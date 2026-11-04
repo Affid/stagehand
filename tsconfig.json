@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["node", "chrome"]
+  },
+  "include": [
+    "packages/*/vite.config.ts",
+    "packages/*/build.ts",
+    "*.ts",
+    "*.config.ts",
+    "eslint.config.js",
+    "tests/**/*.ts"
+  ]
+}

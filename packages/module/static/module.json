@@ -1,0 +1,10 @@
+{
+  "id": "module-library",
+  "title": "Module Library (spike)",
+  "description": "Companion for the Module Library browser extension.",
+  "authors": [{ "name": "Module Library" }],
+  "version": "0.0.1",
+  "compatibility": { "minimum": "13", "verified": "14.369" },
+  "esmodules": ["module-library.js"],
+  "languages": [{ "lang": "en", "name": "English", "path": "lang/en.json" }]
+}

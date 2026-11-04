@@ -1,0 +1,14 @@
+{
+  "MODULE_LIBRARY": {
+    "Apply": {
+      "Title": "Module Library: apply module changes",
+      "Intro": "Changes queued from the Setup screen for this world:",
+      "Enable": "Enable",
+      "Disable": "Disable",
+      "Dependencies": "Added as dependencies",
+      "Missing": "Not installed (skipped)",
+      "Blocked": "Blocked (missing requirements)",
+      "NoChange": "No change: the world already matches."
+    }
+  }
+}
