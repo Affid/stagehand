@@ -2,7 +2,7 @@
 // world, reports it to the background and mounts the (spike) panel.
 // Builds DOM with textContent only: package data is never parsed as HTML.
 import { logError } from "@module-library/shared/log";
-import type { ApplyMode } from "@module-library/shared/apply";
+import type { ApplyMode } from "@module-library/shared/resolver";
 import { isEnvelope } from "@module-library/shared/protocol";
 import type { SetupData } from "./messages.ts";
 import { send } from "./runtime.ts";

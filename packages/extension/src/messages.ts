@@ -1,7 +1,7 @@
 // Messages from the extension's own pages and content scripts to its
 // background. The background checks each sender before acting.
 import type { Envelope } from "@module-library/shared/protocol";
-import type { ApplyMode } from "@module-library/shared/apply";
+import type { ApplyMode } from "@module-library/shared/resolver";
 
 /** What the Setup page's main-world script reads from `game`. */
 export interface SetupData {

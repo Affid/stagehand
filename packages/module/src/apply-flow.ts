@@ -1,10 +1,13 @@
 // Applies queued commands: resolve against the live state, confirm with the
 // GM, acknowledge, write core's module configuration and reload once.
+// Interim (M1 phase 1): the full dialog comes with the module phase.
+import { toPackageInfo } from "@module-library/shared/package";
 import {
   type ApplyMode,
-  type ApplyResult,
-  computeTarget,
-} from "@module-library/shared/apply";
+  type Plan,
+  resolvePlan,
+} from "@module-library/shared/resolver";
+import { parseCoreVersion } from "@module-library/shared/version";
 import type { Channel } from "./channel.ts";
 import { type FoundryGame, foundryGlobals, MODULE_ID } from "./foundry.ts";
 
@@ -25,32 +28,17 @@ const escapeHtml = (text: string): string =>
       ] ?? c,
   );
 
-const activeIds = (game: FoundryGame): string[] =>
-  [...game.modules.values()].filter((m) => m.active).map((m) => m.id);
-
-/** Folds the commands in queue order into one target (P-6). */
-function resolve(game: FoundryGame, commands: readonly WorldCommand[]) {
-  const installed = [...game.modules.values()].map((m) => ({
-    id: m.id,
-    requires: [...m.relationships.requires]
-      .filter((r) => r.type === "module")
-      .map((r) => r.id),
-  }));
-  const start = activeIds(game);
-  let current: readonly string[] = start;
-  const results: ApplyResult[] = [];
-  for (const c of commands) {
-    const result = computeTarget({
-      mode: c.payload.mode,
-      current,
-      requested: c.payload.modules,
-      installed,
-      companionId: MODULE_ID,
-    });
-    results.push(result);
-    current = result.target;
-  }
-  return { start, target: current, results };
+function resolve(game: FoundryGame, commands: readonly WorldCommand[]): Plan {
+  return resolvePlan({
+    commands: commands.map((c) => c.payload),
+    current: [...game.modules.values()]
+      .filter((m) => m.active)
+      .map((m) => m.id),
+    installed: [...game.modules.values()].map(toPackageInfo),
+    core: parseCoreVersion(`${game.release.generation}.${game.release.build}`),
+    system: { id: game.system.id, version: game.system.version },
+    companionId: MODULE_ID,
+  });
 }
 
 function section(
@@ -64,28 +52,22 @@ function section(
   return `<p><strong>${escapeHtml(label)}</strong></p><ul>${items}</ul>`;
 }
 
-function diffHtml(game: FoundryGame, plan: ReturnType<typeof resolve>): string {
-  const enable = plan.target.filter((id) => !plan.start.includes(id));
-  const disable = plan.start.filter((id) => !plan.target.includes(id));
-  const r = plan.results;
+function diffHtml(game: FoundryGame, plan: Plan): string {
+  const fromDeps = new Set(plan.dependencyAdditions);
   return [
     `<p>${escapeHtml(game.i18n.localize("MODULE_LIBRARY.Apply.Intro"))}</p>`,
-    section(game, "Enable", enable),
-    section(game, "Disable", disable),
     section(
       game,
-      "Dependencies",
-      r.flatMap((x) => x.dependencyAdditions),
+      "Enable",
+      plan.enable.filter((id) => !fromDeps.has(id)),
     ),
-    section(
-      game,
-      "Missing",
-      r.flatMap((x) => x.missing),
-    ),
+    section(game, "Dependencies", plan.dependencyAdditions),
+    section(game, "Disable", plan.disable),
+    section(game, "Missing", plan.missing),
     section(
       game,
       "Blocked",
-      r.flatMap((x) => x.blocked.map((b) => b.id)),
+      plan.blocked.map((b) => b.id),
     ),
   ].join("");
 }

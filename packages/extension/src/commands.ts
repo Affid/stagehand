@@ -1,5 +1,5 @@
 // Queued world commands and their two-phase acknowledgement (PRD 8.4).
-import type { ApplyMode } from "@module-library/shared/apply";
+import type { ApplyMode } from "@module-library/shared/resolver";
 
 export type CommandStatus =
   "pending" | "applying" | "applied" | "failed" | "declined" | "cancelled";

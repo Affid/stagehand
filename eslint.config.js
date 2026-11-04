@@ -48,6 +48,14 @@ export default tseslint.config(
     rules: { "no-console": "off" },
   },
   {
+    // Test matchers (expect.any, expect.stringMatching) are typed any.
+    files: ["**/test/**/*.ts", "tests/**/*.ts"],
+    rules: {
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-non-null-assertion": "off",
+    },
+  },
+  {
     files: ["**/*.js"],
     ...tseslint.configs.disableTypeChecked,
   },

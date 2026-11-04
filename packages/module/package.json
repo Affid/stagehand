@@ -8,6 +8,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@module-library/shared": "workspace:*"
+    "@module-library/shared": "workspace:*",
+    "zod": "^4.6.7"
   }
 }
