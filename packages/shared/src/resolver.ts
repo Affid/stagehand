@@ -33,7 +33,9 @@ function fold(
   const removed = new Set<string>();
   const missing: string[] = [];
   for (const { mode, modules } of input.commands) {
-    missing.push(...modules.filter((id) => !byId.has(id)));
+    // Removing something not installed is a no-op, not a problem.
+    if (mode !== "remove")
+      missing.push(...modules.filter((id) => !byId.has(id)));
     const preset = modules.filter((id) => byId.has(id));
     if (mode === "replace") set = [...new Set([companionId, ...preset])];
     if (mode === "add") set = [...new Set([...set, ...preset])];

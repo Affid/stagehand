@@ -21,10 +21,28 @@ async function relay(msg: Envelope): Promise<void> {
   window.postMessage(reply, location.origin);
 }
 
+/** The world this page belongs to, taken from the companion's HELLO. */
+let pinnedWorld: string | undefined;
+
+const worldOf = (msg: Envelope): string | undefined => {
+  const p = msg.payload as { worldId?: unknown } | null;
+  return typeof p?.worldId === "string" ? p.worldId : undefined;
+};
+
+/** Messages about another world than the HELLO's are dropped. */
+function sameWorld(msg: Envelope): boolean {
+  if (msg.type === "HELLO") {
+    pinnedWorld ??= worldOf(msg);
+    return worldOf(msg) === pinnedWorld;
+  }
+  const world = worldOf(msg);
+  return world === undefined || world === pinnedWorld;
+}
+
 // Listening at once: the module may say HELLO before the background answers.
 window.addEventListener("message", (event: MessageEvent<unknown>) => {
   if (event.source !== window || event.origin !== location.origin) return;
-  if (!isEnvelope(event.data, "module")) return;
+  if (!isEnvelope(event.data, "module") || !sameWorld(event.data)) return;
   relay(event.data).catch((error: unknown) => {
     logError("bridge", error);
   });

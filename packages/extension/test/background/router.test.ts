@@ -25,7 +25,7 @@ function deps(granted = true) {
     extensionUrl: EXT,
     extensionVersion: "0.1.0",
     loadConfig: () => Promise.resolve(BUNDLED_CONFIG),
-    now: () => "now",
+    now: () => "2026-11-05T00:00:00.000Z",
     uuid: () => `id${++n}`,
   };
   return d;
@@ -140,6 +140,16 @@ describe("router: admin verification (PR-1, PR-2, PR-3)", () => {
     const d = deps();
     await registered(d);
     await route(d, { kind: "setup-seen", data: setupData(true) }, fromSetup);
+    await d.state.applyLibraryOp(S, {
+      op: "preset.create",
+      preset: {
+        id: "p",
+        name: "P",
+        description: "",
+        modules: [],
+        source: "user",
+      },
+    });
     const q = (await route(
       d,
       { kind: "queue-apply", worldId: "w", mode: "add", presetIds: ["p"] },
@@ -209,5 +219,51 @@ describe("router: game page bridge (PR-7)", () => {
     await expect(
       route(d, { kind: "library-export" }, fromGame),
     ).rejects.toThrow(/game page/);
+  });
+});
+
+describe("router: review fixes", () => {
+  test("Setup reporting isAdmin:false revokes verification", async () => {
+    const d = deps();
+    await registered(d);
+    await route(d, { kind: "setup-seen", data: setupData(true) }, fromSetup);
+    await route(d, { kind: "setup-seen", data: setupData(false) }, fromSetup);
+    expect(await route(d, { kind: "bridge-init" }, fromGame)).toMatchObject({
+      enabled: false,
+    });
+  });
+
+  test("verification expires", async () => {
+    const d = deps();
+    await registered(d);
+    await route(d, { kind: "setup-seen", data: setupData(true) }, fromSetup);
+    const later = { ...d, now: () => "2099-01-01T00:00:00.000Z" };
+    expect(await route(later, { kind: "bridge-init" }, fromGame)).toMatchObject(
+      { enabled: false },
+    );
+  });
+
+  test("queueing unknown presets is refused", async () => {
+    const d = deps();
+    await registered(d);
+    await route(d, { kind: "setup-seen", data: setupData(true) }, fromSetup);
+    await expect(
+      route(
+        d,
+        { kind: "queue-apply", worldId: "w", mode: "add", presetIds: ["nope"] },
+        fromSetup,
+      ),
+    ).rejects.toThrow(/preset/);
+  });
+
+  test("lookalike paths are not Setup or game pages", async () => {
+    const d = deps();
+    await registered(d);
+    await expect(
+      route(d, { kind: "get-state" }, { ...fromSetup, url: `${S}/setupx` }),
+    ).rejects.toThrow(/unexpected page/);
+    await expect(
+      route(d, { kind: "bridge-init" }, { ...fromGame, url: `${S}/gamex` }),
+    ).rejects.toThrow(/unexpected page/);
   });
 });

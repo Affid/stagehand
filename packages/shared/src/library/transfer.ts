@@ -45,6 +45,29 @@ const header = (kind: "library" | "preset", exportedAt: string) => ({
   exportedAt,
 });
 
+/**
+ * Makes every imported folder, tag and preset newer than any copy an open
+ * editor may hold, so a stale save after an import is a conflict (D-2).
+ */
+export function rebaseRevisions(current: Library, imported: Library): Library {
+  const bump = <T extends { id: string; revision: number }>(
+    mine: readonly T[],
+    theirs: readonly T[],
+  ): T[] =>
+    theirs.map((e) => ({
+      ...e,
+      revision:
+        Math.max(e.revision, mine.find((m) => m.id === e.id)?.revision ?? 0) +
+        1,
+    }));
+  return {
+    ...imported,
+    folders: bump(current.folders, imported.folders),
+    tags: bump(current.tags, imported.tags),
+    presets: bump(current.presets, imported.presets),
+  };
+}
+
 export const exportLibrary = (library: Library, exportedAt: string): string =>
   JSON.stringify({ ...header("library", exportedAt), library }, null, 2);
 

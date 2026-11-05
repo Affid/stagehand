@@ -17,20 +17,34 @@ export interface ApplyDeps {
 }
 
 export type Outcome =
-  "applied" | "unchanged" | "later" | "discarded" | "blocked";
+  "applied" | "unchanged" | "later" | "discarded" | "blocked" | "cancelled";
 
 const K = "MODULE_LIBRARY.Apply";
 
-const ackAll = (
+/** Acknowledges every command; true only if the extension accepted all. */
+async function ackAll(
   deps: ApplyDeps,
   commands: readonly WorldCommand[],
   payload: object,
-) =>
-  Promise.all(
+): Promise<boolean> {
+  const replies = await Promise.all(
     commands.map((c) =>
-      deps.channel.request("COMMAND_ACK", { id: c.id, ...payload }),
+      deps.channel.request("COMMAND_ACK", {
+        id: c.id,
+        worldId: deps.game.world.id,
+        ...payload,
+      }),
     ),
   );
+  return replies.every(
+    (r) =>
+      r.type === "OK" &&
+      (r.payload as { accepted?: unknown } | null)?.accepted === true,
+  );
+}
+
+const message = (error: unknown): string =>
+  error instanceof Error ? error.message : String(error);
 
 /** Conflicts need explicit consent; removals that break others need a choice. */
 function refusal(
@@ -44,12 +58,42 @@ function refusal(
   return undefined;
 }
 
+async function writeConfiguration(
+  deps: ApplyDeps,
+  commands: readonly WorldCommand[],
+  plan: Plan,
+): Promise<void> {
+  try {
+    await deps.game.settings.set(
+      "core",
+      "moduleConfiguration",
+      moduleConfiguration(deps.game, plan.target),
+    );
+  } catch (error: unknown) {
+    await ackAll(deps, commands, { status: "failed", error: message(error) });
+    throw error;
+  }
+}
+
 async function write(
   deps: ApplyDeps,
   commands: readonly WorldCommand[],
   plan: Plan,
 ): Promise<Outcome> {
-  await ackAll(deps, commands, { status: "applying", target: plan.target });
+  const accepted = await ackAll(deps, commands, {
+    status: "applying",
+    target: plan.target,
+  });
+  if (!accepted) {
+    // Cancelled on Setup while the dialog was open, or not recorded:
+    // change nothing, and close whatever was marked applying.
+    await ackAll(deps, commands, {
+      status: "failed",
+      error: "Not applied: a queued change was cancelled meanwhile.",
+    });
+    deps.warn(deps.game.i18n.localize(`${K}.Cancelled`));
+    return "cancelled";
+  }
   if (!plan.changed) {
     // Nothing to reload: a fresh snapshot closes the commands at once.
     await deps.channel.request(
@@ -58,11 +102,7 @@ async function write(
     );
     return "unchanged";
   }
-  await deps.game.settings.set(
-    "core",
-    "moduleConfiguration",
-    moduleConfiguration(deps.game, plan.target),
-  );
+  await writeConfiguration(deps, commands, plan);
   deps.reload();
   return "applied";
 }

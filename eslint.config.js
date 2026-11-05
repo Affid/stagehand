@@ -48,6 +48,16 @@ export default tseslint.config(
     rules: { "no-console": "off" },
   },
   {
+    // House rule: no function longer than 50 lines in source code.
+    files: ["packages/*/src/**/*.{ts,tsx}"],
+    rules: {
+      "max-lines-per-function": [
+        "error",
+        { max: 50, skipBlankLines: true, skipComments: true },
+      ],
+    },
+  },
+  {
     // JSX event handlers are idiomatically arrow shorthands.
     files: ["**/*.tsx"],
     rules: {

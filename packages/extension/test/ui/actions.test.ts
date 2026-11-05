@@ -54,7 +54,7 @@ describe("actions", () => {
   test("a successful op updates the library", async () => {
     const library = { ...emptyLibrary("s"), revision: 3 };
     const { store, actions } = setup(() => ({ ok: true, library }));
-    expect(await actions.op(tagOp)).toBe(true);
+    expect(await actions.op(tagOp)).toBe("ok");
     expect(store.get().data.library.revision).toBe(3);
   });
 
@@ -65,7 +65,7 @@ describe("actions", () => {
         ? fresh
         : { ok: false, conflict: { entity: "tag", id: "t", current: {} } },
     );
-    expect(await actions.op(tagOp)).toBe(false);
+    expect(await actions.op(tagOp)).toBe("conflict");
     expect(store.get().data.library.revision).toBe(9);
     expect(store.get().notice).toEqual({
       kind: "info",
@@ -79,7 +79,7 @@ describe("actions", () => {
       Promise.reject(new Error("Not admin-verified")),
     ) as unknown as Send;
     const actions = createActions(store, send, t);
-    expect(await actions.op(tagOp)).toBe(false);
+    expect(await actions.op(tagOp)).toBe("error");
     expect(store.get().notice?.text).toContain("Not admin-verified");
   });
 

@@ -2,14 +2,20 @@
 import { z } from "zod";
 import { PackageInfoSchema } from "./package.ts";
 
+/** Page scripts can post snapshots: every field is bounded (security review). */
+export const MAX_ACTIVE = 2000;
+const Short = z.string().max(100);
+
 export const SnapshotSchema = z.object({
-  worldId: z.string().min(1),
-  title: z.string(),
-  system: z.object({ id: z.string(), version: z.string() }),
-  coreVersion: z.string(),
-  active: z.array(z.object({ id: z.string().min(1), version: z.string() })),
-  companionVersion: z.string(),
-  takenAt: z.string(),
+  worldId: z.string().min(1).max(200),
+  title: z.string().max(300),
+  system: z.object({ id: Short, version: Short }),
+  coreVersion: Short,
+  active: z
+    .array(z.object({ id: z.string().min(1).max(200), version: Short }))
+    .max(MAX_ACTIVE),
+  companionVersion: Short,
+  takenAt: z.iso.datetime(),
 });
 
 export type Snapshot = z.infer<typeof SnapshotSchema>;

@@ -9,8 +9,11 @@ import type { Store } from "./store.ts";
 
 export type Send = <T>(message: ExtensionMessage) => Promise<T>;
 
+/** A conflict means the latest library was loaded and nothing was saved. */
+export type OpOutcome = "ok" | "conflict" | "error";
+
 export interface Actions {
-  op(op: LibraryOp): Promise<boolean>;
+  op(op: LibraryOp): Promise<OpOutcome>;
   refresh(): Promise<void>;
   queueApply(
     worldId: string,
@@ -22,24 +25,20 @@ export interface Actions {
   importLibrary(text: string): Promise<void>;
 }
 
+type Imported =
+  | { readonly ok: true; readonly library: Library }
+  | { readonly ok: false; readonly error: string };
+
 const message = (error: unknown): string =>
   error instanceof Error ? error.message : String(error);
 
-export function createActions(store: Store, send: Send, t: Translate): Actions {
+/** What every action shares: the store, the background and messages. */
+function base(store: Store, send: Send, t: Translate) {
+  const notify = (kind: "error" | "info", text: string): void => {
+    store.set({ notice: { kind, text } });
+  };
   const fail = (error: unknown): void => {
-    store.set({
-      notice: {
-        kind: "error",
-        text: t("notice.failed", { error: message(error) }),
-      },
-    });
-  };
-  const setLibrary = (library: Library): void => {
-    store.set((s) => ({ data: { ...s.data, library } }));
-  };
-  const refresh = async (): Promise<void> => {
-    const data = await send<SetupState>({ kind: "get-state" });
-    store.set({ data });
+    notify("error", t("notice.failed", { error: message(error) }));
   };
   const guarded = async <T>(fn: () => Promise<T>): Promise<T | undefined> => {
     try {
@@ -49,60 +48,84 @@ export function createActions(store: Store, send: Send, t: Translate): Actions {
       return undefined;
     }
   };
+  const refresh = async (): Promise<void> => {
+    await guarded(async () => {
+      store.set({ data: await send<SetupState>({ kind: "get-state" }) });
+    });
+  };
+  const setLibrary = (library: Library): void => {
+    store.set((s) => ({ data: { ...s.data, library } }));
+  };
+  return { notify, fail, guarded, refresh, setLibrary };
+}
+
+type Base = ReturnType<typeof base>;
+
+async function runOp(
+  b: Base,
+  send: Send,
+  t: Translate,
+  op: LibraryOp,
+): Promise<OpOutcome> {
+  const result = await b.guarded(() =>
+    send<OpResult>({ kind: "library-op", op }),
+  );
+  if (!result) return "error";
+  if (result.ok) {
+    b.setLibrary(result.library);
+    return "ok";
+  }
+  if ("conflict" in result) {
+    // D-2: never overwrite; load the latest and let the admin redo it.
+    await b.refresh();
+    b.notify("info", t("notice.conflict"));
+    return "conflict";
+  }
+  b.fail(new Error(result.error));
+  return "error";
+}
+
+async function runImport(
+  b: Base,
+  send: Send,
+  t: Translate,
+  text: string,
+): Promise<void> {
+  const r = await b.guarded(() =>
+    send<Imported>({ kind: "library-import", text }),
+  );
+  if (!r) return;
+  if (!r.ok) {
+    b.notify("error", t("notice.importFailed", { error: r.error }));
+    return;
+  }
+  b.setLibrary(r.library);
+  b.notify("info", t("notice.imported"));
+}
+
+export function createActions(store: Store, send: Send, t: Translate): Actions {
+  const b = base(store, send, t);
   return {
-    refresh: () => guarded(refresh).then(() => undefined),
-    async op(op) {
-      const result = await guarded(() =>
-        send<OpResult>({ kind: "library-op", op }),
-      );
-      if (!result) return false;
-      if (result.ok) {
-        setLibrary(result.library);
-        return true;
-      }
-      if ("conflict" in result) {
-        // D-2: never overwrite; load the latest and let the admin redo it.
-        await guarded(refresh);
-        store.set({ notice: { kind: "info", text: t("notice.conflict") } });
-      } else fail(new Error(result.error));
-      return false;
-    },
+    refresh: b.refresh,
+    op: (op) => runOp(b, send, t, op),
     async queueApply(worldId, mode, presetIds) {
-      const queued = await guarded(() =>
+      const queued = await b.guarded(() =>
         send({ kind: "queue-apply", worldId, mode, presetIds: [...presetIds] }),
       );
-      if (queued) await guarded(refresh);
+      if (queued) await b.refresh();
       return queued !== undefined;
     },
     async cancelCommand(id) {
-      await guarded(() => send({ kind: "cancel-command", id }));
-      await guarded(refresh);
+      await b.guarded(() => send({ kind: "cancel-command", id }));
+      await b.refresh();
     },
     async exportLibrary() {
-      const r = await guarded(() =>
+      const r = await b.guarded(() =>
         send<{ text: string }>({ kind: "library-export" }),
       );
       return r?.text;
     },
-    async importLibrary(text) {
-      type Imported =
-        { ok: true; library: Library } | { ok: false; error: string };
-      const r = await guarded(() =>
-        send<Imported>({ kind: "library-import", text }),
-      );
-      if (!r) return;
-      if (!r.ok) {
-        store.set({
-          notice: {
-            kind: "error",
-            text: t("notice.importFailed", { error: r.error }),
-          },
-        });
-        return;
-      }
-      setLibrary(r.library);
-      store.set({ notice: { kind: "info", text: t("notice.imported") } });
-    },
+    importLibrary: (text) => runImport(b, send, t, text),
   };
 }
 

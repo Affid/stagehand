@@ -14,6 +14,9 @@ export function normalizeServerUrl(input: string): ServerId {
   }
   if (url.protocol !== "http:" && url.protocol !== "https:")
     throw new Error(`Only http and https servers are supported`);
+  // The path becomes part of match patterns, where * is a wildcard.
+  if (url.pathname.includes("*"))
+    throw new Error("A server URL can't contain *");
   return `${url.origin}${url.pathname.replace(/\/+$/, "")}`;
 }
 

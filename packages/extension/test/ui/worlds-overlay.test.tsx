@@ -202,3 +202,38 @@ describe("preset editor (P-1, P-2, P-7)", () => {
     );
   });
 });
+
+describe("preset editor: review fixes (D-2)", () => {
+  test("after a conflict the editor closes instead of keeping a stale form", async () => {
+    const newer = setupState({
+      library: {
+        ...setupState().library,
+        presets: [{ ...setupState().library.presets[0]!, revision: 4 }],
+      },
+    });
+    const { getByRole, send, store } = renderUi("overlay", {
+      state: { editingPreset: "p1" },
+      reply: (m) =>
+        m.kind === "get-state"
+          ? newer
+          : {
+              ok: false,
+              conflict: { entity: "preset", id: "p1", current: {} },
+            },
+    });
+    fireEvent.click(getByRole("button", { name: "Save preset" }));
+    await waitFor(() => expect(store.get().editingPreset).toBeNull());
+    const ops = sent(send).filter(
+      (m) => (m as { kind: string }).kind === "library-op",
+    );
+    expect(ops).toHaveLength(1);
+  });
+
+  test("a preset deleted elsewhere is not resurrected", () => {
+    const { getByText, queryByRole } = renderUi("overlay", {
+      state: { editingPreset: "deleted-id" },
+    });
+    expect(getByText(/deleted elsewhere/)).toBeTruthy();
+    expect(queryByRole("button", { name: "Save preset" })).toBeNull();
+  });
+});

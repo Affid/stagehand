@@ -26,9 +26,15 @@ const command = (over: Partial<WorldCommand> = {}): WorldCommand => ({
   ...over,
 });
 
-function setup(dialogResult: unknown, form: Record<string, boolean> = {}) {
+function setup(
+  dialogResult: unknown,
+  form: Record<string, boolean> = {},
+  accepted = true,
+) {
   const { game, set } = fakeGame(MODULES);
-  const { channel, requests } = fakeChannel(() => ok());
+  const { channel, requests } = fakeChannel((type) =>
+    type === "COMMAND_ACK" ? ok("OK", { accepted }) : ok(),
+  );
   const { dialog, wait } = fakeDialog(dialogResult, form);
   const reload = vi.fn();
   const warn = vi.fn();
@@ -106,6 +112,7 @@ describe("applyCommands (8.4, 8.5)", () => {
     expect(acks(requests)).toEqual([
       {
         id: "c1",
+        worldId: "w1",
         status: "applying",
         target: ["module-library", "x", "needs-x", "a", "lib"],
       },
@@ -137,8 +144,8 @@ describe("applyCommands (8.4, 8.5)", () => {
       "discarded",
     );
     expect(acks(requests)).toEqual([
-      { id: "c1", status: "declined" },
-      { id: "c2", status: "declined" },
+      { id: "c1", worldId: "w1", status: "declined" },
+      { id: "c2", worldId: "w1", status: "declined" },
     ]);
   });
 
@@ -190,5 +197,44 @@ describe("applyCommands (8.4, 8.5)", () => {
     const { deps, wait } = setup("apply");
     expect(await applyCommands(deps, [])).toBe("unchanged");
     expect(wait).not.toHaveBeenCalled();
+  });
+});
+
+describe("applyCommands: review fixes", () => {
+  test("a command cancelled on Setup meanwhile is not applied", async () => {
+    const { deps, set, reload, warn, requests } = setup("apply", {}, false);
+    expect(await applyCommands(deps, [command()])).toBe("cancelled");
+    expect(set).not.toHaveBeenCalled();
+    expect(reload).not.toHaveBeenCalled();
+    expect(warn).toHaveBeenCalledWith("MODULE_LIBRARY.Apply.Cancelled");
+    expect(acks(requests).map((a) => (a as { status: string }).status)).toEqual(
+      ["applying", "failed"],
+    );
+  });
+
+  test("a failed settings write is reported as failed, then rethrown", async () => {
+    const { deps, set, requests, reload } = setup("apply");
+    set.mockRejectedValueOnce(new Error("disk full"));
+    await expect(applyCommands(deps, [command()])).rejects.toThrow("disk full");
+    expect(acks(requests).at(-1)).toEqual({
+      id: "c1",
+      worldId: "w1",
+      status: "failed",
+      error: "disk full",
+    });
+    expect(reload).not.toHaveBeenCalled();
+  });
+
+  test("the configuration keeps entries of modules that are not installed", () => {
+    const { game } = fakeGame(MODULES);
+    void game.settings.set("core", "moduleConfiguration", {
+      gone: true,
+      x: true,
+    });
+    expect(moduleConfiguration(game, ["a"])).toMatchObject({
+      gone: true,
+      x: false,
+      a: true,
+    });
   });
 });

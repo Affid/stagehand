@@ -92,3 +92,7 @@ describe("serverIdOfPage", () => {
     );
   });
 });
+
+test("a server URL with a wildcard is refused", () => {
+  expect(() => normalizeServerUrl("http://h/foundry*")).toThrow(/\*/);
+});

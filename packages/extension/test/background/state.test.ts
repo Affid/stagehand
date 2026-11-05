@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { emptyLibrary } from "@module-library/shared/library/schema";
 import { memoryKeyValue, serialized } from "../../src/background/kv.ts";
-import { createState } from "../../src/background/state.ts";
+import { createState, MAX_WORLDS } from "../../src/background/state.ts";
 
 const S = "http://localhost:30000";
 const fresh = () => createState(serialized(memoryKeyValue()));
@@ -60,7 +60,7 @@ describe("server state", () => {
       coreVersion: "14.369",
       active: [],
       companionVersion: "0.1.0",
-      takenAt: "t",
+      takenAt: "2026-11-05T00:00:00.000Z",
     };
     await state.putSnapshot(S, snap);
     await state.putHello(S, {
@@ -71,5 +71,32 @@ describe("server state", () => {
     });
     expect((await state.snapshots(S)).w).toEqual(snap);
     expect((await state.hellos(S)).w?.protocol).toBe(1);
+  });
+});
+
+describe("state: review fixes", () => {
+  test("keeps at most MAX_WORLDS snapshots, dropping the oldest", async () => {
+    const state = fresh();
+    for (let i = 0; i < MAX_WORLDS + 2; i++)
+      await state.putSnapshot(S, {
+        worldId: `w${String(i)}`,
+        title: "W",
+        system: { id: "dnd5e", version: "5" },
+        coreVersion: "14.369",
+        active: [],
+        companionVersion: "0.1.0",
+        takenAt: new Date(Date.UTC(2026, 0, 1, 0, i)).toISOString(),
+      });
+    const all = await state.snapshots(S);
+    expect(Object.keys(all)).toHaveLength(MAX_WORLDS);
+    expect(all.w0).toBeUndefined();
+  });
+
+  test("admin verification can be revoked", async () => {
+    const state = fresh();
+    await state.addServer(S, "t1");
+    await state.markAdminVerified(S, "t2");
+    await state.revokeAdmin(S);
+    expect((await state.servers())[S]?.adminVerifiedAt).toBeUndefined();
   });
 });

@@ -100,6 +100,7 @@ describe("acknowledge and reconcile (8.4 two-phase)", () => {
     const list = [command(), command({ id: "c2" })];
     const next = acknowledge(list, {
       id: "c1",
+      worldId: "w1",
       status: "applying",
       target: ["b", "a"],
     });
@@ -113,8 +114,12 @@ describe("acknowledge and reconcile (8.4 two-phase)", () => {
 
   test("ignores acks for unknown or already finished commands", () => {
     const list = [command({ status: "cancelled" })];
-    expect(acknowledge(list, { id: "c1", status: "declined" })).toEqual(list);
-    expect(acknowledge(list, { id: "nope", status: "declined" })).toEqual(list);
+    expect(
+      acknowledge(list, { id: "c1", worldId: "w1", status: "declined" }),
+    ).toEqual(list);
+    expect(
+      acknowledge(list, { id: "nope", worldId: "w1", status: "declined" }),
+    ).toEqual(list);
   });
 
   test("an applying command becomes applied when the snapshot reaches its target", () => {

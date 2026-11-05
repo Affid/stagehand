@@ -72,6 +72,7 @@
   "preset.import": "Import preset",
   "preset.fromWorld": "New preset from world {title}",
   "preset.notInstalled": "{n} modules in this preset are not installed",
+  "preset.gone": "This preset was deleted elsewhere. Close this window; nothing was saved.",
   "library.export": "Export library",
   "library.import": "Import library",
   "library.importConfirm": "Replace the whole library with the imported file?",

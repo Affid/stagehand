@@ -1,5 +1,6 @@
 // Companion module entry: registers its setting and runs one session per
 // launch for the full Gamemaster (C-1, PR-4). Assistant GMs and players: nothing.
+import "@module-library/shared/zod-config";
 import { logError } from "@module-library/shared/log";
 import { createChannel } from "./channel.ts";
 import { foundryGlobals, MODULE_ID } from "./foundry.ts";

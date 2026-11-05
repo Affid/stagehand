@@ -92,3 +92,23 @@ describe("loadSetupConfig (R-4, V-5)", () => {
     );
   });
 });
+
+describe("remote config selectors (review fix)", () => {
+  test("list selectors must be plain ids, so a config cannot hide the page", async () => {
+    const kv = memoryKeyValue();
+    const bad = {
+      ...config,
+      revision: 9,
+      adapters: [
+        {
+          ...adapter,
+          selectors: { ...adapter.selectors, modulesList: "body" },
+        },
+      ],
+    };
+    const fetchText = vi.fn().mockResolvedValue(JSON.stringify(bad));
+    expect(await loadSetupConfig({ kv, fetchText, now: () => 0 })).toEqual(
+      BUNDLED_CONFIG,
+    );
+  });
+});

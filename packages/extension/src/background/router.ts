@@ -40,11 +40,17 @@ type Msg<K extends ExtensionMessage["kind"]> = Extract<
   { kind: K }
 >;
 
+/** How long one authenticated Setup visit keeps this browser verified. */
+export const ADMIN_VERIFIED_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+
 async function isVerified(
   deps: RouterDeps,
   server: ServerId,
 ): Promise<boolean> {
-  return (await deps.state.servers())[server]?.adminVerifiedAt !== undefined;
+  const at = (await deps.state.servers())[server]?.adminVerifiedAt;
+  if (at === undefined) return false;
+  // PR-9: verification lapses; a Setup visit renews it.
+  return Date.parse(deps.now()) - Date.parse(at) < ADMIN_VERIFIED_TTL_MS;
 }
 
 async function state(deps: RouterDeps, server: ServerId): Promise<SetupState> {
@@ -79,6 +85,12 @@ async function queueApply(
   server: ServerId,
   m: Msg<"queue-apply">,
 ) {
+  const known = new Set(
+    (await deps.state.library(server)).presets.map((p) => p.id),
+  );
+  const unknown = m.presetIds.filter((id) => !known.has(id));
+  if (unknown.length > 0)
+    throw new Error(`Unknown preset ${unknown.join(", ")}`);
   const snap = (await deps.state.snapshots(server))[m.worldId];
   const id = deps.uuid();
   await deps.state.updateCommands(server, (list) =>
@@ -115,6 +127,7 @@ async function setupSeen(
   await deps.state.putSetup(server, m.data, deps.now());
   // PR-1: only an authenticated Setup page (Foundry's isAdmin) verifies.
   if (m.data.isAdmin) await deps.state.markAdminVerified(server, deps.now());
+  else await deps.state.revokeAdmin(server);
   return state(deps, server);
 }
 
@@ -179,6 +192,9 @@ async function fromExtension(
   return { server };
 }
 
+const isPage = (path: string, page: string): boolean =>
+  path === page || path.startsWith(`${page}/`);
+
 export async function route(
   deps: RouterDeps,
   raw: unknown,
@@ -195,7 +211,7 @@ export async function route(
   );
   if (!server) throw new Error("Message from an unregistered page");
   const path = pathWithinServer(sender.url, server);
-  if (path.startsWith("/setup")) return fromSetup(deps, server, m);
-  if (path.startsWith("/game")) return fromGame(deps, server, m);
+  if (isPage(path, "/setup")) return fromSetup(deps, server, m);
+  if (isPage(path, "/game")) return fromGame(deps, server, m);
   throw new Error(`Message from an unexpected page: ${path}`);
 }

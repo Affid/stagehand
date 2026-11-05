@@ -261,3 +261,27 @@ describe("resolvePlan: problems", () => {
     expect(plan.changed).toBe(false);
   });
 });
+
+describe("resolvePlan: review fixes", () => {
+  test("remove does not report uninstalled ids as missing", () => {
+    const plan = resolvePlan(
+      input({ commands: [{ mode: "remove", modules: ["ghost"] }] }),
+    );
+    expect(plan.missing).toEqual([]);
+  });
+
+  test("a mutual conflict is reported once", () => {
+    const mutual = [
+      pkg("companion"),
+      pkg("p", { conflicts: [{ id: "q", type: "module" }] }),
+      pkg("q", { conflicts: [{ id: "p", type: "module" }] }),
+    ];
+    const plan = resolvePlan(
+      input({
+        installed: mutual,
+        commands: [{ mode: "add", modules: ["p", "q"] }],
+      }),
+    );
+    expect(plan.conflicts).toHaveLength(1);
+  });
+});

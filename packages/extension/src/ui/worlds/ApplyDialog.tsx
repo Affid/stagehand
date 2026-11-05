@@ -28,85 +28,141 @@ function List(props: {
   );
 }
 
+/** The plan's sections in display order: [i18n key, items, style]. */
+function diffSections(plan: Plan, t: Translate): [string, string[], string][] {
+  const deps = new Set(plan.dependencyAdditions);
+  return [
+    ["apply.enable", plan.enable.filter((id) => !deps.has(id)), "ml-add"],
+    ["apply.dependencies", [...plan.dependencyAdditions], "ml-add"],
+    ["apply.disable", [...plan.disable], "ml-remove"],
+    ["apply.missing", [...plan.missing], "ml-warn"],
+    [
+      "apply.blocked",
+      plan.blocked.map((b) => `${b.id} (${b.detail.join(", ")})`),
+      "ml-warn",
+    ],
+    [
+      "apply.incompatible",
+      plan.incompatible.map(
+        (i) => `${i.id} (${t(`apply.incompatible.${i.reason}`)})`,
+      ),
+      "ml-warn",
+    ],
+    [
+      "apply.conflicts",
+      plan.conflicts.map((c) => t("apply.conflict", { a: c.id, b: c.with })),
+      "ml-warn",
+    ],
+    [
+      "apply.dependents",
+      plan.dependents.map((d) =>
+        t("apply.dependent", { id: d.id, by: d.requiredBy.join(", ") }),
+      ),
+      "ml-warn",
+    ],
+  ];
+}
+
 function Diff(props: { readonly plan: Plan; readonly t: Translate }) {
   const { plan, t } = props;
-  const deps = new Set(plan.dependencyAdditions);
-  if (
-    !plan.changed &&
-    plan.missing.length + plan.blocked.length + plan.incompatible.length === 0
-  )
-    return <p>{t("apply.noChange")}</p>;
+  const problems =
+    plan.missing.length + plan.blocked.length + plan.incompatible.length;
+  if (!plan.changed && problems === 0) return <p>{t("apply.noChange")}</p>;
   return (
     <div class="ml-diff" data-testid="apply-diff">
-      <List
-        title={t("apply.enable")}
-        items={plan.enable.filter((id) => !deps.has(id))}
-        kind="ml-add"
-      />
-      <List
-        title={t("apply.dependencies")}
-        items={plan.dependencyAdditions}
-        kind="ml-add"
-      />
-      <List title={t("apply.disable")} items={plan.disable} kind="ml-remove" />
-      <List title={t("apply.missing")} items={plan.missing} kind="ml-warn" />
-      <List
-        title={t("apply.blocked")}
-        items={plan.blocked.map((b) => `${b.id} (${b.detail.join(", ")})`)}
-        kind="ml-warn"
-      />
-      <List
-        title={t("apply.incompatible")}
-        items={plan.incompatible.map(
-          (i) => `${i.id} (${t(`apply.incompatible.${i.reason}`)})`,
-        )}
-        kind="ml-warn"
-      />
-      <List
-        title={t("apply.conflicts")}
-        items={plan.conflicts.map((c) =>
-          t("apply.conflict", { a: c.id, b: c.with }),
-        )}
-        kind="ml-warn"
-      />
-      <List
-        title={t("apply.dependents")}
-        items={plan.dependents.map((d) =>
-          t("apply.dependent", { id: d.id, by: d.requiredBy.join(", ") }),
-        )}
-        kind="ml-warn"
-      />
+      {diffSections(plan, t).map(([key, items, kind]) => (
+        <List key={key} title={t(key)} items={items} kind={kind} />
+      ))}
     </div>
   );
 }
 
-export function ApplyDialog(props: { readonly worldId: string }) {
-  const { state, store, actions, t, canChange } = useUi();
+function PresetChoice(props: {
+  readonly chosen: readonly string[];
+  readonly onToggle: (id: string) => void;
+}) {
+  const { state, t } = useUi();
+  const presets = state.data.library.presets;
+  return (
+    <fieldset class="ml-field">
+      <legend>{t("apply.presets")}</legend>
+      {presets.length === 0 ? <p>{t("apply.noPresets")}</p> : null}
+      {presets.map((p) => (
+        <label key={p.id} class="ml-check">
+          <input
+            type="checkbox"
+            checked={props.chosen.includes(p.id)}
+            onChange={() => props.onToggle(p.id)}
+          />
+          {p.name} <span class="ml-count">{p.modules.length}</span>
+        </label>
+      ))}
+    </fieldset>
+  );
+}
+
+function ModeChoice(props: {
+  readonly mode: ApplyMode;
+  readonly onMode: (mode: ApplyMode) => void;
+  readonly removeDependents: boolean;
+  readonly onRemoveDependents: (on: boolean) => void;
+}) {
+  const { t } = useUi();
+  return (
+    <fieldset class="ml-field">
+      <legend>{t("apply.mode")}</legend>
+      {MODES.map((m) => (
+        <label key={m} class="ml-check">
+          <input
+            type="radio"
+            name="ml-mode"
+            value={m}
+            checked={props.mode === m}
+            onChange={() => props.onMode(m)}
+          />
+          {t(`apply.mode.${m}`)}
+        </label>
+      ))}
+      {props.mode !== "add" ? (
+        <label class="ml-check">
+          <input
+            type="checkbox"
+            checked={props.removeDependents}
+            onChange={(e) => props.onRemoveDependents(e.currentTarget.checked)}
+          />
+          {t("apply.removeDependents")}
+        </label>
+      ) : null}
+    </fieldset>
+  );
+}
+
+function Preview(props: { readonly preview: ReturnType<typeof previewApply> }) {
+  const { t } = useUi();
+  const { plan, warnings } = props.preview;
+  if (!plan) return null;
+  return (
+    <section aria-label={t("apply.preview")}>
+      <h3>{t("apply.preview")}</h3>
+      {warnings.includes("no-snapshot") ? (
+        <p class="ml-warn-text">{t("apply.noSnapshot")}</p>
+      ) : null}
+      <Diff plan={plan} t={t} />
+    </section>
+  );
+}
+
+/** The dialog's choices and the preview they produce. */
+function useApplyForm(worldId: string) {
+  const { state } = useUi();
   const [presetIds, setPresetIds] = useState<readonly string[]>([]);
   const [mode, setMode] = useState<ApplyMode>("add");
   const [removeDependents, setRemoveDependents] = useState(false);
-  const world = state.data.setup?.worlds.find((w) => w.id === props.worldId);
   const preview = useMemo(
     () =>
-      previewApply(state.data, {
-        worldId: props.worldId,
-        presetIds,
-        mode,
-        removeDependents,
-      }),
-    [state.data, props.worldId, presetIds, mode, removeDependents],
+      previewApply(state.data, { worldId, presetIds, mode, removeDependents }),
+    [state.data, worldId, presetIds, mode, removeDependents],
   );
-  const close = (): void => {
-    store.set({ applyWorld: null });
-  };
-  const queue = async (): Promise<void> => {
-    if (await actions.queueApply(props.worldId, mode, presetIds)) {
-      store.set({
-        applyWorld: null,
-        notice: { kind: "info", text: t("apply.queued") },
-      });
-    }
-  };
   const toggle = (id: string): void => {
     setPresetIds(
       presetIds.includes(id)
@@ -114,12 +170,34 @@ export function ApplyDialog(props: { readonly worldId: string }) {
         : [...presetIds, id],
     );
   };
-  const presets = state.data.library.presets;
+  return {
+    presetIds,
+    toggle,
+    mode,
+    setMode,
+    removeDependents,
+    setRemoveDependents,
+    preview,
+  };
+}
+
+export function ApplyDialog(props: { readonly worldId: string }) {
+  const { state, store, actions, t, canChange } = useUi();
+  const { worldId } = props;
+  const form = useApplyForm(worldId);
+  const world = state.data.setup?.worlds.find((w) => w.id === worldId);
+  const queue = async (): Promise<void> => {
+    if (await actions.queueApply(worldId, form.mode, form.presetIds))
+      store.set({
+        applyWorld: null,
+        notice: { kind: "info", text: t("apply.queued") },
+      });
+  };
   const footer = (
     <button
       type="button"
       class="ml-primary"
-      disabled={!canChange || presetIds.length === 0}
+      disabled={!canChange || form.presetIds.length === 0}
       onClick={() => void queue()}
     >
       {t("apply.queue")}
@@ -127,58 +205,18 @@ export function ApplyDialog(props: { readonly worldId: string }) {
   );
   return (
     <Modal
-      title={t("apply.title", { world: world?.title ?? props.worldId })}
-      onClose={close}
+      title={t("apply.title", { world: world?.title ?? worldId })}
+      onClose={() => store.set({ applyWorld: null })}
       footer={footer}
     >
-      <fieldset class="ml-field">
-        <legend>{t("apply.presets")}</legend>
-        {presets.length === 0 ? <p>{t("apply.noPresets")}</p> : null}
-        {presets.map((p) => (
-          <label key={p.id} class="ml-check">
-            <input
-              type="checkbox"
-              checked={presetIds.includes(p.id)}
-              onChange={() => toggle(p.id)}
-            />
-            {p.name} <span class="ml-count">{p.modules.length}</span>
-          </label>
-        ))}
-      </fieldset>
-      <fieldset class="ml-field">
-        <legend>{t("apply.mode")}</legend>
-        {MODES.map((m) => (
-          <label key={m} class="ml-check">
-            <input
-              type="radio"
-              name="ml-mode"
-              value={m}
-              checked={mode === m}
-              onChange={() => setMode(m)}
-            />
-            {t(`apply.mode.${m}`)}
-          </label>
-        ))}
-        {mode !== "add" ? (
-          <label class="ml-check">
-            <input
-              type="checkbox"
-              checked={removeDependents}
-              onChange={(e) => setRemoveDependents(e.currentTarget.checked)}
-            />
-            {t("apply.removeDependents")}
-          </label>
-        ) : null}
-      </fieldset>
-      {presetIds.length > 0 && preview.plan ? (
-        <section aria-label={t("apply.preview")}>
-          <h3>{t("apply.preview")}</h3>
-          {preview.warnings.includes("no-snapshot") ? (
-            <p class="ml-warn-text">{t("apply.noSnapshot")}</p>
-          ) : null}
-          <Diff plan={preview.plan} t={t} />
-        </section>
-      ) : null}
+      <PresetChoice chosen={form.presetIds} onToggle={form.toggle} />
+      <ModeChoice
+        mode={form.mode}
+        onMode={form.setMode}
+        removeDependents={form.removeDependents}
+        onRemoveDependents={form.setRemoveDependents}
+      />
+      {form.presetIds.length > 0 ? <Preview preview={form.preview} /> : null}
     </Modal>
   );
 }

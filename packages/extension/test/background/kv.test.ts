@@ -1,5 +1,9 @@
 import { describe, expect, test } from "vitest";
-import { memoryKeyValue, serialized } from "../../src/background/kv.ts";
+import {
+  memoryKeyValue,
+  serialized,
+  withResult,
+} from "../../src/background/kv.ts";
 
 describe("serialized updates", () => {
   test("concurrent updates of one key never lose a write", async () => {
@@ -28,12 +32,18 @@ describe("serialized updates", () => {
 
   test("returns the stored value and the update's extra result", async () => {
     const kv = serialized(memoryKeyValue());
-    const result = await kv.update<number, string>("k", 1, (n) => ({
-      value: n * 2,
-      result: "doubled",
-    }));
+    const result = await kv.update<number, string>("k", 1, (n) =>
+      withResult(n * 2, "doubled"),
+    );
     expect(result).toBe("doubled");
     expect(await kv.get("k")).toBe(2);
+  });
+
+  test("a stored object that looks like a wrapper is stored as is", async () => {
+    const kv = serialized(memoryKeyValue());
+    const value = { value: 1, result: 2 };
+    expect(await kv.update<object>("k", {}, () => value)).toEqual(value);
+    expect(await kv.get("k")).toEqual(value);
   });
 
   test("stored values are copies: mutating a read never changes storage", async () => {

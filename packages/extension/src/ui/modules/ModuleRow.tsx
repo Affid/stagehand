@@ -93,44 +93,56 @@ function Badges(props: {
   );
 }
 
+function RowHeading(props: { readonly pkg: PackageInfo }) {
+  const { pkg } = props;
+  return (
+    <div class="ml-row-line">
+      <span class="ml-title">{pkg.title}</span>
+      <span class="ml-id">{pkg.id}</span>
+      <span class="ml-version">{pkg.version}</span>
+      <Authors pkg={pkg} />
+    </div>
+  );
+}
+
+/** Selection of one row: toggles it in the store's selection. */
+function useRowSelection(id: string) {
+  const { state, store } = useUi();
+  const selected = state.selection.includes(id);
+  const toggle = (): void => {
+    store.set((s) => ({
+      selection: selected
+        ? s.selection.filter((x) => x !== id)
+        : [...s.selection, id],
+    }));
+  };
+  return { selected, toggle, dragged: selected ? state.selection : [id] };
+}
+
 export function ModuleRow(props: {
   readonly pkg: PackageInfo;
   readonly model: ModulesModel;
 }) {
-  const { state, store, t, canChange } = useUi();
+  const { state, t, canChange } = useUi();
   const [editing, setEditing] = useState(false);
   const { pkg } = props;
-  const selected = state.selection.includes(pkg.id);
+  const row = useRowSelection(pkg.id);
   const note = state.data.library.modules[pkg.id]?.note ?? "";
-  const toggle = (): void => {
-    store.set((s) => ({
-      selection: selected
-        ? s.selection.filter((x) => x !== pkg.id)
-        : [...s.selection, pkg.id],
-    }));
-  };
   return (
     <li
-      class={`ml-row${selected ? " ml-selected" : ""}`}
+      class={`ml-row${row.selected ? " ml-selected" : ""}`}
       data-module={pkg.id}
       draggable={canChange}
-      onDragStart={(e) => {
-        startDrag(e, selected ? state.selection : [pkg.id]);
-      }}
+      onDragStart={(e) => startDrag(e, row.dragged)}
     >
       <input
         type="checkbox"
-        checked={selected}
+        checked={row.selected}
         aria-label={t("row.select", { title: pkg.title })}
-        onChange={toggle}
+        onChange={row.toggle}
       />
       <div class="ml-row-main">
-        <div class="ml-row-line">
-          <span class="ml-title">{pkg.title}</span>
-          <span class="ml-id">{pkg.id}</span>
-          <span class="ml-version">{pkg.version}</span>
-          <Authors pkg={pkg} />
-        </div>
+        <RowHeading pkg={pkg} />
         <Badges pkg={pkg} model={props.model} />
         {note && !editing ? <p class="ml-note">{note}</p> : null}
         {editing ? (

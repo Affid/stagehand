@@ -154,11 +154,17 @@ function tagOp(
   op: Extract<LibraryOp, { op: `tag.${string}` }>,
 ): OpResult {
   if (op.op === "tag.create") {
+    if (lib.tags.some((t) => t.id === op.tag.id))
+      return fail(`tag ${op.tag.id} exists`);
     if (nameTaken(lib.tags, op.tag.name))
       return fail(`tag ${op.tag.name} exists`);
     return done(lib, { tags: [...lib.tags, { ...op.tag, revision: 1 }] });
   }
   if (op.op === "tag.update") {
+    // A stale edit is a conflict first, whatever else is wrong with it (D-2).
+    const current = lib.tags.find((t) => t.id === op.id);
+    if (current && current.revision !== op.baseRevision)
+      return { ok: false, conflict: { entity: "tag", id: op.id, current } };
     if (op.changes.name && nameTaken(lib.tags, op.changes.name, op.id))
       return fail(`tag ${op.changes.name} exists`);
     const changes = definedChanges(op.changes);

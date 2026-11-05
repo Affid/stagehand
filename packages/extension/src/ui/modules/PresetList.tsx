@@ -5,35 +5,57 @@ import { downloadText, fileStamp, pickTextFile } from "../common/files.ts";
 import { useUi } from "../context.ts";
 import type { ModulesModel } from "./derived.ts";
 
-export function PresetList(props: { readonly model: ModulesModel }) {
-  const { state, store, actions, t, canChange } = useUi();
-  const presets = state.data.library.presets;
-  const startNew = (modules: readonly string[]): void => {
-    store.set({ editingPreset: "new", draftModules: modules });
-  };
-  const importPreset = async (): Promise<void> => {
+/** Imports a shared preset file as a new preset (P-7). */
+function usePresetImport() {
+  const { store, actions, t } = useUi();
+  return async (): Promise<void> => {
     const text = await pickTextFile();
     if (text === undefined) return;
     const parsed = parsePresetImport(text);
     if (!parsed.ok) {
-      store.set({
-        notice: {
-          kind: "error",
-          text: t("notice.importFailed", { error: parsed.error }),
-        },
-      });
+      const error = t("notice.importFailed", { error: parsed.error });
+      store.set({ notice: { kind: "error", text: error } });
       return;
     }
-    await actions.op({
-      op: "preset.create",
-      preset: { ...parsed.preset, id: newId(), source: "import" },
-    });
+    const preset = { ...parsed.preset, id: newId(), source: "import" as const };
+    await actions.op({ op: "preset.create", preset });
   };
+}
+
+function PresetTools(props: { readonly model: ModulesModel }) {
+  const { store, t } = useUi();
+  const importPreset = usePresetImport();
+  const startNew = (modules: readonly string[]): void => {
+    store.set({ editingPreset: "new", draftModules: modules });
+  };
+  return (
+    <div class="ml-stack">
+      <button type="button" class="ml-link" onClick={() => startNew([])}>
+        + {t("preset.new")}
+      </button>
+      {props.model.filtered ? (
+        <button
+          type="button"
+          class="ml-link"
+          onClick={() => startNew(props.model.visible.map((m) => m.id))}
+        >
+          + {t("preset.fromFilter")}
+        </button>
+      ) : null}
+      <button type="button" class="ml-link" onClick={() => void importPreset()}>
+        {t("preset.import")}
+      </button>
+    </div>
+  );
+}
+
+export function PresetList(props: { readonly model: ModulesModel }) {
+  const { state, store, t, canChange } = useUi();
   return (
     <section class="ml-side-section" aria-label={t("sidebar.presets")}>
       <h3>{t("sidebar.presets")}</h3>
       <ul>
-        {presets.map((p) => (
+        {state.data.library.presets.map((p) => (
           <li key={p.id} class="ml-side-item">
             <button
               type="button"
@@ -47,29 +69,7 @@ export function PresetList(props: { readonly model: ModulesModel }) {
           </li>
         ))}
       </ul>
-      {canChange ? (
-        <div class="ml-stack">
-          <button type="button" class="ml-link" onClick={() => startNew([])}>
-            + {t("preset.new")}
-          </button>
-          {props.model.filtered ? (
-            <button
-              type="button"
-              class="ml-link"
-              onClick={() => startNew(props.model.visible.map((m) => m.id))}
-            >
-              + {t("preset.fromFilter")}
-            </button>
-          ) : null}
-          <button
-            type="button"
-            class="ml-link"
-            onClick={() => void importPreset()}
-          >
-            {t("preset.import")}
-          </button>
-        </div>
-      ) : null}
+      {canChange ? <PresetTools model={props.model} /> : null}
     </section>
   );
 }

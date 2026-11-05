@@ -257,3 +257,42 @@ describe("presets", () => {
     });
   });
 });
+
+describe("review fixes", () => {
+  test("tag.create rejects a reused id", () => {
+    const one = ok(
+      applyOp(lib0, {
+        op: "tag.create",
+        tag: { id: "t1", name: "a", color: "#000000" },
+      }),
+    );
+    expect(
+      applyOp(one, {
+        op: "tag.create",
+        tag: { id: "t1", name: "b", color: "#000000" },
+      }),
+    ).toMatchObject({ ok: false, error: expect.stringMatching(/exists/) });
+  });
+
+  test("a stale tag rename is a revision conflict, even to a taken name", () => {
+    const two = ok(
+      applyOp(
+        ok(
+          applyOp(lib0, {
+            op: "tag.create",
+            tag: { id: "t1", name: "a", color: "#000000" },
+          }),
+        ),
+        { op: "tag.create", tag: { id: "t2", name: "b", color: "#000000" } },
+      ),
+    );
+    expect(
+      applyOp(two, {
+        op: "tag.update",
+        id: "t1",
+        baseRevision: 0,
+        changes: { name: "b" },
+      }),
+    ).toMatchObject({ ok: false, conflict: { entity: "tag", id: "t1" } });
+  });
+});

@@ -48,7 +48,16 @@ export function moduleConfiguration(
   target: readonly string[],
 ): Record<string, boolean> {
   const on = new Set([...target, MODULE_ID]);
-  return Object.fromEntries(
-    [...game.modules.keys()].map((id) => [id, on.has(id)]),
-  );
+  // Keep core's entries for modules that aren't installed right now.
+  const current = game.settings.get("core", "moduleConfiguration");
+  const kept =
+    typeof current === "object" && current !== null
+      ? (current as Record<string, boolean>)
+      : {};
+  return {
+    ...kept,
+    ...Object.fromEntries(
+      [...game.modules.keys()].map((id) => [id, on.has(id)]),
+    ),
+  };
 }

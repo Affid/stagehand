@@ -9,12 +9,13 @@ import {
   emptyLibrary,
   type Library,
 } from "@module-library/shared/library/schema";
+import { rebaseRevisions } from "@module-library/shared/library/transfer";
 import type {
   Command,
   SetupData,
   Snapshot,
 } from "@module-library/shared/world";
-import type { SerializedKeyValue } from "./kv.ts";
+import { type SerializedKeyValue, type Updated, withResult } from "./kv.ts";
 import type { ServerId } from "./servers.ts";
 
 export interface ServerRecord {
@@ -37,37 +38,64 @@ export interface StoredSetup extends SetupData {
 
 type Servers = Readonly<Record<ServerId, ServerRecord>>;
 
+/** Snapshots kept per server; a page can't fill storage with fake worlds. */
+export const MAX_WORLDS = 200;
+
+function keepNewest(all: Record<string, Snapshot>): Record<string, Snapshot> {
+  const entries = Object.entries(all);
+  if (entries.length <= MAX_WORLDS) return all;
+  const newest = entries
+    .sort(([, a], [, b]) => b.takenAt.localeCompare(a.takenAt))
+    .slice(0, MAX_WORLDS);
+  return Object.fromEntries(newest);
+}
+
 const key = (kind: string, server: ServerId): string => `${kind}:${server}`;
 
-export type ServerState = ReturnType<typeof createState>;
-
-export function createState(kv: SerializedKeyValue) {
-  const read = async <T>(k: string, fallback: T): Promise<T> =>
+const reader =
+  (kv: SerializedKeyValue) =>
+  async <T>(k: string, fallback: T): Promise<T> =>
     (await kv.get<T>(k)) ?? fallback;
+
+/** Registered servers and their admin verification (R-1, PR-1). */
+function serverStore(kv: SerializedKeyValue) {
+  const update = (fn: (s: Servers) => Servers): Promise<Servers> =>
+    kv.update<Servers>("servers", {}, fn);
   return {
-    servers: () => read<Servers>("servers", {}),
+    servers: () => reader(kv)<Servers>("servers", {}),
     async addServer(id: ServerId, at: string): Promise<void> {
-      await kv.update<Servers>("servers", {}, (s) => ({
-        ...s,
-        [id]: s[id] ?? { id, addedAt: at },
-      }));
+      await update((s) => ({ ...s, [id]: s[id] ?? { id, addedAt: at } }));
     },
     async markAdminVerified(id: ServerId, at: string): Promise<void> {
-      await kv.update<Servers>("servers", {}, (s) => {
+      await update((s) => {
         const current = s[id];
         return current
           ? { ...s, [id]: { ...current, adminVerifiedAt: at } }
           : s;
       });
     },
-    library: (id: ServerId) => read(key("library", id), emptyLibrary(id)),
+    /** Setup said this browser is no longer the admin (security review). */
+    async revokeAdmin(id: ServerId): Promise<void> {
+      await update((s) => {
+        const current = s[id];
+        if (!current?.adminVerifiedAt) return s;
+        return { ...s, [id]: { id: current.id, addedAt: current.addedAt } };
+      });
+    },
+  };
+}
+
+/** The library: the source of truth for folders, tags, notes, presets. */
+function libraryStore(kv: SerializedKeyValue) {
+  return {
+    library: (id: ServerId) => reader(kv)(key("library", id), emptyLibrary(id)),
     applyLibraryOp(id: ServerId, op: LibraryOp): Promise<OpResult> {
       return kv.update<Library, OpResult>(
         key("library", id),
         emptyLibrary(id),
         (lib) => {
           const result = applyOp(lib, op);
-          return { value: result.ok ? result.library : lib, result };
+          return withResult(result.ok ? result.library : lib, result);
         },
       );
     },
@@ -77,12 +105,19 @@ export function createState(kv: SerializedKeyValue) {
         key("library", id),
         emptyLibrary(id),
         (lib) => ({
-          ...next,
+          ...rebaseRevisions(lib, next),
           serverId: id,
           revision: Math.max(lib.revision, next.revision) + 1,
         }),
       );
     },
+  };
+}
+
+/** What the worlds report: Setup data, snapshots, handshakes. */
+function worldStore(kv: SerializedKeyValue) {
+  const read = reader(kv);
+  return {
     setup: (id: ServerId) => kv.get<StoredSetup>(key("setup", id)),
     async putSetup(id: ServerId, data: SetupData, at: string): Promise<void> {
       await kv.update<StoredSetup | null>(key("setup", id), null, () => ({
@@ -96,18 +131,8 @@ export function createState(kv: SerializedKeyValue) {
       await kv.update<Record<string, Snapshot>>(
         key("snapshots", id),
         {},
-        (all) => ({
-          ...all,
-          [snap.worldId]: snap,
-        }),
+        (all) => keepNewest({ ...all, [snap.worldId]: snap }),
       );
-    },
-    commands: (id: ServerId) => read<Command[]>(key("commands", id), []),
-    updateCommands<R = Command[]>(
-      id: ServerId,
-      fn: (list: Command[]) => Command[] | { value: Command[]; result: R },
-    ): Promise<R> {
-      return kv.update<Command[], R>(key("commands", id), [], fn);
     },
     hellos: (id: ServerId) =>
       read<Record<string, HelloRecord>>(key("hello", id), {}),
@@ -121,5 +146,29 @@ export function createState(kv: SerializedKeyValue) {
         }),
       );
     },
+  };
+}
+
+/** The command queue (P-5). */
+function commandStore(kv: SerializedKeyValue) {
+  return {
+    commands: (id: ServerId) => reader(kv)<Command[]>(key("commands", id), []),
+    updateCommands<R = Command[]>(
+      id: ServerId,
+      fn: (list: Command[]) => Updated<Command[], R>,
+    ): Promise<R> {
+      return kv.update<Command[], R>(key("commands", id), [], fn);
+    },
+  };
+}
+
+export type ServerState = ReturnType<typeof createState>;
+
+export function createState(kv: SerializedKeyValue) {
+  return {
+    ...serverStore(kv),
+    ...libraryStore(kv),
+    ...worldStore(kv),
+    ...commandStore(kv),
   };
 }

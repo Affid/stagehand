@@ -43,7 +43,7 @@ const snapshot = (active: string[]) => ({
   coreVersion: "14.369",
   active: active.map((id) => ({ id, version: "1" })),
   companionVersion: "0.1.0",
-  takenAt: "t",
+  takenAt: "2026-11-05T00:00:00.000Z",
 });
 
 describe("relay", () => {
@@ -90,11 +90,13 @@ describe("relay", () => {
       ],
       global: [],
     });
-    await send("COMMAND_ACK", {
+    const ack = await send("COMMAND_ACK", {
       id: "c1",
+      worldId: "w",
       status: "applying",
       target: ["a", "companion"],
     });
+    expect(ack.payload).toEqual({ accepted: true });
     await send("SNAPSHOT_PUSH", snapshot(["companion", "a"]));
     expect((await state.commands(S))[0]?.status).toBe("applied");
     expect((await state.snapshots(S)).w?.active).toHaveLength(2);
@@ -108,5 +110,61 @@ describe("relay", () => {
     ).toBe("ERROR");
     expect((await send("NOPE", {})).type).toBe("ERROR");
     expect((await state.commands(S))[0]?.status).toBe("pending");
+  });
+});
+
+describe("relay: review fixes", () => {
+  test("acks report whether they were accepted; cancelled commands are not", async () => {
+    const { state, send } = await setup();
+    await state.updateCommands(S, (list) =>
+      list.map((c) => ({ ...c, status: "cancelled" as const })),
+    );
+    const reply = await send("COMMAND_ACK", {
+      id: "c1",
+      worldId: "w",
+      status: "applying",
+      target: [],
+    });
+    expect(reply).toMatchObject({ type: "OK", payload: { accepted: false } });
+  });
+
+  test("an ack for another world's command is refused", async () => {
+    const { state, send } = await setup();
+    const reply = await send("COMMAND_ACK", {
+      id: "c1",
+      worldId: "other",
+      status: "declined",
+    });
+    expect(reply.payload).toEqual({ accepted: false });
+    expect((await state.commands(S))[0]?.status).toBe("pending");
+  });
+
+  test("a command whose preset was deleted fails instead of applying nothing", async () => {
+    const { state, send } = await setup();
+    await state.applyLibraryOp(S, {
+      op: "preset.delete",
+      id: "p1",
+      baseRevision: 1,
+    });
+    const pulled = await send("COMMANDS_PULL", { worldId: "w" });
+    expect(pulled.payload).toEqual({ world: [], global: [] });
+    expect((await state.commands(S))[0]).toMatchObject({
+      status: "failed",
+      error: expect.stringMatching(/preset/i),
+    });
+  });
+
+  test("oversized snapshots are refused", async () => {
+    const { send } = await setup();
+    const huge = snapshot(
+      Array.from({ length: 5000 }, (_, i) => `m${String(i)}`),
+    );
+    expect((await send("SNAPSHOT_PUSH", huge)).type).toBe("ERROR");
+  });
+
+  test("inherited object keys are not handlers", async () => {
+    const { send } = await setup();
+    expect((await send("constructor", {})).type).toBe("ERROR");
+    expect((await send("toString", {})).type).toBe("ERROR");
   });
 });

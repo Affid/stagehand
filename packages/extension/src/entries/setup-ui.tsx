@@ -1,6 +1,7 @@
 // Isolated content script on Setup: receives package data from the main
 // world, reports it to the background and mounts the organisation UI.
 // Never breaks the Setup page: if a mount point is missing, it skips it.
+import "@module-library/shared/zod-config";
 import { logError } from "@module-library/shared/log";
 import { isEnvelope } from "@module-library/shared/protocol";
 import { parseCoreVersion } from "@module-library/shared/version";
@@ -32,7 +33,10 @@ function selectorsFor(choice: AdapterChoice): Adapter["selectors"] {
 
 function syncCoreList(): void {
   const list = document.querySelector<HTMLElement>(selectors.modulesList);
-  if (list && deps) list.hidden = deps.store.get().view === "organised";
+  // Only ever hide core's list inside the Setup app, never our own roots.
+  const safe =
+    list?.closest("#setup-packages") && !list.querySelector("[id^='ml-']");
+  if (list && safe && deps) list.hidden = deps.store.get().view === "organised";
 }
 
 function mountBefore(

@@ -3,6 +3,8 @@
 import { z } from "zod";
 
 const Selector = z.string().min(1).max(200);
+/** The lists hidden or mounted next to must be named by id: never `body`. */
+const IdSelector = z.string().regex(/^#[A-Za-z][\w-]{0,80}$/);
 
 export const AdapterSchema = z.object({
   id: z.string().min(1),
@@ -12,8 +14,8 @@ export const AdapterSchema = z.object({
   selectors: z.object({
     worldsTab: Selector,
     modulesTab: Selector,
-    modulesList: Selector,
-    worldsList: Selector,
+    modulesList: IdSelector,
+    worldsList: IdSelector,
     worldCard: Selector,
   }),
   flags: z.record(z.string(), z.boolean()),

@@ -40,48 +40,43 @@ function checkbox(name: string, label: string): string {
   return `<label class="checkbox"><input type="checkbox" name="${name}"> ${escapeHtml(label)}</label>`;
 }
 
+/** The plan's sections in display order: [i18n key, items]. */
+function sections(
+  plan: Plan,
+  commands: readonly WorldCommand[],
+): [string, string[]][] {
+  const deps = new Set(plan.dependencyAdditions);
+  return [
+    [
+      "Presets",
+      commands.flatMap((c) => c.presets.map((p) => `${p.name} (${c.mode})`)),
+    ],
+    ["Enable", plan.enable.filter((id) => !deps.has(id))],
+    ["Dependencies", [...plan.dependencyAdditions]],
+    ["Disable", [...plan.disable]],
+    ["Missing", [...plan.missing]],
+    ["Blocked", plan.blocked.map((b) => `${b.id}: ${b.detail.join(", ")}`)],
+    ["Incompatible", plan.incompatible.map((i) => `${i.id} (${i.reason})`)],
+    ["Conflicts", plan.conflicts.map((c) => `${c.id} / ${c.with}`)],
+    [
+      "Dependents",
+      plan.dependents.map((d) => `${d.id}: ${d.requiredBy.join(", ")}`),
+    ],
+  ];
+}
+
 export function diffHtml(
   game: FoundryGame,
   plan: Plan,
   commands: readonly WorldCommand[],
 ): string {
-  const deps = new Set(plan.dependencyAdditions);
-  const presets = commands.flatMap((c) =>
-    c.presets.map((p) => `${p.name} (${c.mode})`),
-  );
+  const say = (key: string): string =>
+    escapeHtml(game.i18n.localize(`${K}.${key}`));
   const parts = [
-    `<p>${escapeHtml(game.i18n.localize(`${K}.Intro`))}</p>`,
-    section(game, "Presets", presets),
-    plan.changed
-      ? ""
-      : `<p>${escapeHtml(game.i18n.localize(`${K}.NoChange`))}</p>`,
-    section(
-      game,
-      "Enable",
-      plan.enable.filter((id) => !deps.has(id)),
-    ),
-    section(game, "Dependencies", plan.dependencyAdditions),
-    section(game, "Disable", plan.disable),
-    section(game, "Missing", plan.missing),
-    section(
-      game,
-      "Blocked",
-      plan.blocked.map((b) => `${b.id}: ${b.detail.join(", ")}`),
-    ),
-    section(
-      game,
-      "Incompatible",
-      plan.incompatible.map((i) => `${i.id} (${i.reason})`),
-    ),
-    section(
-      game,
-      "Conflicts",
-      plan.conflicts.map((c) => `${c.id} / ${c.with}`),
-    ),
-    section(
-      game,
-      "Dependents",
-      plan.dependents.map((d) => `${d.id}: ${d.requiredBy.join(", ")}`),
+    `<p>${say("Intro")}</p>`,
+    plan.changed ? "" : `<p>${say("NoChange")}</p>`,
+    ...sections(plan, commands).map(([key, items]) =>
+      section(game, key, items),
     ),
   ];
   if (plan.conflicts.length > 0)

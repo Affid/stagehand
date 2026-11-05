@@ -1,5 +1,6 @@
 // Sidebar sections: smart groups (7.3), tags (S-3), authors (S-7).
 import type { Tag } from "@module-library/shared/library/schema";
+import type { AuthorEntry } from "@module-library/shared/organise/authors";
 import { useState } from "preact/hooks";
 import { newId, nextColor } from "../actions.ts";
 import { safeUrl } from "../common/files.ts";
@@ -117,59 +118,58 @@ export function TagList() {
   );
 }
 
+const AUTHORS_SHOWN = 8;
+
+function AuthorItem(props: { readonly author: AuthorEntry }) {
+  const { state, store } = useUi();
+  const { author } = props;
+  const url = safeUrl(author.url);
+  const on = state.filter.authors.includes(author.key);
+  const toggle = (): void => {
+    store.set((s) => ({
+      filter: { ...s.filter, authors: on ? [] : [author.key] },
+      selection: [],
+    }));
+  };
+  return (
+    <li class={`ml-side-item${on ? " ml-on" : ""}`}>
+      <button type="button" class="ml-side-label" onClick={toggle}>
+        <span>{author.name}</span>
+        <span class="ml-count">{author.moduleIds.length}</span>
+      </button>
+      {url ? (
+        <a
+          class="ml-icon"
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          title={url}
+          aria-label={url}
+        >
+          <i
+            class="fa-solid fa-arrow-up-right-from-square fa-fw"
+            aria-hidden="true"
+          />
+        </a>
+      ) : null}
+    </li>
+  );
+}
+
 export function AuthorList(props: { readonly model: ModulesModel }) {
-  const { state, store, t } = useUi();
+  const { t } = useUi();
   const [open, setOpen] = useState(false);
   const authors = [...props.model.authors].sort(
     (a, b) => b.moduleIds.length - a.moduleIds.length,
   );
-  const shown = open ? authors : authors.slice(0, 8);
-  const toggle = (key: string): void => {
-    store.set((s) => {
-      const has = s.filter.authors.includes(key);
-      return {
-        filter: { ...s.filter, authors: has ? [] : [key] },
-        selection: [],
-      };
-    });
-  };
+  const shown = open ? authors : authors.slice(0, AUTHORS_SHOWN);
   return (
     <section class="ml-side-section" aria-label={t("sidebar.authors")}>
       <h3>{t("sidebar.authors")}</h3>
       <ul>
-        {shown.map((a) => {
-          const url = safeUrl(a.url);
-          return (
-            <li
-              key={a.key}
-              class={`ml-side-item${state.filter.authors.includes(a.key) ? " ml-on" : ""}`}
-            >
-              <button
-                type="button"
-                class="ml-side-label"
-                onClick={() => toggle(a.key)}
-              >
-                <span>{a.name}</span>
-                <span class="ml-count">{a.moduleIds.length}</span>
-              </button>
-              {url ? (
-                <a
-                  class="ml-icon"
-                  href={url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  title={url}
-                  aria-label={url}
-                >
-                  <i
-                    class="fa-solid fa-arrow-up-right-from-square fa-fw"
-                    aria-hidden="true"
-                  />
-                </a>
-              ) : null}
-            </li>
-          );
-        })}
+        {shown.map((a) => (
+          <AuthorItem key={a.key} author={a} />
+        ))}
       </ul>
       {authors.length > shown.length || open ? (
         <button type="button" class="ml-link" onClick={() => setOpen(!open)}>

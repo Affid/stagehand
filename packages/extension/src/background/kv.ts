@@ -6,8 +6,21 @@ export interface KeyValue {
   set(key: string, value: unknown): Promise<void>;
 }
 
-/** An update returns the new value, or the new value plus a result. */
-export type Updated<T, R> = T | { readonly value: T; readonly result: R };
+/** An update's new value plus an extra result for the caller. */
+export class WithResult<T, R> {
+  readonly value: T;
+  readonly result: R;
+  constructor(value: T, result: R) {
+    this.value = value;
+    this.result = result;
+  }
+}
+
+export const withResult = <T, R>(value: T, result: R): WithResult<T, R> =>
+  new WithResult(value, result);
+
+/** An update returns the new value, or `withResult(value, result)`. */
+export type Updated<T, R> = T | WithResult<T, R>;
 
 export interface SerializedKeyValue {
   get<T>(key: string): Promise<T | undefined>;
@@ -35,11 +48,6 @@ export function memoryKeyValue(): KeyValue {
   };
 }
 
-const isWrapped = <T, R>(
-  u: Updated<T, R>,
-): u is { readonly value: T; readonly result: R } =>
-  typeof u === "object" && u !== null && "value" in u && "result" in u;
-
 export function serialized(kv: KeyValue): SerializedKeyValue {
   let queue: Promise<unknown> = Promise.resolve();
   return {
@@ -52,9 +60,10 @@ export function serialized(kv: KeyValue): SerializedKeyValue {
       const run = async (): Promise<R> => {
         const current = (await kv.get<T>(key)) ?? fallback;
         const updated = await fn(current);
-        const value = isWrapped(updated) ? updated.value : updated;
+        const wrapped = updated instanceof WithResult;
+        const value = wrapped ? updated.value : updated;
         await kv.set(key, value);
-        return isWrapped(updated) ? updated.result : (value as unknown as R);
+        return wrapped ? updated.result : (value as unknown as R);
       };
       const next = queue.then(run, run);
       queue = next.catch(() => undefined);

@@ -32,7 +32,14 @@ export function findConflicts(
   byId: ReadonlyMap<string, PackageInfo>,
 ): Conflict[] {
   const inTarget = new Set(target);
-  return target.flatMap((id) =>
+  const seen = new Set<string>();
+  const once = (c: Conflict): boolean => {
+    const key = [c.id, c.with].sort().join("\n");
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  };
+  const all = target.flatMap((id) =>
     (byId.get(id)?.conflicts ?? [])
       .filter((c) => c.type === "module" && inTarget.has(c.id))
       .filter((c) => {
@@ -48,6 +55,7 @@ export function findConflicts(
           : { id, with: c.id, reason: c.reason },
       ),
   );
+  return all.filter(once);
 }
 
 /** Staying modules that need a module being turned off. */

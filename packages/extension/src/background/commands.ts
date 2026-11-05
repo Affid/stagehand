@@ -6,6 +6,8 @@ import type { Command, WorldCommand } from "@module-library/shared/world";
 
 export interface CommandAck {
   readonly id: string;
+  /** The world the acknowledging companion runs in. */
+  readonly worldId: string;
   readonly status: "applying" | "failed" | "declined";
   readonly target?: readonly string[] | undefined;
   readonly error?: string | undefined;
@@ -72,12 +74,45 @@ export function expandForWorld(
 
 const OPEN = new Set(["pending", "applying"]);
 
+/** An ack counts only for an open command of the acknowledging world. */
+export const isAcceptable = (
+  list: readonly Command[],
+  ack: CommandAck,
+): boolean =>
+  list.some(
+    (c) => c.id === ack.id && c.worldId === ack.worldId && OPEN.has(c.status),
+  );
+
+/**
+ * Pending commands of this world whose presets were deleted fail, rather
+ * than reaching the world as an empty (for Replace: destructive) change.
+ */
+export function failOrphans(
+  list: readonly Command[],
+  library: Library,
+  worldId: string,
+): Command[] {
+  const known = new Set(library.presets.map((p) => p.id));
+  return list.map((c) =>
+    c.worldId === worldId &&
+    c.status === "pending" &&
+    c.payload.presetIds.some((id) => !known.has(id))
+      ? {
+          ...c,
+          status: "failed" as const,
+          error: "A preset of this command was deleted. Queue it again.",
+        }
+      : c,
+  );
+}
+
 export function acknowledge(
   list: readonly Command[],
   ack: CommandAck,
 ): Command[] {
+  if (!isAcceptable(list, ack)) return [...list];
   return list.map((c) => {
-    if (c.id !== ack.id || !OPEN.has(c.status)) return c;
+    if (c.id !== ack.id) return c;
     const target = ack.target ? { targetKey: activeIdsKey(ack.target) } : {};
     const error = ack.error === undefined ? {} : { error: ack.error };
     return { ...c, ...target, ...error, status: ack.status };

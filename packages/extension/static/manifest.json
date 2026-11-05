@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Module Library for Foundry VTT (spike)",
+  "name": "Module Library for Foundry VTT",
   "version": "0.0.1",
   "description": "Organise Foundry VTT modules on the Setup screen.",
   "permissions": ["storage", "scripting"],
@@ -9,11 +9,17 @@
     "service_worker": "background.js",
     "scripts": ["background.js"]
   },
-  "options_ui": { "page": "options.html", "open_in_tab": true },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
   "browser_specific_settings": {
     "gecko": {
       "id": "module-library@spike.local",
-      "strict_min_version": "128.0"
+      "strict_min_version": "128.0",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
     }
   }
 }

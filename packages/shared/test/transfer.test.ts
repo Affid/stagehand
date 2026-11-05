@@ -5,6 +5,7 @@ import {
   exportPreset,
   parseLibraryImport,
   parsePresetImport,
+  rebaseRevisions,
 } from "../src/library/transfer.ts";
 
 const library: Library = {
@@ -61,5 +62,33 @@ describe("preset export and import (P-7)", () => {
       ok: true,
       preset: { name: "Core QoL", description: "", modules: ["a"] },
     });
+  });
+});
+
+describe("rebaseRevisions (import keeps D-2)", () => {
+  test("every imported entity is newer than any copy an editor holds", () => {
+    const current: Library = {
+      ...library,
+      presets: [{ ...library.presets[0]!, revision: 7 }],
+    };
+    const imported: Library = {
+      ...library,
+      presets: [{ ...library.presets[0]!, revision: 2 }],
+      folders: [
+        {
+          id: "f",
+          name: "F",
+          color: "#000000",
+          parentId: null,
+          order: 0,
+          collapsed: false,
+          revision: 1,
+        },
+      ],
+    };
+    const next = rebaseRevisions(current, imported);
+    expect(next.presets[0]?.revision).toBe(8);
+    expect(next.tags[0]?.revision).toBe(2);
+    expect(next.folders[0]?.revision).toBe(2);
   });
 });
