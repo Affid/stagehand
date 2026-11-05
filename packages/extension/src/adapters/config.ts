@@ -28,6 +28,15 @@ export const SetupConfigSchema = z.object({
 export type Adapter = z.infer<typeof AdapterSchema>;
 export type SetupConfig = z.infer<typeof SetupConfigSchema>;
 
+/** Setup markup of V14 build 369; also the best guess in safe mode. */
+export const V14_SELECTORS: Adapter["selectors"] = {
+  worldsTab: "#setup-packages-worlds",
+  modulesTab: "#setup-packages-modules",
+  modulesList: "#modules-list",
+  worldsList: "#worlds-list",
+  worldCard: "#worlds-list > li.package.world[data-package-id]",
+};
+
 /** Verified in the M0 spike against V14 build 369 (docs/M0-FINDINGS.md). */
 export const BUNDLED_CONFIG: SetupConfig = {
   configVersion: 1,
@@ -38,13 +47,7 @@ export const BUNDLED_CONFIG: SetupConfig = {
       generation: 14,
       minBuild: 0,
       maxBuild: 369,
-      selectors: {
-        worldsTab: "#setup-packages-worlds",
-        modulesTab: "#setup-packages-modules",
-        modulesList: "#modules-list",
-        worldsList: "#worlds-list",
-        worldCard: "#worlds-list > li.package.world[data-package-id]",
-      },
+      selectors: V14_SELECTORS,
       flags: {},
     },
   ],

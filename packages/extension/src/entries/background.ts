@@ -2,8 +2,8 @@
 import { logError } from "@module-library/shared/log";
 import type { SetupConfig } from "../adapters/config.ts";
 import { loadSetupConfig } from "../adapters/remote.ts";
-import { chromeKeyValue, serialized } from "../background/kv.ts";
-import { chromeScripting } from "../background/registration.ts";
+import { serialized } from "../background/kv.ts";
+import { chromeKeyValue, chromeScripting } from "../platform/chrome.ts";
 import { route } from "../background/router.ts";
 import { createState } from "../background/state.ts";
 

@@ -28,30 +28,3 @@ export async function registerServer(
   await platform.register(scripts);
   return server;
 }
-
-export function chromeScripting(): ScriptingPlatform {
-  return {
-    hasPermission: (origin) =>
-      chrome.permissions.contains({ origins: [origin] }),
-    async registeredIds(ids) {
-      const found = await chrome.scripting.getRegisteredContentScripts({
-        ids: [...ids],
-      });
-      return found.map((s) => s.id);
-    },
-    unregister: (ids) =>
-      chrome.scripting.unregisterContentScripts({ ids: [...ids] }),
-    register: (scripts) =>
-      chrome.scripting.registerContentScripts(
-        scripts.map((s) => ({
-          id: s.id,
-          matches: [...s.matches],
-          js: [...s.js],
-          ...(s.css ? { css: [...s.css] } : {}),
-          world: s.world,
-          runAt: s.runAt,
-          persistAcrossSessions: true,
-        })),
-      ),
-  };
-}

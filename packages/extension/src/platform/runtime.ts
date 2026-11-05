@@ -1,5 +1,5 @@
 // Sends a message to the background and unwraps its { ok, result } reply.
-import type { ExtensionMessage } from "./messages.ts";
+import type { ExtensionMessage } from "../messages.ts";
 
 interface Reply {
   readonly ok: boolean;

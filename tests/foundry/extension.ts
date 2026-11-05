@@ -86,3 +86,26 @@ export async function waitReady(page: Page): Promise<void> {
     { timeout: 120_000 },
   );
 }
+
+/** Registers the server on the options page and opens Setup as admin. */
+export async function openSetupAsAdmin(
+  ext: LoadedExtension,
+  page: Page,
+  url: string,
+  password: string,
+): Promise<void> {
+  await page.goto(`chrome-extension://${ext.id}/options.html`);
+  await page.locator("#server-url").fill(`${url}/`);
+  await page.locator("#add-server button").click();
+  await page.locator("#status").filter({ hasText: "Registered" }).waitFor();
+  await ext.context.request.post(`${url}/auth`, {
+    form: { action: "adminAuth", adminPassword: password },
+    headers: { Origin: url },
+    maxRedirects: 0,
+  });
+  await page.goto(`${url}/setup`);
+  await page.locator("#ml-worlds-root .ml-worlds").waitFor();
+  await exitTour(page);
+}
+
+export const SCREENS = "test-results/screens";

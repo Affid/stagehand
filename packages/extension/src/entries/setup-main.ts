@@ -2,7 +2,7 @@
 // `game` (V-1) and posts it to the isolated content script. Reads package
 // data and the UI language only: never game.data.options, licence or
 // certificate (8.6).
-import { toPackageInfo } from "@module-library/shared/package";
+import { toPackageInfo } from "@module-library/shared/package-read";
 import { makeEnvelope } from "@module-library/shared/protocol";
 import type { SetupData, WorldInfo } from "@module-library/shared/world";
 

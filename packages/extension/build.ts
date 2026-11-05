@@ -1,6 +1,6 @@
 // Builds each extension entry as a classic script (content scripts and
 // Firefox's background page can't be ES modules), then copies static files.
-import { cpSync, rmSync } from "node:fs";
+import { cpSync, existsSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { build } from "vite";
 
@@ -14,6 +14,11 @@ const entries = [
   "options",
 ];
 
+const entryFile = (name: string): string => {
+  const tsx = join(root, "src", "entries", `${name}.tsx`);
+  return existsSync(tsx) ? tsx : join(root, "src", "entries", `${name}.ts`);
+};
+
 rmSync(outDir, { recursive: true, force: true });
 for (const name of entries) {
   await build({
@@ -21,6 +26,7 @@ for (const name of entries) {
     root,
     publicDir: false,
     logLevel: "warn",
+    oxc: { jsx: { runtime: "automatic", importSource: "preact" } },
     build: {
       outDir,
       emptyOutDir: false,
@@ -28,7 +34,7 @@ for (const name of entries) {
       minify: false,
       sourcemap: true,
       lib: {
-        entry: join(root, "src", "entries", `${name}.ts`),
+        entry: entryFile(name),
         formats: ["iife"],
         name: `moduleLibrary_${name.replace(/-/g, "_")}`,
         fileName: () => `${name}.js`,

@@ -48,8 +48,18 @@ export default tseslint.config(
     rules: { "no-console": "off" },
   },
   {
+    // JSX event handlers are idiomatically arrow shorthands.
+    files: ["**/*.tsx"],
+    rules: {
+      "@typescript-eslint/no-confusing-void-expression": [
+        "error",
+        { ignoreArrowShorthand: true },
+      ],
+    },
+  },
+  {
     // Test matchers (expect.any, expect.stringMatching) are typed any.
-    files: ["**/test/**/*.ts", "tests/**/*.ts"],
+    files: ["**/test/**/*.{ts,tsx}", "tests/**/*.ts"],
     rules: {
       "@typescript-eslint/no-unsafe-assignment": "off",
       "@typescript-eslint/no-non-null-assertion": "off",

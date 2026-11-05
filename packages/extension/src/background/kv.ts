@@ -18,16 +18,6 @@ export interface SerializedKeyValue {
   ): Promise<R>;
 }
 
-export function chromeKeyValue(): KeyValue {
-  return {
-    async get<T>(key: string) {
-      const items = await chrome.storage.local.get(key);
-      return items[key] as T | undefined;
-    },
-    set: (key, value) => chrome.storage.local.set({ [key]: value }),
-  };
-}
-
 /** In-memory storage (tests), copying like chrome.storage does. */
 export function memoryKeyValue(): KeyValue {
   const data = new Map<string, string>();
