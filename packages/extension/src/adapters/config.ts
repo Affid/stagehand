@@ -32,7 +32,7 @@ export const SetupConfigSchema = z.object({
 export type Adapter = z.infer<typeof AdapterSchema>;
 export type SetupConfig = z.infer<typeof SetupConfigSchema>;
 
-/** Setup markup of V14 build 369; also the best guess in safe mode. */
+/** Setup markup of V14 builds 369 and 370; also the best guess in safe mode. */
 export const V14_SELECTORS: Adapter["selectors"] = {
   worldsTab: "#setup-packages-worlds",
   modulesTab: "#setup-packages-modules",
@@ -42,16 +42,16 @@ export const V14_SELECTORS: Adapter["selectors"] = {
   worldTags: ".tags.right",
 };
 
-/** Verified in the M0 spike against V14 build 369 (docs/M0-FINDINGS.md). */
+/** Verified against V14 build 369 in the M0 spike (docs/M0-FINDINGS.md) and again on build 370. */
 export const BUNDLED_CONFIG: SetupConfig = {
   configVersion: 1,
-  revision: 1,
+  revision: 2,
   adapters: [
     {
       id: "v14",
       generation: 14,
       minBuild: 0,
-      maxBuild: 369,
+      maxBuild: 370,
       selectors: V14_SELECTORS,
       flags: {},
     },
