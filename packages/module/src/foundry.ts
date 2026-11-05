@@ -1,13 +1,13 @@
-// The parts of Foundry's client API this module uses, typed narrowly.
+// The parts of Foundry's client API this module uses, typed narrowly, and
+// the one place that reads Foundry's globals.
+
+export const MODULE_ID = "module-library";
 
 export interface FoundryModule {
   readonly id: string;
   readonly title: string;
   readonly active: boolean;
   readonly version: string | null;
-  readonly relationships: {
-    readonly requires: Iterable<{ readonly id: string; readonly type: string }>;
-  };
 }
 
 export interface FoundryGame {
@@ -19,23 +19,44 @@ export interface FoundryGame {
   readonly settings: {
     get(ns: string, key: string): unknown;
     set(ns: string, key: string, value: unknown): Promise<unknown>;
+    register(ns: string, key: string, config: object): void;
   };
-  readonly i18n: { localize(key: string): string };
+  readonly i18n: {
+    localize(key: string): string;
+    format(key: string, data: Record<string, string | number>): string;
+  };
 }
 
-interface DialogV2 {
-  confirm(options: {
-    window: { title: string };
-    content: string;
-    rejectClose: boolean;
-    modal: boolean;
-  }): Promise<boolean | null>;
+export interface DialogButton {
+  readonly action: string;
+  readonly label: string;
+  readonly icon?: string;
+  readonly default?: boolean;
+  readonly callback?: (event: Event, button: HTMLButtonElement) => unknown;
 }
 
-interface FoundryGlobals {
+export interface DialogV2 {
+  wait(options: {
+    readonly window: { readonly title: string };
+    readonly content: string;
+    readonly buttons: readonly DialogButton[];
+    readonly rejectClose: boolean;
+    readonly modal: boolean;
+  }): Promise<unknown>;
+}
+
+export interface FoundryGlobals {
   readonly game: FoundryGame;
   readonly CONST: { readonly USER_ROLES: { readonly GAMEMASTER: number } };
-  readonly Hooks: { once(name: string, fn: () => void): number };
+  readonly Hooks: {
+    once(name: string, fn: () => void): number;
+  };
+  readonly ui: {
+    readonly notifications: {
+      info(message: string): void;
+      warn(message: string): void;
+    };
+  };
   readonly foundry: {
     readonly applications: { readonly api: { readonly DialogV2: DialogV2 } };
     readonly utils: { debouncedReload(): void };
@@ -44,5 +65,3 @@ interface FoundryGlobals {
 
 export const foundryGlobals = (): FoundryGlobals =>
   globalThis as unknown as FoundryGlobals;
-
-export const MODULE_ID = "module-library";

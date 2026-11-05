@@ -46,7 +46,10 @@ export function PresetEditor() {
           op: "preset.create",
           preset: { ...fields, id: newId(), source: "user" },
         });
-    if (ok) close();
+    if (!ok) return;
+    // The selection became this preset: start the next one from scratch.
+    if (!existing) store.set({ selection: [] });
+    close();
   };
   const remove = async (): Promise<void> => {
     if (

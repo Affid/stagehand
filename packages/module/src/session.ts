@@ -1,0 +1,62 @@
+// One launch: handshake, snapshot, pull, apply (PRD 8.4). Runs only for the
+// full Gamemaster (C-1, PR-4); stays idle without the extension.
+import { PROTOCOL_VERSIONS } from "@module-library/shared/protocol";
+import { WorldCommandSchema } from "@module-library/shared/world";
+import { z } from "zod";
+import { type ApplyDeps, applyCommands, type Outcome } from "./apply.ts";
+import { MODULE_ID } from "./foundry.ts";
+import { coreVersionOf, takeSnapshot } from "./world-state.ts";
+
+export const HELLO_TIMEOUT_MS = 1000;
+export const HELLO_ATTEMPTS = 5;
+
+export type Handshake = "ok" | "rejected" | "none";
+
+export interface SessionResult {
+  readonly handshake: Handshake;
+  readonly outcome?: Outcome;
+}
+
+const CommandsSchema = z.object({ world: z.array(WorldCommandSchema) });
+
+/** Says HELLO until the bridge answers; no answer means no extension. */
+export async function handshake(deps: ApplyDeps): Promise<Handshake> {
+  const { game } = deps;
+  const hello = {
+    moduleVersion: game.modules.get(MODULE_ID)?.version ?? "",
+    protocol: PROTOCOL_VERSIONS,
+    worldId: game.world.id,
+    coreVersion: coreVersionOf(game),
+  };
+  for (let attempt = 0; attempt < HELLO_ATTEMPTS; attempt++) {
+    try {
+      const reply = await deps.channel.request(
+        "HELLO",
+        hello,
+        HELLO_TIMEOUT_MS,
+      );
+      return reply.type === "HELLO_ACK" ? "ok" : "rejected";
+    } catch {
+      // No bridge yet: it may still be starting. Try again.
+    }
+  }
+  return "none";
+}
+
+export async function runSession(deps: ApplyDeps): Promise<SessionResult> {
+  const result = await handshake(deps);
+  if (result !== "ok") return { handshake: result };
+  await deps.channel.request(
+    "SNAPSHOT_PUSH",
+    takeSnapshot(deps.game, deps.now()),
+  );
+  const reply = await deps.channel.request("COMMANDS_PULL", {
+    worldId: deps.game.world.id,
+  });
+  const parsed = CommandsSchema.safeParse(reply.payload);
+  if (!parsed.success) return { handshake: "ok" };
+  return {
+    handshake: "ok",
+    outcome: await applyCommands(deps, parsed.data.world),
+  };
+}

@@ -1,14 +1,27 @@
 {
   "MODULE_LIBRARY": {
+    "NoExtension": "Module Library: no browser extension found. Install it to manage this world's modules from the Setup screen. This notice appears once.",
+    "Outdated": "Module Library: the companion module and the browser extension use different protocol versions. Update the older one.",
     "Apply": {
       "Title": "Module Library: apply module changes",
-      "Intro": "Changes queued from the Setup screen for this world:",
+      "Intro": "Changes queued from the Setup screen for this world. Applying reloads the world once.",
+      "Presets": "Presets",
+      "NoChange": "No change: the world already matches.",
       "Enable": "Enable",
-      "Disable": "Disable",
       "Dependencies": "Added as dependencies",
+      "Disable": "Disable",
       "Missing": "Not installed (skipped)",
-      "Blocked": "Blocked (missing requirements)",
-      "NoChange": "No change: the world already matches."
+      "Blocked": "Blocked: missing or incompatible requirements",
+      "Incompatible": "Incompatible with this world (skipped)",
+      "Conflicts": "Declared conflicts",
+      "Dependents": "Still needed by modules that stay",
+      "AcceptConflicts": "Enable these modules despite the declared conflicts",
+      "RemoveDependents": "Also disable the modules that need a removed one",
+      "ApplyReload": "Apply & reload",
+      "NotNow": "Not now",
+      "Discard": "Discard",
+      "NeedConflictConsent": "Module Library: confirm the conflicts to apply, or choose Not now.",
+      "NeedDependentsChoice": "Module Library: choose to disable the dependent modules too, or choose Not now."
     }
   }
 }

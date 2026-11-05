@@ -150,7 +150,10 @@ test("a preset from a selection (P-1, P-2)", async () => {
   await editor.getByRole("button", { name: "Save preset" }).click();
   await expect(editor).toHaveCount(0);
   await expect(sideItem("Fixture A")).toBeVisible();
-  await app().getByRole("button", { name: "Clear selection" }).click();
+  // Saving a preset from the selection clears it.
+  await expect(
+    app().getByRole("button", { name: "Clear selection" }),
+  ).toHaveCount(0);
   await page.screenshot({ path: `${SCREENS}/setup-organised.png` });
 });
 

@@ -13,7 +13,8 @@ import {
   shutdownWorld,
 } from "./admin.ts";
 import { loadFoundryEnv } from "./env.ts";
-import { ensureUsers, joinAs, reloadWorld } from "./session.ts";
+import { resetWorldModules } from "./reset-world.ts";
+import { ensureUsers, joinAs } from "./session.ts";
 import { COMPANION_ID, TEST_USERS, TEST_WORLD } from "./world.ts";
 
 const env = loadFoundryEnv();
@@ -39,29 +40,23 @@ if (!existsSync(worldFile)) {
   console.log(`World ${TEST_WORLD.id}: creating`);
   await createWorld(api, TEST_WORLD, worldFile);
 }
-console.log(`World ${TEST_WORLD.id}: launching`);
-await launchWorld(api, TEST_WORLD.id);
+await api.dispose();
+await resetWorldModules(env);
 
+// Users: created once with the world open, then Foundry goes back to Setup.
+const api2 = await createAdminClient(env.url);
+await loginAsAdmin(api2, env.adminPassword, join(env.dataDir, "Config"));
+await launchWorld(api2, TEST_WORLD.id);
 const browser = await chromium.launch();
 try {
   const gm = await joinAs(browser, env.url, "Gamemaster");
   for (const change of await ensureUsers(gm, TEST_USERS))
     console.log(`Users: ${change}`);
-  await gm.evaluate(async (companion) => {
-    const g = globalThis as unknown as {
-      game: {
-        settings: { set(ns: string, key: string, v: object): Promise<unknown> };
-      };
-    };
-    await g.game.settings.set("core", "moduleConfiguration", {
-      [companion]: true,
-    });
-  }, COMPANION_ID);
-  await reloadWorld(gm);
-  console.log(`Modules: only ${COMPANION_ID} enabled`);
 } finally {
   await browser.close();
 }
-await shutdownWorld(api, env.adminPassword);
-await api.dispose();
-console.log("Test world ready; Foundry is back on Setup.");
+await shutdownWorld(api2, env.adminPassword);
+await api2.dispose();
+console.log(
+  `Test world ready: only ${COMPANION_ID} enabled, Foundry on Setup.`,
+);

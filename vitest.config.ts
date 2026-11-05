@@ -15,6 +15,7 @@ export default defineConfig({
         // Thin browser glue, covered by the end-to-end suite (pnpm test:foundry).
         "packages/extension/src/entries/**",
         "packages/extension/src/platform/**",
+        "packages/module/src/index.ts",
       ],
       thresholds: { lines: 80, functions: 80, branches: 80, statements: 80 },
     },

@@ -129,7 +129,11 @@ describe("apply dialog (P-3, P-4)", () => {
 describe("preset editor (P-1, P-2, P-7)", () => {
   test("creates a preset from the draft, without the companion", async () => {
     const { getByRole, send, store } = renderUi("overlay", {
-      state: { editingPreset: "new", draftModules: ["b", "module-library"] },
+      state: {
+        editingPreset: "new",
+        draftModules: ["b", "module-library"],
+        selection: ["b"],
+      },
     });
     fireEvent.input(getByRole("textbox", { name: "Name" }), {
       target: { value: "Mine" },
@@ -150,6 +154,8 @@ describe("preset editor (P-1, P-2, P-7)", () => {
       }),
     );
     await waitFor(() => expect(store.get().editingPreset).toBeNull());
+    // Regression: the selection used to leak into the next preset.
+    expect(store.get().selection).toEqual([]);
   });
 
   test("edits with its revision, filters modules, and deletes", async () => {

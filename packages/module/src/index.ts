@@ -1,62 +1,52 @@
-// Companion module: runs for the full Gamemaster only (C-1, PR-4).
+// Companion module entry: registers its setting and runs one session per
+// launch for the full Gamemaster (C-1, PR-4). Assistant GMs and players: nothing.
 import { logError } from "@module-library/shared/log";
-import { PROTOCOL_VERSIONS } from "@module-library/shared/protocol";
-import { applyCommands, type WorldCommand } from "./apply-flow.ts";
-import { type Channel, createChannel } from "./channel.ts";
-import { type FoundryGame, foundryGlobals, MODULE_ID } from "./foundry.ts";
+import { createChannel } from "./channel.ts";
+import { foundryGlobals, MODULE_ID } from "./foundry.ts";
+import { runSession } from "./session.ts";
 
-const HELLO_TIMEOUT_MS = 1000;
-const HELLO_ATTEMPTS = 5;
+const NOTICE_SETTING = "extensionNoticeShown";
 
-function snapshot(game: FoundryGame) {
-  const active = [...game.modules.values()].filter((m) => m.active);
-  return {
-    worldId: game.world.id,
-    title: game.world.title,
-    system: { id: game.system.id, version: game.system.version },
-    coreVersion: `${game.release.generation}.${game.release.build}`,
-    active: active.map((m) => ({ id: m.id, version: m.version ?? "" })),
-    companionVersion: game.modules.get(MODULE_ID)?.version ?? "",
-    takenAt: new Date().toISOString(),
-  };
-}
-
-/** Says HELLO until the bridge answers; none means no extension (idle). */
-async function handshake(
-  channel: Channel,
-  game: FoundryGame,
-): Promise<boolean> {
-  const hello = {
-    moduleVersion: game.modules.get(MODULE_ID)?.version ?? "",
-    protocol: PROTOCOL_VERSIONS,
-    worldId: game.world.id,
-    coreVersion: `${game.release.generation}.${game.release.build}`,
-  };
-  for (let attempt = 0; attempt < HELLO_ATTEMPTS; attempt++) {
-    try {
-      const reply = await channel.request("HELLO", hello, HELLO_TIMEOUT_MS);
-      return reply.type === "HELLO_ACK";
-    } catch {
-      // No bridge yet: it may still be starting. Try again.
-    }
-  }
-  return false;
+function registerSettings(): void {
+  const { game } = foundryGlobals();
+  game.settings.register(MODULE_ID, NOTICE_SETTING, {
+    scope: "client",
+    config: false,
+    type: Boolean,
+    default: false,
+  });
 }
 
 async function start(): Promise<void> {
-  const { game, CONST } = foundryGlobals();
+  const { game, CONST, ui, foundry } = foundryGlobals();
   if (game.user?.role !== CONST.USER_ROLES.GAMEMASTER) return;
-  const channel = createChannel(window);
-  if (!(await handshake(channel, game))) return;
-  await channel.request("SNAPSHOT_PUSH", snapshot(game));
-  const reply = await channel.request("COMMANDS_PULL", {
-    worldId: game.world.id,
+  const result = await runSession({
+    game,
+    dialog: foundry.applications.api.DialogV2,
+    channel: createChannel(window),
+    reload: () => {
+      foundry.utils.debouncedReload();
+    },
+    warn: (message) => {
+      ui.notifications.warn(message);
+    },
+    now: () => new Date(),
   });
-  const { world } = reply.payload as { world: readonly WorldCommand[] };
-  if (world.length > 0) await applyCommands(channel, world);
+  if (result.handshake === "rejected")
+    ui.notifications.warn(game.i18n.localize("MODULE_LIBRARY.Outdated"));
+  if (
+    result.handshake === "none" &&
+    game.settings.get(MODULE_ID, NOTICE_SETTING) !== true
+  ) {
+    // One-time, optional notice (C-1).
+    ui.notifications.info(game.i18n.localize("MODULE_LIBRARY.NoExtension"));
+    await game.settings.set(MODULE_ID, NOTICE_SETTING, true);
+  }
 }
 
-foundryGlobals().Hooks.once("ready", () => {
+const { Hooks } = foundryGlobals();
+Hooks.once("init", registerSettings);
+Hooks.once("ready", () => {
   start().catch((error: unknown) => {
     logError("companion", error);
   });
