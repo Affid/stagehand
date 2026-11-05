@@ -26,6 +26,7 @@ export interface ContentScript {
   readonly id: string;
   readonly matches: readonly string[];
   readonly js: readonly string[];
+  readonly css?: readonly string[];
   readonly world: "MAIN" | "ISOLATED";
   readonly runAt: "document_start" | "document_idle";
 }
@@ -46,6 +47,7 @@ export function contentScriptsFor(server: ServerId): readonly ContentScript[] {
       id: scriptId("setup-ui", server),
       matches: [`${server}/setup*`],
       js: ["setup-ui.js"],
+      css: ["setup-ui.css"],
       world: "ISOLATED",
       runAt: "document_idle",
     },

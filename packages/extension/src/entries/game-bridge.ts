@@ -8,7 +8,7 @@ import {
   makeEnvelope,
   PROTOCOL_VERSIONS,
 } from "@module-library/shared/protocol";
-import { send } from "./runtime.ts";
+import { send } from "../runtime.ts";
 
 const init = send<{ enabled: boolean; extensionVersion: string }>({
   kind: "bridge-init",

@@ -1,43 +1,62 @@
-// Messages from the extension's own pages and content scripts to its
-// background. The background checks each sender before acting.
-import type { Envelope } from "@module-library/shared/protocol";
-import type { ApplyMode } from "@module-library/shared/resolver";
+// Messages from the extension's pages and content scripts to its background.
+// Validated with Zod in the background: content scripts run on web pages.
+import { LibraryOpSchema } from "@module-library/shared/library/ops";
+import type { Library } from "@module-library/shared/library/schema";
+import { NS } from "@module-library/shared/protocol";
+import {
+  ApplyModeSchema,
+  type Command,
+  SetupDataSchema,
+  type Snapshot,
+} from "@module-library/shared/world";
+import { z } from "zod";
+import type { SetupConfig } from "./adapters/config.ts";
+import type { HelloRecord, StoredSetup } from "./background/state.ts";
 
-/** What the Setup page's main-world script reads from `game`. */
-export interface SetupData {
-  readonly coreVersion: string;
-  readonly generation: number;
-  readonly isAdmin: boolean;
-  readonly modules: readonly SetupModule[];
-  readonly worlds: readonly SetupWorld[];
+export const MAX_IMPORT_BYTES = 5_000_000;
+
+export const EnvelopeSchema = z.object({
+  ns: z.literal(NS),
+  v: z.number(),
+  from: z.enum(["module", "bridge", "setup-main"]),
+  type: z.string().min(1).max(64),
+  requestId: z.string().max(100).optional(),
+  payload: z.unknown(),
+});
+
+const Id = z.string().min(1).max(200);
+
+export const ExtensionMessageSchema = z.discriminatedUnion("kind", [
+  z.object({ kind: z.literal("register-server"), server: z.string().max(500) }),
+  z.object({ kind: z.literal("setup-seen"), data: SetupDataSchema }),
+  z.object({ kind: z.literal("get-state") }),
+  z.object({ kind: z.literal("library-op"), op: LibraryOpSchema }),
+  z.object({
+    kind: z.literal("library-import"),
+    text: z.string().max(MAX_IMPORT_BYTES),
+  }),
+  z.object({ kind: z.literal("library-export") }),
+  z.object({
+    kind: z.literal("queue-apply"),
+    worldId: Id,
+    mode: ApplyModeSchema,
+    presetIds: z.array(Id).min(1),
+  }),
+  z.object({ kind: z.literal("cancel-command"), id: Id }),
+  z.object({ kind: z.literal("bridge-init") }),
+  z.object({ kind: z.literal("relay"), msg: EnvelopeSchema }),
+]);
+
+export type ExtensionMessage = z.infer<typeof ExtensionMessageSchema>;
+
+/** Everything the Setup UI renders from. */
+export interface SetupState {
+  readonly server: string;
+  readonly adminVerified: boolean;
+  readonly library: Library;
+  readonly setup: StoredSetup | undefined;
+  readonly snapshots: Readonly<Record<string, Snapshot>>;
+  readonly commands: readonly Command[];
+  readonly hellos: Readonly<Record<string, HelloRecord>>;
+  readonly config: SetupConfig;
 }
-
-export interface SetupModule {
-  readonly id: string;
-  readonly title: string;
-  readonly version: string;
-  readonly authors: readonly string[];
-  readonly library: boolean;
-  readonly requires: readonly string[];
-  readonly conflicts: readonly string[];
-  readonly verified: string;
-}
-
-export interface SetupWorld {
-  readonly id: string;
-  readonly title: string;
-  readonly system: string;
-  readonly coreVersion: string;
-}
-
-export type ExtensionMessage =
-  | { readonly kind: "register-server"; readonly server: string }
-  | { readonly kind: "setup-seen"; readonly data: SetupData }
-  | {
-      readonly kind: "queue-command";
-      readonly worldId: string;
-      readonly mode: ApplyMode;
-      readonly modules: readonly string[];
-    }
-  | { readonly kind: "bridge-init" }
-  | { readonly kind: "relay"; readonly msg: Envelope };

@@ -5,7 +5,7 @@ import {
   pathWithinServer,
   permissionOrigin,
   serverIdOfPage,
-} from "../src/servers.ts";
+} from "../../src/background/servers.ts";
 
 describe("normalizeServerUrl", () => {
   test("keeps scheme, host and port, and drops a trailing slash", () => {

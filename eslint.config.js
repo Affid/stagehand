@@ -53,6 +53,8 @@ export default tseslint.config(
     rules: {
       "@typescript-eslint/no-unsafe-assignment": "off",
       "@typescript-eslint/no-non-null-assertion": "off",
+      // Asserting on vi.fn() methods reads them unbound.
+      "@typescript-eslint/unbound-method": "off",
     },
   },
   {

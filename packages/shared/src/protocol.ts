@@ -12,7 +12,7 @@ export interface Envelope<P = unknown> {
   readonly v: number;
   readonly from: Sender;
   readonly type: string;
-  readonly requestId?: string;
+  readonly requestId?: string | undefined;
   readonly payload: P;
 }
 

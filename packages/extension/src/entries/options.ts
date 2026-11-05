@@ -1,7 +1,7 @@
 // Options page: register a Foundry server (R-1). The permission request
 // needs the user's click, so it runs here and not in the background.
-import { send } from "./runtime.ts";
-import { normalizeServerUrl, permissionOrigin } from "./servers.ts";
+import { send } from "../runtime.ts";
+import { normalizeServerUrl, permissionOrigin } from "../background/servers.ts";
 
 const form = document.querySelector<HTMLFormElement>("#add-server");
 const input = document.querySelector<HTMLInputElement>("#server-url");

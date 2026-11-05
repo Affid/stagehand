@@ -28,7 +28,7 @@ for (const name of entries) {
       minify: false,
       sourcemap: true,
       lib: {
-        entry: join(root, "src", `${name}.ts`),
+        entry: join(root, "src", "entries", `${name}.ts`),
         formats: ["iife"],
         name: `moduleLibrary_${name.replace(/-/g, "_")}`,
         fileName: () => `${name}.js`,
