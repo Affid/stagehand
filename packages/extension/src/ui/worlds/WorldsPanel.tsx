@@ -1,7 +1,8 @@
 // The Game Worlds tab's strip above Foundry's own world list: which worlds
 // change at their next launch and how (P-5, P-6), which need attention
 // (W-2), and the way in to Apply presets. Foundry's list stays the only list.
-import { useEffect, useRef, useState } from "preact/hooks";
+import { useState } from "preact/hooks";
+import { useDismiss } from "../common/popover.ts";
 import { Icon } from "../common/widgets.tsx";
 import { useUi } from "../context.ts";
 import { plural } from "../i18n.ts";
@@ -35,30 +36,6 @@ function QueuedRow(props: { readonly row: WorldRow }) {
 }
 
 /** Closes a disclosure menu on Escape or a click outside it. */
-function useDismiss() {
-  const ref = useRef<HTMLDetailsElement>(null);
-  useEffect(() => {
-    const close = (): void => {
-      ref.current?.removeAttribute("open");
-    };
-    const onKey = (e: KeyboardEvent): void => {
-      if (e.key !== "Escape" || !ref.current?.open) return;
-      close();
-      ref.current.querySelector("summary")?.focus();
-    };
-    const onDown = (e: PointerEvent): void => {
-      if (!ref.current?.contains(e.target as Node)) close();
-    };
-    document.addEventListener("keydown", onKey);
-    document.addEventListener("pointerdown", onDown);
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.removeEventListener("pointerdown", onDown);
-    };
-  }, []);
-  return ref;
-}
-
 function AttentionMenu(props: { readonly rows: readonly WorldRow[] }) {
   const { store, t } = useUi();
   const ref = useDismiss();

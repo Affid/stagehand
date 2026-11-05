@@ -41,6 +41,14 @@ function windowClass(base: AppClass, onClosed: (id: string) => void) {
       content.append(host);
     }
 
+    /**
+     * No detaching into a separate browser window: our stylesheet and the
+     * dialogs these windows open (confirmations, Apply) stay in this page.
+     */
+    _canDetach(): boolean {
+      return false;
+    }
+
     override _onClose(options: unknown): void {
       super._onClose?.(options);
       onClosed(this.mlId);

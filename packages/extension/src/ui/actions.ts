@@ -155,5 +155,17 @@ export const PALETTE = [
   "#7d7d7d",
 ];
 
+/** i18n keys (`color.*`) naming PALETTE's colours, in the same order. */
+export const PALETTE_NAMES = [
+  "amber",
+  "blue",
+  "green",
+  "purple",
+  "yellow",
+  "red",
+  "teal",
+  "grey",
+] as const;
+
 export const nextColor = (used: number): string =>
   PALETTE[used % PALETTE.length] ?? "#7d7d7d";

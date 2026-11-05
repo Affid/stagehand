@@ -11,11 +11,10 @@ import { Modal } from "./widgets.tsx";
 export const FALLBACK_MS = 1500;
 const EDGE = 40;
 
+/** Foundry centres the window; it is clamped to the screen. */
 export interface WindowSize {
   readonly width: number;
   readonly height: number;
-  /** Dock to the right edge of the screen instead of centering. */
-  readonly dock?: "right";
 }
 
 let opened = 0;
@@ -27,14 +26,7 @@ const NONCE = [...crypto.getRandomValues(new Uint8Array(4))]
 function spec(id: string, title: string, icon: string, size: WindowSize) {
   const height = Math.min(size.height, window.innerHeight - EDGE * 2);
   const width = Math.min(size.width, window.innerWidth - EDGE);
-  const dock =
-    size.dock === "right"
-      ? {
-          left: Math.max(0, window.innerWidth - width - EDGE),
-          top: Math.max(0, Math.round((window.innerHeight - height) / 2)),
-        }
-      : {};
-  return { id, title, icon, width, height, ...dock };
+  return { id, title, icon, width, height };
 }
 
 /** Opens the window on mount and closes it on unmount. */

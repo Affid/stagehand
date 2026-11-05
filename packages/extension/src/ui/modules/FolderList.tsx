@@ -3,7 +3,8 @@
 import type { Folder } from "@module-library/shared/library/schema";
 import type { TargetedDragEvent } from "preact";
 import { useState } from "preact/hooks";
-import { newId, nextColor, PALETTE } from "../actions.ts";
+import { newId, nextColor } from "../actions.ts";
+import { ColorPicker } from "../common/ColorPicker.tsx";
 import { Dot, IconButton, InlineInput } from "../common/widgets.tsx";
 import { useUi } from "../context.ts";
 import { orderedFolders } from "../model/modules.ts";
@@ -93,9 +94,6 @@ function FolderMenu(
   const { t } = useUi();
   const ops = useFolderOps();
   const { folder, index } = props;
-  const nextColour =
-    PALETTE[(PALETTE.indexOf(folder.color) + 1) % PALETTE.length] ??
-    folder.color;
   return (
     <span class="ml-item-tools">
       <IconButton
@@ -103,10 +101,10 @@ function FolderMenu(
         label={t("folder.rename")}
         onClick={props.onRename}
       />
-      <IconButton
-        icon="palette"
+      <ColorPicker
         label={t("folder.color")}
-        onClick={() => ops.update(folder, { color: nextColour })}
+        value={folder.color}
+        onPick={(color) => ops.update(folder, { color })}
       />
       <IconButton
         icon="arrow-up"

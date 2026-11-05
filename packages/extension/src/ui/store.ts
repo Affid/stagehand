@@ -28,6 +28,8 @@ export interface UiState {
   readonly apply: ApplyTarget | null;
   /** World whose sheet is open, if any. */
   readonly sheetWorld: string | null;
+  /** Collapsed groups that have no folder record to keep it, as "unfiled". */
+  readonly collapsedGroups: readonly string[];
 }
 
 export const EMPTY_FILTER: ModuleFilterSpec = {

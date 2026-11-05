@@ -142,8 +142,10 @@ describe("modules view: changes go to the background", () => {
       "confirm",
       vi.fn(() => true),
     );
-    const { getByRole, send } = renderUi("modules");
-    fireEvent.click(getByRole("button", { name: "Colour" }));
+    const { getByRole, getByLabelText, send } = renderUi("modules");
+    // The colour is chosen from swatches, not cycled.
+    fireEvent.click(getByLabelText("Colour", { selector: "summary" }));
+    fireEvent.click(getByRole("button", { name: "Teal" }));
     // The only folder can move neither up nor down.
     expect(getByRole("button", { name: "Move down" })).toHaveProperty(
       "disabled",
@@ -164,7 +166,37 @@ describe("modules view: changes go to the background", () => {
         "folder.update",
       ]);
       expect(ops.every((o) => o.baseRevision === 2)).toBe(true);
+      expect(ops[0]).toMatchObject({ changes: { color: "#4cc9b0" } });
     });
+  });
+
+  test("a custom colour can be picked; the current one is not resent", async () => {
+    const { getByRole, getByLabelText, send } = renderUi("modules");
+    const picker = getByLabelText("Colour", { selector: "summary" });
+    fireEvent.click(picker);
+    const swatches = within(getByRole("group", { name: "Colour" }));
+    const current = swatches.getByRole("button", { pressed: true });
+    fireEvent.click(current);
+    fireEvent.change(getByLabelText("Custom colour"), {
+      target: { value: "#ABCDEF" },
+    });
+    await waitFor(() => {
+      const ops = sent(send).map((m) => (m as { op: { changes?: object } }).op);
+      expect(ops).toHaveLength(1);
+      expect(ops[0]).toMatchObject({ changes: { color: "#abcdef" } });
+    });
+  });
+
+  test("the Unfiled group collapses too, without touching the library", () => {
+    const { container, send } = renderUi("modules");
+    const before = rows(container).length;
+    const unfiled = el(container, '[data-folder-group=""] .ml-group-header');
+    fireEvent.click(unfiled);
+    expect(unfiled.getAttribute("aria-expanded")).toBe("false");
+    expect(rows(container).length).toBeLessThan(before);
+    fireEvent.click(unfiled);
+    expect(rows(container)).toHaveLength(before);
+    expect(sent(send)).toEqual([]);
   });
 
   test("collapsing a folder group is persisted (S-1)", async () => {

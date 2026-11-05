@@ -41,6 +41,7 @@ const initial: UiState = {
   selectors: V14_SELECTORS,
   apply: null,
   sheetWorld: null,
+  collapsedGroups: [],
 };
 
 const t = createTranslator("en");

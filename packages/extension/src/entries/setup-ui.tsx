@@ -146,6 +146,7 @@ function ensureDeps(
     draftModules: [],
     apply: null,
     sheetWorld: null,
+    collapsedGroups: [],
   });
   store.subscribe(syncCoreList);
   store.subscribe(syncTags);

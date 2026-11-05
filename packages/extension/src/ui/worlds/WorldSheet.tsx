@@ -1,4 +1,4 @@
-// One world's sheet, in a Foundry window docked on the right (W-1 to W-3):
+// One world's sheet, in a Foundry window (W-1 to W-3):
 // status, the queue for the next launch with its combined result (P-6),
 // history, and the world's actions, launching included.
 import { useState } from "preact/hooks";
@@ -12,7 +12,7 @@ import { HistoryList, QueuedList } from "./commands.tsx";
 import { launchControl } from "./launch.ts";
 import { EffectPills, PlanDiff } from "./PlanView.tsx";
 
-const SIZE = { width: 520, height: 760, dock: "right" } as const;
+const SIZE = { width: 560, height: 760 } as const;
 const STATUS_ICON = {
   ok: "circle-check",
   "no-companion": "plug-circle-xmark",

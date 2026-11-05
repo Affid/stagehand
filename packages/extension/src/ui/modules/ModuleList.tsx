@@ -8,28 +8,53 @@ import { groupByFolder } from "../model/modules.ts";
 import type { ModulesModel } from "./derived.ts";
 import { ModuleRow } from "./ModuleRow.tsx";
 
+const UNFILED = "unfiled";
+
+/** Collapsed state: folders keep it in the library, Unfiled in the UI. */
+function useCollapse(folder: Folder | null) {
+  const { state, store, actions, canChange } = useUi();
+  if (!folder) {
+    const collapsed = state.collapsedGroups.includes(UNFILED);
+    return {
+      collapsed,
+      toggle: (): void => {
+        store.set((s) => ({
+          collapsedGroups: collapsed
+            ? s.collapsedGroups.filter((g) => g !== UNFILED)
+            : [...s.collapsedGroups, UNFILED],
+        }));
+      },
+    };
+  }
+  const collapsed = folder.collapsed;
+  return {
+    collapsed,
+    toggle: (): void => {
+      if (canChange)
+        void actions.op({
+          op: "folder.update",
+          id: folder.id,
+          baseRevision: folder.revision,
+          changes: { collapsed: !collapsed },
+        });
+    },
+  };
+}
+
 function FolderHeader(props: {
   readonly folder: Folder | null;
   readonly count: number;
+  readonly collapsed: boolean;
+  readonly onToggle: () => void;
 }) {
-  const { actions, t, canChange } = useUi();
-  const { folder } = props;
-  const collapsed = folder?.collapsed ?? false;
-  const toggle = (): void => {
-    if (folder && canChange)
-      void actions.op({
-        op: "folder.update",
-        id: folder.id,
-        baseRevision: folder.revision,
-        changes: { collapsed: !collapsed },
-      });
-  };
+  const { t } = useUi();
+  const { folder, collapsed } = props;
   return (
     <button
       type="button"
       class="ml-group-header"
       aria-expanded={!collapsed}
-      onClick={toggle}
+      onClick={props.onToggle}
     >
       <i
         class={`fa-solid fa-chevron-${collapsed ? "right" : "down"} fa-fw`}
@@ -39,6 +64,25 @@ function FolderHeader(props: {
       <span>{folder ? folder.name : t("sidebar.unfiled")}</span>
       <span class="ml-count">{props.count}</span>
     </button>
+  );
+}
+
+function Group(props: {
+  readonly folder: Folder | null;
+  readonly modules: readonly PackageInfo[];
+  readonly model: ModulesModel;
+}) {
+  const { collapsed, toggle } = useCollapse(props.folder);
+  return (
+    <section class="ml-group" data-folder-group={props.folder?.id ?? ""}>
+      <FolderHeader
+        folder={props.folder}
+        count={props.modules.length}
+        collapsed={collapsed}
+        onToggle={toggle}
+      />
+      {collapsed ? null : <Rows modules={props.modules} model={props.model} />}
+    </section>
   );
 }
 
@@ -63,16 +107,12 @@ export function ModuleList(props: { readonly model: ModulesModel }) {
   return (
     <div class="ml-groups">
       {groupByFolder(model.visible, state.data.library).map((g) => (
-        <section
-          key={g.folder?.id ?? "unfiled"}
-          class="ml-group"
-          data-folder-group={g.folder?.id ?? ""}
-        >
-          <FolderHeader folder={g.folder} count={g.modules.length} />
-          {g.folder?.collapsed ? null : (
-            <Rows modules={g.modules} model={model} />
-          )}
-        </section>
+        <Group
+          key={g.folder?.id ?? UNFILED}
+          folder={g.folder}
+          modules={g.modules}
+          model={model}
+        />
       ))}
     </div>
   );

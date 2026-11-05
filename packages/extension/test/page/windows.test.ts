@@ -67,6 +67,13 @@ describe("Foundry windows from the page world", () => {
     expect(app.bringToFront).toHaveBeenCalled();
   });
 
+  test("our windows can't be detached into a separate browser window", async () => {
+    const host = createWindowHost(FakeApp as unknown as AppClass, vi.fn());
+    await host.open({ ...spec, id: "sheet-detach" });
+    const app = FakeApp.made.at(-1) as unknown as { _canDetach(): boolean };
+    expect(app._canDetach()).toBe(false);
+  });
+
   test("Foundry's close is reported once; our close is not echoed", async () => {
     const post = vi.fn();
     const host = createWindowHost(FakeApp as unknown as AppClass, post);
