@@ -6,7 +6,7 @@ import type { Preset } from "@module-library/shared/library/schema";
 import { useState } from "preact/hooks";
 import { newId } from "../actions.ts";
 import { downloadText } from "../common/files.ts";
-import { Modal } from "../common/widgets.tsx";
+import { FoundryWindow } from "../common/FoundryWindow.tsx";
 import { useUi } from "../context.ts";
 import { ModuleChecklist } from "./ModuleChecklist.tsx";
 
@@ -74,13 +74,22 @@ function Footer(props: {
   );
 }
 
+const ICON = "fa-solid fa-layer-group";
+const SIZE = { width: 640, height: 760 } as const;
+
 /** Shown when the preset was deleted elsewhere while the editor was open. */
 function Gone(props: { readonly onClose: () => void }) {
   const { t } = useUi();
   return (
-    <Modal title={t("preset.edit")} onClose={props.onClose}>
+    <FoundryWindow
+      kind="preset"
+      title={t("preset.edit")}
+      icon={ICON}
+      size={SIZE}
+      onClose={props.onClose}
+    >
       <p>{t("preset.gone")}</p>
-    </Modal>
+    </FoundryWindow>
   );
 }
 
@@ -150,8 +159,11 @@ export function PresetEditor() {
     />
   );
   return (
-    <Modal
+    <FoundryWindow
+      kind="preset"
       title={existing ? t("preset.edit") : t("preset.new")}
+      icon={ICON}
+      size={SIZE}
       onClose={close}
       footer={footer}
     >
@@ -172,6 +184,6 @@ export function PresetEditor() {
         />
       </label>
       <ModuleChecklist chosen={form.chosen} onToggle={form.toggle} />
-    </Modal>
+    </FoundryWindow>
   );
 }

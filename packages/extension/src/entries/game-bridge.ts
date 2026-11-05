@@ -14,7 +14,9 @@ const init = send<{ enabled: boolean; extensionVersion: string }>({
   kind: "bridge-init",
 });
 
-async function relay(msg: Envelope): Promise<void> {
+async function relay(
+  msg: Envelope & { readonly from: "module" },
+): Promise<void> {
   const { enabled } = await init;
   if (!enabled) return;
   const reply = await send<Envelope>({ kind: "relay", msg });

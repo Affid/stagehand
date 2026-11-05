@@ -19,7 +19,7 @@ await ext.context.request.post(`${env.url}/auth`, {
   maxRedirects: 0,
 });
 await page.goto(`${env.url}/setup`);
-await page.locator("#ml-worlds-root .ml-worlds").waitFor();
+await page.locator("#ml-worlds-root .ml-next").waitFor();
 await exitTour(page);
 await page.screenshot({ path: "test-results/screens/worlds.png" });
 await page.locator('[data-tab="modules"]').first().click();

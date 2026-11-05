@@ -8,8 +8,8 @@ import type { Command, Snapshot } from "@module-library/shared/world";
 import { BUNDLED_CONFIG } from "../../src/adapters/config.ts";
 import type { SetupState } from "../../src/messages.ts";
 import { groupByFolder, scopeModules } from "../../src/ui/model/modules.ts";
-import { previewApply } from "../../src/ui/model/preview.ts";
-import { worldRows } from "../../src/ui/model/worlds.ts";
+import { effectOf, previewApply } from "../../src/ui/model/preview.ts";
+import { age, worldRows } from "../../src/ui/model/worlds.ts";
 
 const pkg = (id: string, over: Partial<PackageInfo> = {}): PackageInfo => ({
   id,
@@ -218,8 +218,7 @@ describe("previewApply (P-4)", () => {
   test("diffs presets against the world's last snapshot, with dependencies", () => {
     const preview = previewApply(state(), {
       worldId: "w1",
-      presetIds: ["p1"],
-      mode: "add",
+      change: { presetIds: ["p1"], mode: "add" },
       removeDependents: false,
     });
     expect(preview.warnings).toEqual([]);
@@ -234,8 +233,7 @@ describe("previewApply (P-4)", () => {
   test("without a snapshot the preview starts from nothing and says so", () => {
     const preview = previewApply(state(), {
       worldId: "w2",
-      presetIds: ["p1"],
-      mode: "add",
+      change: { presetIds: ["p1"], mode: "add" },
       removeDependents: false,
     });
     expect(preview.warnings).toEqual(["no-snapshot"]);
@@ -268,12 +266,103 @@ describe("previewApply (P-4)", () => {
     });
     const preview = previewApply(withV15, {
       worldId: "w1",
-      presetIds: ["p2"],
-      mode: "add",
+      change: { presetIds: ["p2"], mode: "add" },
       removeDependents: false,
     });
     expect(preview.plan?.incompatible).toEqual([
       { id: "v15", reason: "core", availability: "requires-core-upgrade" },
     ]);
+  });
+});
+
+describe("next launch: queued changes combine (P-6)", () => {
+  test("the preview includes changes already queued, before the new one", () => {
+    // Regression: the preview used to resolve only the new change.
+    const p2 = { ...library.presets[0]!, id: "p2", modules: ["b"] };
+    const queued = state({
+      library: { ...library, presets: [...library.presets, p2] },
+      commands: [command({ id: "1" })],
+    });
+    const preview = previewApply(queued, {
+      worldId: "w1",
+      change: { presetIds: ["p2"], mode: "add" },
+      removeDependents: false,
+    });
+    expect(preview.queued).toBe(1);
+    expect([...(preview.plan?.target ?? [])].sort()).toEqual([
+      "a",
+      "b",
+      "lib",
+      "lib-user",
+      "module-library",
+    ]);
+  });
+
+  test("each world row carries its combined plan and effect", () => {
+    const rows = worldRows(state({ commands: [command({ id: "1" })] }));
+    const plan = rows[0]?.plan;
+    expect(plan && effectOf(plan)).toEqual({
+      enable: 2,
+      disable: 0,
+      dependencies: 1,
+      problems: 0,
+    });
+    expect(rows[1]?.plan).toBeUndefined();
+  });
+
+  test("problems count conflicts, skipped and still-needed modules", () => {
+    const preview = previewApply(
+      state({
+        library: {
+          ...library,
+          presets: [{ ...library.presets[0]!, modules: ["a", "ghost"] }],
+        },
+      }),
+      {
+        worldId: "w1",
+        change: { presetIds: ["p1"], mode: "add" },
+        removeDependents: false,
+      },
+    );
+    expect(preview.plan && effectOf(preview.plan).problems).toBe(1);
+  });
+
+  test("nothing queued and no new change: no plan", () => {
+    const preview = previewApply(state(), {
+      worldId: "w1",
+      removeDependents: false,
+    });
+    expect(preview.plan).toBeUndefined();
+    expect(
+      previewApply(state(), { worldId: "nope", removeDependents: false }),
+    ).toMatchObject({ warnings: ["unknown-world"] });
+  });
+});
+
+describe("attention (W-2)", () => {
+  test("a failed last change needs attention; a later success clears it", () => {
+    const failed = worldRows(
+      state({ commands: [command({ id: "1", status: "failed" })] }),
+    );
+    expect(failed[0]?.attention).toBe("failed");
+    const fixed = worldRows(
+      state({
+        commands: [
+          command({ id: "1", status: "failed" }),
+          command({ id: "2", status: "applied" }),
+        ],
+      }),
+    );
+    expect(fixed[0]?.attention).toBeUndefined();
+    expect(fixed[1]?.attention).toBe("no-companion");
+  });
+
+  test("ages read as just now, minutes, hours or days", () => {
+    const now = Date.parse("2026-11-05T10:00:00.000Z");
+    const at = (ms: number) => new Date(now - ms).toISOString();
+    expect(age(at(10_000), now)).toEqual({ n: 0, unit: "now" });
+    expect(age(at(5 * 60_000), now)).toEqual({ n: 5, unit: "minutes" });
+    expect(age(at(3 * 3_600_000), now)).toEqual({ n: 3, unit: "hours" });
+    expect(age(at(4 * 86_400_000), now)).toEqual({ n: 4, unit: "days" });
   });
 });

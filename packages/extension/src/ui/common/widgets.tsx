@@ -1,7 +1,6 @@
-// Small shared widgets: modal, inline text input, notices, colour dot.
+// Small shared widgets: modal, inline text input, icons, colour dot.
 import type { ComponentChildren } from "preact";
 import { useEffect, useRef, useState } from "preact/hooks";
-import { useUi } from "../context.ts";
 
 export function Modal(props: {
   readonly title: string;
@@ -80,21 +79,6 @@ export function InlineInput(props: {
       }}
       onBlur={commit}
     />
-  );
-}
-
-export function Notices() {
-  const { state, store } = useUi();
-  if (!state.notice) return null;
-  return (
-    <div class={`ml-notice ml-notice-${state.notice.kind}`} role="status">
-      <span>{state.notice.text}</span>
-      <IconButton
-        icon="xmark"
-        label="Dismiss"
-        onClick={() => store.set({ notice: null })}
-      />
-    </div>
   );
 }
 

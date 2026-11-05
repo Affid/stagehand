@@ -21,10 +21,13 @@ import {
   joinWorld,
   type LoadedExtension,
   loadExtension,
+  mlWindow,
   openSetupAsAdmin,
   SCREENS,
   storage,
   waitReady,
+  worldMenu,
+  worldTag,
 } from "./extension.ts";
 
 const env = loadFoundryEnv();
@@ -51,8 +54,7 @@ const activeModules = (p: Page): Promise<string[]> =>
       .sort();
   });
 
-const card = (): Locator =>
-  page.locator(`#ml-worlds-root [data-world="${TEST_WORLD.id}"]`);
+const tag = (): Locator => worldTag(page, TEST_WORLD.id);
 const inWorldDialog = (p: Page): Locator =>
   p.locator("dialog.application", { hasText: "Module Library" });
 
@@ -66,7 +68,7 @@ async function backToSetup(): Promise<void> {
     maxRedirects: 0,
   });
   await page.goto(`${env.url}/setup`);
-  await page.locator("#ml-worlds-root .ml-worlds").waitFor();
+  await page.locator("#ml-worlds-root .ml-next").waitFor();
 }
 
 async function createPreset(
@@ -80,7 +82,7 @@ async function createPreset(
       .locator(`li.ml-row[data-module="${id}"] input[type="checkbox"]`)
       .check();
   await app.getByRole("button", { name: "New preset from selection" }).click();
-  const editor = page.locator(".ml-modal", { hasText: "New preset" });
+  const editor = mlWindow(page, "New preset");
   await editor.getByRole("textbox", { name: "Name" }).fill(name);
   await editor.getByRole("button", { name: "Save preset" }).click();
   await expect(editor).toHaveCount(0);
@@ -91,12 +93,12 @@ async function queue(
   preset: string,
   mode: "Add" | "Replace" | "Remove",
 ): Promise<void> {
-  await card().getByRole("button", { name: "Apply presets…" }).click();
-  const dialog = page.locator(".ml-modal", { hasText: "Apply presets to" });
+  await worldMenu(page, TEST_WORLD.id, "Apply module presets…");
+  const dialog = mlWindow(page, "Apply presets to");
   await dialog.getByRole("checkbox", { name: new RegExp(preset) }).check();
-  await dialog.getByRole("radio", { name: new RegExp(`^${mode}:`) }).check();
+  await dialog.getByRole("radio", { name: new RegExp(`^${mode} `) }).check();
   await dialog.getByRole("button", { name: "Queue for next launch" }).click();
-  await expect(card()).toContainText("Pending changes (1)");
+  await expect(tag()).toHaveText("1 queued");
 }
 
 async function launchAsGm(): Promise<void> {
@@ -145,10 +147,12 @@ test("Add: the GM confirms, dependencies come along, one reload, applied (8.4)",
 
 test("Setup shows the fresh snapshot and the applied command (W-1, W-3)", async () => {
   await backToSetup();
-  await expect(card()).toContainText("Up to date");
-  await expect(card()).toContainText("3 active modules");
-  await expect(card()).toContainText("applied");
+  await expect(tag()).toHaveText("3");
+  await tag().click();
+  const sheet = mlWindow(page, "Tracked · 3 active modules");
+  await expect(sheet.locator(".ml-history")).toContainText("Applied");
   await page.screenshot({ path: `${SCREENS}/setup-worlds-applied.png` });
+  await sheet.locator('button[data-action="close"]').click();
   await page.locator('#setup-packages [data-tab="modules"]').first().click();
   await expect(
     page.locator('#ml-modules-root li.ml-row[data-module="ml-fixture-a"]'),

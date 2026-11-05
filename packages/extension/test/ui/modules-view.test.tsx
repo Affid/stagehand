@@ -238,12 +238,4 @@ describe("modules view: read-only and safe mode", () => {
     expect(getByText(/newer than the builds/)).toBeTruthy();
     expect(getByRole("button", { name: "+ New folder" })).toBeTruthy();
   });
-
-  test("notices can be dismissed", () => {
-    const { getByRole, store } = renderUi("modules", {
-      state: { notice: { kind: "error", text: "Boom" } },
-    });
-    fireEvent.click(getByRole("button", { name: "Dismiss" }));
-    expect(store.get().notice).toBeNull();
-  });
 });

@@ -1,138 +1,199 @@
-// Worlds view on the Game Worlds tab (W-1, W-2): last snapshot, status,
-// pending changes with cancel (P-5), and "Apply presets…".
-import type { Command } from "@module-library/shared/world";
-import { Notices } from "../common/widgets.tsx";
+// The Game Worlds tab's strip above Foundry's own world list: which worlds
+// change at their next launch and how (P-5, P-6), which need attention
+// (W-2), and the way in to Apply presets. Foundry's list stays the only list.
+import { useEffect, useRef, useState } from "preact/hooks";
+import { Icon } from "../common/widgets.tsx";
 import { useUi } from "../context.ts";
-import { age, type WorldRow, worldRows } from "../model/worlds.ts";
-import { Banners } from "../modules/ModulesView.tsx";
+import { plural } from "../i18n.ts";
+import { effectOf } from "../model/preview.ts";
+import { type WorldRow, worldRows } from "../model/worlds.ts";
+import { EffectPills } from "./PlanView.tsx";
 
-const COMPANION = "module-library";
+const ROWS = 3;
 
-function CommandLine(props: { readonly command: Command }) {
-  const { state, actions, t, canChange } = useUi();
-  const { command } = props;
-  const names = command.payload.presetIds
-    .map(
-      (id) => state.data.library.presets.find((p) => p.id === id)?.name ?? id,
-    )
-    .join(", ");
+function QueuedRow(props: { readonly row: WorldRow }) {
+  const { store, t, canChange } = useUi();
+  const { world, pending, plan } = props.row;
   return (
-    <li class={`ml-command ml-${command.status}`} data-command={command.id}>
-      <span>
-        {t("worlds.command", { mode: command.payload.mode, presets: names })}
+    <li class="ml-next-row" data-world={world.id}>
+      <span class="ml-next-world">{world.title}</span>
+      <span class="ml-next-count">
+        {plural(t, "worlds.changes", pending.length)}
       </span>
-      {command.status === "pending" ? (
-        canChange ? (
-          <button
-            type="button"
-            class="ml-link"
-            onClick={() => void actions.cancelCommand(command.id)}
-          >
-            {t("worlds.cancel")}
-          </button>
-        ) : null
-      ) : (
-        <span class="ml-badge">
-          {t(`worlds.commandStatus.${command.status}`)}
-        </span>
-      )}
-      {command.error ? <span class="ml-warn-text">{command.error}</span> : null}
+      {plan ? <EffectPills effect={effectOf(plan)} /> : <span />}
+      <button
+        type="button"
+        class="ml-small"
+        aria-label={t("worlds.reviewFor", { world: world.title })}
+        onClick={() => store.set({ sheetWorld: world.id })}
+      >
+        {canChange ? t("worlds.review") : t("worlds.view")}
+        <Icon name="chevron-right" />
+      </button>
     </li>
   );
 }
 
-function WorldHead(props: { readonly row: WorldRow }) {
-  const { t } = useUi();
-  const { world, snapshot, status, pending } = props.row;
-  const when = snapshot ? age(snapshot.takenAt, Date.now()) : undefined;
+/** Closes a disclosure menu on Escape or a click outside it. */
+function useDismiss() {
+  const ref = useRef<HTMLDetailsElement>(null);
+  useEffect(() => {
+    const close = (): void => {
+      ref.current?.removeAttribute("open");
+    };
+    const onKey = (e: KeyboardEvent): void => {
+      if (e.key !== "Escape" || !ref.current?.open) return;
+      close();
+      ref.current.querySelector("summary")?.focus();
+    };
+    const onDown = (e: PointerEvent): void => {
+      if (!ref.current?.contains(e.target as Node)) close();
+    };
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("pointerdown", onDown);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("pointerdown", onDown);
+    };
+  }, []);
+  return ref;
+}
+
+function AttentionMenu(props: { readonly rows: readonly WorldRow[] }) {
+  const { store, t } = useUi();
+  const ref = useDismiss();
+  if (props.rows.length === 0) return null;
   return (
-    <>
-      <div class="ml-world-head">
-        <strong>{world.title}</strong>
-        <span class="ml-id">
-          {world.system} · {world.coreVersion}
-        </span>
-        {snapshot && when ? (
-          <span class="ml-meta">
-            {t("worlds.activeCount", { n: snapshot.active.length })} ·{" "}
-            {t("worlds.snapshotAge", {
-              n: when.n,
-              unit: t(`worlds.${when.unit}`),
-            })}
-          </span>
-        ) : null}
-      </div>
-      <div class="ml-world-status">
-        <span class="ml-badge">{t(`worlds.status.${status}`)}</span>
-        {pending.length > 0 ? (
-          <span class="ml-badge ml-pending">
-            {t("worlds.pending", { n: pending.length })}
-          </span>
-        ) : null}
-      </div>
-    </>
+    <details class="ml-attention" ref={ref}>
+      <summary>
+        <Icon name="triangle-exclamation" />
+        {plural(t, "worlds.attention", props.rows.length)}
+        <Icon name="caret-down" />
+      </summary>
+      <ul role="list">
+        {props.rows.map(({ world, attention }) => (
+          <li key={world.id}>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.currentTarget.closest("details")?.removeAttribute("open");
+                store.set({ sheetWorld: world.id });
+              }}
+            >
+              <strong>{world.title}</strong>
+              <span>{t(`worlds.reason.${attention ?? "stale"}`)}</span>
+            </button>
+          </li>
+        ))}
+      </ul>
+    </details>
   );
 }
 
-function WorldActions(props: { readonly row: WorldRow }) {
-  const { store, t } = useUi();
-  const { world, snapshot } = props.row;
-  const fromWorld = (): void => {
-    const active = (snapshot?.active ?? [])
-      .map((m) => m.id)
-      .filter((id) => id !== COMPANION);
-    store.set({ editingPreset: "new", draftModules: active });
-  };
-  return (
-    <div class="ml-world-actions">
+function ApplyOrLock() {
+  const { state, store, t, canChange } = useUi();
+  if (canChange)
+    return (
       <button
         type="button"
         class="ml-primary"
-        onClick={() => store.set({ applyWorld: world.id })}
+        onClick={() => store.set({ apply: { worldId: null } })}
       >
+        <Icon name="layer-group" />
         {t("worlds.apply")}
       </button>
-      {snapshot ? (
-        <button type="button" class="ml-link" onClick={fromWorld}>
-          {t("preset.fromWorld", { title: world.title })}
+    );
+  const version = state.data.setup?.core.version ?? "";
+  const why =
+    state.adapter.status === "safe-mode"
+      ? t("notice.safeMode", { version })
+      : t("notice.notVerified");
+  return (
+    <span class="ml-read-only" data-tooltip-text={why} aria-label={why}>
+      <Icon name="lock" />
+      {t("worlds.readOnly")}
+    </span>
+  );
+}
+
+function Onboarding() {
+  const { store, t, canChange } = useUi();
+  return (
+    <div class="ml-onboard">
+      <div>
+        <p>{t("worlds.onboard.intro")}</p>
+        <ol>
+          <li>{t("worlds.onboard.step1")}</li>
+          <li>{t("worlds.onboard.step2")}</li>
+          <li>{t("worlds.onboard.step3")}</li>
+        </ol>
+      </div>
+      {canChange ? (
+        <button
+          type="button"
+          onClick={() => store.set({ apply: { worldId: null } })}
+        >
+          <Icon name="layer-group" />
+          {t("worlds.onboard.anyway")}
         </button>
       ) : null}
     </div>
   );
 }
 
-function WorldItem(props: { readonly row: WorldRow }) {
-  const { canChange } = useUi();
-  const { world, status, pending, recent } = props.row;
+function QueuedRows(props: { readonly rows: readonly WorldRow[] }) {
+  const { t } = useUi();
+  const [all, setAll] = useState(false);
+  const shown = all ? props.rows : props.rows.slice(0, ROWS);
   return (
-    <li class={`ml-world ml-status-${status}`} data-world={world.id}>
-      <WorldHead row={props.row} />
-      {pending.length + recent.length > 0 ? (
-        <ul class="ml-commands">
-          {[...pending, ...recent].map((c) => (
-            <CommandLine key={c.id} command={c} />
-          ))}
-        </ul>
+    <>
+      <ul class="ml-next-rows">
+        {shown.map((r) => (
+          <QueuedRow key={r.world.id} row={r} />
+        ))}
+      </ul>
+      {props.rows.length > ROWS ? (
+        <button
+          type="button"
+          class="ml-link ml-next-more"
+          onClick={() => setAll(!all)}
+        >
+          {all
+            ? t("worlds.less")
+            : t("worlds.more", { n: props.rows.length - ROWS })}
+        </button>
       ) : null}
-      {canChange ? <WorldActions row={props.row} /> : null}
-    </li>
+    </>
   );
 }
 
 export function WorldsPanel() {
-  const { state, t } = useUi();
+  const { state, t, canChange } = useUi();
   const rows = worldRows(state.data);
+  const queued = rows.filter((r) => r.pending.length > 0);
+  const tracked = rows.some((r) => r.snapshot !== undefined);
+  const first = !tracked && queued.length === 0 && rows.length > 0;
   return (
-    <details class="ml-app ml-worlds" open>
-      <summary>{t("worlds.title")}</summary>
-      <Banners />
-      <Notices />
-      {rows.length === 0 ? <p>{t("worlds.none")}</p> : null}
-      <ul class="ml-world-list">
-        {rows.map((r) => (
-          <WorldItem key={r.world.id} row={r} />
-        ))}
-      </ul>
-    </details>
+    <section class="ml-app ml-next" aria-labelledby="ml-next-title">
+      <header class="ml-next-head">
+        <h3 id="ml-next-title">
+          <Icon name={first ? "layer-group" : "hourglass-half"} />
+          {first ? t("app.name") : t("worlds.next")}
+        </h3>
+        <span class="ml-next-sub">
+          {first
+            ? t("worlds.onboard.sub")
+            : queued.length > 0
+              ? plural(t, "worlds.next.sub", queued.length)
+              : t("worlds.next.none")}
+        </span>
+        {first ? null : (
+          <AttentionMenu rows={rows.filter((r) => r.attention)} />
+        )}
+        {first && canChange ? null : <ApplyOrLock />}
+      </header>
+      {first ? <Onboarding /> : null}
+      {queued.length > 0 ? <QueuedRows rows={queued} /> : null}
+    </section>
   );
 }

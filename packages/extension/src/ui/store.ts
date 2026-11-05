@@ -3,17 +3,20 @@
 import type { ModuleFilterSpec } from "@module-library/shared/library/schema";
 import { useEffect, useState } from "preact/hooks";
 import type { SetupState } from "../messages.ts";
+import type { Adapter } from "../adapters/config.ts";
 import type { AdapterChoice } from "../adapters/select.ts";
 import type { Scope } from "./model/modules.ts";
 
-export interface Notice {
-  readonly kind: "error" | "info";
-  readonly text: string;
+/** The Apply dialog: for one world, or with a world picker (null). */
+export interface ApplyTarget {
+  readonly worldId: string | null;
 }
 
 export interface UiState {
   readonly data: SetupState;
   readonly adapter: AdapterChoice;
+  /** Setup selectors in use (safe mode borrows the newest known ones). */
+  readonly selectors: Adapter["selectors"];
   readonly view: "organised" | "core";
   readonly scope: Scope;
   readonly filter: ModuleFilterSpec;
@@ -22,8 +25,9 @@ export interface UiState {
   readonly editingPreset: string | null;
   /** Modules a new preset starts with. */
   readonly draftModules: readonly string[];
-  readonly applyWorld: string | null;
-  readonly notice: Notice | null;
+  readonly apply: ApplyTarget | null;
+  /** World whose sheet is open, if any. */
+  readonly sheetWorld: string | null;
 }
 
 export const EMPTY_FILTER: ModuleFilterSpec = {

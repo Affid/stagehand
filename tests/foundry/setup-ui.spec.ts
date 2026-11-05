@@ -18,9 +18,13 @@ import { TEST_WORLD } from "../../scripts/foundry/world.ts";
 import {
   type LoadedExtension,
   loadExtension,
+  mlWindow,
   openSetupAsAdmin,
   SCREENS,
   storage,
+  toasts,
+  worldMenu,
+  worldTag,
 } from "./extension.ts";
 
 const env = loadFoundryEnv();
@@ -54,12 +58,27 @@ test.afterAll(async () => {
   await admin.dispose();
 });
 
-test("worlds panel lists each world with its companion status (W-1, W-2)", async () => {
-  const card = page.locator(`#ml-worlds-root [data-world="${TEST_WORLD.id}"]`);
-  await expect(card).toContainText("Companion not enabled");
-  await expect(
-    card.locator("button", { hasText: "Apply presets" }),
-  ).toBeVisible();
+test("Foundry's world cards get a status tag and menu entries (W-1, W-2)", async () => {
+  const strip = page.locator("#ml-worlds-root .ml-next");
+  await expect(strip).toContainText("No world is tracked yet");
+  await expect(worldTag(page, TEST_WORLD.id)).toHaveText("Not tracked");
+  await worldMenu(page, TEST_WORLD.id, "Module Library details");
+  const sheet = mlWindow(page, "Not tracked");
+  await expect(sheet.locator(".window-title")).toHaveText(TEST_WORLD.title);
+  await page.screenshot({ path: `${SCREENS}/setup-worlds-first-run.png` });
+  await sheet.locator('button[data-action="close"]').click();
+  await expect(sheet).toHaveCount(0);
+  // Foundry's own view modes re-render the list; the tag comes back.
+  await page
+    .locator('#setup-packages-worlds [data-action="viewMode"]')
+    .nth(2)
+    .click();
+  await expect(worldTag(page, TEST_WORLD.id)).toHaveText("Not tracked");
+  await page
+    .locator('#setup-packages-worlds [data-action="viewMode"]')
+    .nth(0)
+    .click();
+  await expect(worldTag(page, TEST_WORLD.id)).toBeVisible();
 });
 
 test("organised view replaces the core list; the toggle brings it back (S-8)", async () => {
@@ -110,7 +129,7 @@ test("tags, tag filter and search (S-3, S-4)", async () => {
   await app().getByRole("button", { name: "Clear selection" }).click();
   await expect(row("ml-fixture-b")).toContainText("testing");
   // Regression: Enter then blur used to create the tag twice.
-  await expect(app().locator(".ml-notice-error")).toHaveCount(0);
+  await expect(toasts(page).and(page.locator(".error"))).toHaveCount(0);
   await expect(app().locator(".ml-tags li")).toHaveCount(1);
 
   await app()
@@ -144,7 +163,7 @@ test("a preset from a selection (P-1, P-2)", async () => {
   await app()
     .getByRole("button", { name: "New preset from selection" })
     .click();
-  const editor = page.locator(".ml-modal", { hasText: "New preset" });
+  const editor = mlWindow(page, "New preset");
   await editor.getByRole("textbox", { name: "Name" }).fill("Fixture A");
   await expect(editor.locator("legend")).toHaveText("Modules (1)");
   await editor.getByRole("button", { name: "Save preset" }).click();
@@ -187,28 +206,42 @@ test("export and import the library (D-1)", async () => {
     app().getByRole("button", { name: "Import library" }).click(),
   ]);
   await chooser.setFiles(path);
-  await expect(app().locator(".ml-notice")).toContainText("Library imported.");
+  await expect(
+    toasts(page).filter({ hasText: "Library imported." }),
+  ).toHaveCount(1);
   await expect(sideItem("Fixtures")).toContainText("3");
 });
 
-test("apply presets: preview the diff, queue, cancel (P-3, P-4, P-5)", async () => {
+test("apply presets: preview the diff, queue, cancel (P-3 to P-6)", async () => {
   await worldsTab(page);
-  const card = page.locator(`#ml-worlds-root [data-world="${TEST_WORLD.id}"]`);
-  await card.getByRole("button", { name: "Apply presets…" }).click();
-  const dialog = page.locator(".ml-modal", { hasText: "Apply presets to" });
+  await worldMenu(page, TEST_WORLD.id, "Apply module presets…");
+  const dialog = mlWindow(page, "Apply presets to");
   await dialog.getByRole("checkbox", { name: /Fixture A/ }).check();
   const diff = dialog.getByTestId("apply-diff");
   await expect(
-    diff.locator(".ml-diff-section", { hasText: "Enable" }),
+    diff.locator(".ml-diff-group", { hasText: "Enable" }),
   ).toContainText("ml-fixture-a");
   await expect(
-    diff.locator(".ml-diff-section", { hasText: "dependencies" }),
+    diff.locator(".ml-diff-group", { hasText: "Added as dependency" }),
   ).toContainText("ml-fixture-lib");
   await expect(dialog).toContainText("No snapshot of this world yet");
   await page.screenshot({ path: `${SCREENS}/setup-apply-preview.png` });
   await dialog.getByRole("button", { name: "Queue for next launch" }).click();
-  await expect(card).toContainText("Pending changes (1)");
+  await expect(dialog).toHaveCount(0);
+  await expect(toasts(page).filter({ hasText: "Queued for" })).toHaveCount(1);
+  const row = page.locator(
+    `#ml-worlds-root .ml-next-row[data-world="${TEST_WORLD.id}"]`,
+  );
+  await expect(row).toContainText("1 change");
+  await expect(row).toContainText("1 enable");
+  await expect(worldTag(page, TEST_WORLD.id)).toHaveText("1 queued");
   await page.screenshot({ path: `${SCREENS}/setup-worlds-pending.png` });
-  await card.getByRole("button", { name: "Cancel" }).click();
-  await expect(card).not.toContainText("Pending changes");
+  await worldTag(page, TEST_WORLD.id).click();
+  const sheet = mlWindow(page, "Next launch");
+  await expect(sheet).toContainText("Fixture A");
+  await page.screenshot({ path: `${SCREENS}/setup-world-sheet.png` });
+  await sheet.getByRole("button", { name: "Cancel change 1" }).click();
+  await expect(row).toHaveCount(0);
+  await expect(sheet).toContainText("Nothing queued for this world.");
+  await sheet.locator('button[data-action="close"]').click();
 });

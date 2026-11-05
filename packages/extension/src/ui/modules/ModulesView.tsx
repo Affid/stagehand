@@ -1,5 +1,4 @@
 // The Add-on Modules tab: banners, toolbar, sidebar and organised list.
-import { Notices } from "../common/widgets.tsx";
 import { useUi } from "../context.ts";
 import { useModulesModel } from "./derived.ts";
 import { FolderList } from "./FolderList.tsx";
@@ -41,7 +40,6 @@ export function ModulesView() {
   return (
     <div class="ml-app ml-modules">
       <Banners />
-      <Notices />
       <Toolbar model={model} />
       {state.view === "organised" ? (
         <div class="ml-layout">

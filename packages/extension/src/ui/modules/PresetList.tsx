@@ -7,14 +7,16 @@ import type { ModulesModel } from "./derived.ts";
 
 /** Imports a shared preset file as a new preset (P-7). */
 function usePresetImport() {
-  const { store, actions, t } = useUi();
+  const { actions, t } = useUi();
   return async (): Promise<void> => {
     const text = await pickTextFile();
     if (text === undefined) return;
     const parsed = parsePresetImport(text);
     if (!parsed.ok) {
-      const error = t("notice.importFailed", { error: parsed.error });
-      store.set({ notice: { kind: "error", text: error } });
+      actions.notify(
+        "error",
+        t("notice.importFailed", { error: parsed.error }),
+      );
       return;
     }
     const preset = { ...parsed.preset, id: newId(), source: "import" as const };

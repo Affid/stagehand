@@ -17,6 +17,8 @@ export const AdapterSchema = z.object({
     modulesList: IdSelector,
     worldsList: IdSelector,
     worldCard: Selector,
+    /** Inside a world card: where our status tag goes. */
+    worldTags: Selector,
   }),
   flags: z.record(z.string(), z.boolean()),
 });
@@ -37,6 +39,7 @@ export const V14_SELECTORS: Adapter["selectors"] = {
   modulesList: "#modules-list",
   worldsList: "#worlds-list",
   worldCard: "#worlds-list > li.package.world[data-package-id]",
+  worldTags: ".tags.right",
 };
 
 /** Verified in the M0 spike against V14 build 369 (docs/M0-FINDINGS.md). */

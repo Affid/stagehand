@@ -8,14 +8,21 @@ import { parseCoreVersion } from "@module-library/shared/version";
 import { type SetupData, SetupDataSchema } from "@module-library/shared/world";
 import { type ComponentType, render } from "preact";
 import { type Adapter, V14_SELECTORS } from "../adapters/config.ts";
-import { type AdapterChoice, selectAdapter } from "../adapters/select.ts";
+import {
+  type AdapterChoice,
+  allowsChanges,
+  selectAdapter,
+} from "../adapters/select.ts";
 import type { SetupState } from "../messages.ts";
 import { send } from "../platform/runtime.ts";
 import { createActions } from "../ui/actions.ts";
 import { ModulesRoot, OverlayRoot, WorldsRoot } from "../ui/App.tsx";
 import type { UiDeps } from "../ui/context.ts";
 import { createTranslator, pickLanguage } from "../ui/i18n.ts";
-import { createStore, EMPTY_FILTER } from "../ui/store.ts";
+import { worldRows } from "../ui/model/worlds.ts";
+import { createPageBridge, type PageBridge } from "../ui/page.ts";
+import { createStore, EMPTY_FILTER, type Store } from "../ui/store.ts";
+import { syncWorldTags } from "../ui/worlds/tags.ts";
 
 const ROOTS = {
   modules: "ml-modules-root",
@@ -25,6 +32,7 @@ const ROOTS = {
 
 let deps: UiDeps | undefined;
 let selectors: Adapter["selectors"] = V14_SELECTORS;
+const page = createPageBridge(window);
 
 /** Safe mode still reads and shows; it borrows the newest known selectors. */
 function selectorsFor(choice: AdapterChoice): Adapter["selectors"] {
@@ -37,6 +45,58 @@ function syncCoreList(): void {
   const safe =
     list?.closest("#setup-packages") && !list.querySelector("[id^='ml-']");
   if (list && safe && deps) list.hidden = deps.store.get().view === "organised";
+}
+
+let tagged: { data: unknown; selectors: unknown; cards: number } | undefined;
+
+/** Our tag on Foundry's world cards; Foundry re-renders wipe it. */
+function syncTags(): void {
+  if (!deps) return;
+  const { store, t } = deps;
+  const { data } = store.get();
+  const cards = document.querySelectorAll(selectors.worldCard).length;
+  const tags = document.querySelectorAll(".ml-world-tag").length;
+  // Filter keystrokes and selections change the store but not the tags.
+  const same =
+    tagged?.data === data &&
+    tagged.selectors === selectors &&
+    tagged.cards === cards &&
+    tags === cards;
+  if (same) return;
+  tagged = { data, selectors, cards };
+  syncWorldTags(document, selectors, worldRows(data), t, (id) => {
+    store.set({ sheetWorld: id });
+  });
+}
+
+/** Our entries in Foundry's right-click menu on world cards. */
+function syncMenu(store: Store, t: UiDeps["t"]): () => void {
+  let last = "";
+  return () => {
+    const s = store.get();
+    const canChange = s.data.adminVerified && allowsChanges(s.adapter);
+    const labels = {
+      details: t("menu.details"),
+      ...(canChange ? { apply: t("menu.apply") } : {}),
+    };
+    const key = JSON.stringify([labels, s.selectors.worldCard]);
+    if (key === last) return;
+    last = key;
+    page.setMenu(labels, s.selectors.worldCard);
+  };
+}
+
+function listenToPage(store: Store, bridge: PageBridge): void {
+  bridge.subscribe((e) => {
+    if (e.type !== "MENU_ACTION") return;
+    const { action, worldId } = e.payload;
+    // The page can post anything: only act for worlds Setup listed.
+    const known = store.get().data.setup?.worlds.some((w) => w.id === worldId);
+    if (!known) return;
+    store.set(
+      action === "apply" ? { apply: { worldId } } : { sheetWorld: worldId },
+    );
+  });
 }
 
 function mountBefore(
@@ -70,24 +130,30 @@ function ensureDeps(
   adapter: AdapterChoice,
 ): UiDeps {
   if (deps) {
-    deps.store.set({ data: state, adapter });
+    deps.store.set({ data: state, adapter, selectors });
     return deps;
   }
   const t = createTranslator(pickLanguage(data.lang, navigator.language));
   const store = createStore({
     data: state,
     adapter,
+    selectors,
     view: "organised",
     scope: { kind: "all" },
     filter: EMPTY_FILTER,
     selection: [],
     editingPreset: null,
     draftModules: [],
-    applyWorld: null,
-    notice: null,
+    apply: null,
+    sheetWorld: null,
   });
   store.subscribe(syncCoreList);
-  deps = { store, actions: createActions(store, send, t), t };
+  store.subscribe(syncTags);
+  const menu = syncMenu(store, t);
+  store.subscribe(menu);
+  menu();
+  listenToPage(store, page);
+  deps = { store, actions: createActions(store, send, t, page), t, page };
   return deps;
 }
 
@@ -97,12 +163,13 @@ async function onSetupData(data: SetupData): Promise<void> {
     state.config,
     parseCoreVersion(data.core.version),
   );
-  ensureDeps(data, state, adapter);
   selectors = selectorsFor(adapter);
+  ensureDeps(data, state, adapter);
   mountBefore(selectors.modulesList, ROOTS.modules, ModulesRoot);
   mountBefore(selectors.worldsList, ROOTS.worlds, WorldsRoot);
   mountOverlay();
   syncCoreList();
+  syncTags();
 }
 
 window.addEventListener("message", (event: MessageEvent<unknown>) => {

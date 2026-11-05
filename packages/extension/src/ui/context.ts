@@ -4,12 +4,14 @@ import { useContext } from "preact/hooks";
 import { allowsChanges } from "../adapters/select.ts";
 import type { Actions } from "./actions.ts";
 import type { Translate } from "./i18n.ts";
+import type { PageBridge } from "./page.ts";
 import { type Store, type UiState, useStore } from "./store.ts";
 
 export interface UiDeps {
   readonly store: Store;
   readonly actions: Actions;
   readonly t: Translate;
+  readonly page: PageBridge;
 }
 
 export const UiContext = createContext<UiDeps | null>(null);

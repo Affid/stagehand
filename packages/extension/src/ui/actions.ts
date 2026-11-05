@@ -5,6 +5,7 @@ import type { Library } from "@module-library/shared/library/schema";
 import type { ApplyMode } from "@module-library/shared/resolver";
 import type { ExtensionMessage, SetupState } from "../messages.ts";
 import type { Translate } from "./i18n.ts";
+import type { PageBridge } from "./page.ts";
 import type { Store } from "./store.ts";
 
 export type Send = <T>(message: ExtensionMessage) => Promise<T>;
@@ -13,6 +14,8 @@ export type Send = <T>(message: ExtensionMessage) => Promise<T>;
 export type OpOutcome = "ok" | "conflict" | "error";
 
 export interface Actions {
+  /** A Foundry notification (L-1 strings already filled in). */
+  notify(kind: "error" | "info", text: string): void;
   op(op: LibraryOp): Promise<OpOutcome>;
   refresh(): Promise<void>;
   queueApply(
@@ -33,9 +36,9 @@ const message = (error: unknown): string =>
   error instanceof Error ? error.message : String(error);
 
 /** What every action shares: the store, the background and messages. */
-function base(store: Store, send: Send, t: Translate) {
+function base(store: Store, send: Send, t: Translate, page: PageBridge) {
   const notify = (kind: "error" | "info", text: string): void => {
-    store.set({ notice: { kind, text } });
+    page.notify(kind, text);
   };
   const fail = (error: unknown): void => {
     notify("error", t("notice.failed", { error: message(error) }));
@@ -103,9 +106,15 @@ async function runImport(
   b.notify("info", t("notice.imported"));
 }
 
-export function createActions(store: Store, send: Send, t: Translate): Actions {
-  const b = base(store, send, t);
+export function createActions(
+  store: Store,
+  send: Send,
+  t: Translate,
+  page: PageBridge,
+): Actions {
+  const b = base(store, send, t, page);
   return {
+    notify: b.notify,
     refresh: b.refresh,
     op: (op) => runOp(b, send, t, op),
     async queueApply(worldId, mode, presetIds) {

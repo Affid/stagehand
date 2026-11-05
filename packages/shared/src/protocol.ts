@@ -5,7 +5,7 @@ export const NS = "module-library";
 export const PROTOCOL_VERSIONS: readonly number[] = [1];
 
 /** Who posted a message: each side ignores its own posts on `window`. */
-export type Sender = "module" | "bridge" | "setup-main";
+export type Sender = "module" | "bridge" | "setup-main" | "setup-ui";
 
 export interface Envelope<P = unknown> {
   readonly ns: typeof NS;
@@ -27,10 +27,10 @@ export function makeEnvelope<P>(
 }
 
 /** True for a message of this protocol, posted by `expected`. */
-export function isEnvelope(
+export function isEnvelope<S extends Sender>(
   value: unknown,
-  expected: Sender,
-): value is Envelope {
+  expected: S,
+): value is Envelope & { readonly from: S } {
   if (typeof value !== "object" || value === null) return false;
   const m = value as Record<string, unknown>;
   return (

@@ -25,3 +25,18 @@ export function createTranslator(lang: string): Translate {
   const strings = LANGUAGES[lang] ?? en;
   return (key, params = {}) => fill(strings[key] ?? en[key] ?? key, params);
 }
+
+/** English-style plurals: `key.one` for 1, `key.other` otherwise. */
+export const plural = (
+  t: Translate,
+  key: string,
+  n: number,
+  params: Params = {},
+): string => t(`${key}.${n === 1 ? "one" : "other"}`, { ...params, n });
+
+/** "just now", "3 hours ago" and so on. */
+export function ago(t: Translate, when: { n: number; unit: string }): string {
+  return when.unit === "now"
+    ? t("age.now")
+    : plural(t, `age.${when.unit}`, when.n);
+}
