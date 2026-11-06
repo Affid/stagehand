@@ -363,4 +363,26 @@ cleaned (no attributes but checked links and image sources) before Foundry's
 editor opens them; a schedule's zone must be one the browser knows; the page
 world refuses Foundry writes unless Setup is the admin's.
 
+Package 5 (Backups) plan, from `design/setup-page/src/_calm.js` calmBackups
+and `src/_server.js`:
+
+- Progress and lock: the page world listens to `game.socket.on("progress")`
+  (SETUP-SPIKE.md: "Backup In Progress <package> 47%") and posts PROGRESS
+  {action, packageId, pct, step} to the UI; a running backup or restore locks
+  Restore, Delete and Launch (reasons on wrappers), as Foundry's `toggleLock`.
+- World Backups tab: nudge when changes are queued ("Back up now"; turns
+  "done" when a backup is newer than the queue's latest command), empty
+  state ("No backups of X yet", Take the first backup), head "N backups ·
+  latest X ago · size in all" with Select (multi-delete through one
+  `deleteBackups` call) and Take a backup, rows with name or date, date and
+  time, age, "latest" pill, Foundry's version tag (BackupData
+  compatibility.verified; older generation in yellow), size, Restore… and
+  Delete (a snapshot's member: disabled with its reason), the progress row,
+  and the footnote linking "All backups on this server".
+- Server Backups page: tabs Snapshots / Worlds / Modules / Systems with
+  counts and sizes, the snapshot lead line, Select (multi-delete snapshots),
+  filter and sort by name, size or latest, version tags (older generation
+  warns, newer can't restore), uninstalled packages marked, the create flow
+  in Foundry's own dialog with our progress row.
+
 Then Phase 6 (News and finish).
