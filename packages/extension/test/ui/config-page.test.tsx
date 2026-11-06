@@ -118,4 +118,66 @@ describe("the Configuration page", () => {
     fireEvent.click(getByRole("button", { name: "Change in Foundry" }));
     expect(page.foundryAction).toHaveBeenCalledWith({ action: "configure" });
   });
+
+  test("an out-of-range or empty port is flagged and can't be saved", async () => {
+    const { container, getByLabelText, getByRole } = await open();
+    fireEvent.input(getByLabelText("Port"), { target: { value: "70000" } });
+    expect(container.textContent).toContain("from 1 to 65535");
+    expect(
+      (getByRole("button", { name: "Save" }) as HTMLButtonElement).disabled,
+    ).toBe(true);
+    fireEvent.input(getByLabelText("Port"), { target: { value: "" } });
+    expect(container.textContent).toContain("from 1 to 65535");
+    fireEvent.input(getByLabelText("Port"), { target: { value: "30002" } });
+    expect(container.textContent).not.toContain("from 1 to 65535");
+    expect(
+      (getByRole("button", { name: "Save" }) as HTMLButtonElement).disabled,
+    ).toBe(false);
+  });
+
+  test("a later save that needs no restart keeps the earlier restart notice", async () => {
+    const { container, getByLabelText, getByRole, page } = await open();
+    fireEvent.input(getByLabelText("Port"), { target: { value: "30001" } });
+    page.config.mockResolvedValueOnce({
+      settings: { ...SETTINGS, port: 30001 },
+      choices: CHOICES,
+      restart: true,
+    });
+    fireEvent.click(getByRole("button", { name: "Save" }));
+    await waitFor(() => {
+      expect(el(container, ".mlc-bar").textContent).toContain(
+        "after Foundry restarts",
+      );
+    });
+    fireEvent.input(getByLabelText("Host name"), {
+      target: { value: "gm.example" },
+    });
+    page.config.mockResolvedValueOnce({
+      settings: { ...SETTINGS, port: 30001, hostname: "gm.example" },
+      choices: CHOICES,
+      restart: false,
+    });
+    fireEvent.click(getByRole("button", { name: "Save" }));
+    await waitFor(() => {
+      expect(el(container, ".mlc-bar").textContent).toContain(
+        "after Foundry restarts",
+      );
+    });
+  });
+
+  test("text keeps its spaces while typing and is trimmed when saved", async () => {
+    const { getByLabelText, getByRole, page } = await open();
+    fireEvent.input(getByLabelText("Host name"), {
+      target: { value: "gm.example " },
+    });
+    expect((getByLabelText("Host name") as HTMLInputElement).value).toBe(
+      "gm.example ",
+    );
+    fireEvent.click(getByRole("button", { name: "Save" }));
+    await waitFor(() => {
+      expect(page.config).toHaveBeenCalledWith("save", {
+        hostname: "gm.example",
+      });
+    });
+  });
 });

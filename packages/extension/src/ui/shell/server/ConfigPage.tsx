@@ -4,11 +4,13 @@
 // model; then the honest restart notice with Shut down now (Foundry has no
 // restart command). The password is changed in Foundry's window for now.
 import { useEffect, useState } from "preact/hooks";
-import type {
-  Choices,
-  ReadOnly,
-  SettingChanges,
-  Settings,
+import {
+  type Choices,
+  EDITABLE,
+  type ReadOnly,
+  type SettingChanges,
+  type SettingKey,
+  type Settings,
 } from "../../../page-config.ts";
 import { useUi } from "../../context.ts";
 import { plural } from "../../i18n.ts";
@@ -23,6 +25,18 @@ import {
 interface Loaded {
   readonly settings: Settings & ReadOnly;
   readonly choices: Choices;
+}
+
+/** Text is trimmed when saved, not while typed; an empty optional is null. */
+function normalize(changes: SettingChanges): SettingChanges {
+  return Object.fromEntries(
+    Object.entries(changes).map(([k, v]) => {
+      if (typeof v !== "string") return [k, v];
+      const text = v.trim();
+      const optional = EDITABLE[k as keyof typeof EDITABLE] === "optText";
+      return [k, optional && text === "" ? null : text];
+    }),
+  ) as SettingChanges;
 }
 
 function useConfig() {
@@ -43,11 +57,12 @@ function useConfig() {
   }, []);
   const save = async (): Promise<void> => {
     setBusy(true);
-    const r = await page.config("save", changes);
+    const r = await page.config("save", normalize(changes));
     setBusy(false);
     if (take(r)) {
       setChanges({});
-      setRestart(r.restart === true);
+      // A pending restart stays pending until Foundry restarts.
+      setRestart((prev) => prev === true || r.restart === true);
     }
   };
   return { loaded, changes, setChanges, error, busy, restart, save };
@@ -57,14 +72,19 @@ function Bar(props: {
   readonly count: number;
   readonly busy: boolean;
   readonly restart: boolean | null;
+  /** A field holds something that can't be saved. */
+  readonly invalid: boolean;
   readonly onSave: () => void;
   readonly onDiscard: () => void;
 }) {
   const { page, t, canChange } = useUi();
   // One slot whose height is always kept: nothing moves under the pointer.
   return (
-    <div class={`mlc-bar${props.count ? " dirty" : ""}`} aria-live="polite">
-      {props.count ? (
+    <div
+      class={`mlc-bar${props.count || props.invalid ? " dirty" : ""}`}
+      aria-live="polite"
+    >
+      {props.count || props.invalid ? (
         <>
           <span>{plural(t, "cfg.unsaved", props.count)}</span>
           <span class="ml-spacer" />
@@ -74,7 +94,7 @@ function Bar(props: {
           <button
             type="button"
             class="ml-primary"
-            disabled={props.busy || !canChange}
+            disabled={props.busy || !canChange || props.invalid}
             onClick={props.onSave}
           >
             {props.busy ? t("cfg.saving") : t("cfg.save")}
@@ -242,24 +262,52 @@ function Groups(props: GroupProps) {
   );
 }
 
+/** The page's draft: changes against the saved settings, and invalid fields. */
+function useDraft(
+  loaded: Loaded | null,
+  changes: SettingChanges,
+  setChanges: (f: (prev: SettingChanges) => SettingChanges) => void,
+  invalid: ReadonlySet<SettingKey>,
+  setInvalid: (
+    f: (prev: ReadonlySet<SettingKey>) => ReadonlySet<SettingKey>,
+  ) => void,
+): Draft | null {
+  if (!loaded) return null;
+  return {
+    saved: loaded.settings,
+    changes,
+    invalid,
+    setInvalid: (key, bad) => {
+      setInvalid((prev) => {
+        const next = new Set(prev);
+        if (bad) next.add(key);
+        else next.delete(key);
+        return next;
+      });
+    },
+    set: (key, value) => {
+      const saved = loaded.settings[key];
+      setChanges((prev) => {
+        const rest = Object.fromEntries(
+          Object.entries(prev).filter(([k]) => k !== key),
+        ) as SettingChanges;
+        return value === saved ? rest : { ...rest, [key]: value };
+      });
+    },
+  };
+}
+
 export function ConfigPage() {
   const { page, t } = useUi();
   const c = useConfig();
-  const draft: Draft | null = c.loaded
-    ? {
-        saved: c.loaded.settings,
-        changes: c.changes,
-        set: (key, value) => {
-          const saved = c.loaded?.settings[key];
-          c.setChanges((prev) => {
-            const rest = Object.fromEntries(
-              Object.entries(prev).filter(([k]) => k !== key),
-            ) as SettingChanges;
-            return value === saved ? rest : { ...rest, [key]: value };
-          });
-        },
-      }
-    : null;
+  const [invalid, setInvalid] = useState<ReadonlySet<SettingKey>>(new Set());
+  const draft = useDraft(
+    c.loaded,
+    c.changes,
+    c.setChanges,
+    invalid,
+    setInvalid,
+  );
   return (
     <div class="mlc-page ml-app">
       <div class="mlw-bhead">
@@ -278,7 +326,11 @@ export function ConfigPage() {
         busy={c.busy}
         restart={c.restart}
         onSave={() => void c.save()}
-        onDiscard={() => c.setChanges({})}
+        invalid={invalid.size > 0}
+        onDiscard={() => {
+          c.setChanges({});
+          setInvalid(new Set());
+        }}
       />
       {c.error ? <p class="ml-banner ml-warn">{c.error}</p> : null}
       {c.loaded && draft ? (

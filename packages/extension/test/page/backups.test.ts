@@ -90,8 +90,9 @@ describe("a world's backups through Foundry", () => {
     expect((await runBackups(f.page, req("restore", ["nope"]))).error).toMatch(
       /nope/,
     );
+    // Taking a backup needs the package installed.
     expect(
-      (await runBackups(f.page, { ...req("list"), worldId: "x" })).error,
+      (await runBackups(f.page, { ...req("create"), worldId: "x" })).error,
     ).toMatch(/x/);
     f.game.listBackups.mockRejectedValueOnce(new Error("offline"));
     expect((await runBackups(f.page, req("list"))).error).toMatch(/offline/);
@@ -111,5 +112,29 @@ describe("a world's backups through Foundry", () => {
     expect(
       parseBackupsReply({ requestId: "r1", backups: r.backups }),
     ).toBeTruthy();
+  });
+
+  test("an uninstalled package's backup can still be restored: Foundry reinstalls it", async () => {
+    const f = foundry();
+    const gone = {
+      id: "b9",
+      title: "Old Mod",
+      createdAt: 1,
+      size: 1,
+      snapshotId: null,
+    };
+    f.game.listBackups.mockResolvedValue({
+      world: {},
+      module: { "old-mod": [gone] },
+    } as never);
+    const r = await runBackups(f.page, {
+      requestId: "r1",
+      worldId: "old-mod",
+      type: "module",
+      op: "restore",
+      ids: ["b9"],
+    });
+    expect(r.error).toBeUndefined();
+    expect(f.game.restoreBackup).toHaveBeenCalledWith(gone, { dialog: true });
   });
 });

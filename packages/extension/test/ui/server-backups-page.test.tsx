@@ -142,4 +142,18 @@ describe("the server Backups page", () => {
       container.querySelector('[data-snapshot="snapshot.1"]'),
     ).toBeTruthy();
   });
+
+  test("a failed package operation still shows its error after the list comes back", async () => {
+    const { container, page } = await open();
+    page.backups.mockResolvedValueOnce({ error: "Backup file missing" });
+    const mod = el(container, '.mlb-pkg[data-package="module:old-mod"]');
+    fireEvent.click(within(mod).getByRole("button", { name: /Old Mod/ }));
+    fireEvent.click(within(mod).getByRole("button", { name: "Restore" }));
+    await waitFor(() => {
+      expect(page.serverBackups).toHaveBeenLastCalledWith("list", []);
+    });
+    await waitFor(() => {
+      expect(container.textContent).toContain("Backup file missing");
+    });
+  });
 });

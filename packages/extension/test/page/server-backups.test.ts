@@ -129,4 +129,14 @@ describe("the server's backups through Foundry", () => {
     );
     expect((await runServerBackups({}, req("list"))).error).toBeTruthy();
   });
+
+  test("inherited names are not snapshots", async () => {
+    const f = foundry();
+    const r = await runServerBackups(
+      f.page,
+      req("restoreSnapshot", ["__proto__"]),
+    );
+    expect(r.error).toMatch(/__proto__/);
+    expect(f.game.restoreSnapshot).not.toHaveBeenCalled();
+  });
 });

@@ -86,7 +86,10 @@ async function apply(game: Game, req: ServerBackupsRequest): Promise<void> {
     await game.createSnapshot?.({ dialog: true });
   if (req.op === "restoreSnapshot") {
     const listing = ((await game.listBackups?.()) ?? {}) as Listing;
-    const data = listing.snapshots?.[req.ids[0] ?? ""];
+    const id = req.ids[0] ?? "";
+    // Own keys only: "__proto__" or "toString" are not snapshots.
+    const snaps = listing.snapshots ?? {};
+    const data = Object.hasOwn(snaps, id) ? snaps[id] : undefined;
     if (!data) throw new Error(`No snapshot ${req.ids[0] ?? ""}`);
     await game.restoreSnapshot?.(data, { dialog: true });
   }

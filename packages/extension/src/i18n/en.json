@@ -499,5 +499,6 @@
   "up.notes": "What's new in {version}",
   "up.update": "Update in Foundry…",
   "up.lead": "Foundry's own update screen downloads and installs it, checks your packages against it, and offers a snapshot first.",
-  "up.chip": "update"
+  "up.chip": "update",
+  "cfg.portRange": "Enter a port from 1 to 65535."
 }

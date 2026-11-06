@@ -6,11 +6,15 @@ import type {
   SettingKey,
   Settings,
 } from "../../../page-config.ts";
+import { useState } from "preact/hooks";
 import { useUi } from "../../context.ts";
 
 export interface Draft {
   readonly saved: Settings;
   readonly changes: SettingChanges;
+  /** Fields holding something that can't be saved yet. */
+  readonly invalid: ReadonlySet<SettingKey>;
+  setInvalid(key: SettingKey, bad: boolean): void;
   set(key: SettingKey, value: Settings[SettingKey]): void;
 }
 
@@ -62,7 +66,8 @@ export function TextField(props: {
         value={typeof v === "string" ? v : ""}
         disabled={!canChange}
         onInput={(e) => {
-          const text = e.currentTarget.value.trim();
+          // Trimmed when saved, not while typed.
+          const text = e.currentTarget.value;
           props.draft.set(props.k, props.optional && !text ? null : text);
         }}
       />
@@ -70,31 +75,47 @@ export function TextField(props: {
   );
 }
 
+const MAX_PORT = 65535;
+
 export function NumberField(props: {
   readonly draft: Draft;
   readonly k: SettingKey;
   readonly label: string;
   readonly optional?: boolean;
 }) {
-  const { canChange } = useUi();
+  const { t, canChange } = useUi();
+  // What was typed while it can't be saved; otherwise the draft's value.
+  const [raw, setRaw] = useState<string | null>(null);
   const v = current(props.draft, props.k);
+  const shown = raw ?? (typeof v === "number" ? String(v) : "");
+  const onInput = (text: string): void => {
+    const trimmed = text.trim();
+    const n = Number(trimmed);
+    const ok =
+      (props.optional === true && trimmed === "") ||
+      (/^\d+$/.test(trimmed) && n >= 1 && n <= MAX_PORT);
+    setRaw(ok ? null : text);
+    props.draft.setInvalid(props.k, !ok);
+    if (ok) props.draft.set(props.k, trimmed === "" ? null : n);
+  };
   return (
     <label class="mlc-field">
       <span>{props.label}</span>
-      <input
-        type="number"
-        min={1}
-        max={65535}
-        aria-label={props.label}
-        value={typeof v === "number" ? String(v) : ""}
-        disabled={!canChange}
-        onInput={(e) => {
-          const raw = e.currentTarget.value.trim();
-          const n = Number.parseInt(raw, 10);
-          if (props.optional && raw === "") props.draft.set(props.k, null);
-          else if (Number.isInteger(n)) props.draft.set(props.k, n);
-        }}
-      />
+      <span class="mlc-input">
+        <input
+          type="number"
+          min={1}
+          max={MAX_PORT}
+          aria-label={props.label}
+          aria-invalid={raw !== null}
+          value={shown}
+          disabled={!canChange}
+          onInput={(e) => onInput(e.currentTarget.value)}
+        />
+        {raw !== null ? (
+          <span class="mlc-bad">{t("cfg.portRange")}</span>
+        ) : null}
+      </span>
     </label>
   );
 }

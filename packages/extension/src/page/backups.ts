@@ -98,7 +98,14 @@ export async function runBackups(
   req: BackupsRequest,
 ): Promise<BackupsResult> {
   const game = page.game as (BackupGlobals["game"] & BackupGame) | undefined;
-  const world = game ? packageOf(game, req) : undefined;
+  // An uninstalled package's backups can still be listed, restored (Foundry
+  // reinstalls it) and deleted; only taking a new backup needs it installed.
+  const installed = game ? packageOf(game, req) : undefined;
+  const world =
+    installed ??
+    (req.op === "create"
+      ? undefined
+      : { type: req.type, id: req.worldId, title: req.worldId });
   if (!game || !world) return { error: `No ${req.type} ${req.worldId}` };
   try {
     await apply(game, world, req);

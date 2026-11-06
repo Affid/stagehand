@@ -990,3 +990,17 @@ ul.mlw-check.warn {
   padding: 0 14px;
   gap: 8px;
 }
+
+.mls-shell .mlc-input {
+  display: grid;
+  gap: 3px;
+}
+
+.mls-shell .mlc-input input[aria-invalid="true"] {
+  border-color: #e0705a;
+}
+
+.mls-shell .mlc-bad {
+  font-size: 12px;
+  color: #ff9c8f;
+}

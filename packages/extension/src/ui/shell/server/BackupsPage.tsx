@@ -51,8 +51,9 @@ function useServerBackups() {
   ): Promise<void> => {
     setBusy(true);
     const r = await page.backups(p.id, op, ids, p.type);
-    settle({ ...(r.error ? { error: r.error } : {}) });
-    settle(await page.serverBackups("list", []));
+    const list = await page.serverBackups("list", []);
+    // The operation's error stays visible after the list comes back.
+    settle({ ...list, ...(r.error ? { error: r.error } : {}) });
     setBusy(false);
   };
   useEffect(() => {
