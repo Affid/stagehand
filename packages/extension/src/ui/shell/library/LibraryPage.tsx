@@ -18,7 +18,6 @@ import { LibraryTools, PresetList } from "../../modules/PresetList.tsx";
 import { TagList } from "../../modules/SideSections.tsx";
 import { LibCard } from "./LibCard.tsx";
 import { IntakePanel } from "./IntakePanel.tsx";
-import { ModulePanel } from "./ModulePanel.tsx";
 import { WorldGrid } from "./WorldGrid.tsx";
 
 interface ToolsProps {
@@ -185,7 +184,6 @@ function Tabs(props: {
   );
 }
 
-/** The side slot: a module's details, else Organise when asked for. */
 function IntakeBand(props: { readonly onSort: () => void }) {
   const { state, t } = useUi();
   const n = state.data.fresh.length;
@@ -201,14 +199,13 @@ function IntakeBand(props: { readonly onSort: () => void }) {
   );
 }
 
+/** The side slot: intake, else Organise when asked for. */
 function Side(props: {
   readonly model: ModulesModel;
   readonly page: ReturnType<typeof usePageState>;
 }) {
   const { state } = useUi();
-  const { detail, setDetail, organise, intake, setIntake } = props.page;
-  const pkg = detail ? props.model.all.find((m) => m.id === detail) : undefined;
-  if (pkg) return <ModulePanel pkg={pkg} onClose={() => setDetail(null)} />;
+  const { organise, intake, setIntake } = props.page;
   if (intake && state.data.fresh.length)
     return <IntakePanel onClose={() => setIntake(false)} />;
   return organise ? <Organise model={props.model} /> : null;
@@ -221,7 +218,6 @@ function usePageState() {
   const [selecting, setSelecting] = useState(false);
   const [organise, setOrganise] = useState(false);
   const [closed, setClosed] = useState<ReadonlySet<string>>(new Set());
-  const [detail, setDetail] = useState<string | null>(null);
   const [tab, setTab] = useState<LibTab>("modules");
   const [intake, setIntake] = useState(false);
   const toggle = (key: string): void => {
@@ -242,8 +238,6 @@ function usePageState() {
     setOrganise,
     closed,
     toggle,
-    detail,
-    setDetail,
     tab,
     setTab,
     intake,
@@ -256,7 +250,7 @@ function Groups(props: {
   readonly model: ModulesModel;
   readonly page: ReturnType<typeof usePageState>;
 }) {
-  const { t } = useUi();
+  const { state, store, t } = useUi();
   const { page } = props;
   if (props.groups.length === 0)
     return <p class="ml-empty">{t("lib.empty")}</p>;
@@ -270,8 +264,8 @@ function Groups(props: {
           open={!page.closed.has(g.key)}
           onToggle={() => page.toggle(g.key)}
           selecting={page.selecting}
-          detail={page.detail}
-          onOpen={(id) => page.setDetail(page.detail === id ? null : id)}
+          detail={state.panel}
+          onOpen={(id) => store.set({ panel: state.panel === id ? null : id })}
         />
       ))}
     </ol>
@@ -279,7 +273,7 @@ function Groups(props: {
 }
 
 export function LibraryPage() {
-  const { state } = useUi();
+  const { state, store } = useUi();
   const model = useModulesModel(state);
   const page = usePageState();
   const { by, selecting } = page;
@@ -294,7 +288,7 @@ export function LibraryPage() {
       <Tabs tab={page.tab} onTab={page.setTab} />
       <IntakeBand
         onSort={() => {
-          page.setDetail(null);
+          store.set({ panel: null });
           page.setIntake(true);
         }}
       />

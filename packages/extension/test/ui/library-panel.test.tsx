@@ -129,9 +129,41 @@ describe("a module's details", () => {
     });
   });
 
-  test("presets that hold it are listed", () => {
+  test("presets that hold it are listed as chips", () => {
     const { panel } = open();
-    expect(panel.textContent).toContain("QoL");
+    expect(el(panel, ".mll-chip.preset").textContent).toContain("QoL");
+  });
+
+  test("its own column beside the page, headed id · version · authors", () => {
+    const { panel, container } = open();
+    expect(panel.parentElement).toBe(el(container, ".mls"));
+    expect(panel.classList.contains("mls-panel")).toBe(true);
+    expect(el(panel, ".mls-modhead .sub").textContent).toBe("a · v1.0.0 · Ann");
+  });
+
+  test("every world is listed; one without the companion says so", () => {
+    const base = setupState();
+    const { panel } = open({
+      setup: base.setup && {
+        ...base.setup,
+        worlds: [
+          ...base.setup.worlds,
+          {
+            id: "w2",
+            title: "Vaults",
+            system: "dnd5e",
+            systemVersion: "5",
+            coreVersion: "14.369",
+          },
+        ],
+      },
+    });
+    expect(panel.textContent).toContain("On in worlds · 1 of 2");
+    const vaults = [...panel.querySelectorAll(".mls-wlist li")].find((li) =>
+      li.textContent.includes("Vaults"),
+    );
+    expect(vaults?.textContent).toContain("companion off");
+    expect(vaults?.querySelector("input")?.disabled).toBe(true);
   });
 
   test("each tracked world has a switch that queues for its next launch", async () => {

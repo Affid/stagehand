@@ -37,8 +37,24 @@ function WhyRow(props: {
   );
 }
 
+/** The name opens the module's details beside the page; again, closes them. */
+function OpenName(props: { readonly id: string; readonly title: string }) {
+  const { state, store } = useUi();
+  const open = state.panel === props.id;
+  return (
+    <button
+      type="button"
+      class="t"
+      aria-expanded={open}
+      onClick={() => store.set({ panel: open ? null : props.id })}
+    >
+      {props.title}
+    </button>
+  );
+}
+
 export function ModuleCard(props: CardProps) {
-  const { t, canChange } = useUi();
+  const { state, t, canChange } = useUi();
   const { row } = props;
   const line = whyLine(row, props.why);
   const locked = row.pkg.id === COMPANION_ID || !canChange;
@@ -48,6 +64,7 @@ export function ModuleCard(props: CardProps) {
     row.delta === "on" ? "plus" : row.delta === "off" ? "minus" : "",
     row.problem ? "prob" : "",
     row.risk ? "risk" : "",
+    state.panel === row.pkg.id ? "viewing" : "",
   ].join(" ");
   return (
     <li class={cls} data-module={row.pkg.id}>
@@ -68,7 +85,7 @@ export function ModuleCard(props: CardProps) {
             props.onFlip(row.pkg.id, !row.next);
           }}
         />
-        <span class="t">{row.pkg.title}</span>
+        <OpenName id={row.pkg.id} title={row.pkg.title} />
         {row.delta ? (
           <span class="mlw-delta">{t(`wp.delta.${row.delta}`)}</span>
         ) : null}

@@ -182,6 +182,7 @@ export const uiState = (over: Partial<UiState> = {}): UiState => ({
   draftModules: [],
   collapsedGroups: [],
   route: null,
+  panel: null,
   ...over,
 });
 

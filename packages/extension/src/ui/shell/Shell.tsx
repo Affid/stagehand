@@ -1,6 +1,7 @@
 // The new Setup page: header, worlds rail, and a world's page or the Library.
 import { useUi } from "../context.ts";
 import { LibraryPage } from "./library/LibraryPage.tsx";
+import { ModulePanel } from "./library/ModulePanel.tsx";
 import { ServerBackupsPage } from "./server/BackupsPage.tsx";
 import { ConfigPage } from "./server/ConfigPage.tsx";
 import { UpdatePage } from "./server/UpdatePage.tsx";
@@ -8,6 +9,23 @@ import { Header } from "./Header.tsx";
 import { resolveRoute } from "./route.ts";
 import { WorldPage } from "./WorldPage.tsx";
 import { WorldRail } from "./WorldRail.tsx";
+
+/** The module details column, beside the Library or a world's page. */
+function PanelColumn(props: { readonly here: string | undefined }) {
+  const { state, store } = useUi();
+  const pkg = state.panel
+    ? state.data.setup?.modules.find((m) => m.id === state.panel)
+    : undefined;
+  if (!pkg) return null;
+  return (
+    <ModulePanel
+      key={pkg.id}
+      pkg={pkg}
+      here={props.here}
+      onClose={() => store.set({ panel: null })}
+    />
+  );
+}
 
 export function Shell() {
   const { state } = useUi();
@@ -43,6 +61,7 @@ export function Shell() {
             </div>
           </section>
         )}
+        {route.kind === "server" ? null : <PanelColumn here={world?.id} />}
       </div>
     </div>
   );

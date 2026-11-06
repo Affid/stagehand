@@ -80,7 +80,7 @@ for (const name of entries) {
   });
 }
 cpSync(join(root, "static"), outDir, { recursive: true });
-for (const sheet of ["shell.css", "world.css", "library.css"])
+for (const sheet of ["shell.css", "world.css", "library.css", "panel.css"])
   appendFileSync(
     join(outDir, "setup-ui.css"),
     `\n${readFileSync(join(root, "src", "ui", "shell", sheet), "utf8")}`,

@@ -60,6 +60,7 @@ function ensureDeps(
     draftModules: [],
     collapsedGroups: [],
     route: null,
+    panel: null,
   });
   deps = { store, actions: createActions(store, send, t, page), t, page };
   // The new Setup page takes over whenever the extension runs (not in safe mode).

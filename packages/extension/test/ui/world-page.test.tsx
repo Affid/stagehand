@@ -94,6 +94,16 @@ describe("the Modules tab", () => {
     );
   });
 
+  test("a card's name opens the module's details beside the page, this world marked", () => {
+    const { getByRole, container } = page();
+    fireEvent.click(getByRole("button", { name: "Title a" }));
+    const panel = getByRole("complementary", { name: "Title a" });
+    expect(panel.parentElement).toBe(el(container, ".mls"));
+    const here = el(panel, ".mls-wlist li.mls-here");
+    expect(here.textContent).toContain("Strahd");
+    expect(here.textContent).toContain("this world");
+  });
+
   test("each card says why in one line", () => {
     const { container } = page();
     expect(card(container, "a").textContent).toContain("for Strahd");

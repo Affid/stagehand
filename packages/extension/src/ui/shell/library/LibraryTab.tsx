@@ -1,9 +1,12 @@
 // A module's Library tab: folder, tags, note, the presets that hold it, and
-// a switch per tracked world that queues a change for its next launch.
+// every world: a switch that queues a change for its next launch, or
+// "companion off" where Module Library isn't set up.
 import type { PackageInfo } from "@module-library/shared/package";
+import type { WorldInfo } from "@module-library/shared/world";
 import { useState } from "preact/hooks";
 import { IconButton } from "../../common/widgets.tsx";
 import { useUi } from "../../context.ts";
+import { worldOrder } from "../../model/order.ts";
 import { COMPANION_ID } from "../../model/preview.ts";
 import { worldModules } from "../../model/world-modules.ts";
 
@@ -126,48 +129,89 @@ function NoteField(props: { readonly id: string }) {
   );
 }
 
-function Worlds(props: { readonly pkg: PackageInfo }) {
+function WorldItem(props: {
+  readonly pkg: PackageInfo;
+  readonly world: WorldInfo;
+  readonly here: boolean;
+}) {
   const { state, actions, t, canChange } = useUi();
-  const tracked = (state.data.setup?.worlds ?? []).filter(
-    (w) => state.data.snapshots[w.id],
-  );
-  if (tracked.length === 0) return <p class="ml-empty">{t("mp.noWorlds")}</p>;
+  const { pkg, world } = props;
+  const model = worldModules(state.data, world.id);
+  const row = model.rows.find((r) => r.pkg.id === pkg.id);
+  const on = row?.next ?? false;
   return (
-    <ul class="mll-worlds">
-      {tracked.map((w) => {
-        const row = worldModules(state.data, w.id).rows.find(
-          (r) => r.pkg.id === props.pkg.id,
-        );
-        const on = row?.next ?? false;
-        return (
-          <li key={w.id}>
-            <input
-              type="checkbox"
-              role="switch"
-              class="mls-switch"
-              checked={on}
-              disabled={!canChange || props.pkg.id === COMPANION_ID}
-              aria-label={t("wp.switch", {
-                module: props.pkg.title,
-                world: w.title,
-              })}
-              onClick={(e) => {
-                e.preventDefault();
-                void actions.flip(w.id, props.pkg.id, !on);
-              }}
-            />
-            <span>{w.title}</span>
-            {row?.delta ? (
-              <span class={`d ${row.delta}`}>{t(`wp.delta.${row.delta}`)}</span>
-            ) : null}
-          </li>
-        );
-      })}
-    </ul>
+    <li class={props.here ? "mls-here" : ""}>
+      <span>
+        {world.title}
+        {props.here ? (
+          <span class="ml-muted"> · {t("mp.thisWorld")}</span>
+        ) : null}
+      </span>
+      {!model.tracked ? (
+        <span class="d na">{t("grid.off")}</span>
+      ) : row?.delta ? (
+        <span class={`d ${row.delta === "on" ? "plus" : "minus"}`}>
+          {t(`mp.delta.${row.delta}`)}
+        </span>
+      ) : (
+        <span />
+      )}
+      <input
+        type="checkbox"
+        role="switch"
+        class="mls-switch"
+        checked={on}
+        disabled={!canChange || !model.tracked || pkg.id === COMPANION_ID}
+        aria-label={t("wp.switch", { module: pkg.title, world: world.title })}
+        onClick={(e) => {
+          e.preventDefault();
+          void actions.flip(world.id, pkg.id, !on);
+        }}
+      />
+    </li>
   );
 }
 
-export function LibraryTab(props: { readonly pkg: PackageInfo }) {
+/** Every world, in Foundry's order; worlds without the companion say so. */
+function Worlds(props: {
+  readonly pkg: PackageInfo;
+  readonly here: string | undefined;
+}) {
+  const { state, t } = useUi();
+  const worlds = worldOrder(
+    state.data.setup?.worlds ?? [],
+    state.data.setup?.lang,
+  );
+  const onIn = worlds.filter(
+    (w) =>
+      worldModules(state.data, w.id).rows.find((r) => r.pkg.id === props.pkg.id)
+        ?.next,
+  ).length;
+  return (
+    <div class="mls-chg">
+      <h4>
+        <span>
+          {t("mp.onIn", { n: String(onIn), total: String(worlds.length) })}
+        </span>
+      </h4>
+      <ul class="mls-wlist">
+        {worlds.map((w) => (
+          <WorldItem
+            key={w.id}
+            pkg={props.pkg}
+            world={w}
+            here={w.id === props.here}
+          />
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export function LibraryTab(props: {
+  readonly pkg: PackageInfo;
+  readonly here?: string | undefined;
+}) {
   const { state, t } = useUi();
   const { pkg } = props;
   const presets = state.data.library.presets.filter((p) =>
@@ -184,14 +228,18 @@ export function LibraryTab(props: { readonly pkg: PackageInfo }) {
       />
       <div class="mll-field">
         <span>{t("mp.presets")}</span>
-        <span>
+        <span class="mll-chips">
           {presets.length
-            ? presets.map((p) => p.name).join(", ")
+            ? presets.map((p) => (
+                <span key={p.id} class="mll-tag mll-chip preset">
+                  <i class="fa-solid fa-layer-group" aria-hidden="true" />
+                  {p.name}
+                </span>
+              ))
             : t("mp.noPresets")}
         </span>
       </div>
-      <h4>{t("mp.worlds")}</h4>
-      <Worlds pkg={pkg} />
+      <Worlds pkg={pkg} here={props.here} />
     </div>
   );
 }

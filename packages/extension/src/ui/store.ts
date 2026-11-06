@@ -24,6 +24,8 @@ export interface UiState {
   readonly collapsedGroups: readonly string[];
   /** The new Setup page's current page; null until one is chosen. */
   readonly route: Route | null;
+  /** The module whose details show beside the Library or a world's page. */
+  readonly panel: string | null;
 }
 
 export const EMPTY_FILTER: ModuleFilterSpec = {

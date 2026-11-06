@@ -1,0 +1,185 @@
+/* The details column beside the Library or a world's page, and the
+   sub-tabs it shares with the world page (prototype _shell.css). */
+.mls-shell .mls-panel {
+  flex: 0 0 340px;
+  min-width: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.mls-shell .mls-panel > h2.divider {
+  margin: 12px 12px 4px;
+  font-size: 18px;
+  flex: none;
+}
+
+.mls-shell .mls-panel > .mls-close {
+  position: absolute;
+  right: 12px;
+  top: 10px;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  z-index: 2;
+}
+
+.mls-shell .mls-panel .scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 4px 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.mls-shell .mls-modhead h3 {
+  margin: 0;
+  font-size: 17px;
+  color: var(--color-light-1);
+  border: 0;
+}
+
+.mls-shell .mls-modhead .sub {
+  margin-top: 2px;
+  color: var(--color-text-subtle);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.mls-shell .mls-subtabs {
+  display: flex;
+  gap: 2px;
+  align-items: flex-end;
+  border-bottom: 1px solid var(--color-cool-4);
+  flex: none;
+}
+
+.mls-shell .mls-subtabs > button {
+  width: auto;
+  height: auto;
+  padding: 6px 12px;
+  display: inline-flex;
+  gap: 7px;
+  align-items: center;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  margin-bottom: -1px;
+  background: none;
+  box-shadow: none;
+  color: var(--color-light-3);
+  font-size: 14px;
+}
+
+.mls-shell .mls-subtabs > button.active {
+  color: var(--color-light-1);
+  border-bottom-color: var(--color-warm-1);
+}
+
+.mls-shell .mls-subtabs > button .c {
+  color: var(--color-light-4);
+  font-size: 12px;
+}
+
+.mls-shell .mls-panel .mls-subtabs > button {
+  font-size: 13px;
+  padding: 5px 10px;
+}
+
+.mls-shell .mls-chg h4 {
+  margin: 0 0 4px;
+  padding-bottom: 3px;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-family: var(--font-body, Signika), sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-subtle);
+  border-bottom: 1px solid var(--color-cool-4);
+}
+
+.mls-shell .mls-wlist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.mls-shell .mls-wlist li {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 8px;
+  align-items: center;
+  padding: 4px 2px;
+  color: var(--color-light-2);
+}
+
+.mls-shell .mls-wlist li.mls-here {
+  background: rgb(238 155 58 / 10%);
+  border-radius: 3px;
+  padding-left: 6px;
+}
+
+.mls-shell .mls-wlist li .d {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.mls-shell .mls-wlist li .d.plus {
+  color: #8fd49b;
+}
+
+.mls-shell .mls-wlist li .d.minus {
+  color: #ff9c8f;
+}
+
+.mls-shell .mls-wlist li .d.na {
+  color: var(--color-light-5);
+  font-weight: 400;
+}
+
+.mls-shell .mll-chip.preset i {
+  font-size: 10px;
+}
+
+/* A world card's name opens the details, like the Library's. */
+.mls-shell .mlw-card button.t {
+  flex: 1;
+  min-width: 0;
+  width: auto;
+  height: auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  justify-content: flex-start;
+  text-align: left;
+  font: inherit;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--color-light-1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.mls-shell .mlw-card.off button.t {
+  color: var(--color-light-4);
+}
+
+.mls-shell .mlw-card button.t:hover {
+  color: var(--color-warm-1);
+}
+
+.mls-shell .mlw-card.viewing {
+  border-color: var(--color-warm-1);
+  box-shadow: 0 0 6px rgb(238 155 58 / 35%);
+}

@@ -41,6 +41,7 @@ const initial: UiState = {
   selectors: V14_SELECTORS,
   collapsedGroups: [],
   route: null,
+  panel: null,
 };
 
 const t = createTranslator("en");
