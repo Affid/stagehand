@@ -62,15 +62,14 @@ describe("the Configuration page", () => {
   test("the header's Configuration opens it with Foundry's settings, grouped", async () => {
     const { container, store, getByLabelText } = await open();
     expect(store.get().route).toEqual({ kind: "server", page: "config" });
-    const groups = [
-      ...container.querySelectorAll(".mlc-page fieldset legend"),
-    ].map((l) => l.textContent);
-    expect(groups).toEqual([
-      "Access",
-      "Startup and appearance",
-      "Network",
-      "Data and storage",
-      "Other",
+    // Two columns, as the prototype.
+    const columns = [...container.querySelectorAll(".mlc-cols > .col")].map(
+      (col) =>
+        [...col.querySelectorAll("fieldset legend")].map((l) => l.textContent),
+    );
+    expect(columns).toEqual([
+      ["Access", "Startup and appearance", "Other"],
+      ["Network", "Data and storage"],
     ]);
     expect((getByLabelText("Port") as HTMLInputElement).value).toBe("30000");
     expect(container.textContent).toContain("/home/gm/foundry/data");

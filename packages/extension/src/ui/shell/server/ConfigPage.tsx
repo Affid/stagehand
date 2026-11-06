@@ -247,12 +247,16 @@ function Other(props: GroupProps) {
 
 function Groups(props: GroupProps) {
   return (
-    <form onSubmit={(e) => e.preventDefault()}>
-      <Access {...props} />
-      <Startup {...props} />
-      <Network {...props} />
-      <Data {...props} />
-      <Other {...props} />
+    <form class="mlc-cols" onSubmit={(e) => e.preventDefault()}>
+      <div class="col">
+        <Access {...props} />
+        <Startup {...props} />
+        <Other {...props} />
+      </div>
+      <div class="col">
+        <Network {...props} />
+        <Data {...props} />
+      </div>
     </form>
   );
 }

@@ -889,15 +889,24 @@ ul.mlw-check.warn {
   padding: 0 12px;
 }
 
-/* Columns that fill top to bottom: no gap under a short group. */
-.mls-shell .mlc-page form {
-  columns: 420px;
-  column-gap: 14px;
+/* Two columns at any width, as the prototype: Access, Startup and Other on
+   the left; Network and Data on the right. */
+.mls-shell .mlc-page .mlc-cols {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+  max-width: 1400px;
+}
+
+.mls-shell .mlc-page .mlc-cols .col {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
 }
 
 .mls-shell .mlc-page fieldset {
-  margin: 0 0 14px;
-  break-inside: avoid;
+  margin: 0;
   display: grid;
   gap: 10px;
   padding: 10px 14px 14px;

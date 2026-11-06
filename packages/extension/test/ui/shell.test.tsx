@@ -176,9 +176,13 @@ describe("the worlds rail", () => {
 describe("routing", () => {
   test("opens on the first world; a click opens another; Library switches", () => {
     const { container, getByRole, store } = shell();
-    expect(el(container, ".mls-banner h2").textContent).toContain("Curse of Strahd");
+    expect(el(container, ".mls-banner h2").textContent).toContain(
+      "Curse of Strahd",
+    );
     fireEvent.click(getByRole("button", { name: /Old Campaign/ }));
-    expect(el(container, ".mls-banner h2").textContent).toContain("Old Campaign");
+    expect(el(container, ".mls-banner h2").textContent).toContain(
+      "Old Campaign",
+    );
     expect(
       getByRole("button", { name: /Old Campaign/ }).getAttribute(
         "aria-current",
