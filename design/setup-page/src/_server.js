@@ -57,9 +57,9 @@ function serverBackupsPage() {
     const size = id === "snapshots" ? "" : ` · ${fmtSize(sbTotal(id))}`;
     return `<a class="${tab === id ? "active" : ""}" data-act="sbtab" data-id="${id}"><i class="fa-solid ${icon}"></i>${label} <span class="c">${sbCount(id)}${size}</span></a>`;
   }).join("");
-  const create = `${lock ? `<span class="mlw-tipwrap" data-tooltip="${busyTip()}">` : ""}<button type="button" class="bright" data-act="snapnew"${lock}><i class="fa-solid fa-camera-retro"></i>Create a snapshot</button>${lock ? "</span>" : ""}`;
+  const create = job ? sbProgress(job) : `${lock ? `<span class="mlw-tipwrap" data-tooltip="${busyTip()}">` : ""}<button type="button" class="bright" data-act="snapnew"${lock}><i class="fa-solid fa-camera-retro"></i>Create a snapshot</button>${lock ? "</span>" : ""}`;
   const head = `<div class="mlb-head"><div><h2>Backups</h2><p>${fmtSize(pkgMB)} of backups on this server · ${plural(SNAPSHOTS.length, "snapshot")} · 48 GB of disk free</p></div><span class="ml-spacer"></span>${create}</div>`;
-  const progress = job ? sbProgress(job) : "";
+  const progress = "";
   const body = tab === "snapshots" ? sbSnapshots(lock) : sbPackageList(tab, lock);
   return `<section id="setup-packages" class="application framed mls-main mlb-page"><div class="mls-body-main">${head}${progress}
     <nav class="mls-subtabs">${tabs}</nav>${body}</div></section>`;
@@ -69,8 +69,8 @@ function sbProgress(job) {
   // Foundry's own order, seen live on 14.370: modules, then systems, then worlds.
   const steps = [["module", "Modules"], ["system", "Systems"], ["world", "Worlds"]].map(([k, l], i) =>
     `<li class="${i < job.step ? "done" : i === job.step ? "now" : ""}"><i class="fa-solid ${i < job.step ? "fa-check" : i === job.step ? "fa-spinner fa-spin-pulse" : "fa-circle"}"></i>${l}</li>`).join("");
-  return `<div class="mlb-job" role="status"><div class="t"><strong>Creating a snapshot${job.note ? `: ${esc(job.note)}` : ""}</strong><span>${job.current ? `Backing up ${esc(job.current)} · ` : ""}It can't be interrupted. Launching, restoring and deleting wait until it's done.</span></div>
-    <ol>${steps}</ol><div class="bar"><span style="width:${job.pct}%"></span></div><span class="pct">${job.pct}%</span></div>`;
+  return `<div class="mlb-job" role="status" data-tooltip="A snapshot can't be interrupted. Launching, restoring and deleting wait until it's done."><div class="t"><strong>Creating a snapshot · ${job.pct}%</strong><span>${job.current ? `Backing up ${esc(job.current)}` : "Starting…"}</span></div>
+    <ol>${steps}</ol><div class="bar"><span style="width:${job.pct}%"></span></div></div>`;
 }
 
 function sbSnapshots(lock) {

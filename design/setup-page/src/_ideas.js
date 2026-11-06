@@ -157,7 +157,7 @@ function copyFromPop(x, y) {
 // ---------- intake: sorting newly installed modules ----------
 const SUGGEST = { "modular-av-livekit-krisp": { folder: "voice", tags: ["audio", "beta"], with: "modular-av-livekit", why: "Same family as Modular A/V: LiveKit" } };
 function intakeBand() {
-  if (!ST.fresh.size || ST.select) return "";
+  if (!ST.fresh.size) return "";
   const names = [...ST.fresh].map((id) => `<b>${short(id)}</b>`).join(", ");
   return `<div class="mls-intake-band"><i class="fa-solid fa-box-open"></i><span>${plural(ST.fresh.size, "new module")} since you last sorted: ${names}. They sit in Unfiled and are off in every world.</span>
     <button type="button" class="bright" data-act="intake"><i class="fa-solid fa-wand-magic-sparkles"></i>Sort them</button><button type="button" data-act="intakelater">Later</button></div>`;

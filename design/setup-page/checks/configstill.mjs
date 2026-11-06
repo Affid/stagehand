@@ -1,0 +1,21 @@
+import { chromium } from "@playwright/test";
+const dir = new URL("../", import.meta.url).pathname;
+const b = await chromium.launch(); const errs = [];
+const p = await (await b.newContext({ viewport: { width: 1600, height: 1000 } })).newPage();
+p.on("pageerror", (e) => errs.push(e.message));
+await p.goto(`file://${dir}out/setup-shell.html?calm=1`); await p.waitForTimeout(600);
+await p.click("[data-act=srvconfig]"); await p.waitForTimeout(100);
+const where = () => p.evaluate(() => Object.fromEntries(["telemetry", "port", "world", "dataPath"].map((k) => [k, Math.round(document.querySelector(`[data-cfg="${k}"]`).getBoundingClientRect().top)])));
+const before = await where();
+await p.click('[data-cfg="telemetry"]'); await p.waitForTimeout(250);
+const pending = await where();
+await p.screenshot({ path: `${dir}out/shots/cfg-6-bar.png` });
+await p.click("[data-act=cfgsave]"); await p.click("[data-act=cfgdosave]"); await p.waitForTimeout(250);
+const saved = await where();
+const covered = await p.evaluate(() => { const bar = document.querySelector(".mlc-bar").getBoundingClientRect(); const c = document.querySelector(".mlc-cols"); c.scrollTop = c.scrollHeight; const last = [...document.querySelectorAll(".mlc-set")].map((x) => x.getBoundingClientRect().bottom); return Math.max(...last) > bar.top; });
+const still = JSON.stringify(before) === JSON.stringify(pending) && JSON.stringify(before) === JSON.stringify(saved);
+console.log({ before, pending, saved, still, lastRowHiddenByBar: covered }, still && !covered ? "ok" : "WRONG");
+for (const [w, h] of [[1280, 800]]) { await p.setViewportSize({ width: w, height: h }); await p.click('[data-cfg="hotReload"]'); await p.waitForTimeout(200);
+  const c2 = await p.evaluate(() => { const bar = document.querySelector(".mlc-bar").getBoundingClientRect(); const c = document.querySelector(".mlc-cols"); c.scrollTop = c.scrollHeight; return Math.max(...[...document.querySelectorAll(".mlc-set")].map((x) => x.getBoundingClientRect().bottom)) > bar.top; });
+  console.log(`${w}x${h} last row hidden by bar:`, c2); await p.screenshot({ path: `${dir}out/shots/cfg-7-bar-1280.png` }); }
+console.log(errs.length ? errs : "no errors"); await b.close();

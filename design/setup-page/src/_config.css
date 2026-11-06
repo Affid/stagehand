@@ -46,3 +46,11 @@
 .mlc-diff li span { color: var(--color-light-3); overflow-wrap: anywhere; }
 .mlc-diff li b { color: var(--color-light-1); }
 @media (max-width: 1280px) { .mlc-set { grid-template-columns: minmax(0, 1fr); } .mlc-set .c { justify-content: flex-start; } }
+/* Save bar: bottom of the page, over space the settings always leave free */
+.mlc-page .mls-body-main { position: relative; }
+.mlc-cols { padding-bottom: 76px; }
+.mlc-bar { position: absolute; left: 14px; right: 14px; bottom: 12px; z-index: 5; }
+.mlc-bar > div { box-shadow: 0 6px 22px rgb(0 0 0 / 75%); background-color: rgb(30 22 14 / 96%); backdrop-filter: blur(4px); animation: mlc-up .16s ease-out; }
+.mlc-bar > .mlc-waiting { background-color: rgb(16 24 38 / 96%); }
+@keyframes mlc-up { from { transform: translateY(8px); opacity: 0; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .mlc-bar > div { animation: none; } }

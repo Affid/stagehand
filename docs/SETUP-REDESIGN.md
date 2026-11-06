@@ -80,6 +80,9 @@ necessarily its card markup.
 - Real buttons and links for every action; all reachable by keyboard (C2).
 - Update the page in place; never move focus on re-render (H4).
 - Announce queued changes and saves to screen readers (live region) (H4).
+- Nothing moves under the pointer: bars that appear (unsaved changes, progress, selection)
+  take a slot whose space is already kept, or replace something of the same height.
+  `design/setup-page/checks/shifts.mjs` measures this.
 - Every disabled control that needs an explanation carries it on a wrapper: browsers send
   no hover to disabled buttons, so a tooltip on the button itself never shows.
 - Copy Foundry's busy lock during backups and restores.
@@ -106,7 +109,7 @@ necessarily its card markup.
 cd design/setup-page
 ./assets.sh            # copies Foundry's CSS, fonts and images from ~/foundry/vtt (not in git)
 node build.mjs         # writes out/index.html (playground) and out/setup-shell.html
-node checks/run.mjs    # 27 Playwright checks of the mockup's flows
+node checks/run.mjs    # 29 Playwright checks of the mockup's flows
 ```
 
 `fvtt/` and `out/` are git-ignored: they hold Foundry's and Font Awesome Pro's licensed

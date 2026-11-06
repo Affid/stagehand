@@ -402,3 +402,7 @@
 .mlw-edit .pm-bar { gap: 2px; padding: 3px 6px; }
 .mlw-rte { min-height: 110px; max-height: 320px; overflow: auto; padding: 8px 10px; border: 1px solid var(--color-cool-3); border-radius: 0 0 3px 3px; background: rgb(0 0 0 / 35%); color: var(--color-light-1); font-size: 14px; line-height: 1.5; outline: none; }
 .mlw-rte:focus { border-color: var(--color-warm-1); box-shadow: 0 0 4px var(--color-warm-2); }
+/* Backup list header: same box whether it's the summary or the selection band */
+.mlw-bhead { min-height: 40px; padding: 4px 8px; border: 1px solid transparent; border-radius: 4px; box-sizing: border-box; }
+/* Library: the selection band and the normal control row share one height */
+.mls-main .mls-body-main > .ml-row:has(+ .ml-sections) { min-height: 38px; box-sizing: border-box; padding-block: 4px; border: 1px solid transparent; border-radius: 4px; }

@@ -58,3 +58,9 @@
 .mlb-snaps button.icon { width: 30px; padding: 0; color: var(--color-light-4); }
 .mlb-snaps button.icon:hover:not([disabled]) { color: #ffb3a6; }
 .mlb-snaps button[disabled] { opacity: .45; }
+/* The header keeps one height whether it shows the Create button or the progress */
+.mlb-head { min-height: 62px; }
+.mlb-head .mlb-job { width: 560px; flex: none; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto 5px; gap: 6px 14px; padding: 7px 10px; }
+.mlb-head .mlb-job .t strong { font-size: 13px; }
+.mlb-head .mlb-job .t span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mlb-head .mlb-job .bar { grid-column: 1 / -1; height: 5px; }

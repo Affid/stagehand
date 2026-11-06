@@ -117,8 +117,10 @@ function serverConfigPage() {
         <a class="mlw-mock" data-act="cfgrestarted">Mockup: Foundry restarted</a></div>`
     : "";
   const head = `<div class="mlb-head"><div><h2>Configuration</h2><p>Foundry ${CFG_ENV.build} · running on ${CFG_RUNNING.unixSocket ? "a Unix socket" : `port ${CFG_RUNNING.port}`} · data in <code>${esc(CFG_RUNNING.dataPath)}</code></p></div></div>`;
-  return `<section id="setup-packages" class="application framed mls-main mlb-page mlc-page"><div class="mls-body-main">${head}${waiting}${pending}
-    <div class="mlc-cols"><div class="col">${cfgAccess()}${cfgStartup()}${cfgOther()}</div><div class="col">${cfgNetwork(err)}${cfgStorage(err)}</div></div></div></section>`;
+  // The bar sits at the bottom in space that is always kept free, so the settings never move when it appears.
+  const bar = pending || waiting ? `<div class="mlc-bar">${pending || waiting}</div>` : "";
+  return `<section id="setup-packages" class="application framed mls-main mlb-page mlc-page"><div class="mls-body-main">${head}
+    <div class="mlc-cols"><div class="col">${cfgAccess()}${cfgStartup()}${cfgOther()}</div><div class="col">${cfgNetwork(err)}${cfgStorage(err)}</div></div>${bar}</div></section>`;
 }
 
 /** A setting's value as people read it. */
