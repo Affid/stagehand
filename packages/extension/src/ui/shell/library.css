@@ -382,3 +382,178 @@
   color: var(--color-warm-1);
   text-decoration: underline;
 }
+
+/* The By world grid */
+.mls-shell .mll-gridpage {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+}
+
+.mls-shell .mll-gridbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12.5px;
+  color: var(--color-text-subtle);
+}
+
+.mls-shell .mll-showing .ml-link {
+  width: auto;
+  height: auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-warm-1);
+  text-decoration: underline;
+  font-size: inherit;
+}
+
+.mls-shell .mll-pick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin: 0;
+  padding: 6px 10px;
+  border: 1px solid var(--color-cool-4);
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.mls-shell .mll-pick label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mls-shell .mll-gridwrap {
+  overflow: auto;
+  max-height: 100%;
+  border: 1px solid var(--color-cool-4);
+  border-radius: 4px;
+}
+
+.mls-shell .mll-grid {
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+  width: 100%;
+  font-size: 13px;
+}
+
+.mls-shell .mll-grid th,
+.mls-shell .mll-grid td {
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--color-cool-5, #1a1822);
+  background: rgb(11 10 19 / 92%);
+}
+
+.mls-shell .mll-grid thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  vertical-align: bottom;
+  text-align: center;
+  border-bottom: 1px solid var(--color-cool-3);
+}
+
+.mls-shell .mll-grid th.mod,
+.mls-shell .mll-grid tbody th[scope="row"] {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  width: 250px;
+  text-align: left;
+  color: var(--color-light-1);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mls-shell .mll-grid thead th.mod {
+  z-index: 3;
+}
+
+.mls-shell .mll-grid th.w button {
+  width: 100%;
+  height: auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  justify-content: center;
+  color: var(--color-light-1);
+  font-weight: 600;
+}
+
+.mls-shell .mll-grid th.w .t {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mls-shell .mll-grid th.w .sub {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--color-text-subtle);
+}
+
+.mls-shell .mll-grid th.w .q {
+  color: #f3b36a;
+  font-weight: 600;
+}
+
+.mls-shell .mll-grid td {
+  text-align: center;
+}
+
+.mls-shell .mll-grid td.na {
+  color: var(--color-light-5, #555);
+}
+
+.mls-shell .mll-grid td.plus {
+  background: rgb(63 143 82 / 22%);
+}
+
+.mls-shell .mll-grid td.minus {
+  background: rgb(180 82 63 / 22%);
+}
+
+.mls-shell .mll-grid td.prob {
+  box-shadow: inset 0 0 0 1px rgb(245 196 94 / 70%);
+}
+
+.mls-shell .mll-grid tr.grp th {
+  position: sticky;
+  left: 0;
+  text-align: left;
+  border-left: 3px solid var(--c);
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--c) 25%, transparent),
+      transparent 60%
+    ),
+    rgb(11 10 19 / 92%);
+  color: var(--color-light-1);
+}
+
+.mls-shell .mll-grid tr.grp .n {
+  margin-left: 8px;
+  font-weight: 400;
+  color: var(--color-text-subtle);
+}
+
+.mls-shell .mll-tabs button:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
+}
+
+.mls-shell .mll-tabs button:focus-visible {
+  outline: 2px solid var(--color-warm-1);
+  outline-offset: -2px;
+  box-shadow: none;
+}

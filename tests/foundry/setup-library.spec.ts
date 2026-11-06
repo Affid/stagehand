@@ -107,3 +107,19 @@ test("a module's name opens its details; the Package tab shows its manifest", as
   await panel.getByRole("button", { name: "Close" }).click();
   await expect(panel).toHaveCount(0);
 });
+
+test("By world shows every module in every world", async () => {
+  await lib().getByRole("tab", { name: "By world" }).click();
+  const grid = lib().locator(".mll-grid");
+  await expect(grid.locator("thead th.w")).toHaveCount(2);
+  await expect(
+    grid.locator('tbody tr[data-module="ml-fixture-a"]'),
+  ).toBeVisible();
+  await page.screenshot({ path: `${SCREENS}/library-by-world.png` });
+  await lib().getByRole("combobox", { name: "Show" }).selectOption("fav");
+  await expect(lib().locator(".mlw-empty h3")).toHaveText("No worlds to show");
+  await lib()
+    .getByRole("button", { name: /Show all 2 worlds/ })
+    .click();
+  await expect(grid.locator("thead th.w")).toHaveCount(2);
+});

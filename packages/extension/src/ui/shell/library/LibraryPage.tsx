@@ -18,6 +18,7 @@ import { LibraryTools, PresetList } from "../../modules/PresetList.tsx";
 import { TagList } from "../../modules/SideSections.tsx";
 import { LibCard } from "./LibCard.tsx";
 import { ModulePanel } from "./ModulePanel.tsx";
+import { WorldGrid } from "./WorldGrid.tsx";
 
 interface ToolsProps {
   readonly model: ModulesModel;
@@ -158,6 +159,30 @@ function Organise(props: { readonly model: ModulesModel }) {
   );
 }
 
+type LibTab = "modules" | "grid";
+
+function Tabs(props: {
+  readonly tab: LibTab;
+  readonly onTab: (tab: LibTab) => void;
+}) {
+  const { t } = useUi();
+  return (
+    <div class="mll-tabs" role="tablist">
+      {(["modules", "grid"] as const).map((k) => (
+        <button
+          type="button"
+          key={k}
+          role="tab"
+          aria-selected={props.tab === k}
+          onClick={() => props.onTab(k)}
+        >
+          {t(`lib.tab.${k}`)}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 /** The side slot: a module's details, else Organise when asked for. */
 function Side(props: {
   readonly model: ModulesModel;
@@ -177,6 +202,7 @@ function usePageState() {
   const [organise, setOrganise] = useState(false);
   const [closed, setClosed] = useState<ReadonlySet<string>>(new Set());
   const [detail, setDetail] = useState<string | null>(null);
+  const [tab, setTab] = useState<LibTab>("modules");
   const toggle = (key: string): void => {
     const next = new Set(closed);
     if (!next.delete(key)) next.add(key);
@@ -197,6 +223,8 @@ function usePageState() {
     toggle,
     detail,
     setDetail,
+    tab,
+    setTab,
   };
 }
 
@@ -240,6 +268,7 @@ export function LibraryPage() {
   return (
     <div class="mll-page ml-app">
       <Banners />
+      <Tabs tab={page.tab} onTab={page.setTab} />
       <Tools
         model={model}
         by={by}
@@ -251,8 +280,14 @@ export function LibraryPage() {
       />
       <div class="mll-body">
         <div class="mll-main">
-          {selecting ? <BulkBar model={model} /> : null}
-          <Groups groups={groups} model={model} page={page} />
+          {page.tab === "grid" ? (
+            <WorldGrid groups={groups} />
+          ) : (
+            <>
+              {selecting ? <BulkBar model={model} /> : null}
+              <Groups groups={groups} model={model} page={page} />
+            </>
+          )}
         </div>
         <Side model={model} page={page} />
       </div>
