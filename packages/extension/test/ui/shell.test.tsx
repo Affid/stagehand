@@ -88,13 +88,11 @@ describe("the header bar", () => {
     expect(el(container, ".mlh-ver").textContent).toContain("14 · 369");
   });
 
-  test("Backups, Configuration and the version open Foundry's own screens", () => {
+  test("Configuration and the version open Foundry's own screens", () => {
     const { getByRole, page, container } = shell();
-    fireEvent.click(getByRole("button", { name: "Backups" }));
     fireEvent.click(getByRole("button", { name: "Configuration" }));
     fireEvent.click(el(container, ".mlh-ver"));
     expect(sent(page.foundryAction)).toEqual([
-      { action: "backups" },
       { action: "configure" },
       { action: "update" },
     ]);

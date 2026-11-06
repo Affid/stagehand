@@ -62,8 +62,46 @@ function PowerMenu() {
   );
 }
 
+/** Back to Foundry's page, the server pages and the power menu. */
+function Actions() {
+  const { state, store, page, actions, t } = useUi();
+  const onBackups = state.route?.kind === "server";
+  return (
+    <div class="mlh-acts">
+      <button
+        type="button"
+        class="mlh-back"
+        title={t("shell.backHint")}
+        onClick={() => void actions.setPref("newSetupPage", false)}
+      >
+        <Icon name="arrow-rotate-left" />
+        {t("shell.back")}
+      </button>
+      <button
+        type="button"
+        class={onBackups ? "ml-on" : ""}
+        aria-current={onBackups ? "page" : undefined}
+        onClick={() =>
+          store.set({ route: { kind: "server", page: "backups" } })
+        }
+      >
+        <Icon name="floppy-disks" />
+        {t("shell.backups")}
+      </button>
+      <button
+        type="button"
+        onClick={() => page.foundryAction({ action: "configure" })}
+      >
+        <Icon name="gears" />
+        {t("shell.configuration")}
+      </button>
+      <PowerMenu />
+    </div>
+  );
+}
+
 export function Header() {
-  const { state, page, actions, t } = useUi();
+  const { state, page, t } = useUi();
   const version = state.data.setup?.core.version ?? "";
   return (
     <header class="mls-top mlh">
@@ -82,32 +120,7 @@ export function Header() {
         </button>
       ) : null}
       <span class="ml-spacer" />
-      <div class="mlh-acts">
-        <button
-          type="button"
-          class="mlh-back"
-          title={t("shell.backHint")}
-          onClick={() => void actions.setPref("newSetupPage", false)}
-        >
-          <Icon name="arrow-rotate-left" />
-          {t("shell.back")}
-        </button>
-        <button
-          type="button"
-          onClick={() => page.foundryAction({ action: "backups" })}
-        >
-          <Icon name="floppy-disks" />
-          {t("shell.backups")}
-        </button>
-        <button
-          type="button"
-          onClick={() => page.foundryAction({ action: "configure" })}
-        >
-          <Icon name="gears" />
-          {t("shell.configuration")}
-        </button>
-        <PowerMenu />
-      </div>
+      <Actions />
     </header>
   );
 }

@@ -433,5 +433,21 @@
   "bk.none": "No backups yet.",
   "bk.loading": "Reading Foundry's backups…",
   "bk.busy": "Waiting for Foundry…",
-  "bk.lead": "Backups are Foundry's own. Restore and Delete ask for Foundry's confirm code."
+  "bk.lead": "Backups are Foundry's own. Restore and Delete ask for Foundry's confirm code.",
+  "sb.title": "Backups",
+  "sb.lead": "Foundry's backups of this server. Restore and Delete ask for Foundry's confirm code.",
+  "sb.take": "Take a snapshot",
+  "sb.manager": "Foundry's Backup Manager",
+  "sb.snapshots": "Snapshots",
+  "sb.world": "Worlds",
+  "sb.module": "Modules",
+  "sb.system": "Systems",
+  "sb.summary": "{count} · {size}",
+  "sb.noSnapshots": "No snapshots yet. A snapshot backs up every world, module and system at once.",
+  "sb.none": "No backups yet.",
+  "sb.version": "Foundry {version}",
+  "sb.held.one": "{n} package",
+  "sb.held.other": "{n} packages",
+  "sb.notInstalled": "Not installed: restoring reinstalls it",
+  "sb.loading": "Reading Foundry's backups…"
 }

@@ -5,7 +5,9 @@ import { worldOrder } from "../model/order.ts";
 
 export type Route =
   | { readonly kind: "library" }
-  | { readonly kind: "world"; readonly worldId: string };
+  | { readonly kind: "world"; readonly worldId: string }
+  /** A page of the server's own: Backups (Configuration and Update follow). */
+  | { readonly kind: "server"; readonly page: "backups" };
 
 const LIBRARY: Route = { kind: "library" };
 
@@ -18,7 +20,7 @@ export function resolveRoute(
   worlds: readonly WorldInfo[],
   lang?: string,
 ): Route {
-  if (route?.kind === "library") return route;
+  if (route?.kind === "library" || route?.kind === "server") return route;
   if (route && worlds.some((w) => w.id === route.worldId)) return route;
   const first = worldOrder(worlds, lang)[0];
   return first ? { kind: "world", worldId: first.id } : LIBRARY;

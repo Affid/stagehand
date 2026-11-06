@@ -50,7 +50,7 @@ function useBackups(worldId: string) {
   return { view, busy, run };
 }
 
-function Row(props: {
+export function Row(props: {
   readonly b: BackupInfo;
   readonly busy: boolean;
   readonly canChange: boolean;

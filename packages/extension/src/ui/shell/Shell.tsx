@@ -1,6 +1,7 @@
 // The new Setup page: header, worlds rail, and a world's page or the Library.
 import { useUi } from "../context.ts";
 import { LibraryPage } from "./library/LibraryPage.tsx";
+import { ServerBackupsPage } from "./server/BackupsPage.tsx";
 import { Header } from "./Header.tsx";
 import { resolveRoute } from "./route.ts";
 import { WorldPage } from "./WorldPage.tsx";
@@ -19,7 +20,13 @@ export function Shell() {
       <Header />
       <div class="mls">
         <WorldRail route={route} />
-        {world ? (
+        {route.kind === "server" ? (
+          <section class="application framed mls-main">
+            <div class="mls-body-main">
+              <ServerBackupsPage />
+            </div>
+          </section>
+        ) : world ? (
           <WorldPage key={world.id} world={world} />
         ) : (
           <section class="application framed mls-main mls-library">
