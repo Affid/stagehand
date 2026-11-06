@@ -98,7 +98,7 @@ describe("the By world grid", () => {
     expect(within(row).queryByRole("switch", { name: /Untracked/ })).toBe(null);
     expect(row.textContent).toContain("–");
     const head = [...container.querySelectorAll(".mll-grid thead th.w")].find(
-      (th) => th.textContent?.includes("Untracked"),
+      (th) => th.textContent.includes("Untracked"),
     );
     expect(head?.textContent).toContain("companion off");
   });

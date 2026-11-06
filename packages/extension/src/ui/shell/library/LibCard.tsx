@@ -97,6 +97,24 @@ function CardTitle(props: {
   );
 }
 
+/** "v0.11.0 · on in 3 worlds"; the version in yellow when it is a risk. */
+function Meta(props: {
+  readonly pkg: PackageInfo;
+  readonly core: CoreVersion;
+  readonly worlds: number | undefined;
+}) {
+  const { t } = useUi();
+  const n = props.worlds;
+  return (
+    <span class="meta">
+      <span class={isRisk(props.pkg, props.core) ? "uv" : ""}>
+        v{props.pkg.version}
+      </span>{" "}
+      · {n ? plural(t, "lib.inWorlds", n) : t("lib.inNoWorld")}
+    </span>
+  );
+}
+
 export function LibCard(props: {
   readonly pkg: PackageInfo;
   readonly core: CoreVersion;
@@ -108,8 +126,6 @@ export function LibCard(props: {
   const { state, store, t } = useUi();
   const { pkg } = props;
   const selected = state.selection.includes(pkg.id);
-  const where = (n: number | undefined): string =>
-    n ? plural(t, "lib.inWorlds", n) : t("lib.inNoWorld");
   const toggle = (): void => {
     store.set((s) => ({ selection: toggled(s.selection, pkg.id) }));
   };
@@ -140,12 +156,7 @@ export function LibCard(props: {
       <Line pkg={pkg} core={props.core} />
       <div class="l3">
         <Tags id={pkg.id} />
-        <span class="meta">
-          <span class={isRisk(pkg, props.core) ? "uv" : ""}>
-            v{pkg.version}
-          </span>{" "}
-          · {where(props.worlds)}
-        </span>
+        <Meta pkg={pkg} core={props.core} worlds={props.worlds} />
       </div>
     </li>
   );

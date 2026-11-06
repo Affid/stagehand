@@ -6,5 +6,7 @@ export function systemTitle(
   setup: Pick<SetupData, "systems"> | undefined,
   id: string,
 ): string {
-  return setup?.systems.find((s) => s.id === id)?.title || id;
+  const title = setup?.systems.find((s) => s.id === id)?.title ?? "";
+  // An empty title (a broken manifest) reads as the id too.
+  return title.length > 0 ? title : id;
 }

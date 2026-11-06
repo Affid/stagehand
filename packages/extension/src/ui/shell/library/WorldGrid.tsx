@@ -266,6 +266,32 @@ function useWorldRows(shown: readonly WorldInfo[]): Models {
   );
 }
 
+/** The pinned header row: "Module", then a column per world. */
+function Heads(props: {
+  readonly worlds: readonly WorldInfo[];
+  readonly models: Models;
+}) {
+  const { state, t } = useUi();
+  return (
+    <thead>
+      <tr>
+        <th class="mod" scope="col">
+          {t("grid.module")}
+        </th>
+        {props.worlds.map((w) => (
+          <Head
+            key={w.id}
+            world={w}
+            model={
+              props.models.get(w.id)?.model ?? worldModules(state.data, w.id)
+            }
+          />
+        ))}
+      </tr>
+    </thead>
+  );
+}
+
 export function WorldGrid(props: {
   readonly groups: readonly LibGroup[];
   readonly folding: Folding;
@@ -287,22 +313,7 @@ export function WorldGrid(props: {
             aria-label={t("lib.tab.grid")}
             style={{ minWidth: `${MOD_COL + shown.length * MIN_COL}px` }}
           >
-            <thead>
-              <tr>
-                <th class="mod" scope="col">
-                  {t("grid.module")}
-                </th>
-                {shown.map((w) => (
-                  <Head
-                    key={w.id}
-                    world={w}
-                    model={
-                      models.get(w.id)?.model ?? worldModules(state.data, w.id)
-                    }
-                  />
-                ))}
-              </tr>
-            </thead>
+            <Heads worlds={shown} models={models} />
             <Rows
               groups={props.groups}
               worlds={shown}
