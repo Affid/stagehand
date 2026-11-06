@@ -8,7 +8,8 @@ import { useDisclosure } from "../../../common/disclosure.ts";
 import { Icon } from "../../../common/widgets.tsx";
 import { useUi } from "../../../context.ts";
 import { worldOrder } from "../../../model/order.ts";
-import { COMPANION_ID, pendingFor } from "../../../model/preview.ts";
+import { pendingFor } from "../../../model/preview.ts";
+import { nextSet } from "../../../model/world-modules.ts";
 
 type Step =
   | { readonly kind: "main" }
@@ -36,10 +37,7 @@ function Btn(props: {
 /** The modules on in a world after its next launch, the companion left out. */
 function useSet(world: WorldInfo): readonly string[] {
   const { state } = useUi();
-  const snap = state.data.snapshots[world.id];
-  return (snap?.active ?? [])
-    .map((m) => m.id)
-    .filter((id) => id !== COMPANION_ID);
+  return nextSet(state.data, world.id);
 }
 
 function Targets(props: {
@@ -178,7 +176,7 @@ export function ColumnMenu(props: { readonly world: WorldInfo }) {
         <Icon name="ellipsis-vertical" />
       </button>
       {d.open ? (
-        <div class="mlh-menu" role="menu" aria-label={props.world.title}>
+        <div class="mlh-menu" role="group" aria-label={props.world.title}>
           <Body
             world={props.world}
             step={step}

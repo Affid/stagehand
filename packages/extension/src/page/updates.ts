@@ -42,7 +42,8 @@ async function newerOf(
     const version = typeof remote?.version === "string" ? remote.version : "";
     const a = Number(remote?.availability);
     if (!version || !newer(version, p.version)) continue;
-    if (a < INSTALLABLE_MIN || a > INSTALLABLE_MAX) continue;
+    if (!Number.isFinite(a) || a < INSTALLABLE_MIN || a > INSTALLABLE_MAX)
+      continue;
     out.push([p.id, version]);
   }
   return Object.fromEntries(out);

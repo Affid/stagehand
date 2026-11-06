@@ -18,8 +18,15 @@ import { WorldRail } from "./WorldRail.tsx";
 
 /** The Library's own panels: Tags, Presets, New modules. */
 function SideColumn() {
-  const { state } = useUi();
+  const { state, store } = useUi();
   const side = state.side;
+  const gone =
+    side?.kind === "system" &&
+    !state.data.setup?.systems.some((s) => s.id === side.id);
+  // Its system was uninstalled: close, as a module's panel does (review).
+  useEffect(() => {
+    if (gone) store.set({ side: null });
+  }, [gone, store]);
   if (side?.kind === "tags") return <TagsPanel id={side.id} />;
   if (side?.kind === "presets") return <PresetsPanel id={side.id} />;
   if (side?.kind === "intake") return <IntakePanel />;

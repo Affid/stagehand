@@ -6,7 +6,7 @@ import { useDismiss } from "../../common/dismiss.ts";
 import { Icon } from "../../common/widgets.tsx";
 import { useUi } from "../../context.ts";
 import { plural } from "../../i18n.ts";
-import { COMPANION_ID } from "../../model/preview.ts";
+import { nextSet } from "../../model/world-modules.ts";
 
 interface Source {
   readonly id: string;
@@ -17,12 +17,8 @@ interface Source {
 function useSources(worldId: string): Source[] {
   const { state } = useUi();
   return (state.data.setup?.worlds ?? []).flatMap((w) => {
-    const snap = state.data.snapshots[w.id];
-    if (w.id === worldId || !snap) return [];
-    const modules = snap.active
-      .map((m) => m.id)
-      .filter((id) => id !== COMPANION_ID);
-    return [{ id: w.id, title: w.title, modules }];
+    if (w.id === worldId || !state.data.snapshots[w.id]) return [];
+    return [{ id: w.id, title: w.title, modules: nextSet(state.data, w.id) }];
   });
 }
 

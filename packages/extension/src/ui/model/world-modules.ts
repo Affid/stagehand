@@ -228,3 +228,12 @@ export function flipModule(
     queue: { mode: on ? "add" : "remove", presetIds: [], modules: [moduleId] },
   };
 }
+
+/**
+ * The modules on in a world after its next launch, the companion left out:
+ * what "copy this world" copies (queued changes included, as the prototype).
+ */
+export const nextSet = (state: SetupState, worldId: string): string[] =>
+  worldModules(state, worldId)
+    .rows.filter((r) => r.next && r.pkg.id !== COMPANION_ID)
+    .map((r) => r.pkg.id);

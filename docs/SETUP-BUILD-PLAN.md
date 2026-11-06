@@ -398,4 +398,46 @@ read in weeks, months and years (the prototype's "5 weeks ago"). Checked live
 on 14.370: a world backup drew our row from 13% to 100% with Launch off, and
 a snapshot drew Modules, Systems, Worlds with the package it was on.
 
-Then Phase 6 (News and finish).
+Package 5 reviews: security (a lock message naming an object key crashed
+the page; the progress wrapper could throw into Foundry's call) and code
+(server package backups unsorted, so Restore latest could pick an older
+one; a snapshot step without a percent kept the last step's; select-mode
+counts and disabled reasons). All fixed (`4ce5744`, `d25abf0`).
+
+Package 6 done, in parts: 6a head, toolbar and panels (`1e7b83c`), the
+Foundry-window host removed with the old preset editor (`d760c4e`), 6b1
+cards with Foundry's star, lock, updates and descriptions (`32d88a7`), 6b2
+the Package tab (`1333e95`), 6b3 group menus (`c033198`), 6c1 Systems tab
+and panel (`ea25e49`), 6c2 the By world grid's extras (`1dcf29c`). Notes:
+
+- Organise is gone: Tags, Presets and New modules open in the panel column
+  (store `side`), as the prototype. The selection bar replaces the toolbar
+  while selecting. Library import and export, and preset import, sit in the
+  toolbar's Import and export menu.
+- Install Module and Install System open Foundry's own installer
+  (`game.browsePackages`); Update All clicks Foundry's own button.
+- Updates: once per Setup load the page world asks Foundry's package list
+  (`game.getPackages`, one request per type, about 1.5 s) and keeps newer
+  versions Foundry would install (availability 1 to 6), behind the new
+  `updateCheck` adapter flag. Private packages not on foundryvtt.com get no
+  mark; Foundry's own Update All still covers them.
+- Package actions (update, favourite, lock, backup, uninstall) work for
+  modules and systems as for worlds; Edit manifest reaches Foundry's
+  ModuleConfig through its own card menu (not exported; see SETUP-SPIKE.md).
+- Systems are read as packages (SystemInfoSchema: id, title and version
+  required, the rest as a module's).
+- Empty folders show on the Modules tab (unless filtering), so a new folder
+  can be filled.
+- Live: the Library suite covers the selection bar, Tags, Presets, a new
+  folder end to end, Foundry's installer, the Package tab's favourite and
+  Edit manifest, By world and intake.
+
+Package 6 reviews: security (a description's out-of-range numeric entity
+threw and lost the whole Setup read; one odd update version hid every
+update mark) and code (Turn all could do nothing silently or queue twice;
+bulk changes over 500 modules were refused; a stale selection, tag stages,
+preset races, suggestions, the copied set, a gone system's panel, menu
+roles, focus after rename). All fixed; each package is now read on its own,
+and the update check runs once per Setup load.
+
+Then package 7 (server pages) and Phase 6 (News and finish).

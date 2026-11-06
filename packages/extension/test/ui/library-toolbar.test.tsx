@@ -235,7 +235,7 @@ describe("the selection's bar", () => {
 describe("a group's menu (6b3)", () => {
   const menu = (r: ReturnType<typeof library>, group: string) => {
     fireEvent.click(r.getByRole("button", { name: `${group}: actions` }));
-    return r.getByRole("menu", { name: group });
+    return r.getByRole("group", { name: group });
   };
 
   test("a folder: Rename in place, Colour…, Move, Delete folder", async () => {
@@ -360,5 +360,63 @@ describe("a system's card and panel (6c)", () => {
     expect(el(r.container, '[data-system="pf2e"]').textContent).toContain(
       "In no world · safe to uninstall",
     );
+  });
+});
+
+describe("package 6 review fixes", () => {
+  test("Tags for the selection: a tag cycled back to how it was sends nothing", async () => {
+    const r = library();
+    fireEvent.click(r.getByRole("button", { name: "Select" }));
+    const bar = el(r.container, ".mls-selbar");
+    fireEvent.click(
+      within(el(r.container, '.mll-card[data-module="b"]')).getByRole(
+        "checkbox",
+      ),
+    );
+    fireEvent.click(within(bar).getByRole("button", { name: "Tags" }));
+    const box = within(bar).getByRole("checkbox", { name: /visual/ });
+    fireEvent.click(box);
+    fireEvent.click(box);
+    expect(bar.querySelector(".ml-tagpop footer")?.textContent).toContain(
+      "Click a tag",
+    );
+    const before = sent(r.send).length;
+    fireEvent.click(within(bar).getByRole("button", { name: "Apply" }));
+    await new Promise((x) => setTimeout(x, 20));
+    expect(sent(r.send).length).toBe(before);
+  });
+
+  test("leaving the Library drops the selection", async () => {
+    const r = library();
+    fireEvent.click(r.getByRole("button", { name: "Select" }));
+    fireEvent.click(
+      within(el(r.container, '.mll-card[data-module="b"]')).getByRole(
+        "checkbox",
+      ),
+    );
+    r.store.set({ route: { kind: "world", worldId: "w1" } });
+    await waitFor(() => {
+      expect(r.store.get().selection).toEqual([]);
+    });
+  });
+
+  test("a system panel closes when its system is uninstalled", async () => {
+    const r = library();
+    r.store.set({ side: { kind: "system", id: "gone" } });
+    await waitFor(() => {
+      expect(r.store.get().side).toBe(null);
+    });
+  });
+
+  test("after renaming in place, focus is back on the group's header", async () => {
+    const r = library();
+    fireEvent.click(r.getByRole("button", { name: "Combat: actions" }));
+    fireEvent.click(r.getByRole("button", { name: "Rename" }));
+    fireEvent.keyDown(r.getByRole("textbox", { name: "Rename" }), {
+      key: "Escape",
+    });
+    await waitFor(() => {
+      expect(document.activeElement?.classList.contains("mlw-head")).toBe(true);
+    });
   });
 });

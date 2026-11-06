@@ -22,6 +22,7 @@ import { saveWorld } from "../page/save-world.ts";
 import { collect } from "../page/collect.ts";
 import { watchProgress } from "../page/progress.ts";
 import { checkUpdates } from "../page/updates.ts";
+import type { Updates } from "../page-updates.ts";
 import { pageGlobals } from "../page/globals.ts";
 import { setShell } from "../page/shell.ts";
 
@@ -138,6 +139,16 @@ function handleEditor(
     );
 }
 
+/** Foundry's package list is asked once per Setup load, however often (review). */
+let updates: Promise<Updates | undefined> | undefined;
+
+function answerUpdates(): void {
+  updates ??= checkUpdates(page);
+  void updates.then((payload) => {
+    if (payload) postToUi({ type: "UPDATES", payload });
+  });
+}
+
 /** Messages that change Foundry: only on an admin's Setup (defence in depth). */
 const WRITES: ReadonlySet<string> = new Set([
   "SAVE_WORLD",
@@ -186,9 +197,7 @@ function handle(m: UiToPage): void {
       handleEditor(m);
       break;
     case "CHECK_UPDATES":
-      void checkUpdates(page).then((payload) => {
-        if (payload) postToUi({ type: "UPDATES", payload });
-      });
+      answerUpdates();
       break;
     case "SAVE_WORLD":
       answerSave(m.payload);

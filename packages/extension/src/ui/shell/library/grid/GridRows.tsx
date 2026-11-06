@@ -5,7 +5,7 @@ import type { PackageInfo } from "@module-library/shared/package";
 import type { WorldInfo } from "@module-library/shared/world";
 import { useUi } from "../../../context.ts";
 import type { LibGroup } from "../../../model/library-groups.ts";
-import { useTurnAll } from "../../world/turn-all.ts";
+import { useTurnable, useTurnAll } from "../../world/turn-all.ts";
 import type { Folding, Models, WorldRows } from "./types.ts";
 
 const MAX_DOTS = 3;
@@ -57,21 +57,23 @@ function GroupCount(props: {
     return r ? [r] : [];
   });
   const turnAll = useTurnAll(rows, props.world.id);
+  const turnable = useTurnable(rows);
   if (!props.rows?.model.tracked || !rows.length) return <td class="na" />;
   const on = rows.filter((r) => r.next).length;
   const all = on === rows.length;
+  // Off: modules that need one not installed can't turn on (review).
+  const can = turnable(!all).length > 0;
+  const label = can
+    ? t(all ? "grid.allOff" : "grid.allOn", { world: props.world.title })
+    : t("grid.cantTurn", { world: props.world.title });
   return (
     <td>
       <button
         type="button"
         class={`mls-gcount${all ? " full" : on ? " some" : ""}`}
-        disabled={!canChange}
-        title={t(all ? "grid.allOff" : "grid.allOn", {
-          world: props.world.title,
-        })}
-        aria-label={t(all ? "grid.allOff" : "grid.allOn", {
-          world: props.world.title,
-        })}
+        disabled={!canChange || !can}
+        title={label}
+        aria-label={label}
         onClick={() => turnAll(!all)}
       >
         {on}/{rows.length}

@@ -3,11 +3,9 @@
 import { useUi } from "../../../context.ts";
 import { orderedFolders } from "../../../model/modules.ts";
 
-export function ModuleChecks(props: {
-  readonly isOn: (id: string) => boolean;
-  readonly onToggle: (id: string, on: boolean) => void;
-}) {
-  const { state, t, canChange } = useUi();
+/** Installed modules by folder, in the folders' order, then Unfiled. */
+function useFolderGroups() {
+  const { state, t } = useUi();
   const { library } = state.data;
   const modules = [...(state.data.setup?.modules ?? [])].sort((a, b) =>
     a.title.localeCompare(b.title),
@@ -15,7 +13,7 @@ export function ModuleChecks(props: {
   const folderOf = (id: string): string | null =>
     library.modules[id]?.folderId ?? null;
   const known = new Set(library.folders.map((f) => f.id));
-  const groups = [
+  return [
     ...orderedFolders(library).map((f) => ({
       key: f.id,
       name: f.name,
@@ -30,6 +28,16 @@ export function ModuleChecks(props: {
       }),
     },
   ].filter((g) => g.list.length > 0);
+}
+
+export function ModuleChecks(props: {
+  readonly isOn: (id: string) => boolean;
+  readonly onToggle: (id: string, on: boolean) => void;
+  /** While a change is on its way. */
+  readonly busy?: boolean;
+}) {
+  const { canChange } = useUi();
+  const groups = useFolderGroups();
   return (
     <ul class="mls-mods">
       {groups.flatMap((g) => [
@@ -42,7 +50,7 @@ export function ModuleChecks(props: {
               <input
                 type="checkbox"
                 checked={props.isOn(m.id)}
-                disabled={!canChange}
+                disabled={!canChange || props.busy === true}
                 onChange={(e) => props.onToggle(m.id, e.currentTarget.checked)}
               />
               {m.title}

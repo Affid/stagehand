@@ -1,6 +1,7 @@
 // The Library's groups: a header with the name and how many modules it
 // holds (renamed in place after New folder), and its cards when open.
 import type { Folder } from "@module-library/shared/library/schema";
+import { useEffect, useRef } from "preact/hooks";
 import { InlineInput } from "../../common/widgets.tsx";
 import { useUi } from "../../context.ts";
 import { plural } from "../../i18n.ts";
@@ -34,6 +35,39 @@ function RenameHead(props: {
   );
 }
 
+function HeadMenu(props: {
+  readonly group: LibGroup;
+  readonly name: string;
+  readonly page: PageState;
+}) {
+  const { state, store } = useUi();
+  const { group, page } = props;
+  const ids = group.modules.map((m) => m.id);
+  return (
+    <GroupMenu
+      name={props.name}
+      folder={state.data.library.folders.find((f) => f.id === group.key)}
+      ids={ids}
+      onRename={() => page.setRenaming(group.key)}
+      onSelect={() => {
+        page.onSelecting(true);
+        store.set({ selection: ids });
+      }}
+    />
+  );
+}
+
+/** After renaming in place, focus goes back to the group's header (review). */
+function useRefocusAfter(renaming: boolean) {
+  const head = useRef<HTMLButtonElement>(null);
+  const was = useRef(renaming);
+  useEffect(() => {
+    if (was.current && !renaming) head.current?.focus();
+    was.current = renaming;
+  }, [renaming]);
+  return head;
+}
+
 function Head(props: {
   readonly group: LibGroup;
   readonly open: boolean;
@@ -42,12 +76,13 @@ function Head(props: {
   readonly onRenamed: () => void;
   readonly page: PageState;
 }) {
-  const { state, store, t, canChange } = useUi();
+  const { state, t, canChange } = useUi();
   const { group } = props;
   const name =
     group.name ??
     t(group.label ?? "", group.param ? { param: group.param } : {});
   const folder = state.data.library.folders.find((f) => f.id === group.key);
+  const head = useRefocusAfter(props.renaming);
   if (props.renaming && folder)
     return <RenameHead folder={folder} onDone={props.onRenamed} />;
   return (
@@ -55,6 +90,7 @@ function Head(props: {
       {props.page.selecting ? <GroupCheck group={group} name={name} /> : null}
       <button
         type="button"
+        ref={head}
         class="mlw-head"
         aria-expanded={props.open}
         onClick={props.onToggle}
@@ -69,16 +105,7 @@ function Head(props: {
         </span>
       </button>
       {canChange ? (
-        <GroupMenu
-          name={name}
-          folder={folder}
-          ids={group.modules.map((m) => m.id)}
-          onRename={() => props.page.setRenaming(group.key)}
-          onSelect={() => {
-            props.page.onSelecting(true);
-            store.set({ selection: group.modules.map((m) => m.id) });
-          }}
-        />
+        <HeadMenu group={group} name={name} page={props.page} />
       ) : null}
     </div>
   );

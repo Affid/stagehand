@@ -733,5 +733,6 @@
   "grid.legend.prob": "needs attention",
   "grid.legend.queued.one": "{n} world changes at its next launch:",
   "grid.legend.queued.other": "{n} worlds change at their next launch:",
-  "grid.legend.none": "Nothing queued."
+  "grid.legend.none": "Nothing queued.",
+  "grid.cantTurn": "In {world}, these modules can't turn on: each needs a module that isn't installed."
 }

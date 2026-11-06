@@ -173,12 +173,12 @@ describe("the update check (6b)", () => {
     const updates = ok?.payload as { module: Record<string, string> };
     expect(updates.module.constructor).toBe("2.0.0");
     expect(updates.module.toString).toBeUndefined();
-    expect(
-      parsePageToUi("UPDATES", { module: { m: "<b>" }, system: {} }),
-    ).toBeUndefined();
-    expect(
-      parsePageToUi("UPDATES", { module: { "../x": "1" }, system: {} }),
-    ).toBeUndefined();
+    // An odd entry is dropped, the rest kept (security review).
+    const mixed = parsePageToUi("UPDATES", {
+      module: { m: "<b>", n: "2.0", "../x": "1" },
+      system: {},
+    })?.payload as { module: Record<string, string> } | undefined;
+    expect(Object.keys(mixed?.module ?? {})).toEqual(["n"]);
     expect(parsePageToUi("UPDATES", { module: {} })).toBeUndefined();
   });
 });

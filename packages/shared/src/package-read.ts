@@ -68,6 +68,16 @@ const ENTITIES: Readonly<Record<string, string>> = {
   nbsp: " ",
 };
 
+const MAX_CODE_POINT = 0x10ffff;
+
+/** A numeric entity's character; a space for one out of range (review). */
+function codePoint(digits: string): string {
+  const n = Number(digits);
+  return Number.isInteger(n) && n > 0 && n <= MAX_CODE_POINT
+    ? String.fromCodePoint(n)
+    : " ";
+}
+
 /** A manifest's HTML description as plain text for a card line. */
 export function plainText(html: unknown): string | undefined {
   if (typeof html !== "string") return undefined;
@@ -75,7 +85,7 @@ export function plainText(html: unknown): string | undefined {
     .replace(/<[^>]*>/g, " ")
     .replace(/&(#\d+|[a-z]+);/gi, (m, e: string) =>
       e.startsWith("#")
-        ? String.fromCodePoint(Number(e.slice(1)) || 32)
+        ? codePoint(e.slice(1))
         : (ENTITIES[e.toLowerCase()] ?? m),
     )
     .replace(/\s+/g, " ")

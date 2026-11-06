@@ -12,12 +12,25 @@ export interface Suggestion {
   readonly tags: readonly string[];
 }
 
+/** Filed or tagged: a relative worth copying. */
+const sorted = (library: Library, id: string): boolean => {
+  const meta = library.modules[id];
+  if (!meta) return false;
+  const filed = library.folders.some((f) => f.id === meta.folderId);
+  const tagged = meta.tags.some((t) => library.tags.some((x) => x.id === t));
+  return filed || tagged;
+};
+
 function relative(
   pkg: PackageInfo,
   all: readonly PackageInfo[],
   skip: ReadonlySet<string>,
+  library: Library,
 ): { readonly p: PackageInfo; readonly why: Suggestion["why"] } | undefined {
-  const usable = all.filter((m) => m.id !== pkg.id && !skip.has(m.id));
+  // Only sorted relatives count, so an unsorted one doesn't hide the next (review).
+  const usable = all.filter(
+    (m) => m.id !== pkg.id && !skip.has(m.id) && sorted(library, m.id),
+  );
   const needed = pkg.requires
     .map((r) => usable.find((m) => m.id === r.id))
     .find((m) => m !== undefined);
@@ -35,7 +48,7 @@ export function suggestFor(
   library: Library,
   fresh: ReadonlySet<string>,
 ): Suggestion | undefined {
-  const r = relative(pkg, all, fresh);
+  const r = relative(pkg, all, fresh, library);
   if (!r) return undefined;
   const meta = library.modules[r.p.id];
   const folderId =

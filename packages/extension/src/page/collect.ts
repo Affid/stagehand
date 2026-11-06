@@ -1,6 +1,7 @@
 // Reads package data from Foundry's `game` on Setup (V-1). Reads package data
 // and the UI language only: never game.data.options, licence or certificate
 // (8.6).
+import { logError } from "@module-library/shared/log";
 import { toPackageInfo } from "@module-library/shared/package-read";
 import {
   MAX_DESCRIPTION,
@@ -101,6 +102,16 @@ function issues(game: SetupGame): Pick<SetupData, "issues"> {
     : {};
 }
 
+/** One package's data; a manifest we can't read is left out, not the list (review). */
+function readable<T>(pkg: unknown, read: (p: unknown) => T): T[] {
+  try {
+    return [read(pkg)];
+  } catch (e: unknown) {
+    logError("package read", e);
+    return [];
+  }
+}
+
 export function collect(game: SetupGame): SetupData {
   const release = game.release ?? { generation: 0, build: 0 };
   return {
@@ -111,13 +122,15 @@ export function collect(game: SetupGame): SetupData {
     },
     isAdmin: game.data?.isAdmin === true,
     lang: game.i18n?.lang ?? "",
-    modules: all(game.modules).map(toPackageInfo),
-    systems: all(game.systems).map((s) => ({
-      ...toPackageInfo(s),
-      id: str(s.id).slice(0, MAX_ID),
-      title: str(s.title).slice(0, MAX_TITLE),
-      version: str(s.version).slice(0, MAX_VERSION),
-    })),
+    modules: all(game.modules).flatMap((m) => readable(m, toPackageInfo)),
+    systems: all(game.systems).flatMap((s) =>
+      readable(s, (x) => ({
+        ...toPackageInfo(x),
+        id: str(s.id).slice(0, MAX_ID),
+        title: str(s.title).slice(0, MAX_TITLE),
+        version: str(s.version).slice(0, MAX_VERSION),
+      })),
+    ),
     worlds: all(game.worlds).map(toWorld),
     ...coreUpdate(game),
     ...issues(game),

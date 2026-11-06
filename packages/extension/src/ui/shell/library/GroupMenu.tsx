@@ -11,6 +11,7 @@ import { useUi } from "../../context.ts";
 import { orderedFolders } from "../../model/modules.ts";
 import { worldOrder } from "../../model/order.ts";
 import { useFolderOps } from "../../modules/folder-ops.ts";
+import { queueInParts } from "../world/turn-all.ts";
 import { useNewPreset } from "./panels/PresetsPanel.tsx";
 
 type Step = "main" | "colour" | "world";
@@ -92,7 +93,11 @@ function Worlds(props: {
             label={tracked ? w.title : `${w.title} · ${t("lib.companionOff")}`}
             disabled={!tracked}
             onClick={() => {
-              void actions.queueApply(w.id, "add", [], props.ids);
+              void queueInParts(
+                (part) => actions.queueApply(w.id, "add", [], part),
+                `${w.id}:on:${props.ids.join(",")}`,
+                props.ids,
+              );
               props.done();
             }}
           />
@@ -228,7 +233,7 @@ export function GroupMenu(props: GroupMenuProps) {
         <Icon name="ellipsis-vertical" />
       </button>
       {d.open ? (
-        <div class="mlh-menu" role="menu" aria-label={props.name}>
+        <div class="mlh-menu" role="group" aria-label={props.name}>
           {step === "colour" && props.folder ? (
             <Colours folder={props.folder} done={close} />
           ) : step === "world" ? (

@@ -144,3 +144,32 @@ describe("new installs", () => {
     expect(r.queryByRole("complementary", { name: "New modules" })).toBe(null);
   });
 });
+
+describe("suggestions (package 6 review)", () => {
+  test("an unsorted needed module doesn't hide a sorted family member", () => {
+    const base = setupState();
+    const lib = {
+      ...LIBRARY,
+      modules: {
+        ...LIBRARY.modules,
+        fam: { folderId: LIBRARY.folders[0]?.id ?? null, tags: [], note: "" },
+      },
+    };
+    const r = library({
+      library: lib,
+      fresh: ["fam-extra"],
+      setup: base.setup && {
+        ...base.setup,
+        modules: [
+          ...base.setup.modules,
+          pkg("fam"),
+          pkg("fam-extra", { requires: [{ id: "c", type: "module" }] }),
+        ],
+      },
+    });
+    fireEvent.click(r.getByRole("button", { name: "Sort them" }));
+    expect(el(panel(r), ".mls-sug").textContent).toContain(
+      "Same family as Title fam.",
+    );
+  });
+});

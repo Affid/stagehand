@@ -264,3 +264,26 @@ Read from `public/scripts/foundry.mjs` and checked live with the new page:
   `checkCreateSnapshotDiskSpace` sizes every installed package first.
 - After `deleteSnapshots`, Foundry's backup cache is empty: list again before
   `deleteBackups`, or it throws on `null.world`.
+
+## Follow-up 2026-11-06 (build 370): Library actions on modules and systems
+
+Read from `public/scripts/foundry.mjs` (`SetupPackages`) and checked live:
+
+- Install: `game.browsePackages(type)` opens Foundry's installer above our page.
+- Update All is private (`#updateAll`); its button is
+  `#setup-packages [data-package-type="module"] [data-action="updateAll"]`.
+- A package's own update is the hidden card's `[data-action="updatePackage"]`
+  (checks its manifest, then installs).
+- Favourite and lock work the same for every package type: the
+  `core.setupPackageFavorites` setting keyed by collection (`worlds`, `modules`,
+  `systems`), and `game.post({action: "lockPackage", type, id, shouldLock})`.
+- `game.getPackages({type})` answers from foundryvtt.com through the server: 583 systems
+  and 7137 modules here, about 1.2 s and 0.3 s. Each entry has `version` and
+  `availability` (`CONST.PACKAGE_AVAILABILITY_CODES`: 1 to 6 installable, 7 to 10 need
+  another core).
+- `ModuleConfig` (Edit Module) is not exported: `foundry.setup.applications` holds only
+  EULA, JoinGameForm, SetupAuthenticationForm, SetupMenu, SetupPackages, ShuttingDown and
+  UserManagement. It is reachable through Foundry's own card menu: a `contextmenu` event
+  on the hidden card opens `#context-menu` only when the event has a position
+  (`clientX`/`clientY`); its edit item (`.fa-edit`) then opens `module-config`. The menu
+  stays open afterwards, so we close it.

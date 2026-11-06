@@ -20,16 +20,15 @@ function versions(v: unknown): Record<string, string> | undefined {
   if (typeof v !== "object" || v === null || Array.isArray(v)) return undefined;
   const entries = Object.entries(v as Loose);
   if (entries.length > MAX) return undefined;
-  const ok = entries.every(
+  // An odd entry is dropped, not the whole list (review).
+  const good = entries.filter(
     ([k, x]) => ID.test(k) && typeof x === "string" && VERSION.test(x),
   );
   // A plain object without a prototype: ids like "constructor" are just ids.
-  return ok
-    ? Object.assign(
-        Object.create(null) as Record<string, string>,
-        Object.fromEntries(entries),
-      )
-    : undefined;
+  return Object.assign(
+    Object.create(null) as Record<string, string>,
+    Object.fromEntries(good),
+  );
 }
 
 export function parseUpdates(p: Loose): Updates | undefined {

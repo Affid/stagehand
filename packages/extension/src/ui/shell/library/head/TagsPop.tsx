@@ -26,7 +26,7 @@ function TagRow(props: {
   readonly tag: Tag;
   readonly ids: readonly string[];
   readonly staged: TagState | undefined;
-  readonly onStage: (st: TagState) => void;
+  readonly onStage: (st: TagState | null) => void;
 }) {
   const { state, t } = useUi();
   const { tag, ids } = props;
@@ -52,7 +52,11 @@ function TagRow(props: {
           ref={(el) => {
             if (el) el.indeterminate = st === "some";
           }}
-          onChange={() => props.onStage(cycle(was, st))}
+          onChange={() => {
+            const next = cycle(was, st);
+            // Back to how it was: nothing to send (review).
+            props.onStage(next === was ? null : next);
+          }}
         />
         <i class="ml-dot" style={{ "--ml-c": tag.color }} aria-hidden="true" />
         <span class="ml-name">{tag.name}</span>
@@ -71,7 +75,7 @@ function TagRow(props: {
 function Body(props: {
   readonly ids: readonly string[];
   readonly staged: Readonly<Record<string, TagState>>;
-  readonly onStage: (id: string, st: TagState) => void;
+  readonly onStage: (id: string, st: TagState | null) => void;
   readonly onCancel: () => void;
   readonly onApply: () => void;
 }) {
@@ -119,21 +123,25 @@ function Body(props: {
   );
 }
 
+/** The staged tags as one module.setTags: all is add, none is remove. */
+function sendStaged(
+  actions: ReturnType<typeof useUi>["actions"],
+  ids: readonly string[],
+  staged: Readonly<Record<string, TagState>>,
+): void {
+  const keys = Object.keys(staged);
+  const add = keys.filter((k) => staged[k] === "all");
+  const remove = keys.filter((k) => staged[k] === "none");
+  if (add.length || remove.length)
+    void actions.op({ op: "module.setTags", moduleIds: [...ids], add, remove });
+}
+
 export function TagsPop(props: { readonly ids: readonly string[] }) {
   const { actions, t } = useUi();
   const d = useDisclosure<HTMLSpanElement>();
   const [staged, setStaged] = useState<Readonly<Record<string, TagState>>>({});
   const apply = (): void => {
-    const keys = Object.keys(staged);
-    const add = keys.filter((k) => staged[k] === "all");
-    const remove = keys.filter((k) => staged[k] === "none");
-    if (add.length || remove.length)
-      void actions.op({
-        op: "module.setTags",
-        moduleIds: [...props.ids],
-        add,
-        remove,
-      });
+    sendStaged(actions, props.ids, staged);
     setStaged({});
     d.close(true);
   };
@@ -157,7 +165,15 @@ export function TagsPop(props: { readonly ids: readonly string[] }) {
         <Body
           ids={props.ids}
           staged={staged}
-          onStage={(id, st) => setStaged((x) => ({ ...x, [id]: st }))}
+          onStage={(id, st) =>
+            setStaged((x) =>
+              st === null
+                ? Object.fromEntries(
+                    Object.entries(x).filter(([k]) => k !== id),
+                  )
+                : { ...x, [id]: st },
+            )
+          }
           onCancel={() => d.close(true)}
           onApply={apply}
         />

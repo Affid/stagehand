@@ -3,7 +3,7 @@ import type { Snapshot, WorldInfo } from "@module-library/shared/world";
 import { cleanup, fireEvent, waitFor, within } from "@testing-library/preact";
 import { afterEach, describe, expect, test } from "vitest";
 import type { ExtensionMessage, SetupState } from "../../src/messages.ts";
-import { el, renderUi, sent, setupState } from "./harness.tsx";
+import { el, pkg, renderUi, sent, setupState } from "./harness.tsx";
 
 afterEach(cleanup);
 
@@ -224,5 +224,42 @@ describe("the grid's extras (6c2)", () => {
     expect(new Set(rows.map((x) => x.getAttribute("data-module")))).toEqual(
       new Set(["module-library"]),
     );
+  });
+});
+
+describe("group counts (package 6 review)", () => {
+  test("nothing can turn on: the count says so and is off", () => {
+    const base = setupState();
+    const r = grid({
+      setup: base.setup && {
+        ...base.setup,
+        worlds: [world("w2", "Vaults")],
+        modules: [
+          base.setup.modules.find((m) => m.id === "module-library")!,
+          pkg("needy", { requires: [{ id: "missing", type: "module" }] }),
+        ],
+      },
+      snapshots: { w2: snap("w2", ["module-library"]) },
+    });
+    const [count] = r
+      .getAllByRole("button", { name: /Vaults/ })
+      .filter((b) => b.classList.contains("mls-gcount"));
+    expect((count as HTMLButtonElement).disabled).toBe(true);
+    expect(count?.getAttribute("title")).toMatch(/can't/);
+  });
+
+  test("a double click queues the group once", async () => {
+    const r = grid();
+    const [count] = r.getAllByRole("button", { name: "Turn all on in Vaults" });
+    if (!count) throw new Error("no count");
+    fireEvent.click(count);
+    fireEvent.click(count);
+    await waitFor(() => {
+      expect(
+        sent(r.send).filter(
+          (m) => (m as { kind?: string }).kind === "queue-apply",
+        ).length,
+      ).toBe(1);
+    });
   });
 });

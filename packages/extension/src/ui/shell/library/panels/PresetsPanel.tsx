@@ -2,6 +2,7 @@
 // preset, and the chosen preset's name, about, Add to a world…, its modules
 // and Delete preset.
 import type { Preset } from "@module-library/shared/library/schema";
+import { useState } from "preact/hooks";
 import { newId } from "../../../actions.ts";
 import { Icon } from "../../../common/widgets.tsx";
 import { useUi } from "../../../context.ts";
@@ -56,15 +57,22 @@ function PresetList(props: { readonly current: Preset | undefined }) {
   );
 }
 
+/** Changes go one at a time, each from the revision the last one left (review). */
 function useUpdate(p: Preset) {
   const { actions } = useUi();
-  return (changes: Partial<Pick<Preset, "name" | "description" | "modules">>) =>
-    void actions.op({
-      op: "preset.update",
-      id: p.id,
-      baseRevision: p.revision,
-      changes,
-    });
+  const [busy, setBusy] = useState(false);
+  const update = (
+    changes: Partial<Pick<Preset, "name" | "description" | "modules">>,
+  ): void => {
+    if (busy) return;
+    setBusy(true);
+    void actions
+      .op({ op: "preset.update", id: p.id, baseRevision: p.revision, changes })
+      .finally(() => {
+        setBusy(false);
+      });
+  };
+  return Object.assign(update, { busy });
 }
 
 function Fields(props: { readonly p: Preset }) {
@@ -134,6 +142,7 @@ function PresetEdit(props: { readonly p: Preset }) {
           ) : null}
         </h4>
         <ModuleChecks
+          busy={update.busy}
           isOn={(id) => p.modules.includes(id)}
           onToggle={(id, on) =>
             update({

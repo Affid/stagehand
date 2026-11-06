@@ -3,7 +3,7 @@ import type { Command, Snapshot } from "@module-library/shared/world";
 import { cleanup, fireEvent, waitFor, within } from "@testing-library/preact";
 import { afterEach, describe, expect, test } from "vitest";
 import type { ExtensionMessage, SetupState } from "../../src/messages.ts";
-import { el, renderUi, sent, setupState } from "./harness.tsx";
+import { el, pkg, renderUi, sent, setupState } from "./harness.tsx";
 
 afterEach(cleanup);
 
@@ -420,7 +420,13 @@ describe("review findings", () => {
 
   test("copy says how many modules, and refuses more than a change can hold", () => {
     const many = Array.from({ length: 501 }, (_, i) => `m${String(i)}`);
+    // Installed: a copy takes the source's next-launch set of installed modules.
     const { getByRole } = page({
+      setup: base.setup && {
+        ...base.setup,
+        worlds,
+        modules: [...base.setup.modules, ...many.map((id) => pkg(id))],
+      },
       snapshots: {
         w1: snap("w1", ["module-library", "a"]),
         w2: snap("w2", ["module-library", ...many]),

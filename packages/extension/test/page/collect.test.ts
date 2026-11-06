@@ -1,5 +1,5 @@
 import { SetupDataSchema } from "@module-library/shared/world";
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 import { collect } from "../../src/page/collect.ts";
 
 const list = (...items: object[]) => ({ values: () => items.values() });
@@ -228,5 +228,25 @@ describe("reading Setup's package data (V-1)", () => {
       modules: [],
       worlds: [],
     });
+  });
+});
+
+describe("one manifest we can't read (security review)", () => {
+  test("is left out; the other packages still come through", () => {
+    const bad = {
+      get id(): string {
+        throw new Error("broken manifest");
+      },
+    };
+    const game = {
+      release: { generation: 14, build: 370 },
+      modules: {
+        values: () => [bad, { id: "ok", title: "Ok", version: "1" }].values(),
+      },
+      systems: { values: () => [].values() },
+      worlds: { values: () => [].values() },
+    };
+    vi.spyOn(console, "error").mockImplementation(() => undefined);
+    expect(collect(game as never).modules.map((m) => m.id)).toEqual(["ok"]);
   });
 });

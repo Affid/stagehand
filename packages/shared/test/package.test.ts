@@ -112,3 +112,11 @@ describe("what the Library shows from a manifest (6b)", () => {
     expect(toPackageInfo({ id: "n" })).not.toHaveProperty("favorite");
   });
 });
+
+describe("descriptions that could break the read (security review)", () => {
+  test("a numeric entity out of range reads as a space, never throws", () => {
+    expect(plainText("a&#1114112;b")).toBe("a b");
+    expect(plainText("a&#99999999999;b")).toBe("a b");
+    expect(plainText("&#0;x")).toBe("x");
+  });
+});

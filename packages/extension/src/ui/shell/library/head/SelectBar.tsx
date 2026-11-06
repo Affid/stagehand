@@ -9,6 +9,7 @@ import { useFolderOps } from "../../../modules/folder-ops.ts";
 import { PopMenu } from "../common/PopMenu.tsx";
 import { useNewPreset } from "../panels/PresetsPanel.tsx";
 import { WorldPick } from "../panels/WorldPick.tsx";
+import { queueInParts } from "../../world/turn-all.ts";
 import { TagsPop } from "./TagsPop.tsx";
 
 function MoveTo(props: { readonly ids: readonly string[] }) {
@@ -81,11 +82,33 @@ function ToPreset(props: { readonly ids: readonly string[] }) {
   );
 }
 
+function WorldOn(props: { readonly ids: readonly string[] }) {
+  const { actions, t } = useUi();
+  const { ids } = props;
+  return (
+    <WorldPick
+      label={t("sel.world")}
+      title={t("sel.worldTitle", {
+        what: plural(t, "sel.modules", ids.length),
+      })}
+      note={t("sel.worldNote")}
+      disabled={!ids.length}
+      onPick={(w) =>
+        void queueInParts(
+          (part) => actions.queueApply(w, "add", [], part),
+          `${w}:on:${ids.join(",")}`,
+          ids,
+        )
+      }
+    />
+  );
+}
+
 export function SelectBar(props: {
   readonly shown: readonly string[];
   readonly onDone: () => void;
 }) {
-  const { state, store, actions, t } = useUi();
+  const { state, store, t } = useUi();
   const ids = state.selection;
   return (
     <div class="ml-row mls-selbar" role="toolbar" aria-label={t("sel.label")}>
@@ -110,15 +133,7 @@ export function SelectBar(props: {
       <MoveTo ids={ids} />
       <TagsPop ids={ids} />
       <ToPreset ids={ids} />
-      <WorldPick
-        label={t("sel.world")}
-        title={t("sel.worldTitle", {
-          what: plural(t, "sel.modules", ids.length),
-        })}
-        note={t("sel.worldNote")}
-        disabled={!ids.length}
-        onPick={(w) => void actions.queueApply(w, "add", [], ids)}
-      />
+      <WorldOn ids={ids} />
       <span class="ml-spacer" />
       <button type="button" class="bright" onClick={props.onDone}>
         {t("lib.done")}
