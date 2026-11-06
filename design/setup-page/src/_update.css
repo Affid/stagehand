@@ -117,3 +117,13 @@
 .mlu-hhead a, .mlu-hist .mlu-nhead a { color: var(--color-light-3); text-decoration: underline; text-decoration-color: var(--color-light-5); }
 .mlw-pill.warn { border-color: #8a6a1f; color: #f5c45e; }
 .mlu-chips a, .mlu-tabs a, .mlu-rels li { text-decoration: none; }
+.mlu-sum { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; }
+.mlu-sum li { display: inline-flex; gap: 6px; align-items: center; }
+.mlu-sum li.ok i { color: #8fd49b; } .mlu-sum li.unv i { color: #f5c45e; } .mlu-sum li.risk i { color: #f0a050; } .mlu-sum li.bad i { color: #ff9c8f; }
+.mlu-sum li.zero { color: var(--color-light-5); } .mlu-sum li.zero i { color: inherit; }
+.mlu-clist li { grid-template-columns: 22px minmax(0, 1fr) 130px 110px 46px; }
+.mlu-clist li.risk { border-left-color: #f0a050; } .mlu-clist li.risk .st { color: #f0a050; }
+.mlu-clist li.dep { border-left-color: #e0705a; } .mlu-clist li.dep .st { color: #ff9c8f; }
+.mlu-clist .v b { color: #8fd49b; font-weight: 600; }
+.mlu-clist .lk { display: flex; gap: 8px; justify-content: flex-end; font-size: 11px; }
+.mlu-clist .lk a { color: var(--color-light-4); } .mlu-clist .lk a:hover { color: var(--color-warm-1); }

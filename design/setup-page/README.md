@@ -6,7 +6,7 @@ A clickable mockup of the replacement Setup page. Decisions and open questions:
 ```sh
 ./assets.sh            # Foundry's CSS, fonts and images from ~/foundry/vtt into fvtt/ (git-ignored)
 node build.mjs         # out/index.html is the playground; out/setup-shell.html the page itself
-node checks/run.mjs    # 34 Playwright checks; screenshots go to out/shots/
+node checks/run.mjs    # 35 Playwright checks; screenshots go to out/shots/
 ```
 
 - `src/` — the page: `_data.js` (sample library), `_kit.*` (Foundry card markup), `_shell.*`

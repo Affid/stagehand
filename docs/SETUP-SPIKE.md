@@ -197,8 +197,17 @@ node_version, notes, suffix, time`. `download` is a time-limited link: never log
   Electron reinstall flags), or "Updates Disabled" (`--noupdate`).
 - Download: `updateDownload` with progress steps Downloading, Extracting, Cleaning,
   Installing. Then a server exits "for manual restart"; the desktop app relaunches itself.
-- `game.previewCompatibility(release)` posts `previewCompatibility`; it returned nothing for
-  the current version (the window only offers it for newer ones), so its shape is untested.
+- `game.previewCompatibility(release)` posts `previewCompatibility`. The server
+  (`dist/packages/preview-compatibility.mjs`) refuses the current version. For a newer one it
+  asks the package registry for the **newest version of each installed system and module**
+  suited to the target release (else the newest, else the remote manifest, else the installed
+  copy), then tests each: VERIFIED → Compatible; UNVERIFIED_BUILD → Unverified ("likely still
+  compatible"); UNVERIFIED_GENERATION → Compatibility Risk ("may not be compatible");
+  REQUIRES_CORE_DOWNGRADE → Incompatible; plus MISSING_DEPENDENCY and UNVERIFIED_SYSTEM. Worlds
+  are judged by their system. It returns `{version, world, system, module}` (package data with
+  `availability`) and adds each newest version's changelog. Foundry's window: categories
+  Systems, Modules, Worlds; filters Compatible, Unverified, Incompatible; a summary of four
+  counts; links to the package page and changelog. Not run live (no newer version exists).
 
 ## Follow-up 2026-11-06: where release notes come from
 

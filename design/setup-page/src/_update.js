@@ -122,26 +122,20 @@ function updNotes(rel) {
     <nav class="mlu-jump">${jump}</nav>${banner}${intro(notes.intro)}<div class="mlu-body">${body}</div></div>`;
 }
 
-/** Your packages against the new version: Foundry's compatibility preview plus which of your worlds use them. */
+/** Short summary beside the notes; the full list is the Your packages tab. */
 function updCompat(rel) {
-  const newGen = rel.gen > 14;
-  const mods = ALL_MODULES.map((m) => ({ m, st: newGen ? (["module-library"].includes(m.id) ? "ok" : m.unverified ? "bad" : "unv") : m.unverified ? "unv" : "ok" }));
-  const syss = SYSTEMS.map((s) => ({ s, st: newGen ? (s.id === "dnd5e" ? "ok" : "unv") : s.unverified ? "unv" : "ok" }));
-  const cnt = (list, st) => list.filter((x) => x.st === st).length;
-  const usedIn = (id) => WORLDS_X.filter((w) => !w.noCompanion && desired(w.id, id));
-  // Incompatible first, then the ones your worlds use most.
-  const rank = (x) => (x.st === "bad" ? 1000 : 0) + usedIn(x.m.id).length;
-  const flagged = mods.filter((x) => x.st !== "ok").sort((a, b) => rank(b) - rank(a)).slice(0, 6).map(({ m, st }) => {
-    const ws = usedIn(m.id);
-    return `<li class="${st}"><span class="t" data-act="updmod" data-id="${m.id}">${esc(m.title)}</span><span class="w">${ws.length ? `on in ${plural(ws.length, "world")}` : "in no world"}</span></li>`;
-  }).join("");
-  const more = mods.filter((x) => x.st !== "ok").length - 6;
+  const d = compatData(rel), all = [...d.system, ...d.module];
+  const cnt = (sts) => all.filter((x) => sts.includes(x.st)).length;
   const tag = (n, st, label) => (n ? `<span class="mlu-tag ${st}">${n} ${label}</span>` : "");
+  const order = { bad: 0, dep: 1, risk: 2, unv: 3 };
+  const flagged = all.filter((x) => x.st !== "ok").sort((a, b) => order[a.st] - order[b.st] || b.worlds.length - a.worlds.length).slice(0, 5)
+    .map((x) => `<li class="${FILTER_OF[x.st]}"><span class="t" ${x.kind === "module" ? `data-act="updmod" data-id="${x.id}"` : `data-act="updsys" data-id="${x.id}"`}>${esc(x.title)}</span><span class="w">${ST_INFO[x.st][0].toLowerCase()}</span></li>`).join("");
+  const more = all.filter((x) => x.st !== "ok").length - 5;
+  const updates = all.filter((x) => x.needsUpdate && x.st !== "bad").length;
   return `<section class="mlw-box"><h4><span>Your packages on ${esc(rel.version)}</span><a data-act="updview" data-id="compat">Full list</a></h4>
-    <div class="mlu-tags"><span class="k">Modules</span>${tag(cnt(mods, "ok"), "ok", "compatible")}${tag(cnt(mods, "unv"), "unv", "not verified")}${tag(cnt(mods, "bad"), "bad", "incompatible")}</div>
-    <div class="mlu-tags"><span class="k">Systems</span>${tag(cnt(syss, "ok"), "ok", "compatible")}${tag(cnt(syss, "unv"), "unv", "not verified")}</div>
-    ${flagged ? `<ul class="mlu-flag">${flagged}${more > 0 ? `<li class="more">and ${more} more</li>` : ""}</ul>` : '<p class="ml-muted" style="margin:0">Every installed package is verified for this version.</p>'}
-    <p class="hint">Not verified usually still works; incompatible won't load. Foundry checks this from each package's manifest.</p></section>`;
+    <div class="mlu-tags">${tag(cnt(["ok"]), "ok", "compatible")}${tag(cnt(["unv"]), "unv", "unverified")}${tag(cnt(["risk"]), "unv", "risk")}${tag(cnt(["bad", "dep"]), "bad", "incompatible")}</div>
+    ${flagged ? `<ul class="mlu-flag">${flagged}${more > 0 ? `<li class="more">and ${more} more</li>` : ""}</ul>` : '<p class="ml-muted" style="margin:0">Every installed package has a compatible version.</p>'}
+    ${updates ? `<p class="hint">${plural(updates, "package")} need${updates === 1 ? "s" : ""} updating too.</p>` : ""}</section>`;
 }
 
 function updAction(rel) {
@@ -221,60 +215,106 @@ document.addEventListener("input", (e) => {
 document.addEventListener("change", (e) => { if (e.target.dataset?.change === "updchan") { ST.upd.channel = e.target.value; render(); } });
 
 // ---------- Your packages (Foundry's compatibility preview) and Release history ----------
-/** Status of every package for a release. Foundry's preview gives compatible / unverified / incompatible per package;
- *  the mockup derives it from the sample data. We add where each one is used. */
+/* Foundry's preview (dist/packages/preview-compatibility.mjs) judges the NEWEST available version of each installed
+   package for the target release, from the package registry (falling back to the installed copy), with these codes:
+   VERIFIED → Compatible; UNVERIFIED_BUILD → Unverified ("likely still compatible"); UNVERIFIED_GENERATION →
+   Compatibility Risk; REQUIRES_CORE_DOWNGRADE → Incompatible; plus MISSING_DEPENDENCY and UNVERIFIED_SYSTEM.
+   Worlds are judged by their system. The sample registry below stands in for Foundry's answer. */
+/** Newest version per target generation, as the registry answers getRepositoryPackages({release}). Missing → installed. */
+const REGISTRY = {
+  "module-library": { 14: { latest: "0.1.1", verified: "14.371" }, 15: { latest: "0.2.0", verified: "15" } },
+  "modular-av-jitsi": { 14: { verified: "13.351", max: "14" } },
+  "modular-av-dock": { 14: { latest: "0.12.0", verified: "14.371" } },
+  "ml-fixture-b": { 14: { verified: "14.369" } },
+  "ml-fixture-lib": { 14: { verified: "14", max: "14" } },
+  sequencer: { 14: { verified: "14.360" } },
+  dnd5e: { 14: { latest: "5.2.0", verified: "14" }, 15: { latest: "6.0.0", verified: "15" } },
+  pf2e: { 14: { verified: "14.369" } },
+  swade: { 14: { verified: "13.351", max: "14" } },
+};
+const REQUIRES = { "ml-fixture-a": ["ml-fixture-lib"] };
+const vGen = (v) => Number(String(v).split(".")[0]), vBuild = (v) => Number(String(v).split(".")[1] ?? Infinity);
+/** The newest version for a release: the target generation's entry, else the newest known one (judged as-is). */
+function registryFor(id, installed, unverified, rel) {
+  const r = REGISTRY[id] ?? {};
+  const e = r[rel.gen] ?? r[14] ?? {};
+  return { latest: e.latest ?? installed, verified: e.verified ?? (unverified ? "13.351" : "14"), max: e.max ?? null };
+}
+/** Foundry's availability code for that version against the release. */
+function availability(reg, rel) {
+  const gen = rel.gen, build = vBuild(rel.version);
+  if (reg.max && vGen(reg.max) < gen) return "bad";
+  if (vGen(reg.verified) > gen) return "bad";
+  if (vGen(reg.verified) === gen && (!String(reg.verified).includes(".") || vBuild(reg.verified) >= build)) return "ok";
+  if (vGen(reg.verified) === gen) return "unv";
+  return "risk";
+}
+const ST_INFO = {
+  ok: ["Compatible", "fa-circle-check"], unv: ["Unverified", "fa-circle-question"], risk: ["Compatibility risk", "fa-triangle-exclamation"],
+  bad: ["Incompatible", "fa-circle-xmark"], dep: ["Missing dependency", "fa-link-slash"],
+};
+const FILTER_OF = { ok: "ok", unv: "unv", risk: "unv", bad: "bad", dep: "bad" };
+
 function compatData(rel) {
-  const newGen = rel.gen > 14;
-  const verified = (unv) => (unv ? "13.351" : "14.369");
-  const mods = ALL_MODULES.map((m) => {
-    const st = newGen ? (m.id === "module-library" ? "ok" : m.unverified ? "bad" : "unv") : m.unverified ? "unv" : "ok";
-    const why = st === "ok" ? `Verified for ${newGen ? `Foundry ${rel.gen}` : `14 (build ${verified(m.unverified).split(".")[1]})`}`
-      : st === "bad" ? `Made for Foundry 13 at most; it won't load on ${rel.gen}`
-      : newGen ? `Verified for 14, not yet for ${rel.gen}` : `Last verified for ${verified(m.unverified)}`;
-    return { kind: "module", id: m.id, title: m.title, ver: m.version ?? "0.11.0", st, why, worlds: WORLDS_X.filter((w) => !w.noCompanion && desired(w.id, m.id)) };
-  });
-  const syss = SYSTEMS.map((s) => {
-    const st = newGen ? (s.id === "dnd5e" ? "ok" : "unv") : s.unverified ? "unv" : "ok";
-    const short = { dnd5e: "D&D 5e", pf2e: "Pathfinder 2e", swade: "SWADE" }[s.id];
-    return { kind: "system", id: s.id, title: s.title, ver: s.version, st, why: st === "ok" ? `Verified for Foundry ${rel.gen}` : newGen ? `Verified for 14, not yet for ${rel.gen}` : "Last verified for 13.351", worlds: WORLDS_X.filter((w) => w.system === short) };
-  });
+  const pkg = (kind, id, title, ver, unverified, worlds) => {
+    const reg = registryFor(id, ver, unverified, rel);
+    return { kind, id, title, ver, latest: reg.latest, verified: reg.verified, max: reg.max, st: availability(reg, rel), worlds, needsUpdate: reg.latest !== ver };
+  };
+  const mods = ALL_MODULES.map((m) => pkg("module", m.id, m.title, m.version ?? "0.11.0", m.unverified, WORLDS_X.filter((w) => !w.noCompanion && desired(w.id, m.id))));
+  mods.forEach((m) => { const dep = (REQUIRES[m.id] ?? []).find((d) => ["bad", "dep"].includes(mods.find((x) => x.id === d)?.st)); if (dep) { m.st = "dep"; m.dep = mods.find((x) => x.id === dep).title; } });
+  const syss = SYSTEMS.map((x) => pkg("system", x.id, x.title, x.version, x.unverified, WORLDS_X.filter((w) => w.system === { dnd5e: "D&D 5e", pf2e: "Pathfinder 2e", swade: "SWADE" }[x.id])));
   const worlds = WORLDS_X.map((w) => {
     const sys = syss.find((x) => x.worlds.includes(w));
     const mine = w.noCompanion ? [] : mods.filter((m) => m.worlds.includes(w));
-    const bad = mine.filter((m) => m.st === "bad").length, unv = mine.filter((m) => m.st === "unv").length;
-    // Unknown modules (no companion) are something to check, never "compatible".
-    const st = bad || sys?.st === "bad" ? "bad" : unv || sys?.st === "unv" || w.noCompanion ? "unv" : "ok";
-    const parts = [sys?.st === "ok" ? "System verified" : `System ${sys?.st === "bad" ? "incompatible" : "not verified"}`];
-    if (w.noCompanion) parts.push("modules unknown (no companion)");
-    else parts.push(bad || unv ? [bad ? `${bad} incompatible` : "", unv ? `${unv} not verified` : ""].filter(Boolean).join(", ") + ` of ${mine.length} modules` : `all ${mine.length} modules verified`);
-    return { kind: "world", id: w.id, title: w.title, ver: `migrates to ${rel.version}`, st, why: parts.join(" · "), worlds: [] };
+    const off = mine.filter((m) => m.st !== "ok");
+    return { kind: "world", id: w.id, title: w.title, st: sys?.st ?? "risk", sys, mine, off, unknown: !!w.noCompanion, worlds: [] };
   });
-  return { world: worlds, system: syss, module: mods };
+  return { system: syss, module: mods, world: worlds };
 }
-const ST_LABEL = { ok: "Compatible", unv: "Not verified", bad: "Incompatible" };
+
+/** Foundry's tooltip wording, made into one line, plus the version to update to. */
+function compatWhy(x, rel) {
+  if (x.kind === "world") {
+    const sysLine = { ok: "Its system has a compatible version", unv: `Its system was last verified for ${x.sys?.verified}`, risk: `Its system was last verified for ${x.sys?.verified}`, bad: "No compatible version of its system", dep: "Its system is missing a dependency" }[x.st];
+    const mods = x.unknown ? "modules unknown (no companion)" : x.off.length ? `${x.off.length} of its ${x.mine.length} modules to check` : `all ${x.mine.length} modules compatible`;
+    return `${sysLine} · ${mods}`;
+  }
+  if (x.st === "dep") return `Needs ${x.dep}, which isn't compatible with ${rel.version}`;
+  const line = { ok: `Latest version is compatible with ${rel.version}`, unv: `Latest version was last verified for ${x.verified}; likely still fine`, risk: `Latest version was last verified for ${x.verified}; may not work`, bad: `Latest version isn't compatible with ${rel.version}${x.max ? ` (works up to ${x.max})` : ""}` }[x.st];
+  return x.needsUpdate && x.st !== "bad" ? `${line} · update it to ${x.latest}` : line;
+}
 
 function updCompatView(rel) {
-  const data = compatData(rel), cat = ST.upd.ccat ?? "module", f = ST.upd.cfilter ?? "all", q = (ST.upd.cq ?? "").trim().toLowerCase();
-  const tabs = [["world", "Worlds"], ["system", "Systems"], ["module", "Modules"]].map(([k, l]) => {
-    const bad = data[k].filter((x) => x.st !== "ok").length;
+  const data = compatData(rel), cat = ST.upd.ccat ?? "system", f = ST.upd.cfilter ?? "all", q = (ST.upd.cq ?? "").trim().toLowerCase();
+  const toCheck = (x) => x.st !== "ok" || (x.kind === "world" && (x.unknown || x.off.length));
+  const tabs = [["system", "Systems"], ["module", "Modules"], ["world", "Worlds"]].map(([k, l]) => {
+    const bad = data[k].filter(toCheck).length;
     return `<a class="${cat === k ? "active" : ""}" data-act="updccat" data-id="${k}">${l} <span class="c">${data[k].length}${bad ? ` · <b class="w">${bad} to check</b>` : ""}</span></a>`;
   }).join("");
   const list = data[cat];
-  const chip = (id, label) => { const n = id === "all" ? list.length : list.filter((x) => x.st === id).length; return `<a class="${f === id ? "on" : ""} ${id}" data-act="updcfilter" data-id="${id}">${label} <b>${n}</b></a>`; };
-  const shown = list.filter((x) => (f === "all" || x.st === f) && (!q || x.title.toLowerCase().includes(q)))
-    .sort((a, b) => ({ bad: 0, unv: 1, ok: 2 })[a.st] - ({ bad: 0, unv: 1, ok: 2 })[b.st] || b.worlds.length - a.worlds.length || a.title.localeCompare(b.title));
+  const sum = (st) => list.filter((x) => x.st === st).length;
+  const summary = `<ul class="mlu-sum">${["ok", "unv", "risk", "bad"].map((st) => `<li class="${st}${sum(st) + (st === "bad" ? sum("dep") : 0) ? "" : " zero"}"><i class="fa-solid ${ST_INFO[st][1]}"></i>${sum(st) + (st === "bad" ? sum("dep") : 0)} ${ST_INFO[st][0].toLowerCase()}</li>`).join("")}</ul>`;
+  const chip = (id, label) => { const n = id === "all" ? list.length : list.filter((x) => FILTER_OF[x.st] === id).length; return `<a class="${f === id ? "on" : ""} ${id}" data-act="updcfilter" data-id="${id}">${label} <b>${n}</b></a>`; };
+  const order = { bad: 0, dep: 1, risk: 2, unv: 3, ok: 4 };
+  const shown = list.filter((x) => (f === "all" || FILTER_OF[x.st] === f) && (!q || x.title.toLowerCase().includes(q)))
+    .sort((a, b) => order[a.st] - order[b.st] || (b.worlds.length - a.worlds.length) || a.title.localeCompare(b.title));
   const rows = shown.map((x) => {
+    const [label, icon] = ST_INFO[x.st];
     const where = x.kind === "world" ? `<a data-act="world" data-id="${x.id}">Open</a>`
       : x.worlds.length ? `<span data-tooltip="${esc(x.worlds.map((w) => w.title).join(", "))}">on in ${plural(x.worlds.length, "world")}</span>` : '<span class="none">in no world</span>';
-    const open = x.kind === "module" ? `data-act="updmod" data-id="${x.id}"` : x.kind === "system" ? `data-act="updsys" data-id="${x.id}"` : "";
-    return `<li class="${x.st}"><span class="st" data-tooltip="${ST_LABEL[x.st]}"><i class="fa-solid ${x.st === "ok" ? "fa-circle-check" : x.st === "bad" ? "fa-circle-xmark" : "fa-circle-question"}"></i></span>
-      <div class="nm"><strong ${open}>${esc(x.title)}</strong><span>${esc(x.why)}</span></div><span class="v">${x.kind === "world" ? esc(x.ver) : `v${esc(x.ver)}`}</span><span class="u">${where}</span></li>`;
+    const open = x.kind === "module" ? `data-act="updmod" data-id="${x.id}"` : x.kind === "system" ? `data-act="updsys" data-id="${x.id}"` : `data-act="world" data-id="${x.id}"`;
+    const ver = x.kind === "world" ? `<span class="v">${esc(world(x.id)?.system ?? "")}</span>`
+      : `<span class="v">${x.needsUpdate ? `v${esc(x.ver)} → <b>${esc(x.latest)}</b>` : `v${esc(x.ver)}`}</span>`;
+    const links = x.kind === "world" ? "" : `<span class="lk"><a data-act="foundry" data-what="Open ${esc(x.title)}'s page on foundryvtt.com" data-tooltip="Package page" aria-label="Package page"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>${x.needsUpdate ? `<a data-act="foundry" data-what="Open the changelog of ${esc(x.title)} ${esc(x.latest)}" data-tooltip="Changelog for ${esc(x.latest)}" aria-label="Changelog"><i class="fa-solid fa-list-ul"></i></a>` : ""}</span>`;
+    return `<li class="${x.st}"><span class="st" data-tooltip="${label}"><i class="fa-solid ${icon}"></i></span>
+      <div class="nm"><strong ${open}>${esc(x.title)}</strong><span>${esc(compatWhy(x, rel))}</span></div>${ver}<span class="u">${where}</span>${links}</li>`;
   }).join("") || '<li class="empty">Nothing matches.</li>';
-  return `<div class="mlu-notes mlu-compat"><div class="mlu-nhead"><div><h3>Your packages on Foundry ${esc(rel.version)}</h3><span>Foundry's compatibility preview, from each package's manifest, with where you use them.</span></div></div>
-    <nav class="mls-subtabs">${tabs}</nav>
-    <div class="mlu-tools"><input type="search" data-filter="updcq" value="${esc(ST.upd.cq ?? "")}" placeholder="Filter ${cat}s" aria-label="Filter"><div class="mlu-chips">${chip("all", "All")}${chip("ok", "Compatible")}${chip("unv", "Not verified")}${chip("bad", "Incompatible")}</div></div>
+  const updates = data.module.concat(data.system).filter((x) => x.needsUpdate && x.st !== "bad").length;
+  return `<div class="mlu-notes mlu-compat"><div class="mlu-nhead"><div><h3>Your packages on Foundry ${esc(rel.version)}</h3><span>Foundry's compatibility preview: it checks the newest version of each installed package. We add where you use them.</span></div></div>
+    <nav class="mls-subtabs">${tabs}</nav>${summary}
+    <div class="mlu-tools"><input type="search" data-filter="updcq" value="${esc(ST.upd.cq ?? "")}" placeholder="Filter ${cat}s" aria-label="Filter"><div class="mlu-chips">${chip("all", "All")}${chip("ok", "Compatible")}${chip("unv", "Unverified")}${chip("bad", "Incompatible")}</div></div>
     <ol class="mlu-clist">${rows}</ol>
-    <p class="hint">Not verified usually still works: the author hasn't confirmed this version yet. Incompatible won't load. ${rel.gen > 14 ? "Check for package updates after updating Foundry; authors often release versions for the new generation." : ""}</p></div>`;
+    <p class="hint">${updates ? `${plural(updates, "package")} only ${updates === 1 ? "works" : "work"} on ${esc(rel.version)} after you update ${updates === 1 ? "it" : "them"} too (Library, Update all). ` : ""}Unverified: verified for an earlier build, likely still fine. Compatibility risk: verified for an earlier generation, may not work. Incompatible won't load.</p></div>`;
 }
 
 const RELEASES = [
@@ -322,7 +362,7 @@ function updHistoryView() {
 function updLeft(rel) {
   const v = ST.upd.view ?? "notes";
   const t = (id, icon, label) => `<a class="${v === id ? "active" : ""}" data-act="updview" data-id="${id}"><i class="fa-solid ${icon}"></i>${label}</a>`;
-  const bad = (() => { const d = compatData(rel); return [...d.module, ...d.system].filter((x) => x.st !== "ok").length; })();
+  const bad = (() => { const d = compatData(rel); return [...d.module, ...d.system].filter((x) => x.st !== "ok").length; })(); // packages to check
   const tabs = `<nav class="mls-subtabs mlu-tabs">${t("notes", "fa-newspaper", "What's new")}${t("compat", "fa-puzzle-piece", `Your packages${bad ? ` <span class="c w">${bad}</span>` : ""}`)}${t("history", "fa-clock-rotate-left", "Release history")}</nav>`;
   return `<div class="mlu-left">${tabs}${v === "compat" ? updCompatView(rel) : v === "history" ? updHistoryView() : updNotes(rel)}</div>`;
 }
