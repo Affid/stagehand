@@ -10,7 +10,8 @@ import { type WorldModules, worldModules } from "../model/world-modules.ts";
 import { cssImage } from "./route.ts";
 import { type LaunchChoice, LaunchReview } from "./world/LaunchReview.tsx";
 import { useWhy } from "./world/useWhy.ts";
-import { WorldBody } from "./world/WorldBody.tsx";
+import { useCanEditWorld } from "./world/AboutEdit.tsx";
+import { WorldBody, type WorldTab } from "./world/WorldBody.tsx";
 import { useLastPlayed } from "./WorldRail.tsx";
 
 function BannerMeta(props: {
@@ -92,6 +93,8 @@ function BannerActions(props: {
   readonly world: WorldInfo;
   readonly changes: number;
   readonly onLaunch: () => void;
+  /** Edit in place (the About tab); without it, Foundry's window. */
+  readonly onEdit: (() => void) | undefined;
 }) {
   const { page, t } = useUi();
   const { world, changes } = props;
@@ -118,7 +121,7 @@ function BannerActions(props: {
         class="icon"
         aria-label={t("shell.edit")}
         title={t("shell.edit")}
-        onClick={() => act("editWorld")}
+        onClick={() => (props.onEdit ? props.onEdit() : act("editWorld"))}
       >
         <Icon name="pen" />
       </button>
@@ -171,6 +174,8 @@ export function WorldPage(props: { readonly world: WorldInfo }) {
   const model = worldModules(state.data, world.id);
   const why = useWhy();
   const launch = useLaunch(world, model);
+  const [tab, setTab] = useState<WorldTab>("modules");
+  const canEdit = useCanEditWorld();
   const image = cssImage(world.background, location.origin);
   return (
     <section class="application framed mls-main">
@@ -184,10 +189,11 @@ export function WorldPage(props: { readonly world: WorldInfo }) {
           world={world}
           changes={model.changes}
           onLaunch={launch.start}
+          onEdit={canEdit ? () => setTab("about") : undefined}
         />
       </div>
       <div class="mls-body-main ml-app">
-        <WorldBody world={world} model={model} />
+        <WorldBody world={world} model={model} tab={tab} onTab={setTab} />
       </div>
       {launch.review ? (
         <LaunchReview

@@ -226,9 +226,13 @@ describe("a world's page", () => {
     expect(banner.textContent).toContain("dnd5e");
     expect(banner.textContent).toMatch(/Last played/);
     fireEvent.click(within(banner).getByRole("button", { name: "Edit World" }));
+    // Edited in place: the pencil opens the About tab.
+    expect(
+      container.querySelector('[role="tab"][aria-selected="true"]')
+        ?.textContent,
+    ).toBe("About");
     fireEvent.click(within(banner).getByRole("button", { name: "Launch" }));
     expect(sent(page.foundryAction)).toEqual([
-      { action: "editWorld", worldId: "strahd" },
       { action: "launch", worldId: "strahd" },
     ]);
   });

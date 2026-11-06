@@ -1,6 +1,5 @@
 // A world page's body: Modules and About tabs, then recent changes.
 import type { WorldInfo } from "@module-library/shared/world";
-import { useState } from "preact/hooks";
 import { useUi } from "../../context.ts";
 import type { WorldModules } from "../../model/world-modules.ts";
 import { worldRow } from "../../model/worlds.ts";
@@ -10,15 +9,18 @@ import { BackupsTab } from "./BackupsTab.tsx";
 import { ModulesTab } from "./ModulesTab.tsx";
 import { NotSetUp } from "./NotSetUp.tsx";
 
-type Tab = "modules" | "about" | "backups";
+export type WorldTab = "modules" | "about" | "backups";
+type Tab = WorldTab;
 const TABS: readonly Tab[] = ["modules", "about", "backups"];
 
 export function WorldBody(props: {
   readonly world: WorldInfo;
   readonly model: WorldModules;
+  readonly tab: Tab;
+  readonly onTab: (tab: Tab) => void;
 }) {
   const { state, t } = useUi();
-  const [tab, setTab] = useState<Tab>("modules");
+  const { tab, onTab: setTab } = props;
   const { world, model } = props;
   const recent = worldRow(state.data, world).recent;
   return (
