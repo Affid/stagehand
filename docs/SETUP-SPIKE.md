@@ -199,3 +199,16 @@ node_version, notes, suffix, time`. `download` is a time-limited link: never log
   Installing. Then a server exits "for manual restart"; the desktop app relaunches itself.
 - `game.previewCompatibility(release)` posts `previewCompatibility`; it returned nothing for
   the current version (the window only offers it for newer ones), so its shape is untested.
+
+## Follow-up 2026-11-06: where release notes come from
+
+- Foundry's update check is server-side: `POST ${WEBSITE_API_URL}/_api/license/check/` with the
+  license, channel, versions and diagnostics. It returns only the newest release on the
+  channel (with notes). Foundry never reads `foundryvtt.com/releases/`; it only links to it.
+- `https://foundryvtt.com/releases/` is a public HTML page: `#releases-directory`, an `h2` per
+  generation, `li.release` with the version link, `.release-time` and `.release-tag` (channel,
+  "Full"). It listed 177 releases. Each `/releases/<version>` page holds the notes in
+  `article.primary-content`, in the same structure as the update check's notes; the mockup's
+  reader parsed 14.370's page unchanged (107 entries, all issue numbers, banner).
+- No CORS headers, so the Setup page can't fetch them; the extension's background can, with an
+  optional host permission for `https://foundryvtt.com/*`.

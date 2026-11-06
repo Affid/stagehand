@@ -77,3 +77,43 @@
 .mlu-banner figcaption a, .mlu-sec li a, .mlu-notes .mlu-p a { color: var(--color-light-2); text-decoration: underline; text-decoration-color: var(--color-light-5); }
 .mlu-notes .mlu-p { margin: 0 0 6px; font-size: 13.5px; line-height: 1.5; color: var(--color-light-2); }
 .mlu-sec li code, .mlu-notes .mlu-p code { font-size: 12.5px; padding: 0 4px; border-radius: 3px; background: rgb(255 255 255 / 7%); color: var(--color-light-1); }
+/* Tabs in the left column; compatibility list; release history */
+.mlu-left { min-height: 0; display: flex; flex-direction: column; gap: 8px; }
+.mlu-left > .mlu-notes { flex: 1; }
+.mlu-tabs .c.w, .mls-subtabs .c b.w { color: #f5c45e; font-weight: 600; }
+.mlu-compat .mls-subtabs { margin-top: 2px; }
+.mlu-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.mlu-chips a { padding: 1px 10px; border-radius: 12px; border: 1px solid var(--color-cool-3); font-size: 12.5px; color: var(--color-light-3); }
+.mlu-chips a b { color: var(--color-light-1); }
+.mlu-chips a.on { border-color: var(--color-warm-1); background: rgb(238 155 58 / 12%); color: var(--color-light-1); }
+.mlu-chips a.unv b { color: #f5c45e; } .mlu-chips a.bad b { color: #ffb3a6; } .mlu-chips a.ok b { color: #8fd49b; }
+.mlu-clist { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.mlu-clist li { display: grid; grid-template-columns: 22px minmax(0, 1fr) 140px 120px; gap: 10px; align-items: center; padding: 6px 10px; border-radius: 3px; background: rgb(255 255 255 / 3%); border-left: 3px solid transparent; }
+.mlu-clist li.unv { border-left-color: #f5c45e; } .mlu-clist li.bad { border-left-color: #e0705a; }
+.mlu-clist li .st { text-align: center; }
+.mlu-clist li.ok .st { color: #8fd49b; } .mlu-clist li.unv .st { color: #f5c45e; } .mlu-clist li.bad .st { color: #ff9c8f; }
+.mlu-clist .nm { display: grid; min-width: 0; }
+.mlu-clist .nm strong { color: var(--color-light-1); font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mlu-clist .nm strong[data-act] { cursor: pointer; } .mlu-clist .nm strong[data-act]:hover { color: var(--color-warm-1); }
+.mlu-clist .nm span { font-size: 12.5px; color: var(--color-text-subtle); }
+.mlu-clist .v { font-size: 12px; color: var(--color-light-3); font-variant-numeric: tabular-nums; }
+.mlu-clist .u { font-size: 12.5px; color: var(--color-light-3); text-align: right; }
+.mlu-clist .u .none { color: var(--color-light-5); }
+.mlu-clist .u a { color: var(--color-light-2); text-decoration: underline; }
+.mlu-clist li.empty { display: block; color: var(--color-text-subtle); background: none; }
+.mlu-hcols { flex: 1; min-height: 0; display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 12px; }
+.mlu-rels { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; align-content: start; }
+.mlu-rels li { display: grid; grid-template-columns: auto 1fr; gap: 2px 8px; padding: 6px 8px; border-radius: 3px; border-left: 3px solid transparent; cursor: pointer; }
+.mlu-rels li strong { color: var(--color-light-1); font-size: 13.5px; font-variant-numeric: tabular-nums; }
+.mlu-rels li > span:nth-of-type(1) { font-size: 12px; color: var(--color-text-subtle); text-align: right; }
+.mlu-rels li .tg { grid-column: 1 / -1; display: flex; gap: 4px; flex-wrap: wrap; }
+.mlu-rels li:hover { background: rgb(255 255 255 / 4%); }
+.mlu-rels li.on { background: rgb(238 155 58 / 12%); border-left-color: var(--color-warm-1); }
+.mlu-rels li.newer strong { color: #b9e3c1; }
+.mlu-hnotes { min-height: 0; overflow: auto; border-left: 1px solid var(--color-cool-4); padding-left: 12px; }
+.mlu-hhead { display: grid; gap: 2px; margin-bottom: 8px; }
+.mlu-hhead strong { color: var(--color-light-1); font-size: 15px; }
+.mlu-hhead span { font-size: 12.5px; color: var(--color-text-subtle); }
+.mlu-hhead a, .mlu-hist .mlu-nhead a { color: var(--color-light-3); text-decoration: underline; text-decoration-color: var(--color-light-5); }
+.mlw-pill.warn { border-color: #8a6a1f; color: #f5c45e; }
+.mlu-chips a, .mlu-tabs a, .mlu-rels li { text-decoration: none; }
