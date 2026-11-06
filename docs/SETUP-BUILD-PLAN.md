@@ -12,10 +12,10 @@ Mockup to match: `design/setup-page/` (playground: https://claude.ai/artifact/YK
 - **Foundry stays underneath.** Foundry's Setup layout is hidden with CSS only
   (`#setup`, `#setup-menu`, `#main-header`, `#watermark`); its apps keep running, so hidden
   buttons, menus, hooks and progress events still work (SETUP-SPIKE.md).
-- **Opt-in until parity, always reversible.** A per-server setting turns the new page on.
-  "Foundry's Setup page" in our header turns it off. Any error while mounting restores
-  Foundry's page and keeps the current Module Library UI. Safe mode (unknown Foundry
-  generation) never takes over the page.
+- **The page whenever the extension runs** (owner, 2026-11-06; until then it was opt-in
+  with a "Foundry's Setup page" switch back). Turning the extension off gives Foundry's
+  page. Any error while mounting leaves Foundry's page alone with one notice. Safe mode
+  (unknown Foundry generation) never takes over the page.
 - **Internal Foundry hooks behind the remote config**, each with a fallback: hidden button
   selectors, `editWorld`, menu wrapping. Public `game.*` calls are preferred everywhere.
 - **Every phase:** tests first (Vitest, Testing Library style for components), `pnpm verify`,
@@ -231,4 +231,49 @@ survive the re-list; uninstalled packages' backups can be restored and deleted; 
 snapshot lookups; port validation blocks Save; trimming at save; the restart notice
 accumulates. Open: unsaved Configuration edits are dropped when leaving the page.
 
-Next: Phase 6 (News and finish).
+### Phase 5b: prototype parity (in progress)
+
+A side-by-side check of the build against the prototype at 2560 and 1366 wide (report:
+https://claude.ai/artifact/NwhDMdn4e6vaTPb9TLF1Mf) found 11 bugs, 17 gaps and 8 differences
+recorded as "deliberate". The owner's rulings (2026-11-06):
+
+- **The prototype is the spec.** A difference is a decision only if the owner approved it.
+  Items deferred in Phases 2 to 5 are done now, not carried.
+- **No way back inside the extension.** "Foundry's Setup page" goes; the new page is the
+  page whenever the extension runs (turning the extension off gives Foundry's page). Safe
+  mode and a failed mount still leave Foundry's page alone. The old Module Library UI on
+  Foundry's tabs goes with it.
+- **No Foundry fallbacks on our pages:** "Foundry's Backup Manager", "Foundry's Application
+  Configuration", "Edit in Foundry", "Change in Foundry", "Update in Foundry…" go; the
+  features they stood in for are built.
+- **Build label** only in dev builds.
+- **Library toolbar** as designed (Select, Collapse all, New folder, Tags, Presets, Export),
+  not today's Organise slot. The "Cards / Foundry's" switch is dropped.
+- **Version chip** as designed: a menu with the update and Help.
+- **Configuration** follows Foundry's window and the prototype (fields Foundry's window
+  hides are not shown; Backups is set at server start); rechecked once it matches.
+- **One confirmation at launch.** The review on Setup is the confirmation. The companion
+  re-checks in the world and applies at once with a notice; it asks again only if the live
+  check differs from what was reviewed (conflict, missing dependency, modules changed in
+  the world meanwhile).
+
+Work packages, each committed on its own:
+
+1. Rulings above: default page, removals, dev-only build label, chip menu, one confirmation.
+2. Bugs: compatibility levels as Foundry rates them (UNVERIFIED_BUILD is neutral), system
+   titles, Update page with updates disabled, server backups titles, sizes and empty
+   packages, page headings, note font, star beside the title, Configuration columns, grid
+   group rows.
+3. World page: tab icons and counts, filter row in the tab bar, group menu, View options,
+   launch review extras (drop one change, preset named, backup size and age).
+4. About: description in prose-mirror, background picker, Maintenance (data, safe mode,
+   reset passwords, Lock), next-session schedule, join screen, system, Danger zone.
+5. Backups: world tab (nudge, summary, multi-select, tags, progress with Foundry's busy
+   lock) and server page (category tabs, Select, filter and sort, disk free, create flow,
+   progress).
+6. Library: Install Module, Update All, Systems tab, Update button, module favourite and
+   lock, toolbar, group menus, module panel and grid extras, descriptions, Library entry.
+7. Server pages: Configuration (help text, password change, HTTPS, AWS, Advanced) and
+   Update (notes reader, your packages, history, snapshot first, states, progress).
+
+Then Phase 6 (News and finish).
