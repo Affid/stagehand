@@ -406,3 +406,6 @@
 .mlw-bhead { min-height: 40px; padding: 4px 8px; border: 1px solid transparent; border-radius: 4px; box-sizing: border-box; }
 /* Library: the selection band and the normal control row share one height */
 .mls-main .mls-body-main > .ml-row:has(+ .ml-sections) { min-height: 38px; box-sizing: border-box; padding-block: 4px; border: 1px solid transparent; border-radius: 4px; }
+.mls-worlds.more { -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 36px), transparent); mask-image: linear-gradient(to bottom, #000 calc(100% - 36px), transparent); }
+.mls-morew { font-size: 12px; color: var(--color-light-3); text-decoration: underline; text-decoration-color: var(--color-light-5); align-self: center; padding: 0 4px; }
+.mls-morew:hover { color: var(--color-warm-1); }

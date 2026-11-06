@@ -171,10 +171,18 @@ function intakeItem(m) {
     return `<span class="ml-chip mls-tchip${on ? " on" : ""}${sug ? " sug" : ""}" data-act="intaketag" data-id="${t.id}" data-mid="${m.id}" data-tooltip="${sug ? "Suggested" : on ? "Remove" : "Add"}"><i class="ml-dot" style="--ml-c:${t.color}"></i>${esc(t.name)}</span>`;
   }).join("");
   const withOn = s?.with ? WORLDS_X.filter((w) => !w.noCompanion && desired(w.id, s.with)) : [];
-  const worlds = WORLDS_X.filter((w) => !w.noCompanion).map((w) => {
+  // With many worlds, show the ones that matter (on, suggested) and keep the rest one click away.
+  const all = WORLDS_X.filter((w) => !w.noCompanion);
+  const open = ST.intakeAllWorlds?.has(m.id) || all.length <= 6;
+  const chipOf = (w) => {
     const on = desired(w.id, m.id), sug = withOn.includes(w) && !on;
     return `<span class="ml-chip mls-tchip${on ? " on" : ""}${sug ? " sug" : ""}" data-act="intakeworld" data-id="${w.id}" data-mid="${m.id}">${on ? '<i class="fa-solid fa-check"></i>' : ""}${esc(w.title)}</span>`;
-  }).join("");
+  };
+  // Collapsed: only where it's on; the suggestion box above offers the suggested worlds in one click.
+  const key = all.filter((w) => desired(w.id, m.id));
+  const rest = all.length - key.length;
+  const worlds = open ? all.map(chipOf).join("") + (all.length > 6 ? `<a class="mls-morew" data-act="intakeworlds" data-id="${m.id}">Fewer</a>` : "")
+    : `${key.map(chipOf).join("") || '<span class="ml-muted">In no world yet</span>'}<a class="mls-morew" data-act="intakeworlds" data-id="${m.id}">${key.length ? `${rest} more world${rest === 1 ? "" : "s"}…` : `Choose from ${all.length} worlds…`}</a>`;
   const hint = s ? `<div class="mls-sug"><i class="fa-solid fa-lightbulb"></i><span>${esc(s.why)}. ${s.with ? `${short(s.with)} is on in ${plural(WORLDS_X.filter((w) => !w.noCompanion && desired(w.id, s.with)).length, "world")}.` : ""}</span><a data-act="intakeaccept" data-id="${m.id}">Use suggestions</a></div>` : "";
   return `<div class="mls-intake-item"><div class="hd"><strong>${esc(m.title)}</strong><span class="ml-muted">${esc(m.author)} · v${m.version ?? "0.1.0"}</span></div>
     <p class="desc">${esc(m.shortDesc ?? m.description ?? "")}</p>${hint}
@@ -195,6 +203,7 @@ A.intake = () => { ST.panel = { kind: "intake" }; ST.lsub = "modules"; render();
 A.intakelater = () => { ST.fresh.clear(); render(); notify("They stay in Unfiled. The Library marks new installs again next time."); };
 A.intaketag = (tid, el) => { const id = el.dataset.mid, cur = TAGS_OF[id] ?? []; TAGS_OF[id] = cur.includes(tid) ? cur.filter((t) => t !== tid) : [...cur, tid]; render(); };
 A.intakeworld = (wid, el) => { setDesired(wid, el.dataset.mid, !desired(wid, el.dataset.mid)); render(); warnIfBroken(wid); };
+A.intakeworlds = (id) => { ST.intakeAllWorlds ??= new Set(); ST.intakeAllWorlds.has(id) ? ST.intakeAllWorlds.delete(id) : ST.intakeAllWorlds.add(id); render(); };
 A.intakeaccept = (id) => {
   const s = SUGGEST[id];
   ST.intakeFolder[id] = s.folder;

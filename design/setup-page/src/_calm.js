@@ -305,6 +305,8 @@ const WORLD_INFO = {
   strahd: { next: "Tue 10 Nov, 19:00", nextRel: "in 4 days", core: "14.369", saved: "14.369", playtime: "61 hours" },
   mltest: { core: "14.369", saved: "14.370", playtime: "3 hours" },
   heist: { core: "13.351", saved: "13.351", playtime: "38 hours" },
+  runelords: { core: "13.351", saved: "13.351", playtime: "140 hours" },
+  kingmaker: { core: "14.369", saved: "14.369", playtime: "80 hours" },
   vaults: { core: "14.369", saved: "14.369", playtime: "22 hours" },
   oneshot: { core: "14.369", saved: "14.369", playtime: "4 hours" },
   avtest: { core: "14.369", saved: "14.369", playtime: "6 hours" },
@@ -564,3 +566,14 @@ render = function () {
   d?.classList.toggle("cut", tooLong);
   if (more) more.hidden = !tooLong;
 };
+
+// The worlds list fades at the bottom while more worlds are hidden below, so a cut-off row reads as "scroll".
+function railFade() {
+  const l = document.querySelector(".mls-worlds");
+  if (!l) return;
+  const more = () => l.classList.toggle("more", l.scrollTop + l.clientHeight < l.scrollHeight - 2);
+  more(); l.onscroll = more;
+}
+const renderBeforeRailFade = render;
+// eslint-disable-next-line no-func-assign
+render = function () { renderBeforeRailFade(); railFade(); };

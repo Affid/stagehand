@@ -89,6 +89,9 @@ necessarily its card markup.
   link → number); keep the banner figure and intro paragraphs; clean everything like a world
   description. `design/setup-page/checks/realnotes.mjs` checks this against Foundry's real
   14.370 notes (fetched locally by `spikes/spike-update.ts`, not stored in git).
+- Works with many worlds: lists of worlds scroll or collapse (intake shows only worlds a
+  module is on, with "N more worlds…"); a scrolling list fades where it is cut off. The
+  mockup's `?worlds=12` (playground: Worlds 6 / 12) and `checks/busy.mjs` cover this.
 - Nothing moves under the pointer: bars that appear (unsaved changes, progress, selection)
   take a slot whose space is already kept, or replace something of the same height.
   `design/setup-page/checks/shifts.mjs` measures this.
@@ -118,7 +121,7 @@ necessarily its card markup.
 cd design/setup-page
 ./assets.sh            # copies Foundry's CSS, fonts and images from ~/foundry/vtt (not in git)
 node build.mjs         # writes out/index.html (playground) and out/setup-shell.html
-node checks/run.mjs    # 35 Playwright checks of the mockup's flows
+node checks/run.mjs    # 36 Playwright checks of the mockup's flows
 ```
 
 `fvtt/` and `out/` are git-ignored: they hold Foundry's and Font Awesome Pro's licensed

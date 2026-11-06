@@ -10,6 +10,15 @@ const WORLDS_X = [
   { id: "oneshot", title: "One-shot: Heist Night", system: "D&D 5e", sysFull: "Dungeons & Dragons Fifth Edition 5.1.4", last: "2 months ago", img: 0, pos: "60% 20%", desc: "A convention one-shot." },
   { id: "avtest", title: "Modular A/V test", system: "D&D 5e", sysFull: "Dungeons & Dragons Fifth Edition 5.1.4", last: "yesterday", img: 1, pos: "70% 30%", desc: "Test world for Modular A/V." },
 ];
+// "?worlds=12": a busier server, for checking how lists hold up.
+if (Q.get("worlds") === "12") WORLDS_X.push(
+  { id: "phandelver", title: "Lost Mine of Phandelver", system: "D&D 5e", sysFull: "Dungeons & Dragons Fifth Edition 5.1.4", last: "4 days ago", img: 0, pos: "45% 55%", desc: "<p>Starter campaign for new players, Sunday afternoons.</p>" },
+  { id: "kingmaker", title: "Kingmaker", system: "Pathfinder 2e", sysFull: "Pathfinder Second Edition 7.2.0", last: "yesterday", img: 1, pos: "35% 25%", desc: "<p>Kingdom building in the Stolen Lands.</p>" },
+  { id: "deadlands", title: "Deadlands: The Weird West", system: "SWADE", sysFull: "Savage Worlds Adventure Edition 4.4.1", last: "6 weeks ago", img: 0, pos: "85% 35%", desc: "<p>Savage Worlds, monthly.</p>" },
+  { id: "stormwreck", title: "Dragons of Stormwreck Isle", system: "D&D 5e", sysFull: "Dungeons & Dragons Fifth Edition 5.1.4", last: "6 months ago", att: "The companion is not enabled in this world yet.", noCompanion: true, img: 1, pos: "55% 70%", desc: "<p>A one-off for a school club.</p>" },
+  { id: "runelords", title: "Rise of the Runelords", system: "Pathfinder 2e", sysFull: "Pathfinder Second Edition 7.2.0", last: "8 months ago", att: "Last saved with Foundry 13: it migrates when it next launches.", img: 0, pos: "15% 45%", desc: "<p>On hold since the spring.</p>" },
+  { id: "levels", title: "Test: Scene Levels", system: "D&D 5e", sysFull: "Dungeons & Dragons Fifth Edition 5.1.4", last: "today", img: 1, pos: "65% 60%", desc: "<p>Trying out V14's scene levels.</p>" },
+);
 const STRAHD_ON = ["modular-av", "modular-av-livekit", "modular-av-dock", "modular-av-audio-mixer", "modular-av-mic-denoise", "modular-av-p2p", "module-library", "modular-av-cam-background", "modular-av-dock-vines", "ml-fixture-a", "ml-fixture-lib"];
 const SYSTEMS = [
   { id: "dnd5e", title: "Dungeons & Dragons Fifth Edition", author: "Atropos", version: "5.1.4", description: "A system for playing the fifth edition of the world's most popular role-playing game.", used: "5 worlds" },

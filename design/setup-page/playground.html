@@ -19,6 +19,10 @@ body { margin: 0; background: var(--bg); color: var(--fg); font: 14px/1.45 var(-
 .tools { display: flex; gap: 8px; margin-left: auto; }
 .tools button { font: inherit; color: var(--fg); background: transparent; border: 1px solid var(--line); border-radius: 6px; padding: 6px 12px; cursor: pointer; }
 .tools button:hover { color: var(--fg); background: rgb(255 255 255 / 5%); }
+.seg { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.seg .lbl { padding: 0 10px; color: var(--muted); font-size: .86rem; }
+.seg button { font: inherit; color: var(--muted); background: transparent; border: 0; border-left: 1px solid var(--line); padding: 6px 12px; cursor: pointer; border-radius: 0; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
 button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .hint { flex-basis: 100%; margin: 0; color: var(--muted); font-size: .86rem; min-width: 0; }
 .hint b { color: var(--fg); font-weight: 600; }
@@ -34,6 +38,7 @@ iframe { width: 100%; height: 100%; border: 0; display: block; border-radius: 4p
   <h1>Setup Redesign Playground</h1>
   <span class="tag">Mockup · nothing is saved</span>
   <div class="tools">
+    <span class="seg" role="group" aria-label="Worlds on the server"><span class="lbl">Worlds</span><button type="button" data-worlds="6" aria-pressed="true">6</button><button type="button" data-worlds="12" aria-pressed="false">12</button></span>
     <button type="button" id="fit" aria-pressed="true">Actual size</button>
     <button type="button" id="reset">Reset</button>
   </div>
@@ -53,13 +58,17 @@ function scale() {
   const s = Math.min(1, w / 1600, h / 1000);
   frame.style.transform = `translateX(-50%) scale(${s})`;
 }
-document.getElementById("reset").addEventListener("click", () => { view.src = view.getAttribute("src"); });
+document.getElementById("reset").addEventListener("click", () => { const src = view.src; view.src = "about:blank"; view.src = src; });
 fitBtn.addEventListener("click", () => {
   fit = !fit;
   stage.classList.toggle("actual", !fit);
   fitBtn.textContent = fit ? "Actual size" : "Fit to window";
   scale();
 });
+document.querySelectorAll("[data-worlds]").forEach((b) => b.addEventListener("click", () => {
+  document.querySelectorAll("[data-worlds]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+  view.src = `setup-shell.html?calm=1${b.dataset.worlds === "12" ? "&worlds=12" : ""}`;
+}));
 addEventListener("resize", scale);
 scale();
 </script>

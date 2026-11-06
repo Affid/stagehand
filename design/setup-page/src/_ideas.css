@@ -103,3 +103,4 @@
 .mls-grid tbody th .mh .mls-newtag, .mls-grid tbody th .mh .dots { flex: none; margin-left: 0; }
 .mls-lib strong .mls-newtag { margin-left: 6px; vertical-align: 1px; }
 .mls-intake-item .desc { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.mls-grid th .sub { white-space: normal; line-height: 1.25; }
