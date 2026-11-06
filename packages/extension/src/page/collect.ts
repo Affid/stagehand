@@ -43,11 +43,15 @@ function coreUpdate(game: SetupGame): Pick<SetupData, "coreUpdate"> {
   const u = (game.data as { coreUpdate?: Record<string, unknown> } | undefined)
     ?.coreUpdate;
   if (!u || typeof u.hasUpdate !== "boolean") return {};
+  // Without an update the check names no channel: Foundry's setting does.
+  const channel = str(u.channel) || str(game.data?.options?.updateChannel);
   return {
     coreUpdate: {
       hasUpdate: u.hasUpdate,
-      channel: str(u.channel).slice(0, 30),
+      channel: channel.slice(0, 30),
       version: str(u.version).slice(0, 30),
+      canUpdate: u.canUpdate !== false,
+      reachable: u.couldReachWebsite !== false,
     },
   };
 }

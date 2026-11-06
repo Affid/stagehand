@@ -9,6 +9,8 @@ function open(coreUpdate?: {
   hasUpdate: boolean;
   channel: string;
   version: string;
+  canUpdate?: boolean;
+  reachable?: boolean;
 }) {
   const base = setupState();
   const r = renderUi("shell", {
@@ -55,6 +57,36 @@ describe("the Update page", () => {
         .getByRole("link", { name: /What's new in 14.369/ })
         .getAttribute("href"),
     ).toBe("https://foundryvtt.com/releases/14.369");
+  });
+
+  test("the channel reads as a name; updates disabled by --noupdate say so", () => {
+    const r = open({
+      hasUpdate: false,
+      channel: "development",
+      version: "",
+      canUpdate: false,
+      reachable: true,
+    });
+    toUpdate(r, "Update page");
+    const pageEl = el(r.container, ".mlu-page");
+    expect(pageEl.textContent).toContain("Development");
+    expect(pageEl.textContent).toContain("Up to date");
+    expect(pageEl.textContent).toContain("--noupdate");
+  });
+
+  test("when foundryvtt.com didn't answer, it doesn't claim up to date", () => {
+    const r = open({
+      hasUpdate: false,
+      channel: "stable",
+      version: "",
+      reachable: false,
+    });
+    fireEvent.click(el(r.container, ".mlh-ver"));
+    expect(r.container.textContent).toContain("Couldn't reach foundryvtt.com");
+    fireEvent.click(r.getByRole("button", { name: "Update page" }));
+    const pageEl = el(r.container, ".mlu-page");
+    expect(pageEl.textContent).not.toContain("Up to date");
+    expect(pageEl.textContent).toContain("Couldn't reach foundryvtt.com");
   });
 
   test("a version that isn't a plain number gets no link", () => {

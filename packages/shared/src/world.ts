@@ -127,6 +127,10 @@ export const SetupDataSchema = z.object({
       hasUpdate: z.boolean(),
       channel: z.string().max(30),
       version: z.string().max(30),
+      /** False when Foundry was started with --noupdate. */
+      canUpdate: z.boolean().optional(),
+      /** False when foundryvtt.com didn't answer the last check. */
+      reachable: z.boolean().optional(),
     })
     .optional(),
 });

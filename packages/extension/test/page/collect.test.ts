@@ -89,9 +89,34 @@ describe("reading Setup's package data (V-1)", () => {
       hasUpdate: true,
       channel: "stable",
       version: "14.371",
+      canUpdate: true,
+      reachable: true,
     });
     expect(JSON.stringify(data)).not.toContain("secret");
     expect(collect({}).coreUpdate).toBeUndefined();
+    expect(SetupDataSchema.safeParse(data).success).toBe(true);
+  });
+
+  test("the update check says whether updating is allowed and foundryvtt.com answered; the channel falls back to Foundry's setting", () => {
+    const data = collect({
+      data: {
+        options: { updateChannel: "development" },
+        coreUpdate: {
+          hasUpdate: false,
+          canUpdate: false,
+          couldReachWebsite: true,
+          channel: null,
+          version: null,
+        },
+      },
+    } as never);
+    expect(data.coreUpdate).toEqual({
+      hasUpdate: false,
+      channel: "development",
+      version: "",
+      canUpdate: false,
+      reachable: true,
+    });
     expect(SetupDataSchema.safeParse(data).success).toBe(true);
   });
 

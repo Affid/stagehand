@@ -611,3 +611,12 @@
   text-align: center;
   color: var(--color-light-4);
 }
+
+.mls-shell .mlh-upd .avail.warn {
+  border-color: rgb(245 196 94 / 55%);
+  color: #f3dca4;
+}
+
+.mls-shell .mlh-upd .avail.warn > i {
+  color: #f5c45e;
+}

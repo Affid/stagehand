@@ -4,6 +4,7 @@
 // and offers a snapshot). The update check's download link is never read.
 import { Icon } from "../../common/widgets.tsx";
 import { useUi } from "../../context.ts";
+import { channelName } from "../../model/update.ts";
 
 /** Foundry's public notes for a version; only plain "14.371" versions. */
 export function notesUrl(version: string): string | undefined {
@@ -29,6 +30,14 @@ function Availability(props: { readonly installed: string }) {
   const { state, t } = useUi();
   const update = state.data.setup?.coreUpdate;
   const available = update?.hasUpdate ? update.version : "";
+  if (update?.reachable === false && !available)
+    return (
+      <div class="mlu-avail warn">
+        <Icon name="triangle-exclamation" />
+        <span>{t("up.unreachable")}</span>
+        <Notes version={props.installed} />
+      </div>
+    );
   if (!available)
     return (
       <div class="mlu-avail none">
@@ -67,11 +76,17 @@ export function UpdatePage() {
         {update ? (
           <>
             <dt>{t("up.channel")}</dt>
-            <dd>{update.channel}</dd>
+            <dd>{channelName(update.channel)}</dd>
           </>
         ) : null}
       </dl>
       <Availability installed={installed} />
+      {update?.canUpdate === false ? (
+        <p class="mlu-why">
+          <Icon name="circle-info" />
+          {t("up.disabled")}
+        </p>
+      ) : null}
     </div>
   );
 }

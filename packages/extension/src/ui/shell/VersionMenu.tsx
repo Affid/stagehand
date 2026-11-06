@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import { useDismiss } from "../common/dismiss.ts";
 import { Icon } from "../common/widgets.tsx";
 import { useUi } from "../context.ts";
+import { channelName } from "../model/update.ts";
 
 export const KB_URL = "https://foundryvtt.com/kb/";
 
@@ -25,10 +26,11 @@ function Update(props: { readonly onPage: () => void }) {
         </button>
       </div>
     );
+  const unreachable = update?.reachable === false;
   return (
-    <div class="avail none">
-      <Icon name="circle-check" />
-      <span>{t("vm.current")}</span>
+    <div class={`avail none${unreachable ? " warn" : ""}`}>
+      <Icon name={unreachable ? "triangle-exclamation" : "circle-check"} />
+      <span>{t(unreachable ? "vm.unreachable" : "vm.current")}</span>
       <button type="button" class="ml-link" onClick={props.onPage}>
         {t("vm.updatePage")}
       </button>
@@ -75,9 +77,7 @@ function Help(props: MenuProps) {
 function Menu(props: MenuProps) {
   const { state, store, t } = useUi();
   const setup = state.data.setup;
-  const raw = setup?.coreUpdate?.channel ?? "";
-  // Foundry's channel ids are lower case: "stable" reads "Stable channel".
-  const channel = raw ? raw.charAt(0).toUpperCase() + raw.slice(1) : "";
+  const channel = channelName(setup?.coreUpdate?.channel ?? "");
   const toUpdate = (): void => {
     props.close();
     store.set({ route: { kind: "server", page: "update" } });
