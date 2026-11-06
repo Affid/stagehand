@@ -54,7 +54,7 @@ Mockup to match: `design/setup-page/` (playground: https://claude.ai/artifact/YK
 
 ## Progress
 
-### Phase 1: shell (in progress)
+### Phase 1: shell (done once committed)
 
 Done (`34388ff`):
 
@@ -72,17 +72,32 @@ Also done: `entries/setup-main.ts` handles `SHELL` (replies `SHELL_STATE`) and
 `FOUNDRY_ACTION` (Foundry notification on error); `page/globals.ts` types Foundry's
 settings, `Collection.get` and `WorldConfig`.
 
-Next:
+Also done (uncommitted at the time of writing, see `git log`):
 
-3. Setting UI: the store/actions call `set-pref` (background part done: `Prefs` /
-   `DEFAULT_PREFS` in `messages.ts`, `state.prefs` / `setPref`, `prefs` in `SetupState`,
-   accepted from the Setup page without admin verification); a switch on the options page
-   and in the current Module Library UI.
-4. `ui/shell/`: `ShellRoot` (full-page host), `Header` (logo, version chip, Backups,
-   Configuration, ⏻ menu, "Foundry's Setup page"), `WorldRail` (worldOrder, filter, flags
-   from `worldRow`), router state in the store (`page: world | library`, `worldId`).
-5. Library route renders today's `ModulesRoot`; world route renders a banner plus today's
-   world sheet content (`WorldSheet`).
-6. Mount in `entries/setup-ui.tsx` when the flag is on and the adapter allows changes;
-   on any mount error send `SHELL` off and keep today's UI.
-7. Live test in `tests/foundry/`: turn on, open a world, open the Library, switch back.
+- Per-server preference `newSetupPage` (`Prefs` in `messages.ts`, `state.prefs` /
+  `setPref`, `set-pref` accepted from the Setup page without admin verification, since it
+  only changes this browser's view). `actions.setPref` in the UI.
+- "Try the new Setup page" in the Module Library toolbar (not offered in safe mode).
+  "Foundry's Setup page" in our header switches back.
+- `ui/shell/`: `Shell`, `Header` (logo, version chip opening Foundry's update screen,
+  Backups, Configuration, power menu with Log out and Shut down), `WorldRail` (Library
+  entry, worlds in Foundry's order, filter, Create World, favourite, lock, queued and
+  attention flags, artwork thumbnails), `WorldPage` (banner with artwork, system, core,
+  last played, lock, favourite star, Edit World, Launch; today's sheet sections via
+  `SheetSections`; Apply presets), `route.ts` (`resolveRoute`, `filterWorlds`,
+  `cssImage` for same-origin artwork only), `mount.tsx` (`syncShell`: ask, wait for
+  `SHELL_STATE`, render; refusal or render error keeps today's UI with one notice; an
+  error boundary gives Foundry's page back on later errors), `shell.css` (appended to
+  `setup-ui.css` by `build.ts`).
+- Store: `route` (`library` or a world). The Library route renders today's `ModulesView`.
+- Live test `tests/foundry/setup-shell.spec.ts`: turn on, world page, Edit World window
+  above our page, Library, Configuration window, reload keeps it, switch back.
+
+Deferred: the switch on the options page. The options page has no per-server list yet;
+the switch lives in the Module Library toolbar and our header instead.
+
+Open item: our power menu is always shown, but Foundry only offers Log out and Shut down
+when an admin password is set (SETUP-SPIKE.md); without one the action reports a missing
+control. Collect that flag and hide the menu then (Phase 5, server pages).
+
+Next: close Phase 1 (reviews, commit, report), then Phase 2 (world page).

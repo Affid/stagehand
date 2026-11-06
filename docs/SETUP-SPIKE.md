@@ -221,3 +221,16 @@ node_version, notes, suffix, time`. `download` is a time-limited link: never log
   reader parsed 14.370's page unchanged (107 entries, all issue numbers, banner).
 - No CORS headers, so the Setup page can't fetch them; the extension's background can, with an
   optional host permission for `https://foundryvtt.com/*`.
+
+## Follow-up 2026-11-06 (build 370): Setup menu actions
+
+Read from `public/scripts/foundry.mjs` (`SetupMenu`) and checked live with the new page:
+
+- Shut down (`#onClickShutDownServer`) asks first with `DialogV2.confirm`, then POSTs to
+  `/quit`. Clicking the hidden button keeps that confirm; it opens above our page.
+- Log out (`#onClickAdminLogout`) posts `adminLogout` at once, no confirm (same as the
+  classic page).
+- Log out and Shut down are only offered when an admin password is set
+  (`game.data.options.adminPassword`); without one the hidden buttons don't exist.
+- Configuration (`ServerSettingsConfig`), Backups (`BackupManager`) and Edit World
+  (`WorldConfig`) open as Foundry windows above the new page.
