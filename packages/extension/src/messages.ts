@@ -66,6 +66,16 @@ export const ExtensionMessageSchema = z.discriminatedUnion("kind", [
     /** Apply and launch: the modules on after it, as reviewed (one confirmation). */
     reviewed: z.array(Id).max(5000).optional(),
   }),
+  /** Foundry's public release list, or one release's page (Release history). */
+  z.object({
+    kind: z.literal("foundry-releases"),
+    version: z
+      .string()
+      .regex(/^\d{1,4}\.\d{1,6}$/)
+      .optional(),
+  }),
+  /** Opens the options page to allow reading foundryvtt.com. */
+  z.object({ kind: z.literal("ask-foundryvtt") }),
   z.object({ kind: z.literal("bridge-init") }),
   z.object({ kind: z.literal("relay"), msg: EnvelopeSchema }),
 ]);

@@ -12,6 +12,12 @@ import type { Store } from "./store.ts";
 
 export type Send = <T>(message: ExtensionMessage) => Promise<T>;
 
+/** The background's answer for Foundry's release pages, or what went wrong. */
+export type ReleasesAnswer =
+  | { readonly permitted: false }
+  | { readonly permitted: true; readonly html: string }
+  | { readonly error: string };
+
 /** A conflict means the latest library was loaded and nothing was saved. */
 export type OpOutcome = "ok" | "conflict" | "error";
 
@@ -44,6 +50,10 @@ export interface Actions {
   importLibrary(text: string): Promise<void>;
   /** Intake: these modules are sorted and no longer "new". */
   markSorted(ids: readonly string[]): Promise<void>;
+  /** Foundry's public release list, or one release's page (Release history). */
+  releases(version?: string): Promise<ReleasesAnswer>;
+  /** Opens the options page, where reading foundryvtt.com can be allowed. */
+  askFoundryvtt(): Promise<void>;
 }
 
 type Imported =
@@ -251,6 +261,17 @@ export function createActions(
     async markSorted(ids) {
       await b.guarded(() => send({ kind: "modules-sorted", ids: [...ids] }));
       await b.refresh();
+    },
+    // Errors come back as answers: the history says what went wrong itself.
+    releases: (version) =>
+      send<ReleasesAnswer>({
+        kind: "foundry-releases",
+        ...(version ? { version } : {}),
+      }).catch((e: unknown) => ({
+        error: e instanceof Error ? e.message : String(e),
+      })),
+    async askFoundryvtt() {
+      await b.guarded(() => send({ kind: "ask-foundryvtt" }));
     },
   };
 }

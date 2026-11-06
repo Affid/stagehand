@@ -21,22 +21,28 @@ export interface LoadedExtension {
 
 /**
  * A copy of the build that is granted localhost at install, so the options
- * page's permission request resolves without Chrome's (native) prompt.
+ * page's permission request resolves without Chrome's (native) prompt; and
+ * any other hosts a suite needs (foundryvtt.com for Release history).
  */
-function prepareCopy(): string {
+function prepareCopy(hosts: readonly string[]): string {
   rmSync(UNDER_TEST, { recursive: true, force: true });
   cpSync(DIST, UNDER_TEST, { recursive: true });
   const path = join(UNDER_TEST, "manifest.json");
   const manifest = JSON.parse(readFileSync(path, "utf8")) as object;
   writeFileSync(
     path,
-    JSON.stringify({ ...manifest, host_permissions: ["http://localhost/*"] }),
+    JSON.stringify({
+      ...manifest,
+      host_permissions: ["http://localhost/*", ...hosts],
+    }),
   );
   return UNDER_TEST;
 }
 
-export async function loadExtension(): Promise<LoadedExtension> {
-  const dir = prepareCopy();
+export async function loadExtension(
+  hosts: readonly string[] = [],
+): Promise<LoadedExtension> {
+  const dir = prepareCopy(hosts);
   const context = await chromium.launchPersistentContext("", {
     channel: "chromium",
     viewport: { width: 1600, height: 1000 },

@@ -21,6 +21,11 @@ function deps(granted = true) {
   const d: RouterDeps = {
     state: createState(serialized(memoryKeyValue())),
     scripting,
+    releases: {
+      permitted: vi.fn().mockResolvedValue(true),
+      fetchText: vi.fn().mockResolvedValue("<ol></ol>"),
+      openOptions: vi.fn().mockResolvedValue(undefined),
+    },
     extensionId: "ext",
     extensionUrl: EXT,
     extensionVersion: "0.1.0",
@@ -532,5 +537,44 @@ describe("router: review fixes (Phase 3)", () => {
     await expect(
       route(d, { kind: "launch-hold", worldId: "nope", hold: true }, fromSetup),
     ).rejects.toThrow(/world/i);
+  });
+});
+
+describe("router: Foundry's release pages (package 7)", () => {
+  test("Setup reads the list or one release, only with the permission", async () => {
+    const d = deps();
+    await registered(d);
+    expect(await route(d, { kind: "foundry-releases" }, fromSetup)).toEqual({
+      permitted: true,
+      html: "<ol></ol>",
+    });
+    await route(d, { kind: "foundry-releases", version: "14.370" }, fromSetup);
+    expect(d.releases.fetchText).toHaveBeenLastCalledWith(
+      "https://foundryvtt.com/releases/14.370",
+    );
+    vi.mocked(d.releases.permitted).mockResolvedValue(false);
+    expect(await route(d, { kind: "foundry-releases" }, fromSetup)).toEqual({
+      permitted: false,
+    });
+  });
+
+  test("only a plain version reaches the URL", async () => {
+    const d = deps();
+    await registered(d);
+    for (const version of ["../x", "14.370/../../a", "14.370?q", "x.1"])
+      await expect(
+        route(d, { kind: "foundry-releases", version }, fromSetup),
+      ).rejects.toThrow();
+    expect(d.releases.fetchText).not.toHaveBeenCalled();
+  });
+
+  test("the permission is asked on the options page; a game page can't read", async () => {
+    const d = deps();
+    await registered(d);
+    await route(d, { kind: "ask-foundryvtt" }, fromSetup);
+    expect(d.releases.openOptions).toHaveBeenCalled();
+    await expect(
+      route(d, { kind: "foundry-releases" }, fromGame),
+    ).rejects.toThrow();
   });
 });

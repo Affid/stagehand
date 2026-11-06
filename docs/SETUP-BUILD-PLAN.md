@@ -480,4 +480,16 @@ opens the module's details, the system on the Library's Systems tab, or
 the world. Only the fields shown cross from the page world, never a
 description.
 
+7b3 Release history: Foundry's public list at foundryvtt.com/releases and
+each release's notes, read by the background with the optional permission
+for foundryvtt.com (never with cookies; only those two kinds of URL; the
+version is checked). This generation on your channel, or all channels;
+marked installed, new, manual (Foundry's "Full"); the newest newer release
+first, its notes with every section open. Deviation, by necessity: the
+prototype asks for the permission when the tab first opens, but a page
+script can't ask for one, so the tab explains and opens the options page,
+whose button asks. Without it, the tab links to foundryvtt.com/releases.
+Live: the denied state and the options page; with the permission granted
+at install, Foundry's real list and 14.370's notes.
+
 Then package 7 (server pages) and Phase 6 (News and finish).

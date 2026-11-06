@@ -3,6 +3,9 @@
 import { BUILD } from "../build-info.ts";
 import { send } from "../platform/runtime.ts";
 import { normalizeServerUrl, permissionOrigin } from "../background/servers.ts";
+import { setUpFoundryvtt } from "./options-foundryvtt.ts";
+
+setUpFoundryvtt(document);
 
 const form = document.querySelector<HTMLFormElement>("#add-server");
 const input = document.querySelector<HTMLInputElement>("#server-url");

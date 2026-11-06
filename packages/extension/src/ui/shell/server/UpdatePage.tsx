@@ -12,11 +12,12 @@ import { ActionBox } from "./update/ActionBox.tsx";
 import { CompatBox } from "./update/CompatBox.tsx";
 import { compatData, type CompatData, toCheck } from "./update/compat.ts";
 import { CompatView } from "./update/CompatView.tsx";
+import { HistoryView } from "./update/HistoryView.tsx";
 import { NotesView } from "./update/NotesView.tsx";
 import { usePreview } from "./update/usePreview.ts";
 import { type UpdateState, useUpdate } from "./update/useUpdate.ts";
 
-type View = "notes" | "compat";
+type View = "notes" | "compat" | "history";
 
 /** "You're on Foundry 14.370 (Stable). 14.371 is available." */
 function Summary(props: {
@@ -116,6 +117,7 @@ function Tabs(props: {
       <span class="mls-tablist" role="tablist">
         {tab("notes", "newspaper", t("up.tab.notes"))}
         {tab("compat", "puzzle-piece", t("up.tab.compat"), props.toCheck)}
+        {tab("history", "clock-rotate-left", t("up.tab.history"))}
       </span>
     </nav>
   );
@@ -155,8 +157,15 @@ function ReleaseView(props: {
               <p class="ml-muted">{c.error ?? t("up.previewing")}</p>
             </div>
           )
+        ) : view === "history" ? (
+          <HistoryView channel={u.channel ?? "stable"} />
         ) : (
-          <NotesView release={release} />
+          <NotesView
+            release={release}
+            onHistory={() => {
+              setView("history");
+            }}
+          />
         )}
       </div>
       <div class="mlu-side">

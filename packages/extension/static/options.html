@@ -14,6 +14,22 @@
       <button type="submit">Add server</button>
     </form>
     <output id="status"></output>
+    <section id="foundryvtt">
+      <h2>Foundry's release notes</h2>
+      <p>
+        The Update page's Release history reads Foundry's public release list
+        and notes at foundryvtt.com/releases. That needs permission to read
+        foundryvtt.com; nothing is sent there but the page requests, and no
+        cookies.
+      </p>
+      <button type="button" id="allow-foundryvtt">
+        Allow reading foundryvtt.com
+      </button>
+      <button type="button" id="remove-foundryvtt" hidden>
+        Remove the permission
+      </button>
+      <output id="foundryvtt-status"></output>
+    </section>
     <p id="build"></p>
     <script src="options.js"></script>
   </body>

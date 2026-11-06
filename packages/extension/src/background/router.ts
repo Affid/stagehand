@@ -14,6 +14,7 @@ import {
 } from "../messages.ts";
 import { cancel, queue } from "./commands.ts";
 import { registerServer, type ScriptingPlatform } from "./registration.ts";
+import { type ReleasesPlatform, readReleases } from "./releases.ts";
 import { handleRelay } from "./relay.ts";
 import { pathWithinServer, type ServerId, serverIdOfPage } from "./servers.ts";
 import type { ServerState } from "./state.ts";
@@ -27,6 +28,7 @@ export interface SenderInfo {
 export interface RouterDeps {
   readonly state: ServerState;
   readonly scripting: ScriptingPlatform;
+  readonly releases: ReleasesPlatform;
   readonly extensionId: string;
   readonly extensionUrl: string;
   readonly extensionVersion: string;
@@ -206,6 +208,10 @@ async function fromSetup(
 ): Promise<unknown> {
   if (m.kind === "setup-seen") return setupSeen(deps, server, m);
   if (m.kind === "get-state") return state(deps, server);
+  // Foundry's public release notes: read only, nothing of this server's.
+  if (m.kind === "foundry-releases")
+    return readReleases(deps.releases, m.version);
+  if (m.kind === "ask-foundryvtt") return deps.releases.openOptions();
   if (!SETUP_WRITES.has(m.kind))
     throw new Error(`Unexpected ${m.kind} from Setup`);
   await assertCanChange(deps, server);

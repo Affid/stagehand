@@ -5,6 +5,7 @@ import type { SetupConfig } from "../adapters/config.ts";
 import { loadSetupConfig } from "../adapters/remote.ts";
 import { serialized } from "../background/kv.ts";
 import { chromeKeyValue, chromeScripting } from "../platform/chrome.ts";
+import { FOUNDRY_ORIGIN } from "../background/releases.ts";
 import { route } from "../background/router.ts";
 import { createState } from "../background/state.ts";
 
@@ -29,9 +30,20 @@ const loadConfig = (): Promise<SetupConfig> => {
   return config;
 };
 
+const releases = {
+  permitted: () => chrome.permissions.contains({ origins: [FOUNDRY_ORIGIN] }),
+  fetchText,
+  openOptions: async (): Promise<void> => {
+    await chrome.tabs.create({
+      url: chrome.runtime.getURL("options.html#foundryvtt"),
+    });
+  },
+};
+
 const deps = {
   state: createState(serialized(chromeKeyValue())),
   scripting: chromeScripting(),
+  releases,
   extensionId: chrome.runtime.id,
   extensionUrl: chrome.runtime.getURL(""),
   extensionVersion: chrome.runtime.getManifest().version,

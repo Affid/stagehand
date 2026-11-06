@@ -232,6 +232,26 @@ node_version, notes, suffix, time`. `download` is a time-limited link: never log
 - No CORS headers, so the Setup page can't fetch them; the extension's background can, with an
   optional host permission for `https://foundryvtt.com/*`.
 
+## Follow-up 2026-11-06 (build 370): the update from our Update page, live
+
+- `game.post` posts to the current view's route. On `/setup`, `updateCheck` and
+  `previewCompatibility` fail with "Unsupported setup configuration action"; both, and
+  `updateDownload`, belong to the `/update` route. The page world posts them there with
+  `fetch(getRoute("update"))`, as `game.post` would on Foundry's update screen.
+- `previewCompatibility` needs the release the check returned (posted back whole). For
+  14.370 answered as a newer build it took about 5 s and rated 19 modules, 1 system and
+  2 worlds (codes 1 and 2 here). It returns full package data; only id, title, newest
+  version, code, verified and maximum, required ids, a world's system and the package
+  and changelog links cross to our UI.
+- The download's ticks arrive through `game._addProgressListener` as action
+  `updateDownload`, id `updateCore`, steps download, extract, cleanup, install, then
+  complete or error. We pass them to `ui.setupPackages.onProgress`, as Foundry's
+  `ProgressReceiver` does, so our progress watcher sees them. Not run live (`--noupdate`).
+- Release history: a page script can't ask for a browser permission, so the Update page
+  opens the extension's options page, whose button asks for `https://foundryvtt.com/*`.
+  The background then fetches only `foundryvtt.com/releases/` and `/releases/<version>`,
+  without cookies; the UI parses the HTML with DOMParser.
+
 ## Follow-up 2026-11-06 (build 370): Setup menu actions
 
 Read from `public/scripts/foundry.mjs` (`SetupMenu`) and checked live with the new page:

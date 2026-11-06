@@ -58,7 +58,7 @@ const anchor = (h: string): string => `mlu-${h.replace(/\W+/g, "-")}`;
 
 const ISSUES = "https://github.com/foundryvtt/foundryvtt/issues/";
 
-function Items(props: { readonly items: readonly NoteEntry[] }) {
+export function Items(props: { readonly items: readonly NoteEntry[] }) {
   const { t } = useUi();
   return (
     <ul>
@@ -85,7 +85,7 @@ function Items(props: { readonly items: readonly NoteEntry[] }) {
   );
 }
 
-function Intro(props: { readonly blocks: readonly Element[] }) {
+export function Intro(props: { readonly blocks: readonly Element[] }) {
   return (
     <>
       {props.blocks.map((b, n) => (
