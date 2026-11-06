@@ -335,6 +335,14 @@ by the page world); 4c the next-session schedule (`world.flags["module-
 library"].schedule`, moved forward when Setup opens). Done so far for 4a:
 save protocol fields, collected world fields (joinTheme, safeMode,
 playtime, verified), page-world actions lock/unlock/deleteWorld/
-pickBackground, tests in `test/ui/world-about-boxes.test.tsx` (UI not yet).
+pickBackground. 4a done (`7e43b7b`): the About layout and boxes. 4b done
+(`e92c423`): Foundry's prose-mirror mounted by the page world in an
+`ml-pm-` host (EDITOR_OPEN / EDITOR_SAVE / EDITOR_CLOSE), live-tested. Next:
+4c, the schedule (port `design/setup-page/src/_sched.js`: `zonedToUtc`,
+`upcoming`, `nextOf`, `ruleText` as a pure tested model; the session box
+with the next date, rule, upcoming list with Skip / Remove; the editor with
+calendar, 24-hour time, quick times, time zone list and search, repeats none
+/ weekly / 2 weeks / monthly / chosen dates; saved as `flags` via editWorld
+plus `nextSession`; moved forward on Setup open). Then reviews for package 4.
 
 Then Phase 6 (News and finish).
