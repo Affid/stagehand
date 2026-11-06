@@ -58,6 +58,14 @@ export function parseCoreVersion(version: string): CoreVersion {
 
 const isGenerationOnly = (v: string): boolean => Number.isInteger(Number(v));
 
+/**
+ * Whether Foundry badges this availability as a risk (a warning or an
+ * error). A newer build of the verified generation is neutral in Foundry
+ * (UNVERIFIED_BUILD, "verified with 14.369"), so it is not one.
+ */
+export const isCompatibilityRisk = (a: Availability): boolean =>
+  a !== Availability.VERIFIED && a !== Availability.UNVERIFIED_BUILD;
+
 export function testAvailability(
   compatibility: CompatibilityRange,
   core: CoreVersion,

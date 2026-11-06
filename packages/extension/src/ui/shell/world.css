@@ -273,6 +273,12 @@
   color: var(--color-light-4);
 }
 
+/* Foundry would badge it a compatibility risk; a change's colour still wins. */
+.mls-shell .mlw-card.risk {
+  border-color: rgb(245 196 94 / 55%);
+  border-left-color: #f5c45e;
+}
+
 .mls-shell .mlw-card.plus {
   border-left-color: #6fd083;
   background: rgb(63 143 82 / 14%);

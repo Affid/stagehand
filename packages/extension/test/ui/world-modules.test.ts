@@ -149,6 +149,23 @@ describe("a world's modules, now and after the next launch", () => {
     });
   });
 
+  test("a newer build of the verified generation is fine, as Foundry rates it", () => {
+    const base = setupState();
+    const s = state(["module-library"], [], {
+      setup: base.setup && {
+        ...base.setup,
+        modules: base.setup.modules.map((m) =>
+          m.id === "a"
+            ? { ...m, compatibility: { minimum: "13", verified: "14.300" } }
+            : m,
+        ),
+      },
+    });
+    expect(row(s, "a")?.why).toEqual({ kind: "note", text: "for Strahd" });
+    expect(row(s, "a")?.risk).toBe(false);
+    expect(row(s, "b")?.risk).toBe(true);
+  });
+
   test("why: not verified, then the note, then the authors", () => {
     const s = state(["module-library"]);
     expect(row(s, "b")?.why).toEqual({ kind: "unverified" });

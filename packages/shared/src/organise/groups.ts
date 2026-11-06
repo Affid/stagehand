@@ -1,8 +1,8 @@
 // Smart groups: automatic, read-only (PRD 7.3).
 import type { PackageInfo } from "../package.ts";
 import {
-  Availability,
   type CoreVersion,
+  isCompatibilityRisk,
   testAvailability,
 } from "../version.ts";
 
@@ -43,8 +43,9 @@ export function smartGroups(
   modules: readonly PackageInfo[],
   ctx: GroupContext,
 ): SmartGroup[] {
+  // As Foundry badges it: a newer build of the verified generation is fine.
   const verified = (m: PackageInfo): boolean =>
-    testAvailability(m.compatibility, ctx.core) === Availability.VERIFIED;
+    !isCompatibilityRisk(testAvailability(m.compatibility, ctx.core));
   const groups: SmartGroup[] = [
     {
       key: "library",

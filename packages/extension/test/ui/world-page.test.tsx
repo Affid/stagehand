@@ -97,9 +97,13 @@ describe("the Modules tab", () => {
   test("each card says why in one line", () => {
     const { container } = page();
     expect(card(container, "a").textContent).toContain("for Strahd");
+    // Verified for Foundry 13: a risk on 14, marked like Foundry's warning.
     expect(card(container, "b").textContent).toContain(
-      "Not verified for Foundry 14.369",
+      "Not verified for Foundry 14",
     );
+    expect(card(container, "b").textContent).not.toContain("14.369");
+    expect(card(container, "b").classList.contains("risk")).toBe(true);
+    expect(card(container, "a").classList.contains("risk")).toBe(false);
     expect(card(container, "c").textContent).toContain("By Ann");
   });
 

@@ -24,7 +24,8 @@ export interface WhyContext {
   readonly t: Translate;
   /** A module's title, or its id when it isn't installed. */
   readonly name: (id: string) => string;
-  readonly coreVersion: string;
+  /** "14": a risk is not verified for the running generation. */
+  readonly coreGeneration: string;
 }
 
 function problemLine(row: WorldModuleRow, c: WhyContext): WhyLine | undefined {
@@ -95,7 +96,7 @@ export function whyLine(row: WorldModuleRow, c: WhyContext): WhyLine {
       return {
         tone: "warn",
         icon: "code-branch",
-        text: t("wp.why.unverified", { version: c.coreVersion }),
+        text: t("wp.why.unverified", { version: c.coreGeneration }),
       };
     case "note":
       return { tone: "note", icon: "note-sticky", text: why.text };

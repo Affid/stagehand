@@ -94,6 +94,14 @@
   min-width: 0;
 }
 
+.mls-shell .mll-card.risk {
+  border-left: 3px solid #8a6a1f;
+}
+
+.mls-shell .mll-card .meta .uv {
+  color: #f5c45e;
+}
+
 .mls-shell .mll-card.selected {
   border-color: var(--color-warm-1);
   box-shadow: 0 0 6px rgb(238 155 58 / 35%);

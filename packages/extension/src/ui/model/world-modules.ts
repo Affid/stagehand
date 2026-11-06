@@ -5,7 +5,7 @@
 import type { Plan } from "@module-library/shared/resolver";
 import type { PackageInfo } from "@module-library/shared/package";
 import {
-  Availability,
+  isCompatibilityRisk,
   parseCoreVersion,
   testAvailability,
 } from "@module-library/shared/version";
@@ -38,6 +38,8 @@ export interface WorldModuleRow {
   readonly why: Why;
   /** Worth the GM's attention before launching. */
   readonly problem: boolean;
+  /** Foundry would badge it as a compatibility risk (yellow edge). */
+  readonly risk: boolean;
 }
 
 export interface WorldModules {
@@ -106,14 +108,21 @@ function presetWhy(ctx: Context, id: string): Why | undefined {
   return undefined;
 }
 
+/** As Foundry badges it: a newer build of the verified generation is fine. */
+const isRisky = (ctx: Context, pkg: PackageInfo): boolean =>
+  isCompatibilityRisk(
+    testAvailability(
+      pkg.compatibility,
+      parseCoreVersion(ctx.state.setup?.core.version ?? ""),
+    ),
+  );
+
 function infoWhy(ctx: Context, pkg: PackageInfo): Why {
   const preset = presetWhy(ctx, pkg.id);
   if (preset) return preset;
   const users = neededBy(ctx, pkg.id);
   if (users.length) return { kind: "neededBy", ids: users };
-  const core = parseCoreVersion(ctx.state.setup?.core.version ?? "");
-  if (testAvailability(pkg.compatibility, core) !== Availability.VERIFIED)
-    return { kind: "unverified" };
+  if (isRisky(ctx, pkg)) return { kind: "unverified" };
   const note = ctx.state.library.modules[pkg.id]?.note.trim();
   if (note) return { kind: "note", text: note };
   return { kind: "authors", text: pkg.authors.map((a) => a.name).join(", ") };
@@ -131,10 +140,12 @@ function rowFor(ctx: Context, pkg: PackageInfo): WorldModuleRow {
       delta,
       why: { kind: "companion" },
       problem: false,
+      risk: false,
     };
   const problem = problemWhy(ctx, pkg);
   const why = problem ?? infoWhy(ctx, pkg);
-  return { pkg, now, next, delta, why, problem: problem !== undefined };
+  const risk = isRisky(ctx, pkg);
+  return { pkg, now, next, delta, why, problem: problem !== undefined, risk };
 }
 
 function context(state: SetupState, worldId: string): Context | undefined {

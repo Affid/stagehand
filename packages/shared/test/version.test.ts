@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import {
   Availability,
+  isCompatibilityRisk,
   isNewerVersion,
   isUsable,
   parseCoreVersion,
@@ -60,6 +61,17 @@ describe("testAvailability", () => {
     [{}, Availability.UNKNOWN],
   ])("%j on 14.369 is %s", (compatibility, expected) => {
     expect(testAvailability(compatibility, core)).toBe(expected);
+  });
+
+  test("a risk as Foundry badges it: a newer build of the same generation is neutral", () => {
+    expect(isCompatibilityRisk(Availability.VERIFIED)).toBe(false);
+    expect(isCompatibilityRisk(Availability.UNVERIFIED_BUILD)).toBe(false);
+    expect(isCompatibilityRisk(Availability.UNVERIFIED_GENERATION)).toBe(true);
+    expect(isCompatibilityRisk(Availability.UNKNOWN)).toBe(true);
+    expect(isCompatibilityRisk(Availability.REQUIRES_CORE_UPGRADE)).toBe(true);
+    expect(isCompatibilityRisk(Availability.REQUIRES_CORE_DOWNGRADE)).toBe(
+      true,
+    );
   });
 
   test("unverified packages are still usable; out-of-range ones are not", () => {

@@ -40,7 +40,10 @@ describe("the Library page", () => {
     expect(a.textContent).toContain("v1.0.0");
     expect(a.textContent).toContain("on in 1 world");
     expect(card(container, "c").textContent).toContain("in no world");
-    expect(card(container, "b").textContent).toContain("Not verified");
+    expect(card(container, "b").textContent).toContain(
+      "Not verified for Foundry 14",
+    );
+    expect(card(container, "b").classList.contains("risk")).toBe(true);
   });
 
   test("Group by tag, author or smart group", () => {

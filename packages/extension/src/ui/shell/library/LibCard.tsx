@@ -3,8 +3,8 @@
 // In select mode a checkbox picks it for the selection band.
 import type { PackageInfo } from "@module-library/shared/package";
 import {
-  Availability,
   type CoreVersion,
+  isCompatibilityRisk,
   testAvailability,
 } from "@module-library/shared/version";
 import { Icon } from "../../common/widgets.tsx";
@@ -12,6 +12,10 @@ import { useUi } from "../../context.ts";
 import { plural } from "../../i18n.ts";
 
 const MAX_TAGS = 3;
+
+/** As Foundry badges it: a newer build of the verified generation is fine. */
+const isRisk = (pkg: PackageInfo, core: CoreVersion): boolean =>
+  isCompatibilityRisk(testAvailability(pkg.compatibility, core));
 
 const toggled = (list: readonly string[], id: string): string[] =>
   list.includes(id) ? list.filter((x) => x !== id) : [...list, id];
@@ -22,13 +26,13 @@ function Line(props: {
 }) {
   const { state, t } = useUi();
   const { pkg } = props;
-  if (testAvailability(pkg.compatibility, props.core) !== Availability.VERIFIED)
+  if (isRisk(pkg, props.core))
     return (
       <div class="l2 warn">
         <Icon name="code-branch" />
         <span>
           {t("wp.why.unverified", {
-            version: state.data.setup?.core.version ?? "",
+            version: String(props.core.generation),
           })}
         </span>
       </div>
@@ -111,7 +115,7 @@ export function LibCard(props: {
   };
   return (
     <li
-      class={`mll-card${selected ? " selected" : ""}${props.open ? " viewing" : ""}`}
+      class={`mll-card${selected ? " selected" : ""}${props.open ? " viewing" : ""}${isRisk(pkg, props.core) ? " risk" : ""}`}
       data-module={pkg.id}
     >
       <div class="l1">
@@ -137,7 +141,10 @@ export function LibCard(props: {
       <div class="l3">
         <Tags id={pkg.id} />
         <span class="meta">
-          v{pkg.version} · {where(props.worlds)}
+          <span class={isRisk(pkg, props.core) ? "uv" : ""}>
+            v{pkg.version}
+          </span>{" "}
+          · {where(props.worlds)}
         </span>
       </div>
     </li>

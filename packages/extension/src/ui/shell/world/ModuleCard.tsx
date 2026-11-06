@@ -47,6 +47,7 @@ export function ModuleCard(props: CardProps) {
     row.next ? "on" : "off",
     row.delta === "on" ? "plus" : row.delta === "off" ? "minus" : "",
     row.problem ? "prob" : "",
+    row.risk ? "risk" : "",
   ].join(" ");
   return (
     <li class={cls} data-module={row.pkg.id}>
