@@ -274,7 +274,7 @@ document.addEventListener("change", (e) => {
     seed.forEach((x) => ST.sDraft.dates.set(x.date, ST.sDraft.time));
   }
   if (k === "hh" || k === "mm") { const [h, m] = ST.sDraft.time.split(":"); ST.sDraft.time = k === "hh" ? `${el.value}:${m}` : `${h}:${el.value}`; } else ST.sDraft[k] = el.value;
-  render();
+  renderSoon();
 });
 
 document.addEventListener("change", (e) => {
@@ -282,5 +282,5 @@ document.addEventListener("change", (e) => {
   if (!el || !ST.sDraft) return;
   const v = el.value.trim();
   if (/^([01]\d|2[0-3]):[0-5]\d$/.test(v)) ST.sDraft.dates.set(el.dataset.sdate, v);
-  render();
+  renderSoon();
 });

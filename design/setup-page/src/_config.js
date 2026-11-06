@@ -174,11 +174,39 @@ A.cfgpwset = () => {
   if (a !== b) { ST.cfgPw.err = "The two don't match."; render(); return; }
   ST.cfgPw = { step: "done", next: true }; render();
 };
+const cfgValue = (el) => (el.dataset.cfg === "port" ? (el.value === "" ? "" : Number(el.value)) : el.value.trim());
+const isTyped = (el) => el.tagName === "INPUT" && /^(text|number|password|search)$/.test(el.type);
+/** Update what depends on typed values (save bar, changed marks, errors, HTTPS box) without replacing any field. */
+function cfgRefresh() {
+  const cur = document.querySelector(".mlc-page");
+  if (!cur) return;
+  const tmp = document.createElement("div");
+  tmp.innerHTML = serverConfigPage();
+  const swap = (sel) => {
+    const a = cur.querySelector(sel), b = tmp.querySelector(sel);
+    if (a && b) { if (a.outerHTML !== b.outerHTML) a.replaceWith(b); } else if (a && !b) a.remove(); else if (!a && b) cur.querySelector(".mls-body-main").append(b);
+  };
+  swap(".mlc-bar"); swap(".mlc-https");
+  const oldRows = cur.querySelectorAll(".mlc-set"), newRows = tmp.querySelectorAll(".mlc-set");
+  if (oldRows.length !== newRows.length) { renderSoon(); return; }
+  oldRows.forEach((row, i) => {
+    const n = newRows[i];
+    if (row.className !== n.className) row.className = n.className;
+    const l = row.querySelector(".l"), nl = n.querySelector(".l");
+    if (l && nl && l.innerHTML !== nl.innerHTML) l.innerHTML = nl.innerHTML;
+  });
+}
+document.addEventListener("input", (e) => {
+  const el = e.target.closest?.("[data-cfg]");
+  if (!el || !isTyped(el)) return;
+  ST.cfg[el.dataset.cfg] = cfgValue(el);
+  cfgRefresh();
+});
 document.addEventListener("change", (e) => {
   const el = e.target.closest?.("[data-cfg]");
   if (!el) return;
-  const k = el.dataset.cfg;
-  ST.cfg[k] = el.type === "checkbox" ? el.checked : k === "port" ? (el.value === "" ? "" : Number(el.value)) : el.value.trim();
+  if (isTyped(el)) { ST.cfg[el.dataset.cfg] = cfgValue(el); cfgRefresh(); return; }
+  ST.cfg[el.dataset.cfg] = el.type === "checkbox" ? el.checked : el.value.trim();
   render();
 });
 

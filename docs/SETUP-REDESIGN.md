@@ -79,6 +79,9 @@ necessarily its card markup.
 
 - Real buttons and links for every action; all reachable by keyboard (C2).
 - Update the page in place; never move focus on re-render (H4).
+- A click right after typing must land: a text field saves when it loses focus (on
+  mousedown elsewhere), so nothing may replace the element under the pointer at that moment.
+  `design/setup-page/checks/cfgtyping.mjs` covers it.
 - Announce queued changes and saves to screen readers (live region) (H4).
 - Nothing moves under the pointer: bars that appear (unsaved changes, progress, selection)
   take a slot whose space is already kept, or replace something of the same height.
@@ -109,7 +112,7 @@ necessarily its card markup.
 cd design/setup-page
 ./assets.sh            # copies Foundry's CSS, fonts and images from ~/foundry/vtt (not in git)
 node build.mjs         # writes out/index.html (playground) and out/setup-shell.html
-node checks/run.mjs    # 29 Playwright checks of the mockup's flows
+node checks/run.mjs    # 30 Playwright checks of the mockup's flows
 ```
 
 `fvtt/` and `out/` are git-ignored: they hold Foundry's and Font Awesome Pro's licensed

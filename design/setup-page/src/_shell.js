@@ -494,6 +494,15 @@ function render() {
   });
   document.getElementById("mls-rename")?.focus();
 }
+// A text field saves when it loses focus, which happens on mousedown elsewhere. Redrawing then would
+// replace the element under the pointer and lose the click, so such redraws wait for the pointer.
+let pointerHeld = false, renderQueued = false;
+document.addEventListener("pointerdown", () => { pointerHeld = true; }, true);
+document.addEventListener("pointerup", () => {
+  pointerHeld = false;
+  if (renderQueued) setTimeout(() => { if (renderQueued) { renderQueued = false; render(); } }, 0);
+}, true);
+function renderSoon() { if (pointerHeld) renderQueued = true; else render(); }
 const rerender = (scrollTop = false) => { render(); if (scrollTop) document.querySelectorAll(".ml-sections, .mls-panel .scroll").forEach((el) => { el.scrollTop = 0; }); };
 
 function applyFilter() {
@@ -657,7 +666,7 @@ document.addEventListener("change", (e) => {
     case "ifolder": ST.intakeFolder[el.dataset.id] = v; break;
     default: return;
   }
-  render();
+  renderSoon();
 });
 document.addEventListener("input", (e) => {
   const f = e.target.dataset?.filter;
