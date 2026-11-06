@@ -7,6 +7,7 @@ import {
   MAX_ID,
   MAX_TITLE,
   MAX_VERSION,
+  ScheduleSchema,
   type SetupData,
   type WorldInfo,
 } from "@module-library/shared/world";
@@ -36,7 +37,16 @@ function worldExtras(w: Loose): Partial<WorldInfo> {
       ? { playtime }
       : {}),
     ...(verified ? { verified } : {}),
+    ...scheduleOf(w),
   };
+}
+
+/** Our schedule in the world's flags, when it passes the schema. */
+function scheduleOf(w: Loose): Partial<WorldInfo> {
+  const flags = w.flags as Loose | undefined;
+  const ours = flags?.["module-library"] as Loose | undefined;
+  const parsed = ScheduleSchema.safeParse(ours?.schedule);
+  return parsed.success ? { schedule: parsed.data } : {};
 }
 
 const toWorld = (w: Loose): WorldInfo => {

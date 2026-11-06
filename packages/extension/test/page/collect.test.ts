@@ -156,6 +156,31 @@ describe("reading Setup's package data (V-1)", () => {
     expect(SetupDataSchema.safeParse(data).success).toBe(true);
   });
 
+  test("our schedule comes from the world's flags, only when it is sound", () => {
+    const schedule = {
+      start: "2026-11-10",
+      time: "19:00",
+      tz: "Europe/Berlin",
+      freq: "w1",
+      skips: [],
+    };
+    const data = collect({
+      worlds: {
+        values: () =>
+          [
+            { id: "w", flags: { "module-library": { schedule } } },
+            {
+              id: "v",
+              flags: { "module-library": { schedule: { time: "25:00" } } },
+            },
+          ].values(),
+      },
+    } as never);
+    expect(data.worlds[0]?.schedule).toEqual(schedule);
+    expect(data.worlds[1]).not.toHaveProperty("schedule");
+    expect(SetupDataSchema.safeParse(data).success).toBe(true);
+  });
+
   test("world and system names are cut to their bounds (security review)", () => {
     const long = "x".repeat(5000);
     const data = collect({

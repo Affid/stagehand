@@ -18,11 +18,20 @@ export type SaveGlobals = Pick<PageGlobals, "game" | "ui">;
 const message = (e: unknown): string =>
   e instanceof Error ? e.message : String(e);
 
+/** Our fields as Foundry stores them: the schedule lives in our flags. */
+function forFoundry(changes: WorldChanges): object {
+  const { schedule, ...rest } = changes;
+  if (schedule === undefined) return rest;
+  const ours = schedule === null ? { "-=schedule": null } : { schedule };
+  return { ...rest, flags: { "module-library": ours } };
+}
+
 export async function saveWorld(
   page: SaveGlobals,
   worldId: string,
-  changes: WorldChanges,
+  wanted: WorldChanges,
 ): Promise<string | undefined> {
+  const changes = forFoundry(wanted);
   const game = page.game;
   const world = game?.worlds?.get?.(worldId) as EditableWorld | undefined;
   if (!world || !game?.post) return `No world ${worldId}`;

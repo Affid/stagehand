@@ -87,6 +87,26 @@ export const MAX_ID = 200;
 export const MAX_TITLE = 300;
 export const MAX_VERSION = 50;
 
+const DATE = /^\d{4}-\d{2}-\d{2}$/;
+const TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
+/** Chosen dates or skips past this are not a real schedule. */
+const MAX_DATES = 400;
+
+/** The next-session schedule, ours, in the world's flags["module-library"]. */
+export const ScheduleSchema = z.object({
+  start: z.string().regex(DATE),
+  time: z.string().regex(TIME),
+  tz: z.string().min(1).max(64),
+  freq: z.enum(["none", "w1", "w2", "m1", "dates"]),
+  skips: z.array(z.string().regex(DATE)).max(MAX_DATES),
+  dates: z
+    .record(z.string().regex(DATE), z.string().regex(TIME))
+    .refine((d) => Object.keys(d).length <= MAX_DATES)
+    .optional(),
+});
+
+export type ScheduleData = z.infer<typeof ScheduleSchema>;
+
 export const WorldInfoSchema = z.object({
   id: z.string().min(1).max(MAX_ID),
   title: z.string().max(MAX_TITLE),
@@ -112,6 +132,8 @@ export const WorldInfoSchema = z.object({
   playtime: z.number().int().nonnegative().optional(),
   /** The Foundry version the world was checked with (compatibility). */
   verified: z.string().max(MAX_VERSION).optional(),
+  /** Our next-session schedule, from the world's flags. */
+  schedule: ScheduleSchema.optional(),
 });
 
 export type WorldInfo = z.infer<typeof WorldInfoSchema>;

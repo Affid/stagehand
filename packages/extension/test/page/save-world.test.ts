@@ -47,6 +47,33 @@ describe("saving a world through Foundry", () => {
     expect(f.render).toHaveBeenCalled();
   });
 
+  test("our schedule goes into the world's flags; null removes it", async () => {
+    const f = foundry();
+    const schedule = {
+      start: "2026-11-10",
+      time: "19:00",
+      tz: "Europe/Berlin",
+      freq: "w1" as const,
+      skips: [],
+    };
+    await saveWorld(f.page, "w", {
+      schedule,
+      nextSession: "2026-11-10T18:00:00.000Z",
+    });
+    expect(f.post).toHaveBeenCalledWith({
+      action: "editWorld",
+      id: "w",
+      nextSession: "2026-11-10T18:00:00.000Z",
+      flags: { "module-library": { schedule } },
+    });
+    await saveWorld(f.page, "w", { schedule: null });
+    expect(f.post).toHaveBeenLastCalledWith({
+      action: "editWorld",
+      id: "w",
+      flags: { "module-library": { "-=schedule": null } },
+    });
+  });
+
   test("a value Foundry rejects is never sent", async () => {
     const f = foundry({
       validate: () => {

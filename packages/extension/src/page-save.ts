@@ -1,6 +1,11 @@
 // Saving a world's details from the new Setup page (build plan, Phase 4):
 // the UI asks with SAVE_WORLD and a request id; the page world answers
 // SAVE_DONE with the same id and an error if it failed. Checked both ways.
+import {
+  type ScheduleData,
+  ScheduleSchema,
+} from "@module-library/shared/world";
+
 type Loose = Readonly<Record<string, unknown>>;
 
 /** The fields our About tab edits; Foundry's validate checks them again. */
@@ -19,6 +24,8 @@ export interface WorldChanges {
   readonly resetKeys?: true;
   /** HTML from Foundry's own editor; Foundry cleans it when it saves. */
   readonly description?: string;
+  /** Our schedule, saved in the world's flags; null removes it. */
+  readonly schedule?: ScheduleData | null;
 }
 
 export interface SaveWorld {
@@ -49,6 +56,7 @@ const KEYS: ReadonlySet<string> = new Set([
   "safeMode",
   "resetKeys",
   "description",
+  "schedule",
 ]);
 
 const isObject = (v: unknown): v is Loose =>
@@ -98,6 +106,11 @@ const CHECKS: Readonly<Record<string, Check>> = {
     v === undefined ? undefined : typeof v === "boolean" ? v : BAD,
   resetKeys: (v) => (v === undefined ? undefined : v === true ? v : BAD),
   description: text(MAX_DESCRIPTION, true),
+  schedule: (v) => {
+    if (v === undefined || v === null) return v;
+    const parsed = ScheduleSchema.safeParse(v);
+    return parsed.success ? parsed.data : BAD;
+  },
 };
 
 function changes(v: unknown): WorldChanges | undefined {

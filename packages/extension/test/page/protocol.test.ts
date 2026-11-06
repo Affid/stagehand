@@ -168,6 +168,16 @@ describe("saving a world's details", () => {
       { resetKeys: true },
       { description: "<p>Gothic</p>" },
       { description: "" },
+      {
+        schedule: {
+          start: "2026-11-10",
+          time: "19:00",
+          tz: "Europe/Berlin",
+          freq: "w1",
+          skips: [],
+        },
+      },
+      { schedule: null },
     ])
       expect(save(changes)?.payload).toMatchObject({ changes });
   });
@@ -188,6 +198,16 @@ describe("saving a world's details", () => {
       { background: 3 },
       { background: "x".repeat(2049) },
       { description: "x".repeat(20001) },
+      {
+        schedule: {
+          start: "soon",
+          time: "19:00",
+          tz: "UTC",
+          freq: "w1",
+          skips: [],
+        },
+      },
+      { schedule: "weekly" },
       null,
     ])
       expect(save(changes)).toBeUndefined();
