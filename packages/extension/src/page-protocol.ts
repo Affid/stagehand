@@ -46,7 +46,15 @@ export const SERVER_ACTIONS = [
   "shutdown",
   "createWorld",
 ] as const;
-export const WORLD_ACTIONS = ["launch", "favorite", "backupLaunch"] as const;
+export const WORLD_ACTIONS = [
+  "launch",
+  "favorite",
+  "lock",
+  "unlock",
+  "deleteWorld",
+  "pickBackground",
+  "backupLaunch",
+] as const;
 export type FoundryAction =
   | { readonly action: (typeof SERVER_ACTIONS)[number] }
   | {

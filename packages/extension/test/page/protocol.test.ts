@@ -156,6 +156,21 @@ describe("saving a world's details", () => {
     });
   });
 
+  test("accepts the About tab's other fields", () => {
+    for (const changes of [
+      { system: "pf2e" },
+      { joinTheme: "minimal" },
+      { joinTheme: "default" },
+      { background: "worlds/w/bg.webp" },
+      { background: null },
+      { safeMode: true },
+      { resetKeys: true },
+      { description: "<p>Gothic</p>" },
+      { description: "" },
+    ])
+      expect(save(changes)?.payload).toMatchObject({ changes });
+  });
+
   test("refuses empty, oversized, unreadable or unknown changes", () => {
     for (const changes of [
       {},
@@ -163,7 +178,15 @@ describe("saving a world's details", () => {
       { title: "x".repeat(201) },
       { nextSession: "soon" },
       { nextSession: 5 },
-      { title: "t", safeMode: true },
+      { title: "t", lockPackage: true },
+      { system: "" },
+      { system: "x".repeat(201) },
+      { joinTheme: "fancy" },
+      { safeMode: false },
+      { resetKeys: "yes" },
+      { background: 3 },
+      { background: "x".repeat(2049) },
+      { description: "x".repeat(20001) },
       null,
     ])
       expect(save(changes)).toBeUndefined();

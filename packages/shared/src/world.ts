@@ -104,6 +104,14 @@ export const WorldInfoSchema = z.object({
   description: z.string().max(MAX_DESCRIPTION).optional(),
   /** The next session as Foundry stores it (one UTC time). */
   nextSession: z.string().max(64).optional(),
+  /** Foundry's join screen: "default" or "minimal". */
+  joinTheme: z.enum(["default", "minimal"]).optional(),
+  /** The next launch runs with every module off (one-shot). */
+  safeMode: z.boolean().optional(),
+  /** Seconds played, as Foundry counts them. */
+  playtime: z.number().int().nonnegative().optional(),
+  /** The Foundry version the world was checked with (compatibility). */
+  verified: z.string().max(MAX_VERSION).optional(),
 });
 
 export type WorldInfo = z.infer<typeof WorldInfoSchema>;

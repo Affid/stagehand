@@ -4,6 +4,7 @@
 // Returns an error message, or undefined when the action was started.
 import type { FoundryAction } from "../page-protocol.ts";
 import type { PageGlobals } from "./globals.ts";
+import { saveWorld } from "./save-world.ts";
 
 const MENU_ACTION: Record<string, string> = {
   warnings: "viewWarnings",
@@ -87,6 +88,76 @@ async function toggleFavorite(
   return undefined;
 }
 
+/**
+ * As Foundry's card menu does (SetupPackages#toggleLock): its internal
+ * lockPackage request, then a re-render. Behind the `lockPackage` flag.
+ */
+async function setLock(
+  page: ActionGlobals,
+  id: string,
+  shouldLock: boolean,
+): Promise<string | undefined> {
+  const world = worldOf(page, id) as
+    (WorldLike & { locked?: boolean }) | undefined;
+  const game = page.game;
+  if (!world || !game?.post) return `No world ${id}`;
+  await game.post({ action: "lockPackage", type: "world", id, shouldLock });
+  world.locked = shouldLock;
+  const setup = page.ui?.setupPackages as
+    { render?: () => unknown } | undefined;
+  await setup?.render?.();
+  return undefined;
+}
+
+/** Foundry's own uninstall: its confirm-code dialog, then Setup reloads. */
+async function deleteWorld(
+  page: ActionGlobals,
+  id: string,
+): Promise<string | undefined> {
+  const world = worldOf(page, id);
+  const uninstall = (
+    page.game as
+      { uninstallPackage?: (p: unknown) => Promise<unknown> } | undefined
+  )?.uninstallPackage;
+  if (!world || !uninstall) return `No world ${id}`;
+  await uninstall.call(page.game, world);
+  return undefined;
+}
+
+interface PickerClass {
+  readonly implementation?: PickerClass;
+  new (options: {
+    type: string;
+    current: string;
+    callback: (path: string) => unknown;
+  }): { render(force?: boolean): unknown };
+}
+
+/**
+ * Foundry's own file picker for the world's background; the pick is saved
+ * through editWorld like every About field (behind the `editWorld` flag).
+ */
+function pickBackground(page: ActionGlobals, id: string): string | undefined {
+  const world = worldOf(page, id) as
+    (WorldLike & { background?: string }) | undefined;
+  const apps = (
+    page.foundry?.applications as
+      { apps?: { FilePicker?: PickerClass } } | undefined
+  )?.apps;
+  const Picker = apps?.FilePicker?.implementation ?? apps?.FilePicker;
+  if (!world || !Picker) return `No world ${id}`;
+  const picker = new Picker({
+    type: "image",
+    current: world.background ?? "",
+    callback: async (path: string) => {
+      const error = await saveWorld(page, id, { background: path });
+      if (error) page.ui?.notifications?.error?.(error);
+    },
+  });
+  picker.render(true);
+  return undefined;
+}
+
 /** Foundry's warnings window opens under its own menu, hidden by our page. */
 export const WARNINGS_ID = "setup-warnings";
 const PLACE_TOP = 80;
@@ -145,6 +216,13 @@ export async function runFoundryAction(
         return await backupThenLaunch(doc, page, a.worldId, a.note);
       case "favorite":
         return await toggleFavorite(page, a.worldId);
+      case "lock":
+      case "unlock":
+        return await setLock(page, a.worldId, a.action === "lock");
+      case "deleteWorld":
+        return await deleteWorld(page, a.worldId);
+      case "pickBackground":
+        return pickBackground(page, a.worldId);
     }
   } catch (e) {
     return e instanceof Error ? e.message : String(e);

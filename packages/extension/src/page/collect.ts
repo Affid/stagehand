@@ -16,6 +16,29 @@ type Loose = Record<string, unknown>;
 const str = (v: unknown): string => (typeof v === "string" ? v : "");
 const all = (c?: Collection): Loose[] => [...(c?.values() ?? [])] as Loose[];
 
+const THEMES: readonly unknown[] = ["default", "minimal"];
+
+/** Join screen, safe mode, play time and the verified version, when sound. */
+function worldExtras(w: Loose): Partial<WorldInfo> {
+  const verified = str((w.compatibility as Loose | undefined)?.verified).slice(
+    0,
+    MAX_VERSION,
+  );
+  const playtime = w.playtime;
+  return {
+    ...(THEMES.includes(w.joinTheme)
+      ? { joinTheme: w.joinTheme as "default" | "minimal" }
+      : {}),
+    ...(w.safeMode === true ? { safeMode: true } : {}),
+    ...(typeof playtime === "number" &&
+    Number.isInteger(playtime) &&
+    playtime >= 0
+      ? { playtime }
+      : {}),
+    ...(verified ? { verified } : {}),
+  };
+}
+
 const toWorld = (w: Loose): WorldInfo => {
   const lastPlayed = str(w.lastPlayed);
   const background = str(w.background);
@@ -34,6 +57,7 @@ const toWorld = (w: Loose): WorldInfo => {
     ...(background ? { background } : {}),
     ...(description ? { description } : {}),
     ...(nextSession ? { nextSession } : {}),
+    ...worldExtras(w),
   };
 };
 

@@ -117,6 +117,98 @@ describe("Foundry actions on its own controls", () => {
     ).toMatch(/warnings/);
   });
 
+  test("Lock and Unlock post Foundry's lockPackage, then Setup re-renders", async () => {
+    const world = { id: "strahd", type: "world", locked: false };
+    const post = vi.fn(() => Promise.resolve({}));
+    const render = vi.fn();
+    const page = {
+      game: {
+        post,
+        worlds: { values: () => [].values(), get: () => world },
+      },
+      ui: { setupPackages: { render } },
+    };
+    expect(
+      await runFoundryAction(document, page, {
+        action: "lock",
+        worldId: "strahd",
+      }),
+    ).toBeUndefined();
+    expect(post).toHaveBeenCalledWith({
+      action: "lockPackage",
+      type: "world",
+      id: "strahd",
+      shouldLock: true,
+    });
+    expect(world.locked).toBe(true);
+    expect(render).toHaveBeenCalled();
+    await runFoundryAction(document, page, {
+      action: "unlock",
+      worldId: "strahd",
+    });
+    expect(post).toHaveBeenLastCalledWith(
+      expect.objectContaining({ shouldLock: false }),
+    );
+  });
+
+  test("Delete goes to Foundry's own uninstall, with its confirm code", async () => {
+    const world = { id: "strahd", type: "world" };
+    const uninstallPackage = vi.fn(() => Promise.resolve());
+    const page = {
+      game: {
+        uninstallPackage,
+        worlds: { values: () => [].values(), get: () => world },
+      },
+    };
+    expect(
+      await runFoundryAction(document, page, {
+        action: "deleteWorld",
+        worldId: "strahd",
+      }),
+    ).toBeUndefined();
+    expect(uninstallPackage).toHaveBeenCalledWith(world);
+  });
+
+  test("Change background opens Foundry's file picker and saves the pick", async () => {
+    const world = {
+      id: "strahd",
+      type: "world",
+      background: "old.webp",
+      validate: vi.fn(),
+      updateSource: vi.fn(),
+    };
+    const post = vi.fn(() => Promise.resolve({}));
+    let options: {
+      current?: string;
+      type?: string;
+      callback?: (p: string) => unknown;
+    } = {};
+    class FilePicker {
+      static implementation = FilePicker;
+      constructor(o: typeof options) {
+        options = o;
+      }
+      render = vi.fn();
+    }
+    const page = {
+      game: { post, worlds: { values: () => [].values(), get: () => world } },
+      foundry: { applications: { apps: { FilePicker } } },
+    };
+    expect(
+      await runFoundryAction(document, page as never, {
+        action: "pickBackground",
+        worldId: "strahd",
+      }),
+    ).toBeUndefined();
+    expect(options).toMatchObject({ type: "image", current: "old.webp" });
+    await options.callback?.("worlds/strahd/new.webp");
+    expect(post).toHaveBeenCalledWith({
+      action: "editWorld",
+      id: "strahd",
+      background: "worlds/strahd/new.webp",
+    });
+  });
+
   test("Back up first: Foundry's own backup, then the world's launch control", async () => {
     const seen = clicks();
     const world = { id: "strahd", type: "world", title: "Strahd" };

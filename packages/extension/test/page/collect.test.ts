@@ -120,6 +120,42 @@ describe("reading Setup's package data (V-1)", () => {
     expect(SetupDataSchema.safeParse(data).success).toBe(true);
   });
 
+  test("a world's join screen, safe mode, play time and verified version are read", () => {
+    const data = collect({
+      worlds: {
+        values: () =>
+          [
+            {
+              id: "w",
+              title: "W",
+              system: "dnd5e",
+              joinTheme: "minimal",
+              safeMode: true,
+              playtime: 219600,
+              compatibility: { verified: "14.369" },
+            },
+            {
+              id: "v",
+              title: "V",
+              system: "dnd5e",
+              joinTheme: "fancy",
+              playtime: -3,
+            },
+          ].values(),
+      },
+    } as never);
+    expect(data.worlds[0]).toMatchObject({
+      joinTheme: "minimal",
+      safeMode: true,
+      playtime: 219600,
+      verified: "14.369",
+    });
+    expect(data.worlds[1]).not.toHaveProperty("joinTheme");
+    expect(data.worlds[1]).not.toHaveProperty("playtime");
+    expect(data.worlds[1]).not.toHaveProperty("safeMode");
+    expect(SetupDataSchema.safeParse(data).success).toBe(true);
+  });
+
   test("world and system names are cut to their bounds (security review)", () => {
     const long = "x".repeat(5000);
     const data = collect({

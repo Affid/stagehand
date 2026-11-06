@@ -53,8 +53,9 @@ export const BUNDLED_CONFIG: SetupConfig = {
       minBuild: 0,
       maxBuild: 370,
       selectors: V14_SELECTORS,
-      // Foundry's internal editWorld request, tested live on 14.370.
-      flags: { editWorld: true },
+      // Foundry's internal editWorld and lockPackage requests, tested live
+      // on 14.370 (docs/SETUP-SPIKE.md).
+      flags: { editWorld: true, lockPackage: true },
     },
   ],
 };

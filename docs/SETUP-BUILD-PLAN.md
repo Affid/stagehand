@@ -324,4 +324,17 @@ outliving its module, overlapping backup calls, popovers closing on Tab,
 groups over 500 modules (queued in parts), and queued module ids kept only if
 installed.
 
+Package 4 in progress, in three steps: 4a About layout (two columns),
+Details (Rename, Game system and Join screen Change, made for, last saved
+with, played for, size, folder), Background (Foundry's file picker,
+`pickBackground` action), Maintenance (data, safe mode, reset passwords with
+an in-place confirm, Lock via `lockPackage` behind its adapter flag), Danger
+zone (`deleteWorld` = Foundry's uninstall dialog), a locked world's
+disabled controls; 4b description editing in Foundry's prose-mirror (mounted
+by the page world); 4c the next-session schedule (`world.flags["module-
+library"].schedule`, moved forward when Setup opens). Done so far for 4a:
+save protocol fields, collected world fields (joinTheme, safeMode,
+playtime, verified), page-world actions lock/unlock/deleteWorld/
+pickBackground, tests in `test/ui/world-about-boxes.test.tsx` (UI not yet).
+
 Then Phase 6 (News and finish).
