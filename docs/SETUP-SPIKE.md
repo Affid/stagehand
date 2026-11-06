@@ -149,3 +149,21 @@ untouched). No restore was confirmed.
 - Delete snapshot (`game.deleteSnapshots([id], {dialog: true})`): typed code; deletes the
   snapshot and every backup in it.
 - Snapshot data: `id, note, generation, build, size, originalSize, createdAt, backups`.
+
+## Follow-up 2026-11-06 (build 370): Application Configuration
+
+Read from `public/scripts/foundry.mjs` (`ServerSettingsConfig`) and `dist/server/views/setup.mjs`
+(`updateServerConfiguration`), plus a read-only look at the window (`spikes/spike-config.ts`).
+
+- Saved with `game.post({action: "adminConfigure", config: changes})` after
+  `game.serverSettings.updateSource(changes)` validates them. The server validates again,
+  checks an AWS file if given, writes `options.json` (and copies `Config/` to a new data path),
+  and answers `{changes, restart: true}`. **It never restarts by itself** on a Node server;
+  Foundry tells the admin to restart. (Only the desktop app restarts, and only after updates.)
+- Changing the administrator password: Foundry first checks the current one with
+  `game.post({action: "adminPassword", adminPassword})`; only then is a new one accepted.
+- SSL: `adminGenerateCertificates` (Let's Encrypt, needs port 80 reachable, falls back to
+  self-signed) and `adminReleaseCertificate`; skipped when `proxySSL` is set.
+- On the test server: no username, password set, port 30000, UPnP off, no certificate,
+  compression on, usage data off, no Electron section. Fields not shown in the window but in
+  `options.json`: hostname, routePrefix, proxyPort, proxySSL, updateChannel, noBackups (CLI).

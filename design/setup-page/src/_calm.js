@@ -190,7 +190,7 @@ function calmTopBar() {
     <span class="v">Version 14 · 370</span><span class="upd"><i class="fa-solid fa-arrow-up"></i>update</span><i class="fa-solid fa-caret-down"></i></button>`;
   const btn = (act, what, icon, label) => `<button type="button" data-act="${act}" data-what="${what}"><i class="fa-solid ${icon}"></i>${label}</button>`;
   return `<header class="mls-top mlh"><span class="logo" aria-hidden="true"></span><h1>Foundry Virtual Tabletop</h1><span class="mlh-chipwrap">${chip}${newsCallout()}</span><span class="ml-spacer"></span>
-    <div class="mlh-acts"><button type="button" class="${ST.page === "backups" ? "ml-on" : ""}" data-act="srvbackups" aria-current="${ST.page === "backups" ? "page" : "false"}"><i class="fa-solid fa-floppy-disks"></i>Backups</button>${btn("foundry", "Configuration", "fa-gears", "Configuration")}
+    <div class="mlh-acts"><button type="button" class="${ST.page === "backups" ? "ml-on" : ""}" data-act="srvbackups" aria-current="${ST.page === "backups" ? "page" : "false"}"><i class="fa-solid fa-floppy-disks"></i>Backups</button><button type="button" class="${ST.page === "config" ? "ml-on" : ""}" data-act="srvconfig" aria-current="${ST.page === "config" ? "page" : "false"}"><i class="fa-solid fa-gears"></i>Configuration</button>
       <button type="button" class="icon${ST.pop?.kind === "pmenu" ? " ml-on" : ""}" data-act="pmenu" aria-label="Log out or shut down" data-tooltip="Log out or shut down"><i class="fa-solid fa-power-off"></i></button></div></header>`;
 }
 function foundryMenu(x, y) {
