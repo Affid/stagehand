@@ -2,6 +2,7 @@ import { listAuthors } from "@module-library/shared/organise/authors";
 import { smartGroups } from "@module-library/shared/organise/groups";
 import { parseCoreVersion } from "@module-library/shared/version";
 import { describe, expect, test } from "vitest";
+import { createTranslator } from "../../src/ui/i18n.ts";
 import { groupLibrary } from "../../src/ui/model/library-groups.ts";
 import { LIBRARY, pkg } from "./harness.tsx";
 
@@ -59,6 +60,18 @@ describe("grouping the Library", () => {
     const groups = groupLibrary(modules, "smart", ctx);
     expect(groups.every((g) => g.modules.length > 0)).toBe(true);
     expect(groups.map((g) => g.label)).toContain("groups.unverified");
+  });
+
+  test("every smart group's label is a real string", () => {
+    const t = createTranslator("en");
+    for (const label of [
+      "groups.library",
+      "groups.content",
+      "groups.system",
+      "groups.unverified",
+      "groups.unused",
+    ])
+      expect(t(label, { param: "dnd5e" })).not.toBe(label);
   });
 
   test("no modules, no groups", () => {
