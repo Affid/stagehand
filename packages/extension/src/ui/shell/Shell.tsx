@@ -9,6 +9,7 @@ import { UpdatePage } from "./server/UpdatePage.tsx";
 import { Header } from "./Header.tsx";
 import { resolveRoute } from "./route.ts";
 import { WorldPage } from "./WorldPage.tsx";
+import { useScheduleSync } from "./world/about/session/useScheduleSync.ts";
 import { WorldRail } from "./WorldRail.tsx";
 
 /** The module details column, beside the Library or a world's page. */
@@ -34,6 +35,7 @@ function PanelColumn(props: { readonly here: string | undefined }) {
 
 export function Shell() {
   const { state } = useUi();
+  useScheduleSync();
   const worlds = state.data.setup?.worlds ?? [];
   const route = resolveRoute(state.route, worlds, state.data.setup?.lang);
   const world =

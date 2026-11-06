@@ -7,7 +7,6 @@ import { useState } from "preact/hooks";
 import type { WorldChanges } from "../../../page-save.ts";
 import { IconButton, InlineInput } from "../../common/widgets.tsx";
 import { useUi } from "../../context.ts";
-import { formatSession } from "./AboutTab.tsx";
 
 /** Edits need a verified admin, a supported Foundry and the flag. */
 export function useCanEditWorld(): boolean {
@@ -69,76 +68,6 @@ export function TitleField(props: { readonly world: WorldInfo }) {
           setDraft(props.world.title);
           setEditing(true);
         }}
-      />
-    </span>
-  );
-}
-
-/** "2026-11-12T19:00" in local time, as a datetime-local input wants it. */
-function localValue(iso: string | undefined): string {
-  const d = new Date(iso ?? "");
-  if (Number.isNaN(d.getTime())) return "";
-  const pad = (n: number): string => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
-}
-
-const ZONE = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-function SessionEditor(props: {
-  readonly world: WorldInfo;
-  readonly onDone: () => void;
-}) {
-  const { t } = useUi();
-  const save = useSave(props.world.id);
-  const [value, setValue] = useState(localValue(props.world.nextSession));
-  // Closes only once Foundry has saved; a failure keeps the picked time.
-  const finish = (nextSession: string | null): void => {
-    void save({ nextSession }).then((ok) => {
-      if (ok) props.onDone();
-    });
-  };
-  return (
-    <span class="mlw-sessionedit">
-      <label>
-        <span class="ml-hint">{t("about.nextIn", { zone: ZONE })}</span>
-        <input
-          type="datetime-local"
-          value={value}
-          onInput={(e) => setValue(e.currentTarget.value)}
-        />
-      </label>
-      <button
-        type="button"
-        disabled={!value}
-        onClick={() => finish(new Date(value).toISOString())}
-      >
-        {t("about.save")}
-      </button>
-      <button type="button" onClick={() => finish(null)}>
-        {t("about.clear")}
-      </button>
-      <button type="button" class="ml-link" onClick={props.onDone}>
-        {t("about.cancel")}
-      </button>
-    </span>
-  );
-}
-
-export function SessionField(props: { readonly world: WorldInfo }) {
-  const { state, t } = useUi();
-  const [editing, setEditing] = useState(false);
-  if (editing)
-    return (
-      <SessionEditor world={props.world} onDone={() => setEditing(false)} />
-    );
-  const shown = formatSession(props.world.nextSession, state.data.setup?.lang);
-  return (
-    <span class="mlw-editable">
-      {shown ?? t("about.notSet")}
-      <IconButton
-        icon="pen"
-        label={t("about.changeNext")}
-        onClick={() => setEditing(true)}
       />
     </span>
   );

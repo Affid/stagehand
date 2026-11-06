@@ -15,7 +15,7 @@ export interface Schedule {
   /** Dates of a rule that won't happen. */
   readonly skips: readonly string[];
   /** Chosen dates, each with its own time. */
-  readonly dates?: Readonly<Record<string, string>>;
+  readonly dates?: Readonly<Record<string, string>> | undefined;
 }
 
 export interface Session {

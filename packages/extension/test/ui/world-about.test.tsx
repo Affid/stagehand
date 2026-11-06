@@ -2,7 +2,6 @@
 import type { WorldInfo } from "@module-library/shared/world";
 import { cleanup, fireEvent, waitFor } from "@testing-library/preact";
 import { BUNDLED_CONFIG } from "../../src/adapters/config.ts";
-import { formatSession } from "../../src/ui/shell/world/AboutTab.tsx";
 import { afterEach, describe, expect, test } from "vitest";
 import { el, renderUi, setupState } from "./harness.tsx";
 
@@ -50,17 +49,6 @@ describe("a world's About tab", () => {
     expect(box.textContent).toContain("14.369");
   });
 
-  test("the next session shows in local time with its time zone, or says it isn't set", () => {
-    const set = about({ nextSession: "2026-11-12T18:00:00.000Z" });
-    expect(el(set.container, ".mlw-next").textContent).toMatch(/2026/);
-    expect(el(set.container, ".mlw-next").textContent).toMatch(
-      /UTC|GMT|[A-Z]{3,4}/,
-    );
-    cleanup();
-    const unset = about();
-    expect(el(unset.container, ".mlw-next").textContent).toContain("Not set");
-  });
-
   test("no description says so", () => {
     const { container } = about();
     expect(el(container, ".mlw-about").textContent).toContain(
@@ -84,28 +72,6 @@ describe("editing a world's details in place", () => {
     await waitFor(() => {
       expect(page.saveWorld).toHaveBeenCalledWith("w1", {
         title: "Curse of Strahd",
-      });
-    });
-  });
-
-  test("the next session is picked in local time and saved as UTC; Clear removes it", async () => {
-    const { getByRole, getByLabelText, page } = about({
-      nextSession: "2026-11-12T18:00:00.000Z",
-    });
-    fireEvent.click(getByRole("button", { name: "Change next session" }));
-    const input = getByLabelText(/Next session in/);
-    fireEvent.input(input, { target: { value: "2026-11-19T19:30" } });
-    fireEvent.click(getByRole("button", { name: "Save" }));
-    await waitFor(() => {
-      expect(page.saveWorld).toHaveBeenCalledWith("w1", {
-        nextSession: new Date("2026-11-19T19:30").toISOString(),
-      });
-    });
-    fireEvent.click(getByRole("button", { name: "Change next session" }));
-    fireEvent.click(getByRole("button", { name: "Clear" }));
-    await waitFor(() => {
-      expect(page.saveWorld).toHaveBeenLastCalledWith("w1", {
-        nextSession: null,
       });
     });
   });
@@ -170,9 +136,5 @@ describe("editing a world's details in place", () => {
     expect(
       (r.getByRole("textbox", { name: "Title" }) as HTMLInputElement).value,
     ).toBe("Typed title");
-  });
-
-  test("an odd language tag can't break the date", () => {
-    expect(formatSession("2026-11-12T18:00:00.000Z", "pt_BR")).toMatch(/2026/);
   });
 });

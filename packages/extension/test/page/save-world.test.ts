@@ -72,6 +72,10 @@ describe("saving a world through Foundry", () => {
       id: "w",
       flags: { "module-library": { "-=schedule": null } },
     });
+    // The client's copy drops it too: merging the answer alone keeps it.
+    expect(f.world.updateSource).toHaveBeenCalledWith({
+      flags: { "module-library": { "-=schedule": null } },
+    });
   });
 
   test("a value Foundry rejects is never sent", async () => {

@@ -98,7 +98,7 @@ export const ScheduleSchema = z.object({
   time: z.string().regex(TIME),
   tz: z.string().min(1).max(64),
   freq: z.enum(["none", "w1", "w2", "m1", "dates"]),
-  skips: z.array(z.string().regex(DATE)).max(MAX_DATES),
+  skips: z.array(z.string().regex(DATE)).max(MAX_DATES).readonly(),
   dates: z
     .record(z.string().regex(DATE), z.string().regex(TIME))
     .refine((d) => Object.keys(d).length <= MAX_DATES)

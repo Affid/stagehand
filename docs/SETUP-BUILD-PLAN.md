@@ -343,6 +343,12 @@ pickBackground. 4a done (`7e43b7b`): the About layout and boxes. 4b done
 with the next date, rule, upcoming list with Skip / Remove; the editor with
 calendar, 24-hour time, quick times, time zone list and search, repeats none
 / weekly / 2 weeks / monthly / chosen dates; saved as `flags` via editWorld
-plus `nextSession`; moved forward on Setup open). Then reviews for package 4.
+plus `nextSession`; moved forward on Setup open). Then reviews for package 4. 4c done: the
+schedule model, its storage in the world's flags, the Next session box (view
+with the zone named, the rule and Skip / Restore / Remove; editor with
+calendar, Repeats, 24-hour time and quick times, time zone list and search),
+and moving a passed date on when Setup opens. Found live: Foundry's client
+merges editWorld's answer, so a "-=" deletion has to be applied to the
+client's copy too (`saveWorld` applies our changes, then the answer).
 
 Then Phase 6 (News and finish).

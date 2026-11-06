@@ -169,15 +169,16 @@ test("About saves the title and next session through Foundry, and they come back
   await box.getByRole("textbox", { name: "Title" }).fill(TEST_WORLD.title);
   await box.getByRole("button", { name: "Save" }).click();
   await expect(shell().locator(".mls-banner h2")).toHaveText(TEST_WORLD.title);
-  // Next session: set it, see it, clear it.
-  await box.getByRole("button", { name: "Change next session" }).click();
-  await box.getByLabel(/Next session in/).fill("2030-01-15T19:30");
-  await box.getByRole("button", { name: "Save" }).click();
-  await expect(box.locator(".mlw-next")).toContainText("2030");
+  // Next session: set a weekly one, see it, clear it (schedule and date).
+  const sess = shell().locator(".mlw-sess");
+  await sess.getByRole("button", { name: "Set the next session" }).click();
+  await sess.getByRole("combobox", { name: "Repeats" }).selectOption("w1");
+  await sess.getByRole("button", { name: "Save" }).click();
+  await expect(sess).toContainText(/Every \w+day at 19:00/);
   await page.screenshot({ path: `${SCREENS}/world-about-edited.png` });
-  await box.getByRole("button", { name: "Change next session" }).click();
-  await box.getByRole("button", { name: "Clear" }).click();
-  await expect(box.locator(".mlw-next")).toContainText("Not set");
+  await sess.getByRole("button", { name: "Change the next session" }).click();
+  await sess.getByRole("button", { name: "No next session" }).click();
+  await expect(sess).toContainText("No next session set");
   await shell().getByRole("tab", { name: "Modules" }).click();
 });
 

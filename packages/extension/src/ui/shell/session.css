@@ -1,0 +1,647 @@
+/* The next session: its view, the editor and the time zone search
+   (prototype _sched.css). */
+.mls-shell .mlw-next {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mls-shell .mlw-next > i {
+  font-size: 22px;
+  color: var(--color-warm-1);
+  width: 26px;
+  text-align: center;
+}
+
+.mls-shell .mlw-next > div {
+  flex: 1;
+  display: grid;
+}
+
+.mls-shell .mlw-next strong {
+  font-size: 16px;
+  color: var(--color-light-1);
+}
+
+.mls-shell .mlw-next span {
+  color: var(--color-text-subtle);
+  font-size: 13px;
+}
+
+.mls-shell .mlw-next a {
+  color: var(--color-light-3);
+  text-decoration: underline;
+  text-decoration-color: var(--color-light-5);
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+.mls-shell .mlw-next.none > i {
+  color: var(--color-light-4);
+}
+
+.mls-shell .mlw-sess .mlw-next span {
+  font-size: 12.5px;
+}
+
+.mls-shell .mlw-rule {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  color: var(--color-light-2);
+  font-size: 13px;
+  margin-top: 2px;
+}
+
+.mls-shell .mlw-rule i {
+  color: var(--color-light-4);
+  width: 26px;
+  text-align: center;
+}
+
+.mls-shell .mlw-upcoming {
+  list-style: none;
+  margin: 0 0 0 34px;
+  padding: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.mls-shell .mlw-upcoming li {
+  display: grid;
+  grid-template-columns: 1fr auto 52px;
+  gap: 10px;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 3px;
+  font-size: 13px;
+  color: var(--color-light-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.mls-shell .mlw-upcoming li.next {
+  background: rgb(63 143 82 / 12%);
+  color: var(--color-light-1);
+}
+
+.mls-shell .mlw-upcoming li.skipped .d {
+  text-decoration: line-through;
+  color: var(--color-light-5);
+}
+
+.mls-shell .mlw-upcoming li .ml-link {
+  justify-self: end;
+  font-size: 12px;
+  color: var(--color-light-4);
+  text-decoration: underline;
+  text-decoration-color: var(--color-light-5);
+}
+
+.mls-shell .mlw-upcoming li .ml-link:hover {
+  color: var(--color-warm-1);
+}
+
+.mls-shell .mlw-pill.ok {
+  border-color: rgb(63 143 82 / 70%);
+  color: #8fd49b;
+}
+
+.mls-shell .mlw-moved {
+  margin: 0;
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  font-size: 12.5px;
+  color: #b9e3c1;
+  padding-left: 34px;
+}
+
+.mls-shell .mlw-mock {
+  justify-self: start;
+  font-size: 11.5px;
+  color: var(--color-light-5);
+  border-bottom: 1px dashed var(--color-light-5);
+}
+
+.mls-shell .mlw-mock:hover {
+  color: var(--color-light-3);
+}
+
+.mls-shell .mlw-sched {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 12px 18px;
+}
+
+.mls-shell .mlw-cal {
+  width: 252px;
+  display: grid;
+  gap: 4px;
+}
+
+.mls-shell .mlw-cal header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mls-shell .mlw-cal header strong {
+  color: var(--color-light-1);
+  font-size: 13.5px;
+}
+
+.mls-shell .mlw-cal header button {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  font-size: 11px;
+}
+
+.mls-shell .mlw-cal .dow,
+.mls-shell .mlw-cal .days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  text-align: center;
+}
+
+.mls-shell .mlw-cal .dow span {
+  font-size: 11px;
+  color: var(--color-text-subtle);
+  padding: 2px 0;
+}
+
+.mls-shell .mlw-cal .days button {
+  height: 32px;
+  width: auto;
+  padding: 0;
+  font-size: 13px;
+  border: 1px solid transparent;
+  background: rgb(255 255 255 / 3%);
+  color: var(--color-light-2);
+  border-radius: 4px;
+  position: relative;
+  font-variant-numeric: tabular-nums;
+}
+
+.mls-shell .mlw-cal .days button:hover:not([disabled]) {
+  border-color: var(--color-cool-3);
+  color: var(--color-light-1);
+}
+
+.mls-shell .mlw-cal .days button[disabled] {
+  opacity: 0.3;
+  cursor: default;
+  background: none;
+}
+
+.mls-shell .mlw-cal .days button.today {
+  border-color: var(--color-cool-3);
+}
+
+.mls-shell .mlw-cal .days button.rep::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 4px;
+  width: 4px;
+  height: 4px;
+  margin-left: -2px;
+  border-radius: 50%;
+  background: var(--color-warm-1);
+}
+
+.mls-shell .mlw-cal .days button.sel {
+  background: var(--color-warm-1);
+  color: #1a1206;
+  font-weight: 700;
+  border-color: var(--color-warm-1);
+}
+
+.mls-shell .mlw-sched .side {
+  display: grid;
+  grid-template-columns: 74px minmax(0, 1fr);
+  gap: 10px 10px;
+  align-content: start;
+  align-items: start;
+}
+
+.mls-shell .mlw-sched .side label {
+  color: var(--color-text-subtle);
+  font-size: 12.5px;
+  padding-top: 6px;
+}
+
+.mls-shell .mlw-sched .side > div {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.mls-shell .mlw-sched .side input,
+.mls-shell .mlw-sched .side select {
+  height: 30px;
+  font-size: 13.5px;
+}
+
+.mls-shell .mlw-sched .side input[type="time"] {
+  width: 120px;
+}
+
+.mls-shell .mlw-sched .chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.mls-shell .mlw-sched .chips button {
+  height: 24px;
+  width: auto;
+  flex: none;
+  padding: 0 8px;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.mls-shell .mlw-sched .chips button.on {
+  border-color: var(--color-warm-1);
+  color: var(--color-light-1);
+  background: rgb(238 155 58 / 14%);
+}
+
+.mls-shell .mlw-sched .tzl {
+  font-size: 12px;
+  color: var(--color-text-subtle);
+}
+
+.mls-shell .mlw-sched .sum {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 8px 10px;
+  border-radius: 4px;
+  border: 1px solid rgb(238 155 58 / 45%);
+  background: rgb(238 155 58 / 8%);
+}
+
+.mls-shell .mlw-sched .sum > i {
+  color: var(--color-warm-1);
+  font-size: 18px;
+  margin-top: 2px;
+}
+
+.mls-shell .mlw-sched .sum > div {
+  display: grid;
+  gap: 2px;
+}
+
+.mls-shell .mlw-sched .sum strong {
+  color: var(--color-light-1);
+  font-size: 14.5px;
+}
+
+.mls-shell .mlw-sched .sum strong span {
+  font-weight: 400;
+  color: var(--color-text-subtle);
+  font-size: 12.5px;
+  margin-left: 4px;
+}
+
+.mls-shell .mlw-sched .sum .others {
+  font-size: 12.5px;
+  color: var(--color-light-3);
+}
+
+.mls-shell .mlw-sched .sum .others span + span::before {
+  content: " · ";
+  color: var(--color-light-5);
+}
+
+.mls-shell .mlw-sched .sum .others b {
+  color: var(--color-light-1);
+  font-weight: 600;
+}
+
+.mls-shell .mlw-sched .bar {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 6px;
+}
+
+.mls-shell .mlw-sched .bar .ml-spacer {
+  flex: 1;
+}
+
+.mls-shell .mlw-sched .bar button {
+  height: 28px;
+  width: auto;
+  flex: none;
+  padding: 0 12px;
+  font-size: 13px;
+}
+
+.mls-shell .mlw-sched .hm {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.mls-shell .mlw-sched .hm select {
+  width: 64px;
+  font-variant-numeric: tabular-nums;
+}
+
+.mls-shell .mlw-sched .hm .h24 {
+  margin-left: 6px;
+  font-size: 11.5px;
+  color: var(--color-text-subtle);
+}
+
+.mls-shell .mlw-sess .mlw-next span b {
+  color: var(--color-light-1);
+  font-weight: 600;
+}
+
+.mls-shell .mlw-cal .days button.sel,
+.mls-shell .mlw-cal .days button.sel:hover {
+  color: #1a1206;
+  border-color: var(--color-warm-1);
+}
+
+.mls-shell .mlw-chosen {
+  grid-column: 1 / -1;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 4px 10px;
+}
+
+.mls-shell .mlw-chosen li {
+  display: grid;
+  grid-template-columns: 1fr 62px 24px;
+  gap: 6px;
+  align-items: center;
+  padding: 3px 4px 3px 8px;
+  border-radius: 3px;
+  background: rgb(255 255 255 / 4%);
+  font-size: 13px;
+  color: var(--color-light-1);
+}
+
+.mls-shell .mlw-chosen li.past {
+  opacity: 0.5;
+}
+
+.mls-shell .mlw-chosen li.none {
+  display: block;
+  color: var(--color-text-subtle);
+  background: none;
+}
+
+.mls-shell .mlw-chosen .tt {
+  height: 24px;
+  font-size: 12.5px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  padding: 0 4px;
+}
+
+.mls-shell .mlw-chosen button {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  font-size: 11px;
+  background: none;
+  border: 0;
+  color: var(--color-light-4);
+}
+
+.mls-shell .mlw-chosen button:hover {
+  color: #ffb3a6;
+}
+
+.mls-shell .mlw-upcoming li.more span {
+  color: var(--color-text-subtle);
+}
+
+.mls-shell .mlw-sched .bar button[disabled] {
+  opacity: 0.45;
+}
+
+.mls-shell .mlw-tzrow {
+  display: flex;
+  gap: 6px;
+}
+
+.mls-shell .mlw-tzrow select {
+  flex: 1;
+  min-width: 0;
+}
+
+.mls-shell .mlw-tzrow button {
+  height: 30px;
+  width: auto;
+  flex: none;
+  padding: 0 10px;
+  gap: 6px;
+  font-size: 12.5px;
+}
+
+.mls-shell .mlw-tzfind {
+  display: grid;
+  gap: 4px;
+}
+
+.mls-shell .mlw-tzfind .in {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.mls-shell .mlw-tzfind .in i {
+  color: var(--color-light-4);
+  font-size: 12px;
+  margin-left: 2px;
+}
+
+.mls-shell .mlw-tzfind .in input {
+  flex: 1;
+  min-width: 0;
+  height: 30px;
+}
+
+.mls-shell .mlw-tzfind .in button {
+  height: 30px;
+  width: auto;
+  flex: none;
+  padding: 0 10px;
+  font-size: 12.5px;
+}
+
+.mls-shell .mlw-tzfind ul {
+  list-style: none;
+  margin: 0;
+  padding: 3px;
+  border: 1px solid var(--color-cool-3);
+  border-radius: 4px;
+  background: rgb(11 10 19 / 92%);
+  display: grid;
+  gap: 1px;
+  max-height: 236px;
+  overflow: auto;
+}
+
+.mls-shell .mlw-tzfind li {
+  display: grid;
+  grid-template-columns: 1fr auto 70px;
+  gap: 8px;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--color-light-2);
+}
+
+.mls-shell .mlw-tzfind li .r {
+  font-size: 11.5px;
+  color: var(--color-text-subtle);
+}
+
+.mls-shell .mlw-tzfind li .o {
+  font-size: 12px;
+  color: var(--color-light-3);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.mls-shell .mlw-tzfind li:hover,
+.mls-shell .mlw-tzfind li.on {
+  background: rgb(238 155 58 / 16%);
+  color: var(--color-light-1);
+}
+
+.mls-shell .mlw-tzfind li.hint {
+  display: block;
+  cursor: default;
+  color: var(--color-text-subtle);
+  font-size: 12.5px;
+  background: none;
+}
+
+.mls-shell .mlw-sched {
+  align-items: start;
+}
+
+.mls-shell .mlw-cal {
+  align-content: start;
+}
+
+.mls-shell .mlw-tzfind {
+  position: relative;
+}
+
+.mls-shell .mlw-tzfind ul {
+  position: absolute;
+  top: 34px;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  max-height: 280px;
+  box-shadow: 0 10px 24px rgb(0 0 0 / 70%);
+  background: rgb(17 15 25 / 98%);
+}
+
+.mls-shell .mlw-tzfind li.more {
+  font-style: italic;
+}
+
+.mls-shell .mlw-rule .mlw-why {
+  width: auto;
+  color: var(--color-light-5);
+  font-size: 12px;
+  cursor: help;
+}
+
+.mls-shell .mlw-rule .mlw-why:hover {
+  color: var(--color-light-2);
+}
+
+.mls-shell .mlw-rule .mlw-mock {
+  margin-left: auto;
+}
+
+.mls-shell .mlw-sess {
+  gap: 6px;
+}
+
+.mls-shell .mlw-upcoming li {
+  padding: 2px 8px;
+}
+
+.mls-shell .mlw-bg {
+  aspect-ratio: 2.39;
+}
+
+.mls-shell .mlw-box dl {
+  gap: 5px 12px;
+}
+
+.mls-shell .mlw-about {
+  gap: 14px;
+}
+
+.mls-shell .mlw-about .col {
+  gap: 12px;
+}
+
+.mls-shell .mlw-upcoming li .ml-link,
+.mls-shell .mlw-sess h4 .ml-link {
+  justify-self: end;
+  width: auto;
+  height: auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+
+.mls-shell .mlw-tzfind ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 180px;
+  overflow: auto;
+}
+
+.mls-shell .mlw-tzfind li[role="option"] {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 8px;
+  padding: 3px 6px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 12.5px;
+}
+
+.mls-shell .mlw-tzfind li[role="option"]:hover {
+  background: rgb(255 255 255 / 6%);
+}
+
+.mls-shell .mlw-tzfind li.hint {
+  padding: 3px 6px;
+  font-size: 12px;
+  color: var(--color-text-subtle);
+}
+
+/* At 1366 the side column narrows: the zone's name keeps its room. */
+.mls-shell .mlw-tzrow {
+  flex-wrap: wrap;
+}
+
+.mls-shell .mlw-tzrow select {
+  min-width: 140px;
+}

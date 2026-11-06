@@ -42,6 +42,8 @@ export async function saveWorld(
       id: worldId,
       ...changes,
     })) as object;
+    // Merging the answer can't remove a key ("-=" deletions): apply ours first.
+    world.updateSource(changes);
     world.updateSource(data);
     const setup = page.ui?.setupPackages as
       { render?: () => unknown } | undefined;
