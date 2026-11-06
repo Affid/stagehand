@@ -2,7 +2,11 @@
 // and the UI language only: never game.data.options, licence or certificate
 // (8.6).
 import { toPackageInfo } from "@module-library/shared/package-read";
-import type { SetupData, WorldInfo } from "@module-library/shared/world";
+import {
+  MAX_DESCRIPTION,
+  type SetupData,
+  type WorldInfo,
+} from "@module-library/shared/world";
 import type { Collection, SetupGame } from "./globals.ts";
 
 type Loose = Record<string, unknown>;
@@ -12,6 +16,8 @@ const all = (c?: Collection): Loose[] => [...(c?.values() ?? [])] as Loose[];
 const toWorld = (w: Loose): WorldInfo => {
   const lastPlayed = str(w.lastPlayed);
   const background = str(w.background);
+  const description = str(w.description).slice(0, MAX_DESCRIPTION);
+  const nextSession = str(w.nextSession).slice(0, 64);
   return {
     id: str(w.id),
     title: str(w.title),
@@ -23,6 +29,8 @@ const toWorld = (w: Loose): WorldInfo => {
     locked: w.locked === true,
     ...(lastPlayed ? { lastPlayed } : {}),
     ...(background ? { background } : {}),
+    ...(description ? { description } : {}),
+    ...(nextSession ? { nextSession } : {}),
   };
 };
 

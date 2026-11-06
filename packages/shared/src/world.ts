@@ -79,6 +79,9 @@ export const WorldCommandSchema = z.object({
 
 export type WorldCommand = z.infer<typeof WorldCommandSchema>;
 
+/** Longer world descriptions are cut when Setup is read. */
+export const MAX_DESCRIPTION = 20000;
+
 export const WorldInfoSchema = z.object({
   id: z.string().min(1),
   title: z.string(),
@@ -92,6 +95,10 @@ export const WorldInfoSchema = z.object({
   locked: z.boolean().optional(),
   /** The world's background image path, as Foundry stores it. */
   background: z.string().max(2000).optional(),
+  /** Foundry's world description: HTML, shown only after cleaning. */
+  description: z.string().max(MAX_DESCRIPTION).optional(),
+  /** The next session as Foundry stores it (one UTC time). */
+  nextSession: z.string().max(64).optional(),
 });
 
 export type WorldInfo = z.infer<typeof WorldInfoSchema>;

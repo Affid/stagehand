@@ -1,3 +1,4 @@
+import { SetupDataSchema } from "@module-library/shared/world";
 import { describe, expect, test } from "vitest";
 import { collect } from "../../src/page/collect.ts";
 
@@ -49,6 +50,27 @@ describe("reading Setup's package data (V-1)", () => {
     });
     expect(data.worlds[1]).toMatchObject({ favorite: false, locked: false });
     expect(data.worlds[1]).not.toHaveProperty("background");
+  });
+
+  test("worlds carry their description and next session; a huge description is cut, not refused", () => {
+    const data = collect({
+      worlds: list(
+        {
+          id: "w",
+          title: "W",
+          description: "<p>Gothic horror</p>",
+          nextSession: "2026-11-12T18:00:00.000Z",
+        },
+        { id: "x", title: "X", description: "x".repeat(30000), nextSession: 5 },
+      ),
+    });
+    expect(data.worlds[0]).toMatchObject({
+      description: "<p>Gothic horror</p>",
+      nextSession: "2026-11-12T18:00:00.000Z",
+    });
+    expect(data.worlds[1]?.description).toHaveLength(20000);
+    expect(data.worlds[1]).not.toHaveProperty("nextSession");
+    expect(SetupDataSchema.safeParse(data).success).toBe(true);
   });
 
   test("missing pieces read as empty, never throw", () => {
