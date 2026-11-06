@@ -6,12 +6,11 @@ import { useDisclosure } from "../../common/disclosure.ts";
 import { Icon } from "../../common/widgets.tsx";
 import { useUi } from "../../context.ts";
 import { groupLibrary, type LibGroup } from "../../model/library-groups.ts";
-import { MAX_PICKED } from "@module-library/shared/world";
-import { COMPANION_ID } from "../../model/preview.ts";
 import type { WorldModuleRow } from "../../model/world-modules.ts";
 import { useModulesModel } from "../../modules/derived.ts";
 import { ModuleCard } from "./ModuleCard.tsx";
 import { ModuleLine } from "./ModuleLine.tsx";
+import { useTurnAll } from "./turn-all.ts";
 import type { WhyContext } from "./why.ts";
 
 export interface SectionsProps {
@@ -21,43 +20,6 @@ export interface SectionsProps {
   readonly world: WorldInfo;
   readonly why: WhyContext;
   readonly onFlip: (id: string, on: boolean) => void;
-}
-
-/** Ids in parts the background accepts in one change (MAX_PICKED). */
-export function inParts(ids: readonly string[], size = MAX_PICKED): string[][] {
-  const parts: string[][] = [];
-  for (let i = 0; i < ids.length; i += size) parts.push(ids.slice(i, i + size));
-  return parts;
-}
-
-/**
- * Whether "Turn all" includes this row: never the companion off, never a
- * module on that needs one that isn't installed (it would be blocked).
- */
-const turns = (
-  r: WorldModuleRow,
-  on: boolean,
-  installed: ReadonlySet<string>,
-): boolean =>
-  r.next !== on &&
-  (on
-    ? r.pkg.requires.every((q) => q.type !== "module" || installed.has(q.id))
-    : r.pkg.id !== COMPANION_ID);
-
-/** Turn all on or off: one queued change for the group's other modules. */
-/** Queues "Turn all on / off" for a group, in parts the background accepts. */
-function useTurnAll(rows: readonly WorldModuleRow[], worldId: string) {
-  const { state, actions } = useUi();
-  return (on: boolean): void => {
-    const installed = new Set(state.data.setup?.modules.map((m) => m.id));
-    const ids = rows
-      .filter((r) => turns(r, on, installed))
-      .map((r) => r.pkg.id);
-    void (async () => {
-      for (const part of inParts(ids))
-        await actions.queueApply(worldId, on ? "add" : "remove", [], part);
-    })();
-  };
 }
 
 function GroupMenu(props: {

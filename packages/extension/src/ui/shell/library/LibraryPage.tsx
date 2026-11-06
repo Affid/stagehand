@@ -14,7 +14,7 @@ import { Toolbar } from "./head/Toolbar.tsx";
 import { Sections } from "./Sections.tsx";
 import { SystemsTab } from "./SystemsTab.tsx";
 import { type PageState, usePageState } from "./usePageState.ts";
-import { WorldGrid } from "./WorldGrid.tsx";
+import { WorldGrid } from "./grid/WorldGrid.tsx";
 
 function ModulesTab(props: {
   readonly model: ModulesModel;
@@ -71,6 +71,8 @@ export function LibraryPage() {
         <WorldGrid
           groups={groups}
           folding={{ closed: page.closed, onToggle: page.toggle }}
+          by={page.by}
+          onBy={page.setBy}
         />
       ) : page.tab === "systems" ? (
         <>

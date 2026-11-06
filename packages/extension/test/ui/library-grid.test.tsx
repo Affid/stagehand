@@ -162,3 +162,67 @@ describe("the By world grid", () => {
     expect(store.get().route).toEqual({ kind: "world", worldId: "w2" });
   });
 });
+
+describe("the grid's extras (6c2)", () => {
+  test("a group row shows each world's count; a click turns them all on there", async () => {
+    const r = grid();
+    const [count] = r.getAllByRole("button", { name: "Turn all on in Vaults" });
+    if (!count) throw new Error("no count");
+    expect(count.textContent).toMatch(/^\d+\/\d+$/);
+    fireEvent.click(count);
+    await waitFor(() => {
+      expect(sent(r.send)).toContainEqual(
+        expect.objectContaining({
+          kind: "queue-apply",
+          worldId: "w2",
+          mode: "add",
+        }),
+      );
+    });
+  });
+
+  test("a module's name opens its details; its tags show as dots", () => {
+    const r = grid();
+    const row = el(r.container, '.mll-grid tr[data-module="a"]');
+    expect(row.querySelectorAll(".dots .ml-dot")).toHaveLength(1);
+    fireEvent.click(within(row).getByRole("button", { name: "Title a" }));
+    expect(r.store.get().panel).toBe("a");
+  });
+
+  test("a world's menu: Open, Copy this set to… another world, Discard", async () => {
+    const r = grid();
+    fireEvent.click(r.getByRole("button", { name: "Strahd: actions" }));
+    fireEvent.click(r.getByRole("button", { name: "Copy this set to…" }));
+    fireEvent.click(r.getByRole("button", { name: "Vaults" }));
+    fireEvent.click(r.getByRole("button", { name: "Add Strahd's modules" }));
+    await waitFor(() => {
+      expect(sent(r.send)).toContainEqual(
+        expect.objectContaining({
+          kind: "queue-apply",
+          worldId: "w2",
+          mode: "add",
+          modules: ["a"],
+        }),
+      );
+    });
+    fireEvent.click(r.getByRole("button", { name: "Strahd: actions" }));
+    fireEvent.click(r.getByRole("button", { name: "Open world" }));
+    expect(r.store.get().route).toEqual({ kind: "world", worldId: "w1" });
+  });
+
+  test("the legend explains the colours; the filter narrows the modules", () => {
+    const r = grid();
+    expect(el(r.container, ".mls-gridlegend").textContent).toContain(
+      "turns on at the next launch",
+    );
+    fireEvent.input(r.getByRole("searchbox", { name: "Filter modules" }), {
+      target: { value: "module-lib" },
+    });
+    const rows = [
+      ...r.container.querySelectorAll(".mll-grid tbody tr[data-module]"),
+    ];
+    expect(new Set(rows.map((x) => x.getAttribute("data-module")))).toEqual(
+      new Set(["module-library"]),
+    );
+  });
+});

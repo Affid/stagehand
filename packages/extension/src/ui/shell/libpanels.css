@@ -759,3 +759,11 @@
 .mls-shell .mls-usedby {
   margin-bottom: 14px;
 }
+
+/* A tag's colour dot, wherever it shows (prototype _kit.css) */
+.mls-shell .ml-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--ml-c, var(--color-light-5));
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 50%);
+}
