@@ -101,6 +101,8 @@ export function whyLine(row: WorldModuleRow, c: WhyContext): WhyLine {
       };
     case "note":
       return { tone: "note", icon: "note-sticky", text: why.text };
+    case "description":
+      return { tone: "desc", icon: "", text: why.text };
     case "authors":
       return {
         tone: "desc",

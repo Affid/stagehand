@@ -27,6 +27,8 @@ export type Why =
   | { readonly kind: "preset"; readonly name: string }
   | { readonly kind: "unverified" }
   | { readonly kind: "note"; readonly text: string }
+  /** The manifest's description, as the prototype's cards show it. */
+  | { readonly kind: "description"; readonly text: string }
   | { readonly kind: "authors"; readonly text: string };
 
 export interface WorldModuleRow {
@@ -125,6 +127,8 @@ function infoWhy(ctx: Context, pkg: PackageInfo): Why {
   if (isRisky(ctx, pkg)) return { kind: "unverified" };
   const note = ctx.state.library.modules[pkg.id]?.note.trim();
   if (note) return { kind: "note", text: note };
+  const description = pkg.description?.trim();
+  if (description) return { kind: "description", text: description };
   return { kind: "authors", text: pkg.authors.map((a) => a.name).join(", ") };
 }
 

@@ -173,6 +173,22 @@ describe("a world's modules, now and after the next launch", () => {
     expect(row(s, "a")?.why).toEqual({ kind: "note", text: "for Strahd" });
     expect(row(s, "c")?.why).toEqual({ kind: "authors", text: "Ann" });
   });
+
+  test("why: the description before the authors, as the prototype's cards", () => {
+    const base = state(["module-library"]);
+    const s = state(["module-library"], [], {
+      setup: base.setup && {
+        ...base.setup,
+        modules: base.setup.modules.map((m) =>
+          m.id === "c" ? { ...m, description: "Dice in 3D." } : m,
+        ),
+      },
+    });
+    expect(row(s, "c")?.why).toEqual({
+      kind: "description",
+      text: "Dice in 3D.",
+    });
+  });
 });
 
 describe("flipping a module's switch", () => {
