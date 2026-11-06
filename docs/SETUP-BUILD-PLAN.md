@@ -132,4 +132,42 @@ can be discarded and are reviewed; holds expire after ten minutes; a second flip
 saving is ignored; copying more than `MAX_PICKED` modules is refused with a reason; modals
 take focus, trap Tab, stop Escape and return focus.
 
-Next: Phase 3 (Library).
+### Phase 3: Library (done)
+
+Done (commits from `556a1d7`):
+
+- `ui/model/library-groups.ts`: group by folder, tag, author or smart group.
+- `ui/shell/library/`: Library page with tabs Modules and By world, filter, Group by, the
+  count, Select (checkboxes and today's bulk bar), Organise (today's folders, tags,
+  presets, import and export in the side slot). Calm cards (name, one line: not verified,
+  note or authors; up to three tags; version; worlds it is on in). A module's name opens
+  its details (Library tab: folder, tags, note, presets, a switch per tracked world;
+  Package tab: version, compatibility, authors, relations, links).
+- By world grid (`ui/model/world-grid.ts`, `WorldGrid.tsx`): worlds in Foundry's order,
+  a switch per cell, Show filter (all, favourites, last 3 months, with changes or
+  problems, chosen), hidden worlds with changes named, Show all when empty, pinned module
+  column and header, 92px minimum columns.
+- Intake: the background remembers sorted modules (first Setup visit seeds all as
+  sorted); `fresh` in the Setup state; `modules-sorted` (admin-gated). A band and New
+  marks on the cards; Sort them lists each new module with folder and tags.
+- Live: `tests/foundry/setup-library.spec.ts`.
+
+Not yet: Foundry's favourite and lock for modules, an Update button on modules with
+updates, intake suggestions ("same family as"), Systems tab, group-header menus (rename or
+recolour a folder from its header), group counts per world in the grid, a fade at the
+grid's cut-off edge.
+
+Reviews (code, security): no critical or high findings. Fixed: sorted-module storage is
+bounded (ids max 200 characters, lists max 5000, only installed ids, seeded only by an
+admin visit); changes and holds for unknown worlds are refused; the filter clears the
+selection; the intake panel closes; notes resync; the companion is locked in the panel;
+grid keys and lookups.
+
+Open (security, from Phase 1 design): any script on the Setup page can post Setup data
+claiming `isAdmin`, which unlocks our admin-gated writes. Hostile code in the admin's own
+Setup session already has Foundry's admin powers, so this widens little, but a per-load
+channel (MessageChannel or nonce created by the isolated script) should replace the
+open `postMessage` for SETUP_DATA. Also open: tab keyboard pattern (arrow keys,
+`tabpanel`) for the Library and module panel tabs.
+
+Next: Phase 4 (World details).
