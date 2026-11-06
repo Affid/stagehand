@@ -11,6 +11,8 @@ import {
 import type { BackupInfo, BackupOp, PackageType } from "../page-backups.ts";
 import type {
   Choices,
+  ConfigOp,
+  ConfigReply,
   ReadOnly,
   SettingChanges,
   Settings,
@@ -27,6 +29,9 @@ export interface ConfigResult {
   readonly settings?: Settings & ReadOnly;
   readonly choices?: Choices;
   readonly restart?: boolean;
+  readonly passwordOk?: boolean;
+  readonly method?: string;
+  readonly reason?: string;
   readonly error?: string;
 }
 
@@ -67,8 +72,26 @@ export interface PageBridge {
     disk?: boolean,
   ): Promise<ServerBackupsResult>;
   /** Foundry's configuration: read it, or save some settings. */
-  config(op: "read" | "save", changes?: SettingChanges): Promise<ConfigResult>;
+  config(
+    op: ConfigOp,
+    changes?: SettingChanges,
+    /** save: a new admin password; checkPassword: the current one. */
+    password?: string,
+  ): Promise<ConfigResult>;
   subscribe(fn: (event: PageToUi) => void): () => void;
+}
+
+/** CONFIG_DONE as the page uses it. */
+function configResult(p: ConfigReply): ConfigResult {
+  const { settings, choices, restart, passwordOk, method, reason, error } = p;
+  return {
+    ...(settings && choices ? { settings, choices } : {}),
+    ...(restart === undefined ? {} : { restart }),
+    ...(passwordOk === undefined ? {} : { passwordOk }),
+    ...(method === undefined ? {} : { method }),
+    ...(reason === undefined ? {} : { reason }),
+    ...(error === undefined ? {} : { error }),
+  };
 }
 
 /** A save goes to Foundry's server; longer than this is a failure. */
@@ -206,27 +229,25 @@ function requests(
         type: "EDITOR_SAVE",
         payload: { requestId, worldId, hostId },
       })),
-    config: (op, changes = {}) =>
+    config: (op, changes = {}, password) =>
       request<ConfigResult>(
         send,
         listeners,
         (requestId) => ({
           type: "CONFIG",
-          payload: { requestId, op, changes },
+          payload: {
+            requestId,
+            op,
+            changes,
+            ...(password === undefined ? {} : { password }),
+          },
         }),
         (e, id) =>
           e.type === "CONFIG_DONE" && e.payload.requestId === id
-            ? {
-                ...(e.payload.settings && e.payload.choices
-                  ? { settings: e.payload.settings, choices: e.payload.choices }
-                  : {}),
-                ...(e.payload.restart === undefined
-                  ? {}
-                  : { restart: e.payload.restart }),
-                ...(e.payload.error ? { error: e.payload.error } : {}),
-              }
+            ? configResult(e.payload)
             : undefined,
-        SAVE_TIMEOUT_MS,
+        // A certificate waits on Let's Encrypt; the rest is quick.
+        op === "generateCertificate" ? BACKUP_OP_TIMEOUT_MS : SAVE_TIMEOUT_MS,
         { error: "Foundry did not answer in time." },
       ),
     ...backupRequests(send, listeners),

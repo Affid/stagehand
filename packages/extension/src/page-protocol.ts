@@ -48,6 +48,7 @@ export const SERVER_ACTIONS = [
   "logout",
   "shutdown",
   "createWorld",
+  "quit",
 ] as const;
 export const WORLD_ACTIONS = [
   "launch",

@@ -8,7 +8,7 @@ import { PresetsPanel } from "./library/panels/PresetsPanel.tsx";
 import { SystemPanel } from "./library/panels/SystemPanel.tsx";
 import { TagsPanel } from "./library/panels/TagsPanel.tsx";
 import { ServerBackupsPage } from "./server/backups/BackupsPage.tsx";
-import { ConfigPage } from "./server/ConfigPage.tsx";
+import { ConfigPage } from "./server/config/ConfigPage.tsx";
 import { UpdatePage } from "./server/UpdatePage.tsx";
 import { Header } from "./Header.tsx";
 import { resolveRoute } from "./route.ts";

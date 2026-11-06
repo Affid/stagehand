@@ -1,5 +1,9 @@
 // @vitest-environment happy-dom
-import { cleanup, fireEvent, waitFor } from "@testing-library/preact";
+// The Configuration page as the prototype (package 7): the settings
+// Foundry's own window edits, in two columns; the password flow; the HTTPS
+// box with Foundry's certificate actions; problems that stop a save; the bar
+// at the bottom, a save dialog listing each change, and the restart notice.
+import { cleanup, fireEvent, waitFor, within } from "@testing-library/preact";
 import { afterEach, describe, expect, test } from "vitest";
 import type { Choices, ReadOnly, Settings } from "../../src/page-config.ts";
 import { el, renderUi } from "./harness.tsx";
@@ -8,188 +12,280 @@ afterEach(cleanup);
 
 const SETTINGS: Settings & ReadOnly = {
   adminUsername: null,
-  passwordSet: true,
+  dataPath: "/home/gm/foundry/data",
+  cssTheme: "dark",
   world: null,
   language: "en.core",
-  cssTheme: "dark",
   port: 30000,
-  upnp: true,
-  hostname: null,
-  routePrefix: null,
-  proxyPort: null,
-  proxySSL: false,
-  dataPath: "/home/gm/foundry/data",
-  noBackups: false,
-  telemetry: false,
-  hotReload: false,
-  deleteNEDB: false,
+  upnp: false,
+  unixSocket: null,
   compressStatic: true,
   compressSocket: true,
+  sslCert: null,
+  sslKey: null,
+  awsConfig: null,
+  fullscreen: false,
+  telemetry: false,
+  deleteNEDB: false,
+  hotReload: false,
   updateChannel: "stable",
+  passwordSet: true,
+  running: { port: 30000, unixSocket: null, dataPath: "/home/gm/foundry/data" },
+  proxySSL: false,
+  noBackups: false,
+  electron: false,
+  certificate: { managed: false, expired: false, error: null },
 };
 const CHOICES: Choices = {
   worlds: [{ value: "w1", label: "Strahd" }],
   languages: [{ value: "en.core", label: "English - Core" }],
   themes: [
-    { value: "dark", label: "Dark" },
-    { value: "light", label: "Light" },
+    { value: "dark", label: "Foundry Virtual Tabletop" },
+    { value: "fantasy", label: "Classic Fantasy" },
   ],
   channels: [{ value: "stable", label: "Stable" }],
 };
 
-async function open() {
+async function open(over: Partial<Settings & ReadOnly> = {}) {
   const r = renderUi("shell");
-  r.page.config.mockResolvedValue({ settings: SETTINGS, choices: CHOICES });
+  r.page.config.mockResolvedValue({
+    settings: { ...SETTINGS, ...over },
+    choices: CHOICES,
+  });
   fireEvent.click(r.getByRole("button", { name: "Configuration" }));
   await waitFor(() => {
-    expect(r.container.querySelector(".mlc-page form")).toBeTruthy();
+    expect(r.container.querySelector(".mlc-cols")).toBeTruthy();
   });
   return r;
 }
 
+const box = (c: ParentNode, title: string): HTMLElement => {
+  const found = [...c.querySelectorAll<HTMLElement>(".mlc-cols .mlw-box")].find(
+    (b) => b.querySelector("h4")?.textContent.startsWith(title),
+  );
+  if (!found) throw new Error(`no box ${title}`);
+  return found;
+};
+
 describe("the Configuration page", () => {
-  test("its heading says what is running: version, port and data folder", async () => {
+  test("its heading says what runs now: version, port and data folder", async () => {
     const { container } = await open();
     const head = el(container, ".mlc-page .mlb-head");
-    expect(head.querySelector("h2")?.textContent).toBe("Configuration");
-    expect(head.textContent).toContain("Foundry 14.369");
     expect(head.textContent).toContain("running on port 30000");
-    expect(head.querySelector("code")?.textContent).toBe(
-      "/home/gm/foundry/data",
-    );
+    expect(head.textContent).toContain("/home/gm/foundry/data");
   });
 
-  test("the header's Configuration opens it with Foundry's settings, grouped", async () => {
-    const { container, store, getByLabelText } = await open();
-    expect(store.get().route).toEqual({ kind: "server", page: "config" });
-    // Two columns, as the prototype.
-    const columns = [...container.querySelectorAll(".mlc-cols > .col")].map(
+  test("two columns, as the prototype, with only what Foundry's own window edits", async () => {
+    const { container, queryByRole } = await open();
+    const cols = [...container.querySelectorAll(".mlc-cols > .col")].map(
       (col) =>
-        [...col.querySelectorAll("fieldset legend")].map((l) => l.textContent),
+        [...col.querySelectorAll(".mlw-box > h4")].map((h) => h.textContent),
     );
-    expect(columns).toEqual([
+    expect(cols).toEqual([
       ["Access", "Startup and appearance", "Other"],
-      ["Network", "Data and storage"],
+      ["Network and HTTPS", "Data and storage"],
     ]);
-    expect((getByLabelText("Port") as HTMLInputElement).value).toBe("30000");
-    expect(container.textContent).toContain("/home/gm/foundry/data");
-    expect(container.textContent).toContain("Set");
+    for (const gone of [
+      "Host name",
+      "Route prefix",
+      "Proxy port",
+      "Update channel",
+    ])
+      expect(queryByRole("textbox", { name: gone })).toBe(null);
+    expect(container.textContent).not.toContain("Full-screen mode");
   });
 
-  test("edits gather in a bar; Discard puts them back", async () => {
-    const { container, getByLabelText, getByRole } = await open();
-    fireEvent.input(getByLabelText("Port"), { target: { value: "30001" } });
-    expect(el(container, ".mlc-bar").textContent).toContain(
-      "1 change not saved",
+  test("Backups are set when the server starts: their state and a link", async () => {
+    const { container } = await open({ noBackups: true });
+    expect(box(container, "Data and storage").textContent).toContain(
+      "Turned off when the server was started",
     );
-    fireEvent.click(getByRole("button", { name: "Discard" }));
-    expect((getByLabelText("Port") as HTMLInputElement).value).toBe("30000");
-    expect(el(container, ".mlc-bar").textContent).not.toContain("not saved");
   });
 
-  test("Save sends only the changes; a restart is explained, with Shut down now", async () => {
-    const { container, getByLabelText, getByRole, page } = await open();
-    fireEvent.input(getByLabelText("Port"), { target: { value: "30001" } });
-    fireEvent.click(getByLabelText("UPnP"));
+  test("an edit is marked and gathered in the bar; Discard puts it back", async () => {
+    const { container, getByRole } = await open();
+    fireEvent.change(getByRole("combobox", { name: "Setup theme" }), {
+      target: { value: "fantasy" },
+    });
+    expect(el(container, ".mlc-unsaved").textContent).toContain(
+      "1 change not saved: Setup theme",
+    );
+    expect(container.querySelector(".mlc-set.changed")).toBeTruthy();
+    fireEvent.click(getByRole("button", { name: "Discard" }));
+    expect(container.querySelector(".mlc-unsaved")).toBe(null);
+  });
+
+  test("Save… lists each change; saving sends only the changes; then the restart notice", async () => {
+    const { container, getByRole, page } = await open();
+    fireEvent.change(getByRole("combobox", { name: "Setup theme" }), {
+      target: { value: "fantasy" },
+    });
+    fireEvent.click(getByRole("button", { name: "Save…" }));
+    const dialog = getByRole("dialog", { name: "Save configuration" });
+    expect(dialog.textContent).toContain(
+      "Foundry Virtual Tabletop → Classic Fantasy",
+    );
     page.config.mockResolvedValueOnce({
-      settings: { ...SETTINGS, port: 30001, upnp: false },
+      settings: { ...SETTINGS, cssTheme: "fantasy" },
       choices: CHOICES,
       restart: true,
     });
-    fireEvent.click(getByRole("button", { name: "Save" }));
+    fireEvent.click(
+      within(dialog).getByRole("button", { name: "Save 1 change" }),
+    );
     await waitFor(() => {
-      expect(page.config).toHaveBeenCalledWith("save", {
-        port: 30001,
-        upnp: false,
-      });
+      expect(page.config).toHaveBeenCalledWith(
+        "save",
+        { cssTheme: "fantasy" },
+        undefined,
+      );
     });
     await waitFor(() => {
-      expect(el(container, ".mlc-bar").textContent).toContain(
-        "after Foundry restarts",
+      expect(el(container, ".mlc-waiting").textContent).toContain(
+        "apply after a restart: Setup theme",
       );
     });
     fireEvent.click(getByRole("button", { name: "Shut down now…" }));
-    expect(page.foundryAction).toHaveBeenCalledWith({ action: "shutdown" });
+    fireEvent.click(
+      within(getByRole("dialog", { name: "Shut down Foundry" })).getByRole(
+        "button",
+        { name: "Shut down Foundry" },
+      ),
+    );
+    expect(page.foundryAction).toHaveBeenCalledWith({ action: "quit" });
   });
 
-  test("a refused save keeps the edits and says why", async () => {
-    const { container, getByLabelText, getByRole, page } = await open();
-    fireEvent.input(getByLabelText("Port"), { target: { value: "1" } });
-    page.config.mockResolvedValueOnce({ error: "port: invalid" });
-    fireEvent.click(getByRole("button", { name: "Save" }));
-    await waitFor(() => {
-      expect(container.textContent).toContain("port: invalid");
+  test("problems stop a save and say why: port, data path, certificate without key", async () => {
+    const { container, getByRole } = await open();
+    fireEvent.input(getByRole("spinbutton", { name: "Port" }), {
+      target: { value: "70000" },
     });
-    expect((getByLabelText("Port") as HTMLInputElement).value).toBe("1");
+    fireEvent.input(getByRole("textbox", { name: "User data path" }), {
+      target: { value: "data" },
+    });
+    expect(container.textContent).toContain(
+      "A port is a whole number from 1 to 65535.",
+    );
+    expect(container.textContent).toContain("Use a full path");
+    const save = getByRole("button", { name: "Save…" }) as HTMLButtonElement;
+    expect(save.disabled).toBe(true);
+    expect(save.closest("[title]")?.getAttribute("title")).toContain(
+      "Fix the 2 problems first",
+    );
   });
+});
 
-  test("no way out to Foundry's own Configuration window", async () => {
-    const { queryByRole } = await open();
-    expect(queryByRole("button", { name: "Change in Foundry" })).toBe(null);
-    expect(
-      queryByRole("button", { name: "Foundry's Application Configuration" }),
-    ).toBe(null);
-  });
-
-  test("an out-of-range or empty port is flagged and can't be saved", async () => {
-    const { container, getByLabelText, getByRole } = await open();
-    fireEvent.input(getByLabelText("Port"), { target: { value: "70000" } });
-    expect(container.textContent).toContain("from 1 to 65535");
-    expect(
-      (getByRole("button", { name: "Save" }) as HTMLButtonElement).disabled,
-    ).toBe(true);
-    fireEvent.input(getByLabelText("Port"), { target: { value: "" } });
-    expect(container.textContent).toContain("from 1 to 65535");
-    fireEvent.input(getByLabelText("Port"), { target: { value: "30002" } });
-    expect(container.textContent).not.toContain("from 1 to 65535");
-    expect(
-      (getByRole("button", { name: "Save" }) as HTMLButtonElement).disabled,
-    ).toBe(false);
-  });
-
-  test("a later save that needs no restart keeps the earlier restart notice", async () => {
-    const { container, getByLabelText, getByRole, page } = await open();
-    fireEvent.input(getByLabelText("Port"), { target: { value: "30001" } });
+describe("the password (package 7)", () => {
+  test("Change…: Foundry checks the current one; a new one twice; saved with the rest", async () => {
+    const { getByRole, getByLabelText, page, container } = await open();
+    fireEvent.click(getByRole("button", { name: "Change…" }));
     page.config.mockResolvedValueOnce({
-      settings: { ...SETTINGS, port: 30001 },
+      settings: SETTINGS,
       choices: CHOICES,
+      passwordOk: true,
+    });
+    fireEvent.input(getByLabelText("Current password"), {
+      target: { value: "old" },
+    });
+    fireEvent.click(getByRole("button", { name: "Continue" }));
+    await waitFor(() => {
+      expect(page.config).toHaveBeenCalledWith("checkPassword", {}, "old");
+    });
+    const next = await waitFor(() => getByLabelText("New password"));
+    fireEvent.input(next, { target: { value: "longenough" } });
+    fireEvent.input(getByLabelText("Repeat the new password"), {
+      target: { value: "longenough" },
+    });
+    fireEvent.click(getByRole("button", { name: "Use it" }));
+    expect(el(container, ".mlc-unsaved").textContent).toContain(
+      "Administrator password",
+    );
+    fireEvent.click(getByRole("button", { name: "Save…" }));
+    fireEvent.click(
+      within(getByRole("dialog")).getByRole("button", {
+        name: "Save 1 change",
+      }),
+    );
+    await waitFor(() => {
+      expect(page.config).toHaveBeenCalledWith("save", {}, "longenough");
+    });
+  });
+
+  test("a wrong current password, a short or mismatched new one, each says so", async () => {
+    const { getByRole, getByLabelText, page, container } = await open();
+    fireEvent.click(getByRole("button", { name: "Change…" }));
+    page.config.mockResolvedValueOnce({
+      settings: SETTINGS,
+      choices: CHOICES,
+      passwordOk: false,
+    });
+    fireEvent.input(getByLabelText("Current password"), {
+      target: { value: "bad" },
+    });
+    fireEvent.click(getByRole("button", { name: "Continue" }));
+    await waitFor(() => {
+      expect(container.textContent).toContain(
+        "That isn't the current password.",
+      );
+    });
+  });
+});
+
+describe("HTTPS (package 7)", () => {
+  test("not encrypted: Get a free certificate… explains, then asks Foundry", async () => {
+    const { container, getByRole, page } = await open();
+    expect(el(container, ".mlc-https").textContent).toContain(
+      "Not encrypted (http)",
+    );
+    fireEvent.click(getByRole("button", { name: "Get a free certificate…" }));
+    const d = getByRole("dialog", { name: "Get a free certificate" });
+    expect(d.textContent).toContain("Port 80 must be reachable");
+    page.config.mockResolvedValueOnce({
+      settings: SETTINGS,
+      choices: CHOICES,
+      method: "letsencrypt",
       restart: true,
     });
-    fireEvent.click(getByRole("button", { name: "Save" }));
+    fireEvent.click(
+      within(d).getByRole("button", { name: "Get the certificate" }),
+    );
     await waitFor(() => {
-      expect(el(container, ".mlc-bar").textContent).toContain(
-        "after Foundry restarts",
-      );
-    });
-    fireEvent.input(getByLabelText("Host name"), {
-      target: { value: "gm.example" },
-    });
-    page.config.mockResolvedValueOnce({
-      settings: { ...SETTINGS, port: 30001, hostname: "gm.example" },
-      choices: CHOICES,
-      restart: false,
-    });
-    fireEvent.click(getByRole("button", { name: "Save" }));
-    await waitFor(() => {
-      expect(el(container, ".mlc-bar").textContent).toContain(
-        "after Foundry restarts",
+      expect(page.config).toHaveBeenCalledWith(
+        "generateCertificate",
+        {},
+        undefined,
       );
     });
   });
 
-  test("text keeps its spaces while typing and is trimmed when saved", async () => {
-    const { getByLabelText, getByRole, page } = await open();
-    fireEvent.input(getByLabelText("Host name"), {
-      target: { value: "gm.example " },
-    });
-    expect((getByLabelText("Host name") as HTMLInputElement).value).toBe(
-      "gm.example ",
+  test("a reverse proxy, Let's Encrypt, or your own certificate each say so", async () => {
+    let r = await open({ proxySSL: true });
+    expect(el(r.container, ".mlc-https").textContent).toContain(
+      "reverse proxy",
     );
-    fireEvent.click(getByRole("button", { name: "Save" }));
-    await waitFor(() => {
-      expect(page.config).toHaveBeenCalledWith("save", {
-        hostname: "gm.example",
-      });
+    cleanup();
+    r = await open({
+      certificate: { managed: true, expired: false, error: null },
     });
+    expect(el(r.container, ".mlc-https").textContent).toContain(
+      "Let's Encrypt",
+    );
+    expect(r.getByRole("button", { name: "Stop renewing…" })).toBeTruthy();
+    cleanup();
+    r = await open({ sslCert: "c.pem", sslKey: "k.pem" });
+    expect(el(r.container, ".mlc-https").textContent).toContain(
+      "your own certificate",
+    );
+  });
+
+  test("your own certificate needs its key", async () => {
+    const { container, getByRole } = await open();
+    fireEvent.click(
+      getByRole("button", { name: "Use my own certificate instead" }),
+    );
+    fireEvent.input(getByRole("textbox", { name: "SSL certificate" }), {
+      target: { value: "c.pem" },
+    });
+    expect(container.textContent).toContain("A certificate needs its key");
   });
 });

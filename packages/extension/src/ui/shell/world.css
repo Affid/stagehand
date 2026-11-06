@@ -675,106 +675,6 @@ ul.mlw-check.warn {
   color: var(--color-warm-1);
 }
 
-/* The Configuration page */
-.mls-shell .mlc-page {
-  display: grid;
-  gap: 12px;
-  align-content: start;
-}
-
-.mls-shell .mlc-page h2 {
-  margin: 0;
-  font-size: 20px;
-  border: 0;
-}
-
-.mls-shell .mlc-bar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-height: 44px;
-  padding: 6px 12px;
-  border: 1px solid var(--color-cool-4);
-  border-radius: 4px;
-  font-size: 13.5px;
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  background: rgb(11 10 19 / 92%);
-}
-
-.mls-shell .mlc-bar.dirty {
-  border-color: rgb(238 155 58 / 55%);
-  color: #f6d3a8;
-}
-
-.mls-shell .mlc-bar button {
-  width: auto;
-  height: 30px;
-  padding: 0 12px;
-}
-
-/* Two columns at any width, as the prototype: Access, Startup and Other on
-   the left; Network and Data on the right. */
-.mls-shell .mlc-page .mlc-cols {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 14px;
-  align-items: start;
-  max-width: 1400px;
-}
-
-.mls-shell .mlc-page .mlc-cols .col {
-  display: grid;
-  gap: 14px;
-  min-width: 0;
-}
-
-.mls-shell .mlc-page fieldset {
-  margin: 0;
-  display: grid;
-  gap: 10px;
-  padding: 10px 14px 14px;
-  border: 1px solid var(--color-cool-4);
-  border-radius: 4px;
-  background: rgb(11 10 19 / 55%);
-}
-
-.mls-shell .mlc-page legend {
-  padding: 0 6px;
-  font-size: 12px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--color-text-subtle);
-}
-
-.mls-shell .mlc-field {
-  display: grid;
-  grid-template-columns: minmax(120px, 200px) minmax(0, 1fr);
-  align-items: center;
-  gap: 10px;
-  font-size: 13.5px;
-}
-
-.mls-shell .mlc-field.mlc-toggle {
-  grid-template-columns: auto 1fr;
-}
-
-.mls-shell .mlc-value {
-  display: inline-flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-
-.mls-shell .mlc-value button {
-  width: auto;
-  height: 26px;
-  padding: 0 10px;
-}
-
 /* The Update page, and the chip's update mark */
 .mls-shell .mlh-ver .upd {
   display: inline-flex;
@@ -831,20 +731,6 @@ ul.mlw-check.warn {
   height: 34px;
   padding: 0 14px;
   gap: 8px;
-}
-
-.mls-shell .mlc-input {
-  display: grid;
-  gap: 3px;
-}
-
-.mls-shell .mlc-input input[aria-invalid="true"] {
-  border-color: #e0705a;
-}
-
-.mls-shell .mlc-bad {
-  font-size: 12px;
-  color: #ff9c8f;
 }
 
 .mls-shell .mlu-avail.warn {

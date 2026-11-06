@@ -120,6 +120,22 @@ function openWarnings(doc: Document, page: ActionGlobals): string | undefined {
   return error;
 }
 
+/**
+ * As Setup's Shut down (#onClickShutDownServer) after our own confirm: its
+ * deferred /quit, then the page Foundry sends us to.
+ */
+async function quit(page: ActionGlobals): Promise<string | undefined> {
+  const route = page.foundry?.utils?.getRoute?.("quit") ?? "/quit";
+  const response = await fetch(route, {
+    method: "POST",
+    body: JSON.stringify({ defer: true }),
+    headers: { "Content-Type": "application/json" },
+  });
+  if (!response.ok) return "Foundry did not accept the shutdown";
+  window.location.href = response.url;
+  return undefined;
+}
+
 /** Foundry's installer (public), or its own Update All button (private flow). */
 function packageAction(
   doc: Document,
@@ -182,6 +198,8 @@ export async function runFoundryAction(
           `#setup-menu [data-action="${MENU_ACTION[a.action]}"]`,
           a.action,
         );
+      case "quit":
+        return await quit(page);
       case "createWorld":
         return click(
           doc,

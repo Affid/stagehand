@@ -1,108 +1,82 @@
 import { describe, expect, test } from "vitest";
 import { parseConfigReply, parseConfigRequest } from "../../src/page-config.ts";
 
-describe("configuration requests", () => {
-  test("read, or save known settings with the right types", () => {
+describe("CONFIG requests are checked (package 7)", () => {
+  test("read; save known settings, maybe with a new password; check a password; certificates", () => {
     expect(parseConfigRequest({ requestId: "r1", op: "read" })).toEqual({
       requestId: "r1",
       op: "read",
       changes: {},
     });
-    // What the bridge sends for a read.
-    expect(
-      parseConfigRequest({ requestId: "r1", op: "read", changes: {} })?.op,
-    ).toBe("read");
     expect(
       parseConfigRequest({
         requestId: "r1",
         op: "save",
-        changes: { port: 30001, upnp: false, world: null, language: "en.core" },
-      })?.changes,
-    ).toEqual({ port: 30001, upnp: false, world: null, language: "en.core" });
+        changes: { port: 30001, sslCert: "c.pem" },
+        password: "pw",
+      }),
+    ).toEqual({
+      requestId: "r1",
+      op: "save",
+      changes: { port: 30001, sslCert: "c.pem" },
+      password: "pw",
+    });
+    expect(
+      parseConfigRequest({ requestId: "r1", op: "save", password: "pw" })?.op,
+    ).toBe("save");
+    expect(
+      parseConfigRequest({
+        requestId: "r1",
+        op: "checkPassword",
+        password: "pw",
+      })?.password,
+    ).toBe("pw");
+    expect(
+      parseConfigRequest({ requestId: "r1", op: "generateCertificate" })?.op,
+    ).toBe("generateCertificate");
   });
 
-  test("refuses secrets, unknown keys, wrong types and empty saves", () => {
-    const save = (changes: unknown) =>
-      parseConfigRequest({ requestId: "r1", op: "save", changes });
-    for (const changes of [
-      {},
-      { adminPassword: "x" },
-      { passwordSalt: "x" },
-      { sslKey: "x" },
-      { dataPath: "/tmp" },
-      { port: "30000" },
-      { port: 70000 },
-      { upnp: "yes" },
-      { language: "" },
-      { hostname: "x".repeat(300) },
-      null,
+  test("refuses fields Foundry's window doesn't edit, wrong types, empty saves and stray passwords", () => {
+    for (const bad of [
+      { requestId: "r1", op: "save", changes: { hostname: "x" } },
+      { requestId: "r1", op: "save", changes: { proxySSL: true } },
+      { requestId: "r1", op: "save", changes: { port: 0 } },
+      { requestId: "r1", op: "save", changes: {} },
+      { requestId: "r1", op: "save", changes: { adminPassword: "pw" } },
+      { requestId: "r1", op: "read", password: "pw" },
+      { requestId: "r1", op: "checkPassword" },
+      { requestId: "r1", op: "checkPassword", password: "" },
+      { requestId: "r1", op: "generateCertificate", changes: { port: 1 } },
+      { requestId: "r1", op: "drop" },
     ])
-      expect(save(changes)).toBeUndefined();
-    expect(parseConfigRequest({ requestId: "r1", op: "wipe" })).toBeUndefined();
-    expect(
-      parseConfigRequest({ requestId: "r1", op: "read", changes: { port: 1 } }),
-    ).toBeUndefined();
+      expect(parseConfigRequest(bad)).toBeUndefined();
   });
 });
 
-describe("configuration replies", () => {
-  const settings = {
-    adminUsername: null,
-    passwordSet: true,
-    world: null,
-    language: "en.core",
-    cssTheme: "dark",
-    port: 30000,
-    upnp: true,
-    hostname: null,
-    routePrefix: null,
-    proxyPort: null,
-    proxySSL: false,
-    dataPath: "/data",
-    noBackups: false,
-    telemetry: false,
-    hotReload: false,
-    deleteNEDB: false,
-    compressStatic: true,
-    compressSocket: true,
-    updateChannel: "stable",
-  };
-  const choices = {
-    worlds: [{ value: "w", label: "W" }],
-    languages: [{ value: "en.core", label: "English" }],
-    themes: [{ value: "dark", label: "Dark" }],
-    channels: [{ value: "stable", label: "Stable" }],
-  };
-
-  test("settings and their choices, checked", () => {
-    expect(parseConfigReply({ requestId: "r1", settings, choices })).toEqual({
-      requestId: "r1",
-      settings,
-      choices,
-    });
-    expect(
-      parseConfigReply({ requestId: "r1", restart: true, settings, choices }),
-    ).toMatchObject({ restart: true });
-  });
-
-  test("never carries a secret, and refuses malformed settings", () => {
+describe("CONFIG_DONE is checked", () => {
+  test("only known settings and read-only facts; the small answers typed", () => {
     expect(
       parseConfigReply({
         requestId: "r1",
-        settings: { ...settings, adminPassword: "hash" },
-        choices,
+        passwordOk: true,
+        method: "self-signed",
+        reason: "no port 80",
       }),
+    ).toEqual({
+      requestId: "r1",
+      passwordOk: true,
+      method: "self-signed",
+      reason: "no port 80",
+    });
+    expect(
+      parseConfigReply({ requestId: "r1", passwordOk: "yes" }),
     ).toBeUndefined();
     expect(
       parseConfigReply({
         requestId: "r1",
-        settings: { ...settings, port: "x" },
-        choices,
+        settings: { adminPassword: "hash" },
+        choices: {},
       }),
     ).toBeUndefined();
-    expect(parseConfigReply({ requestId: "r1", error: "nope" })).toEqual({
-      requestId: "r1",
-      error: "nope",
-    });
   });
 });

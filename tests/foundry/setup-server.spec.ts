@@ -84,19 +84,38 @@ test("Configuration reads Foundry's settings and saves one through Foundry, then
   await shell().getByRole("button", { name: "Configuration" }).click();
   const cfg = shell().locator(".mlc-page");
   await expect(cfg.getByLabel("Port", { exact: true })).toHaveValue(/\d+/);
-  const toggle = cfg.getByRole("switch", { name: "Compress socket data" });
+  await cfg
+    .getByRole("button", { name: "Advanced: Unix socket, compression" })
+    .click();
+  const toggle = cfg.getByRole("switch", { name: "Compress web socket data" });
   const was = await toggle.isChecked();
+  const saveOne = async (): Promise<void> => {
+    await cfg.getByRole("button", { name: "Save…" }).click();
+    await shell()
+      .getByRole("dialog", { name: "Save configuration" })
+      .getByRole("button", { name: "Save 1 change" })
+      .click();
+  };
   await toggle.click();
   await expect(cfg.locator(".mlc-bar")).toContainText("1 change not saved");
   await page.screenshot({ path: `${SCREENS}/server-config.png` });
-  await cfg.getByRole("button", { name: "Save" }).click();
-  await expect(cfg.locator(".mlc-bar")).toContainText("after Foundry restarts");
+  await saveOne();
+  await expect(cfg.locator(".mlc-bar")).toContainText("apply after a restart");
   await expect(toggle).toBeChecked({ checked: !was });
   // Put it back, so options.json ends as it began.
   await toggle.click();
-  await cfg.getByRole("button", { name: "Save" }).click();
+  await saveOne();
   await expect(toggle).toBeChecked({ checked: was });
-  await expect(cfg.locator(".mlc-bar")).not.toContainText("not saved");
+  await expect(cfg.locator(".mlc-unsaved")).toHaveCount(0);
+});
+
+test("Configuration: a wrong current password is refused by Foundry", async () => {
+  const cfg = shell().locator(".mlc-page");
+  await cfg.getByRole("button", { name: "Change…" }).click();
+  await cfg.getByLabel("Current password").fill("certainly-not-the-password");
+  await cfg.getByRole("button", { name: "Continue" }).click();
+  await expect(cfg).toContainText("That isn't the current password.");
+  await cfg.getByRole("button", { name: "Cancel" }).click();
 });
 
 test("the Version chip's menu opens the Update page with Foundry's version and its notes", async () => {

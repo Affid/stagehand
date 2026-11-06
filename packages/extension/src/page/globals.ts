@@ -74,6 +74,7 @@ export interface PageGlobals {
     readonly utils?: {
       readonly escapeHTML?: (text: string) => string;
       readonly isNewerVersion?: (v1: string, v0: string) => boolean;
+      readonly getRoute?: (path: string) => string;
     };
   };
 }

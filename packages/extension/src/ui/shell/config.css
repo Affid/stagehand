@@ -1,0 +1,405 @@
+/* The Configuration page, as the prototype (design/setup-page/src/
+   _config.css): two columns of boxes that scroll, setting rows with a hint
+   and a control, the HTTPS box, and the bar at the bottom in space that is
+   always kept free. Appended to setup-ui.css. */
+
+.mls-shell .mlc-page {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mls-shell .mlc-page .mlb-head code {
+  margin-left: 4px;
+  font-size: 12px;
+  color: var(--color-light-3);
+}
+
+.mls-shell .mlc-cols {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+  padding-bottom: 76px;
+}
+
+.mls-shell .mlc-cols .col {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+/* A setting row */
+.mls-shell .mlc-set {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(180px, 46%);
+  gap: 12px;
+  align-items: center;
+  padding: 8px 0;
+  border-top: 1px solid rgb(255 255 255 / 5%);
+}
+
+.mls-shell .mlw-box h4 + .mlc-set {
+  border-top: 0;
+  padding-top: 2px;
+}
+
+.mls-shell .mlc-set .l {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.mls-shell .mlc-set .l strong {
+  color: var(--color-light-1);
+  font-size: 13.5px;
+}
+
+.mls-shell .mlc-set .l span {
+  color: var(--color-text-subtle);
+  font-size: 12.5px;
+  line-height: 1.35;
+}
+
+.mls-shell .mlc-set .l .err {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  color: #ffb3a6;
+}
+
+.mls-shell .mlc-set .c {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.mls-shell .mlc-set .c input[type="text"],
+.mls-shell .mlc-set .c input[type="number"],
+.mls-shell .mlc-set .c select {
+  width: 100%;
+  height: 30px;
+}
+
+.mls-shell .mlc-set .c > button {
+  height: 28px;
+  width: auto;
+  flex: none;
+  padding: 0 12px;
+  font-size: 13px;
+}
+
+.mls-shell .mlc-set .c > .ml-link {
+  height: auto;
+  padding: 0;
+  font-size: 12.5px;
+}
+
+.mls-shell .mlc-set.changed .l strong::after {
+  content: "changed";
+  margin-left: 8px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-warm-1);
+}
+
+.mls-shell .mlc-state {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  font-size: 12.5px;
+}
+
+.mls-shell .mlc-state.ok {
+  color: #8fd49b;
+}
+
+.mls-shell .mlc-state.warn {
+  color: #f5c45e;
+}
+
+.mls-shell .mlc-state.bad {
+  color: #ffb3a6;
+}
+
+/* The password flow */
+.mls-shell .mlc-pw {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  grid-template-columns: 1fr auto auto;
+}
+
+.mls-shell .mlc-pw input {
+  height: 30px;
+  grid-column: 1 / -1;
+}
+
+.mls-shell .mlc-pw button {
+  height: 28px;
+  width: auto;
+  padding: 0 12px;
+  font-size: 13px;
+}
+
+.mls-shell .mlc-pw button.bright {
+  grid-column: 2;
+}
+
+.mls-shell .mlc-pw .err {
+  grid-column: 1 / -1;
+  color: #ffb3a6;
+  font-size: 12.5px;
+}
+
+/* Network and HTTPS */
+.mls-shell .mlc-port {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+}
+
+.mls-shell .mlc-port input[type="number"] {
+  flex: 1;
+}
+
+.mls-shell .mlc-port label {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  font-size: 13px;
+  color: var(--color-light-2);
+  white-space: nowrap;
+}
+
+.mls-shell .mlc-https {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin: 4px 0;
+  padding: 10px;
+  border: 1px solid;
+  border-radius: 4px;
+}
+
+.mls-shell .mlc-https > i {
+  font-size: 18px;
+}
+
+.mls-shell .mlc-https > div {
+  flex: 1;
+  display: grid;
+  gap: 2px;
+}
+
+.mls-shell .mlc-https strong {
+  color: var(--color-light-1);
+  font-size: 13.5px;
+}
+
+.mls-shell .mlc-https span {
+  font-size: 12.5px;
+  color: var(--color-light-3);
+}
+
+.mls-shell .mlc-https button {
+  height: 30px;
+  width: auto;
+  flex: none;
+  padding: 0 12px;
+  font-size: 13px;
+}
+
+.mls-shell .mlc-https.warn {
+  border-color: rgb(245 196 94 / 55%);
+  background: rgb(245 196 94 / 8%);
+}
+
+.mls-shell .mlc-https.warn > i {
+  color: #f5c45e;
+}
+
+.mls-shell .mlc-https.ok {
+  border-color: rgb(63 143 82 / 55%);
+  background: rgb(63 143 82 / 8%);
+}
+
+.mls-shell .mlc-https.ok > i {
+  color: #8fd49b;
+}
+
+.mls-shell .mlc-more,
+.mls-shell .mlc-more.ml-link {
+  display: inline-block;
+  justify-self: start;
+  width: auto;
+  height: auto;
+  margin: 6px 0 2px;
+  padding: 0;
+  border: 0;
+  font-size: 12.5px;
+  color: var(--color-light-3);
+  text-decoration: underline;
+  text-decoration-color: var(--color-light-5);
+}
+
+.mls-shell .mlc-more:hover {
+  color: var(--color-warm-1);
+}
+
+/* The bar: unsaved changes, or what waits for a restart */
+.mls-shell .mlc-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 5;
+}
+
+.mls-shell .mlc-unsaved,
+.mls-shell .mlc-waiting {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 4px;
+  font-size: 13px;
+  box-shadow: 0 6px 22px rgb(0 0 0 / 75%);
+  backdrop-filter: blur(4px);
+  animation: mlc-up 0.16s ease-out;
+}
+
+.mls-shell .mlc-unsaved {
+  border: 1px solid rgb(238 155 58 / 60%);
+  background-color: rgb(30 22 14 / 96%);
+  color: #f6d3a8;
+}
+
+.mls-shell .mlc-unsaved > i {
+  color: var(--color-warm-1);
+}
+
+.mls-shell .mlc-waiting {
+  border: 1px solid rgb(79 143 214 / 60%);
+  background-color: rgb(16 24 38 / 96%);
+  color: #cfe0f5;
+}
+
+.mls-shell .mlc-waiting > i {
+  color: #7fb0e6;
+}
+
+.mls-shell .mlc-unsaved > span:not(.nodel),
+.mls-shell .mlc-waiting > span {
+  flex: 1;
+  min-width: 0;
+}
+
+.mls-shell .mlc-unsaved button,
+.mls-shell .mlc-waiting button {
+  height: 30px;
+  width: auto;
+  flex: none;
+  padding: 0 12px;
+  font-size: 13px;
+}
+
+.mls-shell .mlc-unsaved button[disabled] {
+  opacity: 0.45;
+}
+
+@keyframes mlc-up {
+  from {
+    transform: translateY(8px);
+    opacity: 0;
+  }
+
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mls-shell .mlc-unsaved,
+  .mls-shell .mlc-waiting {
+    animation: none;
+  }
+}
+
+/* The dialogs */
+.mls-shell .mlc-diff,
+.mls-shell .mlc-how {
+  list-style: none;
+  margin: 0 0 10px;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.mls-shell .mlc-diff li {
+  display: grid;
+  grid-template-columns: 170px 1fr;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.mls-shell .mlc-diff li span {
+  color: var(--color-light-3);
+  overflow-wrap: anywhere;
+}
+
+.mls-shell .mlc-diff li b {
+  color: var(--color-light-1);
+}
+
+.mls-shell .mlc-how li {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--color-light-2);
+}
+
+.mls-shell .mlc-how li i {
+  margin-top: 3px;
+  color: var(--color-light-4);
+}
+
+@media (max-width: 1280px) {
+  .mls-shell .mlc-set {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .mls-shell .mlc-set .c {
+    justify-content: flex-start;
+  }
+}
+
+.mls-shell .mls-check {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  padding: 8px 10px;
+  border: 1px solid;
+  border-radius: 4px;
+  font-size: 12.5px;
+}
+
+.mls-shell .mls-check.warn {
+  border-color: rgb(245 196 94 / 50%);
+  background: rgb(245 196 94 / 8%);
+  color: #f3dca4;
+}
