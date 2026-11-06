@@ -296,3 +296,46 @@ describe("router: review fixes", () => {
     ).rejects.toThrow(/unexpected page/);
   });
 });
+
+describe("router: new Setup page preference", () => {
+  test("is off by default, stored per server, and comes back with the state", async () => {
+    const d = deps();
+    await registered(d);
+    await route(d, { kind: "setup-seen", data: setupData(true) }, fromSetup);
+    const before = (await route(d, { kind: "get-state" }, fromSetup)) as {
+      prefs: { newSetupPage: boolean };
+    };
+    expect(before.prefs).toEqual({ newSetupPage: false });
+    await route(
+      d,
+      { kind: "set-pref", key: "newSetupPage", value: true },
+      fromSetup,
+    );
+    const after = (await route(d, { kind: "get-state" }, fromSetup)) as {
+      prefs: { newSetupPage: boolean };
+    };
+    expect(after.prefs).toEqual({ newSetupPage: true });
+  });
+
+  test("is accepted only from this server's Setup page, with a known key and a boolean", async () => {
+    const d = deps();
+    await registered(d);
+    await expect(
+      route(
+        d,
+        { kind: "set-pref", key: "newSetupPage", value: true },
+        fromGame,
+      ),
+    ).rejects.toThrow();
+    await expect(
+      route(d, { kind: "set-pref", key: "other", value: true }, fromSetup),
+    ).rejects.toThrow();
+    await expect(
+      route(
+        d,
+        { kind: "set-pref", key: "newSetupPage", value: "yes" },
+        fromSetup,
+      ),
+    ).rejects.toThrow();
+  });
+});

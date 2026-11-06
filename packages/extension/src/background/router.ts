@@ -64,6 +64,7 @@ async function state(deps: RouterDeps, server: ServerId): Promise<SetupState> {
     commands: await s.commands(server),
     hellos: await s.hellos(server),
     config: await deps.loadConfig(),
+    prefs: await s.prefs(server),
   };
 }
 
@@ -147,6 +148,8 @@ async function fromSetup(
 ): Promise<unknown> {
   if (m.kind === "setup-seen") return setupSeen(deps, server, m);
   if (m.kind === "get-state") return state(deps, server);
+  // A display preference for this browser: no admin verification needed.
+  if (m.kind === "set-pref") return deps.state.setPref(server, m.key, m.value);
   if (!SETUP_WRITES.has(m.kind))
     throw new Error(`Unexpected ${m.kind} from Setup`);
   await assertCanChange(deps, server);

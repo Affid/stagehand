@@ -94,6 +94,7 @@ export function setupState(over: Partial<SetupState> = {}): SetupState {
     commands: [],
     hellos: {},
     config: BUNDLED_CONFIG,
+    prefs: { newSetupPage: false },
     ...over,
   };
 }

@@ -74,8 +74,10 @@ settings, `Collection.get` and `WorldConfig`.
 
 Next:
 
-3. Setting: per-server "new Setup page" flag in the background state (`messages.ts`,
-   `background/state.ts`, router), a switch on the options page and in the current UI.
+3. Setting UI: the store/actions call `set-pref` (background part done: `Prefs` /
+   `DEFAULT_PREFS` in `messages.ts`, `state.prefs` / `setPref`, `prefs` in `SetupState`,
+   accepted from the Setup page without admin verification); a switch on the options page
+   and in the current Module Library UI.
 4. `ui/shell/`: `ShellRoot` (full-page host), `Header` (logo, version chip, Backups,
    Configuration, ⏻ menu, "Foundry's Setup page"), `WorldRail` (worldOrder, filter, flags
    from `worldRow`), router state in the store (`page: world | library`, `worldId`).

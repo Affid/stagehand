@@ -15,6 +15,7 @@ import type {
   SetupData,
   Snapshot,
 } from "@module-library/shared/world";
+import { DEFAULT_PREFS, type Prefs } from "../messages.ts";
 import { type SerializedKeyValue, type Updated, withResult } from "./kv.ts";
 import type { ServerId } from "./servers.ts";
 
@@ -73,6 +74,20 @@ function serverStore(kv: SerializedKeyValue) {
           ? { ...s, [id]: { ...current, adminVerifiedAt: at } }
           : s;
       });
+    },
+    prefs: async (id: ServerId): Promise<Prefs> => ({
+      ...DEFAULT_PREFS,
+      ...(await reader(kv)<Partial<Prefs>>(key("prefs", id), {})),
+    }),
+    async setPref(
+      id: ServerId,
+      name: keyof Prefs,
+      value: boolean,
+    ): Promise<void> {
+      await kv.update<Partial<Prefs>>(key("prefs", id), {}, (p) => ({
+        ...p,
+        [name]: value,
+      }));
     },
     /** Setup said this browser is no longer the admin (security review). */
     async revokeAdmin(id: ServerId): Promise<void> {

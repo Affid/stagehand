@@ -51,6 +51,11 @@ export const ExtensionMessageSchema = z.discriminatedUnion("kind", [
       message: "Choose presets or modules to apply",
     }),
   z.object({ kind: z.literal("cancel-command"), id: Id }),
+  z.object({
+    kind: z.literal("set-pref"),
+    key: z.literal("newSetupPage"),
+    value: z.boolean(),
+  }),
   z.object({ kind: z.literal("bridge-init") }),
   z.object({ kind: z.literal("relay"), msg: EnvelopeSchema }),
 ]);
@@ -67,4 +72,14 @@ export interface SetupState {
   readonly commands: readonly Command[];
   readonly hellos: Readonly<Record<string, HelloRecord>>;
   readonly config: SetupConfig;
+  /** This browser's choices for this server. */
+  readonly prefs: Prefs;
 }
+
+/** Per-server preferences, stored in this browser. */
+export interface Prefs {
+  /** Show the new Setup page instead of Foundry's own layout. */
+  readonly newSetupPage: boolean;
+}
+
+export const DEFAULT_PREFS: Prefs = { newSetupPage: false };
