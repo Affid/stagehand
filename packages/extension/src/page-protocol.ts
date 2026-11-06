@@ -1,6 +1,12 @@
 // Messages between the Setup page's own world (setup-main) and the isolated
 // UI (setup-ui). Both sides check every message by hand: the page world stays
 // free of Zod to keep it small, and page scripts can post anything.
+import {
+  parseSaveDone,
+  parseSaveWorld,
+  type SaveDone,
+  type SaveWorld,
+} from "./page-save.ts";
 
 export type NoticeKind = "info" | "warning" | "error";
 
@@ -68,7 +74,9 @@ export type UiToPage =
     }
   /** Take over Foundry's Setup layout (on) or give it back (off). */
   | { readonly type: "SHELL"; readonly payload: { readonly on: boolean } }
-  | { readonly type: "FOUNDRY_ACTION"; readonly payload: FoundryAction };
+  | { readonly type: "FOUNDRY_ACTION"; readonly payload: FoundryAction }
+  /** Save a world's details through Foundry (answered by SAVE_DONE). */
+  | { readonly type: "SAVE_WORLD"; readonly payload: SaveWorld };
 
 export type PageToUi =
   | { readonly type: "WINDOW_READY"; readonly payload: { readonly id: string } }
@@ -87,7 +95,8 @@ export type PageToUi =
   | {
       readonly type: "SHELL_STATE";
       readonly payload: { readonly on: boolean; readonly error?: string };
-    };
+    }
+  | { readonly type: "SAVE_DONE"; readonly payload: SaveDone };
 
 const WINDOW_ID = /^[a-z][a-z0-9-]{0,60}$/;
 const MAX_TEXT = 2000;
@@ -188,6 +197,10 @@ export function parseUiToPage(type: string, p: unknown): UiToPage | undefined {
       const payload = foundryAction(p);
       return payload ? { type, payload } : undefined;
     }
+    case "SAVE_WORLD": {
+      const payload = parseSaveWorld(p);
+      return payload ? { type, payload } : undefined;
+    }
     default:
       return undefined;
   }
@@ -218,6 +231,10 @@ export function parsePageToUi(type: string, p: unknown): PageToUi | undefined {
       return isText(p.error)
         ? { type, payload: { on: p.on, error: p.error } }
         : undefined;
+    case "SAVE_DONE": {
+      const payload = parseSaveDone(p);
+      return payload ? { type, payload } : undefined;
+    }
     default:
       return undefined;
   }

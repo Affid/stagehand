@@ -122,6 +122,7 @@ export function fakePage(windows = true) {
     setMenu: vi.fn(),
     setShell: vi.fn(),
     foundryAction: vi.fn(),
+    saveWorld: vi.fn(() => Promise.resolve<string | undefined>(undefined)),
     openWindow: vi.fn((spec: { id: string }) => {
       if (!windows) return;
       const frame = document.createElement("div");

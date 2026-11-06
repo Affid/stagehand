@@ -89,3 +89,39 @@ describe("the UI's bridge to the page world", () => {
     expect(bridge.windowHost("c-1")).toBeNull();
   });
 });
+
+describe("saving a world through the bridge", () => {
+  test("asks with a request id and settles on the matching answer", async () => {
+    const spy = vi.spyOn(window, "postMessage");
+    const bridge = createPageBridge(window);
+    const done = bridge.saveWorld("w", { title: "New" });
+    const sentMsg = spy.mock.calls.at(-1)?.[0] as {
+      type: string;
+      payload: { requestId: string; worldId: string; changes: unknown };
+    };
+    expect(sentMsg).toMatchObject({
+      type: "SAVE_WORLD",
+      payload: { worldId: "w", changes: { title: "New" } },
+    });
+    window.dispatchEvent(
+      fromPage("SAVE_DONE", { requestId: "someone-else", error: "no" }),
+    );
+    window.dispatchEvent(
+      fromPage("SAVE_DONE", {
+        requestId: sentMsg.payload.requestId,
+        error: "title: may not be blank",
+      }),
+    );
+    await expect(done).resolves.toBe("title: may not be blank");
+    spy.mockRestore();
+  });
+
+  test("no answer in time is an error, not a wait forever", async () => {
+    vi.useFakeTimers();
+    const bridge = createPageBridge(window);
+    const done = bridge.saveWorld("w", { nextSession: null });
+    vi.advanceTimersByTime(30_000);
+    await expect(done).resolves.toMatch(/answer/i);
+    vi.useRealTimers();
+  });
+});

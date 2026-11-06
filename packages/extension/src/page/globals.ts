@@ -21,6 +21,8 @@ export interface SetupGame {
   readonly worlds?: Collection;
   readonly systems?: Collection;
   readonly settings?: ClientSettings;
+  /** Foundry's own POST to the Setup route; resolves with the server's answer. */
+  readonly post?: (data: object) => Promise<unknown>;
   /** Resolves once the backup is done: true if it was created. */
   readonly createBackup?: (
     pkg: unknown,

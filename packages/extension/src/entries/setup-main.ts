@@ -10,6 +10,7 @@ import {
   type UiToPage,
 } from "../page-protocol.ts";
 import { runFoundryAction } from "../page/actions.ts";
+import { saveWorld } from "../page/save-world.ts";
 import { collect } from "../page/collect.ts";
 import { pageGlobals } from "../page/globals.ts";
 import { installWorldMenu, type MenuConfig } from "../page/menu.ts";
@@ -18,6 +19,8 @@ import { createWindowHost, type WindowHost } from "../page/windows.ts";
 
 const page = pageGlobals();
 const POLL_MS = 100;
+/** SAVE_DONE's limit for an error message. */
+const MAX_ERROR = 2000;
 const MAX_POLLS = 300;
 
 function post(type: string, payload: unknown): void {
@@ -77,6 +80,18 @@ function handle(bridge: Bridge, m: UiToPage): void {
       void runFoundryAction(document, page, m.payload).then((error) => {
         if (error) notify("error", error);
       });
+      break;
+    case "SAVE_WORLD": {
+      const { requestId, worldId, changes } = m.payload;
+      void saveWorld(page, worldId, changes).then((error) => {
+        postToUi({
+          type: "SAVE_DONE",
+          payload: error
+            ? { requestId, error: error.slice(0, MAX_ERROR) }
+            : { requestId },
+        });
+      });
+    }
   }
 }
 

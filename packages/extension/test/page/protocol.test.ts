@@ -151,3 +151,56 @@ describe("new Setup page messages are checked", () => {
     ).toBeUndefined();
   });
 });
+
+describe("saving a world's details", () => {
+  const save = (changes: unknown, extra: Record<string, unknown> = {}) =>
+    parseUiToPage("SAVE_WORLD", {
+      requestId: "r1",
+      worldId: "w",
+      changes,
+      ...extra,
+    });
+
+  test("accepts a title, a next session or clearing it", () => {
+    expect(save({ title: "New title" })?.payload).toEqual({
+      requestId: "r1",
+      worldId: "w",
+      changes: { title: "New title" },
+    });
+    expect(save({ nextSession: "2026-11-12T18:00:00.000Z" })?.payload).toEqual({
+      requestId: "r1",
+      worldId: "w",
+      changes: { nextSession: "2026-11-12T18:00:00.000Z" },
+    });
+    expect(save({ nextSession: null })?.payload).toMatchObject({
+      changes: { nextSession: null },
+    });
+  });
+
+  test("refuses empty, oversized, unreadable or unknown changes", () => {
+    for (const changes of [
+      {},
+      { title: "" },
+      { title: "x".repeat(201) },
+      { nextSession: "soon" },
+      { nextSession: 5 },
+      { title: "t", safeMode: true },
+      null,
+    ])
+      expect(save(changes)).toBeUndefined();
+    expect(save({ title: "t" }, { requestId: "" })).toBeUndefined();
+    expect(save({ title: "t" }, { worldId: 3 })).toBeUndefined();
+  });
+
+  test("the answer names its request and may carry an error", () => {
+    expect(parsePageToUi("SAVE_DONE", { requestId: "r1" })).toEqual({
+      type: "SAVE_DONE",
+      payload: { requestId: "r1" },
+    });
+    expect(
+      parsePageToUi("SAVE_DONE", { requestId: "r1", error: "Bad title" })
+        ?.payload,
+    ).toEqual({ requestId: "r1", error: "Bad title" });
+    expect(parsePageToUi("SAVE_DONE", { error: "x" })).toBeUndefined();
+  });
+});
