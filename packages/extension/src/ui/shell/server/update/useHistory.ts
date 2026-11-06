@@ -50,11 +50,15 @@ export function useHistory() {
   const setOne = (version: string, s: NotesState): void => {
     setNotes((m) => new Map([...m, [version, s]]));
   };
+  /** A failed read is read again when asked (review); a read one is kept. */
   const read = (version: string): void => {
-    if (notes.has(version)) return;
+    const known = notes.get(version)?.kind;
+    if (known === "ready" || known === "loading") return;
     setOne(version, { kind: "loading" });
     void actions.releases(version).then((a) => {
       const s = stateOf(a, releaseNotesOf);
+      // The permission went away: the tab says how to give it again.
+      if (s.kind === "denied") setList({ kind: "denied" });
       setOne(
         version,
         s.kind === "ok"

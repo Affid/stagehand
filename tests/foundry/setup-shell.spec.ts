@@ -107,7 +107,7 @@ test("the Library shows the module cards", async () => {
 
 test("Configuration opens our page, with no way out to Foundry's window", async () => {
   await shell(page).getByRole("button", { name: "Configuration" }).click();
-  await expect(shell(page).locator(".mlc-page form")).toBeVisible();
+  await expect(shell(page).locator(".mlc-page .mlc-cols")).toBeVisible();
   await expect(
     shell(page).getByRole("button", {
       name: "Foundry's Application Configuration",

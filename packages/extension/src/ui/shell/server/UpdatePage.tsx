@@ -125,13 +125,16 @@ function Tabs(props: {
 
 /** Foundry's preview, with where each package is used. */
 function useCompat(u: UpdateState, release: Release) {
-  const { state } = useUi();
+  const { state, t } = useUi();
   const p = usePreview(release, u.channel);
   const data = useMemo<CompatData | null>(
     () => (p.kind === "ready" ? compatData(state.data, p.preview) : null),
     [p, state.data],
   );
-  return { data, error: p.kind === "error" ? p.error || undefined : undefined };
+  // An error without words still ends the wait (review).
+  const error =
+    p.kind === "error" ? p.error || t("up.previewFailed") : undefined;
+  return { data, error };
 }
 
 function ReleaseView(props: {

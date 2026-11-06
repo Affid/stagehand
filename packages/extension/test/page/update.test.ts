@@ -8,7 +8,12 @@ import {
   parseUpdateRequest,
   type UpdateRequest,
 } from "../../src/page-update.ts";
-import { releaseOf, runUpdate, UPDATING } from "../../src/page/update.ts";
+import {
+  releaseOf,
+  runUpdate,
+  STALL_MS,
+  UPDATING,
+} from "../../src/page/update.ts";
 
 type Listener = (data: Record<string, unknown>) => void;
 
@@ -119,28 +124,46 @@ describe("checking for an update", () => {
   });
 });
 
+type Tick = Record<string, unknown>;
+const dl = (step: string, more: Tick = {}): Tick => ({
+  action: "updateDownload",
+  id: "updateCore",
+  step,
+  ...more,
+});
+
+/** Foundry's /update route: the check answers RELEASE; a download ticks. */
+function server(f: ReturnType<typeof foundry>, ticks: readonly Tick[]) {
+  const fetch = vi.fn((_url: string, init: { body: string }) => {
+    const { action } = JSON.parse(init.body) as { action: string };
+    if (action === "updateDownload")
+      queueMicrotask(() => {
+        ticks.forEach((t) => {
+          f.tick(t);
+        });
+      });
+    return Promise.resolve(answer(action === "updateCheck" ? RELEASE : {}));
+  });
+  vi.stubGlobal("fetch", fetch);
+  return fetch;
+}
+
+const downloads = (fetch: ReturnType<typeof server>): number =>
+  fetch.mock.calls.filter((c) => c[1].body.includes("updateDownload")).length;
+
+const install = (over: Partial<UpdateRequest> = {}) =>
+  req({ op: "download", version: "14.371", ...over });
+
 describe("installing an update", () => {
   test("posts updateDownload, forwards its ticks, locks Setup, ends on complete", async () => {
     const f = foundry();
-    vi.stubGlobal("fetch", () => {
-      queueMicrotask(() => {
-        f.tick({
-          action: "updateDownload",
-          id: "updateCore",
-          step: "download",
-          pct: 40,
-        });
-        f.tick({ action: "installPackage", id: "x", step: "complete" });
-        f.tick({
-          action: "updateDownload",
-          id: "updateCore",
-          step: "complete",
-          pct: 100,
-        });
-      });
-      return Promise.resolve(answer({}));
-    });
-    const r = await runUpdate(f.page, req({ op: "download" }));
+    server(f, [
+      dl("download", { pct: 40 }),
+      { action: "installPackage", id: "x", step: "complete" },
+      dl("complete", { pct: 100 }),
+    ]);
+    await runUpdate(f.page, req());
+    const r = await runUpdate(f.page, install());
     expect(r).toEqual({ installed: true });
     expect(f.onProgress).toHaveBeenCalledTimes(2);
     expect(f.toggleLock).toHaveBeenNthCalledWith(1, true, {
@@ -152,45 +175,120 @@ describe("installing an update", () => {
 
   test("Foundry's error tick fails it", async () => {
     const f = foundry();
-    vi.stubGlobal("fetch", () => {
-      queueMicrotask(() => {
-        f.tick({
-          action: "updateDownload",
-          id: "updateCore",
-          step: "error",
-          error: "Disk full",
-        });
-      });
-      return Promise.resolve(answer({}));
-    });
-    expect(await runUpdate(f.page, req({ op: "download" }))).toEqual({
-      error: "Disk full",
-    });
+    server(f, [dl("error", { error: "Disk full" })]);
+    await runUpdate(f.page, req());
+    expect(await runUpdate(f.page, install())).toEqual({ error: "Disk full" });
   });
 
-  test("a snapshot first, with its note; if it fails nothing is installed", async () => {
+  test("only the release the page showed: another version needs a new check", async () => {
     const f = foundry();
-    const fetch = vi.fn(() => Promise.resolve(answer({})));
-    vi.stubGlobal("fetch", fetch);
+    const fetch = server(f, [dl("complete")]);
+    await runUpdate(f.page, req());
+    expect(
+      (await runUpdate(f.page, install({ version: "14.380" }))).error,
+    ).toContain("again");
+    expect(downloads(fetch)).toBe(0);
+  });
+
+  test("one update at a time", async () => {
+    const f = foundry();
+    const fetch = server(f, []);
+    await runUpdate(f.page, req());
+    const first = runUpdate(f.page, install());
+    await Promise.resolve();
+    expect((await runUpdate(f.page, install())).error).toContain("already");
+    f.tick(dl("complete"));
+    expect(await first).toEqual({ installed: true });
+    expect(downloads(fetch)).toBe(1);
+  });
+
+  test("a download that stops ticking fails and gives the lock back", async () => {
+    vi.useFakeTimers();
+    try {
+      const f = foundry();
+      server(f, [dl("download", { pct: 10 })]);
+      await runUpdate(f.page, req());
+      const r = runUpdate(f.page, install());
+      await vi.advanceTimersByTimeAsync(STALL_MS + 1000);
+      expect((await r).error).toContain("stopped answering");
+      expect(f.toggleLock).toHaveBeenLastCalledWith(false);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  test("a snapshot first, with its note; its error stops the update", async () => {
+    const f = foundry();
+    const fetch = server(f, [dl("complete")]);
     f.game.createSnapshot.mockImplementation(() => {
       f.tick({
         action: "createSnapshot",
-        id: "snapshot.1",
+        id: "s.1",
         step: "error",
         error: "No space",
       });
       return Promise.resolve();
     });
-    const r = await runUpdate(
-      f.page,
-      req({ op: "download", snapshot: true, version: "14.371" }),
-    );
+    await runUpdate(f.page, req());
+    const r = await runUpdate(f.page, install({ snapshot: true }));
     expect(f.game.createSnapshot).toHaveBeenCalledWith({
       note: "Before updating to 14.371",
       dialog: false,
     });
-    expect(r).toEqual({ error: "No space" });
-    expect(fetch).not.toHaveBeenCalled();
+    expect(r.error).toBe("No space Nothing was installed.");
+    expect(downloads(fetch)).toBe(0);
+  });
+
+  test("one package's backup done is not the snapshot done (review)", async () => {
+    const f = foundry();
+    const fetch = server(f, [dl("complete")]);
+    f.game.createSnapshot.mockImplementation(() => {
+      f.tick({ action: "createBackup", id: "module.a", step: "complete" });
+      f.tick({
+        action: "createBackup",
+        id: "module.b",
+        step: "error",
+        error: "Locked file",
+      });
+      return Promise.resolve();
+    });
+    await runUpdate(f.page, req());
+    expect(
+      (await runUpdate(f.page, install({ snapshot: true }))).error,
+    ).toContain("Locked file");
+    // Foundry's answer had an error and no tick at all: not taken either.
+    f.game.createSnapshot.mockImplementation(() => Promise.resolve());
+    expect(
+      (await runUpdate(f.page, install({ snapshot: true }))).error,
+    ).toContain("didn't confirm");
+    expect(downloads(fetch)).toBe(0);
+  });
+
+  test("the snapshot's own complete tick lets the update go on", async () => {
+    const f = foundry();
+    const fetch = server(f, [dl("complete")]);
+    f.game.createSnapshot.mockImplementation(() => {
+      f.tick({ action: "createSnapshot", id: "s.1", step: "complete" });
+      return Promise.resolve();
+    });
+    await runUpdate(f.page, req());
+    expect(await runUpdate(f.page, install({ snapshot: true }))).toEqual({
+      installed: true,
+    });
+    expect(downloads(fetch)).toBe(1);
+  });
+
+  test("an answer that isn't JSON says so, with its status", async () => {
+    vi.stubGlobal("fetch", () =>
+      Promise.resolve({
+        redirected: false,
+        status: 502,
+        json: () => Promise.reject(new SyntaxError("Unexpected token <")),
+      } as unknown as Response),
+    );
+    expect((await runUpdate(foundry().page, req())).error).toBe(
+      "Foundry's update answer was not readable (HTTP 502)",
+    );
   });
 });
 
@@ -207,6 +305,8 @@ describe("UPDATE and UPDATE_DONE are checked", () => {
     expect(parseUpdateRequest({ ...ok, op: "install" })).toBeUndefined();
     expect(parseUpdateRequest({ ...ok, channel: "../x" })).toBeUndefined();
     expect(parseUpdateRequest({ ...ok, force: "yes" })).toBeUndefined();
+    // A download names the release the page showed (security review).
+    expect(parseUpdateRequest({ ...ok, op: "download" })).toBeUndefined();
     // Only a download takes a snapshot first.
     expect(parseUpdateRequest({ ...ok, snapshot: true })).toBeUndefined();
     expect(

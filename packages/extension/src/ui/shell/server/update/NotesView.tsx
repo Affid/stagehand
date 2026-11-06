@@ -111,7 +111,7 @@ function Body(props: {
   return (
     <>
       {searching ? null : <Intro blocks={s.intro} />}
-      {s.items.length ? <Items items={shownItems(f, s)} /> : null}
+      {shownItems(f, s).length ? <Items items={shownItems(f, s)} /> : null}
       {s.areas.map((a) => {
         const items = shownItems(f, s, a);
         if (!items.length) return null;

@@ -134,7 +134,8 @@ function Links(props: { readonly x: CompatRow }) {
           href={page}
           target="_blank"
           rel="noopener noreferrer"
-          title={t("up.pkgPage")}
+          // Where it really goes: a package's author chose it (review).
+          title={`${t("up.pkgPage")}: ${new URL(page).host}`}
           aria-label={t("up.pkgPage")}
         >
           <Icon name="arrow-up-right-from-square" />
@@ -145,7 +146,7 @@ function Links(props: { readonly x: CompatRow }) {
           href={log}
           target="_blank"
           rel="noopener noreferrer"
-          title={t("up.changelog", { version: x.latest ?? "" })}
+          title={`${t("up.changelog", { version: x.latest ?? "" })}: ${new URL(log).host}`}
           aria-label={t("up.changelog", { version: x.latest ?? "" })}
         >
           <Icon name="list-ul" />
@@ -177,7 +178,12 @@ function Row(props: { readonly x: CompatRow; readonly version: string }) {
   const { x } = props;
   return (
     <li class={x.status}>
-      <span class="st" title={statusLabel(t, x.status)}>
+      <span
+        class="st"
+        role="img"
+        aria-label={statusLabel(t, x.status)}
+        title={statusLabel(t, x.status)}
+      >
         <Icon name={STATUS_ICON[x.status]} />
       </span>
       <div class="nm">
@@ -231,11 +237,11 @@ export function CompatView(props: {
   const { data, release } = props;
   const f = useFilters();
   const list = data[f.kind];
+  // A chip with nothing left in it shows all, not an empty dead end (review).
+  const chip = list.some((x) => inChip(x, f.chip)) ? f.chip : "all";
   const q = f.q.trim().toLowerCase();
   const shown = list
-    .filter(
-      (x) => inChip(x, f.chip) && (!q || x.title.toLowerCase().includes(q)),
-    )
+    .filter((x) => inChip(x, chip) && (!q || x.title.toLowerCase().includes(q)))
     .sort(byConcern);
   return (
     <div class="mlu-notes mlu-compat">
@@ -256,7 +262,7 @@ export function CompatView(props: {
           }}
         />
       </nav>
-      <Chips list={list} chip={f.chip} onChip={f.setChip} />
+      <Chips list={list} chip={chip} onChip={f.setChip} />
       <ol class="mlu-clist">
         {shown.length ? (
           shown.map((x) => <Row key={x.id} x={x} version={release.version} />)

@@ -31,9 +31,25 @@ function Body(props: { readonly notes: Notes }) {
   );
 }
 
+function Failed(props: {
+  readonly error: string;
+  readonly onRetry: () => void;
+}) {
+  const { t } = useUi();
+  return (
+    <div class="mlu-hask">
+      <p>{t("up.hist.failed", { error: props.error || "?" })}</p>
+      <button type="button" onClick={props.onRetry}>
+        {t("up.hist.again")}
+      </button>
+    </div>
+  );
+}
+
 export function HistoryNotes(props: {
   readonly r: ReleaseItem;
   readonly state: NotesState | undefined;
+  readonly onRetry: () => void;
 }) {
   const { t } = useUi();
   const { r, state } = props;
@@ -63,7 +79,7 @@ export function HistoryNotes(props: {
       {state?.kind === "ready" ? (
         <Body notes={notes} />
       ) : state?.kind === "error" ? (
-        <p class="ml-muted">{t("up.hist.failed", { error: state.error })}</p>
+        <Failed error={state.error} onRetry={props.onRetry} />
       ) : (
         <p class="ml-muted" role="status">
           {t("up.hist.loading")}

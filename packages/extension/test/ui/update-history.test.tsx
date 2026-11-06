@@ -38,7 +38,8 @@ const RELEASE: Release = {
   manual: false,
 };
 
-async function open(permitted = true) {
+async function open(permitted = true, failNotesOnce = false) {
+  let failed = !failNotesOnce;
   const base = setupState();
   const data = {
     setup: base.setup && {
@@ -48,6 +49,10 @@ async function open(permitted = true) {
   };
   const full = setupState(data);
   const reply = (m: ExtensionMessage): unknown => {
+    if (m.kind === "foundry-releases" && m.version && !failed) {
+      failed = true;
+      return Promise.reject(new Error("offline"));
+    }
     if (m.kind === "foundry-releases")
       return permitted
         ? { permitted, html: m.version ? page(m.version) : LIST }
@@ -167,6 +172,22 @@ describe("Release history", () => {
     );
     await waitFor(() => {
       expect(sent(r.send)).toContainEqual({ kind: "ask-foundryvtt" });
+    });
+  });
+
+  test("a release whose notes failed can be read again (review)", async () => {
+    const r = await open(true, true);
+    const again = await waitFor(() =>
+      within(el(r.container, ".mlu-hnotes")).getByRole("button", {
+        name: "Try again",
+      }),
+    );
+    expect(el(r.container, ".mlu-hnotes").textContent).toContain("offline");
+    fireEvent.click(again);
+    await waitFor(() => {
+      expect(el(r.container, ".mlu-hnotes").textContent).toContain(
+        "Fixed 14.371.",
+      );
     });
   });
 });

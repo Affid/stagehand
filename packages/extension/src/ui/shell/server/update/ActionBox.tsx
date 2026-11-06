@@ -8,6 +8,7 @@ import { useState } from "preact/hooks";
 import type { Release } from "../../../../page-update.ts";
 import { Icon } from "../../../common/widgets.tsx";
 import { useUi } from "../../../context.ts";
+import { lockReason } from "../../../tasks.ts";
 import { agoMs } from "../../world/backups/text.ts";
 import type { UpdateState } from "./useUpdate.ts";
 
@@ -52,9 +53,9 @@ function Running(props: {
     STEPS.indexOf((update?.step ?? "download") as (typeof STEPS)[number]),
   );
   return (
-    <section class="mlw-box mlu-act" role="status">
+    <section class="mlw-box mlu-act">
       <h4>
-        <span>
+        <span role="status">
           {snapping
             ? t("up.snapping")
             : t("up.updating", { version: props.version })}
@@ -195,6 +196,7 @@ function Force(props: { readonly on: boolean; readonly toggle: () => void }) {
     <button
       type="button"
       class="mlc-more ml-link"
+      aria-expanded={more}
       onClick={() => {
         setMore(!more);
       }}
@@ -224,14 +226,17 @@ function Go(props: {
   readonly electron: boolean;
   readonly onGo: () => void;
 }) {
-  const { t, canChange } = useUi();
+  const { t, canChange, state } = useUi();
   const { version } = props;
+  // Foundry busy (a backup, a restore): the update waits (review).
+  const busy = lockReason(t, state);
   return (
     <>
       <button
         type="button"
         class="bright mlu-go"
-        disabled={!canChange}
+        disabled={!canChange || busy !== null}
+        title={busy ?? undefined}
         onClick={props.onGo}
       >
         <Icon name="cloud-arrow-down" />
@@ -252,19 +257,12 @@ function Failed(props: { readonly error: string }) {
   );
 }
 
-export function ActionBox(props: {
-  readonly u: UpdateState;
-  readonly release: Release;
-}) {
+function Idle(props: { readonly u: UpdateState; readonly release: Release }) {
   const { t, state } = useUi();
   const { u, release } = props;
   const [snap, setSnap] = useState(true);
   const [force, setForce] = useState(false);
   const canSnap = !u.env.noBackups;
-  if (u.job?.kind === "running")
-    return <Running version={release.version} snapshot={u.job.snapshot} />;
-  if (u.job?.kind === "installed")
-    return <Done version={u.job.version} electron={u.env.electron} />;
   const disabled = state.data.setup?.coreUpdate?.canUpdate === false;
   const blocked = release.manual || disabled;
   const first = canSnap && snap;
@@ -300,4 +298,24 @@ export function ActionBox(props: {
       />
     </section>
   );
+}
+
+export function ActionBox(props: {
+  readonly u: UpdateState;
+  readonly release: Release;
+}) {
+  const { state } = useUi();
+  const { u, release } = props;
+  // Foundry's own ticks say an update runs, even after this page was left.
+  const updating = state.tasks.some((x) => x.action === "updateDownload");
+  if (u.job?.kind === "running" || updating)
+    return (
+      <Running
+        version={release.version}
+        snapshot={u.job?.kind === "running" && u.job.snapshot}
+      />
+    );
+  if (u.job?.kind === "installed")
+    return <Done version={u.job.version} electron={u.env.electron} />;
+  return <Idle u={u} release={release} />;
 }

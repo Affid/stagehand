@@ -190,6 +190,9 @@ function Ready(props: {
           <HistoryNotes
             r={selected}
             state={props.h.notes.get(selected.version)}
+            onRetry={() => {
+              props.h.read(selected.version);
+            }}
           />
         ) : null}
       </div>

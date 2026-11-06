@@ -68,9 +68,12 @@ async function postUpdate(page: Page, data: Raw): Promise<Raw> {
   });
   // Foundry sends a signed-out admin to its sign-in page.
   if (response.redirected) throw new Error("Foundry asked to sign in again.");
-  const body = (await response.json()) as unknown;
+  // A proxy's error page is not JSON: say so, not "Unexpected token <" (review).
+  const body = (await response.json().catch(() => null)) as unknown;
   if (typeof body !== "object" || body === null)
-    throw new Error("Foundry's update answer was not readable");
+    throw new Error(
+      `Foundry's update answer was not readable (HTTP ${String(response.status)})`,
+    );
   const answer = body as Raw;
   if (typeof answer.error === "string")
     throw new Error(text(page, answer.error).slice(0, MAX_ERROR));
@@ -128,67 +131,82 @@ async function check(page: Page, req: UpdateRequest): Promise<UpdateResult> {
   return { release };
 }
 
-/** Resolves when Foundry's progress for `action` ends: with its error, if any. */
-function whenDone(
-  page: Page,
-  matches: (data: Raw) => boolean,
-  forward: boolean,
-): { done: Promise<string | undefined>; stop: () => void } {
+/** No tick from Foundry's download for this long: it has stopped (review). */
+export const STALL_MS = 5 * 60 * 1000;
+
+/**
+ * Foundry's ticks for the download, passed on to our progress; resolves on
+ * its complete or error tick, or when no tick came for STALL_MS, so a
+ * stalled download can't hold Setup's lock for good.
+ */
+function watchDownload(page: Page): {
+  ended: Promise<string | undefined>;
+  stop: () => void;
+} {
   const game = gameOf(page);
   const sp = page.ui?.setupPackages as SetupPackagesLike | undefined;
   let listener: Listener = () => undefined;
-  const done = new Promise<string | undefined>((resolve) => {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const ended = new Promise<string | undefined>((resolve) => {
+    const stall = (): void => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        resolve(
+          "Foundry's update stopped answering. Check Foundry before trying again.",
+        );
+      }, STALL_MS);
+    };
     listener = (data) => {
-      if (!matches(data)) return;
-      if (forward) sp?.onProgress?.(data);
+      if (data.action !== "updateDownload" || data.id !== "updateCore") return;
+      sp?.onProgress?.(data);
+      stall();
       if (data.step === "complete") resolve(undefined);
       else if (data.step === "error")
         resolve(str(data.error, MAX_ERROR) || "Foundry's update failed");
     };
+    stall();
     game?._addProgressListener?.(listener);
   });
   const stop = (): void => {
+    clearTimeout(timer);
     game?._removeProgressListener?.(listener);
   };
-  return { done, stop };
+  return { ended, stop };
 }
 
-/** game.createSnapshot without its dialog; an error stops the update. */
+/**
+ * game.createSnapshot without its dialog. Only Foundry's own complete tick
+ * for the snapshot counts as taken; any error, of the snapshot or of one
+ * package's backup, or no answer at all, stops the update (review).
+ */
 async function snapshotFirst(
   page: Page,
   note: string,
 ): Promise<string | undefined> {
   const game = gameOf(page);
   if (!game?.createSnapshot) return "Foundry's snapshots are not available";
-  let failed: string | undefined;
-  const { done, stop } = whenDone(
-    page,
-    (d) => d.action === "createSnapshot" || d.action === "createBackup",
-    false,
-  );
-  void done.then((e) => {
-    failed ??= e;
-  });
+  // What Foundry's ticks said; the listener fills it in.
+  const seen: { error?: string; taken?: boolean } = {};
+  const listener: Listener = (d) => {
+    if (d.action !== "createSnapshot" && d.action !== "createBackup") return;
+    if (d.step === "error")
+      seen.error ??= str(d.error, MAX_ERROR) || "Foundry's snapshot failed";
+    else if (d.step === "complete" && d.action === "createSnapshot")
+      seen.taken = true;
+  };
+  game._addProgressListener?.(listener);
   try {
     await game.createSnapshot({ note, dialog: false });
   } finally {
-    stop();
+    game._removeProgressListener?.(listener);
   }
-  return failed;
+  if (seen.error) return seen.error;
+  return seen.taken ? undefined : "Foundry didn't confirm the snapshot.";
 }
 
-async function download(page: Page, req: UpdateRequest): Promise<UpdateResult> {
-  if (req.snapshot) {
-    const note = `Before updating to ${req.version ?? req.channel}`;
-    const error = await snapshotFirst(page, note);
-    if (error) return { error };
-  }
+async function install(page: Page, req: UpdateRequest): Promise<UpdateResult> {
   const sp = page.ui?.setupPackages as SetupPackagesLike | undefined;
-  const { done, stop } = whenDone(
-    page,
-    (d) => d.action === "updateDownload" && d.id === "updateCore",
-    true,
-  );
+  const { ended, stop } = watchDownload(page);
   sp?.toggleLock?.(true, { message: UPDATING });
   try {
     // A warning only informs, as in Foundry's ProgressReceiver; the ticks decide.
@@ -197,11 +215,34 @@ async function download(page: Page, req: UpdateRequest): Promise<UpdateResult> {
       updateChannel: req.channel,
       forceUpdate: req.force,
     });
-    const error = await done;
+    const error = await ended;
     return error ? { error } : { installed: true };
   } finally {
     stop();
     sp?.toggleLock?.(false);
+  }
+}
+
+/** One update at a time, whatever the UI asks (review). */
+let downloading = false;
+
+async function download(page: Page, req: UpdateRequest): Promise<UpdateResult> {
+  if (downloading) return { error: "Foundry is already updating." };
+  // Only the release the page showed: a newer one found since needs a new look.
+  if (!checked || releaseOf(checked)?.version !== req.version)
+    return { error: "Check for the update again first." };
+  downloading = true;
+  try {
+    if (req.snapshot) {
+      const error = await snapshotFirst(
+        page,
+        `Before updating to ${req.version}`,
+      );
+      if (error) return { error: `${error} Nothing was installed.` };
+    }
+    return await install(page, req);
+  } finally {
+    downloading = false;
   }
 }
 

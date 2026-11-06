@@ -492,4 +492,23 @@ whose button asks. Without it, the tab links to foundryvtt.com/releases.
 Live: the denied state and the options page; with the permission granted
 at install, Foundry's real list and 14.370's notes.
 
-Then package 7 (server pages) and Phase 6 (News and finish).
+Package 7 reviews: no critical. Code: a failed snapshot could still let the
+update install (one package's backup finishing read as the snapshot done;
+Foundry's error answer has no tick), and a second update could start after
+leaving the page mid-download. Fixed: only Foundry's own complete tick for
+the snapshot counts, any error stops it; one download at a time in the page
+world; the Update box shows Foundry's running update from its ticks and
+waits while Foundry is busy; a download that stops ticking for 5 minutes
+fails and gives the lock back. Security: a download must name the release
+the page showed; release pages are fetched without redirects, from
+foundryvtt.com/releases only, size-capped; package links show their host.
+Also: a stale check can't replace a newer one, a failed configuration read
+leaves a usable page, failed release notes can be read again, a port that
+isn't one is left out of a save, non-JSON answers say so, and smaller
+accessibility fixes. Left for later, with reasons: the tab rows' full ARIA
+tabs pattern (Phase 6 accessibility pass, for every tab row at once); a page
+script forging an answer to the UI (the MessageChannel decision with the
+owner; no escalation, as page scripts can call Foundry directly); the
+options page opening once per click on "Allow" (minor).
+
+Then Phase 6 (News and finish).

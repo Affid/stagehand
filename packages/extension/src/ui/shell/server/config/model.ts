@@ -35,10 +35,18 @@ export const shown = (
 ): unknown => (key in typed ? typed[key] : saved[key]);
 
 /** Typed values that differ from the saved ones, as Foundry stores them. */
+const isPort = (v: unknown): v is number =>
+  Number.isInteger(v) && (v as number) >= 1 && (v as number) <= MAX_PORT;
+
+/**
+ * What a save sends. A port that isn't one is left out: with a socket set
+ * it is no problem, but Foundry (and our message check) would refuse it.
+ */
 export function changesOf(saved: Settings, typed: Typed): SettingChanges {
   return Object.fromEntries(
     (Object.keys(typed) as SettingKey[]).flatMap((k) => {
       const v = clean(k, typed[k]);
+      if (k === "port" && !isPort(v)) return [];
       return v === saved[k] ? [] : [[k, v]];
     }),
   );
@@ -54,12 +62,7 @@ export function problemsOf(
 ): ReadonlySet<Problem> {
   const v = (k: SettingKey): unknown => clean(k, shown(saved, typed, k));
   const out = new Set<Problem>();
-  const port = v("port") as number;
-  if (
-    !v("unixSocket") &&
-    !(Number.isInteger(port) && port >= 1 && port <= MAX_PORT)
-  )
-    out.add("port");
+  if (!v("unixSocket") && !isPort(v("port"))) out.add("port");
   const data = v("dataPath");
   if (typeof data !== "string" || !isAbsolute(data)) out.add("dataPath");
   if (Boolean(v("sslCert")) !== Boolean(v("sslKey"))) out.add("sslCert");

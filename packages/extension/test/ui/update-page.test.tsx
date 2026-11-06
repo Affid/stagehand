@@ -431,3 +431,41 @@ describe("Your packages (Foundry's compatibility preview)", () => {
     expect(r.store.get().route).toEqual({ kind: "world", worldId: "w1" });
   });
 });
+
+describe("package 7 review", () => {
+  test("an update Foundry is running shows as running, even on a fresh page", async () => {
+    const r = await open();
+    r.emit({
+      type: "PROGRESS",
+      payload: {
+        action: "updateDownload",
+        id: "updateCore",
+        step: "download",
+        pct: 30,
+      },
+    });
+    await waitFor(() => {
+      expect(el(r.container, ".mlu-act").textContent).toContain(
+        "Updating to 14.371",
+      );
+    });
+    expect(r.queryByRole("button", { name: /then update/ })).toBe(null);
+  });
+
+  test("while Foundry is busy, the update waits", async () => {
+    const r = await open();
+    r.emit({
+      type: "LOCK",
+      payload: { locked: true, message: "SETUP.BACKUPS.BackingUp" },
+    });
+    await waitFor(() => {
+      expect(
+        (
+          r.getByRole("button", {
+            name: /then update 14.371/,
+          }) as HTMLButtonElement
+        ).disabled,
+      ).toBe(true);
+    });
+  });
+});

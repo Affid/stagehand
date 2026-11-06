@@ -520,6 +520,7 @@
   "up.hist.onSite": "On foundryvtt.com",
   "up.hist.hint": "From Foundry's public list at foundryvtt.com/releases and each release's page (Foundry's own update check only returns the newest).",
   "up.previewing": "Foundry is checking each installed package…",
+  "up.previewFailed": "Foundry couldn't check the installed packages.",
   "up.yours": "Your packages on {version}",
   "up.fullList": "Full list",
   "up.tag.ok.one": "{n} compatible",

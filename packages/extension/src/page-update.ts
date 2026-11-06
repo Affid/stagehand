@@ -19,7 +19,7 @@ export interface UpdateRequest {
   readonly force: boolean;
   /** download: take a snapshot first, and stop if it fails. */
   readonly snapshot: boolean;
-  /** download: the version it installs, for the snapshot's note; preview: the release checked. */
+  /** download and preview: the release the page showed, as Foundry's check found it. */
   readonly version?: string;
 }
 
@@ -74,7 +74,8 @@ export function parseUpdateRequest(p: Loose): UpdateRequest | undefined {
   if (typeof force !== "boolean" || typeof snapshot !== "boolean")
     return undefined;
   if (snapshot && op !== "download") return undefined;
-  if (op === "preview" && version === undefined) return undefined;
+  // A preview or a download names the release the page showed.
+  if (op !== "check" && version === undefined) return undefined;
   if (
     version !== undefined &&
     !(typeof version === "string" && VERSION.test(version))
