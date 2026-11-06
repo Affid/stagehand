@@ -100,4 +100,30 @@ Open item: our power menu is always shown, but Foundry only offers Log out and S
 when an admin password is set (SETUP-SPIKE.md); without one the action reports a missing
 control. Collect that flag and hide the menu then (Phase 5, server pages).
 
-Next: close Phase 1 (reviews, commit, report), then Phase 2 (world page).
+### Phase 2: world page
+
+Done (commits from `1290e9f`):
+
+- Background: `launch-hold` (Setup, admin-gated) sets a per-world hold; the world's next
+  `COMMANDS_PULL` gets no commands and uses the hold up. "Launch without changes" sets it;
+  "Apply and launch" clears a stale one first.
+- Page world: `backupLaunch` runs Foundry's public `game.createBackup(world, {note})` and
+  launches only if it finished.
+- `ui/model/world-modules.ts`: each module on now (snapshot) and after the next launch
+  (queue resolved like the companion), delta, problem flag and the "why" reason
+  (companion, blocked, needs, conflict, needed by, preset, not verified, note, authors;
+  packages carry no description, so authors are the quiet fallback). `flipModule`
+  undoes a module's own single-module change before queuing a new one.
+- `ui/shell/world/`: Modules tab (filter, All / On / Changes, folder sections, cards with
+  a switch, a why line and its fix, live region), Add (a preset; copy another world:
+  match or add), launch review (problems or "dependencies met", turns on / off, presets,
+  Back up first, Launch without changes), not-set-up state. Banner: pending line with
+  Review and Discard, change count on Launch. `world.css` appended by the build.
+- Live: `tests/foundry/setup-world.spec.ts` (seeded snapshot) and the last test of
+  `apply.spec.ts` (Launch without changes: no confirm in the world, change stays queued).
+
+Not yet: About and Backups tabs (Phase 4), progress of Foundry's backup on our page (its
+own notification shows), a group's "turn all on/off" menu, and View options from the
+mockup.
+
+Next: close Phase 2 (reviews, commit, report), then Phase 3 (Library).
