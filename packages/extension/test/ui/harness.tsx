@@ -133,6 +133,9 @@ export function fakePage(windows = true) {
     setShell: vi.fn(),
     foundryAction: vi.fn(),
     saveWorld: vi.fn(() => Promise.resolve<string | undefined>(undefined)),
+    editorOpen: vi.fn(),
+    editorClose: vi.fn(),
+    editorSave: vi.fn(() => Promise.resolve<string | undefined>(undefined)),
     config: vi.fn(() => Promise.resolve<ConfigResult>({})),
     serverBackups: vi.fn(() =>
       Promise.resolve<ServerBackupsResult>({

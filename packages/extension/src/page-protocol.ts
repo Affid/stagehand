@@ -2,6 +2,13 @@
 // UI (setup-ui). Both sides check every message by hand: the page world stays
 // free of Zod to keep it small, and page scripts can post anything.
 import {
+  type EditorOpen,
+  type EditorSave,
+  parseEditorClose,
+  parseEditorOpen,
+  parseEditorSave,
+} from "./page-editor.ts";
+import {
   type BackupsReply,
   type BackupsRequest,
   parseBackupsReply,
@@ -80,6 +87,14 @@ export type UiToPage =
   | { readonly type: "FOUNDRY_ACTION"; readonly payload: FoundryAction }
   /** Save a world's details through Foundry (answered by SAVE_DONE). */
   | { readonly type: "SAVE_WORLD"; readonly payload: SaveWorld }
+  /** Foundry's prose-mirror editor in one of our hosts (page-editor.ts). */
+  | { readonly type: "EDITOR_OPEN"; readonly payload: EditorOpen }
+  | {
+      readonly type: "EDITOR_CLOSE";
+      readonly payload: { readonly hostId: string };
+    }
+  /** Save the editor's HTML as the world's description (answered by SAVE_DONE). */
+  | { readonly type: "EDITOR_SAVE"; readonly payload: EditorSave }
   /** A world's backups: list, take, restore or delete (answered by BACKUPS_DONE). */
   | { readonly type: "BACKUPS"; readonly payload: BackupsRequest }
   /** The server's backups and snapshots (answered by SERVER_BACKUPS_DONE). */
@@ -165,9 +180,27 @@ function foundryAction(p: Loose): FoundryAction | undefined {
   return undefined;
 }
 
+/** The description editor's messages (page-editor.ts). */
+function parseEditor(type: string, p: Loose): UiToPage | undefined {
+  if (type === "EDITOR_OPEN") {
+    const payload = parseEditorOpen(p);
+    return payload ? { type, payload } : undefined;
+  }
+  if (type === "EDITOR_CLOSE") {
+    const payload = parseEditorClose(p);
+    return payload ? { type, payload } : undefined;
+  }
+  if (type === "EDITOR_SAVE") {
+    const payload = parseEditorSave(p);
+    return payload ? { type, payload } : undefined;
+  }
+  return undefined;
+}
+
 /** A message from the UI, checked; undefined when malformed. */
 export function parseUiToPage(type: string, p: unknown): UiToPage | undefined {
   if (!isObject(p)) return undefined;
+  if (type.startsWith("EDITOR_")) return parseEditor(type, p);
   switch (type) {
     case "WINDOW_OPEN": {
       const spec = windowSpec(p);

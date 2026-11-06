@@ -49,6 +49,11 @@ export interface PageBridge {
     worldId: string,
     changes: WorldChanges,
   ): Promise<string | undefined>;
+  /** Foundry's prose-mirror editor in our host element (a page-world element). */
+  editorOpen(hostId: string, value: string): void;
+  editorClose(hostId: string): void;
+  /** Saves the editor's HTML as the world's description; an error, or undefined. */
+  editorSave(worldId: string, hostId: string): Promise<string | undefined>;
   /** A world's backups: list, take, restore or delete, then the current list. */
   backups(
     worldId: string,
@@ -161,29 +166,48 @@ function backupRequests(
   };
 }
 
+/** A request answered by SAVE_DONE: an error, or undefined when saved. */
+function savedRequest(
+  send: (m: UiToPage) => void,
+  listeners: Set<(event: PageToUi) => void>,
+  message: (requestId: string) => UiToPage,
+): Promise<string | undefined> {
+  return request<{ error?: string }>(
+    send,
+    listeners,
+    message,
+    (e, id) =>
+      e.type === "SAVE_DONE" && e.payload.requestId === id
+        ? e.payload.error === undefined
+          ? {}
+          : { error: e.payload.error }
+        : undefined,
+    SAVE_TIMEOUT_MS,
+    { error: "Foundry did not answer in time." },
+  ).then((r) => r.error);
+}
+
 /** The bridge's request and answer pairs: saving a world, backups. */
 function requests(
   send: (m: UiToPage) => void,
   listeners: Set<(event: PageToUi) => void>,
-): Pick<PageBridge, "saveWorld" | "backups" | "serverBackups" | "config"> {
+): Pick<
+  PageBridge,
+  "saveWorld" | "editorSave" | "backups" | "serverBackups" | "config"
+> {
+  const saved = (message: (requestId: string) => UiToPage) =>
+    savedRequest(send, listeners, message);
   return {
     saveWorld: (worldId, changes) =>
-      request<{ error?: string }>(
-        send,
-        listeners,
-        (requestId) => ({
-          type: "SAVE_WORLD",
-          payload: { requestId, worldId, changes },
-        }),
-        (e, id) =>
-          e.type === "SAVE_DONE" && e.payload.requestId === id
-            ? e.payload.error === undefined
-              ? {}
-              : { error: e.payload.error }
-            : undefined,
-        SAVE_TIMEOUT_MS,
-        { error: "Foundry did not answer in time." },
-      ).then((r) => r.error),
+      saved((requestId) => ({
+        type: "SAVE_WORLD",
+        payload: { requestId, worldId, changes },
+      })),
+    editorSave: (worldId, hostId) =>
+      saved((requestId) => ({
+        type: "EDITOR_SAVE",
+        payload: { requestId, worldId, hostId },
+      })),
     config: (op, changes = {}) =>
       request<ConfigResult>(
         send,
@@ -240,6 +264,12 @@ export function createPageBridge(win: Window): PageBridge {
     },
     setShell: (on) => {
       send({ type: "SHELL", payload: { on } });
+    },
+    editorOpen: (hostId, value) => {
+      send({ type: "EDITOR_OPEN", payload: { hostId, value } });
+    },
+    editorClose: (hostId) => {
+      send({ type: "EDITOR_CLOSE", payload: { hostId } });
     },
     foundryAction: (action) => {
       send({ type: "FOUNDRY_ACTION", payload: action });

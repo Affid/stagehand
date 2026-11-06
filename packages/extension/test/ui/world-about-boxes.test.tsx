@@ -124,6 +124,27 @@ describe("the About tab's boxes", () => {
     });
   });
 
+  test("Description's Edit opens Foundry's own editor here, and Save saves its HTML", async () => {
+    const { container, page } = about({ description: "<p>Gothic</p>" });
+    const d = box(container, "Description");
+    fireEvent.click(
+      within(d).getByRole("button", { name: "Edit description" }),
+    );
+    const host = el(d, ".mlw-pmhost");
+    expect(host.id).toMatch(/^ml-pm-/);
+    expect(page.editorOpen).toHaveBeenCalledWith(host.id, "<p>Gothic</p>");
+    fireEvent.click(within(d).getByRole("button", { name: "Save" }));
+    await waitFor(() => {
+      expect(page.editorSave).toHaveBeenCalledWith("w1", host.id);
+    });
+    await waitFor(() => {
+      expect(d.querySelector(".mlw-pmhost")).toBe(null);
+    });
+    await waitFor(() => {
+      expect(page.editorClose).toHaveBeenCalledWith(host.id);
+    });
+  });
+
   test("Background's Change opens Foundry's file picker", () => {
     const { container, page } = about({ background: "worlds/w1/bg.webp" });
     fireEvent.click(

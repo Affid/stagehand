@@ -181,6 +181,52 @@ test("About saves the title and next session through Foundry, and they come back
   await shell().getByRole("tab", { name: "Modules" }).click();
 });
 
+test("About edits the description in Foundry's own editor and saves it", async () => {
+  await shell().getByRole("tab", { name: "About" }).click();
+  const box = shell().locator(".mlw-about .mlw-box", {
+    hasText: "Description",
+  });
+  const before = await page.evaluate(
+    (id) =>
+      (
+        globalThis as unknown as {
+          game: { worlds: { get(id: string): { description: string } } };
+        }
+      ).game.worlds.get(id).description,
+    TEST_WORLD.id,
+  );
+  await box.getByRole("button", { name: "Edit description" }).click();
+  // Foundry's prose-mirror, mounted by the page world in our host.
+  const editor = box.locator(".mlw-pmhost .ProseMirror");
+  await expect(editor).toBeVisible();
+  await editor.click();
+  await page.keyboard.type("Written in Foundry's editor");
+  await page.screenshot({ path: `${SCREENS}/world-about-editor.png` });
+  await box.getByRole("button", { name: "Save" }).click();
+  await expect(box.locator(".mlw-pmhost")).toHaveCount(0);
+  await expect(box).toContainText("Written in Foundry's editor");
+  // Put the description back as it was.
+  await page.evaluate(
+    async ([id, description]) => {
+      const g = globalThis as unknown as {
+        game: {
+          post(d: object): Promise<object>;
+          worlds: { get(id: string): { updateSource(d: object): void } };
+        };
+        ui: { setupPackages: { render(): Promise<void> } };
+      };
+      g.game.worlds
+        .get(id)
+        .updateSource(
+          await g.game.post({ action: "editWorld", id, description }),
+        );
+      await g.ui.setupPackages.render();
+    },
+    [TEST_WORLD.id, before] as const,
+  );
+  await shell().getByRole("tab", { name: "Modules" }).click();
+});
+
 /** Deletes one of our backup rows with the code Foundry shows. */
 async function deleteBackup(row: Locator): Promise<void> {
   await row.getByRole("button", { name: "Delete" }).click();

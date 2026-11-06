@@ -464,5 +464,7 @@
   "about.unlockFirst": "Locked: unlock it first, under Maintenance",
   "about.insideWorld": "Settings kept inside the world (module settings, users, permissions) change only in the world itself.",
   "about.nextBox": "Next session",
-  "shell.launchLocked": "Locked: unlock it on the About tab to launch"
+  "shell.launchLocked": "Locked: unlock it on the About tab to launch",
+  "about.edit": "Edit",
+  "about.editDescription": "Edit description"
 }

@@ -78,6 +78,8 @@ export interface PageGlobals {
       readonly api?: { readonly ApplicationV2?: AppClass };
       /** Foundry's open windows, by id. */
       readonly instances?: ReadonlyMap<string, OpenWindow>;
+      /** Foundry's custom elements (prose-mirror and the rest). */
+      readonly elements?: Readonly<Record<string, unknown>>;
     };
     readonly utils?: { readonly escapeHTML?: (text: string) => string };
   };

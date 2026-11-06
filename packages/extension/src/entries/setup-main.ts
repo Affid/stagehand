@@ -17,6 +17,7 @@ import { runServerBackups } from "../page/server-backups.ts";
 import { runConfig } from "../page/config.ts";
 import type { ConfigRequest } from "../page-config.ts";
 import type { ServerBackupsRequest } from "../page-server-backups.ts";
+import { closeEditor, openEditor, saveFromEditor } from "../page/editor.ts";
 import { saveWorld } from "../page/save-world.ts";
 import { collect } from "../page/collect.ts";
 import { pageGlobals } from "../page/globals.ts";
@@ -102,10 +103,12 @@ function answerConfig(req: ConfigRequest): void {
   });
 }
 
-/** Saves a world's details and answers with its id. */
-function answerSave(req: SaveWorld): void {
-  const { requestId, worldId, changes } = req;
-  void saveWorld(page, worldId, changes).then((error) => {
+/** Answers a save with its id, and an error if it failed. */
+function answerSaved(
+  requestId: string,
+  done: Promise<string | undefined>,
+): void {
+  void done.then((error) => {
     postToUi({
       type: "SAVE_DONE",
       payload: error
@@ -113,6 +116,29 @@ function answerSave(req: SaveWorld): void {
         : { requestId },
     });
   });
+}
+
+/** Saves a world's details and answers with its id. */
+function answerSave(req: SaveWorld): void {
+  answerSaved(req.requestId, saveWorld(page, req.worldId, req.changes));
+}
+
+/** Foundry's description editor in one of our hosts. */
+function handleEditor(
+  m: Extract<
+    UiToPage,
+    { type: "EDITOR_OPEN" | "EDITOR_CLOSE" | "EDITOR_SAVE" }
+  >,
+): void {
+  if (m.type === "EDITOR_OPEN") {
+    const error = openEditor(document, page, m.payload.hostId, m.payload.value);
+    if (error) notify("error", error);
+  } else if (m.type === "EDITOR_CLOSE") closeEditor(document, m.payload.hostId);
+  else
+    answerSaved(
+      m.payload.requestId,
+      saveFromEditor(document, page, m.payload.hostId, m.payload.worldId),
+    );
 }
 
 function handle(bridge: Bridge, m: UiToPage): void {
@@ -145,6 +171,11 @@ function handle(bridge: Bridge, m: UiToPage): void {
       break;
     case "CONFIG":
       answerConfig(m.payload);
+      break;
+    case "EDITOR_OPEN":
+    case "EDITOR_CLOSE":
+    case "EDITOR_SAVE":
+      handleEditor(m);
       break;
     case "SAVE_WORLD":
       answerSave(m.payload);
