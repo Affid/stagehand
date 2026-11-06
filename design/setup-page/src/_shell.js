@@ -44,6 +44,31 @@ const ST = {
 
 // ---------- world state ----------
 const world = (id = ST.world) => WORLDS_X.find((w) => w.id === id);
+/** Days since a world was last played, from the mockup's labels; null if never. */
+function playedDaysAgo(w) {
+  const t = String(w.last ?? "").toLowerCase();
+  if (!t || t === "never") return null;
+  if (t === "just now") return -1;
+  if (t === "today") return 0;
+  if (t === "yesterday") return 1;
+  const m = t.match(/(\d+)\s+(day|week|month|year)/);
+  return m ? Number(m[1]) * { day: 1, week: 7, month: 30, year: 365 }[m[2]] : null;
+}
+/** Foundry's own world order (SetupPackages#sortWorlds): favourites, then last played, then never played, then title. */
+function worldOrder() {
+  const favs = ST.wfav ?? new Set();
+  return [...WORLDS_X].sort((a, b) => {
+    const fd = Number(favs.has(b.id)) - Number(favs.has(a.id));
+    if (fd) return fd;
+    const da = playedDaysAgo(a), db = playedDaysAgo(b);
+    if (da !== null && db === null) return -1;
+    if (db !== null && da === null) return 1;
+    if (da !== null && db !== null && da !== db) return da - db;
+    return a.title.localeCompare(b.title);
+  });
+}
+/** Launching makes a world the most recently played, so it moves up, as in Foundry. */
+const markPlayed = (id) => { const w = world(id); if (w) w.last = "just now"; };
 const hash = (s) => [...s].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7);
 const BASE_SETS = {};
 function baseSet(wid) {
@@ -102,7 +127,7 @@ function topBar() {
 function rail() {
   // Favourites first, as Foundry orders its own list.
   const favs = ST.wfav ?? new Set(), locks = ST.wlock ?? new Set();
-  const ordered = [...WORLDS_X].sort((a, b) => Number(favs.has(b.id)) - Number(favs.has(a.id)));
+  const ordered = worldOrder();
   const worlds = ordered.filter((w) => !ST.wq || w.title.toLowerCase().includes(ST.wq.toLowerCase())).map((w) => {
     const flag = railFlag(w);
     const marks = `${favs.has(w.id) ? '<i class="fa-solid fa-star mls-wfav" aria-label="Favourite"></i>' : ""}${locks.has(w.id) ? '<i class="fa-solid fa-lock mls-wlock" aria-label="Locked"></i>' : ""}`;
@@ -554,6 +579,7 @@ A.launch = () => {
   if (REVIEW_AT_LAUNCH && !world().noCompanion && (diff(ST.world).length || problems(ST.world).length)) { ST.dialog = "launch"; render(); return; }
   const w = world(), n = w.noCompanion ? 0 : diff(w.id).length, probs = w.noCompanion ? [] : problems(w.id);
   if (probs.length) { notify(`${plural(probs.length, "problem")} to fix first (see Next launch). In the real page you could still launch, and the world would ask.`, "warning"); return; }
+  markPlayed(w.id); render();
   notify(`Mockup: Foundry would launch ${esc(w.title)} here${n ? `, and the companion would show the ${plural(n, "change")} for you to confirm` : ""}.`);
 };
 A.foundry = (id, el) => { const what = el?.dataset.what || id; if (what === "Install Module") installMore(); else notify(`Mockup: this opens Foundry's own “${esc(what)}”. We don't rebuild it.`); };

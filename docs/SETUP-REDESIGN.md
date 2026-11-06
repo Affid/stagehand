@@ -92,6 +92,12 @@ necessarily its card markup.
 - Works with many worlds: lists of worlds scroll or collapse (intake shows only worlds a
   module is on, with "N more worlds…"); a scrolling list fades where it is cut off. The
   mockup's `?worlds=12` (playground: Worlds 6 / 12) and `checks/busy.mjs` cover this.
+- Worlds are listed in Foundry's own order everywhere (worlds list, By world columns):
+  favourites, then most recently played, then never played, then title; launching moves a
+  world up (`checks/worldorder.mjs`).
+- The By world grid never shrinks columns below 92 px: past that it scrolls sideways with
+  module names pinned on the left, world headers pinned on top, and a fade at the right
+  edge while more worlds are hidden (`checks/gridwide.mjs`, tested with 30 worlds).
 - Nothing moves under the pointer: bars that appear (unsaved changes, progress, selection)
   take a slot whose space is already kept, or replace something of the same height.
   `design/setup-page/checks/shifts.mjs` measures this.
@@ -121,7 +127,7 @@ necessarily its card markup.
 cd design/setup-page
 ./assets.sh            # copies Foundry's CSS, fonts and images from ~/foundry/vtt (not in git)
 node build.mjs         # writes out/index.html (playground) and out/setup-shell.html
-node checks/run.mjs    # 36 Playwright checks of the mockup's flows
+node checks/run.mjs    # 38 Playwright checks of the mockup's flows
 ```
 
 `fvtt/` and `out/` are git-ignored: they hold Foundry's and Font Awesome Pro's licensed

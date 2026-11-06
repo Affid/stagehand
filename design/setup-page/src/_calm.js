@@ -577,3 +577,14 @@ function railFade() {
 const renderBeforeRailFade = render;
 // eslint-disable-next-line no-func-assign
 render = function () { renderBeforeRailFade(); railFade(); };
+
+// The By world grid fades at its right edge while more world columns are hidden.
+function gridFade() {
+  const g = document.querySelector(".mls-gridwrap");
+  if (!g) return;
+  const more = () => g.classList.toggle("more-right", g.scrollLeft + g.clientWidth < g.scrollWidth - 2);
+  more(); g.onscroll = more;
+}
+const renderBeforeGridFade = render;
+// eslint-disable-next-line no-func-assign
+render = function () { renderBeforeGridFade(); gridFade(); };

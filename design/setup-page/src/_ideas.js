@@ -57,7 +57,7 @@ function gridCell(w, m, probIds) {
 function gridGroupRow(g) {
   const collapsed = ST.collapsed.has(g.key);
   const style = g.color && g.kind === "folder" ? `--sidebar-folder-color:${g.color}` : g.color ? `--ml-c:${g.color}` : "";
-  const cells = WORLDS_X.map((w) => {
+  const cells = worldOrder().map((w) => {
     if (w.noCompanion || !g.modules.length) return '<td class="na"></td>';
     const on = g.modules.filter((m) => desired(w.id, m.id)).length;
     const all = on === g.modules.length;
@@ -67,6 +67,8 @@ function gridGroupRow(g) {
     <i class="fa-solid fa-chevron-${collapsed ? "right" : "down"} fa-fw"></i><i class="fa-solid ${g.kind === "tag" ? "fa-tag" : g.icon} fa-fw gi"></i><span>${esc(g.name)}</span><span class="ml-muted">${g.modules.length}</span></th>${cells}</tr>`;
 }
 
+/** Columns never get narrower than this: past it the grid scrolls sideways, names pinned on the left. */
+const GRID_COL_MIN = 92, GRID_MOD_W = 250;
 function gridBody() {
   const probIds = new Map(WORLDS_X.map((w) => [w.id, new Map(worldProblems(w.id).map((p) => [p.id, p.text]))]));
   const rows = groupsFor(ST.group, ALL_MODULES).map((g) => {
@@ -76,7 +78,7 @@ function gridBody() {
       const viewing = ST.panel?.kind === "module" && ST.panel.id === m.id;
       const tags = tagsOf(m.id).slice(0, 3).map((t) => `<i class="ml-dot" style="--ml-c:${t.color}" data-tooltip="Tag: ${esc(t.name)}"></i>`).join("");
       return `<tr data-mid="${m.id}" class="${viewing ? "viewing" : ""}"><th scope="row" data-act="gridmod" data-id="${m.id}"><div class="mh"><span class="t">${esc(m.title)}</span>${ST.fresh.has(m.id) ? '<span class="mls-newtag">New</span>' : ""}<span class="dots">${tags}</span></div></th>
-        ${WORLDS_X.map((w) => gridCell(w, m, probIds.get(w.id))).join("")}</tr>`;
+        ${worldOrder().map((w) => gridCell(w, m, probIds.get(w.id))).join("")}</tr>`;
     }).join("");
   }).join("");
   const queued = WORLDS_X.filter((w) => !w.noCompanion && diff(w.id).length);
@@ -84,8 +86,8 @@ function gridBody() {
     <span class="ml-spacer"></span><span>${queued.length ? `${plural(queued.length, "world")} change${queued.length === 1 ? "s" : ""} at ${queued.length === 1 ? "its" : "their"} next launch: ${queued.map((w) => `<a data-act="world" data-id="${w.id}">${esc(w.title)}</a>`).join(", ")}` : "Nothing queued."}</span></div>`;
   return `<div class="ml-row">${groupSelect()}<input type="search" data-filter="grid" value="${esc(ST.q)}" placeholder="Filter modules"><span class="ml-spacer"></span>
     <span class="ml-muted" style="font-size:12px">Click a name for details, a switch to queue a change, a world to open it.</span></div>
-    <div class="mls-gridwrap"><table class="mls-grid"><colgroup><col class="mod">${WORLDS_X.map(() => "<col>").join("")}</colgroup>
-    <thead><tr><th class="mod" scope="col">Module</th>${WORLDS_X.map(gridColHead).join("")}</tr></thead><tbody>${rows}</tbody></table></div>${legend}`;
+    <div class="mls-gridwrap"><table class="mls-grid" style="min-width:${GRID_MOD_W + worldOrder().length * GRID_COL_MIN}px"><colgroup><col class="mod">${worldOrder().map(() => "<col>").join("")}</colgroup>
+    <thead><tr><th class="mod" scope="col">Module</th>${worldOrder().map(gridColHead).join("")}</tr></thead><tbody>${rows}</tbody></table></div>${legend}`;
 }
 
 A.gcell = (wid, el) => { setDesired(wid, el.dataset.mid, !desired(wid, el.dataset.mid)); render(); warnIfBroken(wid); };
@@ -249,7 +251,7 @@ function launchDialog() {
   return `<div class="mls-backdrop" data-act="closedialog"></div>${fwindow({ title: `Launch ${esc(w.title)}`, icon: "fa-solid fa-play", x, y, w: 560, body, footer, cls: "mls-dialog" })}`;
 }
 A.closedialog = () => { ST.dialog = null; render(); };
-A.launchplain = () => { const n = diff(ST.world).length; ST.dialog = null; render(); notify(`Mockup: ${esc(world().title)} launches as it is. The ${plural(n, "change")} stay${n === 1 ? "s" : ""} queued.`); };
+A.launchplain = () => { const n = diff(ST.world).length; ST.dialog = null; markPlayed(ST.world); render(); notify(`Mockup: ${esc(world().title)} launches as it is. The ${plural(n, "change")} stay${n === 1 ? "s" : ""} queued.`); };
 function bfirstRow(w) {
   if (backedUpForQueue(w.id)) return `<p class="mls-bdone"><i class="fa-solid fa-circle-check"></i>Backed up ${esc(backupsOf(w.id)[0]?.rel ?? "just now")}, before these changes.</p>`;
   const on = ST.bfirst ?? true, last = backupsOf(w.id)[0];
@@ -257,6 +259,7 @@ function bfirstRow(w) {
 }
 A.bfirst = () => { ST.bfirst = !(ST.bfirst ?? true); render(); };
 A.launchapply = () => {
+  markPlayed(ST.world);
   const n = diff(ST.world).length, w = world(), go = () => notify(`Mockup: ${esc(w.title)} launches, and the companion applies ${plural(n, "change")} and reloads once.`);
   ST.dialog = null;
   if ((ST.bfirst ?? true) && !backedUpForQueue(w.id)) { ST.wtab = "backups"; runBackup(w.id, { note: "Before queued changes", then: go }); return; }

@@ -39,6 +39,6 @@ await p.evaluate(() => { const l = document.querySelector(".mls-worlds"); l.scro
 r.railFadeAtEnd = await p.evaluate(() => document.querySelector(".mls-worlds").classList.contains("more"));
 await p.click(".mls-lib"); await p.click('[data-act=lsub][data-id=grid]'); await p.waitForTimeout(80);
 r.gridQueuedClipped = await p.evaluate(() => { const q = document.querySelector(".mls-grid th .sub .q"); return q ? q.getBoundingClientRect().right > q.closest("th").getBoundingClientRect().right + 1 : "none"; });
-const ok = r.intakeRows <= 2 && r.intakeRowsOpen > r.intakeRows && r.railFade && !r.railFadeAtEnd && r.gridQueuedClipped === false && !r.grid.hScroll;
+const ok = r.intakeRows <= 2 && r.intakeRowsOpen > r.intakeRows && r.railFade && !r.railFadeAtEnd && r.gridQueuedClipped === false && r.grid.colW >= 92;
 console.log(ok ? "ok" : "WRONG"); if (!ok) process.exitCode = 1;
 console.log(JSON.stringify(r, null, 1)); console.log(errs.length ? errs : "no errors"); await b.close();
