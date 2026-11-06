@@ -174,3 +174,28 @@ Read from `public/scripts/foundry.mjs` (`ServerSettingsConfig`) and `dist/server
 - On the test server: no username, password set, port 30000, UPnP off, no certificate,
   compression on, usage data off, no Electron section. Fields not shown in the window but in
   `options.json`: hostname, routePrefix, proxyPort, proxySSL, updateChannel, noBackups (CLI).
+
+## Follow-up 2026-11-06 (build 370): update and release notes
+
+Read from `public/scripts/foundry.mjs` (`SetupUpdate`, `UpdateNotes`, `CompatibilityChecker`),
+`templates/setup/setup-update.hbs` and `update-notes.hbs`, plus a read-only live check
+(`spikes/spike-update.ts`; the server runs with `--noupdate`, nothing was downloaded).
+
+- `/update` page: current version, channel (stable, testing, development), Force update,
+  "Check For Update". Errors when offline or foundryvtt.com is unreachable or slow.
+- Check: `game.post({action: "updateCheck", updateChannel, forceUpdate})` returns release data:
+  `build, channel, download, flags, generation, maxGeneration, maxStableGeneration,
+node_version, notes, suffix, time`. `download` is a time-limited link: never log or store it.
+  With force on the latest version it returned 14.370 ("Version 14 Stable 12"),
+  `requiresManualInstall: true` (flag `requires_full_reinstall`), and 32 KB of HTML notes.
+- The notes are HTML: an h2 title, then h2 sections (Breaking Changes, New Features, API
+  Improvements, Bug Fixes, Documentation Improvements) with h3 areas and 107 list items,
+  nearly all ending in a GitHub issue link. Some have images (`figure`, `img`).
+- Release Notes window (`UpdateNotes`, not exported, so not opened live): the notes, a link
+  to all notes, and buttons Create a Snapshot, Preview Compatibility (only for newer
+  versions), and Begin Download, or "Manual Installation Required" (full, generation or
+  Electron reinstall flags), or "Updates Disabled" (`--noupdate`).
+- Download: `updateDownload` with progress steps Downloading, Extracting, Cleaning,
+  Installing. Then a server exits "for manual restart"; the desktop app relaunches itself.
+- `game.previewCompatibility(release)` posts `previewCompatibility`; it returned nothing for
+  the current version (the window only offers it for newer ones), so its shape is untested.

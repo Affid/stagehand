@@ -16,7 +16,7 @@ function calmBanner(w) {
   const fav = ST.wfav.has(w.id), locked = ST.wlock.has(w.id);
   const star = `<button type="button" class="mlw-star${fav ? " on" : ""}" data-act="wfav" aria-pressed="${fav}" aria-label="Favourite" data-tooltip="${fav ? "Favourite: shown first in the worlds list. Click to remove." : "Mark as favourite: shown first in the worlds list"}"><i class="fa-${fav ? "solid" : "regular"} fa-star"></i></button>`;
   const lockTag = locked ? '<span class="mlw-locktag" data-tooltip="Locked in Foundry: it can\'t be launched, edited, updated or deleted. Unlock it on the About tab."><i class="fa-solid fa-lock"></i>Locked</span>' : "";
-  const block = ST.backupJob?.wid === w.id ? "Waiting for the backup to finish" : ST.serverJob ? "Waiting for the snapshot to finish" : locked ? "Locked: unlock it on the About tab to launch" : "";
+  const block = ST.backupJob?.wid === w.id ? "Waiting for the backup to finish" : ST.serverJob ? "Waiting for the snapshot to finish" : ST.upd?.job ? "Waiting for the Foundry update to finish" : locked ? "Locked: unlock it on the About tab to launch" : "";
   return `<div class="mls-banner" style="--img:url(${IMG[w.img]});--pos:${w.pos}"><div><h2>${esc(w.title)}${star}${lockTag}</h2>
     <div class="meta"><span><i class="fa-solid fa-dice-d20"></i>${esc(w.system)}</span><span><i class="fa-solid fa-clock"></i>Last played ${w.last}</span><span><i class="fa-solid fa-plug"></i>${w.noCompanion ? "Modules unknown" : `${onCount(w.id, baseOn)} modules on now`}</span></div>${pending}${flags}</div>
     <div class="acts"><button type="button" class="icon" data-act="wtab" data-id="about" data-tooltip="Edit the world's details" aria-label="Edit the world's details"><i class="fa-solid fa-pen"></i></button>
@@ -187,7 +187,7 @@ topBar = function () { return CALM ? calmTopBar() : foundryTopBar(); };
 function calmTopBar() {
   const open = ST.pop?.kind === "fmenu";
   const chip = `<button type="button" class="mlh-ver${open ? " ml-on" : ""}" data-act="fmenu" aria-expanded="${open}" aria-label="Foundry: version, update and help">
-    <span class="v">Version 14 · 370</span><span class="upd"><i class="fa-solid fa-arrow-up"></i>update</span><i class="fa-solid fa-caret-down"></i></button>`;
+    <span class="v">Version ${ST.upd.installed.replace(".", " · ")}</span>${UPD_STATES[ST.upd.state] ? '<span class="upd"><i class="fa-solid fa-arrow-up"></i>update</span>' : ""}<i class="fa-solid fa-caret-down"></i></button>`;
   const btn = (act, what, icon, label) => `<button type="button" data-act="${act}" data-what="${what}"><i class="fa-solid ${icon}"></i>${label}</button>`;
   return `<header class="mls-top mlh"><span class="logo" aria-hidden="true"></span><h1>Foundry Virtual Tabletop</h1><span class="mlh-chipwrap">${chip}${newsCallout()}</span><span class="ml-spacer"></span>
     <div class="mlh-acts"><button type="button" class="${ST.page === "backups" ? "ml-on" : ""}" data-act="srvbackups" aria-current="${ST.page === "backups" ? "page" : "false"}"><i class="fa-solid fa-floppy-disks"></i>Backups</button><button type="button" class="${ST.page === "config" ? "ml-on" : ""}" data-act="srvconfig" aria-current="${ST.page === "config" ? "page" : "false"}"><i class="fa-solid fa-gears"></i>Configuration</button>
@@ -195,9 +195,9 @@ function calmTopBar() {
 }
 function foundryMenu(x, y) {
   const body = `<div class="mlh-fm">
-    <section class="mlh-upd"><div><strong>Foundry 14 · build 370</strong><span class="ml-muted">Stable channel</span></div>
-      <div class="avail"><i class="fa-solid fa-arrow-up"></i><span><b>${NEXT_BUILD}</b> is available</span><a data-act="foundry" data-what="Release notes for ${NEXT_BUILD}">Release notes</a>
-      <button type="button" class="bright" data-act="foundry" data-what="Update Foundry">Update…</button></div></section>
+    <section class="mlh-upd"><div><strong>Foundry ${ST.upd.installed.replace(".", " · build ")}</strong><span class="ml-muted">${CHANNELS[ST.upd.channel][0]} channel</span></div>
+      ${UPD_STATES[ST.upd.state] ? `<div class="avail"><i class="fa-solid fa-arrow-up"></i><span><b>${UPD_STATES[ST.upd.state].version}</b> is available</span><a data-act="updpage" data-id="notes">Release notes</a>
+      <button type="button" class="bright" data-act="updpage">Update…</button></div>` : `<div class="avail none"><i class="fa-solid fa-circle-check"></i><span>Up to date</span><a data-act="updpage">Update page</a></div>`}</section>
     <h4>Help</h4><ul class="mls-pick">
       <li data-act="foundry" data-what="Support & Issues"><i class="fa-solid fa-life-ring"></i><span>Support &amp; issues</span><span class="ml-muted">1 module warning</span></li>
       <li data-act="foundry" data-what="Knowledge Base (opens foundryvtt.com)"><i class="fa-solid fa-book-open"></i><span>Knowledge base</span><span class="ml-muted"><i class="fa-solid fa-arrow-up-right-from-square"></i></span></li></ul></div>`;

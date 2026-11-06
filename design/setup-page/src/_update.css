@@ -1,0 +1,73 @@
+/* Update page */
+.mlu-cols { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 14px; }
+.mlu-notes { min-height: 0; overflow: auto; border: 1px solid var(--color-cool-4); border-radius: 4px; background: rgb(11 10 19 / 55%); padding: 12px 16px 18px; display: flex; flex-direction: column; gap: 10px; }
+.mlu-nhead h3 { margin: 0; font-size: 17px; color: var(--color-light-1); border: 0; }
+.mlu-nhead span { font-size: 12.5px; color: var(--color-text-subtle); }
+.mlu-nhead a, .mlu-tools a { color: var(--color-light-3); text-decoration: underline; text-decoration-color: var(--color-light-5); }
+.mlu-tools { display: flex; gap: 12px; align-items: center; font-size: 13px; color: var(--color-light-2); }
+.mlu-tools input[type=search] { height: 28px; width: 240px; }
+.mlu-tools label { display: inline-flex; gap: 6px; align-items: center; }
+.mlu-tools .ml-spacer { flex: 1; }
+.mlu-jump { display: flex; flex-wrap: wrap; gap: 6px; }
+.mlu-jump a { padding: 2px 10px; border-radius: 12px; border: 1px solid var(--color-cool-3); font-size: 12.5px; color: var(--color-light-2); }
+.mlu-jump a b { color: var(--color-light-1); }
+.mlu-jump a:hover { border-color: var(--color-warm-1); }
+.mlu-jump a.brk { border-color: rgb(245 196 94 / 60%); color: #f3dca4; }
+.mlu-body { display: grid; gap: 6px; }
+.mlu-sec h3 { margin: 6px 0 2px; display: flex; align-items: center; gap: 8px; font-size: 15px; color: var(--color-light-1); border: 0; border-bottom: 1px solid var(--color-cool-4); padding-bottom: 4px; cursor: pointer; }
+.mlu-sec h3 > i:first-child { font-size: 11px; color: var(--color-light-4); width: 12px; }
+.mlu-sec h3 .c { font-size: 12px; color: var(--color-text-subtle); font-weight: 400; }
+.mlu-sec.breaking { border: 1px solid rgb(245 196 94 / 50%); background: rgb(245 196 94 / 7%); border-radius: 4px; padding: 2px 10px 6px; }
+.mlu-sec.breaking h3 { border-bottom-color: rgb(245 196 94 / 30%); }
+.mlu-sec.breaking h3 .fa-triangle-exclamation { color: #f5c45e; }
+.mlu-sec h4 { margin: 8px 0 2px; font-family: var(--font-body, Signika), sans-serif; font-size: 12px; letter-spacing: .05em; text-transform: uppercase; color: var(--color-text-subtle); border: 0; }
+.mlu-sec ul { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
+.mlu-sec li { font-size: 13.5px; line-height: 1.45; color: var(--color-light-2); }
+.mlu-issue { font-size: 11.5px; color: var(--color-light-4); white-space: nowrap; }
+.mlu-issue:hover { color: var(--color-warm-1); }
+.mlu-side { min-height: 0; overflow: auto; display: grid; gap: 12px; align-content: start; }
+.mlu-act { gap: 10px; }
+.mlu-go { height: 38px; width: 100%; gap: 8px; font-size: 14px; font-weight: 700; }
+.mlu-go[disabled] { opacity: .6; }
+.mlu-act .mlw-tipwrap { display: flex; }
+.mlu-why { margin: 0; display: flex; gap: 8px; align-items: baseline; font-size: 12.5px; color: var(--color-light-3); }
+.mlu-why i { color: var(--color-light-4); }
+.mlu-why a { color: var(--color-light-2); text-decoration: underline; }
+.mlu-why code { font-size: 12px; }
+.mlu-chan { display: grid; grid-template-columns: 64px 1fr; gap: 4px 10px; align-items: center; }
+.mlu-chan .k { font-size: 12.5px; color: var(--color-text-subtle); }
+.mlu-chan select { height: 28px; }
+.mlu-chan .hint { grid-column: 2; margin: 0; }
+.mlu-force { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: var(--color-light-2); }
+.mlu-force .ml-muted { font-size: 12px; }
+.mlu-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12.5px; color: var(--color-light-4); }
+.mlu-steps li { display: inline-flex; gap: 5px; align-items: center; }
+.mlu-steps li.done { color: #8fd49b; } .mlu-steps li.now { color: var(--color-light-1); }
+.mlu-steps .fa-circle { font-size: 6px; }
+.mlu-sub { margin: 0; font-size: 12.5px; color: var(--color-light-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mlu-bar { height: 6px; border-radius: 3px; background: rgb(255 255 255 / 10%); overflow: hidden; }
+.mlu-bar span { display: block; height: 100%; background: var(--color-warm-1); transition: width .2s; }
+.mlu-done { display: flex; gap: 10px; align-items: flex-start; }
+.mlu-done > i { color: #8fd49b; font-size: 20px; margin-top: 2px; }
+.mlu-done > div { display: grid; gap: 4px; }
+.mlu-done strong { color: var(--color-light-1); font-size: 14.5px; }
+.mlu-done span { font-size: 12.5px; color: var(--color-light-3); }
+.mlu-tags { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.mlu-tags .k { width: 64px; font-size: 12.5px; color: var(--color-text-subtle); }
+.mlu-tag { font-size: 12px; padding: 1px 8px; border-radius: 10px; border: 1px solid; }
+.mlu-tag.ok { color: #8fd49b; border-color: rgb(63 143 82 / 60%); }
+.mlu-tag.unv { color: #f5c45e; border-color: rgb(245 196 94 / 55%); }
+.mlu-tag.bad { color: #ffb3a6; border-color: rgb(180 82 63 / 70%); }
+.mlu-flag { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; }
+.mlu-flag li { display: grid; grid-template-columns: 1fr auto; gap: 8px; font-size: 13px; padding: 3px 6px 3px 8px; border-left: 3px solid; border-radius: 2px; background: rgb(255 255 255 / 3%); }
+.mlu-flag li.unv { border-left-color: #f5c45e; } .mlu-flag li.bad { border-left-color: #e0705a; }
+.mlu-flag li .t { color: var(--color-light-1); cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mlu-flag li .t:hover { color: var(--color-warm-1); }
+.mlu-flag li .w { font-size: 12px; color: var(--color-text-subtle); }
+.mlu-flag li.more { border: 0; background: none; display: block; color: var(--color-text-subtle); font-size: 12.5px; }
+.mlu-mock { display: flex; gap: 10px; align-items: center; font-size: 12px; color: var(--color-light-5); }
+.mlu-mock a { color: var(--color-light-4); border-bottom: 1px dashed var(--color-light-5); }
+.mlu-mock a.on { color: var(--color-warm-1); border-bottom-color: var(--color-warm-1); }
+.mlh-upd .avail.none { border-color: var(--color-cool-3); background: none; color: var(--color-light-2); }
+.mlh-upd .avail.none > i { color: #8fd49b; }
+@media (max-width: 1280px) { .mlu-cols { grid-template-columns: minmax(0, 1fr) 320px; } }

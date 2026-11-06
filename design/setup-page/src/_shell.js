@@ -480,7 +480,7 @@ function render() {
   VIEW = ST.view;
   const keep = [...document.querySelectorAll(".ml-sections, .mls-panel .scroll, .mls-worlds, .mls-gridwrap")].map((el) => el.scrollTop);
   const toasts = document.getElementById("notifications");
-  document.body.innerHTML = `<div id="main-background"></div>${topBar()}<section id="setup" class="mls">${rail()}${ST.page === "world" ? worldPage() : ST.page === "backups" ? serverBackupsPage() : ST.page === "config" ? serverConfigPage() : libraryPage()}</section>${newsDrawer()}`;
+  document.body.innerHTML = `<div id="main-background"></div>${topBar()}<section id="setup" class="mls">${rail()}${ST.page === "world" ? worldPage() : ST.page === "backups" ? serverBackupsPage() : ST.page === "config" ? serverConfigPage() : ST.page === "update" ? updatePage() : libraryPage()}</section>${newsDrawer()}`;
   document.body.insertAdjacentHTML("beforeend", overlay() + launchDialog() + snapshotDialog() + cfgDialog() + cfgStopDialog());
   if (toasts) document.body.append(toasts);
   document.querySelectorAll(".ml-sections, .mls-panel .scroll, .mls-worlds, .mls-gridwrap").forEach((el, i) => { if (keep[i] !== undefined) el.scrollTop = keep[i]; });
@@ -642,7 +642,7 @@ document.addEventListener("click", (e) => {
     if (cardEl && ST.page === "library" && ST.lsub === "systems") { A.syscard(cardEl.dataset.packageId); return; }
     if (cardEl && ST.page === "world" && !e.target.closest(".mls-dialog")) { const id = cardEl.dataset.packageId; ST.panel = ST.panel?.id === id ? null : { kind: "module", id }; ST.mtab = "library"; render(); return; }
   }
-  if (ST.pop && !inPop && !(el && ["gmenu", "lmenu", "wmenu", "presetpop", "bulk", "addtag", "presetworld", "copyfrom", "gcolmenu", "copyfrompop", "copyto", "addmenu", "viewpop", "fmenu", "pmenu", "news", "newsall"].includes(el.dataset.act))) {
+  if (ST.pop && !inPop && !(el && ["gmenu", "lmenu", "wmenu", "presetpop", "bulk", "addtag", "presetworld", "copyfrom", "gcolmenu", "copyfrompop", "copyto", "addmenu", "viewpop", "fmenu", "pmenu", "news", "newsall", "updpage"].includes(el.dataset.act))) {
     ST.pop = null; ST.tagStage = {};
     if (!el) { render(); return; }
   }
