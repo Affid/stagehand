@@ -1,0 +1,4 @@
+# Foundry's own CSS, fonts and images (licensed): copy them with ./assets.sh
+fvtt/
+# Build output and screenshots
+out/

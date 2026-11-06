@@ -1,0 +1,108 @@
+# A new Setup page: design state
+
+Status as of 2026-11-06. Design only: nothing here is built in the extension yet.
+This page records what was decided, what Foundry was shown to support, and what is still
+open, so the build plan can start from it.
+
+- **Mockup:** `design/setup-page/` (see "Running the mockup" below). The published,
+  private playground is https://claude.ai/artifact/YKaVJnZdr1zsju86XQSpBT.
+- **Foundry facts:** `docs/SETUP-SPIKE.md`, from live tests against Foundry 14.369 and
+  14.370 and from reading Foundry's own client and server code.
+- **Earlier context:** `docs/WORLDS-TAB.md` (the current Game Worlds tab work) and
+  `docs/PRD.md` (requirements; D-3 is server sync).
+
+## Why replace the page
+
+The owner's reasons: the News column is dead weight, the equal Worlds / Systems / Add-ons
+split is a poor fit, organisation done in Setup didn't carry into a world's module
+management, and adding lenses to Foundry's tabs felt like a workaround. The replacement
+keeps Foundry's look (its CSS, fonts, colours, windows, notifications and tooltips) but not
+necessarily its card markup.
+
+## Decisions
+
+| Area                        | Decision                                                                                                                                                                                                                                                                                                                          |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Layout                      | Worlds list on the left (Library entry on top), the chosen world's page or the Library in the middle, a details panel on the right only when something is open.                                                                                                                                                                   |
+| Queued changes              | **Reviewed at launch**, not in a permanent "Next launch" column. Pending changes show as a line in the world's banner and a count on Launch; Launch opens a review dialog (Apply and launch, Launch without changes, Cancel) with "Back up first".                                                                                |
+| World page cards            | Our own cards: switch, name, and one "why" line (missing dependency with fix, how many modules here need it, preset that adds it, not verified, note, else description). No Foundry badges, tags, stars or lock. Only changes and problems get a coloured edge.                                                                   |
+| Library cards               | Name; note or description; tags, version, worlds it runs in. Star and lock stay. An Update button only on modules that have an update.                                                                                                                                                                                            |
+| Group headers               | One quiet style everywhere (world page, Library, By world grid): coloured stripe that fades out, collapse arrow first.                                                                                                                                                                                                            |
+| Header bar                  | Logo and title left; a Version chip ("Version 14 · 370 / ↑ update") whose menu holds the update and Help; Backups and Configuration as labelled buttons; ⏻ menu for Log out and Shut down. No News button.                                                                                                                        |
+| News                        | At the foot of the worlds list, under Foundry's own names: **News** (carousel of Foundry's 2.39:1 banners, sliding, preloaded; open while something is unread, folded to one line after) and **Featured Content** (its own full banner, always open). No popups.                                                                  |
+| Library extras              | **By world** grid (modules × worlds, group counts, per-world problems); **intake** for newly installed modules (folder, tags, worlds, suggestions); **copy a world's module set** (match or add only).                                                                                                                            |
+| About tab                   | Edited in place, without Foundry's World Configuration window: description, title, system, join screen, next session, background (Foundry's file picker), safe mode, reset passwords (confirm in place). Shows only fields Foundry really has.                                                                                    |
+| Next session                | Own picker: calendar, 24-hour time, time zone shown with its name and offset, and "players see it in their own time" examples. Repeats: none, weekly, every 2 weeks, monthly, or **chosen dates** (each with its own time). Quick times come from the owner's own schedules. Time zones: short list plus a search over all zones. |
+| Backups tab                 | Full-width list with date and time, Foundry's compatibility badge, size, Restore, Delete; total size; built-in multi-select delete (replaces "Foundry's backup list"); progress row that locks Restore, Delete and Launch; nudge that turns green once a backup covers the queued changes.                                        |
+| World without the companion | Modules tab is an empty state explaining the one-time setup, not a grid of disabled switches.                                                                                                                                                                                                                                     |
+
+## What Foundry supports (summary of `SETUP-SPIKE.md`)
+
+- Our page can sit over Setup with Foundry's layout hidden; Foundry's apps keep running.
+- Public calls: `game.browsePackages`, `checkPackage`, `uninstallPackage`, `createBackup`,
+  `restoreBackup`, `restoreLatestBackup`, `deleteBackups` (several at once), `listBackups`.
+- Reached only through Foundry's hidden buttons or card menu: launch, update one or all,
+  favourite, lock, Backup Manager, Configuration. Create World and core update are separate
+  pages (`/create`, `/update`).
+- **World edits** go through Foundry's internal `POST /setup {action: "editWorld", id, ...}`
+  after `world.validate`. Tested live: one field saved, the rest of `world.json` kept, an
+  empty title rejected before sending. It is an internal request name: keep it behind the
+  remote config and the build smoke test, and fall back to Foundry's World Configuration.
+- World data on Setup: `coreVersion`, `systemVersion`, `compatibility`, `lastPlayed`,
+  `playtime`, `nextSession` (one UTC time), `background`, `description`, `joinTheme`,
+  `safeMode`, `resetKeys`, and a free `flags` object. No player count, size or created date.
+- Migration happens only at launch (Foundry asks and offers a backup). Reset passwords and
+  safe mode are one-shot flags saved with the world.
+- Foundry draws progress bars, the busy lock and tour targets inside its own (hidden)
+  layout: we must draw them ourselves (wrap `ui.setupPackages.onProgress` / `toggleLock`).
+
+## Data: Foundry's or ours
+
+- **Foundry's:** everything in the world manifest and backups. We read and write it with
+  Foundry's own calls.
+- **Ours:** the library (folders, tags, notes, presets), queued changes, news read state,
+  and the next-session **schedule** (rule or chosen dates, skips). Foundry holds only the
+  next date; we move it forward when Setup opens or the companion runs in the world.
+- **Where ours lives today:** extension storage in one browser. Proposed: per-world data
+  (schedule) in the world's `flags` (travels with the world and its backups); the library
+  in a server `library.json` (PRD D-3). Phones need the extension (Firefox for Android or a
+  Safari build); without it they get Foundry's own page.
+
+## Requirements for the build (from the reviews)
+
+- Real buttons and links for every action; all reachable by keyboard (C2).
+- Update the page in place; never move focus on re-render (H4).
+- Announce queued changes and saves to screen readers (live region) (H4).
+- Every disabled control that needs an explanation carries it on a wrapper: browsers send
+  no hover to disabled buttons, so a tooltip on the button itself never shows.
+- Copy Foundry's busy lock during backups and restores.
+- Every queued change, from anywhere, runs the dependency check; worlds with problems are
+  flagged in the worlds list.
+- Works at 1366×768 and 1280×800 (the About tab may scroll a little at 1280×800).
+
+## Open
+
+1. **Not tested live:** Foundry's restore and delete-backup dialogs (the test server had
+   no backups), writing `flags` with `editWorld`, the companion calling `editWorld` from a
+   running world, drawing Foundry's backup progress on our page.
+2. **Mockup gaps:** keyboard access (35 of 84 controls on a world page aren't focusable),
+   focus lost after actions, few live regions, no undo for deleting folders, tags and
+   presets or discarding queued changes, Library bulk actions only turn modules on in one
+   world. The first three come with a real build if the requirements above are met.
+3. **Decisions to take in the build plan:** server sync (D-3) and its scope; the "New"
+   rule for news (newest article seen; nothing new on a fresh install); the "Back up first"
+   default (ticked only when changes are queued and no backup covers them).
+
+## Running the mockup
+
+```sh
+cd design/setup-page
+./assets.sh            # copies Foundry's CSS, fonts and images from ~/foundry/vtt (not in git)
+node build.mjs         # writes out/index.html (playground) and out/setup-shell.html
+node checks/run.mjs    # 23 Playwright checks of the mockup's flows
+```
+
+`fvtt/` and `out/` are git-ignored: they hold Foundry's and Font Awesome Pro's licensed
+files. Add the news banners by hand (`fvtt/news/n1.webp` … `n5.webp`). The mockup is
+throwaway prototype code (one global state object, full re-render on every change); it is
+excluded from lint and formatting and is not a model for the extension's code.

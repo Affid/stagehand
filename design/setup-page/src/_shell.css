@@ -1,0 +1,189 @@
+/* A new Setup page in Foundry's style: worlds on the left, a world's own page or the Library in the middle,
+   a context panel on the right, News behind a button. Cards are Foundry's own (#setup-packages scope). */
+body.setup.mls-body { padding: 0; gap: 0; }
+.mls-top { display: flex; align-items: center; justify-content: flex-start; gap: 14px; height: 68px; padding: 0 24px; flex: none; }
+.mls-top .logo { width: 44px; height: 44px; background: url(fvtt/icons/vtt-512.png) center / contain no-repeat; }
+.mls-top h1 { margin: 0; font-family: "Modesto Condensed", serif; font-size: 34px; color: var(--color-light-1); text-shadow: 0 0 10px #000; letter-spacing: .02em; border: 0; }
+.mls-top .ml-spacer { flex: 1; }
+.mls-top .mls-menu { display: flex; gap: 8px; }
+.mls-top .mls-menu button { position: relative; width: 40px; height: 40px; flex: none; font-size: 18px; padding: 0; }
+.mls-top .mls-menu button.mls-news { width: auto; padding: 0 12px; gap: 8px; font-size: 14px; }
+.mls-top .mls-menu button.ml-on { border-color: var(--color-warm-1); box-shadow: 0 0 6px var(--color-warm-2); }
+.mls-top .mls-menu .pip { position: absolute; top: -6px; right: -6px; width: 16px; height: 16px; border-radius: 50%; background: var(--color-warm-2); color: #fff; font-size: 10px; display: grid; place-items: center; font-weight: 700; }
+.mls-top .mls-menu .pip.dot { width: 10px; height: 10px; top: -3px; right: -3px; }
+#setup.mls { flex: 1; min-height: 0; flex-wrap: nowrap; gap: 16px; padding: 0 24px 16px; justify-content: stretch; }
+.mls > .application { height: 100%; min-height: 0; display: flex; flex-direction: column; }
+[data-act] { cursor: pointer; }
+/* Rail */
+.mls-rail { flex: 0 0 290px; padding: 12px 10px; gap: 8px; }
+.mls-lib { display: grid; grid-template-columns: 40px 1fr; gap: 2px 10px; align-items: center; padding: 8px 10px; border-radius: 4px; border: 1px solid transparent; }
+.mls-lib i { grid-row: span 2; font-size: 22px; color: var(--color-warm-1); text-align: center; }
+.mls-lib strong { color: var(--color-light-1); font-size: 15px; }
+.mls-lib span { color: var(--color-text-subtle); font-size: 12px; }
+.mls-lib:hover, .mls-world:hover { background: rgb(255 255 255 / 4%); }
+.mls-rail .mls-on, .mls-world.mls-on { background: rgb(255 255 255 / 7%); border-color: var(--color-warm-1); box-shadow: inset 3px 0 0 var(--color-warm-1); }
+.mls-rail h2.divider { margin: 6px 0 2px; font-size: 18px; }
+.mls-rail .mls-railbar { display: flex; gap: 6px; }
+.mls-rail .mls-railbar input { flex: 1; height: 30px; }
+.mls-rail .mls-railbar button { width: 30px; height: 30px; flex: none; padding: 0; }
+.mls-worlds { list-style: none; margin: 0; padding: 0; overflow: auto; flex: 1; display: grid; gap: 4px; align-content: start; }
+.mls-world { display: grid; grid-template-columns: 64px 1fr auto; gap: 2px 10px; align-items: center; padding: 6px; border-radius: 4px; border: 1px solid transparent; }
+.mls-world .thumb { grid-row: span 2; width: 64px; height: 44px; border-radius: 3px; background: var(--img) center / cover; border: 1px solid rgb(255 255 255 / 12%); }
+.mls-world strong { color: var(--color-light-1); font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mls-world .meta { color: var(--color-text-subtle); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mls-world .flag { grid-row: span 2; font-size: 11px; padding: 1px 6px; border-radius: 9px; white-space: nowrap; }
+.mls-world .flag.q { background: rgb(238 155 58 / 18%); color: #f3b36a; border: 1px solid rgb(238 155 58 / 45%); }
+.mls-world .flag.a { color: #f5c45e; }
+/* Main */
+#setup-packages.mls-main { flex: 1; min-width: 0; padding: 0; gap: 0; }
+.mls-banner { position: relative; height: 140px; flex: none; background: linear-gradient(90deg, rgb(11 10 19 / 92%) 25%, rgb(11 10 19 / 40%)), var(--img) var(--pos, center) / cover; border-bottom: 1px solid var(--color-cool-3); display: flex; align-items: flex-end; padding: 16px 18px; gap: 16px; }
+.mls-banner h2 { margin: 0; font-family: "Modesto Condensed", serif; font-size: 40px; line-height: 1; color: var(--color-light-1); border: 0; text-shadow: 0 0 8px #000; }
+.mls-banner .meta { color: var(--color-light-2); font-size: 13px; margin-top: 6px; display: flex; gap: 6px 14px; flex-wrap: wrap; }
+.mls-banner .meta i { color: var(--color-light-4); margin-right: 4px; }
+.mls-banner .acts { margin-left: auto; display: flex; gap: 8px; align-items: center; flex: none; }
+.mls-banner .acts button { height: 36px; width: auto; flex: none; padding: 0 14px; gap: 8px; }
+.mls-banner .acts button.icon { width: 36px; padding: 0; }
+.mls-banner .acts button.mls-launch { height: 40px; padding: 0 20px; font-size: 15px; font-weight: 700; }
+.mls-body-main { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 8px; padding: 10px 14px 0; position: relative; }
+.mls-subtabs { display: flex; gap: 2px; border-bottom: 1px solid var(--color-cool-4); flex: none; }
+.mls-subtabs a { padding: 6px 12px; display: inline-flex; gap: 7px; align-items: center; color: var(--color-light-3); border-bottom: 2px solid transparent; margin-bottom: -1px; font-size: 14px; }
+.mls-subtabs a.active { color: var(--color-light-1); border-bottom-color: var(--color-warm-1); }
+.mls-subtabs a .c { color: var(--color-light-4); font-size: 12px; }
+.mls-body-main header.controls { flex: none; }
+.ml-row .view-modes { display: flex; gap: 4px; flex: none; }
+.ml-row .view-modes button { width: 28px; height: 28px; padding: 0; font-size: 13px; }
+.ml-row .view-modes button.active { border-color: var(--color-warm-1); box-shadow: 0 0 4px var(--color-warm-2); color: var(--color-light-1); }
+.ml-row input[type=search] { height: 28px; width: 190px; flex: none; }
+.ml-seg2 { display: inline-flex; border: 1px solid var(--color-cool-3); border-radius: 3px; overflow: hidden; height: 28px; flex: none; }
+.ml-seg2 span { padding: 0 10px; display: grid; place-items: center; font-size: 12.5px; color: var(--color-light-3); border-right: 1px solid var(--color-cool-3); }
+.ml-seg2 span:last-child { border-right: 0; }
+.ml-seg2 span.on { background: var(--color-cool-3); color: var(--color-light-1); }
+.mls-notice { display: flex; gap: 12px; align-items: center; padding: 10px 12px; border: 1px solid rgb(245 196 94 / 45%); background: rgb(245 196 94 / 8%); border-radius: 4px; color: #f3dca4; font-size: 13px; flex: none; }
+.mls-notice i { font-size: 18px; }
+.mls-pane { padding: 4px 2px; color: var(--color-light-2); font-size: 14px; display: grid; gap: 12px; align-content: start; overflow: auto; }
+.mls-pane p { margin: 0; max-width: 70ch; }
+.mls-pane table { border-collapse: collapse; width: 100%; max-width: 640px; font-size: 13px; }
+.mls-pane td { padding: 6px 8px; border-bottom: 1px solid var(--color-cool-4); }
+.mls-pane button { width: auto; height: 30px; padding: 0 12px; justify-self: start; }
+/* On/off switch on Foundry cards (world page) */
+.mls-world-cards .package .ml-check { background: transparent; width: 30px; }
+.mls-switch, .mls-world-cards .package .ml-check input { appearance: none; width: 26px; height: 15px; border-radius: 8px; background: var(--color-cool-3); position: relative; cursor: pointer; border: 0; margin: 0; flex: none; }
+.mls-switch::after, .mls-world-cards .package .ml-check input::after { content: ""; position: absolute; top: 2px; left: 2px; width: 11px; height: 11px; border-radius: 50%; background: var(--color-light-4); transition: left .1s; }
+.mls-switch:checked, .mls-world-cards .package .ml-check input:checked { background: #3f8f52; }
+.mls-switch:checked::after, .mls-world-cards .package .ml-check input:checked::after { left: 13px; background: #fff; }
+.mls-switch:disabled, .mls-world-cards .package .ml-check input:disabled { opacity: .4; cursor: not-allowed; }
+.mls-world-cards .package-list.tiles .package:has(.ml-check) .package-title { padding-left: 40px; }
+.mls-world-cards .package.mls-off .package-title { color: var(--color-light-4); }
+.mls-world-cards .package.mls-off { background: rgb(0 0 0 / 35%); }
+.mls-world-cards .package.mls-plus { border-color: #3f8f52; box-shadow: 0 0 0 1px #3f8f52; }
+.mls-world-cards .package.mls-minus { border-color: #b4523f; box-shadow: 0 0 0 1px #b4523f; }
+.package-list .package .tags > .tag.mls-delta { font-weight: 600; }
+.package-list .package .tags > .tag.mls-delta.plus { color: #8fd49b; border-color: #3f8f52; }
+.package-list .package .tags > .tag.mls-delta.minus { color: #ff9c8f; border-color: #b4523f; }
+#setup-packages .package-list .package { cursor: pointer; }
+/* Right panel */
+.mls-panel { flex: 0 0 340px; padding: 0; }
+.mls-panel > h2.divider { margin: 12px 12px 4px; font-size: 18px; flex: none; position: relative; }
+.mls-panel .mls-close { position: absolute; right: 12px; top: 10px; width: 26px; height: 26px; padding: 0; z-index: 2; }
+.mls-panel .scroll { flex: 1; min-height: 0; overflow: auto; padding: 4px 14px 12px; display: flex; flex-direction: column; gap: 12px; font-size: 13px; }
+.mls-panel .lead { color: var(--color-text-subtle); margin: 0; }
+.mls-chg h4 { margin: 0 0 4px; font-family: var(--font-body, Signika), sans-serif; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--color-text-subtle); display: flex; justify-content: space-between; gap: 8px; border-bottom: 1px solid var(--color-cool-4); padding-bottom: 3px; }
+.mls-chg h4 a { text-transform: none; letter-spacing: 0; color: var(--color-light-3); }
+.mls-chg h4 a:hover { color: var(--color-warm-1); }
+.mls-chg ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; }
+.mls-chg li { display: grid; grid-template-columns: 18px 1fr auto; gap: 8px; align-items: center; color: var(--color-light-2); }
+.mls-chg li .s { font-weight: 700; text-align: center; }
+.mls-chg li .s.plus { color: #8fd49b; } .mls-chg li .s.minus { color: #ff9c8f; }
+.mls-chg li .x { color: var(--color-light-4); font-size: 12px; padding: 0 4px; }
+.mls-chg li .x:hover { color: var(--color-light-1); }
+.mls-chg .none { color: var(--color-text-subtle); }
+.mls-check { display: flex; gap: 8px; padding: 8px 10px; border-radius: 4px; border: 1px solid; font-size: 12.5px; align-items: baseline; }
+.mls-check.ok { border-color: rgb(63 143 82 / 60%); background: rgb(63 143 82 / 10%); color: #b9e3c1; }
+.mls-check.warn { border-color: rgb(245 196 94 / 50%); background: rgb(245 196 94 / 8%); color: #f3dca4; }
+.mls-check a { color: var(--color-warm-1); text-decoration: underline; white-space: nowrap; }
+.mls-checks { display: grid; gap: 6px; }
+.mls-panel footer { flex: none; display: flex; gap: 8px; padding: 10px 12px; border-top: 1px solid var(--color-cool-4); }
+.mls-panel footer button { height: 32px; width: auto; flex: 1; gap: 6px; font-size: 13px; }
+.mls-kv { display: grid; grid-template-columns: 70px 1fr; gap: 8px 10px; align-items: center; }
+.mls-kv > span { color: var(--color-text-subtle); }
+.mls-kv select, .mls-kv input[type=text] { height: 28px; }
+.mls-kv textarea { height: 56px; resize: none; font-family: inherit; font-size: 13px; }
+.mls-kv .chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.ml-chip .fa-xmark { cursor: pointer; }
+.mls-wlist { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.mls-wlist li { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; align-items: center; padding: 4px 2px; color: var(--color-light-2); }
+.mls-wlist li .d { font-size: 11px; font-weight: 600; }
+.mls-wlist li .d.plus { color: #8fd49b; } .mls-wlist li .d.minus { color: #ff9c8f; } .mls-wlist li .d.na { color: var(--color-light-5); font-weight: 400; }
+.mls-modhead h3 { margin: 0; font-size: 17px; color: var(--color-light-1); border: 0; }
+.mls-modhead .sub { color: var(--color-text-subtle); font-size: 12px; margin-top: 2px; }
+.mls-foundry-acts { display: flex; gap: 6px; flex-wrap: wrap; }
+.mls-foundry-acts button { height: 28px; width: auto; flex: none; padding: 0 10px; gap: 6px; font-size: 12.5px; }
+.mls-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.mls-list li { display: grid; grid-template-columns: 20px 1fr auto; gap: 8px; align-items: center; padding: 5px 8px; border-radius: 3px; border-left: 3px solid transparent; color: var(--color-light-2); }
+.mls-list li:hover { background: rgb(255 255 255 / 4%); }
+.mls-list li.active { background: rgb(255 255 255 / 7%); border-left-color: var(--color-warm-1); color: var(--color-light-1); }
+.mls-list .sw { width: 16px; height: 16px; border-radius: 3px; background: var(--ml-c); border: 1px solid rgb(255 255 255 / 20%); }
+.mls-list .c { font-size: 12px; color: var(--color-light-4); }
+.mls-list li.new { color: var(--color-warm-1); }
+.mls-sws { display: flex; gap: 5px; flex-wrap: wrap; }
+.mls-sws .ml-swatch { width: 22px; height: 22px; }
+.mls-mods { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; }
+.mls-mods li.grp { margin: 6px 0 2px; color: var(--color-light-4); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; }
+.mls-mods li label { display: flex; gap: 8px; align-items: center; padding: 2px; color: var(--color-light-2); cursor: pointer; }
+.mls-mods li label input { margin: 0; }
+/* News drawer */
+.mls-drawer { position: fixed; top: 64px; right: 24px; width: 360px; z-index: 110; max-height: calc(100vh - 90px); display: flex; flex-direction: column; box-shadow: 0 8px 24px rgb(0 0 0 / 75%); }
+.mls-drawer .container { overflow: auto; padding: 10px; display: grid; gap: 10px; }
+.mls-drawer .news { position: relative; display: block; }
+.mls-drawer .news img { width: 100%; height: 110px; object-fit: cover; border-radius: 3px; display: block; }
+.mls-drawer .news h3 { position: absolute; left: 10px; bottom: 8px; margin: 0; font-size: 18px; color: #fff; text-shadow: 0 0 6px #000; border: 0; }
+.mls-drawer .news .new { position: absolute; top: 8px; left: 8px; background: var(--color-warm-2); color: #fff; font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 9px; }
+.mls-drawer .news.seen { opacity: .7; }
+.mls-drawer h2.divider { margin: 10px 12px 0; font-size: 18px; }
+#setup-packages .ml-sections .package-list.ml-cards { height: auto; min-height: 0; }
+/* Popovers and menus */
+.ml-pop { position: fixed; }
+.ml-pop ul.mls-pick { list-style: none; margin: 0; padding: 4px 0; max-height: 300px; overflow: auto; }
+.ml-pop ul.mls-pick li { display: grid; grid-template-columns: 18px 1fr auto; gap: 8px; align-items: center; padding: 6px 10px; cursor: pointer; }
+.ml-pop ul.mls-pick li:hover { background: var(--color-dark-1); }
+.ml-pop ul.mls-pick li.dis { color: var(--color-light-5); cursor: not-allowed; }
+.ml-pop .mls-pop-note { padding: 6px 10px 8px; color: var(--color-text-subtle); font-size: 12px; }
+.ml-pop .mls-rename { display: flex; gap: 6px; padding: 10px; }
+.ml-pop .mls-rename input { flex: 1; height: 28px; }
+#context-menu.mls-menu-live { position: fixed; display: block; width: max-content; min-width: 200px; z-index: 130; }
+#context-menu.mls-menu-live .context-item:hover { border-color: var(--hover-entry-border); background: var(--hover-entry-background); color: var(--hover-text-color); }
+.ml-checklist li[data-act] label { pointer-events: none; }
+#notifications.mls-toasts { position: fixed; top: 76px; left: 50%; transform: translateX(-50%); width: 560px; z-index: 200; list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+#notifications.mls-toasts .notification { position: static; }
+.mla-bulk { position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%); z-index: 20; }
+.ml-sections.mls-has-bar { padding-bottom: 64px; }
+.mls-chg .mls-mods li { display: block; }
+.mls-chg .mls-mods li.grp { margin: 8px 0 2px; }
+.mls-selbar { background: rgb(238 155 58 / 14%); border: 1px solid var(--color-warm-1); border-radius: 4px; padding: 4px 8px; box-shadow: 0 0 12px rgb(238 155 58 / 22%); color: var(--color-light-1); flex: none; }
+.mls-selbar > i { color: var(--color-warm-1); font-size: 16px; }
+.mls-selbar strong { white-space: nowrap; margin-right: 4px; }
+.mls-selbar button[disabled] { opacity: .45; cursor: default; }
+.mls-selbar .mls-sep { width: 1px; height: 20px; background: var(--color-cool-3); flex: none; }
+.ml-row button.bright { padding: 0 14px; font-weight: 700; }
+.mls-gcheck { margin: 0 8px 0 0; flex: none; width: 16px; height: 16px; }
+.mls-badge { display: inline-flex; gap: 4px; align-items: center; font-size: 11px; padding: 0 6px; border-radius: 3px; border: 1px solid; margin-left: 4px; }
+.mls-badge.ok { color: #8fd49b; border-color: #3f8f52; } .mls-badge.warn { color: #f5c45e; border-color: #8a6a1f; }
+.mls-links a { color: var(--color-light-2); text-decoration: underline; text-decoration-color: var(--color-light-5); }
+.mls-links a:hover { color: var(--color-warm-1); }
+.mls-chg li .s.rec { color: var(--color-light-3); }
+.mls-panel .mls-subtabs a { font-size: 13px; padding: 5px 10px; }
+.mls-bgthumb { display: inline-block; width: 120px; height: 56px; border-radius: 3px; background: var(--img) center / cover; border: 1px solid var(--color-cool-3); vertical-align: middle; }
+.mls-pane .mls-foundry-acts button { height: 30px; }
+.mls-pane code { font-size: 12px; color: var(--color-light-3); }
+.mls-selbar strong.mls-selcount { flex: 0 0 7.5em; overflow: hidden; text-overflow: ellipsis; font-variant-numeric: tabular-nums; }
+/* Foundry stacks Setup below 1440px wide (display: unset on #setup); our layout stays three columns. */
+body.setup.mls-body { height: 100vh; min-height: 0; }
+#setup.mls { display: flex; overflow: hidden; margin: 0; }
+@media (max-width: 1280px) {
+  .mls-rail { flex-basis: 240px; }
+  .mls-panel { position: fixed; right: 16px; top: 76px; bottom: 16px; width: 340px; height: auto; z-index: 60; box-shadow: -8px 0 24px rgb(0 0 0 / 70%); }
+}
+.mls-wlist li.mls-here { background: rgb(238 155 58 / 10%); border-radius: 3px; padding-left: 6px; }
+/* The floating panel must sit above Foundry's .application layer (z-index 100). */
+@media (max-width: 1280px) { .mls-panel { z-index: 110; height: auto; } }
+@media (max-width: 1280px) { .mls > .application.mls-panel { height: auto; } }

@@ -1,0 +1,13 @@
+import { chromium } from "@playwright/test";
+const dir = new URL("../", import.meta.url).pathname;
+const b = await chromium.launch(); const errs = [];
+const p = await b.newPage({ viewport: { width: 1600, height: 1000 } });
+p.on("pageerror", (e) => errs.push(e.message));
+await p.goto(`file://${dir}out/setup-shell.html?calm=1`); await p.evaluate(() => document.fonts.ready); await p.waitForTimeout(800);
+const shot = (n, clip) => p.screenshot({ path: `${dir}out/shots/${n}.png`, clip });
+await shot("t-1-header-arrival");
+await p.click(".mlh-ver"); await p.waitForTimeout(150); await shot("t-2-foundry-menu");
+await p.click(".mlh-ver"); await p.waitForTimeout(100); await p.click('[data-act="pmenu"]'); await p.waitForTimeout(150); await shot("t-3-power-menu");
+await p.keyboard.press("Escape"); await p.setViewportSize({ width: 1280, height: 800 }); await p.waitForTimeout(150); await shot("t-4-header-1280", { x: 0, y: 0, width: 1280, height: 80 });
+console.log(errs.length ? errs : "no errors");
+await b.close();

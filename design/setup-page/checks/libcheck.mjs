@@ -1,0 +1,16 @@
+import { chromium } from "@playwright/test";
+const dir = new URL("../", import.meta.url).pathname;
+const b = await chromium.launch(); const errs = [];
+const p = await b.newPage({ viewport: { width: 1600, height: 1000 } });
+p.on("pageerror", (e) => errs.push(e.message));
+await p.goto(`file://${dir}out/setup-shell.html?calm=1`); await p.evaluate(() => document.fonts.ready); await p.waitForTimeout(800);
+const act = async (sel) => { await p.evaluate((s) => document.querySelector(s).click(), sel); await p.waitForTimeout(150); };
+const shot = (n) => p.screenshot({ path: `${dir}out/shots/${n}.png` });
+await act('.mlw-card[data-id="modular-av"] input'); await shot("w-4-world-dep");
+await act(".mls-lib"); await shot("l-1-library");
+await p.click('li.mlw-lib[data-package-id="modular-av-dock"] .t'); await p.waitForTimeout(150); await shot("l-2-library-panel");
+await act('[data-act="select"]'); await p.click('li.mlw-lib[data-package-id="modular-av-dock"] .t'); await p.click('li.mlw-lib[data-package-id="modular-av-jitsi"] .t'); await p.waitForTimeout(150); await shot("l-3-library-select");
+await act('[data-act="select"]'); await act('[data-act="lsub"][data-id="systems"]'); await shot("l-4-systems");
+await act('[data-act="lsub"][data-id="modules"]'); await act('[data-act="layout"][data-id="foundry"]'); await shot("l-5-foundry-layout");
+console.log(errs.length ? errs : "no errors");
+await b.close();

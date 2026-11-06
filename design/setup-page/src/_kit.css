@@ -1,0 +1,126 @@
+/* Module Library pieces inside Foundry's Setup page. Everything else is foundry2.css. */
+#setup-packages-modules { --ml-gap: 0.5rem; }
+.ml-vsep { width: 1px; height: 22px; background: var(--color-cool-3); margin: 0 2px; }
+#setup-packages header.controls .view-modes button.ml-organise { font-size: 15px; }
+
+/* Our root sits between Foundry's controls and its (hidden) list */
+.ml-root { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: var(--ml-gap); position: relative; }
+.ml-row { display: flex; align-items: center; gap: 8px; min-height: 30px; font-size: var(--font-size-13); color: var(--color-text-secondary); }
+.ml-row .ml-label { color: var(--color-text-subtle); font-size: var(--font-size-12); }
+.ml-row select { height: 28px; width: auto; min-width: 120px; }
+.ml-row .ml-spacer { flex: 1; }
+.ml-row button { height: 28px; flex: none; width: auto; padding: 0 10px; font-size: var(--font-size-13); gap: 6px; }
+.ml-row button.icon { width: 28px; padding: 0; }
+.ml-row button.ml-on, .ml-row button[aria-pressed=true] { border-color: var(--color-warm-1); box-shadow: 0 0 4px var(--color-warm-2); color: var(--color-light-1); }
+.ml-chip {
+  display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 4px 0 8px; border-radius: 12px;
+  border: 1px solid var(--color-cool-3); background: var(--color-cool-4); color: var(--color-light-2); font-size: var(--font-size-12); white-space: nowrap;
+}
+.ml-chip .fa-xmark { width: 16px; height: 16px; display: grid; place-items: center; border-radius: 50%; font-size: 10px; color: var(--color-light-4); }
+.ml-chip.ml-op { padding: 0 8px; cursor: pointer; font-weight: 600; letter-spacing: .04em; color: var(--color-light-1); }
+.ml-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--ml-c, var(--color-light-5)); flex: none; box-shadow: 0 0 0 1px rgb(0 0 0 / 50%); }
+.ml-muted { color: var(--color-text-subtle); }
+
+/* Sections: Foundry's folder headers over Foundry's card lists */
+.ml-sections { flex: 1; min-height: 0; margin: 0 calc(var(--scroll-margin, 8px) * -1) 0 0; padding: 0 var(--scroll-margin, 8px) 1rem 0; list-style: none; overflow-y: auto; }
+.ml-sections > li.folder { --folder-padding: 4px; --sidebar-folder-height: 26px; margin: 0 0 6px; list-style: none; }
+.ml-sections li.folder > .folder-header { border-radius: 3px; padding: 4px 8px; gap: 0; cursor: pointer; border: 1px solid rgb(255 255 255 / 6%); }
+.ml-sections li.folder > .folder-header > i:first-child { margin-right: 8px; width: 18px; }
+.ml-sections li.folder > .folder-header .folder-name { flex: 0 1 auto; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: var(--font-size-15, 15px); font-weight: 600; }
+.ml-section-header.unfiled, .ml-section-header.author, .ml-section-header.preset, .ml-section-header.rest, .ml-section-header.smart { --sidebar-folder-color: #22202b; }
+.ml-section-header.tag { --sidebar-folder-color: #22202b; box-shadow: inset 4px 0 0 var(--ml-c); }
+.ml-section-header .ml-dot { margin: 0 8px 0 -2px; }
+.ml-section-header .ml-hint { margin-left: 12px; font-size: var(--font-size-12); color: var(--color-text-subtle); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ml-section-header .ml-count { margin-left: auto; padding-left: 12px; font-size: var(--font-size-12); color: var(--color-light-3); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ml-section-header .ml-hbtn {
+  flex: none; width: 24px; height: 24px; margin-left: 6px; padding: 0; border: 1px solid transparent; background: transparent;
+  color: var(--color-light-3); border-radius: 3px; display: grid; place-items: center; font-size: 13px;
+}
+.ml-section-header .ml-hbtn.ml-on { border-color: var(--color-warm-1); background: rgb(0 0 0 / 35%); color: var(--color-light-1); }
+.ml-section-header .ml-caret { margin-left: 8px; width: 12px; font-size: 11px; color: var(--color-light-4); }
+.ml-section-header .ml-tool { flex: none; margin-left: 10px; font-size: var(--font-size-12); color: var(--color-light-3); display: inline-flex; gap: 5px; align-items: center; }
+.ml-sections li.folder.droptarget > .folder-header { outline: 2px solid var(--color-warm-1); outline-offset: -1px; box-shadow: 0 0 10px var(--color-warm-2); }
+.ml-sections .package-list.ml-cards { height: auto; min-height: 0; margin: 0; padding: 8px 0 10px; overflow: visible; }
+.ml-empty-section { margin: 6px 0 10px; padding: 10px 12px; border: 1px dashed var(--color-cool-3); border-radius: 3px; color: var(--color-text-subtle); font-size: var(--font-size-13); }
+
+/* Our tags on Foundry's cards */
+.package-list .package .tags > .tag.ml-tag { gap: 4px; padding: 0 5px; }
+.package-list .package .tags > .tag.ml-tag .ml-dot { width: 7px; height: 7px; }
+.package-list .package .tags > .tag.ml-tagdots { gap: 3px; padding: 0 5px; }
+.package-list .package .tags > .tag.ml-note { background: #4a3a14; border-color: #6d5520; }
+.package-list .package .tags > .tag.ml-used { gap: 3px; }
+.package-list .package .tags > .tag.ml-used.ml-zero { color: var(--color-light-5); }
+.ml-detail-line { display: flex; gap: 8px; align-items: baseline; margin: 8px 0 0; color: var(--color-light-2); font-size: var(--font-size-13); }
+.ml-detail-line i { width: 14px; color: var(--color-light-4); }
+
+/* Selection on Foundry's cards */
+.package-list .package.ml-selected { border-color: var(--color-warm-1); box-shadow: 0 0 0 1px var(--color-warm-1), 0 0 8px var(--color-warm-2); }
+.package-list .package .ml-check { position: absolute; top: 6px; left: 6px; z-index: 3; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 3px; background: rgb(0 0 0 / 70%); }
+.package-list .package .ml-check input { margin: 0; }
+.package-list.tiles .package:has(.ml-check) .package-title { padding-left: 34px; }
+.package-list.details .package .ml-check { top: 8px; left: 8px; }
+.package-list .package.ml-dragging { opacity: .45; }
+
+/* Popovers (same surface as Foundry's ContextMenu) */
+.ml-pop {
+  position: fixed; z-index: 120; min-width: 240px; padding: 0; border: 1px solid var(--color-cool-3); border-radius: 4px;
+  background: var(--color-cool-5); box-shadow: 0 3px 12px rgb(0 0 0 / 65%); color: var(--color-text-secondary); font-size: var(--font-size-13);
+}
+.ml-pop header { padding: 8px 10px 6px; border-bottom: 1px solid var(--color-cool-4); }
+.ml-pop header strong { color: var(--color-light-1); font-size: var(--font-size-13); }
+.ml-pop footer { display: flex; gap: 6px; align-items: center; justify-content: flex-end; padding: 8px 10px; border-top: 1px solid var(--color-cool-4); }
+.ml-pop footer .ml-muted { flex: 1; font-size: var(--font-size-11, 11px); }
+.ml-pop-search { margin: 8px 10px 4px; width: calc(100% - 20px); height: 28px; }
+.ml-small-btn { height: 26px; width: auto; flex: none; padding: 0 10px; font-size: var(--font-size-12); }
+.ml-checklist { list-style: none; margin: 0; padding: 4px 0; max-height: 260px; overflow: auto; }
+.ml-checklist li label { display: flex; align-items: center; gap: 8px; padding: 4px 10px; cursor: pointer; }
+.ml-checklist li label:hover { background: var(--color-dark-1); }
+.ml-checklist li .ml-name { flex: 1; color: var(--color-light-2); }
+.ml-checklist li.ml-changed { background: rgb(238 155 58 / 8%); }
+.ml-checklist .ml-delta { font-size: 11px; padding: 0 5px; border-radius: 2px; border: 1px solid; }
+.ml-checklist .ml-plus { color: #8fd49b; } .ml-checklist .ml-minus { color: #ff9c8f; }
+.ml-checklist .ml-create { padding: 6px 10px; color: var(--color-warm-1); display: flex; gap: 8px; align-items: center; border-top: 1px solid var(--color-cool-4); margin-top: 4px; }
+.ml-swatches { display: grid; grid-template-columns: repeat(6, 28px); gap: 6px; padding: 10px; }
+.ml-swatch { width: 28px; height: 28px; padding: 0; border-radius: 4px; background: var(--ml-c); border: 1px solid rgb(255 255 255 / 15%); flex: none; }
+.ml-swatch.ml-on { outline: 2px solid var(--color-warm-1); outline-offset: 2px; }
+.ml-custom { display: flex; align-items: center; gap: 8px; padding: 0 10px 10px; }
+.ml-custom > span { color: var(--color-text-subtle); width: 52px; }
+.ml-custom color-picker { flex: 1; }
+
+/* Floating bulk bar */
+.ml-bulk {
+  display: flex; align-items: center; gap: 8px; padding: 6px 8px 6px 12px; border: 1px solid var(--color-warm-2);
+  border-radius: 4px; background: var(--color-cool-5); box-shadow: 0 6px 18px rgb(0 0 0 / 70%); font-size: var(--font-size-13);
+}
+.ml-bulk strong { color: var(--color-light-1); margin-right: 4px; white-space: nowrap; }
+.ml-bulk button { height: 28px; width: auto; flex: none; padding: 0 10px; gap: 6px; font-size: var(--font-size-13); }
+.ml-bulk button.ml-on { border-color: var(--color-warm-1); box-shadow: 0 0 4px var(--color-warm-2); }
+.ml-bulk .ml-sep { width: 1px; height: 20px; background: var(--color-cool-3); }
+
+/* Static overlays used only in the mockups */
+#context-menu.ml-static-menu { position: fixed; display: block; width: max-content; min-width: 200px; z-index: 130; }
+#context-menu .context-item.ml-head { cursor: default; color: var(--color-text-subtle); font-size: var(--font-size-11, 11px); letter-spacing: .06em; text-transform: uppercase; padding: 6px 8px 2px; }
+#context-menu .context-item.ml-hover { border-color: var(--hover-entry-border); background: var(--hover-entry-background); color: var(--hover-text-color); }
+#context-menu .context-item.ml-disabled { color: var(--color-light-5); }
+#tooltip.ml-static-tip { position: fixed; display: block; max-width: 320px; z-index: 140; }
+#notifications.ml-toasts { position: fixed; z-index: 150; }
+.ml-window { position: fixed; display: flex; flex-direction: column; }
+.ml-window .window-content { flex: 1; min-height: 0; overflow: auto; }
+.ml-window-footer { display: flex; gap: 8px; align-items: center; padding: 8px 12px; border-top: 1px solid var(--color-cool-4); }
+.ml-window-footer button { width: auto; flex: none; padding: 0 14px; height: 32px; }
+.ml-window-footer .ml-spacer { flex: 1; }
+.ml-callout-note {
+  position: fixed; z-index: 200; padding: 10px 12px; border: 1px dashed #c9a35a; border-radius: 6px; background: rgb(14 12 20 / 94%);
+  color: var(--color-light-2); font-size: 12.5px; line-height: 1.45;
+}
+.ml-callout-note b { color: var(--color-warm-1); }
+.ml-drag-ghost {
+  position: fixed; z-index: 160; padding: 6px 10px; border: 1px solid var(--color-warm-1); border-radius: 3px; background: rgb(11 10 19 / 92%);
+  color: var(--color-light-1); font-size: 13px; box-shadow: 0 6px 16px rgb(0 0 0 / 70%); display: flex; gap: 8px; align-items: center; pointer-events: none;
+}
+.ml-drag-ghost .ml-badge { background: var(--color-warm-2); color: #fff; border-radius: 9px; padding: 0 6px; font-size: 11px; font-weight: 700; }
+.ml-ro-note { display: inline-flex; align-items: center; gap: 6px; color: #f5c45e; font-size: var(--font-size-12); white-space: nowrap; }
+/* Tiles: our chip lives in the left row, which grows to fit it; Foundry's row keeps the rest. */
+#setup-packages .package-list.tiles .package .tags.left { max-width: none; flex: none; gap: 4px; flex-wrap: nowrap; }
+#setup-packages .package-list.tiles .package .tags.right { min-width: 0; flex: 1 1 auto; }
+.package-list .package .tags > .tag.ml-tagdots .ml-chipnote { font-size: 10px; color: #e7c66f; margin-left: 2px; }

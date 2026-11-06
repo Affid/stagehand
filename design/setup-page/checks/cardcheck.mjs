@@ -1,0 +1,15 @@
+import { chromium } from "@playwright/test";
+const dir = new URL("../", import.meta.url).pathname;
+const b = await chromium.launch(); const errs = [];
+const p = await b.newPage({ viewport: { width: 1600, height: 1000 } });
+p.on("pageerror", (e) => errs.push(e.message));
+await p.goto(`file://${dir}out/setup-shell.html?calm=1`); await p.evaluate(() => document.fonts.ready); await p.waitForTimeout(800);
+const act = async (sel) => { await p.evaluate((s) => document.querySelector(s).click(), sel); await p.waitForTimeout(120); };
+await p.screenshot({ path: `${dir}out/shots/w-1-cards.png` });
+await act('.mlw-card[data-id="modular-av"] input'); await act('.mlw-card[data-id="ml-fixture-b"] input');
+await p.screenshot({ path: `${dir}out/shots/w-2-cards-problems.png` });
+await act('.mlw-card[data-id="modular-av-dock"]');
+await p.setViewportSize({ width: 1366, height: 768 }); await p.waitForTimeout(150);
+await p.screenshot({ path: `${dir}out/shots/w-3-cards-1366-panel.png` });
+console.log(errs.length ? errs : "no errors");
+await b.close();

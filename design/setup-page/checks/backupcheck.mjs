@@ -1,0 +1,24 @@
+import { chromium } from "@playwright/test";
+const dir = new URL("../", import.meta.url).pathname;
+const b = await chromium.launch(); const errs = [];
+const p = await (await b.newContext({ viewport: { width: 1600, height: 1000 } })).newPage();
+p.on("pageerror", (e) => errs.push(e.message));
+await p.goto(`file://${dir}out/setup-shell.html?calm=1`); await p.waitForTimeout(800);
+const main = { x: 330, y: 70, width: 1210, height: 620 };
+await p.click("[data-act=wtab][data-id=backups]"); await p.waitForTimeout(100);
+const head = await p.evaluate(() => document.querySelector(".mlw-bhead").innerText.replace(/\s+/g, " "));
+await p.click("[data-act=backupnow]"); await p.waitForTimeout(500);
+const during = await p.evaluate(() => ({ busy: !!document.querySelector(".mlw-blist li.busy"), restoreLocked: [...document.querySelectorAll(".mlw-blist button")].filter((x) => x.textContent.includes("Restore")).every((x) => x.disabled), launchLocked: document.querySelector(".mls-launch").disabled }));
+await p.screenshot({ path: `${dir}out/shots/b-1-progress.png`, clip: main });
+await p.waitForTimeout(2200);
+const after = await p.evaluate(() => ({ nudge: document.querySelector(".mlw-nudge")?.innerText.replace(/\s+/g, " "), first: document.querySelector(".mlw-blist li .nm")?.innerText.replace(/\s+/g, " "), launch: document.querySelector(".mls-launch").disabled }));
+await p.screenshot({ path: `${dir}out/shots/b-2-done.png`, clip: main });
+// queue another change: the nudge asks again; launch review offers "Back up first"
+await p.click("[data-act=wtab][data-id=modules]"); await p.click('.mlw-card[data-id="modular-av-dock"] input'); await p.click(".mls-banner .mls-launch"); await p.waitForTimeout(150);
+const dlg = await p.evaluate(() => document.querySelector(".mls-bfirst")?.innerText.replace(/\s+/g, " "));
+await p.screenshot({ path: `${dir}out/shots/b-3-launch-bfirst.png` });
+await p.click("[data-act=launchapply]"); await p.waitForTimeout(300);
+const flow = await p.evaluate(() => ({ tab: document.querySelector(".mls-subtabs a.active")?.textContent.trim(), busy: !!document.querySelector(".mlw-blist li.busy") }));
+await p.waitForTimeout(2300);
+const end = await p.evaluate(() => ({ toast: [...document.querySelectorAll("#notifications li")].map((l) => l.textContent).pop(), first: document.querySelector(".mlw-blist li .nm strong")?.textContent }));
+console.log({ head, during, after, dlg, flow, end }); console.log(errs.length ? errs : "no errors"); await b.close();

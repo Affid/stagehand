@@ -1,0 +1,93 @@
+/* Next session: picker and schedule */
+.mlw-sess .mlw-next span { font-size: 12.5px; }
+.mlw-rule { display: flex; gap: 8px; align-items: center; color: var(--color-light-2); font-size: 13px; margin-top: 2px; }
+.mlw-rule i { color: var(--color-light-4); width: 26px; text-align: center; }
+.mlw-upcoming { list-style: none; margin: 0 0 0 34px; padding: 0; display: grid; gap: 2px; }
+.mlw-upcoming li { display: grid; grid-template-columns: 1fr auto 52px; gap: 10px; align-items: center; padding: 3px 8px; border-radius: 3px; font-size: 13px; color: var(--color-light-2); font-variant-numeric: tabular-nums; }
+.mlw-upcoming li.next { background: rgb(63 143 82 / 12%); color: var(--color-light-1); }
+.mlw-upcoming li.skipped .d { text-decoration: line-through; color: var(--color-light-5); }
+.mlw-upcoming li a { justify-self: end; font-size: 12px; color: var(--color-light-4); text-decoration: underline; text-decoration-color: var(--color-light-5); }
+.mlw-upcoming li a:hover { color: var(--color-warm-1); }
+.mlw-pill.ok { border-color: rgb(63 143 82 / 70%); color: #8fd49b; }
+.mlw-moved { margin: 0; display: flex; gap: 8px; align-items: baseline; font-size: 12.5px; color: #b9e3c1; padding-left: 34px; }
+.mlw-mock { justify-self: start; font-size: 11.5px; color: var(--color-light-5); border-bottom: 1px dashed var(--color-light-5); }
+.mlw-mock:hover { color: var(--color-light-3); }
+.mlw-sched { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px 18px; }
+.mlw-cal { width: 252px; display: grid; gap: 4px; }
+.mlw-cal header { display: flex; align-items: center; justify-content: space-between; }
+.mlw-cal header strong { color: var(--color-light-1); font-size: 13.5px; }
+.mlw-cal header button { width: 26px; height: 26px; padding: 0; font-size: 11px; }
+.mlw-cal .dow, .mlw-cal .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; }
+.mlw-cal .dow span { font-size: 11px; color: var(--color-text-subtle); padding: 2px 0; }
+.mlw-cal .days button { height: 32px; width: auto; padding: 0; font-size: 13px; border: 1px solid transparent; background: rgb(255 255 255 / 3%); color: var(--color-light-2); border-radius: 4px; position: relative; font-variant-numeric: tabular-nums; }
+.mlw-cal .days button:hover:not([disabled]) { border-color: var(--color-cool-3); color: var(--color-light-1); }
+.mlw-cal .days button[disabled] { opacity: .3; cursor: default; background: none; }
+.mlw-cal .days button.today { border-color: var(--color-cool-3); }
+.mlw-cal .days button.rep::after { content: ""; position: absolute; left: 50%; bottom: 4px; width: 4px; height: 4px; margin-left: -2px; border-radius: 50%; background: var(--color-warm-1); }
+.mlw-cal .days button.sel { background: var(--color-warm-1); color: #1a1206; font-weight: 700; border-color: var(--color-warm-1); }
+.mlw-sched .side { display: grid; grid-template-columns: 74px minmax(0, 1fr); gap: 10px 10px; align-content: start; align-items: start; }
+.mlw-sched .side label { color: var(--color-text-subtle); font-size: 12.5px; padding-top: 6px; }
+.mlw-sched .side > div { display: grid; gap: 5px; min-width: 0; }
+.mlw-sched .side input, .mlw-sched .side select { height: 30px; font-size: 13.5px; }
+.mlw-sched .side input[type=time] { width: 120px; }
+.mlw-sched .chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.mlw-sched .chips button { height: 24px; width: auto; flex: none; padding: 0 8px; font-size: 12px; font-variant-numeric: tabular-nums; }
+.mlw-sched .chips button.on { border-color: var(--color-warm-1); color: var(--color-light-1); background: rgb(238 155 58 / 14%); }
+.mlw-sched .tzl { font-size: 12px; color: var(--color-text-subtle); }
+.mlw-sched .sum { grid-column: 1 / -1; display: flex; gap: 10px; align-items: flex-start; padding: 8px 10px; border-radius: 4px; border: 1px solid rgb(238 155 58 / 45%); background: rgb(238 155 58 / 8%); }
+.mlw-sched .sum > i { color: var(--color-warm-1); font-size: 18px; margin-top: 2px; }
+.mlw-sched .sum > div { display: grid; gap: 2px; }
+.mlw-sched .sum strong { color: var(--color-light-1); font-size: 14.5px; }
+.mlw-sched .sum strong span { font-weight: 400; color: var(--color-text-subtle); font-size: 12.5px; margin-left: 4px; }
+.mlw-sched .sum .others { font-size: 12.5px; color: var(--color-light-3); }
+.mlw-sched .sum .others span + span::before { content: " · "; color: var(--color-light-5); }
+.mlw-sched .sum .others b { color: var(--color-light-1); font-weight: 600; }
+.mlw-sched .bar { grid-column: 1 / -1; display: flex; gap: 6px; }
+.mlw-sched .bar .ml-spacer { flex: 1; }
+.mlw-sched .bar button { height: 28px; width: auto; flex: none; padding: 0 12px; font-size: 13px; }
+.mlw-sched .hm { display: flex; align-items: center; gap: 4px; }
+.mlw-sched .hm select { width: 64px; font-variant-numeric: tabular-nums; }
+.mlw-sched .hm .h24 { margin-left: 6px; font-size: 11.5px; color: var(--color-text-subtle); }
+.mlw-sess .mlw-next span b { color: var(--color-light-1); font-weight: 600; }
+.mlw-cal .days button.sel, .mlw-cal .days button.sel:hover { color: #1a1206; border-color: var(--color-warm-1); }
+/* Chosen dates */
+.mlw-chosen { grid-column: 1 / -1; list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 4px 10px; }
+.mlw-chosen li { display: grid; grid-template-columns: 1fr 62px 24px; gap: 6px; align-items: center; padding: 3px 4px 3px 8px; border-radius: 3px; background: rgb(255 255 255 / 4%); font-size: 13px; color: var(--color-light-1); }
+.mlw-chosen li.past { opacity: .5; }
+.mlw-chosen li.none { display: block; color: var(--color-text-subtle); background: none; }
+.mlw-chosen .tt { height: 24px; font-size: 12.5px; text-align: center; font-variant-numeric: tabular-nums; padding: 0 4px; }
+.mlw-chosen button { width: 24px; height: 24px; padding: 0; font-size: 11px; background: none; border: 0; color: var(--color-light-4); }
+.mlw-chosen button:hover { color: #ffb3a6; }
+.mlw-upcoming li.more span { color: var(--color-text-subtle); }
+.mlw-sched .bar button[disabled] { opacity: .45; }
+/* Time zone: short list plus search */
+.mlw-tzrow { display: flex; gap: 6px; }
+.mlw-tzrow select { flex: 1; min-width: 0; }
+.mlw-tzrow button { height: 30px; width: auto; flex: none; padding: 0 10px; gap: 6px; font-size: 12.5px; }
+.mlw-tzfind { display: grid; gap: 4px; }
+.mlw-tzfind .in { display: flex; gap: 6px; align-items: center; }
+.mlw-tzfind .in i { color: var(--color-light-4); font-size: 12px; margin-left: 2px; }
+.mlw-tzfind .in input { flex: 1; min-width: 0; height: 30px; }
+.mlw-tzfind .in button { height: 30px; width: auto; flex: none; padding: 0 10px; font-size: 12.5px; }
+.mlw-tzfind ul { list-style: none; margin: 0; padding: 3px; border: 1px solid var(--color-cool-3); border-radius: 4px; background: rgb(11 10 19 / 92%); display: grid; gap: 1px; max-height: 236px; overflow: auto; }
+.mlw-tzfind li { display: grid; grid-template-columns: 1fr auto 70px; gap: 8px; align-items: center; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 13px; color: var(--color-light-2); }
+.mlw-tzfind li .r { font-size: 11.5px; color: var(--color-text-subtle); }
+.mlw-tzfind li .o { font-size: 12px; color: var(--color-light-3); text-align: right; font-variant-numeric: tabular-nums; }
+.mlw-tzfind li:hover, .mlw-tzfind li.on { background: rgb(238 155 58 / 16%); color: var(--color-light-1); }
+.mlw-tzfind li.hint { display: block; cursor: default; color: var(--color-text-subtle); font-size: 12.5px; background: none; }
+/* The results float over the editor instead of stretching it */
+.mlw-sched { align-items: start; }
+.mlw-cal { align-content: start; }
+.mlw-tzfind { position: relative; }
+.mlw-tzfind ul { position: absolute; top: 34px; left: 0; right: 0; z-index: 30; max-height: 280px; box-shadow: 0 10px 24px rgb(0 0 0 / 70%); background: rgb(17 15 25 / 98%); }
+.mlw-tzfind li.more { font-style: italic; }
+.mlw-rule .mlw-why { width: auto; color: var(--color-light-5); font-size: 12px; cursor: help; }
+.mlw-rule .mlw-why:hover { color: var(--color-light-2); }
+.mlw-rule .mlw-mock { margin-left: auto; }
+.mlw-sess { gap: 6px; }
+.mlw-upcoming li { padding: 2px 8px; }
+/* The background is shown wide (banner, join screen), so preview it wide; details a little tighter */
+.mlw-bg { aspect-ratio: 2.39; }
+.mlw-box dl { gap: 5px 12px; }
+.mlw-about { gap: 14px; }
+.mlw-about .col { gap: 12px; }

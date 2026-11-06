@@ -1,0 +1,16 @@
+import { chromium } from "@playwright/test";
+const dir = new URL("../", import.meta.url).pathname;
+const b = await chromium.launch(); const errs = [];
+const p = await b.newPage({ viewport: { width: 1600, height: 1000 } });
+p.on("pageerror", (e) => errs.push(e.message));
+await p.goto(`file://${dir}out/setup-shell.html?calm=1`); await p.evaluate(() => document.fonts.ready); await p.waitForTimeout(800);
+await p.screenshot({ path: `${dir}out/shots/n-13-featured-row.png`, clip: { x: 24, y: 680, width: 300, height: 310 } });
+await p.screenshot({ path: `${dir}out/shots/n-13-full.png` });
+const r = await p.evaluate(() => ({ newsCount: document.querySelectorAll(".mlr-news .banner").length, featH: Math.round(document.querySelector(".mlr-feat").getBoundingClientRect().height), counter: document.querySelector(".mlr-news .c")?.textContent }));
+await p.click(".mlr-feat .banner"); await p.waitForTimeout(100);
+await p.click("[data-act=newsfold]"); await p.waitForTimeout(150);
+await p.screenshot({ path: `${dir}out/shots/n-14-folded.png`, clip: { x: 24, y: 680, width: 300, height: 310 } });
+await p.setViewportSize({ width: 1280, height: 800 }); await p.click("[data-act=newsfold]"); await p.waitForTimeout(150);
+await p.screenshot({ path: `${dir}out/shots/n-15-1280.png`, clip: { x: 24, y: 480, width: 250, height: 320 } });
+console.log(r); console.log(errs.length ? errs : "no errors");
+await b.close();

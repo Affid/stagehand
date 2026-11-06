@@ -1,0 +1,14 @@
+import { chromium } from "@playwright/test";
+const dir = new URL("../", import.meta.url).pathname;
+const b = await chromium.launch(); const errs = [];
+const p = await b.newPage({ viewport: { width: 1600, height: 1000 } });
+p.on("pageerror", (e) => errs.push(e.message));
+await p.goto(`file://${dir}out/setup-shell.html?calm=1`); await p.evaluate(() => document.fonts.ready); await p.waitForTimeout(800);
+await p.click('.mls-world[data-id="heist"]'); await p.click('[data-act=wtab][data-id=about]'); await p.waitForTimeout(150); await p.screenshot({ path: `${dir}out/shots/a-heist-about.png` });
+await p.click('.mls-world[data-id="oneshot"]'); await p.click('[data-act=wtab][data-id=backups]'); await p.waitForTimeout(150); await p.screenshot({ path: `${dir}out/shots/a-oneshot-backups.png` });
+const tabC = await p.evaluate(() => document.querySelector('[data-act=wtab][data-id=backups]').textContent.trim());
+await p.click('[data-act=backupnow]'); await p.waitForTimeout(150);
+const after = await p.evaluate(() => [document.querySelectorAll(".mlw-blist li").length, document.querySelector('[data-act=wtab][data-id=backups]').textContent.trim()]);
+await p.click('.mls-world[data-id="strahd"]'); await p.click('[data-act=wtab][data-id=about]'); await p.setViewportSize({ width: 1280, height: 800 }); await p.waitForTimeout(150); await p.screenshot({ path: `${dir}out/shots/a-about-1280.png` });
+console.log({ tabC, after }); console.log(errs.length ? errs : "no errors");
+await b.close();

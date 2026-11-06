@@ -1,0 +1,13 @@
+import { chromium } from "@playwright/test";
+const dir = new URL("../", import.meta.url).pathname;
+const b = await chromium.launch(); const errs = [];
+const p = await (await b.newContext({ viewport: { width: 1600, height: 1000 }, timezoneId: "America/Los_Angeles", locale: "en-US" })).newPage();
+p.on("pageerror", (e) => errs.push(e.message));
+await p.goto(`file://${dir}out/setup-shell.html?calm=1`); await p.waitForTimeout(800);
+await p.click('[data-act=wtab][data-id=about]'); await p.waitForTimeout(150);
+console.log(await p.evaluate(() => document.querySelector(".mlw-sess .mlw-next").innerText.replace(/\s+/g, " ")));
+await p.click('.mls-world[data-id="vaults"]'); await p.click('[data-act=wtab][data-id=about]'); await p.waitForTimeout(150);
+console.log(await p.evaluate(() => document.querySelector(".mlw-sess .mlw-next").innerText.replace(/\s+/g, " ")));
+await p.click('.mls-world[data-id="oneshot"]'); await p.click('[data-act=wtab][data-id=about]'); await p.waitForTimeout(150);
+console.log(await p.evaluate(() => document.querySelector(".mlw-sess").innerText.replace(/\s+/g, " ").slice(0, 120)));
+console.log(errs.length ? errs : "no errors"); await b.close();
