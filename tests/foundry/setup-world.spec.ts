@@ -148,3 +148,12 @@ test("Discard cancels every queued change", async () => {
   await banner().getByRole("button", { name: "Discard" }).click();
   await expect(banner().locator(".mlc-pending")).toHaveCount(0);
 });
+
+test("About shows Foundry's details for the world", async () => {
+  await shell().getByRole("tab", { name: "About" }).click();
+  const box = shell().locator(".mlw-about");
+  await expect(box).toContainText(TEST_WORLD.system);
+  await expect(box.locator(".mlw-next")).toBeVisible();
+  await page.screenshot({ path: `${SCREENS}/world-about.png` });
+  await shell().getByRole("tab", { name: "Modules" }).click();
+});

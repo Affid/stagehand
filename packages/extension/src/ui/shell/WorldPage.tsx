@@ -7,13 +7,10 @@ import { Icon } from "../common/widgets.tsx";
 import { useUi } from "../context.ts";
 import { plural } from "../i18n.ts";
 import { type WorldModules, worldModules } from "../model/world-modules.ts";
-import { worldRow } from "../model/worlds.ts";
-import { HistoryList } from "../worlds/commands.tsx";
 import { cssImage } from "./route.ts";
 import { type LaunchChoice, LaunchReview } from "./world/LaunchReview.tsx";
-import { ModulesTab } from "./world/ModulesTab.tsx";
-import { NotSetUp } from "./world/NotSetUp.tsx";
 import { useWhy } from "./world/useWhy.ts";
+import { WorldBody } from "./world/WorldBody.tsx";
 import { useLastPlayed } from "./WorldRail.tsx";
 
 function BannerMeta(props: {
@@ -169,10 +166,9 @@ function useLaunch(world: WorldInfo, model: WorldModules) {
 }
 
 export function WorldPage(props: { readonly world: WorldInfo }) {
-  const { state, t, canChange } = useUi();
+  const { state, canChange } = useUi();
   const { world } = props;
   const model = worldModules(state.data, world.id);
-  const recent = worldRow(state.data, world).recent;
   const why = useWhy();
   const launch = useLaunch(world, model);
   const image = cssImage(world.background, location.origin);
@@ -191,17 +187,7 @@ export function WorldPage(props: { readonly world: WorldInfo }) {
         />
       </div>
       <div class="mls-body-main ml-app">
-        {model.tracked ? (
-          <ModulesTab world={world} model={model} />
-        ) : (
-          <NotSetUp world={world} />
-        )}
-        {recent.length ? (
-          <details class="mlw-history">
-            <summary>{t("wp.history")}</summary>
-            <HistoryList commands={recent} />
-          </details>
-        ) : null}
+        <WorldBody world={world} model={model} />
       </div>
       {launch.review ? (
         <LaunchReview

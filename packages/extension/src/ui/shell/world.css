@@ -556,3 +556,109 @@ ul.mlw-check.warn {
   font-size: 12px;
   color: var(--color-text-subtle);
 }
+
+/* The About tab */
+.mls-shell .mlw-about {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(280px, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.mls-shell .mlw-box {
+  display: grid;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--color-cool-4);
+  border-radius: 4px;
+  background: rgb(11 10 19 / 55%);
+}
+
+.mls-shell .mlw-box h3 {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-subtle);
+  border: 0;
+}
+
+.mls-shell .mlw-box > button {
+  justify-self: start;
+  width: auto;
+  height: 30px;
+  padding: 0 12px;
+  gap: 6px;
+}
+
+.mls-shell .mlw-desc {
+  display: grid;
+  gap: 6px;
+}
+
+.mls-shell .mlw-desc.folded .ml-rich {
+  max-height: calc(1.5em * 6);
+  overflow: hidden;
+  mask-image: linear-gradient(to bottom, #000 70%, transparent);
+}
+
+.mls-shell .mlw-desc .ml-link {
+  justify-self: start;
+  width: auto;
+  height: auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-light-3);
+  text-decoration: underline;
+  font-size: 12.5px;
+}
+
+.mls-shell .ml-rich {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-light-1);
+}
+
+.mls-shell .ml-rich > :first-child {
+  margin-top: 0;
+}
+
+.mls-shell .ml-rich p,
+.mls-shell .ml-rich ul,
+.mls-shell .ml-rich ol {
+  margin: 0 0 0.5em;
+}
+
+.mls-shell .ml-rich ul,
+.mls-shell .ml-rich ol {
+  padding-left: 1.4em;
+}
+
+.mls-shell .ml-rich h4 {
+  margin: 0.4em 0 0.3em;
+  font-size: 15px;
+  border: 0;
+}
+
+.mls-shell .ml-rich a {
+  color: var(--color-warm-1);
+  text-decoration: underline;
+}
+
+.mls-shell .mlw-details {
+  display: grid;
+  grid-template-columns: 130px minmax(0, 1fr);
+  gap: 7px 12px;
+  margin: 0;
+  font-size: 13.5px;
+}
+
+.mls-shell .mlw-details dt {
+  color: var(--color-text-subtle);
+}
+
+.mls-shell .mlw-details dd {
+  margin: 0;
+  color: var(--color-light-1);
+}
