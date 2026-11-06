@@ -54,7 +54,7 @@ Mockup to match: `design/setup-page/` (playground: https://claude.ai/artifact/YK
 
 ## Progress
 
-### Phase 1: shell (done once committed)
+### Phase 1: shell (done)
 
 Done (`34388ff`):
 
@@ -72,7 +72,7 @@ Also done: `entries/setup-main.ts` handles `SHELL` (replies `SHELL_STATE`) and
 `FOUNDRY_ACTION` (Foundry notification on error); `page/globals.ts` types Foundry's
 settings, `Collection.get` and `WorldConfig`.
 
-Also done (uncommitted at the time of writing, see `git log`):
+Also done (`25fed37`, live test `18c7b06`):
 
 - Per-server preference `newSetupPage` (`Prefs` in `messages.ts`, `state.prefs` /
   `setPref`, `set-pref` accepted from the Setup page without admin verification, since it
