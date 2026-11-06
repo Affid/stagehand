@@ -58,21 +58,22 @@ function PresetList(props: { readonly current: Preset | undefined }) {
 }
 
 /** Changes go one at a time, each from the revision the last one left (review). */
+type Changes = Partial<Pick<Preset, "name" | "description" | "modules">>;
+
 function useUpdate(p: Preset) {
   const { actions } = useUi();
-  const [busy, setBusy] = useState(false);
-  const update = (
-    changes: Partial<Pick<Preset, "name" | "description" | "modules">>,
-  ): void => {
-    if (busy) return;
-    setBusy(true);
+  // The change on its way: shown at once, and the only one until it lands.
+  const [pending, setPending] = useState<Changes | null>(null);
+  const update = (changes: Changes): void => {
+    if (pending) return;
+    setPending(changes);
     void actions
       .op({ op: "preset.update", id: p.id, baseRevision: p.revision, changes })
       .finally(() => {
-        setBusy(false);
+        setPending(null);
       });
   };
-  return Object.assign(update, { busy });
+  return Object.assign(update, { busy: pending !== null, pending });
 }
 
 function Fields(props: { readonly p: Preset }) {
@@ -143,7 +144,7 @@ function PresetEdit(props: { readonly p: Preset }) {
         </h4>
         <ModuleChecks
           busy={update.busy}
-          isOn={(id) => p.modules.includes(id)}
+          isOn={(id) => (update.pending?.modules ?? p.modules).includes(id)}
           onToggle={(id, on) =>
             update({
               modules: on
