@@ -3,7 +3,7 @@
 // for busy servers. Columns never shrink below MIN_COL: past that it
 // scrolls sideways with the module names pinned (SETUP-REDESIGN.md).
 import type { WorldInfo } from "@module-library/shared/world";
-import { useState } from "preact/hooks";
+import { useMemo, useState } from "preact/hooks";
 import { useUi } from "../../context.ts";
 import { plural } from "../../i18n.ts";
 import type { LibGroup } from "../../model/library-groups.ts";
@@ -14,12 +14,21 @@ import {
   type GridWorlds,
   gridWorlds,
 } from "../../model/world-grid.ts";
-import { type WorldModules, worldModules } from "../../model/world-modules.ts";
+import {
+  type WorldModuleRow,
+  type WorldModules,
+  worldModules,
+} from "../../model/world-modules.ts";
 
 const MIN_COL = 92;
 const MOD_COL = 250;
 
-type Models = ReadonlyMap<string, WorldModules>;
+/** Each world's modules, with a lookup by module id built once per world. */
+interface WorldRows {
+  readonly model: WorldModules;
+  readonly byId: ReadonlyMap<string, WorldModuleRow>;
+}
+type Models = ReadonlyMap<string, WorldRows>;
 
 function Head(props: {
   readonly world: WorldInfo;
@@ -49,13 +58,13 @@ function Head(props: {
 
 function Cell(props: {
   readonly world: WorldInfo;
-  readonly model: WorldModules | undefined;
+  readonly model: WorldRows | undefined;
   readonly moduleId: string;
   readonly title: string;
 }) {
   const { actions, t, canChange } = useUi();
-  const row = props.model?.rows.find((r) => r.pkg.id === props.moduleId);
-  if (!props.model?.tracked || !row)
+  const row = props.model?.byId.get(props.moduleId);
+  if (!props.model?.model.tracked || !row)
     return (
       <td class="na" title={t("grid.na")}>
         –
@@ -104,7 +113,8 @@ function Rows(props: {
           </th>
         </tr>,
         ...g.modules.map((m) => (
-          <tr key={m.id} data-module={m.id}>
+          // A module can sit in several groups (tags, authors): keys per group.
+          <tr key={`${g.key}:${m.id}`} data-module={m.id}>
             <th scope="row">{m.title}</th>
             {props.worlds.map((w) => (
               <Cell
@@ -216,15 +226,35 @@ function Empty(props: {
   );
 }
 
+/** Each shown world's rows, rebuilt only when the data or the worlds change. */
+function useWorldRows(shown: readonly WorldInfo[]): Models {
+  const { state } = useUi();
+  const ids = shown.map((w) => w.id).join("\n");
+  return useMemo(
+    () =>
+      new Map(
+        ids
+          .split("\n")
+          .filter(Boolean)
+          .map((id) => {
+            const model = worldModules(state.data, id);
+            return [
+              id,
+              { model, byId: new Map(model.rows.map((r) => [r.pkg.id, r])) },
+            ];
+          }),
+      ),
+    [state.data, ids],
+  );
+}
+
 export function WorldGrid(props: { readonly groups: readonly LibGroup[] }) {
   const { state, t } = useUi();
   const [show, setShow] = useState<GridShow>("all");
   const [picked, setPicked] = useState<readonly string[]>([]);
   const result = gridWorlds(state.data, show, picked, Date.now());
   const { shown } = result;
-  const models: Models = new Map(
-    shown.map((w) => [w.id, worldModules(state.data, w.id)]),
-  );
+  const models = useWorldRows(shown);
   return (
     <div class="mll-gridpage">
       <ShowBar show={show} onShow={setShow} result={result} />
@@ -233,6 +263,7 @@ export function WorldGrid(props: { readonly groups: readonly LibGroup[] }) {
         <div class="mll-gridwrap">
           <table
             class="mll-grid"
+            aria-label={t("lib.tab.grid")}
             style={{ minWidth: `${MOD_COL + shown.length * MIN_COL}px` }}
           >
             <thead>
@@ -244,7 +275,9 @@ export function WorldGrid(props: { readonly groups: readonly LibGroup[] }) {
                   <Head
                     key={w.id}
                     world={w}
-                    model={models.get(w.id) ?? worldModules(state.data, w.id)}
+                    model={
+                      models.get(w.id)?.model ?? worldModules(state.data, w.id)
+                    }
                   />
                 ))}
               </tr>

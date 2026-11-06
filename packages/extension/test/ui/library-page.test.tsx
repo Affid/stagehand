@@ -98,4 +98,18 @@ describe("the Library page", () => {
     expect(side.textContent).toContain("Tags");
     expect(side.textContent).toContain("Presets");
   });
+
+  test("typing in the filter clears the selection, so bulk actions can't reach hidden cards", () => {
+    const { container, getByRole, store } = library();
+    fireEvent.click(getByRole("button", { name: "Select" }));
+    fireEvent.click(
+      within(card(container, "a")).getByRole("checkbox", {
+        name: "Select Title a",
+      }),
+    );
+    fireEvent.input(getByRole("searchbox", { name: /Filter modules/ }), {
+      target: { value: "module-lib" },
+    });
+    expect(store.get().selection).toEqual([]);
+  });
 });

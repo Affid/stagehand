@@ -69,7 +69,8 @@ function Tools(props: ToolsProps) {
         value={state.filter.text}
         onInput={(e) => {
           const text = e.currentTarget.value;
-          store.set((s) => ({ filter: { ...s.filter, text } }));
+          // A hidden card must not stay selected for a bulk action.
+          store.set((s) => ({ filter: { ...s.filter, text }, selection: [] }));
         }}
       />
       <label class="mll-by">
@@ -204,10 +205,12 @@ function Side(props: {
   readonly model: ModulesModel;
   readonly page: ReturnType<typeof usePageState>;
 }) {
+  const { state } = useUi();
   const { detail, setDetail, organise, intake, setIntake } = props.page;
   const pkg = detail ? props.model.all.find((m) => m.id === detail) : undefined;
   if (pkg) return <ModulePanel pkg={pkg} onClose={() => setDetail(null)} />;
-  if (intake) return <IntakePanel onClose={() => setIntake(false)} />;
+  if (intake && state.data.fresh.length)
+    return <IntakePanel onClose={() => setIntake(false)} />;
   return organise ? <Organise model={props.model} /> : null;
 }
 

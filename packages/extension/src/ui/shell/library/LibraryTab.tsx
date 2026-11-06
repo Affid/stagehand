@@ -4,6 +4,7 @@ import type { PackageInfo } from "@module-library/shared/package";
 import { useState } from "preact/hooks";
 import { IconButton } from "../../common/widgets.tsx";
 import { useUi } from "../../context.ts";
+import { COMPANION_ID } from "../../model/preview.ts";
 import { worldModules } from "../../model/world-modules.ts";
 
 export function FolderField(props: { readonly id: string }) {
@@ -145,7 +146,7 @@ function Worlds(props: { readonly pkg: PackageInfo }) {
               role="switch"
               class="mls-switch"
               checked={on}
-              disabled={!canChange}
+              disabled={!canChange || props.pkg.id === COMPANION_ID}
               aria-label={t("wp.switch", {
                 module: props.pkg.title,
                 world: w.title,
@@ -176,7 +177,11 @@ export function LibraryTab(props: { readonly pkg: PackageInfo }) {
     <div class="mll-libtab">
       <FolderField id={pkg.id} />
       <TagsField id={pkg.id} />
-      <NoteField key={pkg.id} id={pkg.id} />
+      <NoteField
+        // Starts again when the saved note changes elsewhere (import, another tab).
+        key={`${pkg.id}:${state.data.library.modules[pkg.id]?.note ?? ""}`}
+        id={pkg.id}
+      />
       <div class="mll-field">
         <span>{t("mp.presets")}</span>
         <span>

@@ -1,5 +1,11 @@
 // @vitest-environment happy-dom
-import { cleanup, fireEvent, waitFor, within } from "@testing-library/preact";
+import {
+  act,
+  cleanup,
+  fireEvent,
+  waitFor,
+  within,
+} from "@testing-library/preact";
 import { afterEach, describe, expect, test } from "vitest";
 import type { SetupState } from "../../src/messages.ts";
 import { el, renderUi, sent } from "./harness.tsx";
@@ -51,5 +57,25 @@ describe("intake for new installs", () => {
         ids: ["b", "c"],
       });
     });
+  });
+
+  test("the panel closes with its button, and by itself once nothing is new", () => {
+    const first = library({ fresh: ["b"] });
+    fireEvent.click(first.getByRole("button", { name: "Sort them" }));
+    fireEvent.click(
+      within(
+        first.getByRole("complementary", { name: "New modules" }),
+      ).getByRole("button", { name: "Close" }),
+    );
+    expect(first.queryByRole("complementary", { name: "New modules" })).toBe(
+      null,
+    );
+    fireEvent.click(first.getByRole("button", { name: "Sort them" }));
+    void act(() => {
+      first.store.set((s) => ({ data: { ...s.data, fresh: [] } }));
+    });
+    expect(first.queryByRole("complementary", { name: "New modules" })).toBe(
+      null,
+    );
   });
 });

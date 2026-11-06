@@ -1,5 +1,6 @@
 // Modules installed since they were last sorted: give each a folder and
 // tags beside the cards, then mark it done (SETUP-REDESIGN.md: intake).
+import { IconButton } from "../../common/widgets.tsx";
 import { useUi } from "../../context.ts";
 import { FolderField, TagsField } from "./LibraryTab.tsx";
 
@@ -13,6 +14,11 @@ export function IntakePanel(props: { readonly onClose: () => void }) {
     <aside class="mll-side mll-panel ml-app" aria-label={t("intake.title")}>
       <header class="mll-panel-head">
         <h3>{t("intake.title")}</h3>
+        <IconButton
+          icon="xmark"
+          label={t("mp.close")}
+          onClick={props.onClose}
+        />
       </header>
       <p class="ml-hint">{t("intake.lead")}</p>
       <ul class="mll-intake-list">

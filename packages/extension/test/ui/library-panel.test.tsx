@@ -1,6 +1,12 @@
 // @vitest-environment happy-dom
 import type { Snapshot } from "@module-library/shared/world";
-import { cleanup, fireEvent, waitFor, within } from "@testing-library/preact";
+import {
+  act,
+  cleanup,
+  fireEvent,
+  waitFor,
+  within,
+} from "@testing-library/preact";
 import { afterEach, describe, expect, test } from "vitest";
 import type { ExtensionMessage, SetupState } from "../../src/messages.ts";
 import { el, renderUi, sent, setupState } from "./harness.tsx";
@@ -154,5 +160,44 @@ describe("a module's details", () => {
     expect(text).toContain("13");
     expect(text).toContain("14");
     expect(text).toContain("Ann");
+  });
+
+  test("the note follows a change made elsewhere", () => {
+    const { panel, store } = open();
+    void act(() => {
+      store.set((s) => ({
+        data: {
+          ...s.data,
+          library: {
+            ...s.data.library,
+            modules: {
+              ...s.data.library.modules,
+              a: { folderId: "f1", tags: ["t1"], note: "imported note" },
+            },
+          },
+        },
+      }));
+    });
+    expect(
+      within(panel).getByRole<HTMLTextAreaElement>("textbox", {
+        name: "Note",
+      }).value,
+    ).toBe("imported note");
+  });
+
+  test("the companion can't be switched off from here", () => {
+    const r = renderUi("shell", {
+      data: { snapshots: { w1: snap("w1", ["module-library", "a"]) } },
+      state: { route: { kind: "library" } },
+    });
+    fireEvent.click(r.getByRole("button", { name: "Title module-library" }));
+    const panel = r.getByRole("complementary", {
+      name: "Title module-library",
+    });
+    expect(
+      within(panel).getByRole<HTMLInputElement>("switch", {
+        name: /on in Strahd/,
+      }).disabled,
+    ).toBe(true);
   });
 });
