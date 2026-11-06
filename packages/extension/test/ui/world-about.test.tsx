@@ -2,6 +2,7 @@
 import type { WorldInfo } from "@module-library/shared/world";
 import { cleanup, fireEvent, waitFor } from "@testing-library/preact";
 import { BUNDLED_CONFIG } from "../../src/adapters/config.ts";
+import { formatSession } from "../../src/ui/shell/world/AboutTab.tsx";
 import { afterEach, describe, expect, test } from "vitest";
 import { el, renderUi, setupState } from "./harness.tsx";
 
@@ -158,5 +159,24 @@ describe("editing a world's details in place", () => {
     fireEvent.click(r.getByRole("tab", { name: "About" }));
     expect(r.queryByRole("button", { name: "Change title" })).toBe(null);
     expect(r.getByRole("button", { name: "Edit in Foundry" })).toBeTruthy();
+  });
+
+  test("a failed save keeps the editor open with what was typed", async () => {
+    const r = about();
+    r.page.saveWorld.mockResolvedValueOnce("Foundry did not answer in time.");
+    fireEvent.click(r.getByRole("button", { name: "Change title" }));
+    const input = r.getByRole("textbox", { name: "Title" });
+    fireEvent.input(input, { target: { value: "Typed title" } });
+    fireEvent.keyDown(input, { key: "Enter" });
+    await waitFor(() => {
+      expect(r.page.notify).toHaveBeenCalled();
+    });
+    expect(
+      (r.getByRole("textbox", { name: "Title" }) as HTMLInputElement).value,
+    ).toBe("Typed title");
+  });
+
+  test("an odd language tag can't break the date", () => {
+    expect(formatSession("2026-11-12T18:00:00.000Z", "pt_BR")).toMatch(/2026/);
   });
 });

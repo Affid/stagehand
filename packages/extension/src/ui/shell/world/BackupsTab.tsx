@@ -17,14 +17,15 @@ export function formatSize(bytes: number): string {
   return `${Math.max(1, Math.round(bytes / 1024))} KB`;
 }
 
-type View =
-  | { readonly kind: "loading" }
-  | { readonly kind: "ready"; readonly list: readonly BackupInfo[] }
-  | { readonly kind: "error"; readonly error: string };
+interface View {
+  /** Undefined until the first list arrives. */
+  readonly list?: readonly BackupInfo[];
+  readonly error?: string;
+}
 
 function useBackups(worldId: string) {
   const { page } = useUi();
-  const [view, setView] = useState<View>({ kind: "loading" });
+  const [view, setView] = useState<View>({});
   const [busy, setBusy] = useState(false);
   const run = async (
     op: BackupOp,
@@ -33,11 +34,14 @@ function useBackups(worldId: string) {
     setBusy(true);
     const r = await page.backups(worldId, op, ids);
     setBusy(false);
-    setView(
-      r.backups
-        ? { kind: "ready", list: r.backups }
-        : { kind: "error", error: r.error ?? "" },
-    );
+    // A failure keeps the last list on screen, with the error above it.
+    setView((v) => {
+      const list = r.backups ?? v.list;
+      return {
+        ...(list ? { list } : {}),
+        ...(r.error ? { error: r.error } : {}),
+      };
+    });
   };
   useEffect(() => {
     void run("list");
@@ -115,7 +119,7 @@ function List(props: {
 export function BackupsTab(props: { readonly world: WorldInfo }) {
   const { t, canChange } = useUi();
   const { view, busy, run } = useBackups(props.world.id);
-  const list = view.kind === "ready" ? view.list : [];
+  const list = view.list ?? [];
   const total = list.reduce((sum, b) => sum + b.size, 0);
   return (
     <div class="mlw-backups">
@@ -139,19 +143,16 @@ export function BackupsTab(props: { readonly world: WorldInfo }) {
         </button>
       </div>
       <p class="ml-hint">{t("bk.lead")}</p>
-      {view.kind === "loading" ? (
-        <p class="ml-empty">{t("bk.loading")}</p>
-      ) : null}
-      {view.kind === "error" ? (
-        <p class="ml-banner ml-warn">{view.error}</p>
-      ) : null}
-      {view.kind === "ready" ? (
+      {view.error ? <p class="ml-banner ml-warn">{view.error}</p> : null}
+      {view.list ? (
         <List
           list={view.list}
           busy={busy}
           onRun={(op, ids) => void run(op, ids)}
         />
-      ) : null}
+      ) : view.error ? null : (
+        <p class="ml-empty">{t("bk.loading")}</p>
+      )}
     </div>
   );
 }

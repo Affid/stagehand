@@ -20,7 +20,7 @@ export function formatSession(
   const t = Date.parse(iso ?? "");
   if (!Number.isFinite(t)) return undefined;
   // dateStyle can't be combined with timeZoneName: spell the parts out.
-  return new Intl.DateTimeFormat(lang === "" ? undefined : lang, {
+  const options: Intl.DateTimeFormatOptions = {
     weekday: "long",
     day: "numeric",
     month: "long",
@@ -29,7 +29,16 @@ export function formatSession(
     minute: "2-digit",
     hourCycle: "h23",
     timeZoneName: "short",
-  }).format(t);
+  };
+  try {
+    return new Intl.DateTimeFormat(
+      lang === "" ? undefined : lang,
+      options,
+    ).format(t);
+  } catch {
+    // An odd language tag (e.g. "pt_BR") falls back to the browser's.
+    return new Intl.DateTimeFormat(undefined, options).format(t);
+  }
 }
 
 function Description(props: { readonly html: string | undefined }) {

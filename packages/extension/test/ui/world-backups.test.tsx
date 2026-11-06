@@ -110,4 +110,24 @@ describe("a world's Backups tab", () => {
     expect(formatSize(441 * 1024 * 1024)).toBe("441 MB");
     expect(formatSize(3 * 1024 * 1024 * 1024)).toBe("3.0 GB");
   });
+
+  test("a failed operation keeps the list and shows the error above it", async () => {
+    const { container, getByRole, page } = await backups();
+    await waitFor(() => row(container, "b2"));
+    page.backups.mockResolvedValueOnce({ error: "Backup failed" });
+    fireEvent.click(getByRole("button", { name: "Take a backup" }));
+    await waitFor(() => {
+      expect(container.textContent).toContain("Backup failed");
+    });
+    expect(row(container, "b2")).toBeTruthy();
+  });
+
+  test("leaving the tab and coming back keeps its state (no second list)", async () => {
+    const r = await backups();
+    await waitFor(() => row(r.container, "b2"));
+    fireEvent.click(r.getByRole("tab", { name: "About" }));
+    fireEvent.click(r.getByRole("tab", { name: "Backups" }));
+    expect(row(r.container, "b2")).toBeTruthy();
+    expect(r.page.backups).toHaveBeenCalledTimes(1);
+  });
 });

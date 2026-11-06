@@ -1,4 +1,5 @@
 import { describe, expect, test, vi } from "vitest";
+import { parseBackupsReply } from "../../src/page-backups.ts";
 import { runBackups } from "../../src/page/backups.ts";
 
 const raw = [
@@ -93,5 +94,21 @@ describe("a world's backups through Foundry", () => {
     ).toMatch(/x/);
     f.game.listBackups.mockRejectedValueOnce(new Error("offline"));
     expect((await runBackups(f.page, req("list"))).error).toMatch(/offline/);
+  });
+
+  test("odd records are clamped to what the reply allows, so the answer is never dropped", async () => {
+    const f = foundry();
+    const many = Array.from({ length: 1100 }, (_, i) => ({
+      id: `${"x".repeat(400)}${String(i)}`,
+      createdAt: Number.NaN,
+      size: -5,
+      snapshotId: null,
+    }));
+    f.game.listBackups.mockResolvedValue({ world: { w: many } } as never);
+    const r = await runBackups(f.page, req("list"));
+    expect(r.backups).toHaveLength(1000);
+    expect(
+      parseBackupsReply({ requestId: "r1", backups: r.backups }),
+    ).toBeTruthy();
   });
 });

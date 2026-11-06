@@ -28,14 +28,18 @@ export interface BackupsResult {
 const message = (e: unknown): string =>
   e instanceof Error ? e.message : String(e);
 
+/** What BACKUPS_DONE accepts (page-backups.ts): the answer must never be dropped. */
+const MAX_ID = 300;
+const MAX_BACKUPS = 1000;
+
 function time(v: unknown): number {
-  if (typeof v === "number") return v;
-  const t = Date.parse(typeof v === "string" ? v : "");
-  return Number.isFinite(t) ? t : 0;
+  const t =
+    typeof v === "number" ? v : Date.parse(typeof v === "string" ? v : "");
+  return Number.isFinite(t) && t >= 0 ? t : 0;
 }
 
 const toInfo = (b: Raw): BackupInfo => ({
-  id: String(b.id),
+  id: String(b.id).slice(0, MAX_ID) || "?",
   createdAt: time(b.createdAt),
   size: typeof b.size === "number" && b.size >= 0 ? b.size : 0,
   snapshot: typeof b.snapshotId === "string" && b.snapshotId !== "",
@@ -80,7 +84,11 @@ export async function runBackups(
   try {
     await apply(game, world, req);
     const backups = (await listRaw(game, req.worldId)).map(toInfo);
-    return { backups: [...backups].sort((a, b) => b.createdAt - a.createdAt) };
+    return {
+      backups: [...backups]
+        .sort((a, b) => b.createdAt - a.createdAt)
+        .slice(0, MAX_BACKUPS),
+    };
   } catch (e: unknown) {
     return { error: message(e) };
   }

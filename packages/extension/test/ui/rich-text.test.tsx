@@ -34,7 +34,7 @@ describe("world descriptions, cleaned", () => {
     expect(out).not.toContain("style=");
     expect(out).not.toContain("javascript:");
     expect(out).toContain(
-      '<a href="https://foundryvtt.com/" target="_blank" rel="noopener noreferrer">good</a>',
+      '<a href="https://foundryvtt.com/" title="foundryvtt.com" target="_blank" rel="noopener noreferrer">good</a>',
     );
     expect(out).toContain("bad");
   });
@@ -58,5 +58,18 @@ describe("world descriptions, cleaned", () => {
 
   test("an empty description renders nothing", () => {
     expect(html("   ")).toBe("");
+  });
+
+  test("a link shows where it really goes", () => {
+    expect(
+      html('<a href="https://evil.example/x">foundryvtt.com</a>'),
+    ).toContain('title="evil.example"');
+  });
+
+  test("very deep nesting is flattened to text", () => {
+    const deep = `${"<em>".repeat(200)}deep${"</em>".repeat(200)}`;
+    const out = html(deep);
+    expect(out).toContain("deep");
+    expect((out.match(/<em>/g) ?? []).length).toBeLessThanOrEqual(64);
   });
 });

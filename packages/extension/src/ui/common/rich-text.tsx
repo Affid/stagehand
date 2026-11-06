@@ -62,9 +62,12 @@ const DROP = new Set([
 ]);
 /** Enough for any real description; the rest is cut. */
 const MAX_NODES = 3000;
+/** Deeper nesting than this keeps only its text. */
+const MAX_DEPTH = 32;
 
 interface Walk {
   nodes: number;
+  depth: number;
 }
 
 function children(node: Node, walk: Walk): ComponentChildren[] {
@@ -83,11 +86,24 @@ function convert(node: Node, walk: Walk): ComponentChildren {
   const el = node as Element;
   const tag = el.tagName.toLowerCase();
   if (DROP.has(tag)) return null;
+  if (walk.depth >= MAX_DEPTH) return el.textContent;
+  walk.depth++;
   const inner = children(el, walk);
+  walk.depth--;
   if (tag === "a") {
     const href = safeUrl(el.getAttribute("href") ?? undefined);
     return href
-      ? h("a", { href, target: "_blank", rel: "noopener noreferrer" }, inner)
+      ? h(
+          "a",
+          {
+            href,
+            // Where it really goes, whatever the text says.
+            title: new URL(href).host,
+            target: "_blank",
+            rel: "noopener noreferrer",
+          },
+          inner,
+        )
       : h("span", null, inner);
   }
   const name = KEEP.has(tag) ? tag : RENAME[tag];
@@ -118,5 +134,7 @@ export function RichText(props: { readonly html: string }) {
   if (!source) return null;
   if (!looksLikeHtml(source)) return <div class="ml-rich">{plain(source)}</div>;
   const doc = new DOMParser().parseFromString(source, "text/html");
-  return <div class="ml-rich">{children(doc.body, { nodes: 0 })}</div>;
+  return (
+    <div class="ml-rich">{children(doc.body, { nodes: 0, depth: 0 })}</div>
+  );
 }

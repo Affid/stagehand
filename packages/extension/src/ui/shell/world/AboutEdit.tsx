@@ -18,29 +18,43 @@ export function useCanEditWorld(): boolean {
   );
 }
 
-/** Saves through Foundry; a refusal becomes a notification. */
-function useSave(worldId: string): (changes: WorldChanges) => Promise<void> {
+/** Saves through Foundry; a refusal becomes a notification. True if saved. */
+function useSave(worldId: string): (changes: WorldChanges) => Promise<boolean> {
   const { page, actions, t } = useUi();
   return async (changes) => {
     const error = await page.saveWorld(worldId, changes);
     if (error) actions.notify("error", t("about.saveFailed", { error }));
+    return error === undefined;
   };
 }
 
+/** Stays open until Foundry has saved; a failure keeps what was typed. */
 export function TitleField(props: { readonly world: WorldInfo }) {
   const { t } = useUi();
   const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(props.world.title);
+  const [attempt, setAttempt] = useState(0);
   const save = useSave(props.world.id);
+  const commit = (title: string): void => {
+    if (title === props.world.title) {
+      setEditing(false);
+      return;
+    }
+    setDraft(title);
+    void save({ title }).then((ok) => {
+      if (ok) setEditing(false);
+      // A fresh input with the typed text, ready to try again.
+      else setAttempt((n) => n + 1);
+    });
+  };
   if (editing)
     return (
       <InlineInput
-        initial={props.world.title}
+        key={attempt}
+        initial={draft}
         label={t("about.title")}
         onCancel={() => setEditing(false)}
-        onCommit={(title) => {
-          setEditing(false);
-          if (title !== props.world.title) void save({ title });
-        }}
+        onCommit={commit}
       />
     );
   return (
@@ -49,7 +63,10 @@ export function TitleField(props: { readonly world: WorldInfo }) {
       <IconButton
         icon="pen"
         label={t("about.changeTitle")}
-        onClick={() => setEditing(true)}
+        onClick={() => {
+          setDraft(props.world.title);
+          setEditing(true);
+        }}
       />
     </span>
   );
@@ -72,9 +89,11 @@ function SessionEditor(props: {
   const { t } = useUi();
   const save = useSave(props.world.id);
   const [value, setValue] = useState(localValue(props.world.nextSession));
+  // Closes only once Foundry has saved; a failure keeps the picked time.
   const finish = (nextSession: string | null): void => {
-    props.onDone();
-    void save({ nextSession });
+    void save({ nextSession }).then((ok) => {
+      if (ok) props.onDone();
+    });
   };
   return (
     <span class="mlw-sessionedit">
