@@ -88,9 +88,9 @@ necessarily its card markup.
 
 ## Open
 
-1. **Not tested live:** Foundry's restore and delete-backup dialogs (the test server had
-   no backups), writing `flags` with `editWorld`, the companion calling `editWorld` from a
-   running world, drawing Foundry's backup progress on our page.
+1. **Not tested live:** writing `flags` with `editWorld`, and the companion calling
+   `editWorld` from a running world. (Snapshot and backup dialogs and Foundry's progress
+   events were tested live on 14.370: see `SETUP-SPIKE.md`.)
 2. **Mockup gaps:** keyboard access (35 of 84 controls on a world page aren't focusable),
    focus lost after actions, few live regions, no undo for deleting folders, tags and
    presets or discarding queued changes, Library bulk actions only turn modules on in one

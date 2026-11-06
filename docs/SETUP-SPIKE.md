@@ -123,3 +123,29 @@ nextSession})` saved one field, `world.json` kept every other field; an empty ti
   behind the remote config and the build smoke test; fall back to opening WorldConfig.
 - resetKeys and safeMode are one-shot flags on the same request: resetKeys clears passwords
   on save (needs our own confirm), safeMode applies to the next launch.
+
+## Follow-up 2026-11-06 (build 370): snapshot and backup dialogs, live
+
+`design/setup-page/spikes/spike-snapshot.ts` created one snapshot through Foundry's own
+dialog, opened the restore dialogs and cancelled them, then deleted the snapshot through
+Foundry's confirm-code dialog. The server ended as it started (no backups; module symlinks
+untouched). No restore was confirmed.
+
+- Create dialog (`game.createSnapshot({dialog: true})`): package counts per type (2 worlds,
+  19 modules, 1 system, not names), "178 MB required / 995 GB available", optional note,
+  the can't-be-interrupted warning. Foundry locks Setup while it asks and while it runs.
+- It took 7.3 s for 178 MB of packages; the snapshot held 22 backups and was 131 MB
+  ("required" is the uncompressed size).
+- Order: modules, then systems, then worlds (`createSnapshot:snapshotModules`,
+  `snapshotSystems`, `snapshotWorlds`), each package as `createBackup:archive` with its
+  title and percentage, then `createSnapshot:complete`.
+- **Progress reaches our page:** `game.socket.on("progress", …)` on the Setup page received
+  all 345 messages. Foundry draws them in its own (hidden) layout as "Snapshotting Modules
+  47%" and "Backup In Progress <package> 1%", so our page must draw them itself.
+- Restore snapshot (`game.restoreSnapshot(data, {dialog: true})`): "All versions and world
+  states will be rolled back. This process cannot be undone.", disk space, typed code.
+- Restore one backup (`game.restoreBackup(data, {dialog: true})`): warning, "Back Up Current
+  State" checkbox (ticked from the `core.backupBeforeRestore` setting), typed code.
+- Delete snapshot (`game.deleteSnapshots([id], {dialog: true})`): typed code; deletes the
+  snapshot and every backup in it.
+- Snapshot data: `id, note, generation, build, size, originalSize, createdAt, backups`.

@@ -15,7 +15,8 @@ node checks/run.mjs    # 26 Playwright checks; screenshots go to out/shots/
   (tooltips), `_news.js`, `_boot.js`.
 - `checks/` — one script per flow; each prints what it found.
 - `spikes/` — live tests against a running Foundry (`pnpm foundry:start`); run from the repo
-  root. `spike-edit.ts` changes and restores one field of the test world; the rest only read.
+  root. `spike-edit.ts` changes and restores one field of the test world; `spike-snapshot.ts` creates
+  one snapshot and deletes it again (never restores); the rest only read.
 
 Prototype code: one global state object and a full re-render on every change. Not a model
 for the extension.

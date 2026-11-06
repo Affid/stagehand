@@ -66,9 +66,10 @@ function serverBackupsPage() {
 }
 
 function sbProgress(job) {
-  const steps = [["world", "Worlds"], ["module", "Modules"], ["system", "Systems"]].map(([k, l], i) =>
+  // Foundry's own order, seen live on 14.370: modules, then systems, then worlds.
+  const steps = [["module", "Modules"], ["system", "Systems"], ["world", "Worlds"]].map(([k, l], i) =>
     `<li class="${i < job.step ? "done" : i === job.step ? "now" : ""}"><i class="fa-solid ${i < job.step ? "fa-check" : i === job.step ? "fa-spinner fa-spin-pulse" : "fa-circle"}"></i>${l}</li>`).join("");
-  return `<div class="mlb-job" role="status"><div class="t"><strong>Creating a snapshot${job.note ? `: ${esc(job.note)}` : ""}</strong><span>It can't be interrupted. Launching, restoring and deleting wait until it's done.</span></div>
+  return `<div class="mlb-job" role="status"><div class="t"><strong>Creating a snapshot${job.note ? `: ${esc(job.note)}` : ""}</strong><span>${job.current ? `Backing up ${esc(job.current)} · ` : ""}It can't be interrupted. Launching, restoring and deleting wait until it's done.</span></div>
     <ol>${steps}</ol><div class="bar"><span style="width:${job.pct}%"></span></div><span class="pct">${job.pct}%</span></div>`;
 }
 
@@ -134,7 +135,7 @@ function snapshotDialog() {
   const counts = `${plural(WORLDS_X.length, "world")}, ${plural(ALL_MODULES.length, "module")} and ${plural(SYSTEMS.length, "system")}`;
   const body = `<div class="mls-launch-body">
     <p>A snapshot backs up every installed world, module and system, so you can later roll the whole server back to this moment.</p>
-    <div class="mlb-facts"><span><i class="fa-solid fa-box-archive"></i>${counts}</span><span><i class="fa-solid fa-hard-drive"></i>About 3.4 GB needed · 48 GB free</span></div>
+    <div class="mlb-facts"><span><i class="fa-solid fa-box-archive"></i>${counts}</span><span><i class="fa-solid fa-hard-drive"></i>About 3.4 GB needed · 48 GB free</span><span class="ml-muted" style="font-size:12px">Needed is the size before compression; the snapshot itself is usually smaller.</span></div>
     <label class="mlb-note"><span>Note</span><input type="text" id="snapnote" placeholder="Optional, for example: Before updating Foundry" maxlength="200"></label>
     <div class="mls-check warn"><i class="fa-solid fa-triangle-exclamation"></i><span>It can take a while and can't be interrupted. Launching, restoring and deleting wait until it's done.</span></div></div>`;
   const footer = `<button type="button" data-act="closedialog">Cancel</button><button type="button" class="bright" data-act="snapgo"><i class="fa-solid fa-camera-retro"></i>Create the snapshot</button>`;
@@ -168,7 +169,10 @@ A.snapgo = () => {
   const note = document.getElementById("snapnote")?.value.trim() ?? "";
   ST.dialog = null; ST.serverJob = { pct: 0, step: 0, note }; ST.sbTab = "snapshots"; render();
   const tick = setInterval(() => {
-    const j = ST.serverJob; j.pct = Math.min(100, j.pct + 7); j.step = j.pct < 40 ? 0 : j.pct < 80 ? 1 : 2;
+    const j = ST.serverJob; j.pct = Math.min(100, j.pct + 7); j.step = j.pct < 55 ? 0 : j.pct < 70 ? 1 : 2;
+    // Foundry reports each package as it goes (createBackup progress, with the package title).
+    const stage = [ALL_MODULES.map((m) => m.title), SYSTEMS.map((x) => x.title), WORLDS_X.map((w) => w.title)][j.step];
+    j.current = stage[Math.floor(((j.pct - [0, 55, 70][j.step]) / [55, 15, 30][j.step]) * stage.length) % stage.length];
     if (j.pct < 100) { render(); return; }
     clearInterval(tick);
     const id = `snap-${Date.now()}`;
