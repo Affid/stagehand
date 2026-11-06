@@ -271,3 +271,10 @@ describe("modules view: read-only and safe mode", () => {
     expect(getByRole("button", { name: "+ New folder" })).toBeTruthy();
   });
 });
+
+describe("the build", () => {
+  test("the Module Library toolbar names the extension's build", () => {
+    const { container } = renderUi("modules");
+    expect(el(container, ".ml-build").textContent).toBe("Module Library dev");
+  });
+});

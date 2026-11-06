@@ -34,6 +34,7 @@ for (const name of entries) {
     publicDir: false,
     logLevel: "warn",
     oxc: { jsx: { runtime: "automatic", importSource: "preact" } },
+    define: { __ML_BUILD__: JSON.stringify(BUILD) },
     build: {
       outDir,
       emptyOutDir: false,

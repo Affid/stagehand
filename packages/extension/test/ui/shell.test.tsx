@@ -249,4 +249,9 @@ describe("a world's page", () => {
     expect(container.querySelector(".mlw-empty")).toBeTruthy();
     expect(container.querySelector(".mlw-card")).toBe(null);
   });
+
+  test("the rail's foot names the extension's build", () => {
+    const { container } = shell();
+    expect(el(container, ".mls-build").textContent).toBe("Module Library dev");
+  });
 });

@@ -2,6 +2,7 @@
 // with a filter, Create World and each world's flags.
 import type { WorldInfo } from "@module-library/shared/world";
 import { useMemo, useState } from "preact/hooks";
+import { BUILD } from "../../build-info.ts";
 import { Icon } from "../common/widgets.tsx";
 import { useUi } from "../context.ts";
 import { ago, plural } from "../i18n.ts";
@@ -153,6 +154,7 @@ export function WorldRail(props: { readonly route: Route }) {
       {shown.length === 0 && worlds.length > 0 ? (
         <p class="ml-empty">{t("shell.noMatch")}</p>
       ) : null}
+      <p class="mls-build">{t("app.build", { build: BUILD })}</p>
     </aside>
   );
 }

@@ -1,6 +1,7 @@
 // View toggle (S-8), search (S-4), tag AND/OR (S-3) and filter state,
 // and the switch to the new Setup page.
 import { allowsChanges } from "../../adapters/select.ts";
+import { BUILD } from "../../build-info.ts";
 import { Icon } from "../common/widgets.tsx";
 import { useUi } from "../context.ts";
 import { EMPTY_FILTER } from "../store.ts";
@@ -85,12 +86,13 @@ function TryShell() {
 }
 
 export function Toolbar(props: { readonly model: ModulesModel }) {
-  const { state } = useUi();
+  const { state, t } = useUi();
   return (
     <div class="ml-toolbar">
       <ViewToggle />
       {state.view === "organised" ? <Filters model={props.model} /> : null}
       <TryShell />
+      <span class="ml-build">{t("app.build", { build: BUILD })}</span>
     </div>
   );
 }

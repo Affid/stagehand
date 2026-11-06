@@ -1,11 +1,14 @@
 // Options page: register a Foundry server (R-1). The permission request
 // needs the user's click, so it runs here and not in the background.
+import { BUILD } from "../build-info.ts";
 import { send } from "../platform/runtime.ts";
 import { normalizeServerUrl, permissionOrigin } from "../background/servers.ts";
 
 const form = document.querySelector<HTMLFormElement>("#add-server");
 const input = document.querySelector<HTMLInputElement>("#server-url");
 const status = document.querySelector<HTMLOutputElement>("#status");
+const build = document.querySelector<HTMLElement>("#build");
+if (build) build.textContent = `Build ${BUILD}`;
 
 form?.addEventListener("submit", (event) => {
   event.preventDefault();

@@ -489,3 +489,12 @@
   outline: none;
   box-shadow: none;
 }
+
+/* Which build is running (build-info.ts), at the rail's foot */
+.mls-shell .mls-build {
+  margin: 0;
+  flex: none;
+  font-size: 11px;
+  text-align: center;
+  color: var(--color-light-4);
+}

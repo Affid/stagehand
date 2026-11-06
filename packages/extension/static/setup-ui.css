@@ -1448,3 +1448,11 @@ label.ml-field {
 .ml-diff-more {
   margin: 0 0 0.35rem 0.65rem;
 }
+
+/* Which build is running (build-info.ts) */
+.ml-toolbar .ml-build {
+  flex: none;
+  font-size: 11px;
+  color: var(--ml-muted);
+  white-space: nowrap;
+}

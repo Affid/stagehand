@@ -500,5 +500,6 @@
   "up.update": "Update in Foundry…",
   "up.lead": "Foundry's own update screen downloads and installs it, checks your packages against it, and offers a snapshot first.",
   "up.chip": "update",
-  "cfg.portRange": "Enter a port from 1 to 65535."
+  "cfg.portRange": "Enter a port from 1 to 65535.",
+  "app.build": "Module Library {build}"
 }
