@@ -127,3 +127,10 @@
 .mlu-clist .v b { color: #8fd49b; font-weight: 600; }
 .mlu-clist .lk { display: flex; gap: 8px; justify-content: flex-end; font-size: 11px; }
 .mlu-clist .lk a { color: var(--color-light-4); } .mlu-clist .lk a:hover { color: var(--color-warm-1); }
+.mlu-chips a { display: inline-flex; gap: 6px; align-items: center; }
+.mlu-chips a i { font-size: 11px; }
+.mlu-chips a.ok i { color: #8fd49b; } .mlu-chips a.unv i { color: #f5c45e; } .mlu-chips a.risk i { color: #f0a050; } .mlu-chips a.bad i { color: #ff9c8f; }
+.mlu-chips a.risk b { color: #f0a050; }
+.mlu-chips a.zero { opacity: .45; cursor: default; }
+.mlu-compat .mls-subtabs { align-items: center; } .mlu-csearch { margin-left: auto; height: 26px; width: 180px; margin-bottom: 4px; }
+.mlu-compat .mlu-chips { gap: 5px; } .mlu-compat .mlu-chips a { padding: 1px 8px; gap: 5px; }

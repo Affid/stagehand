@@ -292,11 +292,16 @@ function updCompatView(rel) {
     return `<a class="${cat === k ? "active" : ""}" data-act="updccat" data-id="${k}">${l} <span class="c">${data[k].length}${bad ? ` · <b class="w">${bad} to check</b>` : ""}</span></a>`;
   }).join("");
   const list = data[cat];
-  const sum = (st) => list.filter((x) => x.st === st).length;
-  const summary = `<ul class="mlu-sum">${["ok", "unv", "risk", "bad"].map((st) => `<li class="${st}${sum(st) + (st === "bad" ? sum("dep") : 0) ? "" : " zero"}"><i class="fa-solid ${ST_INFO[st][1]}"></i>${sum(st) + (st === "bad" ? sum("dep") : 0)} ${ST_INFO[st][0].toLowerCase()}</li>`).join("")}</ul>`;
-  const chip = (id, label) => { const n = id === "all" ? list.length : list.filter((x) => FILTER_OF[x.st] === id).length; return `<a class="${f === id ? "on" : ""} ${id}" data-act="updcfilter" data-id="${id}">${label} <b>${n}</b></a>`; };
+  // One row: each chip is a status total and its filter. Incompatible includes missing dependencies.
+  const inStatus = (x, id) => id === "all" || x.st === id || (id === "bad" && x.st === "dep");
+  const chip = (id) => {
+    const n = list.filter((x) => inStatus(x, id)).length;
+    const label = id === "all" ? "All" : ST_INFO[id][0];
+    const icon = id === "all" ? "" : `<i class="fa-solid ${ST_INFO[id][1]}"></i>`;
+    return `<a class="${f === id ? "on" : ""} ${id}${n || id === "all" ? "" : " zero"}" ${n || id === "all" ? `data-act="updcfilter" data-id="${id}"` : 'aria-disabled="true"'} aria-pressed="${f === id}">${icon}${label} <b>${n}</b></a>`;
+  };
   const order = { bad: 0, dep: 1, risk: 2, unv: 3, ok: 4 };
-  const shown = list.filter((x) => (f === "all" || FILTER_OF[x.st] === f) && (!q || x.title.toLowerCase().includes(q)))
+  const shown = list.filter((x) => inStatus(x, f) && (!q || x.title.toLowerCase().includes(q)))
     .sort((a, b) => order[a.st] - order[b.st] || (b.worlds.length - a.worlds.length) || a.title.localeCompare(b.title));
   const rows = shown.map((x) => {
     const [label, icon] = ST_INFO[x.st];
@@ -311,8 +316,8 @@ function updCompatView(rel) {
   }).join("") || '<li class="empty">Nothing matches.</li>';
   const updates = data.module.concat(data.system).filter((x) => x.needsUpdate && x.st !== "bad").length;
   return `<div class="mlu-notes mlu-compat"><div class="mlu-nhead"><div><h3>Your packages on Foundry ${esc(rel.version)}</h3><span>Foundry's compatibility preview: it checks the newest version of each installed package. We add where you use them.</span></div></div>
-    <nav class="mls-subtabs">${tabs}</nav>${summary}
-    <div class="mlu-tools"><input type="search" data-filter="updcq" value="${esc(ST.upd.cq ?? "")}" placeholder="Filter ${cat}s" aria-label="Filter"><div class="mlu-chips">${chip("all", "All")}${chip("ok", "Compatible")}${chip("unv", "Unverified")}${chip("bad", "Incompatible")}</div></div>
+    <nav class="mls-subtabs">${tabs}<input type="search" class="mlu-csearch" data-filter="updcq" value="${esc(ST.upd.cq ?? "")}" placeholder="Filter ${cat}s" aria-label="Filter ${cat}s"></nav>
+    <div class="mlu-chips" role="group" aria-label="Show">${["all", "ok", "unv", "risk", "bad"].map(chip).join("")}</div>
     <ol class="mlu-clist">${rows}</ol>
     <p class="hint">${updates ? `${plural(updates, "package")} only ${updates === 1 ? "works" : "work"} on ${esc(rel.version)} after you update ${updates === 1 ? "it" : "them"} too (Library, Update all). ` : ""}Unverified: verified for an earlier build, likely still fine. Compatibility risk: verified for an earlier generation, may not work. Incompatible won't load.</p></div>`;
 }
