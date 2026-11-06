@@ -51,3 +51,35 @@ Mockup to match: `design/setup-page/` (playground: https://claude.ai/artifact/YK
 - Tests: world order, protocol parsing for the new messages (both directions), shell
   enter/exit and restore on mount error, rail filtering and flags, routing; live: take over,
   open a world, open the Library, switch back.
+
+## Progress
+
+### Phase 1: shell (in progress)
+
+Done (`34388ff`):
+
+- World data: `favorite`, `locked`, `background` in `WorldInfoSchema`, read by
+  `page/collect.ts`.
+- `ui/model/order.ts`: `worldOrder(worlds, lang)`, Foundry's order.
+- `page-protocol.ts`: `SHELL` / `SHELL_STATE`, `FOUNDRY_ACTION` with `SERVER_ACTIONS`
+  (configure, backups, update, logout, shutdown, createWorld) and `WORLD_ACTIONS` (launch,
+  editWorld, favorite).
+- `page/shell.ts`: `setShell(doc, on)`, CSS-only take-over, refuses if `#setup` or
+  `#setup-menu` is missing.
+- `page/actions.ts`: `runFoundryAction(doc, page, action)`.
+
+Next:
+
+1. `entries/setup-main.ts`: handle `SHELL` (reply `SHELL_STATE`) and `FOUNDRY_ACTION`
+   (notify on error); restore Foundry's layout on page unload is not needed (CSS only).
+2. `ui/page.ts` bridge: `setShell(on)`, `foundryAction(a)`, subscribe to `SHELL_STATE`.
+3. Setting: per-server "new Setup page" flag in the background state (`messages.ts`,
+   `background/state.ts`, router), a switch on the options page and in the current UI.
+4. `ui/shell/`: `ShellRoot` (full-page host), `Header` (logo, version chip, Backups,
+   Configuration, ⏻ menu, "Foundry's Setup page"), `WorldRail` (worldOrder, filter, flags
+   from `worldRow`), router state in the store (`page: world | library`, `worldId`).
+5. Library route renders today's `ModulesRoot`; world route renders a banner plus today's
+   world sheet content (`WorldSheet`).
+6. Mount in `entries/setup-ui.tsx` when the flag is on and the adapter allows changes;
+   on any mount error send `SHELL` off and keep today's UI.
+7. Live test in `tests/foundry/`: turn on, open a world, open the Library, switch back.
