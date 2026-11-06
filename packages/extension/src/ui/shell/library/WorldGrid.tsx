@@ -49,7 +49,7 @@ function Head(props: {
         <span class="t">{world.title}</span>
       </button>
       <div class="sub">
-        {model.tracked ? t("grid.on", { n: model.nextCount }) : "–"}
+        {model.tracked ? t("grid.on", { n: model.nextCount }) : t("grid.off")}
         {queued ? <b class="q"> · {t("grid.queued", { n: queued })}</b> : null}
       </div>
     </th>
@@ -93,12 +93,20 @@ function Cell(props: {
   );
 }
 
+/** Folded groups: shared with the Modules tab's group headers. */
+export interface Folding {
+  readonly closed: ReadonlySet<string>;
+  readonly onToggle: (key: string) => void;
+}
+
 function Rows(props: {
   readonly groups: readonly LibGroup[];
   readonly worlds: readonly WorldInfo[];
   readonly models: Models;
+  readonly folding: Folding;
 }) {
   const { t } = useUi();
+  const { closed, onToggle } = props.folding;
   return (
     <tbody>
       {props.groups.flatMap((g) => [
@@ -108,11 +116,21 @@ function Rows(props: {
           style={{ "--c": g.color ?? "var(--color-cool-3)" }}
         >
           <th scope="rowgroup" colSpan={props.worlds.length + 1}>
-            {g.name ?? t(g.label ?? "", g.param ? { param: g.param } : {})}
-            <span class="n">{g.modules.length}</span>
+            <button
+              type="button"
+              aria-expanded={!closed.has(g.key)}
+              onClick={() => onToggle(g.key)}
+            >
+              <i
+                class={`fa-solid fa-chevron-${closed.has(g.key) ? "right" : "down"} fa-fw`}
+                aria-hidden="true"
+              />
+              {g.name ?? t(g.label ?? "", g.param ? { param: g.param } : {})}
+              <span class="n">{g.modules.length}</span>
+            </button>
           </th>
         </tr>,
-        ...g.modules.map((m) => (
+        ...(closed.has(g.key) ? [] : g.modules).map((m) => (
           // A module can sit in several groups (tags, authors): keys per group.
           <tr key={`${g.key}:${m.id}`} data-module={m.id}>
             <th scope="row">{m.title}</th>
@@ -248,7 +266,10 @@ function useWorldRows(shown: readonly WorldInfo[]): Models {
   );
 }
 
-export function WorldGrid(props: { readonly groups: readonly LibGroup[] }) {
+export function WorldGrid(props: {
+  readonly groups: readonly LibGroup[];
+  readonly folding: Folding;
+}) {
   const { state, t } = useUi();
   const [show, setShow] = useState<GridShow>("all");
   const [picked, setPicked] = useState<readonly string[]>([]);
@@ -282,7 +303,12 @@ export function WorldGrid(props: { readonly groups: readonly LibGroup[] }) {
                 ))}
               </tr>
             </thead>
-            <Rows groups={props.groups} worlds={shown} models={models} />
+            <Rows
+              groups={props.groups}
+              worlds={shown}
+              models={models}
+              folding={props.folding}
+            />
           </table>
         </div>
       ) : (

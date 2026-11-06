@@ -256,6 +256,7 @@
   "grid.module": "Module",
   "grid.open": "Open {world}",
   "grid.on": "{n} on",
+  "grid.off": "companion off",
   "grid.queued": "{n} queued",
   "grid.na": "Its companion is off, so its modules are unknown",
   "grid.choose": "Choose worlds",

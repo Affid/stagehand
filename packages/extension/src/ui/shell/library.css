@@ -634,3 +634,23 @@
   height: 26px;
   padding: 0 12px;
 }
+
+.mls-shell .mll-grid tr.grp th button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: auto;
+  height: auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+}
+
+.mls-shell .mll-grid tr.grp th button > i {
+  font-size: 11px;
+  color: var(--color-light-4);
+}

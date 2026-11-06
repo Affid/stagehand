@@ -310,7 +310,10 @@ export function LibraryPage() {
       <div class="mll-body">
         <div class="mll-main">
           {page.tab === "grid" ? (
-            <WorldGrid groups={groups} />
+            <WorldGrid
+              groups={groups}
+              folding={{ closed: page.closed, onToggle: page.toggle }}
+            />
           ) : (
             <>
               {selecting ? <BulkBar model={model} /> : null}

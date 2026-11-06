@@ -97,6 +97,25 @@ describe("the By world grid", () => {
     const row = el(container, '.mll-grid tbody tr[data-module="a"]');
     expect(within(row).queryByRole("switch", { name: /Untracked/ })).toBe(null);
     expect(row.textContent).toContain("–");
+    const head = [...container.querySelectorAll(".mll-grid thead th.w")].find(
+      (th) => th.textContent?.includes("Untracked"),
+    );
+    expect(head?.textContent).toContain("companion off");
+  });
+
+  test("group rows fold like every group header: arrow first", () => {
+    const { container } = grid();
+    const head = el(container, ".mll-grid tr.grp button");
+    expect(head.getAttribute("aria-expanded")).toBe("true");
+    expect(head.querySelector(".fa-chevron-down")).toBeTruthy();
+    const before = container.querySelectorAll(
+      ".mll-grid tbody tr[data-module]",
+    ).length;
+    fireEvent.click(head);
+    expect(head.getAttribute("aria-expanded")).toBe("false");
+    expect(
+      container.querySelectorAll(".mll-grid tbody tr[data-module]").length,
+    ).toBeLessThan(before);
   });
 
   test("Show favourites; hidden worlds with changes are named", () => {
