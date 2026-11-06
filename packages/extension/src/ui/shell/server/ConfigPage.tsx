@@ -14,6 +14,7 @@ import {
 } from "../../../page-config.ts";
 import { useUi } from "../../context.ts";
 import { plural } from "../../i18n.ts";
+import { PageHead } from "./PageHead.tsx";
 import {
   type Draft,
   NumberField,
@@ -291,6 +292,21 @@ function useDraft(
   };
 }
 
+/** "Foundry 14.370 · running on port 30000 · data in /srv/foundry/data". */
+function Running(props: { readonly loaded: Loaded }) {
+  const { state, t } = useUi();
+  const { settings } = props.loaded;
+  return (
+    <>
+      {t("cfg.running", {
+        version: state.data.setup?.core.version ?? "",
+        port: String(settings.port),
+      })}
+      <code>{settings.dataPath}</code>
+    </>
+  );
+}
+
 export function ConfigPage() {
   const { t } = useUi();
   const c = useConfig();
@@ -304,9 +320,10 @@ export function ConfigPage() {
   );
   return (
     <div class="mlc-page ml-app">
-      <div class="mlw-bhead">
-        <h2>{t("cfg.title")}</h2>
-      </div>
+      <PageHead
+        title={t("cfg.title")}
+        summary={c.loaded ? <Running loaded={c.loaded} /> : undefined}
+      />
       <p class="ml-hint">{t("cfg.lead")}</p>
       <Bar
         count={Object.keys(c.changes).length}

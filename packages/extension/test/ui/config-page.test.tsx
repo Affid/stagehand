@@ -48,6 +48,17 @@ async function open() {
 }
 
 describe("the Configuration page", () => {
+  test("its heading says what is running: version, port and data folder", async () => {
+    const { container } = await open();
+    const head = el(container, ".mlc-page .mlb-head");
+    expect(head.querySelector("h2")?.textContent).toBe("Configuration");
+    expect(head.textContent).toContain("Foundry 14.369");
+    expect(head.textContent).toContain("running on port 30000");
+    expect(head.querySelector("code")?.textContent).toBe(
+      "/home/gm/foundry/data",
+    );
+  });
+
   test("the header's Configuration opens it with Foundry's settings, grouped", async () => {
     const { container, store, getByLabelText } = await open();
     expect(store.get().route).toEqual({ kind: "server", page: "config" });

@@ -12,8 +12,9 @@ import type {
 } from "../../../page-server-backups.ts";
 import { Icon } from "../../common/widgets.tsx";
 import { useUi } from "../../context.ts";
-import { plural } from "../../i18n.ts";
+import { plural, type Translate } from "../../i18n.ts";
 import { formatSize, Row } from "../world/BackupsTab.tsx";
+import { PageHead } from "./PageHead.tsx";
 
 const TYPES: readonly PackageType[] = ["world", "module", "system"];
 
@@ -249,14 +250,26 @@ function Sections(props: {
   );
 }
 
+/** "4.7 GB of backups on this server · 2 snapshots". */
+function summary(listing: ServerListing, t: Translate): string {
+  const bytes = listing.packages
+    .flatMap((p) => p.backups)
+    .reduce((n, b) => n + b.size, 0);
+  return t("sb.headSummary", {
+    size: formatSize(bytes),
+    snapshots: plural(t, "sb.snapCount", listing.snapshots.length),
+  });
+}
+
 export function ServerBackupsPage() {
   const { t, canChange } = useUi();
   const { view, busy, run, runPackage } = useServerBackups();
   return (
     <div class="mlb-page ml-app">
-      <div class="mlw-bhead">
-        <h2>{t("sb.title")}</h2>
-        <span class="ml-spacer" />
+      <PageHead
+        title={t("sb.title")}
+        summary={view.listing ? summary(view.listing, t) : undefined}
+      >
         {busy ? <span class="ml-hint">{t("bk.busy")}</span> : null}
         <button
           type="button"
@@ -267,7 +280,7 @@ export function ServerBackupsPage() {
           <Icon name="camera" />
           {t("sb.take")}
         </button>
-      </div>
+      </PageHead>
       <p class="ml-hint">{t("sb.lead")}</p>
       {view.error ? <p class="ml-banner ml-warn">{view.error}</p> : null}
       {view.listing ? (

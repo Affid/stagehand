@@ -61,6 +61,14 @@ async function open(listing: ServerListing = LISTING) {
 }
 
 describe("the server Backups page", () => {
+  test("its heading sums up the backups on this server", async () => {
+    const { container } = await open();
+    const head = el(container, ".mlb-page .mlb-head");
+    expect(head.querySelector("h2")?.textContent).toBe("Backups");
+    expect(head.textContent).toContain("of backups on this server");
+    expect(head.textContent).toContain("1 snapshot");
+  });
+
   test("the header's Backups opens it, in Foundry's order of categories", async () => {
     const { container, store } = await open();
     expect(store.get().route).toEqual({ kind: "server", page: "backups" });

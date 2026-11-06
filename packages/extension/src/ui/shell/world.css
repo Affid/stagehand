@@ -1032,3 +1032,38 @@ ul.mlw-check.warn {
 .mls-shell .mlu-why i {
   color: var(--color-light-4);
 }
+
+/* A server page's heading: Foundry's display face and a summary line. */
+.mls-shell .mlb-head {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex: none;
+}
+
+.mls-shell .mlb-head h2 {
+  margin: 0;
+  font-family: "Modesto Condensed", serif;
+  font-size: 34px;
+  line-height: 1;
+  color: var(--color-light-1);
+  border: 0;
+}
+
+.mls-shell .mlb-head p {
+  margin: 4px 0 0;
+  color: var(--color-text-subtle);
+  font-size: 13px;
+}
+
+.mls-shell .mlb-head code {
+  font-size: 12px;
+  color: var(--color-light-3);
+}
+
+.mls-shell .mlb-head button {
+  width: auto;
+  height: 32px;
+  padding: 0 12px;
+  gap: 6px;
+}

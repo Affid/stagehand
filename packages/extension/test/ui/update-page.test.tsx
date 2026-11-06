@@ -59,6 +59,15 @@ describe("the Update page", () => {
     ).toBe("https://foundryvtt.com/releases/14.369");
   });
 
+  test("its heading says which Foundry runs and whether it is the latest", () => {
+    const r = open({ hasUpdate: false, channel: "stable", version: "" });
+    toUpdate(r, "Update page");
+    const head = el(r.container, ".mlu-page .mlb-head");
+    expect(head.querySelector("h2")?.textContent).toBe("Update Foundry");
+    expect(head.textContent).toContain("You're on Foundry 14.369 (Stable).");
+    expect(head.textContent).toContain("You have the latest version.");
+  });
+
   test("the channel reads as a name; updates disabled by --noupdate say so", () => {
     const r = open({
       hasUpdate: false,

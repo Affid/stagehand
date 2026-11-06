@@ -5,6 +5,7 @@
 import { Icon } from "../../common/widgets.tsx";
 import { useUi } from "../../context.ts";
 import { channelName } from "../../model/update.ts";
+import { PageHead } from "./PageHead.tsx";
 
 /** Foundry's public notes for a version; only plain "14.371" versions. */
 export function notesUrl(version: string): string | undefined {
@@ -60,6 +61,28 @@ function Availability(props: { readonly installed: string }) {
   );
 }
 
+/** "You're on Foundry 14.370 (Stable). You have the latest version." */
+function Summary() {
+  const { state, t } = useUi();
+  const setup = state.data.setup;
+  const version = setup?.core.version ?? "";
+  const update = setup?.coreUpdate;
+  const channel = channelName(update?.channel ?? "");
+  const on = channel
+    ? t("up.youreOn", { version, channel })
+    : t("up.youreOnNoChannel", { version });
+  const then = update?.hasUpdate
+    ? t("up.isAvailable", { version: update.version })
+    : update?.reachable === false
+      ? t("up.unreachable")
+      : t("up.latest");
+  return (
+    <>
+      {on} {then}
+    </>
+  );
+}
+
 export function UpdatePage() {
   const { state, t } = useUi();
   const setup = state.data.setup;
@@ -67,9 +90,7 @@ export function UpdatePage() {
   const update = setup?.coreUpdate;
   return (
     <div class="mlu-page ml-app">
-      <div class="mlw-bhead">
-        <h2>{t("up.title")}</h2>
-      </div>
+      <PageHead title={t("up.title")} summary={<Summary />} />
       <dl class="mlw-details">
         <dt>{t("up.installed")}</dt>
         <dd>{installed}</dd>
