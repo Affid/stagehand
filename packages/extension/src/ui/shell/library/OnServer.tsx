@@ -7,10 +7,12 @@ import { useUi } from "../../context.ts";
 
 type PackageAction = Extract<FoundryAction, { id: string }>["action"];
 
-function useRun(pkg: PackageInfo) {
+export type Kind = "module" | "system";
+
+function useRun(pkg: PackageInfo, kind: Kind) {
   const { page } = useUi();
   return (action: PackageAction): void => {
-    page.foundryAction({ action, packageType: "module", id: pkg.id });
+    page.foundryAction({ action, packageType: kind, id: pkg.id });
   };
 }
 
@@ -45,9 +47,9 @@ function Switch(props: {
   );
 }
 
-function Acts(props: { readonly pkg: PackageInfo }) {
+function Acts(props: { readonly pkg: PackageInfo; readonly kind: Kind }) {
   const { t, canChange } = useUi();
-  const run = useRun(props.pkg);
+  const run = useRun(props.pkg, props.kind);
   const btn = (action: PackageAction, icon: string, label: string) => (
     <button type="button" disabled={!canChange} onClick={() => run(action)}>
       <Icon name={icon} />
@@ -56,7 +58,9 @@ function Acts(props: { readonly pkg: PackageInfo }) {
   );
   return (
     <div class="mls-foundry-acts">
-      {props.pkg.locked ? null : btn("editPackage", "pen-to-square", "pk.edit")}
+      {props.pkg.locked || props.kind === "system"
+        ? null
+        : btn("editPackage", "pen-to-square", "pk.edit")}
       {props.pkg.locked
         ? null
         : btn("updatePackage", "rotate", "pk.checkUpdate")}
@@ -66,10 +70,13 @@ function Acts(props: { readonly pkg: PackageInfo }) {
   );
 }
 
-export function OnServer(props: { readonly pkg: PackageInfo }) {
+export function OnServer(props: {
+  readonly pkg: PackageInfo;
+  readonly kind: Kind;
+}) {
   const { state, t, canChange } = useUi();
   const { pkg } = props;
-  const run = useRun(pkg);
+  const run = useRun(pkg, props.kind);
   const a = state.adapter;
   const canLock =
     canChange &&
@@ -96,7 +103,7 @@ export function OnServer(props: { readonly pkg: PackageInfo }) {
           onFlip={() => run(pkg.locked ? "unlockPackage" : "lockPackage")}
         />
       </ul>
-      <Acts pkg={pkg} />
+      <Acts pkg={pkg} kind={props.kind} />
     </div>
   );
 }

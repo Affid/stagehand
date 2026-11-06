@@ -650,6 +650,7 @@
   color: var(--color-warm-1);
 }
 
+.mls-shell .mls-usedby ul,
 .mls-shell .mls-pkgtab .mls-chg ul:not(.mls-wlist) {
   list-style: none;
   margin: 0;
@@ -658,6 +659,7 @@
   gap: 3px;
 }
 
+.mls-shell .mls-usedby li,
 .mls-shell .mls-pkgtab .mls-chg ul:not(.mls-wlist) li {
   display: grid;
   grid-template-columns: 18px 1fr auto;
@@ -666,6 +668,7 @@
   color: var(--color-light-2);
 }
 
+.mls-shell .mls-usedby li .s,
 .mls-shell .mls-pkgtab .mls-chg li .s {
   text-align: center;
   color: var(--color-light-4);
@@ -683,6 +686,7 @@
   color: var(--color-light-3);
 }
 
+.mls-shell .mls-usedby li .x,
 .mls-shell .mls-pkgtab .mls-chg li .x {
   color: var(--color-light-4);
   font-size: 12px;
@@ -739,4 +743,19 @@
 .mls-shell .mll-emptygroup {
   margin: 4px 0 8px 30px;
   font-size: 12.5px;
+}
+
+.mls-shell .mls-usedby li.none {
+  display: block;
+  color: var(--color-text-subtle);
+}
+
+.mls-shell .mls-usedby li .x {
+  width: auto;
+  height: auto;
+  padding: 0 4px;
+}
+
+.mls-shell .mls-usedby {
+  margin-bottom: 14px;
 }

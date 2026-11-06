@@ -5,6 +5,7 @@ import { LibraryPage } from "./library/LibraryPage.tsx";
 import { ModulePanel } from "./library/ModulePanel.tsx";
 import { IntakePanel } from "./library/panels/IntakePanel.tsx";
 import { PresetsPanel } from "./library/panels/PresetsPanel.tsx";
+import { SystemPanel } from "./library/panels/SystemPanel.tsx";
 import { TagsPanel } from "./library/panels/TagsPanel.tsx";
 import { ServerBackupsPage } from "./server/backups/BackupsPage.tsx";
 import { ConfigPage } from "./server/ConfigPage.tsx";
@@ -22,6 +23,8 @@ function SideColumn() {
   if (side?.kind === "tags") return <TagsPanel id={side.id} />;
   if (side?.kind === "presets") return <PresetsPanel id={side.id} />;
   if (side?.kind === "intake") return <IntakePanel />;
+  if (side?.kind === "system")
+    return <SystemPanel key={side.id} id={side.id} />;
   return null;
 }
 

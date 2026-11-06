@@ -113,6 +113,7 @@ export function collect(game: SetupGame): SetupData {
     lang: game.i18n?.lang ?? "",
     modules: all(game.modules).map(toPackageInfo),
     systems: all(game.systems).map((s) => ({
+      ...toPackageInfo(s),
       id: str(s.id).slice(0, MAX_ID),
       title: str(s.title).slice(0, MAX_TITLE),
       version: str(s.version).slice(0, MAX_VERSION),

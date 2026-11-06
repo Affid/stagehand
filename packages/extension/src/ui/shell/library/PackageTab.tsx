@@ -11,7 +11,7 @@ import { safeUrl } from "../../common/files.ts";
 import { Icon } from "../../common/widgets.tsx";
 import { useUi } from "../../context.ts";
 import { plural } from "../../i18n.ts";
-import { OnServer } from "./OnServer.tsx";
+import { type Kind, OnServer } from "./OnServer.tsx";
 
 function Badge(props: { readonly pkg: PackageInfo }) {
   const { state, t } = useUi();
@@ -146,15 +146,19 @@ function Contents(props: { readonly pkg: PackageInfo }) {
   );
 }
 
-export function PackageTab(props: { readonly pkg: PackageInfo }) {
+export function PackageTab(props: {
+  readonly pkg: PackageInfo;
+  readonly kind?: Kind;
+}) {
   const { t } = useUi();
+  const kind = props.kind ?? "module";
   return (
     <div class="mls-pkgtab">
       <Facts pkg={props.pkg} />
       <Relationships pkg={props.pkg} />
       <Contents pkg={props.pkg} />
-      <OnServer pkg={props.pkg} />
-      <p class="ml-muted mls-foot">{t("pk.foot")}</p>
+      <OnServer pkg={props.pkg} kind={kind} />
+      <p class="ml-muted mls-foot">{t(`pk.foot.${kind}`)}</p>
     </div>
   );
 }

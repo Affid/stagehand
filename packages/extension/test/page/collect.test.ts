@@ -25,7 +25,15 @@ describe("reading Setup's package data (V-1)", () => {
     expect(data.isAdmin).toBe(true);
     expect(data.lang).toBe("de");
     expect(data.modules.map((m) => m.id)).toEqual(["a"]);
-    expect(data.systems).toEqual([{ id: "dnd5e", title: "D&D", version: "5" }]);
+    // Read as a package, as modules are (6c): favourite, lock, links and all.
+    expect(data.systems).toEqual([
+      expect.objectContaining({
+        id: "dnd5e",
+        title: "D&D",
+        version: "5",
+        authors: [],
+      }),
+    ]);
     expect(data.worlds[0]).toMatchObject({ id: "w", lastPlayed: "2026-11-05" });
     expect(data.worlds[1]).not.toHaveProperty("lastPlayed");
   });

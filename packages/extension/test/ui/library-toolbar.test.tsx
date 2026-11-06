@@ -6,7 +6,7 @@ import { cleanup, fireEvent, waitFor, within } from "@testing-library/preact";
 import { afterEach, describe, expect, test, vi } from "vitest";
 import type { Snapshot } from "@module-library/shared/world";
 import type { SetupState } from "../../src/messages.ts";
-import { el, renderUi, sent } from "./harness.tsx";
+import { el, renderUi, sent, setupState } from "./harness.tsx";
 
 afterEach(() => {
   cleanup();
@@ -65,7 +65,7 @@ describe("the Library's head", () => {
     const { container, getByRole, page } = library();
     fireEvent.click(getByRole("tab", { name: /^Systems/ }));
     expect(el(container, '[data-system="dnd5e"]').textContent).toContain(
-      "used by 1 world",
+      "Used by 1 world",
     );
     fireEvent.click(getByRole("button", { name: "Install System" }));
     expect(page.foundryAction).toHaveBeenCalledWith({
@@ -315,5 +315,50 @@ describe("a group's menu (6b3)", () => {
     expect(r.store.get().selection).toEqual(["a"]);
     fireEvent.click(r.getByRole("checkbox", { name: "Select all in Combat" }));
     expect(r.store.get().selection).toEqual([]);
+  });
+});
+
+describe("a system's card and panel (6c)", () => {
+  test("its name opens the System panel: worlds that use it, then its package", () => {
+    const r = library();
+    fireEvent.click(r.getByRole("tab", { name: /^Systems/ }));
+    fireEvent.click(
+      r.getByRole("button", { name: "Dungeons & Dragons Fifth Edition" }),
+    );
+    const p = r.getByRole("complementary", {
+      name: "Dungeons & Dragons Fifth Edition",
+    });
+    expect(el(p, ".mls-usedby").textContent).toContain("Used by 1 world");
+    fireEvent.click(within(p).getByRole("switch", { name: "Favourite" }));
+    expect(r.page.foundryAction).toHaveBeenCalledWith({
+      action: "favoritePackage",
+      packageType: "system",
+      id: "dnd5e",
+    });
+    expect(within(p).queryByRole("button", { name: "Edit manifest…" })).toBe(
+      null,
+    );
+    fireEvent.click(within(p).getByRole("button", { name: "Open Strahd" }));
+    expect(r.store.get().route).toEqual({ kind: "world", worldId: "w1" });
+  });
+
+  test("a system no world uses says it is safe to uninstall", () => {
+    const base = setupState();
+    const r = renderUi("shell", {
+      data: {
+        setup: base.setup && {
+          ...base.setup,
+          systems: [
+            ...base.setup.systems,
+            { id: "pf2e", title: "PF2e", version: "7" },
+          ],
+        },
+      },
+      state: { route: { kind: "library" } },
+    });
+    fireEvent.click(r.getByRole("tab", { name: /^Systems/ }));
+    expect(el(r.container, '[data-system="pf2e"]').textContent).toContain(
+      "In no world · safe to uninstall",
+    );
   });
 });

@@ -148,6 +148,15 @@ export const WorldInfoSchema = z.object({
 
 export type WorldInfo = z.infer<typeof WorldInfoSchema>;
 
+/** A system as Setup reads it: always id, title, version; the rest as a module's. */
+export const SystemInfoSchema = PackageInfoSchema.partial().extend({
+  id: z.string().max(MAX_ID),
+  title: z.string().max(MAX_TITLE),
+  version: z.string().max(MAX_VERSION),
+});
+
+export type SystemInfo = z.infer<typeof SystemInfoSchema>;
+
 /** More packages of one kind than this is not a real server. */
 export const MAX_PACKAGES = 5000;
 
@@ -160,15 +169,7 @@ export const SetupDataSchema = z.object({
   isAdmin: z.boolean(),
   lang: z.string(),
   modules: z.array(PackageInfoSchema).max(MAX_PACKAGES),
-  systems: z
-    .array(
-      z.object({
-        id: z.string().max(MAX_ID),
-        title: z.string().max(MAX_TITLE),
-        version: z.string().max(MAX_VERSION),
-      }),
-    )
-    .max(MAX_PACKAGES),
+  systems: z.array(SystemInfoSchema).max(MAX_PACKAGES),
   worlds: z.array(WorldInfoSchema).max(MAX_PACKAGES),
   /** Foundry's count of setup warnings (Support and issues). */
   issues: z.number().int().nonnegative().max(1_000_000).optional(),
