@@ -200,4 +200,35 @@ editors stay open until saved; dates survive odd language tags; description link
 their host; nesting deeper than 32 is flattened. Noted: our SAVE_DONE / BACKUPS_DONE
 replies can be forged by page scripts (cosmetic only: real state comes from Setup's data).
 
-Next: Phase 5 (server pages).
+### Phase 5: server pages (done)
+
+Done (commits from `1eae2b8`):
+
+- Backups page (header Backups): Snapshots (note, Foundry version, package count, size;
+  take, restore, delete through Foundry's dialogs), then Worlds, Modules and Systems with
+  each package's backups inline (uninstalled ones marked). `SERVER_BACKUPS` / `_DONE`;
+  package backups name their type. Foundry's Backup Manager one click away.
+- Configuration page (header Configuration): Foundry's settings grouped by task, edits in
+  a not-saved bar, saved through Foundry's `ServerSettings` model and `adminConfigure`
+  (only the diff; the model restored on failure), then the restart notice with Shut down
+  now. `CONFIG` / `_DONE` carries an allow-list only: never the password hash, salt or
+  certificate keys (only whether a password is set). The password itself is changed in
+  Foundry's window.
+- Update page (Version chip, marked when an update exists): installed version, channel,
+  availability, Foundry's public release notes, Foundry's own update screen. Only the
+  update check's `hasUpdate`, `channel` and `version` are read, never its download link.
+- Live: `tests/foundry/setup-server.spec.ts` (snapshot taken and deleted; a setting saved
+  and restored; Update page).
+
+Not yet: password change flow on our page (current → new → repeat), HTTPS status and
+certificate actions, AWS, the release notes reader and history (needs the optional
+foundryvtt.com host permission), the compatibility preview (needs Foundry's release data
+from its update check), snapshot creation details (disk needed and free), and progress
+drawn on our page.
+
+Reviews (code, security): no critical or high findings. Fixed: package operation errors
+survive the re-list; uninstalled packages' backups can be restored and deleted; own-key
+snapshot lookups; port validation blocks Save; trimming at save; the restart notice
+accumulates. Open: unsaved Configuration edits are dropped when leaving the page.
+
+Next: Phase 6 (News and finish).
