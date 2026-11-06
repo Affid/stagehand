@@ -20,7 +20,7 @@ export function Banners() {
   return null;
 }
 
-function folderCounts(state: ReturnType<typeof useUi>["state"]) {
+export function folderCounts(state: ReturnType<typeof useUi>["state"]) {
   const counts: Record<string, number> = {};
   const known = new Set(state.data.library.folders.map((f) => f.id));
   let unfiled = 0;

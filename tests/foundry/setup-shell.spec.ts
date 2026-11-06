@@ -85,11 +85,11 @@ test("Edit World opens Foundry's World Configuration above our page", async () =
   await expect(form).toHaveCount(0);
 });
 
-test("the Library shows today's Module Library", async () => {
+test("the Library shows the module cards", async () => {
   await shell(page)
     .getByRole("button", { name: /^Library/ })
     .click();
-  await expect(shell(page).locator(".ml-modules .ml-toolbar")).toBeVisible();
+  await expect(shell(page).locator(".mll-page .mll-tools")).toBeVisible();
   await expect(shell(page).locator(".mls-banner")).toHaveCount(0);
   await page.screenshot({ path: `${SCREENS}/shell-library.png` });
 });

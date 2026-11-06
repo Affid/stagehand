@@ -208,14 +208,14 @@ describe("routing", () => {
     expect(container.querySelector(".mls-world.mls-on")).toBe(null);
     expect(container.querySelector(".mls-world[aria-current]")).toBe(null);
     expect(container.querySelector(".mls-banner")).toBe(null);
-    expect(container.querySelector(".ml-modules")).toBeTruthy();
+    expect(container.querySelector(".mll-page")).toBeTruthy();
   });
 
   test("with no worlds the Library is shown", () => {
     const { container } = renderUi("shell", {
       data: { setup: base.setup ? { ...base.setup, worlds: [] } : undefined },
     });
-    expect(container.querySelector(".ml-modules")).toBeTruthy();
+    expect(container.querySelector(".mll-page")).toBeTruthy();
   });
 });
 

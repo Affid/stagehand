@@ -1,6 +1,6 @@
 // The new Setup page: header, worlds rail, and a world's page or the Library.
 import { useUi } from "../context.ts";
-import { ModulesView } from "../modules/ModulesView.tsx";
+import { LibraryPage } from "./library/LibraryPage.tsx";
 import { Header } from "./Header.tsx";
 import { resolveRoute } from "./route.ts";
 import { WorldPage } from "./WorldPage.tsx";
@@ -24,7 +24,7 @@ export function Shell() {
         ) : (
           <section class="application framed mls-main mls-library">
             <div class="mls-body-main">
-              <ModulesView />
+              <LibraryPage />
             </div>
           </section>
         )}
