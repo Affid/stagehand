@@ -143,7 +143,23 @@ test("a module's name opens its details; the Package tab shows its manifest", as
   await expect(panel.getByRole("combobox", { name: "Folder" })).toBeVisible();
   await page.screenshot({ path: `${SCREENS}/library-details.png` });
   await panel.getByRole("tab", { name: "Package" }).click();
-  await expect(panel.locator(".mll-pkg")).toContainText("ML Fixture: library");
+  await expect(panel.locator(".mls-pkgtab")).toContainText(
+    "Needs ML Fixture: library",
+  );
+  // Foundry's own favourite: the star shows on the card, then goes again.
+  await panel.getByRole("switch", { name: "Favourite" }).click();
+  await expect(card("ml-fixture-a").locator(".mlw-fav")).toBeVisible();
+  await panel.getByRole("switch", { name: "Favourite" }).click();
+  await expect(card("ml-fixture-a").locator(".mlw-fav")).toHaveCount(0);
+  // Edit manifest opens Foundry's own module editor; closed unsaved.
+  await panel.getByRole("button", { name: "Edit manifest…" }).click();
+  const editor = page.locator("#module-config");
+  await expect(editor).toBeVisible();
+  // Foundry's own card menu, used to reach its editor, doesn't linger.
+  await expect(page.locator("#context-menu")).toHaveCount(0);
+  await page.screenshot({ path: `${SCREENS}/library-package.png` });
+  await editor.locator('[data-action="close"]').click();
+  await expect(editor).toHaveCount(0);
   await panel.getByRole("button", { name: "Close" }).click();
   await expect(panel).toHaveCount(0);
 });

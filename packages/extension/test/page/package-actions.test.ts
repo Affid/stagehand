@@ -182,3 +182,42 @@ describe("the update check (6b)", () => {
     expect(parsePageToUi("UPDATES", { module: {} })).toBeUndefined();
   });
 });
+
+describe("Edit manifest, through Foundry's own card menu (6b2)", () => {
+  test("its menu on the hidden card, its edit item by icon", async () => {
+    document.body.innerHTML = `<div id="setup-packages"><section data-package-type="module">
+      <li class="package" data-package-id="m"></li></section></div>`;
+    const card = document.querySelector("li.package");
+    card?.addEventListener("contextmenu", () => {
+      document.body.insertAdjacentHTML(
+        "beforeend",
+        `<nav id="context-menu"><li class="context-item"><i class="fa-edit"></i>Edit</li></nav>`,
+      );
+    });
+    const clicked = vi.fn();
+    document.addEventListener("click", (e) => {
+      if ((e.target as HTMLElement).closest(".context-item")) clicked();
+    });
+    const page = {
+      foundry: { applications: { instances: new Map() } },
+    } as never;
+    expect(
+      await runFoundryAction(document, page, act("editPackage")),
+    ).toBeUndefined();
+    expect(clicked).toHaveBeenCalledTimes(1);
+  });
+
+  test("a system has no editor; a missing card is reported", async () => {
+    document.body.innerHTML = "";
+    expect(
+      await runFoundryAction(
+        document,
+        {},
+        act("editPackage", "dnd5e", "system"),
+      ),
+    ).toMatch(/no editor/);
+    expect(await runFoundryAction(document, {}, act("editPackage"))).toMatch(
+      /missing/,
+    );
+  });
+});

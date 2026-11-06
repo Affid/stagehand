@@ -71,6 +71,7 @@ export const PACKAGE_ID_ACTIONS = [
   "unlockPackage",
   "backupPackage",
   "uninstallPackage",
+  "editPackage",
 ] as const;
 
 export type FoundryAction =

@@ -6,12 +6,14 @@ import type { FoundryAction } from "../page-protocol.ts";
 import type { PageGlobals } from "./globals.ts";
 import {
   backup,
+  edit,
   setLock,
   toggleFavorite,
   uninstall,
   update,
 } from "./package-actions.ts";
 import { saveWorld } from "./save-world.ts";
+import { placeInView } from "./place.ts";
 
 const MENU_ACTION: Record<string, string> = {
   warnings: "viewWarnings",
@@ -105,23 +107,8 @@ function pickBackground(page: ActionGlobals, id: string): string | undefined {
 
 /** Foundry's warnings window opens under its own menu, hidden by our page. */
 export const WARNINGS_ID = "setup-warnings";
-const PLACE_TOP = 80;
-const PLACE_TRIES = 40;
 
 /** Moves one of Foundry's windows into view once it has rendered. */
-async function placeInView(page: ActionGlobals, id: string): Promise<void> {
-  for (let i = 0; i < PLACE_TRIES; i++) {
-    const app = page.foundry?.applications?.instances?.get(id);
-    if (app?.rendered) {
-      const w = app.position?.width;
-      const width = typeof w === "number" ? w : 600;
-      const left = Math.max(16, Math.round((innerWidth - width) / 2));
-      app.setPosition({ left, top: PLACE_TOP });
-      return;
-    }
-    await new Promise((r) => setTimeout(r, 25));
-  }
-}
 
 function openWarnings(doc: Document, page: ActionGlobals): string | undefined {
   const error = click(
@@ -172,6 +159,10 @@ function runPackageAction(
       return backup(page, a.packageType, a.id);
     case "uninstallPackage":
       return uninstall(page, a.packageType, a.id);
+    case "editPackage":
+      return a.packageType === "module"
+        ? edit(doc, page, a.id)
+        : `Foundry has no editor for a ${a.packageType}`;
   }
 }
 

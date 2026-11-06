@@ -184,14 +184,17 @@ describe("a module's details", () => {
     });
   });
 
-  test("the Package tab shows version, compatibility and relations", () => {
+  test("the Package tab: version with Foundry's badge, needs, authors and links", () => {
     const { panel } = open();
     fireEvent.click(within(panel).getByRole("tab", { name: "Package" }));
-    const text = el(panel, ".mll-pkg").textContent;
+    const text = el(panel, ".mls-pkgtab .mls-kv").textContent;
     expect(text).toContain("1.0.0");
-    expect(text).toContain("13");
-    expect(text).toContain("14");
+    expect(text).toContain("verified for 14");
+    expect(text).toContain("Foundry 13 or newer");
     expect(text).toContain("Ann");
+    expect(el(panel, ".mls-pkgtab").textContent).toContain(
+      "No compendium packs",
+    );
   });
 
   test("the note follows a change made elsewhere", () => {
@@ -231,5 +234,65 @@ describe("a module's details", () => {
         name: /on in Strahd/,
       }).disabled,
     ).toBe(true);
+  });
+});
+
+describe("the Package tab's server settings and actions (6b2)", () => {
+  test("relationships say what is installed", () => {
+    const base = setupState();
+    const { panel } = open({
+      setup: base.setup && {
+        ...base.setup,
+        modules: base.setup.modules.map((m) =>
+          m.id === "a"
+            ? {
+                ...m,
+                requires: [{ id: "lib", type: "module" }],
+                conflicts: [{ id: "gone", type: "module" }],
+                packs: ["Macros"],
+                languages: ["English"],
+              }
+            : m,
+        ),
+      },
+    });
+    fireEvent.click(within(panel).getByRole("tab", { name: "Package" }));
+    const rel = el(panel, ".mls-pkgtab").textContent;
+    expect(rel).toContain("Needs Title libinstalled");
+    expect(rel).toContain("Conflicts with gonenot installed");
+    expect(rel).toContain("1 compendium pack: Macros");
+    expect(rel).toContain("English");
+  });
+
+  test("Favourite and Lock updates are Foundry's own; the buttons open its dialogs", () => {
+    const { panel, page } = open();
+    fireEvent.click(within(panel).getByRole("tab", { name: "Package" }));
+    fireEvent.click(within(panel).getByRole("switch", { name: "Favourite" }));
+    expect(page.foundryAction).toHaveBeenCalledWith({
+      action: "favoritePackage",
+      packageType: "module",
+      id: "a",
+    });
+    fireEvent.click(
+      within(panel).getByRole("switch", { name: "Lock updates" }),
+    );
+    expect(page.foundryAction).toHaveBeenCalledWith({
+      action: "lockPackage",
+      packageType: "module",
+      id: "a",
+    });
+    for (const [name, action] of [
+      ["Edit manifest…", "editPackage"],
+      ["Check update", "updatePackage"],
+      ["Backup", "backupPackage"],
+      ["Uninstall", "uninstallPackage"],
+    ] as const) {
+      fireEvent.click(within(panel).getByRole("button", { name }));
+      expect(page.foundryAction).toHaveBeenCalledWith({
+        action,
+        packageType: "module",
+        id: "a",
+      });
+    }
   });
 });

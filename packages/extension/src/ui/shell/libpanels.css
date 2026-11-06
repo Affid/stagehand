@@ -612,3 +612,104 @@
   background: rgb(63 143 82 / 32%);
   color: #fff;
 }
+
+/* A module's Package tab */
+.mls-shell .mls-pkgtab {
+  display: grid;
+  gap: 14px;
+}
+
+.mls-shell .mls-badge {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  margin-left: 4px;
+  padding: 0 6px;
+  border: 1px solid;
+  border-radius: 3px;
+  font-size: 11px;
+}
+
+.mls-shell .mls-badge.ok {
+  color: #8fd49b;
+  border-color: #3f8f52;
+}
+
+.mls-shell .mls-badge.warn {
+  color: #f5c45e;
+  border-color: #8a6a1f;
+}
+
+.mls-shell .mls-links a {
+  color: var(--color-light-2);
+  text-decoration: underline;
+  text-decoration-color: var(--color-light-5);
+}
+
+.mls-shell .mls-links a:hover {
+  color: var(--color-warm-1);
+}
+
+.mls-shell .mls-pkgtab .mls-chg ul:not(.mls-wlist) {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.mls-shell .mls-pkgtab .mls-chg ul:not(.mls-wlist) li {
+  display: grid;
+  grid-template-columns: 18px 1fr auto;
+  gap: 8px;
+  align-items: center;
+  color: var(--color-light-2);
+}
+
+.mls-shell .mls-pkgtab .mls-chg li .s {
+  text-align: center;
+  color: var(--color-light-4);
+}
+
+.mls-shell .mls-pkgtab .mls-chg li .s.plus {
+  color: #8fd49b;
+}
+
+.mls-shell .mls-pkgtab .mls-chg li .s.minus {
+  color: #ff9c8f;
+}
+
+.mls-shell .mls-pkgtab .mls-chg li .s.rec {
+  color: var(--color-light-3);
+}
+
+.mls-shell .mls-pkgtab .mls-chg li .x {
+  color: var(--color-light-4);
+  font-size: 12px;
+  padding: 0 4px;
+}
+
+.mls-shell .mls-hint {
+  font-size: 11.5px;
+}
+
+.mls-shell .mls-foundry-acts {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.mls-shell .mls-foundry-acts button {
+  height: 28px;
+  width: auto;
+  flex: none;
+  padding: 0 10px;
+  gap: 6px;
+  font-size: 12.5px;
+}
+
+.mls-shell .mls-foot {
+  margin: 0;
+  font-size: 12px;
+}
