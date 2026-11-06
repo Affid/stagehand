@@ -675,24 +675,6 @@ ul.mlw-check.warn {
   color: var(--color-warm-1);
 }
 
-.mls-shell .mlw-sessionedit {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  gap: 6px;
-}
-
-.mls-shell .mlw-sessionedit label {
-  display: grid;
-  gap: 2px;
-}
-
-.mls-shell .mlw-sessionedit button {
-  width: auto;
-  height: 28px;
-  padding: 0 10px;
-}
-
 /* The Configuration page */
 .mls-shell .mlc-page {
   display: grid;

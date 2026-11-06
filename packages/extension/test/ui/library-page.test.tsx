@@ -57,7 +57,7 @@ describe("the Library page", () => {
 
   test("the filter narrows the cards", () => {
     const { container, getByRole } = library();
-    fireEvent.input(getByRole("searchbox", { name: /Filter modules/ }), {
+    fireEvent.input(getByRole("searchbox", { name: /Filter Modules/ }), {
       target: { value: "module-lib" },
     });
     expect(cards(container)).toEqual(["module-library"]);
@@ -97,22 +97,10 @@ describe("the Library page", () => {
       }),
     );
     expect(store.get().selection).toEqual(["a"]);
-    expect(el(container, ".ml-bulk-active").textContent).toContain(
-      "1 selected",
-    );
+    expect(el(container, ".mls-selbar").textContent).toContain("1 selected");
     fireEvent.click(getByRole("button", { name: "Done" }));
     expect(store.get().selection).toEqual([]);
-    expect(container.querySelector(".ml-bulk")).toBe(null);
-  });
-
-  test("Organise opens today's folders, tags and presets beside the cards", () => {
-    const { container, getByRole } = library();
-    expect(container.querySelector(".mll-side")).toBe(null);
-    fireEvent.click(getByRole("button", { name: "Organise" }));
-    const side = el(container, ".mll-side");
-    expect(side.textContent).toContain("Folders");
-    expect(side.textContent).toContain("Tags");
-    expect(side.textContent).toContain("Presets");
+    expect(container.querySelector(".mls-selbar")).toBe(null);
   });
 
   test("typing in the filter clears the selection, so bulk actions can't reach hidden cards", () => {
@@ -123,7 +111,7 @@ describe("the Library page", () => {
         name: "Select Title a",
       }),
     );
-    fireEvent.input(getByRole("searchbox", { name: /Filter modules/ }), {
+    fireEvent.input(getByRole("searchbox", { name: /Filter Modules/ }), {
       target: { value: "module-lib" },
     });
     expect(store.get().selection).toEqual([]);

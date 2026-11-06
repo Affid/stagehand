@@ -52,7 +52,7 @@ function grid(over: Partial<SetupState> = {}) {
     reply,
     state: { route: { kind: "library" } },
   });
-  fireEvent.click(r.getByRole("tab", { name: "By world" }));
+  fireEvent.click(r.getByRole("tab", { name: /^By world/ }));
   return r;
 }
 

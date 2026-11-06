@@ -68,8 +68,17 @@ export const WORLD_ACTIONS = [
   "pickBackground",
   "backupLaunch",
 ] as const;
+/** Foundry's Install and Update All, for modules or systems. */
+export const PACKAGE_ACTIONS = ["installPackage", "updateAll"] as const;
+export const PACKAGE_KINDS = ["module", "system"] as const;
+export type PackageKind = (typeof PACKAGE_KINDS)[number];
+
 export type FoundryAction =
   | { readonly action: (typeof SERVER_ACTIONS)[number] }
+  | {
+      readonly action: (typeof PACKAGE_ACTIONS)[number];
+      readonly packageType: PackageKind;
+    }
   | {
       readonly action: Exclude<(typeof WORLD_ACTIONS)[number], "backupLaunch">;
       readonly worldId: string;
@@ -170,8 +179,24 @@ function windowSpec(p: Loose): WindowSpec | undefined {
 
 const NOTE_MAX = 200;
 
+function packageAction(p: Loose): FoundryAction | undefined {
+  const { action, packageType } = p;
+  if (!(PACKAGE_ACTIONS as readonly unknown[]).includes(action))
+    return undefined;
+  if (!(PACKAGE_KINDS as readonly unknown[]).includes(packageType))
+    return undefined;
+  if (Object.keys(p).some((k) => k !== "action" && k !== "packageType"))
+    return undefined;
+  return {
+    action: action as (typeof PACKAGE_ACTIONS)[number],
+    packageType: packageType as PackageKind,
+  };
+}
+
 function foundryAction(p: Loose): FoundryAction | undefined {
   const { action, worldId, note } = p;
+  if ((PACKAGE_ACTIONS as readonly unknown[]).includes(action))
+    return packageAction(p);
   if ((SERVER_ACTIONS as readonly unknown[]).includes(action))
     return worldId === undefined && note === undefined
       ? { action: action as (typeof SERVER_ACTIONS)[number] }

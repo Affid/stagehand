@@ -1,9 +1,7 @@
-// The roots the Setup UI mounts: the new Setup page, and the overlay, whose
-// windows open in Foundry's own window frames.
+// The root the Setup UI mounts: the new Setup page.
 import type { ComponentChildren } from "preact";
 import { useErrorBoundary } from "preact/hooks";
-import { UiContext, type UiDeps, useUi } from "./context.ts";
-import { PresetEditor } from "./presets/PresetEditor.tsx";
+import { UiContext, type UiDeps } from "./context.ts";
 import { Shell } from "./shell/Shell.tsx";
 
 const Provider = (props: {
@@ -11,22 +9,6 @@ const Provider = (props: {
   readonly children: ComponentChildren;
 }) => (
   <UiContext.Provider value={props.deps}>{props.children}</UiContext.Provider>
-);
-
-/** Foundry windows our page opens: the preset editor. */
-function Overlay() {
-  const { state } = useUi();
-  return state.editingPreset !== null ? (
-    <PresetEditor
-      key={`${state.editingPreset}:${state.draftModules.join(",")}`}
-    />
-  ) : null;
-}
-
-export const OverlayRoot = (props: { readonly deps: UiDeps }) => (
-  <Provider deps={props.deps}>
-    <Overlay />
-  </Provider>
 );
 
 /** Renders nothing after an error and reports it, so Foundry's page can return. */

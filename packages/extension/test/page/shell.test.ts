@@ -289,3 +289,38 @@ describe("Foundry actions on its own controls", () => {
     expect(world.favorite).toBe(false);
   });
 });
+
+describe("Install and Update All (6a)", () => {
+  test("Install opens Foundry's own installer for that type", async () => {
+    const browsePackages = vi.fn();
+    const page = { game: { browsePackages } } as never;
+    expect(
+      await runFoundryAction(document, page, {
+        action: "installPackage",
+        packageType: "system",
+      }),
+    ).toBeUndefined();
+    expect(browsePackages).toHaveBeenCalledWith("system");
+  });
+
+  test("Update All clicks Foundry's own button on that type's tab", async () => {
+    document.body.innerHTML = `<div id="setup-packages">
+      <section data-package-type="module"><button data-action="updateAll"></button></section>
+      <section data-package-type="system"><button data-action="updateAll"></button></section></div>`;
+    const clicked = vi.fn();
+    document
+      .querySelector('[data-package-type="module"] button')
+      ?.addEventListener("click", clicked);
+    expect(
+      await runFoundryAction(
+        document,
+        {},
+        {
+          action: "updateAll",
+          packageType: "module",
+        },
+      ),
+    ).toBeUndefined();
+    expect(clicked).toHaveBeenCalledTimes(1);
+  });
+});

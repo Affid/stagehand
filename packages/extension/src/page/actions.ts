@@ -188,6 +188,27 @@ function openWarnings(doc: Document, page: ActionGlobals): string | undefined {
   return error;
 }
 
+/** Foundry's installer (public), or its own Update All button (private flow). */
+function packageAction(
+  doc: Document,
+  page: ActionGlobals,
+  a: Extract<FoundryAction, { packageType: unknown }>,
+): string | undefined {
+  if (a.action === "installPackage") {
+    const browse = (
+      page.game as { browsePackages?: (type: string) => unknown } | undefined
+    )?.browsePackages;
+    if (!browse) return "Foundry's installer is missing";
+    void browse.call(page.game, a.packageType);
+    return undefined;
+  }
+  return click(
+    doc,
+    `#setup-packages [data-package-type="${a.packageType}"] [data-action="updateAll"]`,
+    "Update All",
+  );
+}
+
 export async function runFoundryAction(
   doc: Document,
   page: ActionGlobals,
@@ -223,6 +244,9 @@ export async function runFoundryAction(
         return await deleteWorld(page, a.worldId);
       case "pickBackground":
         return pickBackground(page, a.worldId);
+      case "installPackage":
+      case "updateAll":
+        return packageAction(doc, page, a);
     }
   } catch (e) {
     return e instanceof Error ? e.message : String(e);

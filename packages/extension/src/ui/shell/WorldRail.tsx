@@ -81,7 +81,7 @@ function WorldItem(props: {
           // Another world: its details panel starts closed, as the prototype.
           store.set({
             route: { kind: "world", worldId: world.id },
-            ...(props.current ? {} : { panel: null }),
+            ...(props.current ? {} : { panel: null, side: null }),
           })
         }
       >
@@ -102,7 +102,12 @@ function WorldItem(props: {
 
 function LibraryEntry(props: { readonly current: boolean }) {
   const { state, store, t } = useUi();
-  const n = state.data.setup?.modules.length ?? 0;
+  const setup = state.data.setup;
+  const fresh = state.data.fresh.length;
+  const sub = [
+    plural(t, "shell.librarySub", setup?.modules.length ?? 0),
+    plural(t, "shell.systemsSub", setup?.systems.length ?? 0),
+  ].join(" · ");
   return (
     <button
       type="button"
@@ -111,8 +116,15 @@ function LibraryEntry(props: { readonly current: boolean }) {
       onClick={() => store.set({ route: { kind: "library" } })}
     >
       <Icon name="books" />
-      <strong>{t("shell.library")}</strong>
-      <span>{plural(t, "shell.librarySub", n)}</span>
+      <strong>
+        {t("shell.library")}
+        {fresh ? (
+          <span class="mls-newtag" title={t("shell.newHint")}>
+            {t("shell.newCount", { n: String(fresh) })}
+          </span>
+        ) : null}
+      </strong>
+      <span>{sub}</span>
     </button>
   );
 }

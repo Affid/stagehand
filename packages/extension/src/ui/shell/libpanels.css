@@ -1,0 +1,583 @@
+/* The Library's head, toolbar, selection bar and panels, as the prototype
+   (design/setup-page/src/_shell.css, _ideas.css, _kit.css). Appended to
+   setup-ui.css. */
+
+/* Rows of controls */
+.mls-shell .ml-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 30px;
+  font-size: var(--font-size-13);
+  color: var(--color-text-secondary);
+  flex: none;
+}
+
+.mls-shell .ml-row .ml-label {
+  color: var(--color-text-subtle);
+  font-size: var(--font-size-12);
+}
+
+.mls-shell .ml-row select {
+  height: 28px;
+  width: auto;
+  min-width: 120px;
+}
+
+.mls-shell .ml-row .ml-spacer {
+  flex: 1;
+}
+
+.mls-shell .ml-row button {
+  height: 28px;
+  flex: none;
+  width: auto;
+  padding: 0 10px;
+  font-size: var(--font-size-13);
+  gap: 6px;
+}
+
+.mls-shell .ml-row button.icon {
+  width: 28px;
+  padding: 0;
+}
+
+.mls-shell .ml-row button.ml-on,
+.mls-shell .ml-row button[aria-pressed="true"] {
+  border-color: var(--color-warm-1);
+  box-shadow: 0 0 4px var(--color-warm-2);
+  color: var(--color-light-1);
+}
+
+.mls-shell .ml-row button.bright {
+  padding: 0 14px;
+  font-weight: 700;
+}
+
+/* The filter with Install and Update All */
+.mls-shell .mll-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex: none;
+}
+
+.mls-shell .mll-controls .filter {
+  flex: 1;
+  display: flex;
+}
+
+.mls-shell .mll-controls input[type="search"] {
+  width: 100%;
+  height: 34px;
+}
+
+.mls-shell .mll-controls > button {
+  height: 34px;
+  width: auto;
+  flex: 0 0 150px;
+  gap: 8px;
+}
+
+/* New installs */
+.mls-shell .mls-intake-band {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid rgb(63 143 82 / 60%);
+  background: rgb(63 143 82 / 10%);
+  border-radius: 4px;
+  color: #d5eedb;
+  font-size: 13px;
+  flex: none;
+}
+
+.mls-shell .mls-intake-band > i {
+  color: #8fd49b;
+  font-size: 18px;
+}
+
+.mls-shell .mls-intake-band > span {
+  flex: 1;
+  min-width: 0;
+}
+
+.mls-shell .mls-intake-band button {
+  height: 28px;
+  width: auto;
+  flex: none;
+  padding: 0 12px;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.mls-shell .mls-newtag {
+  margin-left: 6px;
+  padding: 0 5px;
+  border: 1px solid #3f8f52;
+  border-radius: 3px;
+  color: #8fd49b;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 16px;
+  vertical-align: 1px;
+}
+
+/* The selection's bar */
+.mls-shell .mls-selbar {
+  padding: 4px 8px;
+  border: 1px solid var(--color-warm-1);
+  border-radius: 4px;
+  background: rgb(238 155 58 / 14%);
+  box-shadow: 0 0 12px rgb(238 155 58 / 22%);
+  color: var(--color-light-1);
+}
+
+.mls-shell .mls-selbar > i {
+  color: var(--color-warm-1);
+  font-size: 16px;
+}
+
+.mls-shell .mls-selbar strong.mls-selcount {
+  flex: 0 0 7.5em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.mls-shell .mls-selbar button[disabled] {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.mls-shell .mls-selbar .mls-sep {
+  width: 1px;
+  height: 20px;
+  background: var(--color-cool-3);
+  flex: none;
+}
+
+/* Pick lists in a popover */
+.mls-shell .mls-popwrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.mls-shell .mls-popwrap > .ml-pop {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  width: 280px;
+}
+
+.mls-shell .mls-panel .mls-popwrap > .ml-pop {
+  left: auto;
+  right: 0;
+}
+
+.mls-shell .ml-pop ul.mls-pick {
+  list-style: none;
+  margin: 0;
+  padding: 4px 0;
+  max-height: 300px;
+  overflow: auto;
+}
+
+.mls-shell .ml-pop ul.mls-pick button {
+  display: grid;
+  grid-template-columns: 18px 1fr auto;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+  height: auto;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  text-align: left;
+  color: var(--color-light-2);
+}
+
+.mls-shell .ml-pop ul.mls-pick button:hover,
+.mls-shell .ml-pop ul.mls-pick button:focus-visible {
+  background: var(--color-dark-1);
+}
+
+.mls-shell .ml-pop ul.mls-pick li.dis button {
+  color: var(--color-light-5);
+  cursor: not-allowed;
+}
+
+.mls-shell .ml-pop .mls-pop-note {
+  padding: 6px 10px 8px;
+  color: var(--color-text-subtle);
+  font-size: 12px;
+}
+
+.mls-shell .ml-pop footer {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 8px 10px;
+  border-top: 1px solid var(--color-cool-4);
+}
+
+.mls-shell .ml-pop footer .ml-muted {
+  flex: 1;
+  font-size: 11px;
+}
+
+.mls-shell .ml-small-btn {
+  height: 26px;
+  width: auto;
+  flex: none;
+  padding: 0 10px;
+  font-size: var(--font-size-12);
+}
+
+.mls-shell .ml-tagpop {
+  width: 300px;
+}
+
+.mls-shell .ml-tagpop .ml-checklist {
+  list-style: none;
+  margin: 0;
+  padding: 4px 0;
+  max-height: 260px;
+  overflow: auto;
+}
+
+.mls-shell .ml-tagpop .ml-checklist label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+
+.mls-shell .ml-tagpop .ml-checklist label:hover {
+  background: var(--color-dark-1);
+}
+
+.mls-shell .ml-tagpop .ml-name {
+  flex: 1;
+  color: var(--color-light-2);
+}
+
+.mls-shell .ml-tagpop li.ml-changed {
+  background: rgb(238 155 58 / 8%);
+}
+
+.mls-shell .ml-tagpop .ml-delta {
+  font-size: 11px;
+  padding: 0 5px;
+  border-radius: 2px;
+  border: 1px solid;
+}
+
+.mls-shell .ml-tagpop .ml-plus {
+  color: #8fd49b;
+}
+
+.mls-shell .ml-tagpop .ml-minus {
+  color: #ff9c8f;
+}
+
+/* Panels: lists, fields, module boxes */
+.mls-shell .mls-panel footer {
+  flex: none;
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px;
+  border-top: 1px solid var(--color-cool-4);
+}
+
+.mls-shell .mls-panel footer button {
+  height: 32px;
+  width: auto;
+  flex: 1;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.mls-shell .mls-panel footer button[disabled] {
+  opacity: 0.45;
+}
+
+.mls-shell .mls-panel .lead {
+  margin: 0;
+  color: var(--color-light-3);
+  font-size: 13px;
+}
+
+.mls-shell .mls-kv {
+  display: grid;
+  grid-template-columns: 70px 1fr;
+  gap: 8px 10px;
+  align-items: center;
+}
+
+.mls-shell .mls-kv > span {
+  color: var(--color-text-subtle);
+}
+
+.mls-shell .mls-kv select,
+.mls-shell .mls-kv input[type="text"] {
+  height: 28px;
+}
+
+.mls-shell .mls-kv textarea {
+  height: 56px;
+  resize: none;
+  font-family: inherit;
+  font-size: 13px;
+}
+
+.mls-shell .mls-kv .chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.mls-shell .mls-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.mls-shell .mls-list li > button {
+  display: grid;
+  grid-template-columns: 20px 1fr auto;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+  height: auto;
+  padding: 5px 8px;
+  border: 0;
+  border-left: 3px solid transparent;
+  border-radius: 3px;
+  background: none;
+  box-shadow: none;
+  text-align: left;
+  color: var(--color-light-2);
+}
+
+.mls-shell .mls-list li > button:hover {
+  background: rgb(255 255 255 / 4%);
+}
+
+.mls-shell .mls-list li.active > button {
+  background: rgb(255 255 255 / 7%);
+  border-left-color: var(--color-warm-1);
+  color: var(--color-light-1);
+}
+
+.mls-shell .mls-list .sw {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  background: var(--ml-c);
+  border: 1px solid rgb(255 255 255 / 20%);
+}
+
+.mls-shell .mls-list .c {
+  font-size: 12px;
+  color: var(--color-light-4);
+}
+
+.mls-shell .mls-list li.new > button {
+  color: var(--color-warm-1);
+}
+
+.mls-shell .mls-sws {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.mls-shell .mls-sws .ml-swatch {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  flex: none;
+}
+
+.mls-shell .mls-mods {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1px;
+}
+
+.mls-shell .mls-mods li.grp {
+  margin: 8px 0 2px;
+  color: var(--color-light-4);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.mls-shell .mls-mods li label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 2px;
+  color: var(--color-light-2);
+  cursor: pointer;
+}
+
+.mls-shell .mls-mods li label input {
+  margin: 0;
+}
+
+.mls-shell .mls-panel .mls-popwrap > button.bright {
+  height: 32px;
+  width: 100%;
+  gap: 6px;
+}
+
+.mls-shell .mls-panel .mls-popwrap {
+  display: flex;
+}
+
+/* Chips you can toggle: tags and worlds of a new module */
+.mls-shell .ml-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 24px;
+  width: auto;
+  padding: 0 8px;
+  border-radius: 12px;
+  border: 1px solid var(--color-cool-3);
+  background: var(--color-cool-4);
+  color: var(--color-light-2);
+  font-size: var(--font-size-12);
+  white-space: nowrap;
+  box-shadow: none;
+}
+
+.mls-shell .mls-tchip {
+  cursor: pointer;
+  opacity: 0.55;
+}
+
+.mls-shell .mls-tchip:hover {
+  opacity: 0.85;
+}
+
+.mls-shell .mls-tchip.on {
+  opacity: 1;
+  border-color: var(--color-light-4);
+  color: var(--color-light-1);
+}
+
+.mls-shell .mls-tchip.on .fa-check {
+  color: #8fd49b;
+  font-size: 10px;
+}
+
+.mls-shell .mls-tchip.sug {
+  opacity: 0.9;
+  border-style: dashed;
+  border-color: rgb(245 196 94 / 70%);
+}
+
+.mls-shell .mls-morew {
+  font-size: 12px;
+  color: var(--color-light-3);
+  text-decoration: underline;
+  text-decoration-color: var(--color-light-5);
+  align-self: center;
+  padding: 0 4px;
+}
+
+/* A new module in the panel */
+.mls-shell .mls-intake-item {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--color-cool-4);
+  border-radius: 4px;
+  background: rgb(0 0 0 / 18%);
+}
+
+.mls-shell .mls-intake-item .hd {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 8px;
+  align-items: baseline;
+}
+
+.mls-shell .mls-intake-item .hd strong {
+  color: var(--color-light-1);
+  font-size: 14px;
+}
+
+.mls-shell .mls-intake-item .hd .ml-muted {
+  font-size: 12px;
+}
+
+.mls-shell .mls-intake-item .mls-kv {
+  grid-template-columns: 56px 1fr;
+}
+
+.mls-shell .mls-intake-item .acts {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mls-shell .mls-intake-item .acts .ml-link {
+  color: var(--color-light-3);
+  font-size: 12px;
+}
+
+.mls-shell .mls-intake-item .acts button:not(.ml-link) {
+  height: 26px;
+  width: auto;
+  flex: none;
+  padding: 0 10px;
+  gap: 6px;
+  font-size: 12.5px;
+}
+
+.mls-shell .mls-sug {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  padding: 5px 8px;
+  border: 1px dashed rgb(245 196 94 / 45%);
+  border-radius: 3px;
+  background: rgb(245 196 94 / 8%);
+  color: #f3dca4;
+  font-size: 12px;
+}
+
+.mls-shell .mls-sug span {
+  flex: 1;
+}
+
+.mls-shell .mls-sug .ml-link {
+  color: var(--color-warm-1);
+  white-space: nowrap;
+}
+
+/* A folder named in place after New folder */
+.mls-shell .mll-renaming {
+  display: flex;
+  align-items: center;
+  padding: 2px 8px;
+}
+
+.mls-shell .mll-renaming input {
+  height: 26px;
+  max-width: 320px;
+}

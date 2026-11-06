@@ -12,7 +12,7 @@ import type { ExtensionMessage, SetupState } from "../../src/messages.ts";
 import { type PageToUi, windowHostId } from "../../src/page-protocol.ts";
 import type { BackupInfo } from "../../src/page-backups.ts";
 import { createActions, type Send } from "../../src/ui/actions.ts";
-import { OverlayRoot, ShellRoot } from "../../src/ui/App.tsx";
+import { ShellRoot } from "../../src/ui/App.tsx";
 import { createTranslator } from "../../src/ui/i18n.ts";
 import { trackProgress, UNLOCKED } from "../../src/ui/tasks.ts";
 import type {
@@ -188,11 +188,10 @@ export const uiState = (over: Partial<UiState> = {}): UiState => ({
   scope: { kind: "all" },
   filter: EMPTY_FILTER,
   selection: [],
-  editingPreset: null,
-  draftModules: [],
   collapsedGroups: [],
   route: null,
   panel: null,
+  side: null,
   worldView: DEFAULT_WORLD_VIEW,
   tasks: [],
   lock: UNLOCKED,
@@ -200,7 +199,7 @@ export const uiState = (over: Partial<UiState> = {}): UiState => ({
 });
 
 export function renderUi(
-  root: "overlay" | "shell",
+  _root: "shell",
   options: {
     state?: Partial<UiState>;
     data?: Partial<SetupState>;
@@ -232,11 +231,7 @@ export function renderUi(
     t,
     page: fake.page,
   };
-  const Root = {
-    overlay: OverlayRoot,
-    shell: ShellRoot,
-  }[root];
-  const view = render(<Root deps={deps} />);
+  const view = render(<ShellRoot deps={deps} />);
   return { ...view, store, send, ...fake };
 }
 

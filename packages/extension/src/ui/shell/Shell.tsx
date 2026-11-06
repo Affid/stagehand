@@ -3,6 +3,9 @@ import { useEffect } from "preact/hooks";
 import { useUi } from "../context.ts";
 import { LibraryPage } from "./library/LibraryPage.tsx";
 import { ModulePanel } from "./library/ModulePanel.tsx";
+import { IntakePanel } from "./library/panels/IntakePanel.tsx";
+import { PresetsPanel } from "./library/panels/PresetsPanel.tsx";
+import { TagsPanel } from "./library/panels/TagsPanel.tsx";
 import { ServerBackupsPage } from "./server/backups/BackupsPage.tsx";
 import { ConfigPage } from "./server/ConfigPage.tsx";
 import { UpdatePage } from "./server/UpdatePage.tsx";
@@ -12,8 +15,25 @@ import { WorldPage } from "./WorldPage.tsx";
 import { useScheduleSync } from "./world/about/session/useScheduleSync.ts";
 import { WorldRail } from "./WorldRail.tsx";
 
+/** The Library's own panels: Tags, Presets, New modules. */
+function SideColumn() {
+  const { state } = useUi();
+  const side = state.side;
+  if (side?.kind === "tags") return <TagsPanel id={side.id} />;
+  if (side?.kind === "presets") return <PresetsPanel id={side.id} />;
+  if (side?.kind === "intake") return <IntakePanel />;
+  return null;
+}
+
 /** The module details column, beside the Library or a world's page. */
 function PanelColumn(props: { readonly here: string | undefined }) {
+  const { state } = useUi();
+  // The Library's panels show only on the Library (no world here).
+  if (!props.here && state.side && !state.panel) return <SideColumn />;
+  return <ModuleColumn here={props.here} />;
+}
+
+function ModuleColumn(props: { readonly here: string | undefined }) {
   const { state, store } = useUi();
   const pkg = state.panel
     ? state.data.setup?.modules.find((m) => m.id === state.panel)

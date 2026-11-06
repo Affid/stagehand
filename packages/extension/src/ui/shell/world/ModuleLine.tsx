@@ -81,7 +81,9 @@ export function ModuleLine(props: {
         type="button"
         class="t"
         aria-expanded={viewing}
-        onClick={() => store.set({ panel: viewing ? null : pkg.id })}
+        onClick={() =>
+          store.set({ panel: viewing ? null : pkg.id, side: null })
+        }
       >
         {pkg.title}
       </button>

@@ -18,16 +18,14 @@ export interface UiState {
   readonly scope: Scope;
   readonly filter: ModuleFilterSpec;
   readonly selection: readonly string[];
-  /** Preset being edited: an id, "new", or null. */
-  readonly editingPreset: string | null;
-  /** Modules a new preset starts with. */
-  readonly draftModules: readonly string[];
   /** Collapsed groups that have no folder record to keep it, as "unfiled". */
   readonly collapsedGroups: readonly string[];
   /** The new Setup page's current page; null until one is chosen. */
   readonly route: Route | null;
   /** The module whose details show beside the Library or a world's page. */
   readonly panel: string | null;
+  /** The Library's other panel in that column (Tags, Presets, New modules). */
+  readonly side: SidePanel | null;
   /** A world page's View options: how its modules are grouped and laid out. */
   readonly worldView: WorldView;
   /** Foundry's running backups, restores and updates (tasks.ts). */
@@ -35,6 +33,12 @@ export interface UiState {
   /** Foundry's busy lock: on while a backup or restore runs. */
   readonly lock: Lock;
 }
+
+/** The Library's side panels; tags and presets remember the one chosen. */
+export type SidePanel =
+  | { readonly kind: "tags" | "presets"; readonly id?: string }
+  | { readonly kind: "intake" }
+  | { readonly kind: "system"; readonly id: string };
 
 export interface WorldView {
   readonly by: GroupBy;

@@ -6,21 +6,17 @@ import { logError } from "@module-library/shared/log";
 import { isEnvelope } from "@module-library/shared/protocol";
 import { parseCoreVersion } from "@module-library/shared/version";
 import { type SetupData, SetupDataSchema } from "@module-library/shared/world";
-import { render } from "preact";
 import { type Adapter, V14_SELECTORS } from "../adapters/config.ts";
 import { type AdapterChoice, selectAdapter } from "../adapters/select.ts";
 import type { SetupState } from "../messages.ts";
 import { send } from "../platform/runtime.ts";
 import { createActions } from "../ui/actions.ts";
-import { OverlayRoot } from "../ui/App.tsx";
 import type { UiDeps } from "../ui/context.ts";
 import { createTranslator, pickLanguage } from "../ui/i18n.ts";
 import { createPageBridge } from "../ui/page.ts";
 import { syncShell } from "../ui/shell/mount.tsx";
 import { createStore, DEFAULT_WORLD_VIEW, EMPTY_FILTER } from "../ui/store.ts";
 import { trackProgress, UNLOCKED } from "../ui/tasks.ts";
-
-const OVERLAY_ROOT = "ml-overlay-root";
 
 let deps: UiDeps | undefined;
 let selectors: Adapter["selectors"] = V14_SELECTORS;
@@ -29,15 +25,6 @@ const page = createPageBridge(window);
 /** Safe mode still reads and shows; it borrows the newest known selectors. */
 function selectorsFor(choice: AdapterChoice): Adapter["selectors"] {
   return choice.status === "safe-mode" ? selectors : choice.adapter.selectors;
-}
-
-/** Foundry windows our page opens (preset editor) render in this root. */
-function mountOverlay(): void {
-  if (!deps || document.getElementById(OVERLAY_ROOT)) return;
-  const container = document.createElement("div");
-  container.id = OVERLAY_ROOT;
-  document.body.append(container);
-  render(<OverlayRoot deps={deps} />, container);
 }
 
 function ensureDeps(
@@ -57,11 +44,10 @@ function ensureDeps(
     scope: { kind: "all" },
     filter: EMPTY_FILTER,
     selection: [],
-    editingPreset: null,
-    draftModules: [],
     collapsedGroups: [],
     route: null,
     panel: null,
+    side: null,
     worldView: DEFAULT_WORLD_VIEW,
     tasks: [],
     lock: UNLOCKED,
@@ -83,7 +69,6 @@ async function onSetupData(data: SetupData): Promise<void> {
   );
   selectors = selectorsFor(adapter);
   ensureDeps(data, state, adapter);
-  mountOverlay();
 }
 
 window.addEventListener("message", (event: MessageEvent<unknown>) => {

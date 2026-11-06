@@ -1,4 +1,4 @@
-// The Library's notices (safe mode, untested build, not verified) and folder counts.
+// The Library's notices (safe mode, untested build, not verified).
 import { useUi } from "../context.ts";
 
 export function Banners() {
@@ -11,16 +11,4 @@ export function Banners() {
   if (!state.data.adminVerified)
     return <p class="ml-banner ml-warn">{t("notice.notVerified")}</p>;
   return null;
-}
-
-export function folderCounts(state: ReturnType<typeof useUi>["state"]) {
-  const counts: Record<string, number> = {};
-  const known = new Set(state.data.library.folders.map((f) => f.id));
-  let unfiled = 0;
-  for (const m of state.data.setup?.modules ?? []) {
-    const f = state.data.library.modules[m.id]?.folderId ?? null;
-    if (f !== null && known.has(f)) counts[f] = (counts[f] ?? 0) + 1;
-    else unfiled++;
-  }
-  return { counts, unfiled };
 }

@@ -106,27 +106,6 @@
   color: #8fd49b;
 }
 
-.mls-shell .mlw-moved {
-  margin: 0;
-  display: flex;
-  gap: 8px;
-  align-items: baseline;
-  font-size: 12.5px;
-  color: #b9e3c1;
-  padding-left: 34px;
-}
-
-.mls-shell .mlw-mock {
-  justify-self: start;
-  font-size: 11.5px;
-  color: var(--color-light-5);
-  border-bottom: 1px dashed var(--color-light-5);
-}
-
-.mls-shell .mlw-mock:hover {
-  color: var(--color-light-3);
-}
-
 .mls-shell .mlw-sched {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
@@ -369,60 +348,6 @@
   border-color: var(--color-warm-1);
 }
 
-.mls-shell .mlw-chosen {
-  grid-column: 1 / -1;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 4px 10px;
-}
-
-.mls-shell .mlw-chosen li {
-  display: grid;
-  grid-template-columns: 1fr 62px 24px;
-  gap: 6px;
-  align-items: center;
-  padding: 3px 4px 3px 8px;
-  border-radius: 3px;
-  background: rgb(255 255 255 / 4%);
-  font-size: 13px;
-  color: var(--color-light-1);
-}
-
-.mls-shell .mlw-chosen li.past {
-  opacity: 0.5;
-}
-
-.mls-shell .mlw-chosen li.none {
-  display: block;
-  color: var(--color-text-subtle);
-  background: none;
-}
-
-.mls-shell .mlw-chosen .tt {
-  height: 24px;
-  font-size: 12.5px;
-  text-align: center;
-  font-variant-numeric: tabular-nums;
-  padding: 0 4px;
-}
-
-.mls-shell .mlw-chosen button {
-  width: 24px;
-  height: 24px;
-  padding: 0;
-  font-size: 11px;
-  background: none;
-  border: 0;
-  color: var(--color-light-4);
-}
-
-.mls-shell .mlw-chosen button:hover {
-  color: #ffb3a6;
-}
-
 .mls-shell .mlw-upcoming li.more span {
   color: var(--color-text-subtle);
 }
@@ -557,21 +482,6 @@
 
 .mls-shell .mlw-tzfind li.more {
   font-style: italic;
-}
-
-.mls-shell .mlw-rule .mlw-why {
-  width: auto;
-  color: var(--color-light-5);
-  font-size: 12px;
-  cursor: help;
-}
-
-.mls-shell .mlw-rule .mlw-why:hover {
-  color: var(--color-light-2);
-}
-
-.mls-shell .mlw-rule .mlw-mock {
-  margin-left: auto;
 }
 
 .mls-shell .mlw-sess {

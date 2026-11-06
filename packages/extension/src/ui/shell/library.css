@@ -11,32 +11,6 @@
   margin: 0;
 }
 
-.mls-shell .mll-tools {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex: none;
-}
-
-.mls-shell .mll-tools input[type="search"] {
-  height: 28px;
-  width: 220px;
-  flex: none;
-}
-
-.mls-shell .mll-tools button {
-  height: 28px;
-  width: auto;
-  flex: none;
-  padding: 0 12px;
-  font-size: 13px;
-}
-
-.mls-shell .mll-tools button.ml-on {
-  border-color: var(--color-warm-1);
-  box-shadow: 0 0 6px var(--color-warm-2);
-}
-
 .mls-shell .mll-by {
   display: inline-flex;
   align-items: center;
@@ -48,31 +22,6 @@
 .mls-shell .mll-by select {
   height: 28px;
   width: auto;
-}
-
-.mls-shell .mll-body {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  gap: 14px;
-}
-
-.mls-shell .mll-main {
-  flex: 1;
-  min-width: 0;
-  overflow: auto;
-  scrollbar-gutter: stable;
-  padding-right: 4px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.mls-shell .mll-side {
-  flex: 0 0 280px;
-  overflow: auto;
-  padding-left: 12px;
-  border-left: 1px solid var(--color-cool-4);
 }
 
 .mls-shell .mll-sections {
@@ -238,52 +187,6 @@
   box-shadow: 0 0 6px rgb(238 155 58 / 35%);
 }
 
-/* A module's details */
-.mls-shell .mll-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  font-size: 13px;
-}
-
-.mls-shell .mll-panel-head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.mls-shell .mll-panel-head h3 {
-  flex: 1;
-  margin: 0;
-  font-size: 17px;
-  border: 0;
-  color: var(--color-light-1);
-}
-
-.mls-shell .mll-tabs {
-  display: flex;
-  gap: 2px;
-  border-bottom: 1px solid var(--color-cool-4);
-}
-
-.mls-shell .mll-tabs button {
-  width: auto;
-  height: 30px;
-  padding: 0 12px;
-  border: 0;
-  border-bottom: 2px solid transparent;
-  border-radius: 0;
-  margin-bottom: -1px;
-  background: none;
-  box-shadow: none;
-  color: var(--color-light-3);
-}
-
-.mls-shell .mll-tabs button[aria-selected="true"] {
-  color: var(--color-light-1);
-  border-bottom-color: var(--color-warm-1);
-}
-
 .mls-shell .mll-libtab {
   display: grid;
   gap: 10px;
@@ -336,35 +239,6 @@
   height: 24px;
   width: auto;
   font-size: 12px;
-}
-
-.mls-shell .mll-worlds {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 6px;
-}
-
-.mls-shell .mll-worlds li {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.mls-shell .mll-worlds .d {
-  margin-left: auto;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
-.mls-shell .mll-worlds .d.on {
-  color: #8fd49b;
-}
-
-.mls-shell .mll-worlds .d.off {
-  color: #ff9c8f;
 }
 
 .mls-shell .mll-pkg {
@@ -559,46 +433,6 @@
   color: var(--color-text-subtle);
 }
 
-.mls-shell .mll-tabs button:focus:not(:focus-visible) {
-  outline: none;
-  box-shadow: none;
-}
-
-.mls-shell .mll-tabs button:focus-visible {
-  outline: 2px solid var(--color-warm-1);
-  outline-offset: -2px;
-  box-shadow: none;
-}
-
-/* Intake: modules installed since they were last sorted */
-.mls-shell .mll-intake {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 5px 10px;
-  border-radius: 4px;
-  border: 1px solid rgb(238 155 58 / 45%);
-  background: rgb(238 155 58 / 8%);
-  color: #f6d3a8;
-  font-size: 13px;
-  flex: none;
-}
-
-.mls-shell .mll-intake > i {
-  color: var(--color-warm-1);
-}
-
-.mls-shell .mll-intake .ml-link {
-  width: auto;
-  height: auto;
-  padding: 0;
-  border: 0;
-  background: none;
-  color: var(--color-warm-1);
-  text-decoration: underline;
-  font-size: inherit;
-}
-
 .mls-shell .mll-new {
   flex: none;
   font-size: 10.5px;
@@ -610,29 +444,6 @@
   background: rgb(238 155 58 / 18%);
   color: #ffd28a;
   border: 1px solid rgb(238 155 58 / 45%);
-}
-
-.mls-shell .mll-intake-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 12px;
-}
-
-.mls-shell .mll-intake-list li {
-  display: grid;
-  gap: 6px;
-  padding: 8px 10px;
-  border: 1px solid var(--color-cool-4);
-  border-radius: 4px;
-}
-
-.mls-shell .mll-intake-list li > button {
-  justify-self: end;
-  width: auto;
-  height: 26px;
-  padding: 0 12px;
 }
 
 .mls-shell .mll-grid tr.grp th button {

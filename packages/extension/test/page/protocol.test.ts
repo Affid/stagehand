@@ -227,3 +227,30 @@ describe("saving a world's details", () => {
     expect(parsePageToUi("SAVE_DONE", { error: "x" })).toBeUndefined();
   });
 });
+
+describe("Install and Update All are checked (6a)", () => {
+  test("a package type is required, and nothing else", () => {
+    expect(
+      parseUiToPage("FOUNDRY_ACTION", {
+        action: "installPackage",
+        packageType: "module",
+      }),
+    ).toEqual({
+      type: "FOUNDRY_ACTION",
+      payload: { action: "installPackage", packageType: "module" },
+    });
+    expect(
+      parseUiToPage("FOUNDRY_ACTION", {
+        action: "updateAll",
+        packageType: "world",
+      }),
+    ).toBeUndefined();
+    expect(
+      parseUiToPage("FOUNDRY_ACTION", {
+        action: "updateAll",
+        packageType: "module",
+        worldId: "w",
+      }),
+    ).toBeUndefined();
+  });
+});

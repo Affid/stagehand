@@ -36,14 +36,13 @@ const initial: UiState = {
   scope: { kind: "all" },
   filter: EMPTY_FILTER,
   selection: [],
-  editingPreset: null,
-  draftModules: [],
   selectors: V14_SELECTORS,
   collapsedGroups: [],
   route: null,
   panel: null,
   worldView: { by: "folder", layout: "cards" },
   tasks: [],
+  side: null,
   lock: { locked: false },
 };
 
