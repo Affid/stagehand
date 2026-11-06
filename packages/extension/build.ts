@@ -8,10 +8,33 @@ import {
   readFileSync,
   rmSync,
 } from "node:fs";
+import { execSync } from "node:child_process";
 import { join } from "node:path";
 import { build } from "vite";
 
 const root = import.meta.dirname;
+
+/** "0.2.0 · a4a2214+ · 2026-11-06 15:40": version, commit (+ if changed), time. */
+function buildLabel(): string {
+  const { version } = JSON.parse(
+    readFileSync(join(root, "static", "manifest.json"), "utf8"),
+  ) as { version: string };
+  const git = (args: string): string => {
+    try {
+      return execSync(`git ${args}`, { cwd: root, encoding: "utf8" }).trim();
+    } catch {
+      return "";
+    }
+  };
+  const commit = git("rev-parse --short HEAD") || "unknown";
+  const dirty = git("status --porcelain") ? "+" : "";
+  const now = new Date();
+  const pad = (n: number): string => String(n).padStart(2, "0");
+  const time = `${String(now.getFullYear())}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  return `${version} · ${commit}${dirty} · ${time}`;
+}
+
+const BUILD = buildLabel();
 const outDir = join(root, "dist");
 const entries = [
   "background",
