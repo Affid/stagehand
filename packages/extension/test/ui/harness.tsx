@@ -113,6 +113,8 @@ export function fakePage(windows = true) {
   const page = {
     notify: vi.fn(),
     setMenu: vi.fn(),
+    setShell: vi.fn(),
+    foundryAction: vi.fn(),
     openWindow: vi.fn((spec: { id: string }) => {
       if (!windows) return;
       const frame = document.createElement("div");

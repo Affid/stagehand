@@ -29,6 +29,38 @@ describe("the UI's bridge to the page world", () => {
     spy.mockRestore();
   });
 
+  test("asks for the new Setup page and for Foundry actions", () => {
+    const spy = vi.spyOn(window, "postMessage");
+    const bridge = createPageBridge(window);
+    bridge.setShell(true);
+    bridge.foundryAction({ action: "launch", worldId: "strahd" });
+    bridge.foundryAction({ action: "backups" });
+    expect(
+      spy.mock.calls.map((c) => c[0] as { type: string; payload: unknown }),
+    ).toMatchObject([
+      { type: "SHELL", payload: { on: true } },
+      {
+        type: "FOUNDRY_ACTION",
+        payload: { action: "launch", worldId: "strahd" },
+      },
+      { type: "FOUNDRY_ACTION", payload: { action: "backups" } },
+    ]);
+    spy.mockRestore();
+  });
+
+  test("passes on the shell's state", () => {
+    const bridge = createPageBridge(window);
+    const seen = vi.fn();
+    bridge.subscribe(seen);
+    window.dispatchEvent(
+      fromPage("SHELL_STATE", { on: false, error: "missing #setup" }),
+    );
+    expect(seen).toHaveBeenCalledWith({
+      type: "SHELL_STATE",
+      payload: { on: false, error: "missing #setup" },
+    });
+  });
+
   test("passes on well-formed page events only", () => {
     const bridge = createPageBridge(window);
     const seen = vi.fn();

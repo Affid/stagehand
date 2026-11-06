@@ -2,6 +2,7 @@
 // card menu and notifications. Messages go over window.postMessage.
 import { isEnvelope, makeEnvelope } from "@module-library/shared/protocol";
 import {
+  type FoundryAction,
   type MenuLabels,
   type NoticeKind,
   type PageToUi,
@@ -16,6 +17,9 @@ export interface PageBridge {
   openWindow(spec: WindowSpec): void;
   closeWindow(id: string): void;
   setMenu(labels: MenuLabels | null, worldCard: string): void;
+  /** Take over Foundry's Setup layout, or give it back; the answer arrives as SHELL_STATE. */
+  setShell(on: boolean): void;
+  foundryAction(action: FoundryAction): void;
   /** Our host element inside an open Foundry window, if it is there. */
   windowHost(id: string): HTMLElement | null;
   subscribe(fn: (event: PageToUi) => void): () => void;
@@ -56,6 +60,12 @@ export function createPageBridge(win: Window): PageBridge {
     },
     setMenu: (labels, worldCard) => {
       send({ type: "MENU", payload: { labels, worldCard } });
+    },
+    setShell: (on) => {
+      send({ type: "SHELL", payload: { on } });
+    },
+    foundryAction: (action) => {
+      send({ type: "FOUNDRY_ACTION", payload: action });
     },
     windowHost: (id) => {
       const host = win.document.getElementById(windowHostId(id));

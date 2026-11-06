@@ -74,7 +74,6 @@ settings, `Collection.get` and `WorldConfig`.
 
 Next:
 
-2. `ui/page.ts` bridge: `setShell(on)`, `foundryAction(a)`, subscribe to `SHELL_STATE`.
 3. Setting: per-server "new Setup page" flag in the background state (`messages.ts`,
    `background/state.ts`, router), a switch on the options page and in the current UI.
 4. `ui/shell/`: `ShellRoot` (full-page host), `Header` (logo, version chip, Backups,
