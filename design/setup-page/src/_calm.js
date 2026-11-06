@@ -354,9 +354,9 @@ function calmAbout(w) {
   const info = WORLD_INFO[w.id] ?? {};
   const old = info.saved && !info.saved.startsWith("14");
   const row = (k, v, link = "") => `<dt>${k}</dt><dd><span class="v">${v}</span>${link}</dd>`;
-  const toolbar = `<div class="pm-bar" aria-hidden="true"><i class="fa-solid fa-bold"></i><i class="fa-solid fa-italic"></i><i class="fa-solid fa-list-ul"></i><i class="fa-solid fa-link"></i><i class="fa-solid fa-image"></i><span>Foundry's text editor</span></div>`;
-  const desc = editable("desc", `<p class="desc">${esc(w.desc) || '<span class="ml-muted">No description yet.</span>'}</p>`,
-    `${toolbar}<textarea id="mlw-input" rows="5">${esc(w.desc)}</textarea>`);
+  const toolbar = descToolbar();
+  const desc = editable("desc", descView(w),
+    `${toolbar}<div id="mlw-rte" class="mlw-rte" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Description">${cleanDesc(w.desc)}</div>`);
   const nextView = info.next
     ? `<div class="mlw-next"><i class="fa-solid fa-calendar-day"></i><div><strong>${esc(info.next)}</strong><span>${esc(info.nextRel)} · players see it on the join screen</span></div></div>`
     : `<div class="mlw-next none"><i class="fa-solid fa-calendar-plus"></i><div><span>No next session set. Players see it on the join screen.</span></div></div>`;
@@ -403,9 +403,10 @@ A.acancel = () => { ST.aboutEdit = null; ST.aboutErr = null; ST.aboutDraft = nul
 A.aclear = () => { const info = WORLD_INFO[ST.world]; delete info.next; delete info.nextRel; delete info.iso; ST.aboutEdit = null; flashSaved("next"); };
 A.asave = (field) => {
   const w = world(), info = WORLD_INFO[w.id] ?? (WORLD_INFO[w.id] = {});
-  const v = document.getElementById("mlw-input")?.value ?? "";
+  const rte = document.getElementById("mlw-rte");
+  const v = rte ? cleanDesc(rte.innerHTML) : document.getElementById("mlw-input")?.value ?? "";
   if (field === "title" && !v.trim()) { ST.aboutErr = "A world needs a title. Foundry's own check stops an empty one before anything is saved."; ST.aboutDraft = v; render(); document.getElementById("mlw-input")?.focus(); return; }
-  if (field === "desc") w.desc = v.trim();
+  if (field === "desc") { w.desc = /\S/.test(rte?.innerText ?? "") ? v : ""; ST.descOpen = false; }
   if (field === "title") w.title = v.trim();
   if (field === "theme") w.joinTheme = v;
   if (field === "system") { const sys = SYSTEMS.find((x) => x.id === v); w.sysFull = `${sys.title} ${sys.version}`; w.system = sysShort(sys); }
@@ -502,3 +503,60 @@ ST.wfav = new Set(["strahd"]);
 ST.wlock = new Set();
 A.wfav = () => { ST.wfav.has(ST.world) ? ST.wfav.delete(ST.world) : ST.wfav.add(ST.world); render(); };
 A.wlockt = () => { ST.wlock.has(ST.world) ? ST.wlock.delete(ST.world) : ST.wlock.add(ST.world); ST.aboutEdit = null; render(); };
+
+// ---------- World description: Foundry stores HTML ----------
+// Shown as cleaned HTML, folded after a few lines; edited in a rich-text editor that saves HTML.
+// In the build the editor is Foundry's own <prose-mirror> (it renders on Setup, see SETUP-SPIKE.md)
+// and cleaning uses Foundry's own; the mockup uses contenteditable and a small allowlist.
+/** Removed together with everything inside them. */
+const DESC_DROP = new Set(["SCRIPT", "STYLE", "IFRAME", "OBJECT", "EMBED", "TEMPLATE", "NOSCRIPT", "SVG", "MATH", "FORM", "TEXTAREA", "SELECT", "BUTTON"]);
+const DESC_TAGS = new Set(["P", "BR", "STRONG", "B", "EM", "I", "U", "S", "UL", "OL", "LI", "A", "H2", "H3", "H4", "BLOCKQUOTE", "CODE", "HR"]);
+function cleanDesc(html) {
+  const raw = String(html ?? "");
+  if (!raw.trim()) return "";
+  // Plain text from older worlds: keep its line breaks as paragraphs.
+  const src = /<[a-z]/i.test(raw) ? raw : raw.split(/\n{2,}/).map((p) => `<p>${esc(p).replace(/\n/g, "<br>")}</p>`).join("");
+  const doc = new DOMParser().parseFromString(`<div>${src}</div>`, "text/html");
+  const walk = (node) => [...node.childNodes].forEach((n) => {
+    if (n.nodeType === 3) return;
+    if (n.nodeType !== 1 || DESC_DROP.has(n.tagName)) { n.remove(); return; }
+    walk(n);
+    if (n.tagName === "DIV") { const p = doc.createElement("p"); p.append(...n.childNodes); n.replaceWith(p); return; }
+    if (!DESC_TAGS.has(n.tagName)) { n.replaceWith(...n.childNodes); return; }
+    const href = n.tagName === "A" ? n.getAttribute("href") : null;
+    [...n.attributes].forEach((a) => n.removeAttribute(a.name));
+    if (href && /^https?:/i.test(href)) { n.setAttribute("href", href); n.setAttribute("target", "_blank"); n.setAttribute("rel", "noopener"); }
+  });
+  const root = doc.body.firstElementChild;
+  walk(root);
+  root.querySelectorAll("p, li, h2, h3, h4").forEach((n) => { if (!n.textContent.trim() && !n.querySelector("br, hr")) n.remove(); });
+  return root.innerHTML.replace(/(<p><br><\/p>)+$/, "").trim();
+}
+function descView(w) {
+  const html = cleanDesc(w.desc);
+  if (!html) return '<p class="desc ml-muted">No description yet. Players see it on the screen they join from.</p>';
+  return `<div class="desc rich${ST.descOpen ? " open" : ""}" id="mlw-desc">${html}</div>
+    <a class="mlw-more" data-act="descmore" hidden>${ST.descOpen ? "Show less" : "Show more"}</a>`;
+}
+function descToolbar() {
+  const b = (cmd, icon, label, arg = "") => `<button type="button" class="icon" data-act="rte" data-id="${cmd}" data-arg="${arg}" aria-label="${label}" data-tooltip="${label}"><i class="fa-solid ${icon}"></i></button>`;
+  return `<div class="pm-bar" role="toolbar" aria-label="Formatting">${b("bold", "fa-bold", "Bold")}${b("italic", "fa-italic", "Italic")}${b("formatBlock", "fa-heading", "Heading", "h3")}
+    ${b("insertUnorderedList", "fa-list-ul", "Bulleted list")}${b("insertOrderedList", "fa-list-ol", "Numbered list")}${b("createLink", "fa-link", "Link")}
+    <span>Foundry's text editor in the build</span></div>`;
+}
+A.rte = (cmd, el) => {
+  const box = document.getElementById("mlw-rte");
+  box?.focus();
+  if (cmd === "createLink") { const url = prompt("Link address (https://…)"); if (url && /^https?:/i.test(url)) document.execCommand(cmd, false, url); return; }
+  document.execCommand(cmd, false, el.dataset.arg ? `<${el.dataset.arg}>` : null);
+};
+A.descmore = () => { ST.descOpen = !ST.descOpen; render(); };
+// After each render: show "Show more" only when the folded description is actually cut off.
+const renderBeforeDesc = render;
+// eslint-disable-next-line no-func-assign
+render = function () {
+  renderBeforeDesc();
+  const d = document.getElementById("mlw-desc"), more = document.querySelector(".mlw-more");
+  if (d && more) more.hidden = !ST.descOpen && d.scrollHeight <= d.clientHeight + 2;
+  if (d && more && ST.descOpen) more.hidden = false;
+};

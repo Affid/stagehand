@@ -384,3 +384,21 @@
 .mls-world strong .mls-wfav { color: #e8c35a; font-size: 10px; margin-right: 5px; vertical-align: 1px; }
 .mls-world strong .mls-wlock { color: var(--color-light-4); font-size: 10px; margin-right: 5px; vertical-align: 1px; }
 .mlw-acts .mlw-tipwrap button[disabled], .mlw-acts .mlw-tipwrap input[disabled] { opacity: .45; }
+/* Rich description: folded after about six lines */
+.mlw-box .desc.rich { font-size: 14px; line-height: 1.5; color: var(--color-light-1); max-height: calc(1.5em * 6); overflow: hidden; position: relative; }
+.mlw-box .desc.rich.open { max-height: none; }
+.mlw-box .desc.rich:not(.open)::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1.5em; background: linear-gradient(transparent, rgb(13 12 20)); pointer-events: none; }
+.mlw-box .desc.rich > :first-child { margin-top: 0; }
+.mlw-box .desc.rich > :last-child { margin-bottom: 0; }
+.mlw-box .desc.rich p, .mlw-rte p { margin: 0 0 .5em; }
+.mlw-box .desc.rich ul, .mlw-box .desc.rich ol, .mlw-rte ul, .mlw-rte ol { margin: 0 0 .5em; padding-left: 1.4em; }
+.mlw-box .desc.rich h2, .mlw-box .desc.rich h3, .mlw-box .desc.rich h4, .mlw-rte h3 { margin: .4em 0 .3em; font-size: 15px; border: 0; color: var(--color-light-1); }
+.mlw-box .desc.rich a, .mlw-rte a { color: var(--color-warm-1); text-decoration: underline; }
+.mlw-more { justify-self: start; font-size: 12.5px; color: var(--color-light-3); text-decoration: underline; text-decoration-color: var(--color-light-5); }
+.mlw-more:hover { color: var(--color-warm-1); }
+.mlw-more[hidden] { display: none; }
+.mlw-edit .pm-bar button { width: 26px; height: 24px; padding: 0; font-size: 11.5px; background: none; border: 1px solid transparent; color: var(--color-light-2); }
+.mlw-edit .pm-bar button:hover { border-color: var(--color-cool-3); color: var(--color-light-1); }
+.mlw-edit .pm-bar { gap: 2px; padding: 3px 6px; }
+.mlw-rte { min-height: 110px; max-height: 320px; overflow: auto; padding: 8px 10px; border: 1px solid var(--color-cool-3); border-radius: 0 0 3px 3px; background: rgb(0 0 0 / 35%); color: var(--color-light-1); font-size: 14px; line-height: 1.5; outline: none; }
+.mlw-rte:focus { border-color: var(--color-warm-1); box-shadow: 0 0 4px var(--color-warm-2); }

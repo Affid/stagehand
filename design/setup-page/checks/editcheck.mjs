@@ -8,7 +8,7 @@ const shot = (n) => p.screenshot({ path: `${dir}out/shots/${n}.png` });
 await p.click(".mls-banner [data-act=wtab][data-id=about]"); await p.waitForTimeout(150);
 const onAbout = await p.evaluate(() => document.querySelector(".mls-subtabs a.active")?.textContent.trim());
 await p.click("[data-act=aedit][data-id=desc]"); await p.waitForTimeout(100); await shot("e-2-edit-desc");
-await p.fill("#mlw-input", "Gothic horror in Barovia. Tuesday group, five players."); await p.click("[data-act=asave][data-id=desc]"); await p.waitForTimeout(100);
+await p.evaluate(() => { document.getElementById("mlw-rte").innerHTML = "<p>Gothic horror in Barovia. Tuesday group, five players.</p>"; }); await p.click("[data-act=asave][data-id=desc]"); await p.waitForTimeout(100);
 const desc = await p.evaluate(() => document.querySelector(".mlw-box .desc").textContent);
 await p.click("[data-act=sedit]"); await p.click('[data-act=sday][data-id="2026-11-12"]'); await p.click("[data-act=ssave]"); await p.waitForTimeout(100);
 const next = await p.evaluate(() => document.querySelector(".mlw-next").textContent.replace(/\s+/g, " ").trim());

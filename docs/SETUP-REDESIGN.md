@@ -71,6 +71,10 @@ necessarily its card markup.
 
 ## Requirements for the build (from the reviews)
 
+- World descriptions are HTML (Foundry's `HTMLField`): show them cleaned and rendered, fold
+  long ones ("Show more"), edit them in Foundry's own `<prose-mirror>` editor, and save HTML.
+  Plain-text descriptions from older worlds keep their line breaks as paragraphs.
+
 - Real buttons and links for every action; all reachable by keyboard (C2).
 - Update the page in place; never move focus on re-render (H4).
 - Announce queued changes and saves to screen readers (live region) (H4).
@@ -100,7 +104,7 @@ necessarily its card markup.
 cd design/setup-page
 ./assets.sh            # copies Foundry's CSS, fonts and images from ~/foundry/vtt (not in git)
 node build.mjs         # writes out/index.html (playground) and out/setup-shell.html
-node checks/run.mjs    # 24 Playwright checks of the mockup's flows
+node checks/run.mjs    # 25 Playwright checks of the mockup's flows
 ```
 
 `fvtt/` and `out/` are git-ignored: they hold Foundry's and Font Awesome Pro's licensed
