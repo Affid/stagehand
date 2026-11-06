@@ -33,12 +33,23 @@ export const SERVER_ACTIONS = [
   "shutdown",
   "createWorld",
 ] as const;
-export const WORLD_ACTIONS = ["launch", "editWorld", "favorite"] as const;
+export const WORLD_ACTIONS = [
+  "launch",
+  "editWorld",
+  "favorite",
+  "backupLaunch",
+] as const;
 export type FoundryAction =
   | { readonly action: (typeof SERVER_ACTIONS)[number] }
   | {
-      readonly action: (typeof WORLD_ACTIONS)[number];
+      readonly action: Exclude<(typeof WORLD_ACTIONS)[number], "backupLaunch">;
       readonly worldId: string;
+    }
+  | {
+      /** Foundry's backup of the world, then its launch. */
+      readonly action: "backupLaunch";
+      readonly worldId: string;
+      readonly note?: string;
     };
 
 export type UiToPage =
@@ -125,17 +136,25 @@ function menuLabels(v: unknown): MenuLabels | null | undefined {
     : undefined;
 }
 
+const NOTE_MAX = 200;
+
 function foundryAction(p: Loose): FoundryAction | undefined {
-  const { action, worldId } = p;
+  const { action, worldId, note } = p;
   if ((SERVER_ACTIONS as readonly unknown[]).includes(action))
-    return worldId === undefined
+    return worldId === undefined && note === undefined
       ? { action: action as (typeof SERVER_ACTIONS)[number] }
       : undefined;
-  if (
-    (WORLD_ACTIONS as readonly unknown[]).includes(action) &&
-    isText(worldId, 200)
-  )
-    return { action: action as (typeof WORLD_ACTIONS)[number], worldId };
+  if (!isText(worldId, 200)) return undefined;
+  if (action === "backupLaunch") {
+    if (note === undefined) return { action, worldId };
+    return isText(note, NOTE_MAX) ? { action, worldId, note } : undefined;
+  }
+  if (note !== undefined) return undefined;
+  if ((WORLD_ACTIONS as readonly unknown[]).includes(action))
+    return {
+      action: action as Exclude<(typeof WORLD_ACTIONS)[number], "backupLaunch">,
+      worldId,
+    };
   return undefined;
 }
 

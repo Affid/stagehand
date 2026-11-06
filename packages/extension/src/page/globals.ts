@@ -21,6 +21,11 @@ export interface SetupGame {
   readonly worlds?: Collection;
   readonly systems?: Collection;
   readonly settings?: ClientSettings;
+  /** Resolves once the backup is done: true if it was created. */
+  readonly createBackup?: (
+    pkg: unknown,
+    options?: { readonly note?: string },
+  ) => Promise<boolean>;
 }
 
 export interface MenuEntry {

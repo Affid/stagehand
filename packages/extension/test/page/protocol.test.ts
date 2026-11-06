@@ -115,6 +115,17 @@ describe("new Setup page messages are checked", () => {
       ).toEqual({ action, worldId: "strahd" });
       expect(parseUiToPage("FOUNDRY_ACTION", { action })).toBeUndefined();
     }
+    expect(
+      parseUiToPage("FOUNDRY_ACTION", {
+        action: "backupLaunch",
+        worldId: "strahd",
+        note: "Before queued changes",
+      })?.payload,
+    ).toEqual({
+      action: "backupLaunch",
+      worldId: "strahd",
+      note: "Before queued changes",
+    });
   });
 
   test("refuses anything else", () => {
@@ -126,6 +137,12 @@ describe("new Setup page messages are checked", () => {
       ["FOUNDRY_ACTION", { action: "launch", worldId: "" }],
       ["FOUNDRY_ACTION", { action: "launch", worldId: "x".repeat(201) }],
       ["FOUNDRY_ACTION", { action: "configure", worldId: 3 }],
+      ["FOUNDRY_ACTION", { action: "launch", worldId: "x", note: "n" }],
+      ["FOUNDRY_ACTION", { action: "backupLaunch", worldId: "x", note: 3 }],
+      [
+        "FOUNDRY_ACTION",
+        { action: "backupLaunch", worldId: "x", note: "n".repeat(201) },
+      ],
     ];
     for (const [type, p] of bad) expect(parseUiToPage(type, p)).toBeUndefined();
     expect(parsePageToUi("SHELL_STATE", { on: 1 })).toBeUndefined();

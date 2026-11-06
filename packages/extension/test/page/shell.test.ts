@@ -133,6 +133,46 @@ describe("Foundry actions on its own controls", () => {
     ).toMatch(/world/i);
   });
 
+  test("Back up first: Foundry's own backup, then the world's launch control", async () => {
+    const seen = clicks();
+    const world = { id: "strahd", type: "world", title: "Strahd" };
+    const createBackup = vi.fn(() => Promise.resolve(true));
+    const page = {
+      game: {
+        worlds: { values: () => [].values(), get: () => world },
+        createBackup,
+      },
+    };
+    expect(
+      await runFoundryAction(document, page, {
+        action: "backupLaunch",
+        worldId: "strahd",
+        note: "Before queued changes",
+      }),
+    ).toBeUndefined();
+    expect(createBackup).toHaveBeenCalledWith(world, {
+      note: "Before queued changes",
+    });
+    expect(seen).toEqual(["worldLaunch"]);
+  });
+
+  test("a backup that doesn't finish stops the launch", async () => {
+    const seen = clicks();
+    const page = {
+      game: {
+        worlds: { values: () => [].values(), get: () => ({ id: "strahd" }) },
+        createBackup: () => Promise.resolve(false),
+      },
+    };
+    expect(
+      await runFoundryAction(document, page, {
+        action: "backupLaunch",
+        worldId: "strahd",
+      }),
+    ).toMatch(/not launched/i);
+    expect(seen).toEqual([]);
+  });
+
   test("favourite toggles Foundry's own setting, as its card menu does", async () => {
     const store: Record<string, unknown> = {
       setupPackageFavorites: { worlds: ["other"], modules: [], systems: [] },

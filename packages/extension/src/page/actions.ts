@@ -45,6 +45,34 @@ function editWorld(page: ActionGlobals, id: string): string | undefined {
   return undefined;
 }
 
+function launch(doc: Document, worldId: string): string | undefined {
+  const cards = [
+    ...doc.querySelectorAll<HTMLElement>("li.package.world[data-package-id]"),
+  ];
+  const card = cards.find((c) => c.dataset.packageId === worldId);
+  const control = card?.querySelector<HTMLElement>(
+    '[data-action="worldLaunch"]',
+  );
+  if (!control) return `Foundry's launch control for ${worldId} is missing`;
+  control.click();
+  return undefined;
+}
+
+/** "Back up first": Foundry's own backup (its lock and messages), then the launch. */
+async function backupThenLaunch(
+  doc: Document,
+  page: ActionGlobals,
+  id: string,
+  note: string | undefined,
+): Promise<string | undefined> {
+  const world = worldOf(page, id);
+  const game = page.game;
+  if (!world || !game?.createBackup) return `No world ${id}`;
+  const done = await game.createBackup(world, note ? { note } : {});
+  if (!done) return `The backup didn't finish, so ${id} was not launched`;
+  return launch(doc, id);
+}
+
 /** As Foundry's card menu does (SetupPackages#toggleFavorite): its own setting, then a re-render. */
 async function toggleFavorite(
   page: ActionGlobals,
@@ -93,21 +121,10 @@ export async function runFoundryAction(
           '#setup-packages [data-action="worldCreate"]',
           "create world",
         );
-      case "launch": {
-        const cards = [
-          ...doc.querySelectorAll<HTMLElement>(
-            "li.package.world[data-package-id]",
-          ),
-        ];
-        const card = cards.find((c) => c.dataset.packageId === a.worldId);
-        const control = card?.querySelector<HTMLElement>(
-          '[data-action="worldLaunch"]',
-        );
-        if (!control)
-          return `Foundry's launch control for ${a.worldId} is missing`;
-        control.click();
-        return undefined;
-      }
+      case "launch":
+        return launch(doc, a.worldId);
+      case "backupLaunch":
+        return await backupThenLaunch(doc, page, a.worldId, a.note);
       case "editWorld":
         return editWorld(page, a.worldId);
       case "favorite":
