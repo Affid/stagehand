@@ -17,6 +17,7 @@ import { Banners, folderCounts } from "../../modules/ModulesView.tsx";
 import { LibraryTools, PresetList } from "../../modules/PresetList.tsx";
 import { TagList } from "../../modules/SideSections.tsx";
 import { LibCard } from "./LibCard.tsx";
+import { IntakePanel } from "./IntakePanel.tsx";
 import { ModulePanel } from "./ModulePanel.tsx";
 import { WorldGrid } from "./WorldGrid.tsx";
 
@@ -184,13 +185,29 @@ function Tabs(props: {
 }
 
 /** The side slot: a module's details, else Organise when asked for. */
+function IntakeBand(props: { readonly onSort: () => void }) {
+  const { state, t } = useUi();
+  const n = state.data.fresh.length;
+  if (!n) return null;
+  return (
+    <div class="mll-intake">
+      <i class="fa-solid fa-sparkles" aria-hidden="true" />
+      <span>{plural(t, "lib.fresh", n)}</span>
+      <button type="button" class="ml-link" onClick={props.onSort}>
+        {t("lib.sortThem")}
+      </button>
+    </div>
+  );
+}
+
 function Side(props: {
   readonly model: ModulesModel;
   readonly page: ReturnType<typeof usePageState>;
 }) {
-  const { detail, setDetail, organise } = props.page;
+  const { detail, setDetail, organise, intake, setIntake } = props.page;
   const pkg = detail ? props.model.all.find((m) => m.id === detail) : undefined;
   if (pkg) return <ModulePanel pkg={pkg} onClose={() => setDetail(null)} />;
+  if (intake) return <IntakePanel onClose={() => setIntake(false)} />;
   return organise ? <Organise model={props.model} /> : null;
 }
 
@@ -203,6 +220,7 @@ function usePageState() {
   const [closed, setClosed] = useState<ReadonlySet<string>>(new Set());
   const [detail, setDetail] = useState<string | null>(null);
   const [tab, setTab] = useState<LibTab>("modules");
+  const [intake, setIntake] = useState(false);
   const toggle = (key: string): void => {
     const next = new Set(closed);
     if (!next.delete(key)) next.add(key);
@@ -225,6 +243,8 @@ function usePageState() {
     setDetail,
     tab,
     setTab,
+    intake,
+    setIntake,
   };
 }
 
@@ -269,6 +289,12 @@ export function LibraryPage() {
     <div class="mll-page ml-app">
       <Banners />
       <Tabs tab={page.tab} onTab={page.setTab} />
+      <IntakeBand
+        onSort={() => {
+          page.setDetail(null);
+          page.setIntake(true);
+        }}
+      />
       <Tools
         model={model}
         by={by}

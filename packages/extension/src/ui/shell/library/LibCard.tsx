@@ -123,6 +123,9 @@ export function LibCard(props: {
             onChange={toggle}
           />
         ) : null}
+        {state.data.fresh.includes(pkg.id) ? (
+          <span class="mll-new">{t("lib.new")}</span>
+        ) : null}
         <CardTitle
           pkg={pkg}
           selecting={props.selecting}

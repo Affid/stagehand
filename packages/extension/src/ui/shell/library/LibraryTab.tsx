@@ -6,7 +6,7 @@ import { IconButton } from "../../common/widgets.tsx";
 import { useUi } from "../../context.ts";
 import { worldModules } from "../../model/world-modules.ts";
 
-function FolderField(props: { readonly id: string }) {
+export function FolderField(props: { readonly id: string }) {
   const { state, actions, t, canChange } = useUi();
   const { library } = state.data;
   const current = library.modules[props.id]?.folderId ?? "";
@@ -61,7 +61,7 @@ function AddTag(props: {
   );
 }
 
-function TagsField(props: { readonly id: string }) {
+export function TagsField(props: { readonly id: string }) {
   const { state, actions, t, canChange } = useUi();
   const { library } = state.data;
   const ids = library.modules[props.id]?.tags ?? [];

@@ -123,3 +123,28 @@ test("By world shows every module in every world", async () => {
     .click();
   await expect(grid.locator("thead th.w")).toHaveCount(2);
 });
+
+test("a module installed since the last sort is offered for intake", async () => {
+  // As if ml-fixture-a was installed after the last visit.
+  const key = `sorted:${env.url}`;
+  await ext.worker.evaluate(async (k) => {
+    const all = ((await chrome.storage.local.get(k))[k] ?? []) as string[];
+    await chrome.storage.local.set({
+      [k]: all.filter((id) => id !== "ml-fixture-a"),
+    });
+  }, key);
+  await page.reload();
+  await page
+    .locator("#ml-shell-root")
+    .getByRole("button", { name: /^Library/ })
+    .click();
+  await expect(lib().locator(".mll-intake")).toContainText(
+    "1 new since you last sorted",
+  );
+  await expect(card("ml-fixture-a")).toContainText("New");
+  await lib().getByRole("button", { name: "Sort them" }).click();
+  const panel = lib().getByRole("complementary", { name: "New modules" });
+  await page.screenshot({ path: `${SCREENS}/library-intake.png` });
+  await panel.getByRole("button", { name: "All sorted" }).click();
+  await expect(lib().locator(".mll-intake")).toHaveCount(0);
+});

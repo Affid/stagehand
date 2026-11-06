@@ -35,6 +35,8 @@ export interface Actions {
   setLaunchHold(worldId: string, hold: boolean): Promise<boolean>;
   exportLibrary(): Promise<string | undefined>;
   importLibrary(text: string): Promise<void>;
+  /** Intake: these modules are sorted and no longer "new". */
+  markSorted(ids: readonly string[]): Promise<void>;
   /** Saves one of this browser's choices for the server; false if it failed. */
   setPref(key: keyof Prefs, value: boolean): Promise<boolean>;
 }
@@ -203,6 +205,10 @@ export function createActions(
       return r?.text;
     },
     importLibrary: (text) => runImport(b, send, t, text),
+    async markSorted(ids) {
+      await b.guarded(() => send({ kind: "modules-sorted", ids: [...ids] }));
+      await b.refresh();
+    },
     async setPref(key, value) {
       const ok = await b.guarded(async () => {
         await send({ kind: "set-pref", key, value });

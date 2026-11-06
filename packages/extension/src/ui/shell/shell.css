@@ -482,3 +482,10 @@
   padding: 0 12px;
   gap: 6px;
 }
+
+/* Foundry draws a focus box on every focused button, mouse clicks included;
+   on our page only keyboard focus shows a ring. */
+.mls-shell button:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
+}

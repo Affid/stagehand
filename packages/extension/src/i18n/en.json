@@ -384,5 +384,14 @@
   "grid.on": "{n} on",
   "grid.queued": "{n} queued",
   "grid.na": "Its companion is off, so its modules are unknown",
-  "grid.choose": "Choose worlds"
+  "grid.choose": "Choose worlds",
+  "lib.fresh.one": "{n} new since you last sorted",
+  "lib.fresh.other": "{n} new since you last sorted",
+  "lib.sortThem": "Sort them",
+  "lib.new": "New",
+  "intake.title": "New modules",
+  "intake.lead": "Give each one a folder and tags, or leave it as it is. Done takes it off this list.",
+  "intake.done": "Done",
+  "intake.doneWith": "Done with {module}",
+  "intake.all": "All sorted"
 }
