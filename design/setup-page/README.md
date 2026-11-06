@@ -6,12 +6,12 @@ A clickable mockup of the replacement Setup page. Decisions and open questions:
 ```sh
 ./assets.sh            # Foundry's CSS, fonts and images from ~/foundry/vtt into fvtt/ (git-ignored)
 node build.mjs         # out/index.html is the playground; out/setup-shell.html the page itself
-node checks/run.mjs    # 25 Playwright checks; screenshots go to out/shots/
+node checks/run.mjs    # 26 Playwright checks; screenshots go to out/shots/
 ```
 
 - `src/` — the page: `_data.js` (sample library), `_kit.*` (Foundry card markup), `_shell.*`
   (layout, world page, Library), `_ideas.*` (grid, intake, copy, review at launch),
-  `_calm.*` (current cards, header, About, Backups), `_sched.*` (next session), `_tips.js`
+  `_calm.*` (current cards, header, About, Backups), `_sched.*` (next session), `_server.*` (server backups page), `_tips.js`
   (tooltips), `_news.js`, `_boot.js`.
 - `checks/` — one script per flow; each prints what it found.
 - `spikes/` — live tests against a running Foundry (`pnpm foundry:start`); run from the repo

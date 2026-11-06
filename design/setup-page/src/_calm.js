@@ -16,7 +16,7 @@ function calmBanner(w) {
   const fav = ST.wfav.has(w.id), locked = ST.wlock.has(w.id);
   const star = `<button type="button" class="mlw-star${fav ? " on" : ""}" data-act="wfav" aria-pressed="${fav}" aria-label="Favourite" data-tooltip="${fav ? "Favourite: shown first in the worlds list. Click to remove." : "Mark as favourite: shown first in the worlds list"}"><i class="fa-${fav ? "solid" : "regular"} fa-star"></i></button>`;
   const lockTag = locked ? '<span class="mlw-locktag" data-tooltip="Locked in Foundry: it can\'t be launched, edited, updated or deleted. Unlock it on the About tab."><i class="fa-solid fa-lock"></i>Locked</span>' : "";
-  const block = ST.backupJob?.wid === w.id ? "Waiting for the backup to finish" : locked ? "Locked: unlock it on the About tab to launch" : "";
+  const block = ST.backupJob?.wid === w.id ? "Waiting for the backup to finish" : ST.serverJob ? "Waiting for the snapshot to finish" : locked ? "Locked: unlock it on the About tab to launch" : "";
   return `<div class="mls-banner" style="--img:url(${IMG[w.img]});--pos:${w.pos}"><div><h2>${esc(w.title)}${star}${lockTag}</h2>
     <div class="meta"><span><i class="fa-solid fa-dice-d20"></i>${esc(w.system)}</span><span><i class="fa-solid fa-clock"></i>Last played ${w.last}</span><span><i class="fa-solid fa-plug"></i>${w.noCompanion ? "Modules unknown" : `${onCount(w.id, baseOn)} modules on now`}</span></div>${pending}${flags}</div>
     <div class="acts"><button type="button" class="icon" data-act="wtab" data-id="about" data-tooltip="Edit the world's details" aria-label="Edit the world's details"><i class="fa-solid fa-pen"></i></button>
@@ -190,7 +190,7 @@ function calmTopBar() {
     <span class="v">Version 14 · 370</span><span class="upd"><i class="fa-solid fa-arrow-up"></i>update</span><i class="fa-solid fa-caret-down"></i></button>`;
   const btn = (act, what, icon, label) => `<button type="button" data-act="${act}" data-what="${what}"><i class="fa-solid ${icon}"></i>${label}</button>`;
   return `<header class="mls-top mlh"><span class="logo" aria-hidden="true"></span><h1>Foundry Virtual Tabletop</h1><span class="mlh-chipwrap">${chip}${newsCallout()}</span><span class="ml-spacer"></span>
-    <div class="mlh-acts">${btn("foundry", "Backups", "fa-floppy-disks", "Backups")}${btn("foundry", "Configuration", "fa-gears", "Configuration")}
+    <div class="mlh-acts"><button type="button" class="${ST.page === "backups" ? "ml-on" : ""}" data-act="srvbackups" aria-current="${ST.page === "backups" ? "page" : "false"}"><i class="fa-solid fa-floppy-disks"></i>Backups</button>${btn("foundry", "Configuration", "fa-gears", "Configuration")}
       <button type="button" class="icon${ST.pop?.kind === "pmenu" ? " ml-on" : ""}" data-act="pmenu" aria-label="Log out or shut down" data-tooltip="Log out or shut down"><i class="fa-solid fa-power-off"></i></button></div></header>`;
 }
 function foundryMenu(x, y) {
@@ -467,7 +467,7 @@ function calmBackups(w) {
       : `<div class="mlw-bhead"><span><b>${plural(list.length, "backup")}</b>${list[0] ? ` · latest ${esc(list[0].rel)}` : ""} · ${fmtSize(total)} in all</span><span class="ml-spacer"></span>
       ${list.filter((b) => !b.snapshot).length > 1 ? `<button type="button" data-act="bselect"${lock}><i class="fa-solid fa-square-check"></i>Select</button>` : ""}${nudge ? "" : `<button type="button" class="bright" data-act="backupnow"${lock}><i class="fa-solid fa-floppy-disk"></i>Take a backup</button>`}</div>`}
     <ol class="mlw-blist">${progress}${rows}</ol>
-    <p class="hint">These are Foundry's own backups. Restore asks you to type a code and offers to back up the current world first; Delete asks to confirm.${restoreNote}</p></div>`;
+    <p class="hint">These are Foundry's own backups. Restore asks you to type a code and offers to back up the current world first; Delete asks to confirm.${restoreNote} <a data-act="srvbackups">All backups on this server</a></p></div>`;
 }
 
 /** Foundry reports backup progress through ui.setupPackages.onProgress; we draw it here (the mockup fakes the timing). */
