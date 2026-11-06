@@ -7,7 +7,7 @@ await p.goto(`file://${dir}out/setup-shell.html?calm=1`); await p.waitForTimeout
 const shot = (n) => p.screenshot({ path: `${dir}out/shots/${n}.png` });
 const tipOf = async (sel) => { await p.hover(sel, { force: true }); await p.waitForTimeout(700); return p.evaluate(() => document.querySelector("#tooltip.active")?.textContent ?? null); };
 const r = {};
-await p.click(".mlh-ver"); await p.click('.ml-pop [data-act=updpage][data-id=notes]'); await p.waitForTimeout(120);
+await p.click(".mlh-ver"); await p.click('.ml-pop [data-act=updpage]'); await p.waitForTimeout(120);
 r.page = await p.evaluate(() => ({ head: document.querySelector(".mlb-head p")?.textContent, jump: [...document.querySelectorAll(".mlu-jump a")].map((a) => a.textContent), button: document.querySelector(".mlu-go")?.textContent.trim(), compat: [...document.querySelectorAll(".mlu-tags")].map((t) => t.innerText.replace(/\s+/g, " ")) }));
 await shot("upd-1");
 await p.click("[data-act=upddev]"); await p.waitForTimeout(60);

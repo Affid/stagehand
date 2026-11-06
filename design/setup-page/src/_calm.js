@@ -196,8 +196,8 @@ function calmTopBar() {
 function foundryMenu(x, y) {
   const body = `<div class="mlh-fm">
     <section class="mlh-upd"><div><strong>Foundry ${ST.upd.installed.replace(".", " · build ")}</strong><span class="ml-muted">${CHANNELS[ST.upd.channel][0]} channel</span></div>
-      ${UPD_STATES[ST.upd.state] ? `<div class="avail"><i class="fa-solid fa-arrow-up"></i><span><b>${UPD_STATES[ST.upd.state].version}</b> is available</span><a data-act="updpage" data-id="notes">Release notes</a>
-      <button type="button" class="bright" data-act="updpage">Update…</button></div>` : `<div class="avail none"><i class="fa-solid fa-circle-check"></i><span>Up to date</span><a data-act="updpage">Update page</a></div>`}</section>
+      ${UPD_STATES[ST.upd.state] ? `<div class="avail"><i class="fa-solid fa-arrow-up"></i><span><b>${UPD_STATES[ST.upd.state].version}</b> is available</span>
+      <button type="button" class="bright" data-act="updpage">See what's new…</button></div>` : `<div class="avail none"><i class="fa-solid fa-circle-check"></i><span>Up to date</span><a data-act="updpage">Update page</a></div>`}</section>
     <h4>Help</h4><ul class="mls-pick">
       <li data-act="foundry" data-what="Support & Issues"><i class="fa-solid fa-life-ring"></i><span>Support &amp; issues</span><span class="ml-muted">1 module warning</span></li>
       <li data-act="foundry" data-what="Knowledge Base (opens foundryvtt.com)"><i class="fa-solid fa-book-open"></i><span>Knowledge base</span><span class="ml-muted"><i class="fa-solid fa-arrow-up-right-from-square"></i></span></li></ul></div>`;

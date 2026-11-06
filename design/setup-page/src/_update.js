@@ -182,7 +182,7 @@ function updatePage() {
     <div class="mlu-cols">${updNotes(rel)}<div class="mlu-side">${updAction(rel)}${updCompat(rel)}</div></div></div></section>`;
 }
 
-A.updpage = (id) => { ST.page = "update"; ST.pop = null; ST.panel = null; render(); if (id === "notes") document.querySelector(".mlu-notes")?.scrollIntoView({ block: "start" }); };
+A.updpage = () => { ST.page = "update"; ST.pop = null; ST.panel = null; render(); };
 A.updstate = (id) => { ST.upd.state = id; ST.upd.done = false; ST.upd.job = null; render(); };
 A.updsec = (h) => { const o = ST.upd.open; o.has(h) ? o.delete(h) : o.add(h); render(); };
 A.updall = () => { const all = notesFor(UPD_STATES[ST.upd.state]).sections.map((s) => s.h); ST.upd.open = all.every((h) => ST.upd.open.has(h)) ? new Set() : new Set(all); render(); };
