@@ -6,11 +6,12 @@ import type { WorldModules } from "../../model/world-modules.ts";
 import { worldRow } from "../../model/worlds.ts";
 import { HistoryList } from "../../worlds/commands.tsx";
 import { AboutTab } from "./AboutTab.tsx";
+import { BackupsTab } from "./BackupsTab.tsx";
 import { ModulesTab } from "./ModulesTab.tsx";
 import { NotSetUp } from "./NotSetUp.tsx";
 
-type Tab = "modules" | "about";
-const TABS: readonly Tab[] = ["modules", "about"];
+type Tab = "modules" | "about" | "backups";
+const TABS: readonly Tab[] = ["modules", "about", "backups"];
 
 export function WorldBody(props: {
   readonly world: WorldInfo;
@@ -37,6 +38,8 @@ export function WorldBody(props: {
       </div>
       {tab === "about" ? (
         <AboutTab world={world} />
+      ) : tab === "backups" ? (
+        <BackupsTab world={world} />
       ) : model.tracked ? (
         <ModulesTab world={world} model={model} />
       ) : (

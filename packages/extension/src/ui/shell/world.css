@@ -700,3 +700,76 @@ ul.mlw-check.warn {
   height: 28px;
   padding: 0 10px;
 }
+
+/* The Backups tab */
+.mls-shell .mlw-backups {
+  display: grid;
+  gap: 10px;
+}
+
+.mls-shell .mlw-bhead {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+  font-size: 13.5px;
+  color: var(--color-light-2);
+}
+
+.mls-shell .mlw-bhead button {
+  width: auto;
+  height: 30px;
+  padding: 0 12px;
+  gap: 6px;
+}
+
+.mls-shell .mlw-blist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.mls-shell .mlw-blist li {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr) 90px auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border: 1px solid var(--color-cool-4);
+  border-radius: 4px;
+  background: rgb(11 10 19 / 55%);
+}
+
+.mls-shell .mlw-blist .when {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.mls-shell .mlw-blist .note {
+  font-size: 12px;
+  color: var(--color-text-subtle);
+}
+
+.mls-shell .mlw-blist .size {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-light-3);
+}
+
+.mls-shell .mlw-blist button {
+  width: auto;
+  height: 28px;
+  padding: 0 10px;
+}
+
+.mls-shell .mlw-blist span[title] {
+  display: inline-flex;
+  cursor: help;
+}
+
+.mls-shell .mlw-blist span[title] > button[disabled] {
+  pointer-events: none;
+}

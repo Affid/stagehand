@@ -420,5 +420,18 @@
   "about.clear": "Clear",
   "about.cancel": "Cancel",
   "about.saveFailed": "Couldn't save the world: {error}",
-  "about.saved": "Saved."
+  "about.saved": "Saved.",
+  "wt.backups": "Backups",
+  "bk.count.one": "{n} backup",
+  "bk.count.other": "{n} backups",
+  "bk.total": "{size} in all",
+  "bk.take": "Take a backup",
+  "bk.restore": "Restore",
+  "bk.delete": "Delete",
+  "bk.snapshot": "In a snapshot",
+  "bk.snapshotHint": "Part of a snapshot: delete the snapshot from Foundry's Backups to remove it.",
+  "bk.none": "No backups yet.",
+  "bk.loading": "Reading Foundry's backups…",
+  "bk.busy": "Waiting for Foundry…",
+  "bk.lead": "Backups are Foundry's own. Restore and Delete ask for Foundry's confirm code."
 }
