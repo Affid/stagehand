@@ -71,3 +71,9 @@
 .mlh-upd .avail.none { border-color: var(--color-cool-3); background: none; color: var(--color-light-2); }
 .mlh-upd .avail.none > i { color: #8fd49b; }
 @media (max-width: 1280px) { .mlu-cols { grid-template-columns: minmax(0, 1fr) 320px; } }
+.mlu-banner { margin: 0; display: grid; gap: 4px; }
+.mlu-banner img { width: 100%; max-height: 260px; object-fit: cover; border-radius: 4px; border: 1px solid var(--color-cool-4); }
+.mlu-banner figcaption { font-size: 12px; color: var(--color-text-subtle); }
+.mlu-banner figcaption a, .mlu-sec li a, .mlu-notes .mlu-p a { color: var(--color-light-2); text-decoration: underline; text-decoration-color: var(--color-light-5); }
+.mlu-notes .mlu-p { margin: 0 0 6px; font-size: 13.5px; line-height: 1.5; color: var(--color-light-2); }
+.mlu-sec li code, .mlu-notes .mlu-p code { font-size: 12.5px; padding: 0 4px; border-radius: 3px; background: rgb(255 255 255 / 7%); color: var(--color-light-1); }

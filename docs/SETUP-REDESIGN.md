@@ -84,6 +84,11 @@ necessarily its card markup.
   mousedown elsewhere), so nothing may replace the element under the pointer at that moment.
   `design/setup-page/checks/cfgtyping.mjs` covers it.
 - Announce queued changes and saves to screen readers (live region) (H4).
+- Release notes come as HTML from foundryvtt.com: read them into sections (h2, or an h3
+  before the first h2 such as Breaking Changes), areas (h3) and entries (list items, issue
+  link → number); keep the banner figure and intro paragraphs; clean everything like a world
+  description. `design/setup-page/checks/realnotes.mjs` checks this against Foundry's real
+  14.370 notes (fetched locally by `spikes/spike-update.ts`, not stored in git).
 - Nothing moves under the pointer: bars that appear (unsaved changes, progress, selection)
   take a slot whose space is already kept, or replace something of the same height.
   `design/setup-page/checks/shifts.mjs` measures this.
@@ -113,7 +118,7 @@ necessarily its card markup.
 cd design/setup-page
 ./assets.sh            # copies Foundry's CSS, fonts and images from ~/foundry/vtt (not in git)
 node build.mjs         # writes out/index.html (playground) and out/setup-shell.html
-node checks/run.mjs    # 31 Playwright checks of the mockup's flows
+node checks/run.mjs    # 32 Playwright checks of the mockup's flows
 ```
 
 `fvtt/` and `out/` are git-ignored: they hold Foundry's and Font Awesome Pro's licensed

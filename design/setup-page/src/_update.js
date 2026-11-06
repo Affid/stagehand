@@ -37,6 +37,55 @@ const UPD_NOTES = [
   ] },
   { h: "Documentation Improvements", kind: "dev", items: [I("Documented the RegionBehaviorType event list.", 14992)] },
 ];
+/** The sample above, written as Foundry writes its notes (header, h2 sections, h3 areas, lists, issue links). */
+function sampleNotesHtml(rel) {
+  const link = (n) => `<a href="https://github.com/foundryvtt/foundryvtt/issues/${n}" rel="nofollow" target="_blank">(${n})</a>`;
+  const ul = (items) => `<ul>${items.map((i) => `<li>${esc(i.t).replace(/(\b[A-Z][A-Za-z]+#[A-Za-z]+\b|\bpreCreateRegionBehavior\b)/g, "<code>$1</code>")} ${link(i.n)}</li>`).join("")}</ul>`;
+  const [brk, ...rest] = UPD_NOTES;
+  return `<header id="update-header"><h2 class="border" id="update-title">Foundry Virtual Tabletop - ${esc(rel.label.replace("Version ", "Version ").replace(" Stable ", " - Stable "))} Release Notes</h2>
+    <p>This is a sample: a small update fixing several issues reported since the last release, with a few community requests.</p>
+    <h3>${brk.h}</h3><p>Check these if you maintain a module or system.</p>${ul(brk.items)}</header>
+    ${rest.map((sec) => `<h2>${sec.h}</h2>${sec.items ? ul(sec.items) : sec.sub.map((x) => `<h3>${x.h}</h3>${ul(x.items)}`).join("")}`).join("")}`;
+}
+
+/**
+ * Read Foundry's release-notes HTML into { title, banner, intro, sections }. Sections are h2 (or an h3 that comes
+ * before the first section, like Breaking Changes); areas are h3; entries are list items. Each entry's GitHub issue
+ * link becomes its number. Everything is cleaned like a world description (no scripts, http(s) links only).
+ */
+const NOTE_KIND = (h) => (/breaking/i.test(h) ? "breaking" : /^(api|documentation)\b/i.test(h) ? "dev" : "user");
+const SUB_KIND = (h) => (/package development/i.test(h) ? "dev" : undefined);
+function parseNotes(html) {
+  const doc = new DOMParser().parseFromString(String(html ?? ""), "text/html");
+  const out = { title: "", banner: null, intro: [], sections: [] };
+  const blocks = [...doc.body.querySelectorAll("h2, h3, ul, ol, p, figure")].filter((el) => !el.parentElement.closest("li, figure, p"));
+  let sec = null, sub = null;
+  const entry = (li) => {
+    let n = null;
+    li.querySelectorAll('a[href*="/issues/"]').forEach((a) => { const m = a.getAttribute("href").match(/\/issues\/(\d+)/); if (m) { n = Number(m[1]); a.remove(); } });
+    const html2 = cleanDesc(li.innerHTML).replace(/<\/?p>/g, "").replace(/\s*\(\s*\)\s*$/, "").trim();
+    return { html: html2, n, text: li.textContent.replace(/\s+/g, " ").trim() };
+  };
+  for (const el of blocks) {
+    const tag = el.tagName, text = el.textContent.replace(/\s+/g, " ").trim();
+    if (tag === "H2" && !out.title && /release notes/i.test(text)) { out.title = text.replace(/\s*release notes$/i, "").replace(/^Foundry Virtual Tabletop\s*-\s*/i, ""); continue; }
+    if (tag === "FIGURE" && !sec) {
+      const img = el.querySelector("img"), src = img?.getAttribute("src") ?? "";
+      if (/^https:\/\//.test(src)) out.banner = { src, alt: img.getAttribute("alt") ?? "", caption: cleanDesc(el.querySelector("figcaption")?.innerHTML ?? "").replace(/<\/?p>/g, "") };
+      continue;
+    }
+    if (tag === "H2" || (tag === "H3" && !sec)) { sec = { h: text, kind: NOTE_KIND(text), intro: [], items: [], sub: [] }; sub = null; out.sections.push(sec); continue; }
+    if (tag === "H3") { sub = { h: text, kind: SUB_KIND(text), intro: [], items: [] }; sec.sub.push(sub); continue; }
+    if (tag === "P") { const c = cleanDesc(el.outerHTML); if (c) (sub ?? sec ?? out).intro.push(c); continue; }
+    if ((tag === "UL" || tag === "OL") && sec) (sub ?? sec).items.push(...[...el.children].filter((x) => x.tagName === "LI").map(entry));
+  }
+  // An h3 section like Breaking Changes is followed by the first h2; empty shells are dropped.
+  out.sections = out.sections.filter((x) => x.items.length || x.sub.some((y) => y.items.length));
+  out.sections.forEach((x) => { if (!x.sub.length) delete x.sub; else if (!x.items.length) delete x.items; });
+  return out;
+}
+const notesFor = (rel) => (rel._notes ??= parseNotes(rel.notesHtml ?? sampleNotesHtml(rel)));
+
 ST.upd = { state: "available", channel: "stable", open: new Set(["Breaking Changes", "New Features", "Bug Fixes"]), q: "", devNotes: true, snapFirst: true, force: false, job: null, done: false, installed: "14.370" };
 
 const JUMP_LABEL = {
@@ -48,26 +97,29 @@ const isDevSection = (s, parent) => (s.kind ?? parent?.kind) === "dev";
 function updItems(sec, parent) {
   const q = ST.upd.q.trim().toLowerCase();
   if (!ST.upd.devNotes && isDevSection(sec, parent)) return [];
-  return (sec.items ?? []).filter((i) => !q || i.t.toLowerCase().includes(q) || String(i.n).includes(q));
+  return (sec.items ?? []).filter((i) => !q || i.text.toLowerCase().includes(q) || String(i.n ?? "").includes(q));
 }
 const secCount = (s) => (s.items ? updItems(s) : (s.sub ?? []).flatMap((x) => updItems(x, s))).length;
 const issue = (n) => `<a class="mlu-issue" data-act="foundry" data-what="Open issue #${n} on GitHub" data-tooltip="Issue #${n} on GitHub">#${n}</a>`;
-const itemList = (items) => `<ul>${items.map((i) => `<li>${esc(i.t)} ${issue(i.n)}</li>`).join("")}</ul>`;
+const itemList = (items) => `<ul>${items.map((i) => `<li>${i.html}${i.n ? ` ${issue(i.n)}` : ""}</li>`).join("")}</ul>`;
+const intro = (ps) => (ST.upd.q.trim() ? "" : ps.map((p) => p.replace("<p>", '<p class="mlu-p">')).join(""));
 
 function updNotes(rel) {
-  const sections = UPD_NOTES.filter((s) => ST.upd.devNotes || s.kind !== "dev");
-  const jump = sections.map((s) => { const n = secCount(s); return n ? `<a data-act="updjump" data-id="${esc(s.h)}" class="${s.kind === "breaking" ? "brk" : ""}"><b>${n}</b> ${esc(JUMP_LABEL[s.h][n === 1 ? 0 : 1])}</a>` : ""; }).join("");
+  const notes = notesFor(rel);
+  const sections = notes.sections.filter((s) => ST.upd.devNotes || s.kind !== "dev");
+  const jump = sections.map((s) => { const n = secCount(s); return n ? `<a data-act="updjump" data-id="${esc(s.h)}" class="${s.kind === "breaking" ? "brk" : ""}"><b>${n}</b> ${esc(JUMP_LABEL[s.h]?.[n === 1 ? 0 : 1] ?? s.h)}</a>` : ""; }).join("");
   const body = sections.map((s) => {
     const n = secCount(s);
     if (!n) return "";
     const open = ST.upd.open.has(s.h) || !!ST.upd.q.trim();
-    const inner = !open ? "" : s.items ? itemList(updItems(s)) : (s.sub ?? []).map((x) => { const it = updItems(x, s); return it.length ? `<h4>${esc(x.h)}${isDevSection(x, s) && s.kind !== "dev" ? ' <span class="mlw-pill">developers</span>' : ""}</h4>${itemList(it)}` : ""; }).join("");
+    const inner = !open ? "" : intro(s.intro ?? []) + (s.items ? itemList(updItems(s)) : (s.sub ?? []).map((x) => { const it = updItems(x, s); return it.length ? `<h4>${esc(x.h)}${isDevSection(x, s) && s.kind !== "dev" ? ' <span class="mlw-pill">developers</span>' : ""}</h4>${intro(x.intro ?? [])}${itemList(it)}` : ""; }).join(""));
     return `<section class="mlu-sec ${s.kind}" id="upd-${esc(s.h).replace(/\W+/g, "-")}"><h3 data-act="updsec" data-id="${esc(s.h)}" aria-expanded="${open}"><i class="fa-solid fa-chevron-${open ? "down" : "right"}"></i>${s.kind === "breaking" ? '<i class="fa-solid fa-triangle-exclamation"></i>' : ""}${esc(s.h)} <span class="c">${n}</span>${s.kind === "dev" ? ' <span class="mlw-pill">developers</span>' : ""}</h3>${inner}</section>`;
   }).join("") || '<p class="ml-muted">Nothing matches.</p>';
-  return `<div class="mlu-notes"><div class="mlu-nhead"><div><h3>Release notes: ${esc(rel.label)}</h3><span>Foundry ${esc(rel.version)} · ${esc(rel.date)} · <a data-act="foundry" data-what="Open the full list of release notes on foundryvtt.com">All release notes</a></span></div></div>
+  const banner = notes.banner && !ST.upd.q.trim() ? `<figure class="mlu-banner"><img src="${esc(notes.banner.src)}" alt="${esc(notes.banner.alt)}" loading="lazy">${notes.banner.caption ? `<figcaption>${notes.banner.caption}</figcaption>` : ""}</figure>` : "";
+  return `<div class="mlu-notes"><div class="mlu-nhead"><div><h3>Release notes: ${esc(notes.title || rel.label)}</h3><span>Foundry ${esc(rel.version)} · ${esc(rel.date)} · <a data-act="foundry" data-what="Open the full list of release notes on foundryvtt.com">All release notes</a></span></div></div>
     <div class="mlu-tools"><input type="search" data-filter="updq" value="${esc(ST.upd.q)}" placeholder="Search the notes" aria-label="Search the notes">
-      <label><input type="checkbox" data-act="upddev" ${ST.upd.devNotes ? "checked" : ""}>Developer notes</label><span class="ml-spacer"></span><a data-act="updall">${ST.upd.open.size >= UPD_NOTES.length ? "Collapse all" : "Expand all"}</a></div>
-    <nav class="mlu-jump">${jump}</nav><div class="mlu-body">${body}</div></div>`;
+      <label><input type="checkbox" data-act="upddev" ${ST.upd.devNotes ? "checked" : ""}>Developer notes</label><span class="ml-spacer"></span><a data-act="updall">${notes.sections.every((x) => ST.upd.open.has(x.h)) ? "Collapse all" : "Expand all"}</a></div>
+    <nav class="mlu-jump">${jump}</nav>${banner}${intro(notes.intro)}<div class="mlu-body">${body}</div></div>`;
 }
 
 /** Your packages against the new version: Foundry's compatibility preview plus which of your worlds use them. */
@@ -133,7 +185,7 @@ function updatePage() {
 A.updpage = (id) => { ST.page = "update"; ST.pop = null; ST.panel = null; render(); if (id === "notes") document.querySelector(".mlu-notes")?.scrollIntoView({ block: "start" }); };
 A.updstate = (id) => { ST.upd.state = id; ST.upd.done = false; ST.upd.job = null; render(); };
 A.updsec = (h) => { const o = ST.upd.open; o.has(h) ? o.delete(h) : o.add(h); render(); };
-A.updall = () => { ST.upd.open = ST.upd.open.size >= UPD_NOTES.length ? new Set() : new Set(UPD_NOTES.map((s) => s.h)); render(); };
+A.updall = () => { const all = notesFor(UPD_STATES[ST.upd.state]).sections.map((s) => s.h); ST.upd.open = all.every((h) => ST.upd.open.has(h)) ? new Set() : new Set(all); render(); };
 A.updjump = (h) => { ST.upd.open.add(h); render(); document.getElementById(`upd-${h.replace(/\W+/g, "-")}`)?.scrollIntoView({ block: "start", behavior: "smooth" }); };
 A.upddev = () => { ST.upd.devNotes = !ST.upd.devNotes; render(); };
 A.updsnap = () => { ST.upd.snapFirst = !ST.upd.snapFirst; render(); };
