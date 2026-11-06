@@ -57,7 +57,7 @@ function gridCell(w, m, probIds) {
 function gridGroupRow(g) {
   const collapsed = ST.collapsed.has(g.key);
   const style = g.color && g.kind === "folder" ? `--sidebar-folder-color:${g.color}` : g.color ? `--ml-c:${g.color}` : "";
-  const cells = worldOrder().map((w) => {
+  const cells = gridWorlds().map((w) => {
     if (w.noCompanion || !g.modules.length) return '<td class="na"></td>';
     const on = g.modules.filter((m) => desired(w.id, m.id)).length;
     const all = on === g.modules.length;
@@ -66,6 +66,38 @@ function gridGroupRow(g) {
   return `<tr class="grp ${g.kind}" data-group="${esc(g.key)}" style="${style}"><th scope="rowgroup" data-act="collapse" data-id="${esc(g.key)}" aria-expanded="${!collapsed}">
     <i class="fa-solid fa-chevron-${collapsed ? "right" : "down"} fa-fw"></i><i class="fa-solid ${g.kind === "tag" ? "fa-tag" : g.icon} fa-fw gi"></i><span>${esc(g.name)}</span><span class="ml-muted">${g.modules.length}</span></th>${cells}</tr>`;
 }
+
+/** Which worlds the By world grid shows. Each keeps Foundry's world order. */
+const GRID_SHOW = {
+  all: ["All worlds", "Every world on this server."],
+  fav: ["Favourites", "No favourite worlds yet: star one on its page."],
+  recent: ["Played in the last 3 months", "No world was played in the last 3 months."],
+  attention: ["With changes or problems", "No world has queued changes or problems."],
+  pick: ["Chosen worlds", "No worlds chosen: use Choose…"],
+};
+function gridWorlds() {
+  const all = worldOrder(), mode = ST.gridShow ?? "all";
+  if (mode === "fav") return all.filter((w) => ST.wfav?.has(w.id));
+  if (mode === "recent") return all.filter((w) => { const d = playedDaysAgo(w); return d !== null && d <= 92; });
+  if (mode === "attention") return all.filter((w) => !w.noCompanion && (diff(w.id).length || worldProblems(w.id).length));
+  if (mode === "pick") return all.filter((w) => ST.gridPick?.has(w.id));
+  return all;
+}
+function gridPickPop(x, y) {
+  const rows = worldOrder().map((w) => `<li><label><input type="checkbox" data-act="gridpicktoggle" data-id="${w.id}" ${ST.gridPick?.has(w.id) ? "checked" : ""}>${ST.wfav?.has(w.id) ? '<i class="fa-solid fa-star mls-wfav" aria-label="Favourite"></i>' : "<i></i>"}<span>${esc(w.title)}</span><span class="ml-muted">${esc(w.last)}</span></label></li>`).join("");
+  return pop(x, y, "Choose worlds", `<div class="mls-pickbar"><a data-act="gridpickall">All</a><a data-act="gridpicknone">None</a></div><ul class="mls-picklist">${rows}</ul>`, 320);
+}
+A.gridpick = (_id, el) => { openPop("gridpick", el); render(); };
+A.gridpicktoggle = (id) => { ST.gridPick ??= new Set(); ST.gridPick.has(id) ? ST.gridPick.delete(id) : ST.gridPick.add(id); render(); };
+A.gridpickall = () => { ST.gridPick = new Set(WORLDS_X.map((w) => w.id)); render(); };
+A.gridpicknone = () => { ST.gridPick = new Set(); render(); };
+A.gridshowall = () => { ST.gridShow = "all"; ST.pop = null; render(); };
+document.addEventListener("change", (e) => {
+  if (e.target.dataset?.change !== "gridshow") return;
+  ST.gridShow = e.target.value;
+  if (ST.gridShow === "pick" && !ST.gridPick) ST.gridPick = new Set(worldOrder().slice(0, 4).map((w) => w.id));
+  render();
+});
 
 /** Columns never get narrower than this: past it the grid scrolls sideways, names pinned on the left. */
 const GRID_COL_MIN = 92, GRID_MOD_W = 250;
@@ -78,16 +110,24 @@ function gridBody() {
       const viewing = ST.panel?.kind === "module" && ST.panel.id === m.id;
       const tags = tagsOf(m.id).slice(0, 3).map((t) => `<i class="ml-dot" style="--ml-c:${t.color}" data-tooltip="Tag: ${esc(t.name)}"></i>`).join("");
       return `<tr data-mid="${m.id}" class="${viewing ? "viewing" : ""}"><th scope="row" data-act="gridmod" data-id="${m.id}"><div class="mh"><span class="t">${esc(m.title)}</span>${ST.fresh.has(m.id) ? '<span class="mls-newtag">New</span>' : ""}<span class="dots">${tags}</span></div></th>
-        ${worldOrder().map((w) => gridCell(w, m, probIds.get(w.id))).join("")}</tr>`;
+        ${gridWorlds().map((w) => gridCell(w, m, probIds.get(w.id))).join("")}</tr>`;
     }).join("");
   }).join("");
   const queued = WORLDS_X.filter((w) => !w.noCompanion && diff(w.id).length);
   const legend = `<div class="mls-gridlegend"><span><i class="sw plus"></i>turns on at the next launch</span><span><i class="sw minus"></i>turns off</span><span><i class="sw prob"></i>needs attention</span>
     <span class="ml-spacer"></span><span>${queued.length ? `${plural(queued.length, "world")} change${queued.length === 1 ? "s" : ""} at ${queued.length === 1 ? "its" : "their"} next launch: ${queued.map((w) => `<a data-act="world" data-id="${w.id}">${esc(w.title)}</a>`).join(", ")}` : "Nothing queued."}</span></div>`;
-  return `<div class="ml-row">${groupSelect()}<input type="search" data-filter="grid" value="${esc(ST.q)}" placeholder="Filter modules"><span class="ml-spacer"></span>
-    <span class="ml-muted" style="font-size:12px">Click a name for details, a switch to queue a change, a world to open it.</span></div>
-    <div class="mls-gridwrap"><table class="mls-grid" style="min-width:${GRID_MOD_W + worldOrder().length * GRID_COL_MIN}px"><colgroup><col class="mod">${worldOrder().map(() => "<col>").join("")}</colgroup>
-    <thead><tr><th class="mod" scope="col">Module</th>${worldOrder().map(gridColHead).join("")}</tr></thead><tbody>${rows}</tbody></table></div>${legend}`;
+  const shown = gridWorlds(), total = WORLDS_X.length;
+  const hiddenQueued = queued.filter((w) => !shown.includes(w));
+  const showSel = `<span class="ml-label">Show</span><select data-change="gridshow" aria-label="Which worlds to show">${Object.entries(GRID_SHOW).map(([k, [l]]) => `<option value="${k}"${k === (ST.gridShow ?? "all") ? " selected" : ""}>${l}${k === "pick" && ST.gridPick ? ` (${ST.gridPick.size})` : ""}</option>`).join("")}</select>
+    ${(ST.gridShow ?? "all") === "pick" ? `<button type="button" class="mls-pickbtn" data-act="gridpick"><i class="fa-solid fa-list-check"></i>Choose…</button>` : ""}
+    <span class="mls-showing">${shown.length === total ? `${plural(total, "world")}` : `${shown.length} of ${total} worlds`}${hiddenQueued.length ? ` · <a data-act="gridshowall" data-tooltip="${esc(hiddenQueued.map((w) => w.title).join(", "))}">${plural(hiddenQueued.length, "hidden world")} with changes</a>` : ""}</span>`;
+  const table = shown.length
+    ? `<div class="mls-gridwrap"><table class="mls-grid" style="min-width:${GRID_MOD_W + shown.length * GRID_COL_MIN}px"><colgroup><col class="mod">${shown.map(() => "<col>").join("")}</colgroup>
+    <thead><tr><th class="mod" scope="col">Module</th>${shown.map(gridColHead).join("")}</tr></thead><tbody>${rows}</tbody></table></div>`
+    : `<div class="mlw-empty"><i class="fa-solid fa-filter"></i><h3>No worlds to show</h3><p>${esc(GRID_SHOW[ST.gridShow ?? "all"][1])}</p><button type="button" data-act="gridshowall">Show all ${total} worlds</button></div>`;
+  return `<div class="ml-row">${groupSelect()}${showSel}<input type="search" data-filter="grid" value="${esc(ST.q)}" placeholder="Filter modules"><span class="ml-spacer"></span>
+    <span class="ml-muted" style="font-size:12px" data-tooltip="Click a name for details, a switch to queue a change, a world to open it."><i class="fa-regular fa-circle-question"></i></span></div>
+    ${table}${legend}`;
 }
 
 A.gcell = (wid, el) => { setDesired(wid, el.dataset.mid, !desired(wid, el.dataset.mid)); render(); warnIfBroken(wid); };
@@ -272,6 +312,7 @@ function ideasPop(p, x, y) {
     case "copyfrom": return copyFromPop(x, y);
     case "gcolmenu": return menu(x - 180, y, [[["fa-globe", "Open world", "world", p.wid], ["fa-copy", "Copy this set to…", "copyto"]], [["fa-trash", "Discard its changes", "gdiscard"]]]);
     case "copyto": return pop(x - 180, y, `Copy ${esc(world(p.wid).title)}'s modules to…`, worldPick("docopyto", "You review the difference on that world's page.").replace(`data-act="docopyto" data-id="${p.wid}"`, ""), 300);
+    case "gridpick": return gridPickPop(x, y);
     default: return calmPop(p, x, y);
   }
 }

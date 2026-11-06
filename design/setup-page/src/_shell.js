@@ -677,7 +677,7 @@ document.addEventListener("click", (e) => {
     if (cardEl && ST.page === "library" && ST.lsub === "systems") { A.syscard(cardEl.dataset.packageId); return; }
     if (cardEl && ST.page === "world" && !e.target.closest(".mls-dialog")) { const id = cardEl.dataset.packageId; ST.panel = ST.panel?.id === id ? null : { kind: "module", id }; ST.mtab = "library"; render(); return; }
   }
-  if (ST.pop && !inPop && !(el && ["gmenu", "lmenu", "wmenu", "presetpop", "bulk", "addtag", "presetworld", "copyfrom", "gcolmenu", "copyfrompop", "copyto", "addmenu", "viewpop", "fmenu", "pmenu", "news", "newsall", "updpage"].includes(el.dataset.act))) {
+  if (ST.pop && !inPop && !(el && ["gmenu", "lmenu", "wmenu", "presetpop", "bulk", "addtag", "presetworld", "copyfrom", "gcolmenu", "copyfrompop", "copyto", "addmenu", "viewpop", "fmenu", "pmenu", "news", "newsall", "updpage", "gridpick"].includes(el.dataset.act))) {
     ST.pop = null; ST.tagStage = {};
     if (!el) { render(); return; }
   }

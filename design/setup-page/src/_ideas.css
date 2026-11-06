@@ -106,3 +106,13 @@
 .mls-grid th .sub { white-space: normal; line-height: 1.25; }
 .mls-gridwrap.more-right { -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent); }
 .mls-gridwrap .mls-grid { overflow: visible; }
+.mls-showing { font-size: 12.5px; color: var(--color-text-subtle); white-space: nowrap; }
+.mls-showing a { color: #f3b36a; text-decoration: underline; }
+.mls-pickbtn { height: 28px; width: auto; flex: none; padding: 0 10px; gap: 6px; font-size: 13px; }
+.mls-pickbar { display: flex; gap: 12px; padding: 6px 10px 2px; font-size: 12.5px; }
+.mls-pickbar a { color: var(--color-light-3); text-decoration: underline; }
+.mls-picklist { list-style: none; margin: 0; padding: 4px 6px 8px; max-height: 320px; overflow: auto; }
+.mls-picklist label { display: grid; grid-template-columns: 18px 14px 1fr auto; gap: 6px; align-items: center; padding: 3px 4px; border-radius: 3px; cursor: pointer; font-size: 13px; }
+.mls-picklist label:hover { background: rgb(255 255 255 / 5%); }
+.mls-picklist .mls-wfav { color: #e8c35a; font-size: 10px; }
+.mls-picklist .ml-muted { font-size: 11.5px; }

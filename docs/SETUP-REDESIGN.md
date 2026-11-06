@@ -98,6 +98,10 @@ necessarily its card markup.
 - The By world grid never shrinks columns below 92 px: past that it scrolls sideways with
   module names pinned on the left, world headers pinned on top, and a fade at the right
   edge while more worlds are hidden (`checks/gridwide.mjs`, tested with 30 worlds).
+- The By world grid has a Show filter: all worlds, favourites, played in the last 3 months,
+  with changes or problems, or chosen worlds (a checklist). It says "5 of 12 worlds", links
+  hidden worlds that have queued changes, and offers "Show all" when nothing matches
+  (`checks/gridshow.mjs`).
 - Nothing moves under the pointer: bars that appear (unsaved changes, progress, selection)
   take a slot whose space is already kept, or replace something of the same height.
   `design/setup-page/checks/shifts.mjs` measures this.
@@ -127,7 +131,7 @@ necessarily its card markup.
 cd design/setup-page
 ./assets.sh            # copies Foundry's CSS, fonts and images from ~/foundry/vtt (not in git)
 node build.mjs         # writes out/index.html (playground) and out/setup-shell.html
-node checks/run.mjs    # 38 Playwright checks of the mockup's flows
+node checks/run.mjs    # 39 Playwright checks of the mockup's flows
 ```
 
 `fvtt/` and `out/` are git-ignored: they hold Foundry's and Font Awesome Pro's licensed
