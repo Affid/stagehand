@@ -105,3 +105,13 @@ test("Configuration reads Foundry's settings and saves one through Foundry, then
   await expect(toggle).toBeChecked({ checked: was });
   await expect(cfg.locator(".mlc-bar")).not.toContainText("not saved");
 });
+
+test("the Version chip opens the Update page with Foundry's version and its notes", async () => {
+  await shell().locator(".mlh-ver").click();
+  const upd = shell().locator(".mlu-page");
+  await expect(upd).toContainText("14.370");
+  await expect(
+    upd.getByRole("link", { name: /What's new in/ }),
+  ).toHaveAttribute("href", /^https:\/\/foundryvtt\.com\/releases\/14\.\d+$/);
+  await page.screenshot({ path: `${SCREENS}/server-update.png` });
+});

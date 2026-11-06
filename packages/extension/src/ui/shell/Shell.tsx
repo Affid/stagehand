@@ -3,6 +3,7 @@ import { useUi } from "../context.ts";
 import { LibraryPage } from "./library/LibraryPage.tsx";
 import { ServerBackupsPage } from "./server/BackupsPage.tsx";
 import { ConfigPage } from "./server/ConfigPage.tsx";
+import { UpdatePage } from "./server/UpdatePage.tsx";
 import { Header } from "./Header.tsx";
 import { resolveRoute } from "./route.ts";
 import { WorldPage } from "./WorldPage.tsx";
@@ -24,7 +25,13 @@ export function Shell() {
         {route.kind === "server" ? (
           <section class="application framed mls-main">
             <div class="mls-body-main">
-              {route.page === "config" ? <ConfigPage /> : <ServerBackupsPage />}
+              {route.page === "config" ? (
+                <ConfigPage />
+              ) : route.page === "update" ? (
+                <UpdatePage />
+              ) : (
+                <ServerBackupsPage />
+              )}
             </div>
           </section>
         ) : world ? (

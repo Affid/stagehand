@@ -105,7 +105,7 @@ function Actions() {
 }
 
 export function Header() {
-  const { state, page, t } = useUi();
+  const { state, store, t } = useUi();
   const version = state.data.setup?.core.version ?? "";
   return (
     <header class="mls-top mlh">
@@ -116,11 +116,19 @@ export function Header() {
           type="button"
           class="mlh-ver"
           title={t("shell.versionHint")}
-          onClick={() => page.foundryAction({ action: "update" })}
+          onClick={() =>
+            store.set({ route: { kind: "server", page: "update" } })
+          }
         >
           <span class="v">
             {t("shell.version", { version: versionLabel(version) })}
           </span>
+          {state.data.setup?.coreUpdate?.hasUpdate ? (
+            <span class="upd">
+              <Icon name="arrow-up" />
+              {t("up.chip")}
+            </span>
+          ) : null}
         </button>
       ) : null}
       <span class="ml-spacer" />

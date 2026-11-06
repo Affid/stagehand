@@ -490,5 +490,14 @@
   "cfg.savedNow": "Saved.",
   "cfg.shutdown": "Shut down now…",
   "cfg.loading": "Reading Foundry's configuration…",
-  "cfg.foundryWindow": "Foundry's Application Configuration"
+  "cfg.foundryWindow": "Foundry's Application Configuration",
+  "up.title": "Update",
+  "up.installed": "Installed",
+  "up.channel": "Update channel",
+  "up.available": "{version} is available on the {channel} channel.",
+  "up.current": "Up to date.",
+  "up.notes": "What's new in {version}",
+  "up.update": "Update in Foundry…",
+  "up.lead": "Foundry's own update screen downloads and installs it, checks your packages against it, and offers a snapshot first.",
+  "up.chip": "update"
 }

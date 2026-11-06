@@ -34,6 +34,24 @@ const toWorld = (w: Loose): WorldInfo => {
   };
 };
 
+/**
+ * Whether Foundry has an update, on which channel, and its version. Picked
+ * field by field: the update data also holds a time-limited download link,
+ * which must never be read, logged or stored.
+ */
+function coreUpdate(game: SetupGame): Pick<SetupData, "coreUpdate"> {
+  const u = (game.data as { coreUpdate?: Record<string, unknown> } | undefined)
+    ?.coreUpdate;
+  if (!u || typeof u.hasUpdate !== "boolean") return {};
+  return {
+    coreUpdate: {
+      hasUpdate: u.hasUpdate,
+      channel: str(u.channel).slice(0, 30),
+      version: str(u.version).slice(0, 30),
+    },
+  };
+}
+
 export function collect(game: SetupGame): SetupData {
   const release = game.release ?? { generation: 0, build: 0 };
   return {
@@ -51,5 +69,6 @@ export function collect(game: SetupGame): SetupData {
       version: str(s.version),
     })),
     worlds: all(game.worlds).map(toWorld),
+    ...coreUpdate(game),
   };
 }

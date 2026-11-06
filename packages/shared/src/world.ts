@@ -119,6 +119,14 @@ export const SetupDataSchema = z.object({
     z.object({ id: z.string(), title: z.string(), version: z.string() }),
   ),
   worlds: z.array(WorldInfoSchema),
+  /** Foundry's update check: only these three fields, never its download link. */
+  coreUpdate: z
+    .object({
+      hasUpdate: z.boolean(),
+      channel: z.string().max(30),
+      version: z.string().max(30),
+    })
+    .optional(),
 });
 
 export type SetupData = z.infer<typeof SetupDataSchema>;

@@ -73,6 +73,28 @@ describe("reading Setup's package data (V-1)", () => {
     expect(SetupDataSchema.safeParse(data).success).toBe(true);
   });
 
+  test("only the update's version, channel and availability are read: never its download link", () => {
+    const data = collect({
+      data: {
+        coreUpdate: {
+          hasUpdate: true,
+          channel: "stable",
+          version: "14.371",
+          download: "https://secret.example/timed-link",
+          release: { notes: "x" },
+        },
+      },
+    } as never);
+    expect(data.coreUpdate).toEqual({
+      hasUpdate: true,
+      channel: "stable",
+      version: "14.371",
+    });
+    expect(JSON.stringify(data)).not.toContain("secret");
+    expect(collect({}).coreUpdate).toBeUndefined();
+    expect(SetupDataSchema.safeParse(data).success).toBe(true);
+  });
+
   test("missing pieces read as empty, never throw", () => {
     expect(collect({})).toMatchObject({
       core: { version: "0.0" },
