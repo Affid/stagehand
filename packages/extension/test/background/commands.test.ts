@@ -93,6 +93,36 @@ describe("pendingFor and expandForWorld (P-6)", () => {
       },
     ]);
   });
+
+  test("modules picked one by one join the presets' modules", () => {
+    const expanded = expandForWorld(
+      [
+        command({
+          payload: { mode: "remove", presetIds: ["p1"], modules: ["b", "c"] },
+        }),
+        command({
+          id: "c2",
+          payload: { mode: "add", presetIds: [], modules: ["d"] },
+        }),
+      ],
+      library,
+    );
+    expect(expanded.map((c) => c.modules)).toEqual([["a", "b", "c"], ["d"]]);
+    expect(expanded[1]?.presets).toEqual([]);
+  });
+
+  test("queue keeps picked modules on the command", () => {
+    const [c] = queue([], {
+      id: "c9",
+      worldId: "w1",
+      mode: "add",
+      presetIds: [],
+      modules: ["x"],
+      createdAt: "now",
+      baseSnapshotAt: null,
+    });
+    expect(c?.payload).toEqual({ mode: "add", presetIds: [], modules: ["x"] });
+  });
 });
 
 describe("acknowledge and reconcile (8.4 two-phase)", () => {

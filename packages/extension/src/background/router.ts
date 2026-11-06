@@ -99,6 +99,7 @@ async function queueApply(
       worldId: m.worldId,
       mode: m.mode,
       presetIds: m.presetIds,
+      modules: m.modules,
       createdAt: deps.now(),
       baseSnapshotAt: snap?.takenAt ?? null,
     }),

@@ -2,7 +2,11 @@
 // (PRD 8.4). Pure functions over the command list.
 import type { Library } from "@module-library/shared/library/schema";
 import type { ApplyMode } from "@module-library/shared/resolver";
-import type { Command, WorldCommand } from "@module-library/shared/world";
+import {
+  type Command,
+  changeModules,
+  type WorldCommand,
+} from "@module-library/shared/world";
 
 export interface CommandAck {
   readonly id: string;
@@ -18,6 +22,7 @@ export interface NewCommand {
   readonly worldId: string;
   readonly mode: ApplyMode;
   readonly presetIds: readonly string[];
+  readonly modules?: readonly string[] | undefined;
   readonly createdAt: string;
   readonly baseSnapshotAt: string | null;
 }
@@ -33,7 +38,11 @@ export const queue = (list: readonly Command[], c: NewCommand): Command[] => [
     scope: "world",
     worldId: c.worldId,
     type: "preset.apply",
-    payload: { mode: c.mode, presetIds: [...c.presetIds] },
+    payload: {
+      mode: c.mode,
+      presetIds: [...c.presetIds],
+      ...(c.modules?.length ? { modules: [...c.modules] } : {}),
+    },
     createdAt: c.createdAt,
     baseSnapshotAt: c.baseSnapshotAt,
     status: "pending",
@@ -53,7 +62,10 @@ export const pendingFor = (
 ): Command[] =>
   list.filter((c) => c.worldId === worldId && c.status === "pending");
 
-/** What the module receives: presets resolved against the current library. */
+/**
+ * What the module receives: presets resolved against the current library,
+ * plus modules picked one by one.
+ */
 export function expandForWorld(
   commands: readonly Command[],
   library: Library,
@@ -67,7 +79,7 @@ export function expandForWorld(
       id: c.id,
       mode: c.payload.mode,
       presets: presets.map((p) => ({ id: p.id, name: p.name })),
-      modules: [...new Set(presets.flatMap((p) => p.modules))],
+      modules: changeModules(presets, c.payload),
     };
   });
 }

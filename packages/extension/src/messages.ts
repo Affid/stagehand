@@ -6,6 +6,7 @@ import { NS } from "@module-library/shared/protocol";
 import {
   ApplyModeSchema,
   type Command,
+  MAX_PICKED,
   SetupDataSchema,
   type Snapshot,
 } from "@module-library/shared/world";
@@ -25,6 +26,8 @@ export const EnvelopeSchema = z.object({
 });
 
 const Id = z.string().min(1).max(200);
+/** More presets than anyone combines in one change. */
+const MAX_PRESETS = 100;
 
 export const ExtensionMessageSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("register-server"), server: z.string().max(500) }),
@@ -36,12 +39,17 @@ export const ExtensionMessageSchema = z.discriminatedUnion("kind", [
     text: z.string().max(MAX_IMPORT_BYTES),
   }),
   z.object({ kind: z.literal("library-export") }),
-  z.object({
-    kind: z.literal("queue-apply"),
-    worldId: Id,
-    mode: ApplyModeSchema,
-    presetIds: z.array(Id).min(1),
-  }),
+  z
+    .object({
+      kind: z.literal("queue-apply"),
+      worldId: Id,
+      mode: ApplyModeSchema,
+      presetIds: z.array(Id).max(MAX_PRESETS),
+      modules: z.array(Id).max(MAX_PICKED).optional(),
+    })
+    .refine((m) => m.presetIds.length + (m.modules?.length ?? 0) > 0, {
+      message: "Choose presets or modules to apply",
+    }),
   z.object({ kind: z.literal("cancel-command"), id: Id }),
   z.object({ kind: z.literal("bridge-init") }),
   z.object({ kind: z.literal("relay"), msg: EnvelopeSchema }),

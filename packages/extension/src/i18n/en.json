@@ -153,6 +153,8 @@
   "sheet.next": "Next launch",
   "sheet.queuedCount": "{n} queued",
   "sheet.nothingQueued": "Nothing queued for this world.",
+  "sheet.picked.one": "{n} picked module",
+  "sheet.picked.other": "{n} picked modules",
   "sheet.modules.one": "{n} module",
   "sheet.modules.other": "{n} modules",
   "sheet.queuedAt": "queued {time}",

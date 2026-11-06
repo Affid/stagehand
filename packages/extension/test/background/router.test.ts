@@ -243,6 +243,35 @@ describe("router: review fixes", () => {
     );
   });
 
+  test("modules can be queued without a preset; an empty change is refused", async () => {
+    const d = deps();
+    await registered(d);
+    await route(d, { kind: "setup-seen", data: setupData(true) }, fromSetup);
+    await route(
+      d,
+      {
+        kind: "queue-apply",
+        worldId: "w",
+        mode: "remove",
+        presetIds: [],
+        modules: ["dice-so-nice"],
+      },
+      fromSetup,
+    );
+    expect((await d.state.commands(S))[0]?.payload).toEqual({
+      mode: "remove",
+      presetIds: [],
+      modules: ["dice-so-nice"],
+    });
+    await expect(
+      route(
+        d,
+        { kind: "queue-apply", worldId: "w", mode: "add", presetIds: [] },
+        fromSetup,
+      ),
+    ).rejects.toThrow();
+  });
+
   test("queueing unknown presets is refused", async () => {
     const d = deps();
     await registered(d);

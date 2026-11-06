@@ -9,13 +9,15 @@ import {
   resolvePlan,
 } from "@module-library/shared/resolver";
 import { parseCoreVersion } from "@module-library/shared/version";
-import type { Command } from "@module-library/shared/world";
+import { type Command, changeModules } from "@module-library/shared/world";
 import type { SetupState } from "../../messages.ts";
 
 export const COMPANION_ID = "module-library";
 
 export interface NewChange {
   readonly presetIds: readonly string[];
+  /** Modules picked one by one. */
+  readonly modules?: readonly string[] | undefined;
   readonly mode: ApplyMode;
 }
 
@@ -64,7 +66,10 @@ export const isOrphaned = (state: SetupState, c: Command): boolean =>
 
 const toSpec = (state: SetupState, change: NewChange): ApplySpec => ({
   mode: change.mode,
-  modules: presetModules(state, change.presetIds),
+  modules: changeModules(state.library.presets, {
+    presetIds: [...change.presetIds],
+    ...(change.modules ? { modules: [...change.modules] } : {}),
+  }),
 });
 
 export function previewApply(state: SetupState, req: PreviewRequest): Preview {

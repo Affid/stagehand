@@ -72,6 +72,29 @@ describe("world sheet (W-1 to W-3)", () => {
     );
   });
 
+  test("picked modules are named in the queue: by title when few, else counted", async () => {
+    const few = {
+      ...pending,
+      id: "c2",
+      payload: { mode: "remove" as const, presetIds: [], modules: ["a"] },
+    };
+    const many = {
+      ...pending,
+      id: "c3",
+      payload: {
+        mode: "add" as const,
+        presetIds: [],
+        modules: ["a", "b", "c", "d"],
+      },
+    };
+    const { findByText, getByText } = renderUi("overlay", {
+      state: { sheetWorld: "w1" },
+      data: { snapshots: { w1: snapshot() }, commands: [few, many] },
+    });
+    expect(await findByText("Title a")).toBeTruthy();
+    expect(getByText("4 picked modules")).toBeTruthy();
+  });
+
   test("actions: preset from world, apply, and Foundry's own launch", async () => {
     const list = document.createElement("ol");
     list.id = "worlds-list";

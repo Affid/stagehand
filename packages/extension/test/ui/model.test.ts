@@ -275,6 +275,37 @@ describe("previewApply (P-4)", () => {
   });
 });
 
+describe("picked modules (no preset)", () => {
+  test("a picked change previews like a preset of those modules", () => {
+    const preview = previewApply(state(), {
+      worldId: "w1",
+      change: { presetIds: [], modules: ["lib-user"], mode: "add" },
+      removeDependents: false,
+    });
+    expect([...(preview.plan?.enable ?? [])].sort()).toEqual([
+      "lib",
+      "lib-user",
+    ]);
+  });
+
+  test("a queued pick counts, and is never orphaned", () => {
+    const queued = state({
+      commands: [
+        command({
+          id: "1",
+          payload: { mode: "add", presetIds: [], modules: ["b"] },
+        }),
+      ],
+    });
+    const preview = previewApply(queued, {
+      worldId: "w1",
+      removeDependents: false,
+    });
+    expect(preview).toMatchObject({ queued: 1, orphaned: 0 });
+    expect(preview.plan?.enable).toEqual(["b"]);
+  });
+});
+
 describe("next launch: queued changes combine (P-6)", () => {
   test("the preview includes changes already queued, before the new one", () => {
     // Regression: the preview used to resolve only the new change.

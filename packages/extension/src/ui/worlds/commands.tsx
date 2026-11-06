@@ -1,9 +1,9 @@
 // Queued and finished changes, as the sheet lists them.
-import type { Command } from "@module-library/shared/world";
+import { type Command, changeModules } from "@module-library/shared/world";
 import { Icon } from "../common/widgets.tsx";
 import { useUi } from "../context.ts";
 import { plural } from "../i18n.ts";
-import { isOrphaned, presetModules } from "../model/preview.ts";
+import { isOrphaned } from "../model/preview.ts";
 
 const MODE_ICON = { add: "plus", replace: "right-left", remove: "minus" };
 const HISTORY_ICON = {
@@ -19,19 +19,33 @@ const when = (iso: string): string => {
     : d.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
 };
 
-export function usePresetNames(): (c: Command) => string {
-  const { state } = useUi();
-  return (c) =>
-    c.payload.presetIds
-      .map(
-        (id) => state.data.library.presets.find((p) => p.id === id)?.name ?? id,
-      )
-      .join(", ");
+/** Picked modules are named by title while there are only a few. */
+const NAMED_PICKS = 3;
+
+/** What a change applies: its presets' names and any picked modules. */
+export function useChangeNames(): (c: Command) => string {
+  const { state, t } = useUi();
+  const { library, setup } = state.data;
+  const title = (id: string): string =>
+    setup?.modules.find((m) => m.id === id)?.title ?? id;
+  return (c) => {
+    const presets = c.payload.presetIds.map(
+      (id) => library.presets.find((p) => p.id === id)?.name ?? id,
+    );
+    const picked = c.payload.modules ?? [];
+    const picks =
+      picked.length === 0
+        ? []
+        : picked.length <= NAMED_PICKS
+          ? picked.map(title)
+          : [plural(t, "sheet.picked", picked.length)];
+    return [...presets, ...picks].join(", ");
+  };
 }
 
 export function QueuedList(props: { readonly commands: readonly Command[] }) {
   const { state, actions, t, canChange } = useUi();
-  const names = usePresetNames();
+  const names = useChangeNames();
   return (
     <ol class="ml-queue">
       {props.commands.map((c, i) => (
@@ -46,7 +60,7 @@ export function QueuedList(props: { readonly commands: readonly Command[] }) {
               {plural(
                 t,
                 "sheet.modules",
-                presetModules(state.data, c.payload.presetIds).length,
+                changeModules(state.data.library.presets, c.payload).length,
               )}{" "}
               · {t("sheet.queuedAt", { time: when(c.createdAt) })}
             </small>
@@ -73,7 +87,7 @@ export function QueuedList(props: { readonly commands: readonly Command[] }) {
 
 export function HistoryList(props: { readonly commands: readonly Command[] }) {
   const { t } = useUi();
-  const names = usePresetNames();
+  const names = useChangeNames();
   return (
     <ul class="ml-history">
       {[...props.commands].reverse().map((c) => {

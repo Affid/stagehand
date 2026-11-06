@@ -39,6 +39,8 @@ export const CommandSchema = z.object({
   payload: z.object({
     mode: ApplyModeSchema,
     presetIds: z.array(z.string()),
+    /** Modules picked one by one, besides (or instead of) presets. */
+    modules: z.array(z.string()).optional(),
   }),
   createdAt: z.string(),
   baseSnapshotAt: z.string().nullable(),
@@ -48,6 +50,23 @@ export const CommandSchema = z.object({
 });
 
 export type Command = z.infer<typeof CommandSchema>;
+
+/** At most this many modules picked one by one in a single change. */
+export const MAX_PICKED = 500;
+
+/** The modules a change names: its presets' plus any picked one by one. */
+export function changeModules(
+  presets: readonly {
+    readonly id: string;
+    readonly modules: readonly string[];
+  }[],
+  payload: Pick<Command["payload"], "presetIds" | "modules">,
+): string[] {
+  const fromPresets = presets
+    .filter((p) => payload.presetIds.includes(p.id))
+    .flatMap((p) => p.modules);
+  return [...new Set([...fromPresets, ...(payload.modules ?? [])])];
+}
 export type CommandStatus = z.infer<typeof CommandStatusSchema>;
 
 /** A command as the module receives it: presets expanded to module ids. */
