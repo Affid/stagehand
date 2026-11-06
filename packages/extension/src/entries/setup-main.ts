@@ -16,6 +16,8 @@ import { runBackups } from "../page/backups.ts";
 import { runServerBackups } from "../page/server-backups.ts";
 import { runConfig } from "../page/config.ts";
 import type { ConfigRequest } from "../page-config.ts";
+import { runUpdate } from "../page/update.ts";
+import type { UpdateRequest } from "../page-update.ts";
 import type { ServerBackupsRequest } from "../page-server-backups.ts";
 import { closeEditor, openEditor, saveFromEditor } from "../page/editor.ts";
 import { saveWorld } from "../page/save-world.ts";
@@ -95,8 +97,21 @@ function answerConfig(req: ConfigRequest): void {
           ? { settings: r.settings, choices: r.choices }
           : {}),
         ...(r.restart === undefined ? {} : { restart: r.restart }),
+        ...(r.passwordOk === undefined ? {} : { passwordOk: r.passwordOk }),
+        ...(r.method === undefined ? {} : { method: r.method }),
+        ...(r.reason === undefined ? {} : { reason: r.reason }),
         ...(r.error ? { error: r.error.slice(0, MAX_ERROR) } : {}),
       },
+    });
+  });
+}
+
+/** Checks for, or installs, Foundry's update and answers with its id. */
+function answerUpdate(req: UpdateRequest): void {
+  void runUpdate(page, req).then((r) => {
+    postToUi({
+      type: "UPDATE_DONE",
+      payload: { requestId: req.requestId, ...r },
     });
   });
 }
@@ -157,6 +172,7 @@ const WRITES: ReadonlySet<string> = new Set([
   "BACKUPS",
   "SERVER_BACKUPS",
   "CONFIG",
+  "UPDATE",
 ]);
 
 function handle(m: UiToPage): void {
@@ -190,6 +206,9 @@ function handle(m: UiToPage): void {
       break;
     case "CONFIG":
       answerConfig(m.payload);
+      break;
+    case "UPDATE":
+      answerUpdate(m.payload);
       break;
     case "EDITOR_OPEN":
     case "EDITOR_CLOSE":

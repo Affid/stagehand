@@ -28,6 +28,12 @@ import {
   parseConfigRequest,
 } from "./page-config.ts";
 import {
+  parseUpdateReply,
+  parseUpdateRequest,
+  type UpdateReply,
+  type UpdateRequest,
+} from "./page-update.ts";
+import {
   parseServerBackupsReply,
   parseServerBackupsRequest,
   type ServerBackupsReply,
@@ -121,6 +127,8 @@ export type UiToPage =
   | { readonly type: "SERVER_BACKUPS"; readonly payload: ServerBackupsRequest }
   /** Foundry's configuration: read, or save some settings (answered by CONFIG_DONE). */
   | { readonly type: "CONFIG"; readonly payload: ConfigRequest }
+  /** Foundry's own update: check a channel, or download and install (answered by UPDATE_DONE). */
+  | { readonly type: "UPDATE"; readonly payload: UpdateRequest }
   /** Check Foundry's package list for updates (answered by UPDATES). */
   | { readonly type: "CHECK_UPDATES"; readonly payload: Record<string, never> };
 
@@ -142,7 +150,8 @@ export type PageToUi =
       readonly type: "SERVER_BACKUPS_DONE";
       readonly payload: ServerBackupsReply;
     }
-  | { readonly type: "CONFIG_DONE"; readonly payload: ConfigReply };
+  | { readonly type: "CONFIG_DONE"; readonly payload: ConfigReply }
+  | { readonly type: "UPDATE_DONE"; readonly payload: UpdateReply };
 
 const MAX_TEXT = 2000;
 const KINDS: readonly string[] = ["info", "warning", "error"];
@@ -263,6 +272,10 @@ export function parseUiToPage(type: string, p: unknown): UiToPage | undefined {
       const payload = parseConfigRequest(p);
       return payload ? { type, payload } : undefined;
     }
+    case "UPDATE": {
+      const payload = parseUpdateRequest(p);
+      return payload ? { type, payload } : undefined;
+    }
     default:
       return undefined;
   }
@@ -304,6 +317,10 @@ export function parsePageToUi(type: string, p: unknown): PageToUi | undefined {
     }
     case "CONFIG_DONE": {
       const payload = parseConfigReply(p);
+      return payload ? { type, payload } : undefined;
+    }
+    case "UPDATE_DONE": {
+      const payload = parseUpdateReply(p);
       return payload ? { type, payload } : undefined;
     }
     default:

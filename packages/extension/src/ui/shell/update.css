@@ -1,0 +1,476 @@
+/* The Update page, as the prototype (design/setup-page/src/_update.css):
+   the release notes in a scrolling box on the left, the Update box on the
+   right, and the up-to-date state. Appended to setup-ui.css. */
+
+.mls-shell .mlu-page {
+  flex: 1;
+}
+
+.mls-shell .mlu-cols {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  gap: 14px;
+}
+
+.mls-shell .mlu-left {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mls-shell .mlu-left > .mlu-notes {
+  flex: 1;
+}
+
+.mls-shell .mlu-notes {
+  min-height: 0;
+  overflow: auto;
+  border: 1px solid var(--color-cool-4);
+  border-radius: 4px;
+  background: rgb(11 10 19 / 55%);
+  padding: 12px 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mls-shell .mlu-nhead {
+  display: grid;
+  gap: 2px;
+}
+
+.mls-shell .mlu-nhead h3 {
+  margin: 0;
+  font-size: 17px;
+  color: var(--color-light-1);
+  border: 0;
+}
+
+.mls-shell .mlu-nhead span {
+  font-size: 12.5px;
+  color: var(--color-text-subtle);
+}
+
+/* Buttons that read as links: "All release notes", "Expand all". */
+.mls-shell .mlu-link.ml-link {
+  display: inline;
+  width: auto;
+  height: auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: inherit;
+  color: var(--color-light-3);
+  text-decoration: underline;
+  text-decoration-color: var(--color-light-5);
+}
+
+.mls-shell .mlu-link.ml-link:hover {
+  color: var(--color-warm-1);
+  box-shadow: none;
+}
+
+.mls-shell .mlu-tools {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-size: 13px;
+  color: var(--color-light-2);
+}
+
+.mls-shell .mlu-tools input[type="search"] {
+  height: 28px;
+  width: 240px;
+  flex: none;
+}
+
+.mls-shell .mlu-tools label {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.mls-shell .mlu-tools .ml-spacer {
+  flex: 1;
+}
+
+.mls-shell .mlu-jump {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.mls-shell .mlu-jump button {
+  width: auto;
+  height: auto;
+  line-height: 1.4;
+  padding: 2px 10px;
+  border-radius: 12px;
+  border: 1px solid var(--color-cool-3);
+  background: none;
+  font-size: 12.5px;
+  color: var(--color-light-2);
+}
+
+.mls-shell .mlu-jump button b {
+  color: var(--color-light-1);
+}
+
+.mls-shell .mlu-jump button:hover {
+  border-color: var(--color-warm-1);
+  box-shadow: none;
+}
+
+.mls-shell .mlu-jump button.brk {
+  border-color: rgb(245 196 94 / 60%);
+  color: #f3dca4;
+}
+
+.mls-shell .mlu-body {
+  display: grid;
+  gap: 6px;
+}
+
+.mls-shell .mlu-sec h3 {
+  margin: 6px 0 2px;
+  border: 0;
+  border-bottom: 1px solid var(--color-cool-4);
+  padding-bottom: 4px;
+}
+
+.mls-shell .mlu-sec h3 button {
+  width: 100%;
+  height: auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  font-family: inherit;
+  font-size: 15px;
+  color: var(--color-light-1);
+}
+
+.mls-shell .mlu-sec h3 button:hover {
+  box-shadow: none;
+  color: var(--color-warm-1);
+}
+
+.mls-shell .mlu-sec h3 button > i:first-child {
+  font-size: 11px;
+  color: var(--color-light-4);
+  width: 12px;
+}
+
+.mls-shell .mlu-sec h3 .c {
+  font-size: 12px;
+  color: var(--color-text-subtle);
+  font-weight: 400;
+}
+
+.mls-shell .mlu-sec.breaking {
+  border: 1px solid rgb(245 196 94 / 50%);
+  background: rgb(245 196 94 / 7%);
+  border-radius: 4px;
+  padding: 2px 10px 6px;
+}
+
+.mls-shell .mlu-sec.breaking h3 {
+  border-bottom-color: rgb(245 196 94 / 30%);
+}
+
+.mls-shell .mlu-sec.breaking h3 .fa-triangle-exclamation {
+  color: #f5c45e;
+}
+
+.mls-shell .mlu-sec h4 {
+  margin: 8px 0 2px;
+  font-family: var(--font-body, Signika), sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-text-subtle);
+  border: 0;
+}
+
+.mls-shell .mlu-sec ul {
+  margin: 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 4px;
+}
+
+.mls-shell .mlu-sec li {
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--color-light-2);
+}
+
+.mls-shell .mlu-sec li a.mlu-issue {
+  font-size: 11.5px;
+  color: var(--color-light-4);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.mls-shell .mlu-sec li a.mlu-issue:hover {
+  color: var(--color-warm-1);
+}
+
+.mls-shell .mlu-banner {
+  margin: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.mls-shell .mlu-banner img {
+  width: 100%;
+  max-height: 260px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid var(--color-cool-4);
+}
+
+.mls-shell .mlu-banner figcaption {
+  font-size: 12px;
+  color: var(--color-text-subtle);
+}
+
+.mls-shell .mlu-banner figcaption a,
+.mls-shell .mlu-sec li a:not(.mlu-issue),
+.mls-shell .mlu-notes .mlu-p a {
+  color: var(--color-light-2);
+  text-decoration: underline;
+  text-decoration-color: var(--color-light-5);
+}
+
+.mls-shell .mlu-notes .mlu-p {
+  margin: 0 0 6px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--color-light-2);
+}
+
+.mls-shell .mlu-notes .mlu-p p,
+.mls-shell .mlu-notes .mlu-p dl {
+  margin: 0 0 6px;
+}
+
+.mls-shell .mlu-notes .mlu-p dt {
+  font-weight: 700;
+  color: var(--color-light-1);
+}
+
+.mls-shell .mlu-notes .mlu-p dd {
+  margin: 0 0 6px 16px;
+}
+
+.mls-shell .mlu-sec li code,
+.mls-shell .mlu-notes .mlu-p code {
+  font-size: 12.5px;
+  padding: 0 4px;
+  border-radius: 3px;
+  background: rgb(255 255 255 / 7%);
+  color: var(--color-light-1);
+}
+
+/* The Update box */
+.mls-shell .mlu-side {
+  min-height: 0;
+  overflow: auto;
+  display: grid;
+  gap: 12px;
+  align-content: start;
+}
+
+.mls-shell .mlu-act {
+  gap: 10px;
+}
+
+.mls-shell .mlu-act .mlu-go {
+  justify-self: stretch;
+  height: 38px;
+  width: 100%;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.mls-shell .mlu-act .mlu-go[disabled] {
+  opacity: 0.6;
+}
+
+.mls-shell .mlu-why {
+  margin: 0;
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  font-size: 12.5px;
+  color: var(--color-light-3);
+}
+
+.mls-shell .mlu-why i {
+  color: var(--color-light-4);
+}
+
+.mls-shell .mlu-why a {
+  color: var(--color-light-2);
+  text-decoration: underline;
+}
+
+.mls-shell .mlu-why code {
+  font-size: 12px;
+}
+
+.mls-shell .mlu-why.err,
+.mls-shell .mlu-why.err i {
+  color: #ffb3a6;
+}
+
+.mls-shell .mls-bfirst {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 8px 10px;
+  border: 1px solid var(--color-cool-3);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--color-light-2);
+}
+
+.mls-shell .mls-bfirst input {
+  margin-top: 2px;
+  flex: none;
+}
+
+.mls-shell .mls-bfirst .ml-muted {
+  font-size: 12px;
+}
+
+.mls-shell .mlu-chan {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 4px 10px;
+  align-items: center;
+}
+
+.mls-shell .mlu-chan .k {
+  font-size: 12.5px;
+  color: var(--color-text-subtle);
+}
+
+.mls-shell .mlu-chan select {
+  height: 28px;
+}
+
+.mls-shell .mlu-chan .hint {
+  grid-column: 2;
+  margin: 0;
+}
+
+.mls-shell .mlu-force {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 13px;
+  color: var(--color-light-2);
+}
+
+.mls-shell .mlu-force input {
+  flex: none;
+}
+
+.mls-shell .mlu-force .ml-muted {
+  font-size: 12px;
+}
+
+.mls-shell .mlu-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  font-size: 12.5px;
+  color: var(--color-light-4);
+}
+
+.mls-shell .mlu-steps li {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.mls-shell .mlu-steps li.done {
+  color: #8fd49b;
+}
+
+.mls-shell .mlu-steps li.now {
+  color: var(--color-light-1);
+}
+
+.mls-shell .mlu-steps .fa-circle {
+  font-size: 6px;
+}
+
+.mls-shell .mlu-sub {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--color-light-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mls-shell .mlu-bar {
+  height: 6px;
+  border-radius: 3px;
+  background: rgb(255 255 255 / 10%);
+  overflow: hidden;
+}
+
+.mls-shell .mlu-bar span {
+  display: block;
+  height: 100%;
+  background: var(--color-warm-1);
+  transition: width 0.2s;
+}
+
+.mls-shell .mlu-done {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.mls-shell .mlu-done > i {
+  color: #8fd49b;
+  font-size: 20px;
+  margin-top: 2px;
+}
+
+.mls-shell .mlu-done > div {
+  display: grid;
+  gap: 4px;
+}
+
+.mls-shell .mlu-done strong {
+  color: var(--color-light-1);
+  font-size: 14.5px;
+}
+
+.mls-shell .mlu-done span {
+  font-size: 12.5px;
+  color: var(--color-light-3);
+}
+
+@media (max-width: 1280px) {
+  .mls-shell .mlu-cols {
+    grid-template-columns: minmax(0, 1fr) 320px;
+  }
+}

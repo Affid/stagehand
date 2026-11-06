@@ -92,6 +92,7 @@ for (const sheet of [
   "libpanels.css",
   "grid.css",
   "config.css",
+  "update.css",
 ])
   appendFileSync(
     join(outDir, "setup-ui.css"),

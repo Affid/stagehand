@@ -55,6 +55,7 @@ const LOCKING: ReadonlySet<string> = new Set([
   "createSnapshot",
   "restoreSnapshot",
   "deleteSnapshot",
+  "updateDownload",
 ]);
 
 /** Foundry's lock messages, as our own words. */
@@ -63,6 +64,8 @@ const LOCK_WORDS: ReadonlyMap<string, string> = new Map([
   ["SETUP.BACKUPS.Restoring", "lock.restore"],
   ["SETUP.BACKUPS.DeletingBackup", "lock.delete"],
   ["SETUP.BACKUPS.DeletingSnapshot", "lock.delete"],
+  // Ours, while Foundry updates (page/update.ts UPDATING).
+  ["SETUP.UpdateDownloading", "lock.update"],
 ]);
 
 /** Why Restore, Delete and Launch wait, while Foundry is busy; else null. */

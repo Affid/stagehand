@@ -118,16 +118,79 @@ test("Configuration: a wrong current password is refused by Foundry", async () =
   await cfg.getByRole("button", { name: "Cancel" }).click();
 });
 
-test("the Version chip's menu opens the Update page with Foundry's version and its notes", async () => {
+test("Configuration: the right current password lets a new one be chosen", async () => {
+  const cfg = shell().locator(".mlc-page");
+  await cfg.getByRole("button", { name: "Change…" }).click();
+  await cfg.getByLabel("Current password").fill(env.adminPassword);
+  await cfg.getByRole("button", { name: "Continue" }).click();
+  await expect(cfg.getByLabel("New password", { exact: true })).toBeVisible();
+  await cfg.getByRole("button", { name: "Cancel" }).click();
+  await expect(cfg.locator(".mlc-unsaved")).toHaveCount(0);
+});
+
+test("the Version chip's menu opens the Update page: Foundry's own check says up to date", async () => {
   await shell().locator(".mlh-ver").click();
   await shell()
     .getByRole("region", { name: "Foundry Virtual Tabletop" })
     .getByRole("button", { name: /Update page|See what's new/ })
     .click();
   const upd = shell().locator(".mlu-page");
-  await expect(upd).toContainText("14.370");
+  await expect(upd).toContainText("Foundry is up to date", { timeout: 30_000 });
+  await expect(upd).toContainText("Foundry 14.370 is the latest");
+});
+
+/**
+ * Foundry's real notes for its current release, answered as a newer build:
+ * the local server has nothing newer, and runs with --noupdate.
+ */
+async function answerNewer(): Promise<void> {
+  await page.route(`${env.url}/update`, async (route) => {
+    const body = JSON.parse(route.request().postData() ?? "{}") as Record<
+      string,
+      unknown
+    >;
+    if (body.action !== "updateCheck") return route.abort();
+    const real = await route.fetch({
+      postData: JSON.stringify({ ...body, forceUpdate: true }),
+    });
+    const release = (await real.json()) as Record<string, unknown>;
+    return route.fulfill({ json: { ...release, build: 371, flags: {} } });
+  });
+}
+
+test("the Update page reads Foundry's release notes; --noupdate disables the update", async () => {
+  await answerNewer();
+  const upd = shell().locator(".mlu-page");
+  await upd.getByRole("button", { name: "Check again" }).click();
+  const notes = upd.locator(".mlu-notes");
+  await expect(notes.locator(".mlu-nhead h3")).toContainText(
+    "Release notes: Version 14",
+    { timeout: 30_000 },
+  );
+  await expect(upd.locator(".mlb-head")).toContainText("14.371 is available.");
+  await expect(upd.locator(".mlu-jump")).toContainText("bug fixes");
+  await expect(notes.locator("a.mlu-issue").first()).toHaveAttribute(
+    "href",
+    /^https:\/\/github\.com\/foundryvtt\/foundryvtt\/issues\/\d+$/,
+  );
   await expect(
-    upd.getByRole("link", { name: /What's new in/ }),
-  ).toHaveAttribute("href", /^https:\/\/foundryvtt\.com\/releases\/14\.\d+$/);
+    upd.getByRole("button", { name: "Updates disabled" }),
+  ).toBeDisabled();
+  await expect(upd.locator(".mlu-why")).toContainText("--noupdate");
+  // Foundry's banner, from foundryvtt.com, as its own notes window shows it.
+  await expect
+    .poll(() =>
+      notes
+        .locator(".mlu-banner img")
+        .evaluate((img: HTMLImageElement) => img.naturalWidth),
+    )
+    .toBeGreaterThan(0);
   await page.screenshot({ path: `${SCREENS}/server-update.png` });
+  await notes
+    .getByRole("searchbox", { name: "Search the notes" })
+    .fill("password");
+  await expect(notes.locator(".mlu-body li").first()).toContainText(
+    /password/i,
+  );
+  await page.unroute(`${env.url}/update`);
 });

@@ -19,6 +19,7 @@ import { trackProgress, UNLOCKED } from "../../src/ui/tasks.ts";
 import type {
   BackupsResult,
   ConfigResult,
+  UpdateResult,
   PageBridge,
   ServerBackupsResult,
 } from "../../src/ui/page.ts";
@@ -136,6 +137,9 @@ export function fakePage() {
     editorClose: vi.fn(),
     editorSave: vi.fn(() => Promise.resolve<string | undefined>(undefined)),
     config: vi.fn(() => Promise.resolve<ConfigResult>({})),
+    update: vi.fn(() =>
+      Promise.resolve<UpdateResult>({ info: "SETUP.UpdateNotAvailable" }),
+    ),
     serverBackups: vi.fn(() =>
       Promise.resolve<ServerBackupsResult>({
         listing: { snapshots: [], packages: [] },
@@ -184,6 +188,8 @@ export function renderUi(
     backups?: readonly BackupInfo[];
     /** Or Foundry's error, as the page world answers it. */
     backupsError?: string;
+    /** Answers the page world gives, set before the first render. */
+    answers?: (page: ReturnType<typeof fakePage>["page"]) => void;
   } = {},
 ) {
   const data = setupState(options.data);
@@ -199,6 +205,7 @@ export function renderUi(
     fake.page.backups.mockResolvedValue({ backups: [...options.backups] });
   if (options.backupsError)
     fake.page.backups.mockResolvedValue({ error: options.backupsError });
+  options.answers?.(fake.page);
   trackProgress(store, fake.page);
   const deps = {
     store,

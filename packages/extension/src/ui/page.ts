@@ -19,6 +19,7 @@ import type {
 } from "../page-config.ts";
 import type { WorldChanges } from "../page-save.ts";
 import type { ServerBackupOp, ServerListing } from "../page-server-backups.ts";
+import type { Release, UpdateOp, UpdateReply } from "../page-update.ts";
 
 export interface BackupsResult {
   readonly backups?: readonly BackupInfo[];
@@ -38,6 +39,22 @@ export interface ConfigResult {
 export interface ServerBackupsResult {
   readonly listing?: ServerListing;
   readonly error?: string;
+}
+
+export interface UpdateResult {
+  readonly release?: Release;
+  readonly info?: string;
+  readonly installed?: boolean;
+  readonly error?: string;
+}
+
+export interface UpdateAsk {
+  readonly op: UpdateOp;
+  readonly channel: string;
+  readonly force: boolean;
+  readonly snapshot?: boolean;
+  /** download: the version it installs. */
+  readonly version?: string;
 }
 
 export interface PageBridge {
@@ -78,7 +95,20 @@ export interface PageBridge {
     /** save: a new admin password; checkPassword: the current one. */
     password?: string,
   ): Promise<ConfigResult>;
+  /** Foundry's own update: check a channel, or download and install. */
+  update(ask: UpdateAsk): Promise<UpdateResult>;
   subscribe(fn: (event: PageToUi) => void): () => void;
+}
+
+/** UPDATE_DONE as the page uses it. */
+function updateResult(p: UpdateReply): UpdateResult {
+  const { release, info, installed, error } = p;
+  return {
+    ...(release ? { release } : {}),
+    ...(info === undefined ? {} : { info }),
+    ...(installed ? { installed } : {}),
+    ...(error === undefined ? {} : { error }),
+  };
 }
 
 /** CONFIG_DONE as the page uses it. */
@@ -98,6 +128,8 @@ function configResult(p: ConfigReply): ConfigResult {
 const SAVE_TIMEOUT_MS = 20_000;
 /** Taking or restoring a backup waits on Foundry's dialog and the copy. */
 const BACKUP_OP_TIMEOUT_MS = 30 * 60 * 1000;
+/** An update check asks foundryvtt.com through Foundry's server. */
+const CHECK_TIMEOUT_MS = 60_000;
 
 const newRequestId = (): string =>
   [...crypto.getRandomValues(new Uint8Array(12))]
@@ -208,13 +240,35 @@ function savedRequest(
   ).then((r) => r.error);
 }
 
+/** Foundry's own update: a check is quick, a download takes minutes. */
+function updateRequest(
+  send: (m: UiToPage) => void,
+  listeners: Set<(event: PageToUi) => void>,
+  ask: UpdateAsk,
+): Promise<UpdateResult> {
+  return request<UpdateResult>(
+    send,
+    listeners,
+    (requestId) => ({
+      type: "UPDATE",
+      payload: { requestId, snapshot: false, ...ask },
+    }),
+    (e, id) =>
+      e.type === "UPDATE_DONE" && e.payload.requestId === id
+        ? updateResult(e.payload)
+        : undefined,
+    ask.op === "download" ? BACKUP_OP_TIMEOUT_MS : CHECK_TIMEOUT_MS,
+    { error: "Foundry did not answer in time." },
+  );
+}
+
 /** The bridge's request and answer pairs: saving a world, backups. */
 function requests(
   send: (m: UiToPage) => void,
   listeners: Set<(event: PageToUi) => void>,
 ): Pick<
   PageBridge,
-  "saveWorld" | "editorSave" | "backups" | "serverBackups" | "config"
+  "saveWorld" | "editorSave" | "backups" | "serverBackups" | "config" | "update"
 > {
   const saved = (message: (requestId: string) => UiToPage) =>
     savedRequest(send, listeners, message);
@@ -250,6 +304,7 @@ function requests(
         op === "generateCertificate" ? BACKUP_OP_TIMEOUT_MS : SAVE_TIMEOUT_MS,
         { error: "Foundry did not answer in time." },
       ),
+    update: (ask) => updateRequest(send, listeners, ask),
     ...backupRequests(send, listeners),
   };
 }

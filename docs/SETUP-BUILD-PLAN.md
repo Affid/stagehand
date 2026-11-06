@@ -440,4 +440,31 @@ preset races, suggestions, the copied set, a gone system's panel, menu
 roles, focus after rename). All fixed; each package is now read on its own,
 and the update check runs once per Setup load.
 
+Package 7, in parts: 7a Configuration (`af283f1`): only what Foundry's own
+window edits, in two columns; the password changed after Foundry checks the
+current one; HTTPS with Foundry's certificate actions; a save dialog that
+lists each change, and Shut down now for changes that wait for a restart.
+7b1 Update: what's new and the Update box:
+
+- The page runs Foundry's own update check (`updateCheck`, posted to its
+  `/update` route as its update screen does) on the configured channel when
+  it opens, and again on a channel change. Nothing newer: up to date, with
+  Check again. The release's download link never leaves the page world.
+- What's new reads Foundry's release notes HTML: title, banner (only an
+  https image on foundryvtt.com), the overview, sections and areas, issue
+  numbers as GitHub links. Entries are drawn through the description
+  cleaner, never as HTML. Search, Developer notes, jump links, folding.
+- The Update box: Take a snapshot first (`game.createSnapshot` without its
+  dialog; a failed snapshot installs nothing), Manual installation required
+  (a new generation or a full reinstall), Updates disabled (`--noupdate`),
+  the channel with Foundry's three, Advanced: force update. While it runs:
+  the snapshot, then Foundry's four steps from its progress ticks, Setup
+  locked; then what happens next.
+- Found on the way: 7a never passed Foundry's password check result to the
+  UI, so a right current password read as wrong. Fixed; a live test now
+  covers the right password too.
+- Live: up to date from Foundry's real check; Foundry's real notes answered
+  as a newer build, read with the search; Updates disabled under
+  `--noupdate`. The download itself can't run on the local server.
+
 Then package 7 (server pages) and Phase 6 (News and finish).

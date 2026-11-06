@@ -21,6 +21,9 @@ const KEEP = new Set([
   "code",
   "blockquote",
   "hr",
+  "dl",
+  "dt",
+  "dd",
 ]);
 /** Elements renamed to a kept one. */
 const RENAME: Readonly<Record<string, string>> = {
@@ -111,6 +114,10 @@ function convert(node: Node, walk: Walk): ComponentChildren {
 }
 
 const looksLikeHtml = (s: string): boolean => /<[a-z][\s\S]*>/i.test(s);
+
+/** A parsed node's children, cleaned as a description is (Foundry's release notes). */
+export const cleanChildren = (node: Node): ComponentChildren[] =>
+  children(node, { nodes: 0, depth: 0 });
 
 /** Plain text: blank lines split paragraphs, single breaks stay. */
 function plain(text: string): ComponentChildren[] {
