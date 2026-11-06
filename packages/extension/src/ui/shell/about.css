@@ -1,0 +1,229 @@
+/* The About tab as the prototype (_calm.css): two columns of boxes, rows
+   changed in place, maintenance actions and the danger zone. */
+.mls-shell .mlw-about .col {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+.mls-shell .mlw-box h4 {
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-family: var(--font-body, Signika), sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-subtle);
+  border: 0;
+}
+
+.mls-shell .mlw-box h4 .ml-link,
+.mls-shell .mlw-details dd > .ml-link {
+  width: auto;
+  height: auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  flex: none;
+  font-size: 12px;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--color-light-3);
+  text-decoration: underline;
+  text-decoration-color: var(--color-light-5);
+}
+
+.mls-shell .mlw-box h4 .ml-link:hover,
+.mls-shell .mlw-details dd > .ml-link:hover {
+  color: var(--color-warm-1);
+}
+
+.mls-shell .mlw-details dd {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  min-width: 0;
+}
+
+.mls-shell .mlw-details dd .v {
+  flex: 1;
+  min-width: 0;
+}
+
+.mls-shell .mlw-details dd code {
+  font-size: 12.5px;
+  color: var(--color-light-2);
+}
+
+.mls-shell .mlw-details dd .ml-muted {
+  color: var(--color-text-subtle);
+}
+
+.mls-shell .mlw-pill {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 6px;
+  border-radius: 8px;
+  border: 1px solid var(--color-cool-3);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-light-3);
+  vertical-align: 1px;
+}
+
+.mls-shell .mlw-pill.warn {
+  border-color: #8a6a1f;
+  color: #f5c45e;
+}
+
+.mls-shell .mlw-edit {
+  flex: 1;
+  display: grid;
+  gap: 6px;
+}
+
+.mls-shell .mlw-edit input,
+.mls-shell .mlw-edit select {
+  width: 100%;
+  font-size: 13.5px;
+}
+
+.mls-shell .mlw-edit .bar {
+  display: flex;
+  gap: 6px;
+}
+
+.mls-shell .mlw-edit .bar button {
+  height: 28px;
+  width: auto;
+  flex: none;
+  padding: 0 12px;
+  font-size: 13px;
+}
+
+.mls-shell .mlw-edit .warnline {
+  margin: 0;
+  font-size: 12px;
+  color: #f3dca4;
+}
+
+.mls-shell .mlw-bg {
+  aspect-ratio: 16 / 9;
+  border-radius: 3px;
+  background: var(--img) center / cover;
+  border: 1px solid var(--color-cool-3);
+}
+
+.mls-shell .mlw-about .hint {
+  margin: 0;
+  color: var(--color-text-subtle);
+  font-size: 12px;
+}
+
+.mls-shell .mlw-acts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.mls-shell .mlw-acts li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mls-shell .mlw-acts li > div {
+  flex: 1;
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+
+.mls-shell .mlw-acts strong {
+  color: var(--color-light-1);
+  font-size: 13.5px;
+}
+
+.mls-shell .mlw-acts li > div > span {
+  color: var(--color-text-subtle);
+  font-size: 12.5px;
+}
+
+.mls-shell .mlw-acts li.ok > i {
+  color: #8fd49b;
+}
+
+.mls-shell .mlw-acts li.warn strong {
+  color: #f3dca4;
+}
+
+.mls-shell .mlw-acts li.warn > i {
+  color: #f5c45e;
+}
+
+.mls-shell .mlw-acts button {
+  height: 28px;
+  width: auto;
+  flex: none;
+  padding: 0 12px;
+  font-size: 13px;
+}
+
+.mls-shell .mlw-acts li.confirm {
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid rgb(180 82 63 / 55%);
+  background: rgb(180 82 63 / 10%);
+}
+
+.mls-shell .mlw-box.danger {
+  border-color: rgb(180 82 63 / 45%);
+}
+
+.mls-shell .mlw-box.danger h4 {
+  color: #e39a8c;
+}
+
+.mls-shell .mlw-acts button.del {
+  color: #ffb3a6;
+  border-color: rgb(180 82 63 / 70%);
+}
+
+.mls-shell .mlw-acts button.del:hover:not([disabled]) {
+  background: rgb(180 82 63 / 25%);
+  color: #fff;
+}
+
+/* A disabled control's reason: the wrapper gets the hover. */
+.mls-shell .mlw-tipwrap {
+  display: inline-flex;
+  cursor: help;
+}
+
+.mls-shell .mlw-tipwrap > button[disabled],
+.mls-shell .mlw-tipwrap > input[disabled] {
+  pointer-events: none;
+}
+
+.mls-shell .mlw-acts .mlw-tipwrap button[disabled],
+.mls-shell .mlw-acts .mlw-tipwrap input[disabled] {
+  opacity: 0.45;
+}
+
+@media (max-width: 1280px) {
+  .mls-shell .mlw-about {
+    grid-template-columns: minmax(0, 1.3fr) minmax(260px, 1fr);
+    gap: 14px;
+  }
+
+  .mls-shell .mlw-details {
+    grid-template-columns: 112px minmax(0, 1fr);
+  }
+}

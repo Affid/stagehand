@@ -98,7 +98,7 @@ export function WorldBody(props: {
         ) : null}
       </TabRow>
       {tab === "about" ? (
-        <AboutTab world={world} />
+        <AboutTab world={world} backups={props.backups.view.list} />
       ) : tab === "backups" ? null : model.tracked ? (
         <ModulesTab world={world} model={model} filters={filters} />
       ) : (

@@ -132,18 +132,29 @@ function BannerActions(props: {
       >
         <Icon name="pen" />
       </button>
-      <button type="button" class="bright mls-launch" onClick={props.onLaunch}>
-        <Icon name="play" />
-        {t("shell.launch")}
-        {changes ? (
-          <span
-            class="mlc-badge"
-            aria-label={plural(t, "wp.launchBadge", changes)}
-          >
-            {changes}
-          </span>
-        ) : null}
-      </button>
+      {/* A locked world can't launch: the reason sits on a wrapper that gets the hover. */}
+      <span
+        class={props.world.locked ? "mlw-tipwrap" : "mls-launchwrap"}
+        title={props.world.locked ? t("shell.launchLocked") : undefined}
+      >
+        <button
+          type="button"
+          class="bright mls-launch"
+          disabled={props.world.locked === true}
+          onClick={props.onLaunch}
+        >
+          <Icon name="play" />
+          {t("shell.launch")}
+          {changes ? (
+            <span
+              class="mlc-badge"
+              aria-label={plural(t, "wp.launchBadge", changes)}
+            >
+              {changes}
+            </span>
+          ) : null}
+        </button>
+      </span>
     </div>
   );
 }

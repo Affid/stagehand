@@ -143,7 +143,7 @@ describe("reading Setup's package data (V-1)", () => {
             },
           ].values(),
       },
-    } as never);
+    });
     expect(data.worlds[0]).toMatchObject({
       joinTheme: "minimal",
       safeMode: true,

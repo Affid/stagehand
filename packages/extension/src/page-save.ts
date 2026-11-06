@@ -13,8 +13,9 @@ export interface WorldChanges {
   readonly joinTheme?: "default" | "minimal";
   /** A file path (Foundry's file picker), or null to clear it. */
   readonly background?: string | null;
-  /** One-shot flags Foundry clears itself: only ever set to true. */
-  readonly safeMode?: true;
+  /** One-shot: the next launch runs with every module off (or not). */
+  readonly safeMode?: boolean;
+  /** One-shot: clears every player's password; only ever set to true. */
   readonly resetKeys?: true;
   /** HTML from Foundry's own editor; Foundry cleans it when it saves. */
   readonly description?: string;
@@ -71,7 +72,10 @@ function session(v: unknown): string | null | undefined | false {
     : false;
 }
 
-/** Each field: its value, undefined when absent, or false when bad. */
+/** A value a check refuses (false is a real value for safeMode). */
+const BAD = Symbol("bad");
+
+/** Each field: its value, undefined when absent, or BAD. */
 type Check = (v: unknown) => unknown;
 
 const text =
@@ -81,17 +85,18 @@ const text =
       ? undefined
       : typeof v === "string" && v.length <= max && (empty || v.trim() !== "")
         ? v
-        : false;
+        : BAD;
 
 const CHECKS: Readonly<Record<string, Check>> = {
-  title,
-  nextSession: session,
+  title: (v) => (title(v) === false ? BAD : title(v)),
+  nextSession: (v) => (session(v) === false ? BAD : session(v)),
   system: text(MAX_ID, false),
   joinTheme: (v) =>
-    v === undefined ? undefined : THEMES.includes(v) ? v : false,
+    v === undefined ? undefined : THEMES.includes(v) ? v : BAD,
   background: (v) => (v === null ? null : text(MAX_PATH, false)(v)),
-  safeMode: (v) => (v === undefined ? undefined : v === true ? v : false),
-  resetKeys: (v) => (v === undefined ? undefined : v === true ? v : false),
+  safeMode: (v) =>
+    v === undefined ? undefined : typeof v === "boolean" ? v : BAD,
+  resetKeys: (v) => (v === undefined ? undefined : v === true ? v : BAD),
   description: text(MAX_DESCRIPTION, true),
 };
 
@@ -102,10 +107,10 @@ function changes(v: unknown): WorldChanges | undefined {
   const out: Record<string, unknown> = {};
   for (const k of keys) {
     const checked = CHECKS[k]?.(v[k]);
-    if (checked === false) return undefined;
+    if (checked === BAD) return undefined;
     if (checked !== undefined) out[k] = checked;
   }
-  return out as WorldChanges;
+  return out;
 }
 
 export function parseSaveWorld(p: Loose): SaveWorld | undefined {

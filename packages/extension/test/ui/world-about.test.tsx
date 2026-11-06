@@ -77,10 +77,10 @@ describe("a world's About tab", () => {
 describe("editing a world's details in place", () => {
   test("the title is changed here and saved through Foundry", async () => {
     const { getByRole, page } = about();
-    fireEvent.click(getByRole("button", { name: "Change title" }));
+    fireEvent.click(getByRole("button", { name: "Rename" }));
     const input = getByRole("textbox", { name: "Title" });
     fireEvent.input(input, { target: { value: "Curse of Strahd" } });
-    fireEvent.keyDown(input, { key: "Enter" });
+    fireEvent.click(getByRole("button", { name: "Save" }));
     await waitFor(() => {
       expect(page.saveWorld).toHaveBeenCalledWith("w1", {
         title: "Curse of Strahd",
@@ -113,10 +113,10 @@ describe("editing a world's details in place", () => {
   test("a save Foundry refuses is reported", async () => {
     const r = about();
     r.page.saveWorld.mockResolvedValueOnce("title: may not be blank");
-    fireEvent.click(r.getByRole("button", { name: "Change title" }));
+    fireEvent.click(r.getByRole("button", { name: "Rename" }));
     const input = r.getByRole("textbox", { name: "Title" });
     fireEvent.input(input, { target: { value: "x" } });
-    fireEvent.keyDown(input, { key: "Enter" });
+    fireEvent.click(r.getByRole("button", { name: "Save" }));
     await waitFor(() => {
       expect(r.page.notify).toHaveBeenCalledWith(
         "error",
@@ -153,17 +153,17 @@ describe("editing a world's details in place", () => {
       },
     });
     fireEvent.click(r.getByRole("tab", { name: "About" }));
-    expect(r.queryByRole("button", { name: "Change title" })).toBe(null);
+    expect(r.queryByRole("button", { name: "Rename" })).toBe(null);
     expect(r.queryByRole("button", { name: "Edit in Foundry" })).toBe(null);
   });
 
   test("a failed save keeps the editor open with what was typed", async () => {
     const r = about();
     r.page.saveWorld.mockResolvedValueOnce("Foundry did not answer in time.");
-    fireEvent.click(r.getByRole("button", { name: "Change title" }));
+    fireEvent.click(r.getByRole("button", { name: "Rename" }));
     const input = r.getByRole("textbox", { name: "Title" });
     fireEvent.input(input, { target: { value: "Typed title" } });
-    fireEvent.keyDown(input, { key: "Enter" });
+    fireEvent.click(r.getByRole("button", { name: "Save" }));
     await waitFor(() => {
       expect(r.page.notify).toHaveBeenCalled();
     });

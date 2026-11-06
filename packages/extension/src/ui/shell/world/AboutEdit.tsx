@@ -19,7 +19,9 @@ export function useCanEditWorld(): boolean {
 }
 
 /** Saves through Foundry; a refusal becomes a notification. True if saved. */
-function useSave(worldId: string): (changes: WorldChanges) => Promise<boolean> {
+export function useSave(
+  worldId: string,
+): (changes: WorldChanges) => Promise<boolean> {
   const { page, actions, t } = useUi();
   return async (changes) => {
     const error = await page.saveWorld(worldId, changes);

@@ -219,9 +219,26 @@ describe("a world's page", () => {
       container.querySelector('[role="tab"][aria-selected="true"]')
         ?.textContent,
     ).toBe("About");
-    fireEvent.click(within(banner).getByRole("button", { name: "Launch" }));
+    // Strahd is locked: Launch is off, and its wrapper says why.
+    const launch = within(banner).getByRole<HTMLButtonElement>("button", {
+      name: "Launch",
+    });
+    expect(launch.disabled).toBe(true);
+    expect(launch.parentElement?.getAttribute("title")).toContain("Locked");
+    expect(page.foundryAction).not.toHaveBeenCalled();
+  });
+
+  test("an unlocked world launches from the banner", () => {
+    const { container, page } = shell({
+      state: { route: { kind: "world", worldId: "new" } },
+    });
+    fireEvent.click(
+      within(el(container, ".mls-banner")).getByRole("button", {
+        name: "Launch",
+      }),
+    );
     expect(sent(page.foundryAction)).toEqual([
-      { action: "launch", worldId: "strahd" },
+      { action: "launch", worldId: "new" },
     ]);
   });
 

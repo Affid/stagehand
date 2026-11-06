@@ -45,9 +45,9 @@ function about(over: Partial<WorldInfo> = {}) {
 }
 
 const box = (c: ParentNode, title: string): HTMLElement => {
-  const found = [...c.querySelectorAll<HTMLElement>(".mlw-about .mlw-box")].find(
-    (b) => b.querySelector("h4")?.textContent?.startsWith(title),
-  );
+  const found = [
+    ...c.querySelectorAll<HTMLElement>(".mlw-about .mlw-box"),
+  ].find((b) => b.querySelector("h4")?.textContent.startsWith(title));
   if (!found) throw new Error(`no box ${title}`);
   return found;
 };
@@ -55,10 +55,11 @@ const box = (c: ParentNode, title: string): HTMLElement => {
 describe("the About tab's boxes", () => {
   test("two columns: Description, Next session, Details; Background, Maintenance, Danger zone", () => {
     const { container } = about();
-    const cols = [...container.querySelectorAll(".mlw-about > .col")].map((col) =>
-      [...col.querySelectorAll(".mlw-box > h4 > span:first-child")].map(
-        (h) => h.textContent,
-      ),
+    const cols = [...container.querySelectorAll(".mlw-about > .col")].map(
+      (col) =>
+        [...col.querySelectorAll(".mlw-box > h4 > span:first-child")].map(
+          (h) => h.textContent,
+        ),
     );
     expect(cols).toEqual([
       ["Description", "Next session", "Details"],
@@ -96,8 +97,12 @@ describe("the About tab's boxes", () => {
   test("Game system and Join screen change through Foundry, with a warning for the system", async () => {
     const { container, page } = about();
     const d = box(container, "Details");
-    fireEvent.click(within(d).getByRole("button", { name: "Change game system" }));
-    expect(d.textContent).toContain("Switching usually breaks actors and items");
+    fireEvent.click(
+      within(d).getByRole("button", { name: "Change game system" }),
+    );
+    expect(d.textContent).toContain(
+      "Switching usually breaks actors and items",
+    );
     fireEvent.change(within(d).getByRole("combobox", { name: "Game system" }), {
       target: { value: "pf2e" },
     });
@@ -105,13 +110,17 @@ describe("the About tab's boxes", () => {
     await waitFor(() => {
       expect(page.saveWorld).toHaveBeenCalledWith("w1", { system: "pf2e" });
     });
-    fireEvent.click(within(d).getByRole("button", { name: "Change join screen" }));
+    fireEvent.click(
+      within(d).getByRole("button", { name: "Change join screen" }),
+    );
     fireEvent.change(within(d).getByRole("combobox", { name: "Join screen" }), {
       target: { value: "minimal" },
     });
     fireEvent.click(within(d).getByRole("button", { name: "Save" }));
     await waitFor(() => {
-      expect(page.saveWorld).toHaveBeenCalledWith("w1", { joinTheme: "minimal" });
+      expect(page.saveWorld).toHaveBeenCalledWith("w1", {
+        joinTheme: "minimal",
+      });
     });
   });
 
@@ -175,13 +184,16 @@ describe("the About tab's boxes", () => {
     const { container, getByRole } = about({ locked: true });
     const d = box(container, "Details");
     expect(within(d).queryByRole("button", { name: "Rename" })).toBe(null);
-    const del = within(box(container, "Danger zone")).getByRole<HTMLButtonElement>(
-      "button",
-      { name: "Delete…" },
-    );
+    const del = within(
+      box(container, "Danger zone"),
+    ).getByRole<HTMLButtonElement>("button", { name: "Delete…" });
     expect(del.disabled).toBe(true);
-    expect(del.parentElement?.getAttribute("title")).toContain("unlock it first");
-    const launch = getByRole<HTMLButtonElement>("button", { name: /^Launch/ });
+    expect(del.parentElement?.getAttribute("title")).toContain(
+      "unlock it first",
+    );
+    const launch = getByRole("button", {
+      name: /^Launch/,
+    }) as HTMLButtonElement;
     expect(launch.disabled).toBe(true);
     expect(launch.parentElement?.getAttribute("title")).toContain("Locked");
     expect(el(container, ".mlw-about").textContent).toContain("Locked:");

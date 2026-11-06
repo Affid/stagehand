@@ -157,17 +157,17 @@ test("About saves the title and next session through Foundry, and they come back
   await shell().getByRole("tab", { name: "About" }).click();
   const box = shell().locator(".mlw-about");
   // Title: change it, see it in the banner, put it back.
-  await box.getByRole("button", { name: "Change title" }).click();
+  await box.getByRole("button", { name: "Rename" }).click();
   await box
     .getByRole("textbox", { name: "Title" })
     .fill(`${TEST_WORLD.title} (edited)`);
-  await box.getByRole("textbox", { name: "Title" }).press("Enter");
+  await box.getByRole("button", { name: "Save" }).click();
   await expect(shell().locator(".mls-banner h2")).toHaveText(
     `${TEST_WORLD.title} (edited)`,
   );
-  await box.getByRole("button", { name: "Change title" }).click();
+  await box.getByRole("button", { name: "Rename" }).click();
   await box.getByRole("textbox", { name: "Title" }).fill(TEST_WORLD.title);
-  await box.getByRole("textbox", { name: "Title" }).press("Enter");
+  await box.getByRole("button", { name: "Save" }).click();
   await expect(shell().locator(".mls-banner h2")).toHaveText(TEST_WORLD.title);
   // Next session: set it, see it, clear it.
   await box.getByRole("button", { name: "Change next session" }).click();

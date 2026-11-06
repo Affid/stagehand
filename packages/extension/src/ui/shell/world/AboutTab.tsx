@@ -1,13 +1,14 @@
-// A world's About tab: its description (cleaned), Foundry's details, and
-// the next session in the viewer's own time with the zone named. Editing
-// opens Foundry's World Configuration for now (build plan, Phase 4).
+// A world's About tab, as the prototype: description, next session and
+// details on the left; background, maintenance and the danger zone on the
+// right. Every edit goes through Foundry's own requests.
 import type { WorldInfo } from "@module-library/shared/world";
 import { useState } from "preact/hooks";
 import { RichText } from "../../common/rich-text.tsx";
 import { useUi } from "../../context.ts";
-import { systemTitle } from "../../model/system.ts";
-import { useLastPlayed } from "../WorldRail.tsx";
-import { SessionField, TitleField, useCanEditWorld } from "./AboutEdit.tsx";
+import type { BackupInfo } from "../../../page-backups.ts";
+import { SessionField, useCanEditWorld } from "./AboutEdit.tsx";
+import { Details } from "./about/Details.tsx";
+import { Background, DangerZone, Maintenance } from "./about/Side.tsx";
 
 /** Longer descriptions fold until "Show more". */
 const FOLD_CHARS = 600;
@@ -64,61 +65,68 @@ function Description(props: { readonly html: string | undefined }) {
   );
 }
 
-function Details(props: { readonly world: WorldInfo }) {
+/** Edits need the editWorld flag, a verified admin, and an unlocked world. */
+function useEditing(world: WorldInfo) {
+  const { state, canChange } = useUi();
+  const canEdit = useCanEditWorld() && world.locked !== true;
+  const a = state.adapter;
+  const canLock =
+    canChange &&
+    a.status !== "safe-mode" &&
+    a.adapter.flags.lockPackage === true;
+  return { canEdit, canLock };
+}
+
+function NextSession(props: {
+  readonly world: WorldInfo;
+  readonly canEdit: boolean;
+}) {
   const { state, t } = useUi();
-  const { world } = props;
-  const canEdit = useCanEditWorld();
-  const lastPlayed = useLastPlayed();
-  const session = formatSession(world.nextSession, state.data.setup?.lang);
-  const yesNo = (v: boolean | undefined): string =>
-    v ? t("about.yes") : t("about.no");
+  const shown = formatSession(props.world.nextSession, state.data.setup?.lang);
   return (
-    <dl class="mlw-details">
-      {canEdit ? (
-        <>
-          <dt>{t("about.title")}</dt>
-          <dd>
-            <TitleField world={world} />
-          </dd>
-        </>
-      ) : null}
-      <dt>{t("about.system")}</dt>
-      <dd>
-        {systemTitle(state.data.setup, world.system)} {world.systemVersion}
-      </dd>
-      <dt>{t("about.core")}</dt>
-      <dd>{world.coreVersion}</dd>
-      <dt>{t("about.next")}</dt>
-      <dd class="mlw-next">
-        {canEdit ? (
-          <SessionField world={world} />
+    <section class="mlw-box">
+      <h4>
+        <span>{t("about.nextBox")}</span>
+      </h4>
+      <div class="mlw-next">
+        {props.canEdit ? (
+          <SessionField world={props.world} />
         ) : (
-          (session ?? t("about.notSet"))
+          (shown ?? t("about.notSet"))
         )}
-      </dd>
-      <dt>{t("about.lastPlayed")}</dt>
-      <dd>{lastPlayed(world)}</dd>
-      <dt>{t("about.favorite")}</dt>
-      <dd>{yesNo(world.favorite)}</dd>
-      <dt>{t("about.locked")}</dt>
-      <dd>{yesNo(world.locked)}</dd>
-    </dl>
+      </div>
+    </section>
   );
 }
 
-export function AboutTab(props: { readonly world: WorldInfo }) {
+/** The About tab, as the prototype: two columns of boxes. */
+export function AboutTab(props: {
+  readonly world: WorldInfo;
+  readonly backups: readonly BackupInfo[] | undefined;
+}) {
   const { t } = useUi();
-  const { world } = props;
+  const { world, backups } = props;
+  const { canEdit, canLock } = useEditing(world);
+  const side = { world, canEdit, canLock, backups };
   return (
     <div class="mlw-about">
-      <section class="mlw-box">
-        <h3>{t("about.description")}</h3>
-        <Description html={world.description} />
-      </section>
-      <section class="mlw-box">
-        <h3>{t("about.details")}</h3>
-        <Details world={world} />
-      </section>
+      <div class="col">
+        <section class="mlw-box">
+          <h4>
+            <span>{t("about.description")}</span>
+          </h4>
+          <Description html={world.description} />
+        </section>
+        <NextSession world={world} canEdit={canEdit} />
+        <Details world={world} canEdit={canEdit} backups={backups} />
+      </div>
+      <div class="col">
+        <Background {...side} />
+        <Maintenance {...side} />
+        <DangerZone {...side} />
+        {world.locked ? <p class="hint">{t("about.lockedHint")}</p> : null}
+        <p class="hint">{t("about.insideWorld")}</p>
+      </div>
     </div>
   );
 }
