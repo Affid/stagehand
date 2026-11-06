@@ -19,6 +19,7 @@ import type {
 } from "../page-config.ts";
 import type { WorldChanges } from "../page-save.ts";
 import type { ServerBackupOp, ServerListing } from "../page-server-backups.ts";
+import type { Preview } from "../page-compat.ts";
 import type { Release, UpdateOp, UpdateReply } from "../page-update.ts";
 
 export interface BackupsResult {
@@ -45,6 +46,7 @@ export interface UpdateResult {
   readonly release?: Release;
   readonly info?: string;
   readonly installed?: boolean;
+  readonly preview?: Preview;
   readonly error?: string;
 }
 
@@ -53,7 +55,7 @@ export interface UpdateAsk {
   readonly channel: string;
   readonly force: boolean;
   readonly snapshot?: boolean;
-  /** download: the version it installs. */
+  /** download: the version it installs; preview: the release checked. */
   readonly version?: string;
 }
 
@@ -102,11 +104,12 @@ export interface PageBridge {
 
 /** UPDATE_DONE as the page uses it. */
 function updateResult(p: UpdateReply): UpdateResult {
-  const { release, info, installed, error } = p;
+  const { release, info, installed, preview, error } = p;
   return {
     ...(release ? { release } : {}),
     ...(info === undefined ? {} : { info }),
     ...(installed ? { installed } : {}),
+    ...(preview ? { preview } : {}),
     ...(error === undefined ? {} : { error }),
   };
 }
@@ -130,6 +133,13 @@ const SAVE_TIMEOUT_MS = 20_000;
 const BACKUP_OP_TIMEOUT_MS = 30 * 60 * 1000;
 /** An update check asks foundryvtt.com through Foundry's server. */
 const CHECK_TIMEOUT_MS = 60_000;
+/** Foundry's compatibility preview asks about every installed package. */
+const PREVIEW_TIMEOUT_MS = 180_000;
+const UPDATE_TIMEOUTS = {
+  check: CHECK_TIMEOUT_MS,
+  preview: PREVIEW_TIMEOUT_MS,
+  download: BACKUP_OP_TIMEOUT_MS,
+} as const;
 
 const newRequestId = (): string =>
   [...crypto.getRandomValues(new Uint8Array(12))]
@@ -257,7 +267,7 @@ function updateRequest(
       e.type === "UPDATE_DONE" && e.payload.requestId === id
         ? updateResult(e.payload)
         : undefined,
-    ask.op === "download" ? BACKUP_OP_TIMEOUT_MS : CHECK_TIMEOUT_MS,
+    UPDATE_TIMEOUTS[ask.op],
     { error: "Foundry did not answer in time." },
   );
 }

@@ -474,3 +474,312 @@
     grid-template-columns: minmax(0, 1fr) 320px;
   }
 }
+
+/* Tabs in the left column (prototype mlu-tabs) */
+.mls-shell .mlu-tabs .c.w,
+.mls-shell .mlu-compat .mls-subtabs .c b.w {
+  color: #f5c45e;
+  font-weight: 600;
+}
+
+/* Your packages: the summary box */
+.mls-shell .mlu-side .mlw-box h4 .ml-link {
+  width: auto;
+  height: auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 12px;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--color-light-3);
+  text-decoration: underline;
+}
+
+.mls-shell .mlu-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.mls-shell .mlu-tag {
+  font-size: 12px;
+  padding: 1px 8px;
+  border-radius: 10px;
+  border: 1px solid;
+}
+
+.mls-shell .mlu-tag.ok {
+  color: #8fd49b;
+  border-color: rgb(63 143 82 / 60%);
+}
+
+.mls-shell .mlu-tag.unv {
+  color: #f5c45e;
+  border-color: rgb(245 196 94 / 55%);
+}
+
+.mls-shell .mlu-tag.bad {
+  color: #ffb3a6;
+  border-color: rgb(180 82 63 / 70%);
+}
+
+.mls-shell .mlu-flag {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.mls-shell .mlu-flag li {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  font-size: 13px;
+  padding: 3px 6px 3px 8px;
+  border-left: 3px solid;
+  border-radius: 2px;
+  background: rgb(255 255 255 / 3%);
+}
+
+.mls-shell .mlu-flag li.unv {
+  border-left-color: #f5c45e;
+}
+
+.mls-shell .mlu-flag li.bad {
+  border-left-color: #e0705a;
+}
+
+.mls-shell .mlu-flag li .t,
+.mls-shell .mlu-clist .nm .t {
+  width: auto;
+  height: auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  justify-content: flex-start;
+  text-align: left;
+  color: var(--color-light-1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mls-shell .mlu-flag li .t:hover,
+.mls-shell .mlu-clist .nm .t:hover {
+  color: var(--color-warm-1);
+  box-shadow: none;
+}
+
+.mls-shell .mlu-flag li .w {
+  font-size: 12px;
+  color: var(--color-text-subtle);
+}
+
+.mls-shell .mlu-flag li.more {
+  border: 0;
+  background: none;
+  display: block;
+  color: var(--color-text-subtle);
+  font-size: 12.5px;
+}
+
+/* Your packages: the full list */
+.mls-shell .mlu-compat .mls-subtabs {
+  margin-top: 2px;
+  align-items: center;
+}
+
+.mls-shell .mlu-csearch {
+  margin-left: auto;
+  height: 26px;
+  width: 180px;
+  margin-bottom: 4px;
+}
+
+.mls-shell .mlu-chips {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.mls-shell .mlu-chips button {
+  width: auto;
+  height: auto;
+  line-height: 1.4;
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  padding: 1px 8px;
+  border-radius: 12px;
+  border: 1px solid var(--color-cool-3);
+  background: none;
+  font-size: 12.5px;
+  color: var(--color-light-3);
+}
+
+.mls-shell .mlu-chips button i {
+  font-size: 11px;
+}
+
+.mls-shell .mlu-chips button b {
+  color: var(--color-light-1);
+}
+
+.mls-shell .mlu-chips button.on {
+  border-color: var(--color-warm-1);
+  background: rgb(238 155 58 / 12%);
+  color: var(--color-light-1);
+}
+
+.mls-shell .mlu-chips button:hover {
+  box-shadow: none;
+}
+
+.mls-shell .mlu-chips .ok i,
+.mls-shell .mlu-chips .ok b {
+  color: #8fd49b;
+}
+
+.mls-shell .mlu-chips .unv i,
+.mls-shell .mlu-chips .unv b {
+  color: #f5c45e;
+}
+
+.mls-shell .mlu-chips .risk i,
+.mls-shell .mlu-chips .risk b {
+  color: #f0a050;
+}
+
+.mls-shell .mlu-chips .bad i,
+.mls-shell .mlu-chips .bad b {
+  color: #ff9c8f;
+}
+
+.mls-shell .mlu-chips button.zero {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.mls-shell .mlu-clist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.mls-shell .mlu-clist li {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr) 130px 110px 46px;
+  gap: 10px;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 3px;
+  background: rgb(255 255 255 / 3%);
+  border-left: 3px solid transparent;
+}
+
+.mls-shell .mlu-clist li.unv {
+  border-left-color: #f5c45e;
+}
+
+.mls-shell .mlu-clist li.risk {
+  border-left-color: #f0a050;
+}
+
+.mls-shell .mlu-clist li.bad,
+.mls-shell .mlu-clist li.dep {
+  border-left-color: #e0705a;
+}
+
+.mls-shell .mlu-clist li .st {
+  text-align: center;
+}
+
+.mls-shell .mlu-clist li.ok .st {
+  color: #8fd49b;
+}
+
+.mls-shell .mlu-clist li.unv .st {
+  color: #f5c45e;
+}
+
+.mls-shell .mlu-clist li.risk .st {
+  color: #f0a050;
+}
+
+.mls-shell .mlu-clist li.bad .st,
+.mls-shell .mlu-clist li.dep .st {
+  color: #ff9c8f;
+}
+
+.mls-shell .mlu-clist .nm {
+  display: grid;
+  min-width: 0;
+}
+
+.mls-shell .mlu-clist .nm .t {
+  font-size: 13.5px;
+  font-weight: 700;
+}
+
+.mls-shell .mlu-clist .nm span {
+  font-size: 12.5px;
+  color: var(--color-text-subtle);
+}
+
+.mls-shell .mlu-clist .v {
+  font-size: 12px;
+  color: var(--color-light-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.mls-shell .mlu-clist .v b {
+  color: #8fd49b;
+  font-weight: 600;
+}
+
+.mls-shell .mlu-clist .u {
+  font-size: 12.5px;
+  color: var(--color-light-3);
+  text-align: right;
+}
+
+.mls-shell .mlu-clist .u .none {
+  color: var(--color-light-5);
+}
+
+.mls-shell .mlu-clist .u .ml-link {
+  width: auto;
+  height: auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: inherit;
+  color: var(--color-light-2);
+  text-decoration: underline;
+}
+
+.mls-shell .mlu-clist .lk {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  font-size: 11px;
+}
+
+.mls-shell .mlu-clist .lk a {
+  color: var(--color-light-4);
+}
+
+.mls-shell .mlu-clist .lk a:hover {
+  color: var(--color-warm-1);
+}
+
+.mls-shell .mlu-clist li.empty {
+  display: block;
+  color: var(--color-text-subtle);
+  background: none;
+}

@@ -467,4 +467,17 @@ lists each change, and Shut down now for changes that wait for a restart.
   as a newer build, read with the search; Updates disabled under
   `--noupdate`. The download itself can't run on the local server.
 
+7b2 Your packages: Foundry's compatibility preview (`previewCompatibility`,
+also on the `/update` route; it needs the release Foundry's check returned,
+which the page world keeps, and takes about 5 s, so it is asked once per
+release). Its availability codes read as the prototype's five statuses
+(1 compatible; 2, 3 unverified; 4 and unknown a risk; 5, 6, 11 a missing
+dependency; 7 to 10 incompatible). We add where each package is on (next
+launch sets) and which modules of each world need a look; a world without
+the companion has unknown modules. The summary box beside the notes, and
+the full list with Systems, Modules and Worlds, chips and a filter. A row
+opens the module's details, the system on the Library's Systems tab, or
+the world. Only the fields shown cross from the page world, never a
+description.
+
 Then package 7 (server pages) and Phase 6 (News and finish).

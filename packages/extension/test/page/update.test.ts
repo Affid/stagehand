@@ -234,3 +234,82 @@ describe("UPDATE and UPDATE_DONE are checked", () => {
     ).toBeUndefined();
   });
 });
+
+describe("Foundry's compatibility preview", () => {
+  const MODULE = {
+    id: "a",
+    title: "A",
+    version: "2.0.0",
+    availability: 2,
+    compatibility: { minimum: "13", verified: "14.369", maximum: "" },
+    relationships: { requires: [{ id: "lib", type: "module" }] },
+    description: "<script>never crosses</script>",
+    url: "https://foundryvtt.com/packages/a",
+    changelog: "javascript:alert(1)",
+  };
+
+  test("needs the release Foundry checked; then posts it back and keeps the answer", async () => {
+    const f = foundry();
+    const fetch = vi.fn((_url: string, init: { body: string }) => {
+      const body = JSON.parse(init.body) as { action: string };
+      return Promise.resolve(
+        answer(
+          body.action === "updateCheck"
+            ? RELEASE
+            : { module: [MODULE, { id: "../bad" }], system: [], world: [] },
+        ),
+      );
+    });
+    vi.stubGlobal("fetch", fetch);
+    const ask = req({ op: "preview", version: "14.371" });
+    expect(
+      (await runUpdate(f.page, req({ op: "preview", version: "14.999" })))
+        .error,
+    ).toContain("again");
+    await runUpdate(f.page, req());
+    const r = await runUpdate(f.page, ask);
+    const posted = JSON.parse(fetch.mock.calls[1]![1].body) as Record<
+      string,
+      unknown
+    >;
+    expect(posted).toEqual({
+      action: "previewCompatibility",
+      release: RELEASE,
+    });
+    expect(r.preview?.module).toEqual([
+      {
+        id: "a",
+        title: "A",
+        version: "2.0.0",
+        availability: 2,
+        verified: "14.369",
+        maximum: null,
+        requires: ["lib"],
+        url: "https://foundryvtt.com/packages/a",
+      },
+    ]);
+    expect(JSON.stringify(r)).not.toContain("never crosses");
+    // Asked once per release.
+    await runUpdate(f.page, ask);
+    expect(fetch).toHaveBeenCalledTimes(2);
+    expect(parseUpdateReply({ requestId: "r1", ...r })).toBeTruthy();
+  });
+
+  test("a preview request names its release; a reply's entries are all checked", () => {
+    const ok = {
+      requestId: "a1",
+      op: "preview",
+      channel: "stable",
+      force: false,
+      snapshot: false,
+    };
+    expect(parseUpdateRequest(ok)).toBeUndefined();
+    expect(parseUpdateRequest({ ...ok, version: "14.371" })).toBeTruthy();
+    const bad = {
+      system: [],
+      world: [],
+      module: [{ id: "a", availability: "1" }],
+    };
+    expect(parseUpdateReply({ requestId: "a1", preview: bad })).toBeUndefined();
+  });
+});

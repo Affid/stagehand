@@ -4,9 +4,11 @@
 // route, as Foundry's update screen does, and answers UPDATE_DONE. The
 // release's notes cross as HTML and are cleaned in the UI before anything is
 // shown; its download link never crosses. Checked both ways.
+import { parsePreview, type Preview } from "./page-compat.ts";
+
 type Loose = Readonly<Record<string, unknown>>;
 
-export const UPDATE_OPS = ["check", "download"] as const;
+export const UPDATE_OPS = ["check", "download", "preview"] as const;
 export type UpdateOp = (typeof UPDATE_OPS)[number];
 
 export interface UpdateRequest {
@@ -17,7 +19,7 @@ export interface UpdateRequest {
   readonly force: boolean;
   /** download: take a snapshot first, and stop if it fails. */
   readonly snapshot: boolean;
-  /** download: the version it installs, for the snapshot's note. */
+  /** download: the version it installs, for the snapshot's note; preview: the release checked. */
   readonly version?: string;
 }
 
@@ -43,6 +45,8 @@ export interface UpdateReply {
   readonly info?: string;
   /** download: installed; Foundry now shuts down (or restarts, on the desktop app). */
   readonly installed?: boolean;
+  /** preview: Foundry's compatibility preview for the release. */
+  readonly preview?: Preview;
   readonly error?: string;
 }
 
@@ -70,6 +74,7 @@ export function parseUpdateRequest(p: Loose): UpdateRequest | undefined {
   if (typeof force !== "boolean" || typeof snapshot !== "boolean")
     return undefined;
   if (snapshot && op !== "download") return undefined;
+  if (op === "preview" && version === undefined) return undefined;
   if (
     version !== undefined &&
     !(typeof version === "string" && VERSION.test(version))
@@ -108,11 +113,14 @@ export function parseUpdateReply(p: Loose): UpdateReply | undefined {
   if (error !== undefined && !isText(error, MAX_ERROR)) return undefined;
   const r = p.release === undefined ? undefined : release(p.release);
   if (p.release !== undefined && !r) return undefined;
+  const preview = p.preview === undefined ? undefined : parsePreview(p.preview);
+  if (p.preview !== undefined && !preview) return undefined;
   return {
     requestId,
     ...(r ? { release: r } : {}),
     ...(info === undefined ? {} : { info }),
     ...(installed ? { installed } : {}),
+    ...(preview ? { preview } : {}),
     ...(error === undefined ? {} : { error }),
   };
 }

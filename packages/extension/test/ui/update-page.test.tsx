@@ -6,6 +6,7 @@
 // Foundry's steps while it runs, and what happens next.
 import { cleanup, fireEvent, waitFor, within } from "@testing-library/preact";
 import { afterEach, describe, expect, test } from "vitest";
+import type { CompatEntry, Preview } from "../../src/page-compat.ts";
 import type { Release } from "../../src/page-update.ts";
 import type { UpdateResult } from "../../src/ui/page.ts";
 import { el, renderUi, setupState } from "./harness.tsx";
@@ -32,6 +33,37 @@ const RELEASE: Release = {
   manual: false,
 };
 
+const entry = (
+  id: string,
+  availability: number,
+  over: Partial<CompatEntry> = {},
+): CompatEntry => ({
+  id,
+  title: `Title ${id}`,
+  version: "1.0.0",
+  availability,
+  verified: "14",
+  maximum: null,
+  requires: [],
+  ...over,
+});
+
+const PREVIEW: Preview = {
+  system: [entry("dnd5e", 1, { title: "D&D 5e", version: "5.1" })],
+  module: [
+    entry("a", 1, {
+      version: "2.0.0",
+      url: "https://foundryvtt.com/packages/a",
+      changelog: "https://example.com/a/changes",
+    }),
+    entry("b", 4, { verified: "13" }),
+    entry("c", 6, { requires: ["lib"] }),
+    entry("lib", 7, { maximum: "13" }),
+    entry("module-library", 2, { verified: "14.369" }),
+  ],
+  world: [entry("w1", 1, { version: null, system: "dnd5e" })],
+};
+
 async function open(
   check: UpdateResult = { release: RELEASE },
   coreUpdate: { canUpdate?: boolean } = {},
@@ -51,7 +83,9 @@ async function open(
     },
     state: { route: { kind: "server", page: "update" } },
     answers: (page) => {
-      page.update.mockResolvedValue(check);
+      page.update.mockImplementation((ask) =>
+        Promise.resolve(ask.op === "preview" ? { preview: PREVIEW } : check),
+      );
       page.config.mockResolvedValue({
         settings: {
           updateChannel: "stable",
@@ -287,5 +321,113 @@ describe("the Update box", () => {
       expect(r.getByRole("alert").textContent).toContain("Disk full");
     });
     expect(r.getByRole("button", { name: /then update 14.371/ })).toBeTruthy();
+  });
+});
+
+describe("Your packages (Foundry's compatibility preview)", () => {
+  test("asked once for the release; the summary box counts and lists the worst", async () => {
+    const r = await open();
+    expect(r.page.update).toHaveBeenCalledWith({
+      op: "preview",
+      channel: "stable",
+      force: false,
+      version: "14.371",
+    });
+    const box = [...r.container.querySelectorAll(".mlu-side .mlw-box")].find(
+      (b) => b.textContent.includes("Your packages on 14.371"),
+    );
+    expect(box?.textContent).toContain("2 compatible");
+    expect(box?.textContent).toContain("1 risk");
+    expect(box?.textContent).toContain("2 incompatible");
+    const names = [...(box?.querySelectorAll(".mlu-flag li .t") ?? [])].map(
+      (b) => b.textContent,
+    );
+    expect(names).toEqual([
+      "Title lib",
+      "Title c",
+      "Title b",
+      "Title module-library",
+    ]);
+    expect(box?.textContent).toContain("1 package needs updating too.");
+  });
+
+  test("the tab: systems, modules, worlds; chips filter; rows say why and where", async () => {
+    const r = await open();
+    fireEvent.click(r.getByRole("tab", { name: /Your packages/ }));
+    const view = el(r.container, ".mlu-compat");
+    fireEvent.click(within(view).getByRole("tab", { name: /^Modules/ }));
+    const rows = () =>
+      [...view.querySelectorAll(".mlu-clist li")].map(
+        (li) => li.querySelector(".t")?.textContent,
+      );
+    expect(rows()).toEqual([
+      "Title lib",
+      "Title c",
+      "Title b",
+      "Title module-library",
+      "Title a",
+    ]);
+    expect(view.textContent).toContain(
+      "Needs Title lib, which isn't compatible with 14.371",
+    );
+    expect(view.textContent).toContain(
+      "Latest version isn't compatible with 14.371 (works up to 13)",
+    );
+    expect(view.textContent).toContain("update it to 2.0.0");
+    fireEvent.click(
+      within(view).getByRole("button", { name: /^Incompatible/ }),
+    );
+    expect(rows()).toEqual(["Title lib", "Title c"]);
+    expect(
+      within(view).getByRole<HTMLButtonElement>("button", {
+        name: /^Unverified/,
+      }).disabled,
+    ).toBe(false);
+  });
+
+  test("links: the package page, and the changelog when there is a newer version", async () => {
+    const r = await open();
+    fireEvent.click(r.getByRole("tab", { name: /Your packages/ }));
+    const view = el(r.container, ".mlu-compat");
+    fireEvent.click(within(view).getByRole("tab", { name: /^Modules/ }));
+    expect(
+      within(view)
+        .getByRole("link", { name: "Package page" })
+        .getAttribute("href"),
+    ).toBe("https://foundryvtt.com/packages/a");
+    expect(
+      within(view)
+        .getByRole("link", { name: "Changelog for 2.0.0" })
+        .getAttribute("rel"),
+    ).toBe("noopener noreferrer");
+  });
+
+  test("a module's name opens its details; a system's opens on the Systems tab", async () => {
+    const r = await open();
+    fireEvent.click(r.getByRole("button", { name: "Title lib" }));
+    expect(r.store.get().route).toEqual({ kind: "library" });
+    expect(r.store.get().panel).toBe("lib");
+    cleanup();
+    const r2 = await open();
+    fireEvent.click(r2.getByRole("tab", { name: /Your packages/ }));
+    fireEvent.click(r2.getByRole("button", { name: "D&D 5e" }));
+    expect(r2.store.get().side).toEqual({ kind: "system", id: "dnd5e" });
+    await waitFor(() => {
+      expect(
+        r2.container.querySelector('.mll-card.viewing[data-system="dnd5e"]'),
+      ).toBeTruthy();
+    });
+  });
+
+  test("a world without the companion: its modules are unknown", async () => {
+    const r = await open();
+    fireEvent.click(r.getByRole("tab", { name: /Your packages/ }));
+    const view = el(r.container, ".mlu-compat");
+    fireEvent.click(within(view).getByRole("tab", { name: /^Worlds/ }));
+    expect(view.textContent).toContain(
+      "Its system has a compatible version · modules unknown (no companion)",
+    );
+    fireEvent.click(within(view).getByRole("button", { name: "Open" }));
+    expect(r.store.get().route).toEqual({ kind: "world", worldId: "w1" });
   });
 });

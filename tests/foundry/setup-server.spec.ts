@@ -149,6 +149,8 @@ async function answerNewer(): Promise<void> {
       string,
       unknown
     >;
+    // Foundry's own preview answers for the release; nothing is installed.
+    if (body.action === "previewCompatibility") return route.continue();
     if (body.action !== "updateCheck") return route.abort();
     const real = await route.fetch({
       postData: JSON.stringify({ ...body, forceUpdate: true }),
@@ -192,5 +194,48 @@ test("the Update page reads Foundry's release notes; --noupdate disables the upd
   await expect(notes.locator(".mlu-body li").first()).toContainText(
     /password/i,
   );
+  await notes.getByRole("searchbox", { name: "Search the notes" }).fill("");
+});
+
+test("Your packages: Foundry's compatibility preview for the release, with where each is used", async () => {
+  const upd = shell().locator(".mlu-page");
+  const box = upd.locator(".mlu-side .mlw-box", {
+    hasText: "Your packages on 14.371",
+  });
+  await expect(box.locator(".mlu-tags")).toContainText("compatible", {
+    timeout: 60_000,
+  });
+  await upd.getByRole("tab", { name: /Your packages/ }).click();
+  const view = upd.locator(".mlu-compat");
+  await view.getByRole("tab", { name: /^Modules/ }).click();
+  await expect(upd.getByRole("tab", { name: /Your packages/ })).toHaveClass(
+    /active/,
+  );
+  await expect(view.getByRole("tab", { name: /^Modules/ })).toHaveClass(
+    /active/,
+  );
+  await expect(view.getByRole("tab", { name: /^Systems/ })).not.toHaveClass(
+    /active/,
+  );
+  // Foundry's buttons fade their borders: wait until the tab has its line.
+  await expect
+    .poll(() =>
+      view
+        .getByRole("tab", { name: /^Modules/ })
+        .evaluate((e) => getComputedStyle(e).borderBottomColor),
+    )
+    .toBe("rgb(238, 155, 58)");
+  const installed = await page.evaluate(
+    () =>
+      (window as unknown as { game: { modules: { size: number } } }).game
+        .modules.size,
+  );
+  await expect(view.locator(".mlu-clist li")).toHaveCount(installed);
+  await expect(view.locator(".mlu-clist li").first()).toContainText(
+    /14\.371|verified/,
+  );
+  await page.screenshot({ path: `${SCREENS}/server-update-compat.png` });
+  await view.getByRole("tab", { name: /^Worlds/ }).click();
+  await expect(view.locator(".mlu-clist li")).not.toHaveCount(0);
   await page.unroute(`${env.url}/update`);
 });

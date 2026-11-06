@@ -5,6 +5,7 @@
 // pass each tick to ui.setupPackages.onProgress as Foundry's ProgressReceiver
 // does, so our page shows it (progress.ts). A snapshot first goes through
 // game.createSnapshot; if it fails, nothing is installed.
+import { type Preview, readPreview } from "../page-compat.ts";
 import type { Release, UpdateRequest } from "../page-update.ts";
 import type { PageGlobals } from "./globals.ts";
 
@@ -34,6 +35,7 @@ export interface UpdateResult {
   readonly release?: Release;
   readonly info?: string;
   readonly installed?: boolean;
+  readonly preview?: Preview;
   readonly error?: string;
 }
 
@@ -103,6 +105,14 @@ export function releaseOf(raw: Raw): Release | undefined {
 
 const I18N_KEY = /^[A-Za-z0-9_.]{1,200}$/;
 
+/**
+ * The release Foundry's last check found, as Foundry sent it: its
+ * compatibility preview takes the whole release back. Never sent to the UI.
+ */
+let checked: Raw | undefined;
+/** Foundry's preview takes seconds; one per release is enough. */
+const previews = new Map<string, Preview>();
+
 async function check(page: Page, req: UpdateRequest): Promise<UpdateResult> {
   const answer = await postUpdate(page, {
     action: "updateCheck",
@@ -113,9 +123,9 @@ async function check(page: Page, req: UpdateRequest): Promise<UpdateResult> {
   if (typeof info === "string")
     return { info: I18N_KEY.test(info) ? info : "SETUP.UpdateNotAvailable" };
   const release = releaseOf(answer);
-  return release
-    ? { release }
-    : { error: "Foundry's release was not readable" };
+  if (!release) return { error: "Foundry's release was not readable" };
+  checked = answer;
+  return { release };
 }
 
 /** Resolves when Foundry's progress for `action` ends: with its error, if any. */
@@ -195,14 +205,32 @@ async function download(page: Page, req: UpdateRequest): Promise<UpdateResult> {
   }
 }
 
+/** As Foundry's Compatibility Checker: "previewCompatibility" for the checked release. */
+async function preview(page: Page, req: UpdateRequest): Promise<UpdateResult> {
+  const version = req.version ?? "";
+  const known = previews.get(version);
+  if (known) return { preview: known };
+  if (!checked || releaseOf(checked)?.version !== version)
+    return { error: "Check for the update again first." };
+  const answer = await postUpdate(page, {
+    action: "previewCompatibility",
+    release: checked,
+  });
+  const read = readPreview(answer);
+  if (!read)
+    return { error: "Foundry's compatibility preview was not readable" };
+  previews.set(version, read);
+  return { preview: read };
+}
+
+const OPS = { check, download, preview } as const;
+
 export async function runUpdate(
   page: Page,
   req: UpdateRequest,
 ): Promise<UpdateResult> {
   try {
-    return req.op === "check"
-      ? await check(page, req)
-      : await download(page, req);
+    return await OPS[req.op](page, req);
   } catch (e: unknown) {
     return {
       error: (e instanceof Error ? e.message : String(e)).slice(0, MAX_ERROR),

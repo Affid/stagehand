@@ -28,7 +28,10 @@ export function usePageState() {
   const [by, setBy] = useState<GroupBy>("folder");
   const [selecting, setSelecting] = useState(false);
   const { closed, toggle, collapseAll } = useFolding();
-  const [tab, setTab] = useState<LibTab>("modules");
+  // A system opened from elsewhere (the Update page) shows on its tab.
+  const [tab, setTab] = useState<LibTab>(
+    state.side?.kind === "system" ? "systems" : "modules",
+  );
   const [renaming, setRenaming] = useState<string | null>(null);
   // A selection doesn't outlive the page: no stale picks on return (review).
   useEffect(

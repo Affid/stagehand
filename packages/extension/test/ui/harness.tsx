@@ -19,6 +19,7 @@ import { trackProgress, UNLOCKED } from "../../src/ui/tasks.ts";
 import type {
   BackupsResult,
   ConfigResult,
+  UpdateAsk,
   UpdateResult,
   PageBridge,
   ServerBackupsResult,
@@ -137,7 +138,7 @@ export function fakePage() {
     editorClose: vi.fn(),
     editorSave: vi.fn(() => Promise.resolve<string | undefined>(undefined)),
     config: vi.fn(() => Promise.resolve<ConfigResult>({})),
-    update: vi.fn(() =>
+    update: vi.fn((_ask: UpdateAsk) =>
       Promise.resolve<UpdateResult>({ info: "SETUP.UpdateNotAvailable" }),
     ),
     serverBackups: vi.fn(() =>
