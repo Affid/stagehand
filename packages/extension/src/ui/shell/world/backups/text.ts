@@ -23,8 +23,11 @@ export const backupLabel = (b: BackupInfo): string =>
   b.note ?? backupDate(b.createdAt);
 
 /** "3 days ago". */
+export const agoMs = (t: Translate, ms: number): string =>
+  ago(t, age(new Date(ms).toISOString(), Date.now()));
+
 export const backupAge = (t: Translate, b: BackupInfo): string =>
-  ago(t, age(new Date(b.createdAt).toISOString(), Date.now()));
+  agoMs(t, b.createdAt);
 
 /** Foundry's badge for an older generation: restoring brings that data back. */
 export function olderCore(b: BackupInfo, generation: number | undefined) {

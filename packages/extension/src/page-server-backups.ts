@@ -24,6 +24,8 @@ export interface ServerBackupsRequest {
   readonly op: ServerBackupOp;
   /** One snapshot to restore; some to delete; none otherwise. */
   readonly ids: readonly string[];
+  /** Also ask Foundry for the free disk space (adapter flag diskFree). */
+  readonly disk?: boolean;
 }
 
 export interface SnapshotInfo {
@@ -50,6 +52,8 @@ export interface PackageBackups {
 export interface ServerListing {
   readonly snapshots: readonly SnapshotInfo[];
   readonly packages: readonly PackageBackups[];
+  /** Bytes free where Foundry keeps backups, when asked and known. */
+  readonly free?: number;
 }
 
 export interface ServerBackupsReply {
@@ -95,7 +99,10 @@ export function parseServerBackupsRequest(
   if (!(SERVER_OPS as readonly unknown[]).includes(p.op)) return undefined;
   const op = p.op as ServerBackupOp;
   const ids = opIds(op, p.ids);
-  return ids ? { requestId: p.requestId, op, ids } : undefined;
+  if (!ids) return undefined;
+  return p.disk === true && op === "list"
+    ? { requestId: p.requestId, op, ids, disk: true }
+    : { requestId: p.requestId, op, ids };
 }
 
 function snapshot(v: unknown): SnapshotInfo | undefined {
@@ -142,7 +149,8 @@ function pkg(v: unknown): PackageBackups | undefined {
 
 function listing(v: unknown): ServerListing | undefined {
   if (!isObject(v)) return undefined;
-  const { snapshots, packages } = v;
+  const { snapshots, packages, free } = v;
+  if (free !== undefined && !isCount(free)) return undefined;
   if (!Array.isArray(snapshots) || snapshots.length > MAX_SNAPSHOTS)
     return undefined;
   if (!Array.isArray(packages) || packages.length > MAX_PACKAGES)
@@ -151,7 +159,11 @@ function listing(v: unknown): ServerListing | undefined {
   const p = packages.map(pkg);
   if (s.some((x) => x === undefined) || p.some((x) => x === undefined))
     return undefined;
-  return { snapshots: s as SnapshotInfo[], packages: p as PackageBackups[] };
+  return {
+    snapshots: s as SnapshotInfo[],
+    packages: p as PackageBackups[],
+    ...(free === undefined ? {} : { free }),
+  };
 }
 
 export function parseServerBackupsReply(

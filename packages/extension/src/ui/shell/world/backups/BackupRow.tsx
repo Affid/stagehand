@@ -13,6 +13,13 @@ import {
   tip,
 } from "./text.ts";
 
+/** Foundry's version tag on a row: older warns; newer can't be restored. */
+export interface Tag {
+  readonly text: string;
+  readonly cls: "" | "warn" | "bad";
+  readonly tip: string;
+}
+
 export interface RowProps {
   readonly b: BackupInfo;
   readonly latest: boolean;
@@ -22,6 +29,8 @@ export interface RowProps {
   readonly pick?: { readonly on: boolean; readonly toggle: () => void };
   readonly onRestore: () => void;
   readonly onDelete: () => void;
+  /** The server page's tag in place of Foundry's badge. */
+  readonly tag?: Tag | null;
 }
 
 function Pick(props: RowProps) {
@@ -64,10 +73,20 @@ function Name(props: { readonly b: BackupInfo; readonly latest: boolean }) {
   );
 }
 
-function Core(props: { readonly b: BackupInfo }) {
+function Core(props: {
+  readonly b: BackupInfo;
+  readonly tag?: Tag | null | undefined;
+}) {
   const { t, state } = useUi();
-  const { b } = props;
-  if (!b.verified) return <span />;
+  const { b, tag } = props;
+  if (tag)
+    return (
+      <span class={`core ${tag.cls}`} title={tag.tip}>
+        <Icon name={tag.cls ? "triangle-exclamation" : "code-branch"} />{" "}
+        {tag.text}
+      </span>
+    );
+  if (!b.verified || tag === null) return <span />;
   const old = olderCore(b, state.data.setup?.core.generation);
   return (
     <span
@@ -114,7 +133,8 @@ function Delete(props: RowProps) {
 export function BackupRow(props: RowProps) {
   const { t, canChange } = useUi();
   const { b, pick } = props;
-  const off = props.off ?? (canChange ? null : "");
+  const bad = props.tag?.cls === "bad" ? props.tag.tip : null;
+  const off = bad ?? props.off ?? (canChange ? null : "");
   return (
     <li
       data-backup={b.id}
@@ -122,7 +142,7 @@ export function BackupRow(props: RowProps) {
     >
       <Pick {...props} />
       <Name b={b} latest={props.latest} />
-      <Core b={b} />
+      <Core b={b} tag={props.tag} />
       <span class="sz">{formatSize(b.size)}</span>
       {pick ? (
         <>

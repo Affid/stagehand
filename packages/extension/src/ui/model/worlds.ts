@@ -84,12 +84,22 @@ export function worldRow(state: SetupState, world: WorldInfo): WorldRow {
 export const worldRows = (state: SetupState): WorldRow[] =>
   (state.setup?.worlds ?? []).map((w) => worldRow(state, w));
 
-/** Snapshot age in whole minutes, hours or days, for display. */
+/** Up to these, an age reads in days, weeks or months; beyond, in years. */
+const DAYS_UNTIL = 14;
+const WEEKS_UNTIL = 60;
+const MONTHS_UNTIL = 730;
+
+/** An age in whole minutes, hours, days, weeks, months or years. */
 export function age(takenAt: string, now: number): { n: number; unit: string } {
   const minutes = Math.max(0, Math.round((now - Date.parse(takenAt)) / 60000));
   if (minutes < 1) return { n: 0, unit: "now" };
   if (minutes < 60) return { n: minutes, unit: "minutes" };
   const hours = Math.round(minutes / 60);
   if (hours < 48) return { n: hours, unit: "hours" };
-  return { n: Math.round(hours / 24), unit: "days" };
+  const days = Math.round(hours / 24);
+  if (days < DAYS_UNTIL) return { n: days, unit: "days" };
+  if (days < WEEKS_UNTIL) return { n: Math.round(days / 7), unit: "weeks" };
+  if (days < MONTHS_UNTIL)
+    return { n: Math.round(days / 30.44), unit: "months" };
+  return { n: Math.round(days / 365.25), unit: "years" };
 }

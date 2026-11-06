@@ -195,11 +195,13 @@ function useLaunch(world: WorldInfo, model: WorldModules) {
 export function WorldPage(props: { readonly world: WorldInfo }) {
   const { state, canChange } = useUi();
   const { world } = props;
+  const route = state.route;
+  const opening = route?.kind === "world" ? route.tab : undefined;
   const model = worldModules(state.data, world.id);
   const why = useWhy();
   const launch = useLaunch(world, model);
   const backups = useBackups(world.id);
-  const [tab, setTab] = useState<WorldTab>("modules");
+  const [tab, setTab] = useState<WorldTab>(opening ?? "modules");
   const image = cssImage(world.background, location.origin);
   return (
     <section class="application framed mls-main">

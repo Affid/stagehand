@@ -42,6 +42,16 @@ export const tasksFor = (
   packageId: string,
 ): readonly Progress[] => state.tasks.filter((x) => x.packageId === packageId);
 
+/** Foundry's backup work, which locks its Setup while it runs. */
+const LOCKING: ReadonlySet<string> = new Set([
+  "createBackup",
+  "restoreBackup",
+  "deleteBackup",
+  "createSnapshot",
+  "restoreSnapshot",
+  "deleteSnapshot",
+]);
+
 /** Foundry's lock messages, as our own words. */
 const LOCK_WORDS: Readonly<Record<string, string>> = {
   "SETUP.BACKUPS.BackingUp": "lock.backup",
@@ -55,7 +65,8 @@ export function lockReason(
   t: (key: string) => string,
   state: Pick<UiState, "lock" | "tasks">,
 ): string | null {
-  if (!state.lock.locked && state.tasks.length === 0) return null;
+  const backingUp = state.tasks.some((x) => LOCKING.has(x.action));
+  if (!state.lock.locked && !backingUp) return null;
   const key = state.lock.message ? LOCK_WORDS[state.lock.message] : undefined;
   return t(key ?? "lock.busy");
 }

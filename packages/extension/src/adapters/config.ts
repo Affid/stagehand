@@ -54,8 +54,9 @@ export const BUNDLED_CONFIG: SetupConfig = {
       maxBuild: 370,
       selectors: V14_SELECTORS,
       // Foundry's internal editWorld and lockPackage requests, tested live
-      // on 14.370 (docs/SETUP-SPIKE.md).
-      flags: { editWorld: true, lockPackage: true },
+      // on 14.370 (docs/SETUP-SPIKE.md); diskFree reads free space through
+      // its checkRestoreSnapshotDiskSpace request.
+      flags: { editWorld: true, lockPackage: true, diskFree: true },
     },
   ],
 };

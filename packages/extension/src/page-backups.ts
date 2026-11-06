@@ -31,6 +31,8 @@ export interface BackupInfo {
   readonly snapshot: boolean;
   /** Foundry's badge: the core version the copy is verified for. */
   readonly verified?: string;
+  /** The package's own version when it was backed up. */
+  readonly version?: string;
 }
 
 export interface BackupsReply {
@@ -53,6 +55,10 @@ const isId = (v: unknown, max = MAX_ID): v is string =>
 const VERSION = /^[0-9][0-9A-Za-z.+-]{0,31}$/;
 const isVersion = (v: unknown): v is string =>
   typeof v === "string" && VERSION.test(v);
+/** A package's own version: "1.2.3", "v0.10.4-beta"; no spaces or markup. */
+export const PACKAGE_VERSION = /^[0-9A-Za-z][0-9A-Za-z.+_-]{0,39}$/;
+const isPackageVersion = (v: unknown): v is string =>
+  typeof v === "string" && PACKAGE_VERSION.test(v);
 const isCount = (v: unknown): v is number =>
   typeof v === "number" && Number.isFinite(v) && v >= 0;
 
@@ -87,7 +93,7 @@ export function parseBackupsRequest(p: Loose): BackupsRequest | undefined {
 
 export function backup(v: unknown): BackupInfo | undefined {
   if (!isObject(v)) return undefined;
-  const { id, createdAt, size, note, snapshot, verified } = v;
+  const { id, createdAt, size, note, snapshot, verified, version } = v;
   if (!isId(id) || !isCount(createdAt) || !isCount(size)) return undefined;
   if (typeof snapshot !== "boolean") return undefined;
   if (
@@ -96,6 +102,7 @@ export function backup(v: unknown): BackupInfo | undefined {
   )
     return undefined;
   if (verified !== undefined && !isVersion(verified)) return undefined;
+  if (version !== undefined && !isPackageVersion(version)) return undefined;
   return {
     id,
     createdAt,
@@ -103,6 +110,7 @@ export function backup(v: unknown): BackupInfo | undefined {
     snapshot,
     ...(note ? { note } : {}),
     ...(verified ? { verified } : {}),
+    ...(version ? { version } : {}),
   };
 }
 

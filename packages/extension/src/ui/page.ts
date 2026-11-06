@@ -65,6 +65,8 @@ export interface PageBridge {
   serverBackups(
     op: ServerBackupOp,
     ids: readonly string[],
+    /** Also ask for the free disk space (adapter flag diskFree). */
+    disk?: boolean,
   ): Promise<ServerBackupsResult>;
   /** Foundry's configuration: read it, or save some settings. */
   config(op: "read" | "save", changes?: SettingChanges): Promise<ConfigResult>;
@@ -145,13 +147,13 @@ function backupRequests(
         op === "list" ? SAVE_TIMEOUT_MS : BACKUP_OP_TIMEOUT_MS,
         { error: "Foundry did not answer in time." },
       ),
-    serverBackups: (op, ids) =>
+    serverBackups: (op, ids, disk) =>
       request<ServerBackupsResult>(
         send,
         listeners,
         (requestId) => ({
           type: "SERVER_BACKUPS",
-          payload: { requestId, op, ids: [...ids] },
+          payload: { requestId, op, ids: [...ids], ...(disk ? { disk } : {}) },
         }),
         (e, id) =>
           e.type === "SERVER_BACKUPS_DONE" && e.payload.requestId === id

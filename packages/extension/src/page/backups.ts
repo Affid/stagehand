@@ -2,10 +2,11 @@
 // listBackups, createBackup, restoreBackup and deleteBackups, each with
 // Foundry's own dialog (a confirm code for restore and delete) and its own
 // lock and progress messages. Answers with the world's current backups.
-import type {
-  BackupInfo,
-  BackupsRequest,
-  PackageType,
+import {
+  type BackupInfo,
+  type BackupsRequest,
+  PACKAGE_VERSION,
+  type PackageType,
 } from "../page-backups.ts";
 import type { PageGlobals } from "./globals.ts";
 
@@ -63,6 +64,9 @@ export const toInfo = (b: Raw): BackupInfo => ({
     ? { note: b.note.slice(0, 1000) }
     : {}),
   ...verifiedOf(b),
+  ...(typeof b.version === "string" && PACKAGE_VERSION.test(b.version)
+    ? { version: b.version }
+    : {}),
 });
 
 async function listRaw(

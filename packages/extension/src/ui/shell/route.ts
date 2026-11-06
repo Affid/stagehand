@@ -5,7 +5,12 @@ import { worldOrder } from "../model/order.ts";
 
 export type Route =
   | { readonly kind: "library" }
-  | { readonly kind: "world"; readonly worldId: string }
+  | {
+      readonly kind: "world";
+      readonly worldId: string;
+      /** Open on this tab (the server Backups page links a world's). */
+      readonly tab?: "backups";
+    }
   /** A page of the server's own: Backups (Configuration and Update follow). */
   | {
       readonly kind: "server";

@@ -238,37 +238,153 @@
 
 /* The server Backups page */
 .mls-shell .mlb-page {
-  display: grid;
-  gap: 12px;
-  align-content: start;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
 }
 
-.mls-shell .mlb-page h2 {
-  margin: 0;
-  font-size: 20px;
-  border: 0;
-}
-
-.mls-shell .mlb-sec {
-  display: grid;
+.mls-shell .mlb-page .mlb-head button {
+  height: 34px;
+  width: auto;
+  flex: none;
+  padding: 0 14px;
   gap: 8px;
+  font-size: 13.5px;
 }
 
-.mls-shell .mlb-sec > h3 {
-  margin: 6px 0 0;
-  font-size: 12px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--color-text-subtle);
-  border-bottom: 1px solid var(--color-cool-4);
-  padding-bottom: 4px;
+.mls-shell .mlb-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  padding-bottom: 16px;
 }
 
-.mls-shell .mlb-sec .note {
-  text-transform: none;
-  letter-spacing: 0;
-  font-size: 12px;
+.mls-shell .mlb-page .mls-subtabs .c {
   color: var(--color-light-4);
+  font-size: 12px;
+}
+
+/* A snapshot under way, in place of Create a snapshot */
+.mls-shell .mlb-job {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 220px 44px;
+  gap: 14px;
+  align-items: center;
+  min-width: 640px;
+  padding: 10px 12px;
+  border-radius: 4px;
+  border: 1px solid rgb(238 155 58 / 55%);
+  background: rgb(238 155 58 / 8%);
+  cursor: help;
+}
+
+.mls-shell .mlb-job .t {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.mls-shell .mlb-job .t strong {
+  color: var(--color-light-1);
+}
+
+.mls-shell .mlb-job .t span {
+  font-size: 12.5px;
+  color: var(--color-text-subtle);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mls-shell .mlb-job ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 12px;
+  font-size: 12.5px;
+  color: var(--color-light-4);
+}
+
+.mls-shell .mlb-job ol li {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.mls-shell .mlb-job ol li.done {
+  color: #8fd49b;
+}
+
+.mls-shell .mlb-job ol li.now {
+  color: var(--color-light-1);
+}
+
+.mls-shell .mlb-job ol li .fa-circle {
+  font-size: 6px;
+}
+
+.mls-shell .mlb-job .bar {
+  height: 6px;
+  border-radius: 3px;
+  background: rgb(255 255 255 / 10%);
+  overflow: hidden;
+}
+
+.mls-shell .mlb-job .bar span {
+  display: block;
+  height: 100%;
+  background: var(--color-warm-1);
+  transition: width 0.2s;
+}
+
+.mls-shell .mlb-job .pct {
+  font-size: 12.5px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Snapshots */
+.mls-shell .mlb-snaps li {
+  grid-template-columns: 22px minmax(0, 1fr) 90px 80px 96px 30px;
+}
+
+.mls-shell .mlw-blist .core.bad,
+.mls-shell .mlb-pkg .core.bad {
+  color: #ff9c8f;
+}
+
+/* Worlds, Modules and Systems */
+.mls-shell .mlb-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+
+.mls-shell .mlb-tools input[type="search"] {
+  width: 240px;
+  height: 28px;
+}
+
+.mls-shell .mlb-tools select {
+  height: 28px;
+  width: auto;
+}
+
+.mls-shell .mlb-tools .ml-label,
+.mls-shell .mlb-tools .ml-muted {
+  font-size: 12.5px;
+  color: var(--color-text-subtle);
+}
+
+.mls-shell .mlb-none {
+  padding: 12px 2px;
+  margin: 0;
 }
 
 .mls-shell .mlb-pkgs {
@@ -276,32 +392,151 @@
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 4px;
+  gap: 6px;
 }
 
-.mls-shell .mlb-pkghead {
-  width: 100%;
-  height: 34px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 8px;
-  padding: 0 10px;
+.mls-shell .mlb-pkg {
   border: 1px solid var(--color-cool-4);
   border-radius: 4px;
   background: rgb(11 10 19 / 55%);
+}
+
+.mls-shell .mlb-pkg.open {
+  border-color: var(--color-cool-3);
+}
+
+.mls-shell .mlb-pkg .row {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr) 150px 80px 128px;
+  gap: 12px;
+  align-items: center;
+  padding: 8px 10px 8px 6px;
+}
+
+.mls-shell .mlb-pkg .row .tog {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  font-size: 11px;
+  background: none;
+  border: 0;
   box-shadow: none;
-  transition: none;
+  color: var(--color-light-3);
 }
 
-.mls-shell .mlb-gone {
-  font-size: 11.5px;
-  padding: 0 6px;
+.mls-shell .mlb-pkg .nm {
+  display: grid;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.mls-shell .mlb-pkg .nm strong {
+  color: var(--color-light-1);
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mls-shell .mlb-pkg .nm span {
+  color: var(--color-text-subtle);
+  font-size: 12.5px;
+}
+
+.mls-shell .mlb-pkg .core {
+  font-size: 12px;
+  color: var(--color-light-3);
+  white-space: nowrap;
+}
+
+.mls-shell .mlb-pkg .core.warn {
+  color: #f5c45e;
+}
+
+.mls-shell .mlb-pkg .core i {
+  font-size: 10px;
+  margin-right: 2px;
+}
+
+.mls-shell .mlb-pkg .sz {
+  font-size: 12.5px;
+  color: var(--color-light-3);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.mls-shell .mlb-pkg .row button:not(.tog) {
+  height: 28px;
+  width: auto;
+  flex: none;
+  padding: 0 12px;
+  font-size: 13px;
+}
+
+.mls-shell .mlb-pkg button[disabled] {
+  opacity: 0.45;
+}
+
+.mls-shell .mlb-inner {
+  list-style: none;
+  margin: 0 10px 8px 38px;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.mls-shell .mlb-inner li {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr) 90px 80px 96px 30px;
+  gap: 12px;
+  align-items: center;
+  padding: 6px 8px;
   border-radius: 3px;
-  border: 1px solid rgb(245 196 94 / 50%);
-  color: #f3dca4;
+  background: rgb(255 255 255 / 3%);
 }
 
-.mls-shell .mlb-pkg .mlw-blist {
-  margin: 6px 0 4px 24px;
+.mls-shell .mlb-inner li > i {
+  color: var(--color-light-4);
+  text-align: center;
+  font-size: 12px;
+}
+
+.mls-shell .mlb-inner .nm strong {
+  font-size: 13px;
+}
+
+.mls-shell .mlb-inner .core {
+  font-size: 12px;
+  color: var(--color-light-3);
+  white-space: nowrap;
+}
+
+.mls-shell .mlb-inner button {
+  height: 26px;
+  width: auto;
+  flex: none;
+  padding: 0 10px;
+  font-size: 12.5px;
+}
+
+.mls-shell .mlb-inner button.icon {
+  width: 28px;
+  padding: 0;
+  color: var(--color-light-4);
+}
+
+.mls-shell .mlb-open {
+  display: inline-block;
+  width: auto;
+  height: auto;
+  margin: 0 0 10px 38px;
+  padding: 0;
+  font-size: 12.5px;
+  color: var(--color-light-3);
+  text-decoration: underline;
+  text-decoration-color: var(--color-light-5);
+}
+
+.mls-shell .mlb-open:hover {
+  color: var(--color-warm-1);
 }

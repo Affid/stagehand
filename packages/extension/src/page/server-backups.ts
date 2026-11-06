@@ -110,6 +110,22 @@ async function apply(game: Game, req: ServerBackupsRequest): Promise<void> {
   }
 }
 
+/** Foundry's free space for backups: its restore check, asked for nothing. */
+async function freeSpace(game: Game): Promise<{ free?: number }> {
+  try {
+    const r = (await game.post?.({
+      action: "checkRestoreSnapshotDiskSpace",
+      snapshotData: { originalSize: 0 },
+    })) as { readonly available?: unknown } | undefined;
+    return typeof r?.available === "number" && r.available >= 0
+      ? { free: r.available }
+      : {};
+  } catch {
+    // Only a nicety on the page's head: leave it out.
+    return {};
+  }
+}
+
 export async function runServerBackups(
   page: Pick<PageGlobals, "game">,
   req: ServerBackupsRequest,
@@ -127,6 +143,7 @@ export async function runServerBackups(
           .sort((a, b) => b.createdAt - a.createdAt)
           .slice(0, MAX_SNAPSHOTS),
         packages: packagesOf(game, listing),
+        ...(req.disk ? await freeSpace(game) : {}),
       },
     };
   } catch (e: unknown) {

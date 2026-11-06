@@ -144,3 +144,50 @@ describe("the server's backups through Foundry", () => {
     expect(f.game.restoreSnapshot).not.toHaveBeenCalled();
   });
 });
+
+describe("free disk space and package versions (5b)", () => {
+  test("asked for, Foundry's restore check gives the free space", async () => {
+    const f = foundry();
+    const post = vi.fn(() => Promise.resolve({ required: 0, available: 5e10 }));
+    const r = await runServerBackups(
+      { game: { ...f.game, post } },
+      { ...req("list"), disk: true },
+    );
+    expect(post).toHaveBeenCalledWith({
+      action: "checkRestoreSnapshotDiskSpace",
+      snapshotData: { originalSize: 0 },
+    });
+    expect(r.listing?.free).toBe(5e10);
+  });
+
+  test("not asked for, or failing, there is none", async () => {
+    const f = foundry();
+    const post = vi.fn(() => Promise.reject(new Error("no")));
+    expect(
+      (await runServerBackups({ game: { ...f.game, post } }, req("list")))
+        .listing,
+    ).not.toHaveProperty("free");
+    expect(post).not.toHaveBeenCalled();
+    expect(
+      (
+        await runServerBackups(
+          { game: { ...f.game, post } },
+          { ...req("list"), disk: true },
+        )
+      ).listing,
+    ).not.toHaveProperty("free");
+  });
+
+  test("a package backup keeps the package's version", async () => {
+    const f = foundry();
+    f.game.listBackups.mockResolvedValue({
+      ...listing,
+      module: {
+        m: [{ id: "module.m.2", createdAt: 5, size: 1, version: "0.10.4" }],
+      },
+    } as never);
+    const r = await runServerBackups(f.page, req("list"));
+    const m = r.listing?.packages.find((p) => p.id === "m");
+    expect(m?.backups[0]?.version).toBe("0.10.4");
+  });
+});

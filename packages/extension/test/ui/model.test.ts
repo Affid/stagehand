@@ -396,5 +396,8 @@ describe("attention (W-2)", () => {
     expect(age(at(5 * 60_000), now)).toEqual({ n: 5, unit: "minutes" });
     expect(age(at(3 * 3_600_000), now)).toEqual({ n: 3, unit: "hours" });
     expect(age(at(4 * 86_400_000), now)).toEqual({ n: 4, unit: "days" });
+    expect(age(at(35 * 86_400_000), now)).toEqual({ n: 5, unit: "weeks" });
+    expect(age(at(240 * 86_400_000), now)).toEqual({ n: 8, unit: "months" });
+    expect(age(at(1000 * 86_400_000), now)).toEqual({ n: 3, unit: "years" });
   });
 });

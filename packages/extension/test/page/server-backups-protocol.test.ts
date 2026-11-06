@@ -88,6 +88,36 @@ describe("server backups replies", () => {
     });
   });
 
+  test("free space and package versions are checked too (5b)", () => {
+    expect(
+      parseServerBackupsReply({
+        requestId: "r1",
+        listing: { ...listing, free: 9 },
+      })?.listing?.free,
+    ).toBe(9);
+    expect(
+      parseServerBackupsReply({
+        requestId: "r1",
+        listing: { ...listing, free: -1 },
+      }),
+    ).toBeUndefined();
+    expect(
+      parseServerBackupsRequest({
+        requestId: "r1",
+        op: "list",
+        ids: [],
+        disk: true,
+      }),
+    ).toEqual({ requestId: "r1", op: "list", ids: [], disk: true });
+    expect(
+      parseServerBackupsRequest({
+        requestId: "r1",
+        op: "createSnapshot",
+        disk: true,
+      }),
+    ).toEqual({ requestId: "r1", op: "createSnapshot", ids: [] });
+  });
+
   test("refuses malformed entries", () => {
     const bad = (over: object) => ({
       requestId: "r1",

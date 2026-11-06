@@ -3,7 +3,7 @@ import { useEffect } from "preact/hooks";
 import { useUi } from "../context.ts";
 import { LibraryPage } from "./library/LibraryPage.tsx";
 import { ModulePanel } from "./library/ModulePanel.tsx";
-import { ServerBackupsPage } from "./server/BackupsPage.tsx";
+import { ServerBackupsPage } from "./server/backups/BackupsPage.tsx";
 import { ConfigPage } from "./server/ConfigPage.tsx";
 import { UpdatePage } from "./server/UpdatePage.tsx";
 import { Header } from "./Header.tsx";
