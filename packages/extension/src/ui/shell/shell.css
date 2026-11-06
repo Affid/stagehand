@@ -186,6 +186,8 @@
   background: none;
   box-shadow: none;
   font: inherit;
+  /* Foundry's buttons fade their border and fill; the current page switches at once. */
+  transition: none;
 }
 
 .mls-shell .mls-lib {

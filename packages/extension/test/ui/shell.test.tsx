@@ -205,6 +205,8 @@ describe("routing", () => {
     ).toBe("page");
     fireEvent.click(getByRole("button", { name: /Library/ }));
     expect(store.get().route).toEqual({ kind: "library" });
+    expect(container.querySelector(".mls-world.mls-on")).toBe(null);
+    expect(container.querySelector(".mls-world[aria-current]")).toBe(null);
     expect(container.querySelector(".mls-banner")).toBe(null);
     expect(container.querySelector(".ml-modules")).toBeTruthy();
   });
