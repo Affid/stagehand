@@ -119,6 +119,8 @@ export const SetupDataSchema = z.object({
     z.object({ id: z.string(), title: z.string(), version: z.string() }),
   ),
   worlds: z.array(WorldInfoSchema),
+  /** Foundry's count of setup warnings (Support and issues). */
+  issues: z.number().int().nonnegative().max(1_000_000).optional(),
   /** Foundry's update check: only these three fields, never its download link. */
   coreUpdate: z
     .object({

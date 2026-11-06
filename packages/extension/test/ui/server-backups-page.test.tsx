@@ -123,10 +123,11 @@ describe("the server Backups page", () => {
     });
   });
 
-  test("Foundry's Backup Manager stays one click away", async () => {
-    const { getByRole, page } = await open();
-    fireEvent.click(getByRole("button", { name: "Foundry's Backup Manager" }));
-    expect(page.foundryAction).toHaveBeenCalledWith({ action: "backups" });
+  test("no way out to Foundry's Backup Manager", async () => {
+    const { queryByRole } = await open();
+    expect(queryByRole("button", { name: "Foundry's Backup Manager" })).toBe(
+      null,
+    );
   });
 
   test("an error keeps the listing and shows above it", async () => {

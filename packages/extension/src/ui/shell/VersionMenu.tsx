@@ -1,0 +1,150 @@
+// The header's Version chip and its menu (SETUP-REDESIGN.md, Header bar):
+// Foundry's build and channel, the update, and Help (Foundry's own Support
+// and issues window, and the knowledge base on foundryvtt.com).
+import { useCallback, useEffect, useRef, useState } from "preact/hooks";
+import { useDismiss } from "../common/dismiss.ts";
+import { Icon } from "../common/widgets.tsx";
+import { useUi } from "../context.ts";
+
+export const KB_URL = "https://foundryvtt.com/kb/";
+
+/** "14.370" reads as "14 · 370", as Foundry's own footer shows it. */
+export const versionLabel = (version: string): string =>
+  version.replace(".", " · ");
+
+function Update(props: { readonly onPage: () => void }) {
+  const { state, t } = useUi();
+  const update = state.data.setup?.coreUpdate;
+  if (update?.hasUpdate)
+    return (
+      <div class="avail">
+        <Icon name="arrow-up" />
+        <span>{t("vm.available", { version: update.version })}</span>
+        <button type="button" class="ml-primary" onClick={props.onPage}>
+          {t("vm.whatsNew")}
+        </button>
+      </div>
+    );
+  return (
+    <div class="avail none">
+      <Icon name="circle-check" />
+      <span>{t("vm.current")}</span>
+      <button type="button" class="ml-link" onClick={props.onPage}>
+        {t("vm.updatePage")}
+      </button>
+    </div>
+  );
+}
+
+interface MenuProps {
+  readonly first: { current: HTMLButtonElement | null };
+  readonly close: () => void;
+}
+
+/** Foundry's own Support and issues window, and the knowledge base. */
+function Help(props: MenuProps) {
+  const { state, page, t } = useUi();
+  const issues = state.data.setup?.issues ?? 0;
+  return (
+    <div class="mlh-help">
+      <button
+        type="button"
+        ref={(el) => {
+          props.first.current = el;
+        }}
+        onClick={() => {
+          props.close();
+          page.foundryAction({ action: "warnings" });
+        }}
+      >
+        <Icon name="life-ring" />
+        <span>{t("vm.support")}</span>
+        {issues ? (
+          <span class="ml-muted">{t("vm.issues", { n: String(issues) })}</span>
+        ) : null}
+      </button>
+      <a href={KB_URL} target="_blank" rel="noopener noreferrer">
+        <Icon name="book-open" />
+        <span>{t("vm.kb")}</span>
+        <Icon name="arrow-up-right-from-square" />
+      </a>
+    </div>
+  );
+}
+
+function Menu(props: MenuProps) {
+  const { state, store, t } = useUi();
+  const setup = state.data.setup;
+  const raw = setup?.coreUpdate?.channel ?? "";
+  // Foundry's channel ids are lower case: "stable" reads "Stable channel".
+  const channel = raw ? raw.charAt(0).toUpperCase() + raw.slice(1) : "";
+  const toUpdate = (): void => {
+    props.close();
+    store.set({ route: { kind: "server", page: "update" } });
+  };
+  return (
+    <section class="ml-pop mlh-fm" role="region" aria-label={t("shell.title")}>
+      <header>
+        <strong>{t("shell.title")}</strong>
+      </header>
+      <div class="mlh-upd">
+        <div>
+          <strong>
+            {t("vm.build", {
+              generation: String(setup?.core.generation ?? ""),
+              build: String(setup?.core.build ?? ""),
+            })}
+          </strong>
+          {channel ? (
+            <span class="ml-muted">{t("vm.channel", { channel })}</span>
+          ) : null}
+        </div>
+        <Update onPage={toUpdate} />
+      </div>
+      <h4>{t("vm.help")}</h4>
+      <Help first={props.first} close={props.close} />
+    </section>
+  );
+}
+
+export function VersionMenu() {
+  const { state, t } = useUi();
+  const [open, setOpen] = useState(false);
+  const wrap = useRef<HTMLSpanElement>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
+  const first = useRef<HTMLButtonElement | null>(null);
+  const close = useCallback((refocus: boolean) => {
+    setOpen(false);
+    if (refocus) trigger.current?.focus();
+  }, []);
+  useDismiss(open, close, wrap);
+  useEffect(() => {
+    if (open) first.current?.focus();
+  }, [open]);
+  const version = state.data.setup?.core.version ?? "";
+  if (!version) return null;
+  return (
+    <span class="mlh-chipwrap" ref={wrap}>
+      <button
+        type="button"
+        ref={trigger}
+        class={`mlh-ver${open ? " ml-on" : ""}`}
+        aria-expanded={open}
+        aria-label={t("vm.chip", { version: versionLabel(version) })}
+        onClick={() => setOpen(!open)}
+      >
+        <span class="v">
+          {t("shell.version", { version: versionLabel(version) })}
+        </span>
+        {state.data.setup?.coreUpdate?.hasUpdate ? (
+          <span class="upd">
+            <Icon name="arrow-up" />
+            {t("up.chip")}
+          </span>
+        ) : null}
+        <Icon name="caret-down" />
+      </button>
+      {open ? <Menu first={first} close={() => close(true)} /> : null}
+    </span>
+  );
+}

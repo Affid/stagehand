@@ -75,11 +75,15 @@ async function pull(deps: RelayDeps, server: ServerId, msg: Envelope) {
   const list = await deps.state.updateCommands(server, (all) =>
     failOrphans(all, library, worldId),
   );
+  const intent = await deps.state.takeLaunchIntent(server, worldId, deps.now());
   // "Launch without changes" on Setup: this launch gets none; they stay queued.
-  if (await deps.state.takeLaunchHold(server, worldId, deps.now()))
+  if (intent?.kind === "hold")
     return reply(msg, "COMMANDS", { world: [], global: [] });
   const world = expandForWorld(pendingFor(list, worldId), library);
-  return reply(msg, "COMMANDS", { world, global: [] });
+  // Apply and launch: the review was the confirmation (one confirmation).
+  const reviewed =
+    intent?.kind === "reviewed" ? { reviewed: intent.target } : {};
+  return reply(msg, "COMMANDS", { world, global: [], ...reviewed });
 }
 
 async function ack(deps: RelayDeps, server: ServerId, msg: Envelope) {

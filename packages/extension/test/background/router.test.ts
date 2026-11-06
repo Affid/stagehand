@@ -35,6 +35,22 @@ const fromOptions = { id: "ext", url: `${EXT}options.html`, fromTab: true };
 const fromSetup = { id: "ext", url: `${S}/setup`, fromTab: true };
 const fromGame = { id: "ext", url: `${S}/game`, fromTab: true };
 
+/** An installed module, as Setup reports it. */
+const installedModule = (id: string) => ({
+  id,
+  title: id,
+  version: "1",
+  authors: [],
+  library: false,
+  hasPacks: false,
+  hasCode: true,
+  compatibility: {},
+  requires: [],
+  recommends: [],
+  conflicts: [],
+  systems: [],
+});
+
 const setupData = (isAdmin: boolean, version = "14.369"): SetupData => ({
   core: { version, generation: 14, build: Number(version.split(".")[1]) },
   isAdmin,
@@ -187,6 +203,32 @@ describe("router: admin verification (PR-1, PR-2, PR-3)", () => {
     expect(await d.state.launchHolds(S)).toEqual([]);
   });
 
+  test("Apply and launch records the reviewed result, installed modules only", async () => {
+    const d = deps();
+    await registered(d);
+    await route(
+      d,
+      {
+        kind: "setup-seen",
+        data: { ...setupData(true), modules: [installedModule("a")] },
+      },
+      fromSetup,
+    );
+    await route(
+      d,
+      {
+        kind: "launch-hold",
+        worldId: "w",
+        hold: false,
+        reviewed: ["a", "ghost"],
+      },
+      fromSetup,
+    );
+    expect(await d.state.launchHolds(S)).toEqual([
+      { worldId: "w", at: "2026-11-05T00:00:00.000Z", reviewed: ["a"] },
+    ]);
+  });
+
   test("a launch hold needs the verified admin, and only Setup may ask", async () => {
     const d = deps();
     await registered(d);
@@ -337,43 +379,15 @@ describe("router: review fixes", () => {
   });
 });
 
-describe("router: new Setup page preference", () => {
-  test("is off by default, stored per server, and comes back with the state", async () => {
+describe("router: no page preference any more", () => {
+  test("set-pref is refused: the new page is the page", async () => {
     const d = deps();
     await registered(d);
     await route(d, { kind: "setup-seen", data: setupData(true) }, fromSetup);
-    const before = (await route(d, { kind: "get-state" }, fromSetup)) as {
-      prefs: { newSetupPage: boolean };
-    };
-    expect(before.prefs).toEqual({ newSetupPage: false });
-    await route(
-      d,
-      { kind: "set-pref", key: "newSetupPage", value: true },
-      fromSetup,
-    );
-    const after = (await route(d, { kind: "get-state" }, fromSetup)) as {
-      prefs: { newSetupPage: boolean };
-    };
-    expect(after.prefs).toEqual({ newSetupPage: true });
-  });
-
-  test("is accepted only from this server's Setup page, with a known key and a boolean", async () => {
-    const d = deps();
-    await registered(d);
     await expect(
       route(
         d,
         { kind: "set-pref", key: "newSetupPage", value: true },
-        fromGame,
-      ),
-    ).rejects.toThrow();
-    await expect(
-      route(d, { kind: "set-pref", key: "other", value: true }, fromSetup),
-    ).rejects.toThrow();
-    await expect(
-      route(
-        d,
-        { kind: "set-pref", key: "newSetupPage", value: "yes" },
         fromSetup,
       ),
     ).rejects.toThrow();

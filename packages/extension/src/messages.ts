@@ -59,11 +59,12 @@ export const ExtensionMessageSchema = z.discriminatedUnion("kind", [
     ids: z.array(Id).max(MAX_SORTED),
   }),
   /** "Launch without changes": the world's next pull gets none, once. */
-  z.object({ kind: z.literal("launch-hold"), worldId: Id, hold: z.boolean() }),
   z.object({
-    kind: z.literal("set-pref"),
-    key: z.literal("newSetupPage"),
-    value: z.boolean(),
+    kind: z.literal("launch-hold"),
+    worldId: Id,
+    hold: z.boolean(),
+    /** Apply and launch: the modules on after it, as reviewed (one confirmation). */
+    reviewed: z.array(Id).max(5000).optional(),
   }),
   z.object({ kind: z.literal("bridge-init") }),
   z.object({ kind: z.literal("relay"), msg: EnvelopeSchema }),
@@ -81,16 +82,6 @@ export interface SetupState {
   readonly commands: readonly Command[];
   readonly hellos: Readonly<Record<string, HelloRecord>>;
   readonly config: SetupConfig;
-  /** This browser's choices for this server. */
-  readonly prefs: Prefs;
   /** Installed modules not sorted yet (installed since the first visit). */
   readonly fresh: readonly string[];
 }
-
-/** Per-server preferences, stored in this browser. */
-export interface Prefs {
-  /** Show the new Setup page instead of Foundry's own layout. */
-  readonly newSetupPage: boolean;
-}
-
-export const DEFAULT_PREFS: Prefs = { newSetupPage: false };

@@ -30,23 +30,26 @@ function setup(
   dialogResult: unknown,
   form: Record<string, boolean> = {},
   accepted = true,
+  modules: Parameters<typeof fakeGame>[0] = MODULES,
 ) {
-  const { game, set } = fakeGame(MODULES);
+  const { game, set } = fakeGame(modules);
   const { channel, requests } = fakeChannel((type) =>
     type === "COMMAND_ACK" ? ok("OK", { accepted }) : ok(),
   );
   const { dialog, wait } = fakeDialog(dialogResult, form);
   const reload = vi.fn();
   const warn = vi.fn();
+  const info = vi.fn();
   const deps: ApplyDeps = {
     game,
     dialog,
     channel,
     reload,
     warn,
+    info,
     now: () => new Date("2026-11-05T00:00:00Z"),
   };
-  return { deps, set, requests, reload, warn, wait };
+  return { deps, set, requests, reload, warn, info, wait };
 }
 
 const acks = (requests: { type: string; payload: unknown }[]) =>
@@ -236,5 +239,73 @@ describe("applyCommands: review fixes", () => {
       x: false,
       a: true,
     });
+  });
+});
+
+describe("applyCommands: one confirmation (reviewed on Setup)", () => {
+  const TARGET = ["module-library", "x", "needs-x", "a", "lib"];
+
+  test("the reviewed result applies without the dialog, with a notice", async () => {
+    const { deps, set, reload, info, wait } = setup("later");
+    expect(await applyCommands(deps, [command()], TARGET)).toBe("applied");
+    expect(wait).not.toHaveBeenCalled();
+    expect(set).toHaveBeenCalledWith(
+      "core",
+      "moduleConfiguration",
+      expect.objectContaining({ a: true, lib: true }),
+    );
+    expect(info).toHaveBeenCalledWith("MODULE_LIBRARY.Apply.Reviewed");
+    expect(reload).toHaveBeenCalledTimes(1);
+  });
+
+  test("order of the reviewed list does not matter", async () => {
+    const { deps, wait } = setup("later");
+    expect(await applyCommands(deps, [command()], [...TARGET].reverse())).toBe(
+      "applied",
+    );
+    expect(wait).not.toHaveBeenCalled();
+  });
+
+  test("a live result that differs from the review asks again", async () => {
+    const { deps, set, wait } = setup("later");
+    expect(
+      await applyCommands(deps, [command()], ["module-library", "x", "a"]),
+    ).toBe("later");
+    expect(wait).toHaveBeenCalled();
+    expect(set).not.toHaveBeenCalled();
+  });
+
+  test("a conflict always asks, even when the result matches the review", async () => {
+    const { deps, wait } = setup("later");
+    const hates = command({ modules: ["hates-a", "a"] });
+    const target = [...TARGET, "hates-a"];
+    expect(await applyCommands(deps, [hates], target)).toBe("later");
+    expect(wait).toHaveBeenCalled();
+  });
+
+  test("a module that isn't installed always asks", async () => {
+    const { deps, wait } = setup("later");
+    const ghost = command({ modules: ["a", "ghost"] });
+    expect(await applyCommands(deps, [ghost], TARGET)).toBe("later");
+    expect(wait).toHaveBeenCalled();
+  });
+
+  test("a module blocked by a missing requirement always asks", async () => {
+    const { deps, wait } = setup("later", {}, true, [
+      ...MODULES,
+      { id: "needs-ghost", requires: ["ghost"] },
+    ]);
+    const blocked = command({ modules: ["a", "needs-ghost"] });
+    expect(await applyCommands(deps, [blocked], TARGET)).toBe("later");
+    expect(wait).toHaveBeenCalled();
+  });
+
+  test("removing a module others need always asks", async () => {
+    const { deps, wait } = setup("later");
+    const remove = command({ mode: "remove", modules: ["x"] });
+    expect(
+      await applyCommands(deps, [remove], ["module-library", "needs-x"]),
+    ).toBe("later");
+    expect(wait).toHaveBeenCalled();
   });
 });

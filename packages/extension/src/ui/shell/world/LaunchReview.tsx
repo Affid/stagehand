@@ -1,7 +1,7 @@
 // Launch with queued changes: review them first (SETUP-REDESIGN.md, queued
 // changes). Apply and launch (optionally after Foundry's own backup), launch
-// without them (they stay queued), or cancel. The GM still confirms in the
-// world before anything applies (PRD 8.4).
+// without them (they stay queued), or cancel. This review is the GM's
+// confirmation: the world asks again only if its live check differs.
 import type { WorldInfo } from "@module-library/shared/world";
 import { useState } from "preact/hooks";
 import { Icon, Modal } from "../../common/widgets.tsx";
@@ -170,7 +170,6 @@ export function LaunchReview(props: {
           </p>
         ) : null}
         <BackupFirst world={world} on={backup} onChange={setBackup} />
-        <p class="ml-hint">{t("lr.confirm")}</p>
       </div>
     </Modal>
   );

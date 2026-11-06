@@ -1,6 +1,7 @@
 // Builds each extension entry as a classic script (content scripts and
 // Firefox's background page can't be ES modules), then copies static files
 // and appends the new Setup page's styles (src/ui/shell/*.css) to setup-ui.css.
+// `node build.ts --release` builds without the dev build label on Setup.
 import {
   appendFileSync,
   cpSync,
@@ -34,6 +35,8 @@ function buildLabel(): string {
   return `${version} · ${commit}${dirty} · ${time}`;
 }
 
+/** `--release`: no dev build label on the Setup page. */
+const RELEASE = process.argv.includes("--release");
 const BUILD = buildLabel();
 const outDir = join(root, "dist");
 const entries = [
@@ -57,7 +60,10 @@ for (const name of entries) {
     publicDir: false,
     logLevel: "warn",
     oxc: { jsx: { runtime: "automatic", importSource: "preact" } },
-    define: { __ML_BUILD__: JSON.stringify(BUILD) },
+    define: {
+      __ML_BUILD__: JSON.stringify(BUILD),
+      __ML_DEV__: JSON.stringify(!RELEASE),
+    },
     build: {
       outDir,
       emptyOutDir: false,

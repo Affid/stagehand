@@ -3,7 +3,7 @@
 import type { LibraryOp, OpResult } from "@module-library/shared/library/ops";
 import type { Library } from "@module-library/shared/library/schema";
 import type { ApplyMode } from "@module-library/shared/resolver";
-import type { ExtensionMessage, Prefs, SetupState } from "../messages.ts";
+import type { ExtensionMessage, SetupState } from "../messages.ts";
 import type { Translate } from "./i18n.ts";
 import { pendingFor } from "./model/preview.ts";
 import { flipModule } from "./model/world-modules.ts";
@@ -31,14 +31,19 @@ export interface Actions {
   flip(worldId: string, moduleId: string, on: boolean): Promise<void>;
   /** Cancels every change queued for the world. */
   discard(worldId: string): Promise<void>;
-  /** "Launch without changes": the next launch gets none, once. */
-  setLaunchHold(worldId: string, hold: boolean): Promise<boolean>;
+  /**
+   * `hold`: "Launch without changes", the next launch gets none, once.
+   * `reviewed`: Apply and launch, the modules on after it as reviewed.
+   */
+  setLaunchHold(
+    worldId: string,
+    hold: boolean,
+    reviewed?: readonly string[],
+  ): Promise<boolean>;
   exportLibrary(): Promise<string | undefined>;
   importLibrary(text: string): Promise<void>;
   /** Intake: these modules are sorted and no longer "new". */
   markSorted(ids: readonly string[]): Promise<void>;
-  /** Saves one of this browser's choices for the server; false if it failed. */
-  setPref(key: keyof Prefs, value: boolean): Promise<boolean>;
 }
 
 type Imported =
@@ -172,9 +177,14 @@ function worldActions(
       });
       await b.refresh();
     },
-    async setLaunchHold(worldId, hold) {
+    async setLaunchHold(worldId, hold, reviewed) {
       const done = await b.guarded(async () => {
-        await send({ kind: "launch-hold", worldId, hold });
+        await send({
+          kind: "launch-hold",
+          worldId,
+          hold,
+          ...(reviewed ? { reviewed: [...reviewed] } : {}),
+        });
         return true;
       });
       return done === true;
@@ -208,17 +218,6 @@ export function createActions(
     async markSorted(ids) {
       await b.guarded(() => send({ kind: "modules-sorted", ids: [...ids] }));
       await b.refresh();
-    },
-    async setPref(key, value) {
-      const ok = await b.guarded(async () => {
-        await send({ kind: "set-pref", key, value });
-        return true;
-      });
-      if (!ok) return false;
-      store.set((s) => ({
-        data: { ...s.data, prefs: { ...s.data.prefs, [key]: value } },
-      }));
-      return true;
     },
   };
 }

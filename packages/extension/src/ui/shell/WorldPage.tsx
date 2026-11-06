@@ -10,7 +10,6 @@ import { type WorldModules, worldModules } from "../model/world-modules.ts";
 import { cssImage } from "./route.ts";
 import { type LaunchChoice, LaunchReview } from "./world/LaunchReview.tsx";
 import { useWhy } from "./world/useWhy.ts";
-import { useCanEditWorld } from "./world/AboutEdit.tsx";
 import { WorldBody, type WorldTab } from "./world/WorldBody.tsx";
 import { useLastPlayed } from "./WorldRail.tsx";
 
@@ -93,12 +92,12 @@ function BannerActions(props: {
   readonly world: WorldInfo;
   readonly changes: number;
   readonly onLaunch: () => void;
-  /** Edit in place (the About tab); without it, Foundry's window. */
-  readonly onEdit: (() => void) | undefined;
+  /** The pencil: the About tab. */
+  readonly onEdit: () => void;
 }) {
   const { page, t } = useUi();
   const { world, changes } = props;
-  const act = (action: "editWorld" | "favorite"): void => {
+  const act = (action: "favorite"): void => {
     page.foundryAction({ action, worldId: world.id });
   };
   return (
@@ -121,7 +120,7 @@ function BannerActions(props: {
         class="icon"
         aria-label={t("shell.edit")}
         title={t("shell.edit")}
-        onClick={() => (props.onEdit ? props.onEdit() : act("editWorld"))}
+        onClick={props.onEdit}
       >
         <Icon name="pen" />
       </button>
@@ -155,7 +154,8 @@ function useLaunch(world: WorldInfo, model: WorldModules) {
     // A read-only browser can't hold, and its bridge is off anyway.
     if (canChange) {
       const plain = choice.kind === "plain";
-      if (!(await actions.setLaunchHold(world.id, plain))) return;
+      const reviewed = plain ? undefined : model.next;
+      if (!(await actions.setLaunchHold(world.id, plain, reviewed))) return;
     }
     if (choice.kind === "apply" && choice.backup)
       page.foundryAction({
@@ -175,7 +175,6 @@ export function WorldPage(props: { readonly world: WorldInfo }) {
   const why = useWhy();
   const launch = useLaunch(world, model);
   const [tab, setTab] = useState<WorldTab>("modules");
-  const canEdit = useCanEditWorld();
   const image = cssImage(world.background, location.origin);
   return (
     <section class="application framed mls-main">
@@ -189,7 +188,7 @@ export function WorldPage(props: { readonly world: WorldInfo }) {
           world={world}
           changes={model.changes}
           onLaunch={launch.start}
-          onEdit={canEdit ? () => setTab("about") : undefined}
+          onEdit={() => setTab("about")}
         />
       </div>
       <div class="mls-body-main ml-app">

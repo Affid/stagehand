@@ -64,11 +64,6 @@ test.beforeAll(async () => {
   ext = await loadExtension();
   page = await ext.context.newPage();
   await openSetupAsAdmin(ext, page, env.url, env.adminPassword);
-  await page.locator('#setup-packages [data-tab="modules"]').first().click();
-  await page
-    .locator("#ml-modules-root")
-    .getByRole("button", { name: "Try the new Setup page" })
-    .click();
   await expect(shell().locator(".mls-top")).toBeVisible();
 });
 

@@ -14,6 +14,8 @@ export interface ClientSettings {
 
 export interface SetupGame {
   readonly view?: string;
+  /** Foundry's setup warnings (Support and issues). */
+  readonly issueCount?: { readonly total?: unknown };
   readonly release?: { readonly generation: number; readonly build: number };
   readonly data?: {
     readonly isAdmin?: boolean;
@@ -45,22 +47,6 @@ export interface SetupGame {
   ) => Promise<boolean>;
 }
 
-export interface MenuEntry {
-  readonly label: string;
-  readonly icon: string;
-  readonly group?: string;
-  readonly onClick: () => void;
-}
-
-export interface ContextMenuLike {
-  menuItems: MenuEntry[];
-  render: (
-    this: ContextMenuLike,
-    target: HTMLElement,
-    options?: unknown,
-  ) => Promise<unknown>;
-}
-
 export interface AppInstance {
   readonly element?: HTMLElement;
   render(options: { force: boolean }): Promise<unknown>;
@@ -90,20 +76,18 @@ export interface PageGlobals {
   readonly foundry?: {
     readonly applications?: {
       readonly api?: { readonly ApplicationV2?: AppClass };
-      readonly ux?: {
-        readonly ContextMenu?: { readonly prototype: ContextMenuLike };
-      };
-      /** Foundry's World Configuration window (public class). */
-      readonly sidebar?: {
-        readonly apps?: {
-          readonly WorldConfig?: new (options: { world: unknown }) => {
-            render(options: { force: boolean }): unknown;
-          };
-        };
-      };
+      /** Foundry's open windows, by id. */
+      readonly instances?: ReadonlyMap<string, OpenWindow>;
     };
     readonly utils?: { readonly escapeHTML?: (text: string) => string };
   };
+}
+
+/** An open ApplicationV2 window, as far as we move it. */
+export interface OpenWindow {
+  readonly rendered?: boolean;
+  readonly position?: { readonly width?: number | "auto" };
+  setPosition(position: { left?: number; top?: number }): unknown;
 }
 
 export const pageGlobals = (): PageGlobals =>

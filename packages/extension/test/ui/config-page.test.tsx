@@ -113,10 +113,12 @@ describe("the Configuration page", () => {
     expect((getByLabelText("Port") as HTMLInputElement).value).toBe("1");
   });
 
-  test("the password is changed in Foundry's own window", async () => {
-    const { getByRole, page } = await open();
-    fireEvent.click(getByRole("button", { name: "Change in Foundry" }));
-    expect(page.foundryAction).toHaveBeenCalledWith({ action: "configure" });
+  test("no way out to Foundry's own Configuration window", async () => {
+    const { queryByRole } = await open();
+    expect(queryByRole("button", { name: "Change in Foundry" })).toBe(null);
+    expect(
+      queryByRole("button", { name: "Foundry's Application Configuration" }),
+    ).toBe(null);
   });
 
   test("an out-of-range or empty port is flagged and can't be saved", async () => {

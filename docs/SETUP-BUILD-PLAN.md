@@ -276,4 +276,28 @@ Work packages, each committed on its own:
 7. Server pages: Configuration (help text, password change, HTTPS, AWS, Advanced) and
    Update (notes reader, your packages, history, snapshot first, states, progress).
 
+Package 1 done: the new page is the page (no preference, no switch back);
+the old UI on Foundry's tabs, its world-card menu and tags, and their tests,
+CSS and strings are gone; no "Foundry's …" buttons; the Version chip's menu
+(build, channel, update, Help: Foundry's Package Warnings window, the
+knowledge base); build label only in dev builds (`pnpm build:release` drops
+it); one confirmation at launch (`launch-hold` carries `reviewed`, installed
+ids only; the companion applies without its dialog when the live target
+equals it and nothing needs a choice). Live: `apply.spec.ts` rewritten for
+the new page (reviewed launch applies with no dialog; a remove others need
+still asks), `setup-ui.spec.ts` removed with the old UI; library
+organisation gets live tests again with package 6.
+
+Security (review of package 1, MEDIUM, owner to decide): a script running in
+the admin's Setup page can already pass our admin gate by posting Setup data
+that claims `isAdmin` (open since Phase 3). Before, it could only queue
+changes and the GM confirmed them in the world; now it can also mark them
+reviewed, and they apply without the in-world dialog. Closing it means the
+per-load private channel between `setup-main` and `setup-ui` (a MessageChannel
+created at `document_start`, before any page script runs) or an in-world
+confirmation for modules never enabled before. The reviewed intent also lives
+up to ten minutes and is used by the world's next launch from this browser,
+even one started from Foundry's own page (limited to exactly what was
+reviewed).
+
 Then Phase 6 (News and finish).

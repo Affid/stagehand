@@ -252,10 +252,12 @@ describe("the banner and launching", () => {
         note: "Before queued changes (Module Library)",
       });
     });
+    // The review is the confirmation: the result goes with the launch.
     expect(sent(send)).toContainEqual({
       kind: "launch-hold",
       worldId: "w1",
       hold: false,
+      reviewed: expect.arrayContaining(["b"]) as unknown,
     });
   });
 

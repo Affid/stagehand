@@ -20,6 +20,7 @@ function deps(
     channel,
     reload: vi.fn(),
     warn: vi.fn(),
+    info: vi.fn(),
     now: () => new Date("2026-11-05T00:00:00Z"),
   };
   return { d, requests };
@@ -73,6 +74,28 @@ describe("runSession (8.4)", () => {
       "SNAPSHOT_PUSH",
       "COMMANDS_PULL",
     ]);
+  });
+
+  test("a launch reviewed on Setup applies without the dialog", async () => {
+    const { d, requests } = deps((type) =>
+      type === "HELLO"
+        ? ok("HELLO_ACK")
+        : type === "COMMANDS_PULL"
+          ? ok("COMMANDS", {
+              world,
+              global: [],
+              reviewed: ["module-library", "a"],
+            })
+          : type === "COMMAND_ACK"
+            ? ok("OK", { accepted: true })
+            : ok(),
+    );
+    expect(await runSession(d)).toEqual({
+      handshake: "ok",
+      outcome: "applied",
+    });
+    expect(d.reload).toHaveBeenCalledTimes(1);
+    expect(requests.map((r) => r.type)).toContain("COMMAND_ACK");
   });
 
   test("stays idle without the extension", async () => {

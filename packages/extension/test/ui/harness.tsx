@@ -11,12 +11,7 @@ import type { AdapterChoice } from "../../src/adapters/select.ts";
 import type { ExtensionMessage, SetupState } from "../../src/messages.ts";
 import { type PageToUi, windowHostId } from "../../src/page-protocol.ts";
 import { createActions, type Send } from "../../src/ui/actions.ts";
-import {
-  ModulesRoot,
-  OverlayRoot,
-  ShellRoot,
-  WorldsRoot,
-} from "../../src/ui/App.tsx";
+import { OverlayRoot, ShellRoot } from "../../src/ui/App.tsx";
 import { createTranslator } from "../../src/ui/i18n.ts";
 import type {
   BackupsResult,
@@ -104,7 +99,6 @@ export function setupState(over: Partial<SetupState> = {}): SetupState {
     commands: [],
     hellos: {},
     config: BUNDLED_CONFIG,
-    prefs: { newSetupPage: false },
     fresh: [],
     ...over,
   };
@@ -124,7 +118,6 @@ export function fakePage(windows = true) {
   };
   const page = {
     notify: vi.fn(),
-    setMenu: vi.fn(),
     setShell: vi.fn(),
     foundryAction: vi.fn(),
     saveWorld: vi.fn(() => Promise.resolve<string | undefined>(undefined)),
@@ -166,7 +159,7 @@ export function fakePage(windows = true) {
   return { page, emit, closeTopWindow };
 }
 
-const SUPPORTED: AdapterChoice = {
+export const SUPPORTED: AdapterChoice = {
   status: "supported",
   adapter: BUNDLED_CONFIG.adapters[0]!,
 };
@@ -176,21 +169,18 @@ export const uiState = (over: Partial<UiState> = {}): UiState => ({
   data: setupState(),
   adapter: SUPPORTED,
   selectors: V14_SELECTORS,
-  view: "organised",
   scope: { kind: "all" },
   filter: EMPTY_FILTER,
   selection: [],
   editingPreset: null,
   draftModules: [],
-  apply: null,
-  sheetWorld: null,
   collapsedGroups: [],
   route: null,
   ...over,
 });
 
 export function renderUi(
-  root: "modules" | "worlds" | "overlay" | "shell",
+  root: "overlay" | "shell",
   options: {
     state?: Partial<UiState>;
     data?: Partial<SetupState>;
@@ -214,8 +204,6 @@ export function renderUi(
     page: fake.page,
   };
   const Root = {
-    modules: ModulesRoot,
-    worlds: WorldsRoot,
     overlay: OverlayRoot,
     shell: ShellRoot,
   }[root];

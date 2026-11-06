@@ -1,8 +1,8 @@
-// Mounts the new Setup page when this browser chose it for the server, and
-// gives Foundry's page back when it is turned off or can't start.
+// Mounts the new Setup page whenever the extension runs (not in safe mode),
+// and gives Foundry's page back when it can't start.
 // Order: ask the page world to hide Foundry's layout, wait for its answer,
-// then render. A refusal or a render error keeps today's UI and says why,
-// once; turning the setting off and on again retries.
+// then render. A refusal or a render error leaves Foundry's page and says
+// why, once.
 import { logError } from "@module-library/shared/log";
 import { render } from "preact";
 import { allowsChanges } from "../../adapters/select.ts";
@@ -72,7 +72,7 @@ export function syncShell(deps: UiDeps, doc: Document): () => void {
 
   return () => {
     const s = store.get();
-    const wanted = s.data.prefs.newSetupPage && allowsChanges(s.adapter);
+    const wanted = allowsChanges(s.adapter);
     if (wanted && phase === "off") {
       phase = "asking";
       page.setShell(true);

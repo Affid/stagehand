@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import type { WorldInfo } from "@module-library/shared/world";
-import { cleanup, fireEvent, waitFor, within } from "@testing-library/preact";
+import { cleanup, fireEvent, within } from "@testing-library/preact";
 import { afterEach, describe, expect, test } from "vitest";
 import { el, renderUi, sent, setupState } from "./harness.tsx";
 
@@ -39,48 +39,6 @@ const railTitles = (container: ParentNode): string[] =>
     (s) => s.textContent,
   );
 
-describe("switching to the new Setup page", () => {
-  test("the Module Library toolbar offers it and saves the choice", async () => {
-    const { getByRole, send, store } = renderUi("modules", {
-      reply: (m) => (m.kind === "set-pref" ? undefined : { ok: true }),
-    });
-    fireEvent.click(getByRole("button", { name: "Try the new Setup page" }));
-    await waitFor(() => {
-      expect(sent(send)).toContainEqual({
-        kind: "set-pref",
-        key: "newSetupPage",
-        value: true,
-      });
-    });
-    await waitFor(() => {
-      expect(store.get().data.prefs.newSetupPage).toBe(true);
-    });
-  });
-
-  test("safe mode doesn't offer it", () => {
-    const { queryByRole } = renderUi("modules", {
-      state: { adapter: { status: "safe-mode" } },
-    });
-    expect(queryByRole("button", { name: "Try the new Setup page" })).toBe(
-      null,
-    );
-  });
-
-  test("a failed save is reported and the choice stays as it was", async () => {
-    const { getByRole, store, page } = renderUi("modules", {
-      reply: (m) => {
-        if (m.kind === "set-pref") throw new Error("storage full");
-        return { ok: true };
-      },
-    });
-    fireEvent.click(getByRole("button", { name: "Try the new Setup page" }));
-    await waitFor(() => {
-      expect(page.notify).toHaveBeenCalled();
-    });
-    expect(store.get().data.prefs.newSetupPage).toBe(false);
-  });
-});
-
 describe("the header bar", () => {
   test("shows Foundry's name and version", () => {
     const { getByRole, container } = shell();
@@ -88,10 +46,53 @@ describe("the header bar", () => {
     expect(el(container, ".mlh-ver").textContent).toContain("14 · 369");
   });
 
-  test("the version opens the Update page", () => {
-    const { store, container } = shell();
-    fireEvent.click(el(container, ".mlh-ver"));
+  test("the version opens a menu: Foundry's build, the update, and Help", () => {
+    const { store, container, getByRole, queryByRole, page } = shell();
+    const chip = el(container, ".mlh-ver");
+    expect(chip.getAttribute("aria-expanded")).toBe("false");
+    fireEvent.click(chip);
+    expect(chip.getAttribute("aria-expanded")).toBe("true");
+    const menu = getByRole("region", { name: "Foundry Virtual Tabletop" });
+    expect(menu.textContent).toContain("Foundry 14 · build 369");
+    fireEvent.click(
+      within(menu).getByRole("button", { name: "Support and issues" }),
+    );
+    expect(sent(page.foundryAction)).toEqual([{ action: "warnings" }]);
+    const kb = within(menu).getByRole("link", { name: /Knowledge base/ });
+    expect(kb.getAttribute("href")).toBe("https://foundryvtt.com/kb/");
+    fireEvent.click(chip);
+    fireEvent.click(
+      within(
+        getByRole("region", { name: "Foundry Virtual Tabletop" }),
+      ).getByRole("button", { name: "Update page" }),
+    );
     expect(store.get().route).toEqual({ kind: "server", page: "update" });
+    expect(queryByRole("region", { name: "Foundry Virtual Tabletop" })).toBe(
+      null,
+    );
+  });
+
+  test("an available update shows on the chip and in its menu", () => {
+    const setup = withWorlds.setup;
+    const { container, getByRole } = shell({
+      data: {
+        setup: setup && {
+          ...setup,
+          coreUpdate: { hasUpdate: true, channel: "stable", version: "14.371" },
+        },
+      },
+    });
+    const chip = el(container, ".mlh-ver");
+    expect(chip.textContent).toContain("update");
+    fireEvent.click(chip);
+    const menu = getByRole("region", { name: "Foundry Virtual Tabletop" });
+    expect(menu.textContent).toContain("14.371 is available");
+    expect(within(menu).getByRole("button", { name: "See what's new…" }));
+  });
+
+  test("there is no way back to Foundry's page inside the extension", () => {
+    const { queryByRole } = shell();
+    expect(queryByRole("button", { name: "Foundry's Setup page" })).toBe(null);
   });
 
   test("the power menu holds Log out and Shut down, and closes with Escape", () => {
@@ -113,20 +114,6 @@ describe("the header bar", () => {
       { action: "logout" },
       { action: "shutdown" },
     ]);
-  });
-
-  test("Foundry's Setup page switches back", async () => {
-    const { getByRole, send } = shell({
-      data: { ...withWorlds, prefs: { newSetupPage: true } },
-    });
-    fireEvent.click(getByRole("button", { name: "Foundry's Setup page" }));
-    await waitFor(() => {
-      expect(sent(send)).toContainEqual({
-        kind: "set-pref",
-        key: "newSetupPage",
-        value: false,
-      });
-    });
   });
 });
 

@@ -75,7 +75,6 @@ async function state(deps: RouterDeps, server: ServerId): Promise<SetupState> {
     commands: await s.commands(server),
     hellos: await s.hellos(server),
     config: await deps.loadConfig(),
-    prefs: await s.prefs(server),
     fresh: await freshModules(deps, server),
   };
 }
@@ -105,18 +104,24 @@ async function assertKnownWorld(
 }
 
 /** Only modules that are installed are remembered as sorted. */
+/** Only ids of modules Setup reported as installed (security review). */
+async function installedOnly(
+  deps: RouterDeps,
+  server: ServerId,
+  ids: readonly string[],
+): Promise<string[]> {
+  const installed = new Set(
+    ((await deps.state.setup(server))?.modules ?? []).map((m) => m.id),
+  );
+  return ids.filter((id) => installed.has(id));
+}
+
 async function markSorted(
   deps: RouterDeps,
   server: ServerId,
   ids: readonly string[],
 ): Promise<void> {
-  const installed = new Set(
-    ((await deps.state.setup(server))?.modules ?? []).map((m) => m.id),
-  );
-  await deps.state.markSorted(
-    server,
-    ids.filter((id) => installed.has(id)),
-  );
+  await deps.state.markSorted(server, await installedOnly(deps, server, ids));
 }
 
 async function queueApply(
@@ -195,8 +200,6 @@ async function fromSetup(
 ): Promise<unknown> {
   if (m.kind === "setup-seen") return setupSeen(deps, server, m);
   if (m.kind === "get-state") return state(deps, server);
-  // A display preference for this browser: no admin verification needed.
-  if (m.kind === "set-pref") return deps.state.setPref(server, m.key, m.value);
   if (!SETUP_WRITES.has(m.kind))
     throw new Error(`Unexpected ${m.kind} from Setup`);
   await assertCanChange(deps, server);
@@ -217,7 +220,13 @@ async function fromSetup(
       return markSorted(deps, server, m.ids);
     case "launch-hold":
       await assertKnownWorld(deps, server, m.worldId);
-      return deps.state.setLaunchHold(server, m.worldId, m.hold, deps.now());
+      return deps.state.setLaunchHold(
+        server,
+        m.worldId,
+        m.hold,
+        deps.now(),
+        m.reviewed && (await installedOnly(deps, server, m.reviewed)),
+      );
     default:
       throw new Error(`Unexpected ${m.kind} from Setup`);
   }

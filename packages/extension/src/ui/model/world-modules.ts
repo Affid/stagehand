@@ -50,6 +50,8 @@ export interface WorldModules {
   readonly problems: number;
   readonly nowCount: number;
   readonly nextCount: number;
+  /** The modules on after the next launch, as the review shows them. */
+  readonly next: readonly string[];
 }
 
 interface Context {
@@ -163,6 +165,7 @@ export function worldModules(state: SetupState, worldId: string): WorldModules {
       problems: 0,
       nowCount: 0,
       nextCount: 0,
+      next: [],
     };
   const rows = state.setup.modules.map((m) => rowFor(ctx, m));
   return {
@@ -173,6 +176,7 @@ export function worldModules(state: SetupState, worldId: string): WorldModules {
     problems: rows.filter((r) => r.problem).length,
     nowCount: rows.filter((r) => r.now).length,
     nextCount: rows.filter((r) => r.next).length,
+    next: rows.filter((r) => r.next).map((r) => r.pkg.id),
   };
 }
 

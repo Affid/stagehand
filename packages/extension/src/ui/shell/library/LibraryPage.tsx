@@ -13,7 +13,7 @@ import {
 import { BulkBar } from "../../modules/BulkBar.tsx";
 import { type ModulesModel, useModulesModel } from "../../modules/derived.ts";
 import { FolderList } from "../../modules/FolderList.tsx";
-import { Banners, folderCounts } from "../../modules/ModulesView.tsx";
+import { Banners, folderCounts } from "../../modules/banners.tsx";
 import { LibraryTools, PresetList } from "../../modules/PresetList.tsx";
 import { TagList } from "../../modules/SideSections.tsx";
 import { LibCard } from "./LibCard.tsx";

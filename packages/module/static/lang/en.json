@@ -21,6 +21,7 @@
       "NotNow": "Not now",
       "Discard": "Discard",
       "Cancelled": "Module Library: nothing was changed, because a queued change was cancelled on the Setup screen meanwhile.",
+      "Reviewed": "Module Library: applying the module changes you reviewed on the Setup screen. The world reloads once.",
       "NeedConflictConsent": "Module Library: confirm the conflicts to apply, or choose Not now.",
       "NeedDependentsChoice": "Module Library: choose to disable the dependent modules too, or choose Not now."
     }

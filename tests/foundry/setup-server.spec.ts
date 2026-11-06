@@ -36,11 +36,6 @@ test.beforeAll(async () => {
   ext = await loadExtension();
   page = await ext.context.newPage();
   await openSetupAsAdmin(ext, page, env.url, env.adminPassword);
-  await page.locator('#setup-packages [data-tab="modules"]').first().click();
-  await page
-    .locator("#ml-modules-root")
-    .getByRole("button", { name: "Try the new Setup page" })
-    .click();
 });
 
 test.afterAll(async () => {
@@ -106,8 +101,12 @@ test("Configuration reads Foundry's settings and saves one through Foundry, then
   await expect(cfg.locator(".mlc-bar")).not.toContainText("not saved");
 });
 
-test("the Version chip opens the Update page with Foundry's version and its notes", async () => {
+test("the Version chip's menu opens the Update page with Foundry's version and its notes", async () => {
   await shell().locator(".mlh-ver").click();
+  await shell()
+    .getByRole("region", { name: "Foundry Virtual Tabletop" })
+    .getByRole("button", { name: /Update page|See what's new/ })
+    .click();
   const upd = shell().locator(".mlu-page");
   await expect(upd).toContainText("14.370");
   await expect(

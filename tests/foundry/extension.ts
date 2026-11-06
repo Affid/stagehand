@@ -105,31 +105,12 @@ export async function openSetupAsAdmin(
     maxRedirects: 0,
   });
   await page.goto(`${url}/setup`);
-  await page.locator("#ml-worlds-root .ml-next").waitFor();
+  // The new Setup page takes over whenever the extension runs.
+  await page.locator("#ml-shell-root .mls-top").waitFor();
   await exitTour(page);
 }
 
 export const SCREENS = "test-results/screens";
-
-/** Foundry's own card for a world on the Game Worlds tab. */
-export const worldCard = (page: Page, id: string): Locator =>
-  page.locator(`#worlds-list > li.package.world[data-package-id="${id}"]`);
-
-/** Our status tag on that card. */
-export const worldTag = (page: Page, id: string): Locator =>
-  worldCard(page, id).locator(".ml-world-tag");
-
-/** Picks an entry from Foundry's right-click menu on a world card. */
-export async function worldMenu(
-  page: Page,
-  id: string,
-  entry: string,
-): Promise<void> {
-  await worldCard(page, id).click({ button: "right" });
-  await page
-    .locator("#context-menu li.context-item", { hasText: entry })
-    .click();
-}
 
 /** A Foundry window opened by Module Library. */
 export const mlWindow = (page: Page, text: string): Locator =>

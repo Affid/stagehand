@@ -126,7 +126,7 @@ interface GroupProps {
 }
 
 function Access(props: GroupProps) {
-  const { page, t } = useUi();
+  const { t } = useUi();
   return (
     <fieldset>
       <legend>{t("cfg.access")}</legend>
@@ -136,12 +136,6 @@ function Access(props: GroupProps) {
           {props.loaded.settings.passwordSet
             ? t("cfg.passwordSet")
             : t("cfg.passwordNotSet")}
-          <button
-            type="button"
-            onClick={() => page.foundryAction({ action: "configure" })}
-          >
-            {t("cfg.passwordChange")}
-          </button>
         </span>
       </div>
       <TextField
@@ -298,7 +292,7 @@ function useDraft(
 }
 
 export function ConfigPage() {
-  const { page, t } = useUi();
+  const { t } = useUi();
   const c = useConfig();
   const [invalid, setInvalid] = useState<ReadonlySet<SettingKey>>(new Set());
   const draft = useDraft(
@@ -312,13 +306,6 @@ export function ConfigPage() {
     <div class="mlc-page ml-app">
       <div class="mlw-bhead">
         <h2>{t("cfg.title")}</h2>
-        <span class="ml-spacer" />
-        <button
-          type="button"
-          onClick={() => page.foundryAction({ action: "configure" })}
-        >
-          {t("cfg.foundryWindow")}
-        </button>
       </div>
       <p class="ml-hint">{t("cfg.lead")}</p>
       <Bar

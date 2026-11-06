@@ -21,12 +21,18 @@ function open(coreUpdate?: {
   return r;
 }
 
+/** The Version chip's menu leads to the Update page. */
+function toUpdate(r: ReturnType<typeof open>, name: string): void {
+  fireEvent.click(el(r.container, ".mlh-ver"));
+  fireEvent.click(r.getByRole("button", { name }));
+}
+
 describe("the Update page", () => {
   test("the Version chip marks an update and opens the page", () => {
     const r = open({ hasUpdate: true, channel: "stable", version: "14.371" });
     const chip = el(r.container, ".mlh-ver");
     expect(chip.textContent).toContain("update");
-    fireEvent.click(chip);
+    toUpdate(r, "See what's new…");
     expect(r.store.get().route).toEqual({ kind: "server", page: "update" });
     const pageEl = el(r.container, ".mlu-page");
     expect(pageEl.textContent).toContain("14.369");
@@ -36,14 +42,13 @@ describe("the Update page", () => {
       "https://foundryvtt.com/releases/14.371",
     );
     expect(notes.getAttribute("rel")).toBe("noopener noreferrer");
-    fireEvent.click(r.getByRole("button", { name: "Update in Foundry…" }));
-    expect(r.page.foundryAction).toHaveBeenCalledWith({ action: "update" });
+    expect(r.queryByRole("button", { name: "Update in Foundry…" })).toBe(null);
   });
 
   test("up to date says so, with the installed version's notes", () => {
     const r = open({ hasUpdate: false, channel: "stable", version: "" });
     expect(el(r.container, ".mlh-ver").textContent).not.toContain("update");
-    fireEvent.click(el(r.container, ".mlh-ver"));
+    toUpdate(r, "Update page");
     expect(el(r.container, ".mlu-page").textContent).toContain("Up to date");
     expect(
       r
@@ -54,7 +59,7 @@ describe("the Update page", () => {
 
   test("a version that isn't a plain number gets no link", () => {
     const r = open({ hasUpdate: true, channel: "stable", version: "../evil" });
-    fireEvent.click(el(r.container, ".mlh-ver"));
+    toUpdate(r, "See what's new…");
     expect(r.queryByRole("link", { name: /evil/ })).toBe(null);
   });
 });

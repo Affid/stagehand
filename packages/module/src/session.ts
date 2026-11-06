@@ -17,7 +17,11 @@ export interface SessionResult {
   readonly outcome?: Outcome;
 }
 
-const CommandsSchema = z.object({ world: z.array(WorldCommandSchema) });
+const CommandsSchema = z.object({
+  world: z.array(WorldCommandSchema),
+  /** The modules on after the launch, as reviewed on Setup. */
+  reviewed: z.array(z.string().max(200)).max(5000).optional(),
+});
 
 /** Says HELLO until the bridge answers; no answer means no extension. */
 export async function handshake(deps: ApplyDeps): Promise<Handshake> {
@@ -57,6 +61,6 @@ export async function runSession(deps: ApplyDeps): Promise<SessionResult> {
   if (!parsed.success) return { handshake: "ok" };
   return {
     handshake: "ok",
-    outcome: await applyCommands(deps, parsed.data.world),
+    outcome: await applyCommands(deps, parsed.data.world, parsed.data.reviewed),
   };
 }

@@ -8,17 +8,11 @@ import type { AdapterChoice } from "../adapters/select.ts";
 import type { Scope } from "./model/modules.ts";
 import type { Route } from "./shell/route.ts";
 
-/** The Apply dialog: for one world, or with a world picker (null). */
-export interface ApplyTarget {
-  readonly worldId: string | null;
-}
-
 export interface UiState {
   readonly data: SetupState;
   readonly adapter: AdapterChoice;
   /** Setup selectors in use (safe mode borrows the newest known ones). */
   readonly selectors: Adapter["selectors"];
-  readonly view: "organised" | "core";
   readonly scope: Scope;
   readonly filter: ModuleFilterSpec;
   readonly selection: readonly string[];
@@ -26,9 +20,6 @@ export interface UiState {
   readonly editingPreset: string | null;
   /** Modules a new preset starts with. */
   readonly draftModules: readonly string[];
-  readonly apply: ApplyTarget | null;
-  /** World whose sheet is open, if any. */
-  readonly sheetWorld: string | null;
   /** Collapsed groups that have no folder record to keep it, as "unfiled". */
   readonly collapsedGroups: readonly string[];
   /** The new Setup page's current page; null until one is chosen. */

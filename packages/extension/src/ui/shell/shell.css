@@ -94,9 +94,165 @@
   font-size: 13px;
 }
 
-.mls-shell .mlh-ver:hover {
+.mls-shell .mlh-ver:hover,
+.mls-shell .mlh-ver.ml-on {
   border-color: var(--color-warm-1);
   color: var(--color-light-1);
+}
+
+.mls-shell .mlh-ver .upd {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #8fd49b;
+  font-weight: 600;
+  padding-left: 10px;
+  border-left: 1px solid rgb(255 255 255 / 15%);
+}
+
+.mls-shell .mlh-ver .upd i,
+.mls-shell .mlh-ver > .fa-caret-down {
+  font-size: 11px;
+}
+
+.mls-shell .mlh-ver > .fa-caret-down {
+  color: var(--color-light-4);
+}
+
+/* The Version chip's menu */
+.mls-shell .mlh-chipwrap {
+  position: relative;
+  display: inline-flex;
+  margin-left: 4px;
+}
+
+.mls-shell .ml-pop {
+  z-index: 120;
+  min-width: 240px;
+  padding: 0;
+  border: 1px solid var(--color-cool-3);
+  border-radius: 4px;
+  background: var(--color-cool-5);
+  box-shadow: 0 3px 12px rgb(0 0 0 / 65%);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-13);
+}
+
+.mls-shell .ml-pop > header {
+  padding: 8px 10px 6px;
+  border-bottom: 1px solid var(--color-cool-4);
+}
+
+.mls-shell .ml-pop > header strong {
+  color: var(--color-light-1);
+  font-size: var(--font-size-13);
+}
+
+.mls-shell .mlh-fm {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 400px;
+  display: grid;
+  gap: 4px;
+  padding-bottom: 6px;
+}
+
+.mls-shell .mlh-fm h4 {
+  margin: 8px 12px 2px;
+  padding-bottom: 3px;
+  font-family: var(--font-body, Signika), sans-serif;
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-subtle);
+  border-bottom: 1px solid var(--color-cool-4);
+}
+
+.mls-shell .mlh-upd {
+  padding: 8px 12px;
+  display: grid;
+  gap: 8px;
+}
+
+.mls-shell .mlh-upd > div:first-child {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.mls-shell .mlh-upd strong {
+  color: var(--color-light-1);
+}
+
+.mls-shell .mlh-upd .avail {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 4px;
+  border: 1px solid rgb(63 143 82 / 60%);
+  background: rgb(63 143 82 / 12%);
+  color: #d5eedb;
+  font-size: 13px;
+}
+
+.mls-shell .mlh-upd .avail.none {
+  border-color: var(--color-cool-4);
+  background: none;
+  color: var(--color-light-2);
+}
+
+.mls-shell .mlh-upd .avail > i {
+  color: #8fd49b;
+}
+
+.mls-shell .mlh-upd .avail > span {
+  flex: 1;
+}
+
+.mls-shell .mlh-upd .avail button {
+  height: 26px;
+  width: auto;
+  flex: none;
+  padding: 0 10px;
+  font-size: 12.5px;
+}
+
+.mls-shell .mlh-help {
+  display: grid;
+  padding: 0 6px;
+}
+
+.mls-shell .mlh-help > button,
+.mls-shell .mlh-help > a {
+  display: grid;
+  grid-template-columns: 18px 1fr auto;
+  gap: 8px;
+  align-items: center;
+  height: auto;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 3px;
+  background: none;
+  color: var(--color-light-2);
+  font-size: 13px;
+  text-align: left;
+  text-decoration: none;
+}
+
+.mls-shell .mlh-help > button:hover,
+.mls-shell .mlh-help > button:focus-visible,
+.mls-shell .mlh-help > a:hover,
+.mls-shell .mlh-help > a:focus-visible {
+  background: rgb(255 255 255 / 6%);
+  color: var(--color-light-1);
+}
+
+.mls-shell .mlh-help .ml-muted,
+.mls-shell .mlh-help > a > i:last-child {
+  color: var(--color-text-subtle);
+  font-size: 11.5px;
 }
 
 .mls-shell .mlh-acts {
@@ -123,17 +279,6 @@
 .mls-shell .mlh-acts button.ml-on {
   border-color: var(--color-warm-1);
   box-shadow: 0 0 6px var(--color-warm-2);
-}
-
-.mls-shell .mlh-acts .mlh-back {
-  background: none;
-  border-color: transparent;
-  color: var(--color-light-3);
-}
-
-.mls-shell .mlh-acts .mlh-back:hover {
-  color: var(--color-light-1);
-  border-color: var(--color-cool-3);
 }
 
 .mls-shell .mlh-power {
@@ -446,45 +591,9 @@
   scrollbar-gutter: stable;
 }
 
-/* Today's sheet sections, sized as they are in their window */
-.mls-shell .mls-body-main .ml-sheet-next h3,
-.mls-shell .mls-body-main .ml-sheet-history h3 {
-  margin: 0 0 6px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 18px;
-  border: 0;
-}
-
-.mls-shell .mls-world-acts {
-  margin: 0;
-}
-
-.mls-shell .mls-world-acts button {
-  width: auto;
-  padding: 0 14px;
-}
-
 /* The Library: today's Module Library UI fills the panel */
 .mls-shell .mls-library .mls-body-main {
   overflow: hidden;
-}
-
-.mls-shell .mls-library .ml-modules {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-/* The switch in today's Module Library toolbar */
-.ml-toolbar .ml-try-shell {
-  margin-left: auto;
-  width: auto;
-  flex: none;
-  padding: 0 12px;
-  gap: 6px;
 }
 
 /* Foundry draws a focus box on every focused button, mouse clicks included;

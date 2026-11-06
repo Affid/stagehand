@@ -95,6 +95,12 @@ describe("reading Setup's package data (V-1)", () => {
     expect(SetupDataSchema.safeParse(data).success).toBe(true);
   });
 
+  test("Foundry's count of setup warnings is read, when it is a count", () => {
+    expect(collect({ issueCount: { total: 3 } }).issues).toBe(3);
+    expect(collect({ issueCount: { total: -1 } })).not.toHaveProperty("issues");
+    expect(collect({})).not.toHaveProperty("issues");
+  });
+
   test("missing pieces read as empty, never throw", () => {
     expect(collect({})).toMatchObject({
       core: { version: "0.0" },

@@ -52,7 +52,7 @@ function Availability(props: { readonly installed: string }) {
 }
 
 export function UpdatePage() {
-  const { state, page, t } = useUi();
+  const { state, t } = useUi();
   const setup = state.data.setup;
   const installed = setup?.core.version ?? "";
   const update = setup?.coreUpdate;
@@ -72,15 +72,6 @@ export function UpdatePage() {
         ) : null}
       </dl>
       <Availability installed={installed} />
-      <p class="ml-hint">{t("up.lead")}</p>
-      <button
-        type="button"
-        class="ml-primary"
-        onClick={() => page.foundryAction({ action: "update" })}
-      >
-        <Icon name="download" />
-        {t("up.update")}
-      </button>
     </div>
   );
 }

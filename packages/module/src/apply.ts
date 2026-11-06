@@ -1,5 +1,7 @@
 // Applies queued commands (PRD 8.4, 8.5): resolve against the live world,
 // ask the GM, acknowledge, write core's module configuration, reload once.
+// A launch reviewed on Setup was the GM's confirmation: it applies without
+// asking again, unless the live result differs from what was reviewed.
 import type { Plan } from "@module-library/shared/resolver";
 import type { WorldCommand } from "@module-library/shared/world";
 import type { Channel } from "./channel.ts";
@@ -13,6 +15,7 @@ export interface ApplyDeps {
   readonly channel: Channel;
   readonly reload: () => void;
   readonly warn: (message: string) => void;
+  readonly info: (message: string) => void;
   readonly now: () => Date;
 }
 
@@ -107,12 +110,33 @@ async function write(
   return "applied";
 }
 
+/**
+ * The live plan is what was reviewed on Setup, and needs no choice. The
+ * dialog's only questions are conflicts, dependents, missing and blocked
+ * modules: if the Plan grows another one, it must be checked here too.
+ */
+function asReviewed(plan: Plan, reviewed: readonly string[]): boolean {
+  if (plan.conflicts.length > 0 || plan.dependents.length > 0) return false;
+  if (plan.missing.length > 0 || plan.blocked.length > 0) return false;
+  const want = new Set(reviewed);
+  return (
+    want.size === plan.target.length && plan.target.every((id) => want.has(id))
+  );
+}
+
 export async function applyCommands(
   deps: ApplyDeps,
   commands: readonly WorldCommand[],
+  reviewed?: readonly string[],
 ): Promise<Outcome> {
   if (commands.length === 0) return "unchanged";
   const plan = planFor(deps.game, commands, false);
+  if (reviewed && asReviewed(plan, reviewed)) {
+    const outcome = await write(deps, commands, plan);
+    if (outcome === "applied")
+      deps.info(deps.game.i18n.localize(`${K}.Reviewed`));
+    return outcome;
+  }
   const choice = await askGm(deps.dialog, deps.game, plan, commands);
   if (choice.kind === "later") return "later";
   if (choice.kind === "discard") {

@@ -27,22 +27,18 @@ const data: SetupState = {
   commands: [],
   hellos: {},
   config: BUNDLED_CONFIG,
-  prefs: { newSetupPage: false },
   fresh: [],
 };
 
 const initial: UiState = {
   data,
   adapter: { status: "safe-mode" },
-  view: "organised",
   scope: { kind: "all" },
   filter: EMPTY_FILTER,
   selection: [],
   editingPreset: null,
   draftModules: [],
   selectors: V14_SELECTORS,
-  apply: null,
-  sheetWorld: null,
   collapsedGroups: [],
   route: null,
 };
@@ -157,8 +153,8 @@ describe("helpers", () => {
   });
 
   test("plurals and ages read naturally", () => {
-    expect(plural(t, "worlds.changes", 1)).toBe("1 change");
-    expect(plural(t, "worlds.changes", 3)).toBe("3 changes");
+    expect(plural(t, "bk.count", 1)).toBe("1 backup");
+    expect(plural(t, "bk.count", 3)).toBe("3 backups");
     expect(ago(t, { n: 0, unit: "now" })).toBe("just now");
     expect(ago(t, { n: 1, unit: "hours" })).toBe("1 hour ago");
     expect(ago(t, { n: 12, unit: "days" })).toBe("12 days ago");
@@ -171,7 +167,7 @@ describe("helpers", () => {
   });
 
   test("translations fill parameters and fall back to the key", () => {
-    expect(t("list.count", { n: 3 })).toBe("3 modules");
+    expect(t("lr.presets", { names: "QoL" })).toContain("QoL");
     expect(t("no.such.key")).toBe("no.such.key");
   });
 });

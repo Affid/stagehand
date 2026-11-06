@@ -8,8 +8,8 @@ const setupPage = () => {
   document.head.innerHTML = "";
   document.body.innerHTML = `
     <header id="main-header"></header><div id="watermark"></div>
-    <nav id="setup-menu"><button data-action="configure"></button><button data-action="backups"></button>
-      <button data-action="update"></button><button data-action="adminLogout"></button><button data-action="shutDown"></button></nav>
+    <nav id="setup-menu"><button data-action="viewWarnings"></button>
+      <button data-action="adminLogout"></button><button data-action="shutDown"></button></nav>
     <section id="setup"><div id="setup-packages"><button data-action="worldCreate"></button>
       <ol id="worlds-list"><li class="package world" data-package-id="strahd"><a data-action="worldLaunch"></a></li></ol></div></section>`;
 };
@@ -55,18 +55,14 @@ describe("Foundry actions on its own controls", () => {
   test("server actions click Foundry's hidden menu buttons", async () => {
     const seen = clicks();
     for (const action of [
-      "configure",
-      "backups",
-      "update",
+      "warnings",
       "logout",
       "shutdown",
       "createWorld",
     ] as const)
       expect(await runFoundryAction(document, {}, { action })).toBeUndefined();
     expect(seen).toEqual([
-      "configure",
-      "backups",
-      "update",
+      "viewWarnings",
       "adminLogout",
       "shutDown",
       "worldCreate",
@@ -92,45 +88,33 @@ describe("Foundry actions on its own controls", () => {
     ).toMatch(/launch/i);
   });
 
+  test("Support and issues opens Foundry's Package Warnings, moved into view", async () => {
+    const seen = clicks();
+    const setPosition = vi.fn();
+    const instances = new Map([
+      [
+        "setup-warnings",
+        { rendered: true, position: { width: 600 }, setPosition },
+      ],
+    ]);
+    const page = { foundry: { applications: { instances } } };
+    expect(
+      await runFoundryAction(document, page, { action: "warnings" }),
+    ).toBeUndefined();
+    expect(seen).toEqual(["viewWarnings"]);
+    // Foundry places it under its own (hidden) menu: off screen.
+    await vi.waitFor(() => {
+      expect(setPosition).toHaveBeenCalledWith(
+        expect.objectContaining({ top: 80 }),
+      );
+    });
+  });
+
   test("a missing control is reported, never thrown", async () => {
     document.getElementById("setup-menu")?.remove();
     expect(
-      await runFoundryAction(document, {}, { action: "configure" }),
-    ).toMatch(/configure/);
-  });
-
-  test("edit opens Foundry's World Configuration for that world", async () => {
-    const render = vi.fn();
-    class WorldConfig {
-      o: unknown;
-      constructor(o: unknown) {
-        this.o = o;
-      }
-      render = render;
-    }
-    const world = { id: "strahd" };
-    const page = {
-      game: {
-        worlds: {
-          values: () => [].values(),
-          get: (id: string) => (id === "strahd" ? world : undefined),
-        },
-      },
-      foundry: { applications: { sidebar: { apps: { WorldConfig } } } },
-    };
-    expect(
-      await runFoundryAction(document, page, {
-        action: "editWorld",
-        worldId: "strahd",
-      }),
-    ).toBeUndefined();
-    expect(render).toHaveBeenCalledWith({ force: true });
-    expect(
-      await runFoundryAction(document, page, {
-        action: "editWorld",
-        worldId: "x",
-      }),
-    ).toMatch(/world/i);
+      await runFoundryAction(document, {}, { action: "warnings" }),
+    ).toMatch(/warnings/);
   });
 
   test("Back up first: Foundry's own backup, then the world's launch control", async () => {

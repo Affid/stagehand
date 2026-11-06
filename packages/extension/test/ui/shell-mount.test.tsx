@@ -5,7 +5,7 @@ import { createActions, type Send } from "../../src/ui/actions.ts";
 import { createTranslator } from "../../src/ui/i18n.ts";
 import { SHELL_HOST, syncShell } from "../../src/ui/shell/mount.tsx";
 import { createStore } from "../../src/ui/store.ts";
-import { fakePage, setupState, uiState } from "./harness.tsx";
+import { fakePage, SUPPORTED, setupState, uiState } from "./harness.tsx";
 
 afterEach(() => {
   document.body.innerHTML = "";
@@ -26,23 +26,19 @@ function setup(over: Parameters<typeof uiState>[0] = {}) {
   return { ...fake, store, sync };
 }
 
-const turnOn = (store: ReturnType<typeof setup>["store"]): void => {
-  store.set((s) => ({ data: { ...s.data, prefs: { newSetupPage: true } } }));
+/** The extension can't change the page any more (safe mode), or can again. */
+const safeMode = (
+  store: ReturnType<typeof setup>["store"],
+  on: boolean,
+): void => {
+  store.set(on ? { adapter: { status: "safe-mode" } } : { adapter: SUPPORTED });
 };
 
 const host = (): HTMLElement | null => document.getElementById(SHELL_HOST);
 
 describe("mounting the new Setup page", () => {
-  test("off by default: Foundry's page is left alone", () => {
-    const { page, sync } = setup();
-    sync();
-    expect(page.setShell).not.toHaveBeenCalled();
-    expect(host()).toBe(null);
-  });
-
-  test("turned on: asks the page to hide Foundry's layout, then mounts", () => {
-    const { page, store, sync, emit } = setup();
-    turnOn(store);
+  test("on by default: asks the page to hide Foundry's layout, then mounts", () => {
+    const { page, sync, emit } = setup();
     sync();
     sync();
     expect(page.setShell).toHaveBeenCalledTimes(1);
@@ -52,9 +48,8 @@ describe("mounting the new Setup page", () => {
     expect(host()?.querySelector(".mls-top")).toBeTruthy();
   });
 
-  test("the page refusing keeps today's UI and says why, once", () => {
-    const { page, store, sync, emit } = setup();
-    turnOn(store);
+  test("the page refusing leaves Foundry's page and says why, once", () => {
+    const { page, sync, emit } = setup();
     sync();
     emit({
       type: "SHELL_STATE",
@@ -69,32 +64,29 @@ describe("mounting the new Setup page", () => {
     );
   });
 
-  test("turned off: unmounts and gives Foundry's layout back", () => {
+  test("safe mode later: unmounts and gives Foundry's layout back", () => {
     const { page, store, sync, emit } = setup();
-    turnOn(store);
     sync();
     emit({ type: "SHELL_STATE", payload: { on: true } });
-    store.set((s) => ({ data: { ...s.data, prefs: { newSetupPage: false } } }));
+    safeMode(store, true);
     sync();
     expect(host()).toBe(null);
     expect(page.setShell).toHaveBeenLastCalledWith(false);
   });
 
   test("safe mode never takes over the page", () => {
-    const { page, store, sync } = setup({ adapter: { status: "safe-mode" } });
-    turnOn(store);
+    const { page, sync } = setup({ adapter: { status: "safe-mode" } });
     sync();
     expect(page.setShell).not.toHaveBeenCalled();
   });
 
   test("a late acknowledgement of off doesn't spoil turning on again", () => {
     const { page, store, sync, emit } = setup();
-    turnOn(store);
     sync();
     emit({ type: "SHELL_STATE", payload: { on: true } });
-    store.set((s) => ({ data: { ...s.data, prefs: { newSetupPage: false } } }));
+    safeMode(store, true);
     sync();
-    turnOn(store);
+    safeMode(store, false);
     sync();
     emit({ type: "SHELL_STATE", payload: { on: false } });
     emit({ type: "SHELL_STATE", payload: { on: true } });
@@ -110,7 +102,7 @@ describe("mounting the new Setup page", () => {
 });
 
 describe("a render error", () => {
-  test("gives Foundry's layout back and keeps today's UI", async () => {
+  test("gives Foundry's layout back", async () => {
     vi.resetModules();
     vi.doMock("../../src/ui/App.tsx", () => ({
       ShellRoot: () => {
@@ -132,7 +124,7 @@ describe("a render error", () => {
       },
       document,
     );
-    turnOn(store);
+
     sync();
     fake.emit({ type: "SHELL_STATE", payload: { on: true } });
     expect(document.getElementById(id)).toBe(null);
@@ -171,7 +163,7 @@ describe("an error after the page is up", () => {
       actions: createActions(store, send, t, fake.page),
     };
     const sync = sync2(deps, document);
-    turnOn(store);
+
     sync();
     void act(() => {
       fake.emit({ type: "SHELL_STATE", payload: { on: true } });

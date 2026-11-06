@@ -31,6 +31,9 @@ async function start(): Promise<void> {
     warn: (message) => {
       ui.notifications.warn(message);
     },
+    info: (message) => {
+      ui.notifications.info(message);
+    },
     now: () => new Date(),
   });
   if (result.handshake === "rejected")

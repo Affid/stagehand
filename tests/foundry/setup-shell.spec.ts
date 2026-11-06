@@ -44,16 +44,30 @@ test.afterAll(async () => {
   await admin.dispose();
 });
 
-test("Try the new Setup page takes over Foundry's layout", async () => {
-  await page.locator('#setup-packages [data-tab="modules"]').first().click();
-  await page
-    .locator("#ml-modules-root")
-    .getByRole("button", { name: "Try the new Setup page" })
-    .click();
+test("the new Setup page takes over Foundry's layout by itself", async () => {
   await expect(shell(page).locator(".mls-top")).toBeVisible();
   await expect(page.locator("#setup")).toBeHidden();
   await expect(page.locator("#setup-menu")).toBeHidden();
   await expect(shell(page).locator(".mlh-ver")).toContainText("Version 14");
+  await expect(
+    shell(page).getByRole("button", { name: "Foundry's Setup page" }),
+  ).toHaveCount(0);
+});
+
+test("the Version chip's menu: the build, the update page, and Help", async () => {
+  await shell(page).locator(".mlh-ver").click();
+  const menu = shell(page).getByRole("region", {
+    name: "Foundry Virtual Tabletop",
+  });
+  await expect(menu).toContainText("Foundry 14 · build 370");
+  await page.screenshot({ path: `${SCREENS}/shell-version-menu.png` });
+  await menu.getByRole("button", { name: "Support and issues" }).click();
+  // Foundry's own Package Warnings window, in view above our page.
+  const warnings = page.locator("#setup-warnings");
+  await expect(warnings).toBeInViewport();
+  await page.screenshot({ path: `${SCREENS}/shell-warnings.png` });
+  await warnings.locator('[data-action="close"]').first().click();
+  await expect(warnings).toHaveCount(0);
 });
 
 test("a world's page shows its banner, then how to set the world up", async () => {
@@ -68,7 +82,7 @@ test("a world's page shows its banner, then how to set the world up", async () =
   await page.screenshot({ path: `${SCREENS}/shell-world.png` });
 });
 
-test("the pencil opens About; Edit in Foundry opens its World Configuration above our page", async () => {
+test("the pencil opens About", async () => {
   await shell(page)
     .locator(".mls-banner")
     .getByRole("button", { name: "Edit World" })
@@ -77,17 +91,9 @@ test("the pencil opens About; Edit in Foundry opens its World Configuration abov
     "aria-selected",
     "true",
   );
-  await shell(page).getByRole("button", { name: "Edit in Foundry" }).click();
-  const form = page
-    .locator(".application", { hasText: TEST_WORLD.title })
-    .filter({
-      has: page.locator('[data-action="close"]'),
-    });
-  await expect(form.first()).toBeVisible();
-  await page.screenshot({ path: `${SCREENS}/shell-edit-world.png` });
-  // A click only lands if the window is on top of our page.
-  await form.first().locator('[data-action="close"]').click();
-  await expect(form).toHaveCount(0);
+  await expect(
+    shell(page).getByRole("button", { name: "Edit in Foundry" }),
+  ).toHaveCount(0);
 });
 
 test("the Library shows the module cards", async () => {
@@ -99,21 +105,15 @@ test("the Library shows the module cards", async () => {
   await page.screenshot({ path: `${SCREENS}/shell-library.png` });
 });
 
-test("Configuration opens our page; Foundry's window is one click away", async () => {
-  const before = await page.locator(".application:visible").count();
+test("Configuration opens our page, with no way out to Foundry's window", async () => {
   await shell(page).getByRole("button", { name: "Configuration" }).click();
   await expect(shell(page).locator(".mlc-page form")).toBeVisible();
-  await shell(page)
-    .getByRole("button", { name: "Foundry's Application Configuration" })
-    .click();
-  await expect
-    .poll(() => page.locator(".application:visible").count())
-    .toBeGreaterThan(before);
+  await expect(
+    shell(page).getByRole("button", {
+      name: "Foundry's Application Configuration",
+    }),
+  ).toHaveCount(0);
   await page.screenshot({ path: `${SCREENS}/shell-configuration.png` });
-  // Foundry's own window, by its id (our page says the same words).
-  const config = page.locator("#server-settings-config");
-  await config.locator('[data-action="close"]').first().click();
-  await expect(config).toHaveCount(0);
 });
 
 test("Shut down asks first, with Foundry's own confirm, above our page", async () => {
@@ -139,15 +139,4 @@ test("the choice survives a reload", async () => {
   await exitTour(page);
   await expect(shell(page).locator(".mls-top")).toBeVisible();
   await expect(page.locator("#setup")).toBeHidden();
-});
-
-test("Foundry's Setup page switches back", async () => {
-  await shell(page)
-    .getByRole("button", { name: "Foundry's Setup page" })
-    .click();
-  await expect(shell(page)).toHaveCount(0);
-  await expect(page.locator("#setup")).toBeVisible();
-  // Foundry opens on its Game Worlds tab; today's strip is back there.
-  await expect(page.locator("#ml-worlds-root .ml-next")).toBeVisible();
-  await page.screenshot({ path: `${SCREENS}/shell-switched-back.png` });
 });

@@ -20,7 +20,6 @@ import type { ServerBackupsRequest } from "../page-server-backups.ts";
 import { saveWorld } from "../page/save-world.ts";
 import { collect } from "../page/collect.ts";
 import { pageGlobals } from "../page/globals.ts";
-import { installWorldMenu, type MenuConfig } from "../page/menu.ts";
 import { setShell } from "../page/shell.ts";
 import { createWindowHost, type WindowHost } from "../page/windows.ts";
 
@@ -56,7 +55,6 @@ function notify(kind: "info" | "warning" | "error", text: string): void {
 
 interface Bridge {
   readonly windows: WindowHost | undefined;
-  readonly setMenu: ((config: MenuConfig | null) => void) | undefined;
 }
 
 /** Runs a backups request and answers with its id. */
@@ -128,13 +126,6 @@ function handle(bridge: Bridge, m: UiToPage): void {
     case "NOTIFY":
       notify(m.payload.kind, m.payload.text);
       break;
-    case "MENU":
-      bridge.setMenu?.(
-        m.payload.labels
-          ? { labels: m.payload.labels, worldCard: m.payload.worldCard }
-          : null,
-      );
-      break;
     case "SHELL":
       postToUi({
         type: "SHELL_STATE",
@@ -163,10 +154,8 @@ function handle(bridge: Bridge, m: UiToPage): void {
 function connect(): void {
   const api = page.foundry?.applications;
   const base = api?.api?.ApplicationV2;
-  const menu = api?.ux?.ContextMenu?.prototype;
   const bridge: Bridge = {
     windows: base ? createWindowHost(base, postToUi) : undefined,
-    setMenu: menu ? installWorldMenu(menu, postToUi) : undefined,
   };
   window.addEventListener("message", (event: MessageEvent<unknown>) => {
     if (event.source !== window || event.origin !== location.origin) return;

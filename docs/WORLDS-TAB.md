@@ -40,9 +40,9 @@ page's world. `setup-main` (page world) lends them over `window.postMessage`:
   `ApplicationV2` subclass that renders nothing but an empty host element; the
   UI renders into it with a Preact portal (`FoundryWindow`). If no window is
   ready within 1.5 s, the UI uses its own modal instead.
-- `MENU` / `MENU_ACTION`: Setup builds the package menu without a hook, so
-  `ContextMenu.prototype.render` is wrapped once; entries are added only for
-  elements matching the remote-configurable `worldCard` selector.
+- `MENU` / `MENU_ACTION` (removed in Phase 5b with the old Game Worlds UI):
+  Setup builds the package menu without a hook, so `ContextMenu.prototype.render`
+  was wrapped once to add entries on world cards.
 - `NOTIFY`: text is escaped with `foundry.utils.escapeHTML`, since Foundry
   renders notification HTML.
 

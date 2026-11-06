@@ -250,7 +250,7 @@ function Sections(props: {
 }
 
 export function ServerBackupsPage() {
-  const { page, t, canChange } = useUi();
+  const { t, canChange } = useUi();
   const { view, busy, run, runPackage } = useServerBackups();
   return (
     <div class="mlb-page ml-app">
@@ -258,12 +258,6 @@ export function ServerBackupsPage() {
         <h2>{t("sb.title")}</h2>
         <span class="ml-spacer" />
         {busy ? <span class="ml-hint">{t("bk.busy")}</span> : null}
-        <button
-          type="button"
-          onClick={() => page.foundryAction({ action: "backups" })}
-        >
-          {t("sb.manager")}
-        </button>
         <button
           type="button"
           class="ml-primary"

@@ -4,7 +4,6 @@
 import type { WorldInfo } from "@module-library/shared/world";
 import { useState } from "preact/hooks";
 import { RichText } from "../../common/rich-text.tsx";
-import { Icon } from "../../common/widgets.tsx";
 import { useUi } from "../../context.ts";
 import { useLastPlayed } from "../WorldRail.tsx";
 import { SessionField, TitleField, useCanEditWorld } from "./AboutEdit.tsx";
@@ -107,7 +106,7 @@ function Details(props: { readonly world: WorldInfo }) {
 }
 
 export function AboutTab(props: { readonly world: WorldInfo }) {
-  const { page, t } = useUi();
+  const { t } = useUi();
   const { world } = props;
   return (
     <div class="mlw-about">
@@ -118,16 +117,6 @@ export function AboutTab(props: { readonly world: WorldInfo }) {
       <section class="mlw-box">
         <h3>{t("about.details")}</h3>
         <Details world={world} />
-        <button
-          type="button"
-          title={t("about.editHint")}
-          onClick={() =>
-            page.foundryAction({ action: "editWorld", worldId: world.id })
-          }
-        >
-          <Icon name="pen" />
-          {t("about.edit")}
-        </button>
       </section>
     </div>
   );

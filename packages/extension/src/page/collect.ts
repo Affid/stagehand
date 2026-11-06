@@ -52,6 +52,14 @@ function coreUpdate(game: SetupGame): Pick<SetupData, "coreUpdate"> {
   };
 }
 
+/** Foundry's setup warnings, when it gives a plain count. */
+function issues(game: SetupGame): Pick<SetupData, "issues"> {
+  const n = game.issueCount?.total;
+  return typeof n === "number" && Number.isInteger(n) && n >= 0
+    ? { issues: Math.min(n, 1_000_000) }
+    : {};
+}
+
 export function collect(game: SetupGame): SetupData {
   const release = game.release ?? { generation: 0, build: 0 };
   return {
@@ -70,5 +78,6 @@ export function collect(game: SetupGame): SetupData {
     })),
     worlds: all(game.worlds).map(toWorld),
     ...coreUpdate(game),
+    ...issues(game),
   };
 }

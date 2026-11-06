@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "node build.ts",
+    "build:release": "node build.ts --release",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

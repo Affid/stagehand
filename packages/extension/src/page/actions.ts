@@ -6,9 +6,7 @@ import type { FoundryAction } from "../page-protocol.ts";
 import type { PageGlobals } from "./globals.ts";
 
 const MENU_ACTION: Record<string, string> = {
-  configure: "configure",
-  backups: "backups",
-  update: "update",
+  warnings: "viewWarnings",
   logout: "adminLogout",
   shutdown: "shutDown",
 };
@@ -35,15 +33,6 @@ const worldOf = (page: ActionGlobals, id: string): WorldLike | undefined => {
   const w = page.game?.worlds?.get?.(id) as WorldLike | undefined;
   return w && typeof w === "object" ? w : undefined;
 };
-
-function editWorld(page: ActionGlobals, id: string): string | undefined {
-  const world = worldOf(page, id);
-  const WorldConfig = page.foundry?.applications?.sidebar?.apps?.WorldConfig;
-  if (!world) return `No world ${id}`;
-  if (!WorldConfig) return "Foundry's World Configuration is missing";
-  void new WorldConfig({ world }).render({ force: true });
-  return undefined;
-}
 
 function launch(doc: Document, worldId: string): string | undefined {
   const cards = [
@@ -98,6 +87,36 @@ async function toggleFavorite(
   return undefined;
 }
 
+/** Foundry's warnings window opens under its own menu, hidden by our page. */
+export const WARNINGS_ID = "setup-warnings";
+const PLACE_TOP = 80;
+const PLACE_TRIES = 40;
+
+/** Moves one of Foundry's windows into view once it has rendered. */
+async function placeInView(page: ActionGlobals, id: string): Promise<void> {
+  for (let i = 0; i < PLACE_TRIES; i++) {
+    const app = page.foundry?.applications?.instances?.get(id);
+    if (app?.rendered) {
+      const w = app.position?.width;
+      const width = typeof w === "number" ? w : 600;
+      const left = Math.max(16, Math.round((innerWidth - width) / 2));
+      app.setPosition({ left, top: PLACE_TOP });
+      return;
+    }
+    await new Promise((r) => setTimeout(r, 25));
+  }
+}
+
+function openWarnings(doc: Document, page: ActionGlobals): string | undefined {
+  const error = click(
+    doc,
+    `#setup-menu [data-action="${MENU_ACTION.warnings ?? ""}"]`,
+    "warnings",
+  );
+  if (!error) void placeInView(page, WARNINGS_ID);
+  return error;
+}
+
 export async function runFoundryAction(
   doc: Document,
   page: ActionGlobals,
@@ -105,9 +124,8 @@ export async function runFoundryAction(
 ): Promise<string | undefined> {
   try {
     switch (a.action) {
-      case "configure":
-      case "backups":
-      case "update":
+      case "warnings":
+        return openWarnings(doc, page);
       case "logout":
       case "shutdown":
         return click(
@@ -125,8 +143,6 @@ export async function runFoundryAction(
         return launch(doc, a.worldId);
       case "backupLaunch":
         return await backupThenLaunch(doc, page, a.worldId, a.note);
-      case "editWorld":
-        return editWorld(page, a.worldId);
       case "favorite":
         return await toggleFavorite(page, a.worldId);
     }

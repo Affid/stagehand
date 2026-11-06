@@ -16,7 +16,6 @@ import {
   type SetupData,
   type Snapshot,
 } from "@module-library/shared/world";
-import { DEFAULT_PREFS, type Prefs } from "../messages.ts";
 import { type SerializedKeyValue, type Updated, withResult } from "./kv.ts";
 import type { ServerId } from "./servers.ts";
 
@@ -75,20 +74,6 @@ function serverStore(kv: SerializedKeyValue) {
           ? { ...s, [id]: { ...current, adminVerifiedAt: at } }
           : s;
       });
-    },
-    prefs: async (id: ServerId): Promise<Prefs> => ({
-      ...DEFAULT_PREFS,
-      ...(await reader(kv)<Partial<Prefs>>(key("prefs", id), {})),
-    }),
-    async setPref(
-      id: ServerId,
-      name: keyof Prefs,
-      value: boolean,
-    ): Promise<void> {
-      await kv.update<Partial<Prefs>>(key("prefs", id), {}, (p) => ({
-        ...p,
-        [name]: value,
-      }));
     },
     /** Setup said this browser is no longer the admin (security review). */
     async revokeAdmin(id: ServerId): Promise<void> {
@@ -192,9 +177,19 @@ export const HOLD_TTL_MS = 10 * 60 * 1000;
 
 export interface LaunchHold {
   readonly worldId: string;
-  /** When "Launch without changes" was chosen (ISO time). */
+  /** When the launch was chosen on Setup (ISO time). */
   readonly at: string;
+  /**
+   * Apply and launch: the modules on after it, as reviewed. Absent for
+   * "Launch without changes", which holds the queue instead.
+   */
+  readonly reviewed?: readonly string[];
 }
+
+/** What Setup chose for a world's next launch. */
+export type LaunchIntent =
+  | { readonly kind: "hold" }
+  | { readonly kind: "reviewed"; readonly target: readonly string[] };
 
 const fresh = (h: LaunchHold, now: string): boolean =>
   Date.parse(now) - Date.parse(h.at) < HOLD_TTL_MS;
@@ -209,25 +204,38 @@ function commandStore(kv: SerializedKeyValue) {
       worldId: string,
       hold: boolean,
       at: string,
+      reviewed?: readonly string[],
     ): Promise<void> {
       await kv.update<LaunchHold[]>(holdKey(id), [], (list) => {
+        // A hold wins: "without changes" never carries a reviewed result.
         const others = list.filter((h) => h.worldId !== worldId);
-        return hold ? [...others, { worldId, at }].slice(-MAX_HOLDS) : others;
+        const entry: LaunchHold | undefined = hold
+          ? { worldId, at }
+          : reviewed
+            ? { worldId, at, reviewed: [...reviewed] }
+            : undefined;
+        return entry ? [...others, entry].slice(-MAX_HOLDS) : others;
       });
     },
-    /** True once if the world's launch was held recently; the hold is used up. */
-    takeLaunchHold(
+    /** What Setup chose for this launch, once, if recent; it is used up. */
+    takeLaunchIntent(
       id: ServerId,
       worldId: string,
       now: string,
-    ): Promise<boolean> {
-      return kv.update<LaunchHold[], boolean>(holdKey(id), [], (list) => {
-        const mine = list.find((h) => h.worldId === worldId);
-        return withResult(
-          list.filter((h) => h.worldId !== worldId),
-          mine !== undefined && fresh(mine, now),
-        );
-      });
+    ): Promise<LaunchIntent | undefined> {
+      return kv.update<LaunchHold[], LaunchIntent | undefined>(
+        holdKey(id),
+        [],
+        (list) => {
+          const mine = list.find((h) => h.worldId === worldId);
+          const rest = list.filter((h) => h.worldId !== worldId);
+          if (!mine || !fresh(mine, now)) return withResult(rest, undefined);
+          const intent: LaunchIntent = mine.reviewed
+            ? { kind: "reviewed", target: mine.reviewed }
+            : { kind: "hold" };
+          return withResult(rest, intent);
+        },
+      );
     },
     commands: (id: ServerId) => reader(kv)<Command[]>(key("commands", id), []),
     updateCommands<R = Command[]>(

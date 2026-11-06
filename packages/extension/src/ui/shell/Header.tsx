@@ -1,14 +1,11 @@
-// The new Setup page's header bar: Foundry's name and version, Backups,
-// Configuration, the power menu, and the way back to Foundry's own page.
-// For now each opens Foundry's own screen (build plan, Phase 1).
+// The new Setup page's header bar: Foundry's name, the Version chip and its
+// menu, Backups and Configuration (our pages), and the power menu.
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import type { FoundryAction } from "../../page-protocol.ts";
 import { useDismiss } from "../common/dismiss.ts";
 import { Icon } from "../common/widgets.tsx";
 import { useUi } from "../context.ts";
-
-/** "14.370" reads as "14 · 370", as Foundry's own footer shows it. */
-const versionLabel = (version: string): string => version.replace(".", " · ");
+import { VersionMenu } from "./VersionMenu.tsx";
 
 /** Log out and Shut down: a disclosure of two plain buttons. */
 function PowerMenu() {
@@ -62,23 +59,14 @@ function PowerMenu() {
   );
 }
 
-/** Back to Foundry's page, the server pages and the power menu. */
+/** The server pages and the power menu. */
 function Actions() {
-  const { state, store, actions, t } = useUi();
+  const { state, store, t } = useUi();
   const on = state.route?.kind === "server" ? state.route.page : null;
   const onBackups = on === "backups";
   const onConfig = on === "config";
   return (
     <div class="mlh-acts">
-      <button
-        type="button"
-        class="mlh-back"
-        title={t("shell.backHint")}
-        onClick={() => void actions.setPref("newSetupPage", false)}
-      >
-        <Icon name="arrow-rotate-left" />
-        {t("shell.back")}
-      </button>
       <button
         type="button"
         class={onBackups ? "ml-on" : ""}
@@ -105,32 +93,12 @@ function Actions() {
 }
 
 export function Header() {
-  const { state, store, t } = useUi();
-  const version = state.data.setup?.core.version ?? "";
+  const { t } = useUi();
   return (
     <header class="mls-top mlh">
       <span class="logo" aria-hidden="true" />
       <h1>{t("shell.title")}</h1>
-      {version ? (
-        <button
-          type="button"
-          class="mlh-ver"
-          title={t("shell.versionHint")}
-          onClick={() =>
-            store.set({ route: { kind: "server", page: "update" } })
-          }
-        >
-          <span class="v">
-            {t("shell.version", { version: versionLabel(version) })}
-          </span>
-          {state.data.setup?.coreUpdate?.hasUpdate ? (
-            <span class="upd">
-              <Icon name="arrow-up" />
-              {t("up.chip")}
-            </span>
-          ) : null}
-        </button>
-      ) : null}
+      <VersionMenu />
       <span class="ml-spacer" />
       <Actions />
     </header>

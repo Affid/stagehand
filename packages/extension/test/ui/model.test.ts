@@ -167,7 +167,6 @@ const state = (over: Partial<SetupState> = {}): SetupState => ({
   commands: [],
   hellos: {},
   config: BUNDLED_CONFIG,
-  prefs: { newSetupPage: false },
   fresh: [],
   ...over,
 });

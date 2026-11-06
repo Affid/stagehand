@@ -68,13 +68,9 @@ describe("a world's About tab", () => {
     );
   });
 
-  test("Edit opens Foundry's World Configuration", () => {
-    const { getByRole, page } = about();
-    fireEvent.click(getByRole("button", { name: "Edit in Foundry" }));
-    expect(page.foundryAction).toHaveBeenCalledWith({
-      action: "editWorld",
-      worldId: "w1",
-    });
+  test("no way out to Foundry's World Configuration", () => {
+    const { queryByRole } = about();
+    expect(queryByRole("button", { name: "Edit in Foundry" })).toBe(null);
   });
 });
 
@@ -129,7 +125,7 @@ describe("editing a world's details in place", () => {
     });
   });
 
-  test("without the editWorld flag, only Foundry's window edits", () => {
+  test("without the editWorld flag, the details are read only", () => {
     const base = setupState();
     const r = renderUi("shell", {
       data: {
@@ -158,7 +154,7 @@ describe("editing a world's details in place", () => {
     });
     fireEvent.click(r.getByRole("tab", { name: "About" }));
     expect(r.queryByRole("button", { name: "Change title" })).toBe(null);
-    expect(r.getByRole("button", { name: "Edit in Foundry" })).toBeTruthy();
+    expect(r.queryByRole("button", { name: "Edit in Foundry" })).toBe(null);
   });
 
   test("a failed save keeps the editor open with what was typed", async () => {

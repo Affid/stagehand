@@ -3,7 +3,6 @@
 import { isEnvelope, makeEnvelope } from "@module-library/shared/protocol";
 import {
   type FoundryAction,
-  type MenuLabels,
   type NoticeKind,
   type PageToUi,
   parsePageToUi,
@@ -42,7 +41,6 @@ export interface PageBridge {
   notify(kind: NoticeKind, text: string): void;
   openWindow(spec: WindowSpec): void;
   closeWindow(id: string): void;
-  setMenu(labels: MenuLabels | null, worldCard: string): void;
   /** Take over Foundry's Setup layout, or give it back; the answer arrives as SHELL_STATE. */
   setShell(on: boolean): void;
   foundryAction(action: FoundryAction): void;
@@ -239,9 +237,6 @@ export function createPageBridge(win: Window): PageBridge {
     },
     closeWindow: (id) => {
       send({ type: "WINDOW_CLOSE", payload: { id } });
-    },
-    setMenu: (labels, worldCard) => {
-      send({ type: "MENU", payload: { labels, worldCard } });
     },
     setShell: (on) => {
       send({ type: "SHELL", payload: { on } });

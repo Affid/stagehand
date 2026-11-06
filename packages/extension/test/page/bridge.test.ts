@@ -15,11 +15,9 @@ describe("the UI's bridge to the page world", () => {
     const spy = vi.spyOn(window, "postMessage");
     const bridge = createPageBridge(window);
     bridge.notify("info", "Queued");
-    bridge.setMenu({ details: "D" }, ".w");
     bridge.closeWindow("apply-1");
     expect(spy.mock.calls.map((c) => (c[0] as { type: string }).type)).toEqual([
       "NOTIFY",
-      "MENU",
       "WINDOW_CLOSE",
     ]);
     expect(spy.mock.calls[0]?.[0]).toMatchObject({
@@ -34,7 +32,7 @@ describe("the UI's bridge to the page world", () => {
     const bridge = createPageBridge(window);
     bridge.setShell(true);
     bridge.foundryAction({ action: "launch", worldId: "strahd" });
-    bridge.foundryAction({ action: "backups" });
+    bridge.foundryAction({ action: "logout" });
     expect(
       spy.mock.calls.map((c) => c[0] as { type: string; payload: unknown }),
     ).toMatchObject([
@@ -43,7 +41,7 @@ describe("the UI's bridge to the page world", () => {
         type: "FOUNDRY_ACTION",
         payload: { action: "launch", worldId: "strahd" },
       },
-      { type: "FOUNDRY_ACTION", payload: { action: "backups" } },
+      { type: "FOUNDRY_ACTION", payload: { action: "logout" } },
     ]);
     spy.mockRestore();
   });

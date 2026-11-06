@@ -1,14 +1,10 @@
-// The roots the Setup UI mounts: modules tab, worlds tab, the overlay,
-// whose windows open in Foundry's own window frames, and the new Setup page.
+// The roots the Setup UI mounts: the new Setup page, and the overlay, whose
+// windows open in Foundry's own window frames.
 import type { ComponentChildren } from "preact";
 import { useErrorBoundary } from "preact/hooks";
 import { UiContext, type UiDeps, useUi } from "./context.ts";
-import { ModulesView } from "./modules/ModulesView.tsx";
 import { PresetEditor } from "./presets/PresetEditor.tsx";
 import { Shell } from "./shell/Shell.tsx";
-import { ApplyDialog } from "./worlds/ApplyDialog.tsx";
-import { WorldSheet } from "./worlds/WorldSheet.tsx";
-import { WorldsPanel } from "./worlds/WorldsPanel.tsx";
 
 const Provider = (props: {
   readonly deps: UiDeps;
@@ -17,39 +13,15 @@ const Provider = (props: {
   <UiContext.Provider value={props.deps}>{props.children}</UiContext.Provider>
 );
 
+/** Foundry windows our page opens: the preset editor. */
 function Overlay() {
   const { state } = useUi();
-  return (
-    <>
-      {state.editingPreset !== null ? (
-        <PresetEditor
-          key={`${state.editingPreset}:${state.draftModules.join(",")}`}
-        />
-      ) : null}
-      {state.sheetWorld !== null ? (
-        <WorldSheet key={state.sheetWorld} worldId={state.sheetWorld} />
-      ) : null}
-      {state.apply !== null ? (
-        <ApplyDialog
-          key={state.apply.worldId ?? ""}
-          worldId={state.apply.worldId}
-        />
-      ) : null}
-    </>
-  );
+  return state.editingPreset !== null ? (
+    <PresetEditor
+      key={`${state.editingPreset}:${state.draftModules.join(",")}`}
+    />
+  ) : null;
 }
-
-export const ModulesRoot = (props: { readonly deps: UiDeps }) => (
-  <Provider deps={props.deps}>
-    <ModulesView />
-  </Provider>
-);
-
-export const WorldsRoot = (props: { readonly deps: UiDeps }) => (
-  <Provider deps={props.deps}>
-    <WorldsPanel />
-  </Provider>
-);
 
 export const OverlayRoot = (props: { readonly deps: UiDeps }) => (
   <Provider deps={props.deps}>
