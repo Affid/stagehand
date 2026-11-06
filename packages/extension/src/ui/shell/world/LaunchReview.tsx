@@ -6,7 +6,11 @@ import type { WorldInfo } from "@module-library/shared/world";
 import { useState } from "preact/hooks";
 import { Icon, Modal } from "../../common/widgets.tsx";
 import { useUi } from "../../context.ts";
-import { plural } from "../../i18n.ts";
+import type { BackupInfo } from "../../../page-backups.ts";
+import { ago, plural, type Translate } from "../../i18n.ts";
+import { age } from "../../model/worlds.ts";
+import { formatSize } from "./BackupsTab.tsx";
+import { latestBackup } from "./useBackups.ts";
 import { pendingFor } from "../../model/preview.ts";
 import type { WorldModules } from "../../model/world-modules.ts";
 import type { WhyContext } from "./why.ts";
@@ -16,8 +20,11 @@ export type LaunchChoice =
   | { readonly kind: "apply"; readonly backup: boolean }
   | { readonly kind: "plain" };
 
-function Changes(props: { readonly model: WorldModules }) {
-  const { t } = useUi();
+function Changes(props: {
+  readonly model: WorldModules;
+  readonly worldId: string;
+}) {
+  const { actions, t, canChange } = useUi();
   const list = (delta: "on" | "off") =>
     props.model.rows.filter((r) => r.delta === delta);
   return (
@@ -27,7 +34,25 @@ function Changes(props: { readonly model: WorldModules }) {
           <h4>{t(`lr.${d}`, { n: list(d).length })}</h4>
           <ul>
             {list(d).map((r) => (
-              <li key={r.pkg.id}>{r.pkg.title}</li>
+              <li key={r.pkg.id}>
+                <span class={`s ${d === "on" ? "plus" : "minus"}`}>
+                  {d === "on" ? "+" : "−"}
+                </span>
+                <span>{r.pkg.title}</span>
+                {canChange ? (
+                  <button
+                    type="button"
+                    class="x"
+                    aria-label={t("lr.drop", { module: r.pkg.title })}
+                    title={t("lr.drop", { module: r.pkg.title })}
+                    onClick={() =>
+                      void actions.flip(props.worldId, r.pkg.id, r.now)
+                    }
+                  >
+                    <Icon name="xmark" />
+                  </button>
+                ) : null}
+              </li>
             ))}
             {list(d).length === 0 ? (
               <li class="ml-empty">{t("lr.nothing")}</li>
@@ -111,10 +136,24 @@ function Footer(props: {
   );
 }
 
+/** "About 441 MB. The latest backup is from 3 days ago." */
+function backupHint(
+  t: Translate,
+  list: readonly BackupInfo[] | undefined,
+): string {
+  const latest = latestBackup(list);
+  if (!latest) return t("lr.backupHint");
+  return t("lr.backupHintLatest", {
+    size: formatSize(latest.size),
+    when: ago(t, age(new Date(latest.createdAt).toISOString(), Date.now())),
+  });
+}
+
 function BackupFirst(props: {
   readonly world: WorldInfo;
   readonly on: boolean;
   readonly onChange: (on: boolean) => void;
+  readonly backups: readonly BackupInfo[] | undefined;
 }) {
   const { t } = useUi();
   return (
@@ -126,7 +165,7 @@ function BackupFirst(props: {
       />
       <span>
         <strong>{t("lr.backup", { world: props.world.title })}</strong>
-        <span class="ml-hint">{t("lr.backupHint")}</span>
+        <span class="ml-hint">{backupHint(t, props.backups)}</span>
       </span>
     </label>
   );
@@ -140,6 +179,8 @@ export function LaunchReview(props: {
   readonly onLaunch: (choice: LaunchChoice) => void;
   /** "Launch without changes" needs a browser that can change the queue. */
   readonly canHold: boolean;
+  /** The world's backups, once listed. */
+  readonly backups?: readonly BackupInfo[] | undefined;
 }) {
   const { state, t } = useUi();
   const [backup, setBackup] = useState(true);
@@ -163,13 +204,18 @@ export function LaunchReview(props: {
     >
       <div class="mlw-lr">
         <Check model={model} why={props.why} />
-        <Changes model={model} />
+        <Changes model={model} worldId={world.id} />
         {presets.length ? (
           <p class="ml-hint">
             {t("lr.presets", { names: presets.join(", ") })}
           </p>
         ) : null}
-        <BackupFirst world={world} on={backup} onChange={setBackup} />
+        <BackupFirst
+          world={world}
+          on={backup}
+          onChange={setBackup}
+          backups={props.backups}
+        />
       </div>
     </Modal>
   );

@@ -11,6 +11,7 @@ import { type WorldModules, worldModules } from "../model/world-modules.ts";
 import { cssImage } from "./route.ts";
 import { type LaunchChoice, LaunchReview } from "./world/LaunchReview.tsx";
 import { useWhy } from "./world/useWhy.ts";
+import { useBackups } from "./world/useBackups.ts";
 import { WorldBody, type WorldTab } from "./world/WorldBody.tsx";
 import { useLastPlayed } from "./WorldRail.tsx";
 
@@ -181,6 +182,7 @@ export function WorldPage(props: { readonly world: WorldInfo }) {
   const model = worldModules(state.data, world.id);
   const why = useWhy();
   const launch = useLaunch(world, model);
+  const backups = useBackups(world.id);
   const [tab, setTab] = useState<WorldTab>("modules");
   const image = cssImage(world.background, location.origin);
   return (
@@ -199,13 +201,20 @@ export function WorldPage(props: { readonly world: WorldInfo }) {
         />
       </div>
       <div class="mls-body-main ml-app">
-        <WorldBody world={world} model={model} tab={tab} onTab={setTab} />
+        <WorldBody
+          world={world}
+          model={model}
+          backups={backups}
+          tab={tab}
+          onTab={setTab}
+        />
       </div>
       {launch.review ? (
         <LaunchReview
           world={world}
           model={model}
           why={why}
+          backups={backups.view.list}
           onClose={launch.close}
           onLaunch={(c) => void launch.run(c)}
           canHold={canChange}

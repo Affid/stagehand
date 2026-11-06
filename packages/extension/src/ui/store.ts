@@ -5,6 +5,7 @@ import { useEffect, useState } from "preact/hooks";
 import type { SetupState } from "../messages.ts";
 import type { Adapter } from "../adapters/config.ts";
 import type { AdapterChoice } from "../adapters/select.ts";
+import type { GroupBy } from "./model/library-groups.ts";
 import type { Scope } from "./model/modules.ts";
 import type { Route } from "./shell/route.ts";
 
@@ -26,7 +27,16 @@ export interface UiState {
   readonly route: Route | null;
   /** The module whose details show beside the Library or a world's page. */
   readonly panel: string | null;
+  /** A world page's View options: how its modules are grouped and laid out. */
+  readonly worldView: WorldView;
 }
+
+export interface WorldView {
+  readonly by: GroupBy;
+  readonly layout: "cards" | "list";
+}
+
+export const DEFAULT_WORLD_VIEW: WorldView = { by: "folder", layout: "cards" };
 
 export const EMPTY_FILTER: ModuleFilterSpec = {
   text: "",

@@ -10,6 +10,7 @@ import { BUNDLED_CONFIG, V14_SELECTORS } from "../../src/adapters/config.ts";
 import type { AdapterChoice } from "../../src/adapters/select.ts";
 import type { ExtensionMessage, SetupState } from "../../src/messages.ts";
 import { type PageToUi, windowHostId } from "../../src/page-protocol.ts";
+import type { BackupInfo } from "../../src/page-backups.ts";
 import { createActions, type Send } from "../../src/ui/actions.ts";
 import { OverlayRoot, ShellRoot } from "../../src/ui/App.tsx";
 import { createTranslator } from "../../src/ui/i18n.ts";
@@ -19,7 +20,12 @@ import type {
   PageBridge,
   ServerBackupsResult,
 } from "../../src/ui/page.ts";
-import { createStore, EMPTY_FILTER, type UiState } from "../../src/ui/store.ts";
+import {
+  createStore,
+  DEFAULT_WORLD_VIEW,
+  EMPTY_FILTER,
+  type UiState,
+} from "../../src/ui/store.ts";
 
 export const pkg = (
   id: string,
@@ -183,6 +189,7 @@ export const uiState = (over: Partial<UiState> = {}): UiState => ({
   collapsedGroups: [],
   route: null,
   panel: null,
+  worldView: DEFAULT_WORLD_VIEW,
   ...over,
 });
 
@@ -193,6 +200,10 @@ export function renderUi(
     data?: Partial<SetupState>;
     reply?: (m: ExtensionMessage) => unknown;
     windows?: boolean;
+    /** Foundry's backups of every world, as the page world answers. */
+    backups?: readonly BackupInfo[];
+    /** Or Foundry's error, as the page world answers it. */
+    backupsError?: string;
   } = {},
 ) {
   const data = setupState(options.data);
@@ -204,6 +215,10 @@ export function renderUi(
   const send = vi.fn((m: ExtensionMessage) => Promise.resolve(reply(m)));
   const t = createTranslator("en");
   const fake = fakePage(options.windows ?? true);
+  if (options.backups)
+    fake.page.backups.mockResolvedValue({ backups: [...options.backups] });
+  if (options.backupsError)
+    fake.page.backups.mockResolvedValue({ error: options.backupsError });
   const deps = {
     store,
     actions: createActions(store, send as unknown as Send, t, fake.page),

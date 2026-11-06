@@ -94,7 +94,10 @@ test("a module's name opens its details; the Package tab shows its manifest", as
   await card("ml-fixture-a")
     .getByRole("button", { name: /ML Fixture: A/ })
     .click();
-  const panel = lib().getByRole("complementary", { name: /ML Fixture: A/ });
+  // Its own column beside the Library, as the prototype.
+  const panel = page
+    .locator("#ml-shell-root")
+    .getByRole("complementary", { name: /ML Fixture: A/ });
   await expect(panel.getByRole("combobox", { name: "Folder" })).toBeVisible();
   await page.screenshot({ path: `${SCREENS}/library-details.png` });
   await panel.getByRole("tab", { name: "Package" }).click();

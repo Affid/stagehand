@@ -24,11 +24,12 @@ const LIST: BackupInfo[] = [
 ];
 
 async function backups(list: BackupInfo[] = LIST) {
+  // Listed once when the world's page opens (the tab shows the count).
   const r = renderUi("shell", {
     state: { route: { kind: "world", worldId: "w1" } },
+    backups: list,
   });
-  r.page.backups.mockResolvedValue({ backups: list });
-  fireEvent.click(r.getByRole("tab", { name: "Backups" }));
+  fireEvent.click(r.getByRole("tab", { name: /^Backups/ }));
   await waitFor(() => {
     expect(r.container.querySelector(".mlw-backups")).toBeTruthy();
   });
@@ -96,9 +97,9 @@ describe("a world's Backups tab", () => {
   test("an error from Foundry is shown", async () => {
     const r = renderUi("shell", {
       state: { route: { kind: "world", worldId: "w1" } },
+      backupsError: "Backups are disabled",
     });
-    r.page.backups.mockResolvedValue({ error: "Backups are disabled" });
-    fireEvent.click(r.getByRole("tab", { name: "Backups" }));
+    fireEvent.click(r.getByRole("tab", { name: /^Backups/ }));
     await waitFor(() => {
       expect(r.container.textContent).toContain("Backups are disabled");
     });
@@ -126,8 +127,8 @@ describe("a world's Backups tab", () => {
   test("leaving the tab and coming back keeps its state (no second list)", async () => {
     const r = await backups();
     await waitFor(() => row(r.container, "b2"));
-    fireEvent.click(r.getByRole("tab", { name: "About" }));
-    fireEvent.click(r.getByRole("tab", { name: "Backups" }));
+    fireEvent.click(r.getByRole("tab", { name: /^About/ }));
+    fireEvent.click(r.getByRole("tab", { name: /^Backups/ }));
     expect(row(r.container, "b2")).toBeTruthy();
     expect(r.page.backups).toHaveBeenCalledTimes(1);
   });

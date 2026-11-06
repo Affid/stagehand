@@ -61,20 +61,6 @@
   place-items: center;
 }
 
-/* Tools: filter, All / On / Changes, Add */
-.mls-shell .mlw-tools {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  flex: none;
-}
-
-.mls-shell .mlw-tools input[type="search"] {
-  height: 28px;
-  width: 190px;
-  flex: none;
-}
-
 .mls-shell .ml-seg2 {
   display: inline-flex;
   border: 1px solid var(--color-cool-3);

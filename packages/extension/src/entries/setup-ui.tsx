@@ -17,7 +17,7 @@ import type { UiDeps } from "../ui/context.ts";
 import { createTranslator, pickLanguage } from "../ui/i18n.ts";
 import { createPageBridge } from "../ui/page.ts";
 import { syncShell } from "../ui/shell/mount.tsx";
-import { createStore, EMPTY_FILTER } from "../ui/store.ts";
+import { createStore, DEFAULT_WORLD_VIEW, EMPTY_FILTER } from "../ui/store.ts";
 
 const OVERLAY_ROOT = "ml-overlay-root";
 
@@ -61,6 +61,7 @@ function ensureDeps(
     collapsedGroups: [],
     route: null,
     panel: null,
+    worldView: DEFAULT_WORLD_VIEW,
   });
   deps = { store, actions: createActions(store, send, t, page), t, page };
   // The new Setup page takes over whenever the extension runs (not in safe mode).

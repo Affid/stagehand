@@ -42,6 +42,7 @@ const initial: UiState = {
   collapsedGroups: [],
   route: null,
   panel: null,
+  worldView: { by: "folder", layout: "cards" },
 };
 
 const t = createTranslator("en");

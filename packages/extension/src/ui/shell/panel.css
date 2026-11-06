@@ -58,7 +58,7 @@
   flex: none;
 }
 
-.mls-shell .mls-subtabs > button {
+.mls-shell .mls-subtabs button[role="tab"] {
   width: auto;
   height: auto;
   padding: 6px 12px;
@@ -75,17 +75,17 @@
   font-size: 14px;
 }
 
-.mls-shell .mls-subtabs > button.active {
+.mls-shell .mls-subtabs button[role="tab"].active {
   color: var(--color-light-1);
   border-bottom-color: var(--color-warm-1);
 }
 
-.mls-shell .mls-subtabs > button .c {
+.mls-shell .mls-subtabs button[role="tab"] .c {
   color: var(--color-light-4);
   font-size: 12px;
 }
 
-.mls-shell .mls-panel .mls-subtabs > button {
+.mls-shell .mls-panel .mls-subtabs button[role="tab"] {
   font-size: 13px;
   padding: 5px 10px;
 }
@@ -182,4 +182,38 @@
 .mls-shell .mlw-card.viewing {
   border-color: var(--color-warm-1);
   box-shadow: 0 0 6px rgb(238 155 58 / 35%);
+}
+
+/* The Library tab as the prototype's key-value grid: label, then value. */
+.mls-shell .mls-panel .mll-libtab {
+  display: grid;
+  gap: 10px;
+}
+
+.mls-shell .mls-panel .mll-field {
+  display: grid;
+  grid-template-columns: 70px minmax(0, 1fr);
+  gap: 8px 10px;
+  align-items: center;
+}
+
+.mls-shell .mls-panel .mll-field > span:first-child {
+  font-size: 13px;
+  color: var(--color-text-subtle);
+}
+
+.mls-shell .mls-panel .mll-field textarea {
+  height: 56px;
+  min-height: 0;
+  resize: none;
+}
+
+/* The world page's tab row wraps when the details column narrows it. */
+.mls-shell .mls-subtabs {
+  flex-wrap: wrap;
+  row-gap: 4px;
+}
+
+.mls-shell .mls-subtabs button[role="tab"] {
+  white-space: nowrap;
 }

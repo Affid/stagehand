@@ -2,8 +2,8 @@
 // with Take a backup, Restore and Delete through Foundry's own dialogs
 // (SETUP-REDESIGN.md, Backups tab). Foundry shows its own progress.
 import type { WorldInfo } from "@module-library/shared/world";
-import { useEffect, useState } from "preact/hooks";
 import type { BackupInfo, BackupOp } from "../../../page-backups.ts";
+import type { WorldBackups } from "./useBackups.ts";
 import { Icon } from "../../common/widgets.tsx";
 import { useUi } from "../../context.ts";
 import { plural } from "../../i18n.ts";
@@ -16,39 +16,6 @@ export function formatSize(bytes: number): string {
   if (bytes >= MB) return `${Math.round(bytes / MB)} MB`;
   // Anything above nothing is at least 1 KB; nothing is 0 KB.
   return `${bytes > 0 ? Math.max(1, Math.round(bytes / 1024)) : 0} KB`;
-}
-
-interface View {
-  /** Undefined until the first list arrives. */
-  readonly list?: readonly BackupInfo[];
-  readonly error?: string;
-}
-
-function useBackups(worldId: string) {
-  const { page } = useUi();
-  const [view, setView] = useState<View>({});
-  const [busy, setBusy] = useState(false);
-  const run = async (
-    op: BackupOp,
-    ids: readonly string[] = [],
-  ): Promise<void> => {
-    setBusy(true);
-    const r = await page.backups(worldId, op, ids);
-    setBusy(false);
-    // A failure keeps the last list on screen, with the error above it.
-    setView((v) => {
-      const list = r.backups ?? v.list;
-      return {
-        ...(list ? { list } : {}),
-        ...(r.error ? { error: r.error } : {}),
-      };
-    });
-  };
-  useEffect(() => {
-    void run("list");
-    // A new world gets a fresh list.
-  }, [worldId]);
-  return { view, busy, run };
 }
 
 export function Row(props: {
@@ -117,9 +84,12 @@ function List(props: {
   );
 }
 
-export function BackupsTab(props: { readonly world: WorldInfo }) {
+export function BackupsTab(props: {
+  readonly world: WorldInfo;
+  readonly backups: WorldBackups;
+}) {
   const { t, canChange } = useUi();
-  const { view, busy, run } = useBackups(props.world.id);
+  const { view, busy, run } = props.backups;
   const list = view.list ?? [];
   const total = list.reduce((sum, b) => sum + b.size, 0);
   return (
