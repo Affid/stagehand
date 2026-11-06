@@ -1052,6 +1052,7 @@ ul.mlw-check.warn {
 
 .mls-shell .mlb-head h2 {
   margin: 0;
+  text-align: left;
   font-family: "Modesto Condensed", serif;
   font-size: 34px;
   line-height: 1;

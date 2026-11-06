@@ -147,7 +147,7 @@ test("Discard cancels every queued change", async () => {
 test("About shows Foundry's details for the world", async () => {
   await shell().getByRole("tab", { name: "About" }).click();
   const box = shell().locator(".mlw-about");
-  await expect(box).toContainText(TEST_WORLD.system);
+  await expect(box).toContainText(TEST_WORLD.systemTitle);
   await expect(box.locator(".mlw-next")).toBeVisible();
   await page.screenshot({ path: `${SCREENS}/world-about.png` });
   await shell().getByRole("tab", { name: "Modules" }).click();

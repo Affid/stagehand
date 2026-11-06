@@ -5,6 +5,8 @@ export const TEST_WORLD = {
   id: "module-library-test",
   title: "Module Library test",
   system: "dnd5e",
+  /** The system's title, as our pages show it. */
+  systemTitle: "Dungeons & Dragons Fifth Edition",
 } as const;
 
 const PLAYER = 1;
