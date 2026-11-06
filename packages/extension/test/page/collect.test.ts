@@ -175,7 +175,7 @@ describe("reading Setup's package data (V-1)", () => {
             },
           ].values(),
       },
-    } as never);
+    });
     expect(data.worlds[0]?.schedule).toEqual(schedule);
     expect(data.worlds[1]).not.toHaveProperty("schedule");
     expect(SetupDataSchema.safeParse(data).success).toBe(true);
