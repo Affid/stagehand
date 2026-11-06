@@ -1,6 +1,6 @@
 # A new Setup page: design state
 
-Status as of 2026-11-06. Design only: nothing here is built in the extension yet.
+Status as of 2026-11-06. Design complete; the build follows `docs/SETUP-BUILD-PLAN.md`.
 This page records what was decided, what Foundry was shown to support, and what is still
 open, so the build plan can start from it.
 
