@@ -511,4 +511,8 @@ script forging an answer to the UI (the MessageChannel decision with the
 owner; no escalation, as page scripts can call Foundry directly); the
 options page opening once per click on "Allow" (minor).
 
+Phase 5b results: https://claude.ai/artifact/D4H4nCYeMMfJ3DJJtesL6b (private).
+Owner, 2026-11-07: accepted; the small imperfections left are a polish pass
+after Phase 6.
+
 Then Phase 6 (News and finish).
