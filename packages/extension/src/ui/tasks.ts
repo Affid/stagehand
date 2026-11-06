@@ -53,12 +53,12 @@ const LOCKING: ReadonlySet<string> = new Set([
 ]);
 
 /** Foundry's lock messages, as our own words. */
-const LOCK_WORDS: Readonly<Record<string, string>> = {
-  "SETUP.BACKUPS.BackingUp": "lock.backup",
-  "SETUP.BACKUPS.Restoring": "lock.restore",
-  "SETUP.BACKUPS.DeletingBackup": "lock.delete",
-  "SETUP.BACKUPS.DeletingSnapshot": "lock.delete",
-};
+const LOCK_WORDS: ReadonlyMap<string, string> = new Map([
+  ["SETUP.BACKUPS.BackingUp", "lock.backup"],
+  ["SETUP.BACKUPS.Restoring", "lock.restore"],
+  ["SETUP.BACKUPS.DeletingBackup", "lock.delete"],
+  ["SETUP.BACKUPS.DeletingSnapshot", "lock.delete"],
+]);
 
 /** Why Restore, Delete and Launch wait, while Foundry is busy; else null. */
 export function lockReason(
@@ -67,6 +67,9 @@ export function lockReason(
 ): string | null {
   const backingUp = state.tasks.some((x) => LOCKING.has(x.action));
   if (!state.lock.locked && !backingUp) return null;
-  const key = state.lock.message ? LOCK_WORDS[state.lock.message] : undefined;
+  // A Map: a message like "constructor" finds nothing (security review).
+  const key = state.lock.message
+    ? LOCK_WORDS.get(state.lock.message)
+    : undefined;
   return t(key ?? "lock.busy");
 }

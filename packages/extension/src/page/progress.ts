@@ -12,6 +12,15 @@ interface SetupPackagesLike {
   mlWatched?: boolean;
 }
 
+/** Watching must never break Foundry's own call: an odd argument is skipped. */
+function forward(send: () => void): void {
+  try {
+    send();
+  } catch {
+    // Not a tick we can read; Foundry has already handled it.
+  }
+}
+
 export function watchProgress(
   page: Pick<PageGlobals, "ui">,
   post: (m: PageToUi) => void,
@@ -23,16 +32,20 @@ export function watchProgress(
   if (onProgress)
     sp.onProgress = (data) => {
       const result = onProgress(data);
-      const payload = parseProgress(data);
-      if (payload) post({ type: "PROGRESS", payload });
+      forward(() => {
+        const payload = parseProgress(data);
+        if (payload) post({ type: "PROGRESS", payload });
+      });
       return result;
     };
   const toggleLock = sp.toggleLock?.bind(sp);
   if (toggleLock)
     sp.toggleLock = (locked, options) => {
       const result = toggleLock(locked, options);
-      const payload = parseLock({ locked, message: options?.message });
-      if (payload) post({ type: "LOCK", payload });
+      forward(() => {
+        const payload = parseLock({ locked, message: options?.message });
+        if (payload) post({ type: "LOCK", payload });
+      });
       return result;
     };
 }

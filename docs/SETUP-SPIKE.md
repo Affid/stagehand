@@ -244,3 +244,23 @@ Read from `public/scripts/foundry.mjs` (`SetupMenu`) and checked live with the n
   (`game.data.options.adminPassword`); without one the hidden buttons don't exist.
 - Configuration (`ServerSettingsConfig`), Backups (`BackupManager`) and Edit World
   (`WorldConfig`) open as Foundry windows above the new page.
+
+## Follow-up 2026-11-06 (build 370): progress and lock on our page
+
+Read from `public/scripts/foundry.mjs` and checked live with the new page:
+
+- Every `ProgressReceiver._onProgress` calls `ui.setupPackages?.onProgress(data)` before its
+  own handling, and the snapshot receiver forwards each package's `createBackup` ticks too.
+  `game.toggleLock` calls `ui.setupPackages?.toggleLock(locked, options)`. Wrapping those two
+  public methods (keeping Foundry's own behaviour) gives us every tick and the lock.
+- A tick is `{action, id, step, pct, packageId?, type?, title?, message?}`. For a backup `id`
+  is the backup's id, `<type>.<packageId>.<date>.<ms>`; the last tick of a restore names only
+  that id, so the package is read from it.
+- `createSnapshot` locks before its dialog opens (no message), then again with
+  `SETUP.BACKUPS.BackingUp`. Its steps are `snapshotModules`, `snapshotSystems`,
+  `snapshotWorlds`, each with its own percent.
+- Free space: `game.post({action: "checkRestoreSnapshotDiskSpace", snapshotData:
+  {originalSize: 0}})` answers `{required: 0, available}` at once;
+  `checkCreateSnapshotDiskSpace` sizes every installed package first.
+- After `deleteSnapshots`, Foundry's backup cache is empty: list again before
+  `deleteBackups`, or it throws on `null.world`.

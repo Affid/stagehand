@@ -35,4 +35,15 @@ describe("watching Foundry's progress and lock", () => {
       watchProgress({}, vi.fn());
     }).not.toThrow();
   });
+
+  test("a tick we can't read never breaks Foundry's call (security review)", () => {
+    const onProgress = vi.fn(() => "drawn");
+    const setupPackages: { onProgress: (d: unknown) => unknown } = {
+      onProgress,
+    };
+    const post = vi.fn();
+    watchProgress({ ui: { setupPackages } }, post);
+    expect(setupPackages.onProgress(null)).toBe("drawn");
+    expect(post).not.toHaveBeenCalled();
+  });
 });

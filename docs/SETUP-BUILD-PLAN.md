@@ -385,4 +385,17 @@ and `src/_server.js`:
   warns, newer can't restore), uninstalled packages marked, the create flow
   in Foundry's own dialog with our progress row.
 
+Package 5 done (`3737397`, `63923af`). Progress comes from wrapping
+`ui.setupPackages.onProgress` and `toggleLock` (every Foundry progress
+receiver calls them, so one wrap covers backups, restores, snapshots and
+updates); the store keeps running tasks and Foundry's lock. Only backup work
+locks Restore, Delete and Launch; an install does not. The server page reads
+free disk space from Foundry's `checkRestoreSnapshotDiskSpace` request asked
+for nothing (one `statfs`), behind the new `diskFree` adapter flag, because
+the create check sizes every package. A world route can open on its Backups
+tab (`tab: "backups"`), for the server page's "Open X's Backups tab". Ages now
+read in weeks, months and years (the prototype's "5 weeks ago"). Checked live
+on 14.370: a world backup drew our row from 13% to 100% with Launch off, and
+a snapshot drew Modules, Systems, Worlds with the package it was on.
+
 Then Phase 6 (News and finish).

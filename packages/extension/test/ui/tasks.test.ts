@@ -49,3 +49,14 @@ describe("Foundry's running tasks", () => {
     expect(store.get().lock.locked).toBe(false);
   });
 });
+
+describe("odd lock messages (security review)", () => {
+  test("a message naming an object's own key reads as busy, not a crash", async () => {
+    const { lockReason } = await import("../../src/ui/tasks.ts");
+    const t = (k: string): string => k;
+    for (const message of ["constructor", "__proto__", "toString"])
+      expect(
+        lockReason(t, { lock: { locked: true, message }, tasks: [] }),
+      ).toBe("lock.busy");
+  });
+});
