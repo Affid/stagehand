@@ -1,7 +1,9 @@
 
 // ---------- Configuration: our page in place of Foundry's Application Configuration window ----------
 // Same settings, grouped by task. Saving sends Foundry's own request (game.post({action: "adminConfigure"}));
-// every change waits for a restart, which Foundry can't do itself on a server (only the desktop app restarts).
+// Every change waits for a restart. Foundry has no restart command: on a server it can only stop (Setup's Shut down),
+// and comes back if whatever started it (a service, Docker, a host) starts it again. The desktop app relaunches
+// itself only after a Foundry update, not after saving settings.
 
 const CFG_SAVED = {
   adminUsername: "", passwordSet: true, dataPath: "/srv/foundry/data", cssTheme: "dark", world: "", language: "en.core",
@@ -113,8 +115,8 @@ function serverConfigPage() {
         <button type="button" data-act="cfgdiscard">Discard</button>${bad ? `<span class="mlw-tipwrap" data-tooltip="Fix the ${plural(bad, "problem")} first"><button type="button" class="bright" disabled>Save…</button></span>` : '<button type="button" class="bright" data-act="cfgsave">Save…</button>'}</div>`
     : "";
   const waiting = ST.cfgWaiting.length
-    ? `<div class="mlc-waiting" role="status"><i class="fa-solid fa-rotate"></i><span><b>Saved. Restart Foundry to apply:</b> ${ST.cfgWaiting.map((k) => CFG_LABELS[k]).join(", ")}. Foundry can't restart itself on a server: restart it the way you started it (service, Docker or hosting panel).</span>
-        <a class="mlw-mock" data-act="cfgrestarted">Mockup: Foundry restarted</a></div>`
+    ? `<div class="mlc-waiting" role="status"><i class="fa-solid fa-rotate"></i><span><b>Saved. They apply after a restart:</b> ${ST.cfgWaiting.map((k) => CFG_LABELS[k]).join(", ")}.</span>
+        <a class="mlw-mock" data-act="cfgrestarted">Mockup: Foundry restarted</a><button type="button" data-act="cfgstop">${CFG_ENV.electron ? "Quit Foundry…" : "Shut down now…"}</button></div>`
     : "";
   const head = `<div class="mlb-head"><div><h2>Configuration</h2><p>Foundry ${CFG_ENV.build} · running on ${CFG_RUNNING.unixSocket ? "a Unix socket" : `port ${CFG_RUNNING.port}`} · data in <code>${esc(CFG_RUNNING.dataPath)}</code></p></div></div>`;
   // The bar sits at the bottom in space that is always kept free, so the settings never move when it appears.
@@ -139,7 +141,7 @@ function cfgDialog() {
     return `<li><strong>${CFG_LABELS[k]}</strong><span>${k === "password" ? to : `${esc(from)} → <b>${esc(to)}</b>`}</span></li>`;
   }).join("");
   const body = `<div class="mls-launch-body"><ul class="mlc-diff">${rows}</ul>
-    <div class="mls-check warn"><i class="fa-solid fa-rotate"></i><span>They take effect when Foundry restarts. Foundry can't restart itself on a server: you restart it the way you started it.</span></div>
+    <div class="mls-check warn"><i class="fa-solid fa-rotate"></i><span>Foundry keeps running with the old settings until it restarts. After saving you can shut it down from here; how it comes back depends on how it was started.</span></div>
     ${changes.includes("port") || changes.includes("unixSocket") ? `<p class="ml-muted">After the restart, open Setup at the new address${ST.cfg.unixSocket ? "" : `: port ${esc(ST.cfg.port)}`}.</p>` : ""}</div>`;
   const footer = `<button type="button" data-act="closedialog">Cancel</button><button type="button" class="bright" data-act="cfgdosave"><i class="fa-solid fa-floppy-disk"></i>Save ${plural(changes.length, "change")}</button>`;
   return `<div class="mls-backdrop" data-act="closedialog"></div>${fwindow({ title: "Save configuration", icon: "fa-solid fa-gears", x: Math.round(innerWidth / 2 - 250), y: 140, w: 500, body, footer, cls: "mls-dialog" })}`;
@@ -179,3 +181,17 @@ document.addEventListener("change", (e) => {
   ST.cfg[k] = el.type === "checkbox" ? el.checked : k === "port" ? (el.value === "" ? "" : Number(el.value)) : el.value.trim();
   render();
 });
+
+function cfgStopDialog() {
+  if (ST.dialog !== "cfgstop") return "";
+  const body = CFG_ENV.electron
+    ? `<div class="mls-launch-body"><p>Foundry closes. Open it again to use the new settings.</p></div>`
+    : `<div class="mls-launch-body"><p>Foundry stops, and this page goes offline until it's back.</p>
+      <ul class="mlc-how"><li><i class="fa-solid fa-rotate"></i><span><b>Started by a service, Docker or your host?</b> If it restarts Foundry automatically, Foundry is back in a moment with the new settings, and this page reconnects.</span></li>
+      <li><i class="fa-solid fa-terminal"></i><span><b>Started by hand?</b> It stays off until you start it again the same way.</span></li></ul>
+      <p class="ml-muted">Foundry can't tell which, so it doesn't promise a restart.</p></div>`;
+  const footer = `<button type="button" data-act="closedialog">Cancel</button><button type="button" class="del" data-act="cfgdostop"><i class="fa-solid fa-power-off"></i>${CFG_ENV.electron ? "Quit Foundry" : "Shut down Foundry"}</button>`;
+  return `<div class="mls-backdrop" data-act="closedialog"></div>${fwindow({ title: CFG_ENV.electron ? "Quit Foundry" : "Shut down Foundry", icon: "fa-solid fa-power-off", x: Math.round(innerWidth / 2 - 250), y: 160, w: 500, body, footer, cls: "mls-dialog" })}`;
+}
+A.cfgstop = () => { ST.dialog = "cfgstop"; render(); };
+A.cfgdostop = () => { ST.dialog = null; render(); notify("Mockup: Foundry shuts down (its own Shut down). If a service restarts it, this page reconnects with the new settings."); };

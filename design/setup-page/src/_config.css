@@ -54,3 +54,8 @@
 .mlc-bar > .mlc-waiting { background-color: rgb(16 24 38 / 96%); }
 @keyframes mlc-up { from { transform: translateY(8px); opacity: 0; } to { transform: none; opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .mlc-bar > div { animation: none; } }
+.mlc-waiting button { height: 30px; width: auto; flex: none; padding: 0 12px; font-size: 13px; }
+.mlc-how { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.mlc-how li { display: grid; grid-template-columns: 22px 1fr; gap: 8px; font-size: 13px; color: var(--color-light-2); }
+.mlc-how li i { color: var(--color-light-4); margin-top: 3px; }
+.mls-dialog .ml-window-footer button.del { color: #ffb3a6; border-color: rgb(180 82 63 / 70%); }

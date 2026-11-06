@@ -158,8 +158,15 @@ Read from `public/scripts/foundry.mjs` (`ServerSettingsConfig`) and `dist/server
 - Saved with `game.post({action: "adminConfigure", config: changes})` after
   `game.serverSettings.updateSource(changes)` validates them. The server validates again,
   checks an AWS file if given, writes `options.json` (and copies `Config/` to a new data path),
-  and answers `{changes, restart: true}`. **It never restarts by itself** on a Node server;
-  Foundry tells the admin to restart. (Only the desktop app restarts, and only after updates.)
+  and answers `{changes, restart: true}`. Saving restarts nothing: the server keeps running
+  with the old settings and Foundry tells the admin to restart.
+- Restarting, from `dist/core/update.mjs`, `dist/init.mjs` and `dist/server/views/quit.mjs`:
+  Foundry has **no restart command**. The desktop app relaunches itself only after a core
+  update. On a Node server, a core update and Setup's Shut down both **exit** the process
+  ("Shutting down … for manual restart"); whether it comes back depends on what started it
+  (systemd with Restart=always, Docker's restart policy, pm2 or a host restart it; a hand
+  start doesn't). Foundry can't tell which. `config.service` only identifies licensed hosting
+  providers. So the page offers "Shut down now…" and explains both outcomes.
 - Changing the administrator password: Foundry first checks the current one with
   `game.post({action: "adminPassword", adminPassword})`; only then is a new one accepted.
 - SSL: `adminGenerateCertificates` (Let's Encrypt, needs port 80 reachable, falls back to

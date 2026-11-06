@@ -481,7 +481,7 @@ function render() {
   const keep = [...document.querySelectorAll(".ml-sections, .mls-panel .scroll, .mls-worlds, .mls-gridwrap")].map((el) => el.scrollTop);
   const toasts = document.getElementById("notifications");
   document.body.innerHTML = `<div id="main-background"></div>${topBar()}<section id="setup" class="mls">${rail()}${ST.page === "world" ? worldPage() : ST.page === "backups" ? serverBackupsPage() : ST.page === "config" ? serverConfigPage() : libraryPage()}</section>${newsDrawer()}`;
-  document.body.insertAdjacentHTML("beforeend", overlay() + launchDialog() + snapshotDialog() + cfgDialog());
+  document.body.insertAdjacentHTML("beforeend", overlay() + launchDialog() + snapshotDialog() + cfgDialog() + cfgStopDialog());
   if (toasts) document.body.append(toasts);
   document.querySelectorAll(".ml-sections, .mls-panel .scroll, .mls-worlds, .mls-gridwrap").forEach((el, i) => { if (keep[i] !== undefined) el.scrollTop = keep[i]; });
   document.querySelectorAll("[data-indeterminate=true]").forEach((el) => { el.indeterminate = true; });
