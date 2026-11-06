@@ -53,7 +53,8 @@ export const BUNDLED_CONFIG: SetupConfig = {
       minBuild: 0,
       maxBuild: 370,
       selectors: V14_SELECTORS,
-      flags: {},
+      // Foundry's internal editWorld request, tested live on 14.370.
+      flags: { editWorld: true },
     },
   ],
 };

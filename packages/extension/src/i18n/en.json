@@ -411,5 +411,14 @@
   "about.edit": "Edit in Foundry",
   "about.editHint": "Opens Foundry's World Configuration for this world",
   "about.more": "Show more",
-  "about.less": "Show less"
+  "about.less": "Show less",
+  "about.title": "Title",
+  "about.changeTitle": "Change title",
+  "about.changeNext": "Change next session",
+  "about.nextIn": "Next session in {zone}",
+  "about.save": "Save",
+  "about.clear": "Clear",
+  "about.cancel": "Cancel",
+  "about.saveFailed": "Couldn't save the world: {error}",
+  "about.saved": "Saved."
 }

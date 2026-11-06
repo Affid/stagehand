@@ -662,3 +662,41 @@ ul.mlw-check.warn {
   margin: 0;
   color: var(--color-light-1);
 }
+
+.mls-shell .mlw-editable {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mls-shell .mlw-editable .ml-icon {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 11px;
+  color: var(--color-light-4);
+}
+
+.mls-shell .mlw-editable .ml-icon:hover {
+  color: var(--color-warm-1);
+}
+
+.mls-shell .mlw-sessionedit {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.mls-shell .mlw-sessionedit label {
+  display: grid;
+  gap: 2px;
+}
+
+.mls-shell .mlw-sessionedit button {
+  width: auto;
+  height: 28px;
+  padding: 0 10px;
+}

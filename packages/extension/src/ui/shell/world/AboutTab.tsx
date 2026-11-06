@@ -7,6 +7,7 @@ import { RichText } from "../../common/rich-text.tsx";
 import { Icon } from "../../common/widgets.tsx";
 import { useUi } from "../../context.ts";
 import { useLastPlayed } from "../WorldRail.tsx";
+import { SessionField, TitleField, useCanEditWorld } from "./AboutEdit.tsx";
 
 /** Longer descriptions fold until "Show more". */
 const FOLD_CHARS = 600;
@@ -26,6 +27,7 @@ export function formatSession(
     year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
+    hourCycle: "h23",
     timeZoneName: "short",
   }).format(t);
 }
@@ -56,12 +58,21 @@ function Description(props: { readonly html: string | undefined }) {
 function Details(props: { readonly world: WorldInfo }) {
   const { state, t } = useUi();
   const { world } = props;
+  const canEdit = useCanEditWorld();
   const lastPlayed = useLastPlayed();
   const session = formatSession(world.nextSession, state.data.setup?.lang);
   const yesNo = (v: boolean | undefined): string =>
     v ? t("about.yes") : t("about.no");
   return (
     <dl class="mlw-details">
+      {canEdit ? (
+        <>
+          <dt>{t("about.title")}</dt>
+          <dd>
+            <TitleField world={world} />
+          </dd>
+        </>
+      ) : null}
       <dt>{t("about.system")}</dt>
       <dd>
         {world.system} {world.systemVersion}
@@ -69,7 +80,13 @@ function Details(props: { readonly world: WorldInfo }) {
       <dt>{t("about.core")}</dt>
       <dd>{world.coreVersion}</dd>
       <dt>{t("about.next")}</dt>
-      <dd class="mlw-next">{session ?? t("about.notSet")}</dd>
+      <dd class="mlw-next">
+        {canEdit ? (
+          <SessionField world={world} />
+        ) : (
+          (session ?? t("about.notSet"))
+        )}
+      </dd>
       <dt>{t("about.lastPlayed")}</dt>
       <dd>{lastPlayed(world)}</dd>
       <dt>{t("about.favorite")}</dt>
