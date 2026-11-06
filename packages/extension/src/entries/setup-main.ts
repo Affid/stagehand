@@ -9,9 +9,11 @@ import {
   parseUiToPage,
   type UiToPage,
 } from "../page-protocol.ts";
+import { runFoundryAction } from "../page/actions.ts";
 import { collect } from "../page/collect.ts";
 import { pageGlobals } from "../page/globals.ts";
 import { installWorldMenu, type MenuConfig } from "../page/menu.ts";
+import { setShell } from "../page/shell.ts";
 import { createWindowHost, type WindowHost } from "../page/windows.ts";
 
 const page = pageGlobals();
@@ -64,6 +66,17 @@ function handle(bridge: Bridge, m: UiToPage): void {
           ? { labels: m.payload.labels, worldCard: m.payload.worldCard }
           : null,
       );
+      break;
+    case "SHELL":
+      postToUi({
+        type: "SHELL_STATE",
+        payload: setShell(document, m.payload.on),
+      });
+      break;
+    case "FOUNDRY_ACTION":
+      void runFoundryAction(document, page, m.payload).then((error) => {
+        if (error) notify("error", error);
+      });
   }
 }
 

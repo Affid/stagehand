@@ -3,6 +3,7 @@
 // prompts, locks and migration checks still run; the rest uses public API.
 // Returns an error message, or undefined when the action was started.
 import type { FoundryAction } from "../page-protocol.ts";
+import type { PageGlobals } from "./globals.ts";
 
 const MENU_ACTION: Record<string, string> = {
   configure: "configure",
@@ -13,22 +14,11 @@ const MENU_ACTION: Record<string, string> = {
 };
 const FAVORITES = "setupPackageFavorites";
 
-type Loose = Record<string, unknown>;
 interface WorldLike {
   readonly id: string;
   favorite?: boolean;
 }
-export interface ActionGlobals {
-  readonly game?: {
-    readonly worlds?: { get(id: string): unknown };
-    readonly settings?: {
-      get(ns: string, key: string): unknown;
-      set(ns: string, key: string, v: unknown): Promise<unknown>;
-    };
-  };
-  readonly ui?: { readonly setupPackages?: unknown };
-  readonly foundry?: unknown;
-}
+export type ActionGlobals = Pick<PageGlobals, "game" | "ui" | "foundry">;
 
 function click(
   doc: Document,
@@ -42,18 +32,13 @@ function click(
 }
 
 const worldOf = (page: ActionGlobals, id: string): WorldLike | undefined => {
-  const w = page.game?.worlds?.get(id) as WorldLike | undefined;
+  const w = page.game?.worlds?.get?.(id) as WorldLike | undefined;
   return w && typeof w === "object" ? w : undefined;
 };
 
 function editWorld(page: ActionGlobals, id: string): string | undefined {
   const world = worldOf(page, id);
-  const apps = (page.foundry as Loose | undefined)?.applications as
-    Loose | undefined;
-  const WorldConfig = (
-    (apps?.sidebar as Loose | undefined)?.apps as Loose | undefined
-  )?.WorldConfig as
-    (new (o: unknown) => { render(o: unknown): unknown }) | undefined;
+  const WorldConfig = page.foundry?.applications?.sidebar?.apps?.WorldConfig;
   if (!world) return `No world ${id}`;
   if (!WorldConfig) return "Foundry's World Configuration is missing";
   void new WorldConfig({ world }).render({ force: true });

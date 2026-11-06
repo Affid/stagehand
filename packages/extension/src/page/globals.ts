@@ -3,6 +3,13 @@
 
 export interface Collection {
   values(): Iterable<unknown>;
+  get?(id: string): unknown;
+}
+
+/** Foundry's client settings, as far as the new Setup page uses them. */
+export interface ClientSettings {
+  get(namespace: string, key: string): unknown;
+  set(namespace: string, key: string, value: unknown): Promise<unknown>;
 }
 
 export interface SetupGame {
@@ -13,6 +20,7 @@ export interface SetupGame {
   readonly modules?: Collection;
   readonly worlds?: Collection;
   readonly systems?: Collection;
+  readonly settings?: ClientSettings;
 }
 
 export interface MenuEntry {
@@ -57,6 +65,14 @@ export interface PageGlobals {
       readonly api?: { readonly ApplicationV2?: AppClass };
       readonly ux?: {
         readonly ContextMenu?: { readonly prototype: ContextMenuLike };
+      };
+      /** Foundry's World Configuration window (public class). */
+      readonly sidebar?: {
+        readonly apps?: {
+          readonly WorldConfig?: new (options: { world: unknown }) => {
+            render(options: { force: boolean }): unknown;
+          };
+        };
       };
     };
     readonly utils?: { readonly escapeHTML?: (text: string) => string };

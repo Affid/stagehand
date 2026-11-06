@@ -107,7 +107,10 @@ describe("Foundry actions on its own controls", () => {
     const world = { id: "strahd" };
     const page = {
       game: {
-        worlds: { get: (id: string) => (id === "strahd" ? world : undefined) },
+        worlds: {
+          values: () => [].values(),
+          get: (id: string) => (id === "strahd" ? world : undefined),
+        },
       },
       foundry: { applications: { sidebar: { apps: { WorldConfig } } } },
     };
@@ -138,7 +141,7 @@ describe("Foundry actions on its own controls", () => {
     const rerender = vi.fn();
     const page = {
       game: {
-        worlds: { get: () => world },
+        worlds: { values: () => [].values(), get: () => world },
         settings: { get: (_ns: string, key: string) => store[key], set },
       },
       ui: { setupPackages: { render: rerender } },

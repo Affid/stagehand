@@ -68,10 +68,12 @@ Done (`34388ff`):
   `#setup-menu` is missing.
 - `page/actions.ts`: `runFoundryAction(doc, page, action)`.
 
+Also done: `entries/setup-main.ts` handles `SHELL` (replies `SHELL_STATE`) and
+`FOUNDRY_ACTION` (Foundry notification on error); `page/globals.ts` types Foundry's
+settings, `Collection.get` and `WorldConfig`.
+
 Next:
 
-1. `entries/setup-main.ts`: handle `SHELL` (reply `SHELL_STATE`) and `FOUNDRY_ACTION`
-   (notify on error); restore Foundry's layout on page unload is not needed (CSS only).
 2. `ui/page.ts` bridge: `setShell(on)`, `foundryAction(a)`, subscribe to `SHELL_STATE`.
 3. Setting: per-server "new Setup page" flag in the background state (`messages.ts`,
    `background/state.ts`, router), a switch on the options page and in the current UI.
