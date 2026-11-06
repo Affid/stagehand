@@ -4,6 +4,12 @@ import { z } from "zod";
 
 const optionalText = z.string().optional();
 
+/** Bounds for what Setup reads from a manifest (package-read.ts cuts to these). */
+export const MAX_DESCRIPTION = 400;
+export const MAX_LINK = 500;
+export const MAX_LABEL = 100;
+export const MAX_LIST = 50;
+
 export const CompatibilitySchema = z.object({
   minimum: optionalText,
   verified: optionalText,
@@ -38,6 +44,19 @@ export const PackageInfoSchema = z.object({
   recommends: z.array(RelationSchema),
   conflicts: z.array(RelationSchema),
   systems: z.array(RelationSchema),
+  /** The manifest's description as plain text, cut to a card's worth. */
+  description: z.string().max(MAX_DESCRIPTION).optional(),
+  /** Foundry's own star (core.setupPackageFavorites). */
+  favorite: z.boolean().optional(),
+  /** Foundry's lock: skipped by Update All. */
+  locked: z.boolean().optional(),
+  readme: z.string().max(MAX_LINK).optional(),
+  changelog: z.string().max(MAX_LINK).optional(),
+  license: z.string().max(MAX_LINK).optional(),
+  /** Compendium packs, by label. */
+  packs: z.array(z.string().max(MAX_LABEL)).max(MAX_LIST).optional(),
+  /** Languages, by name. */
+  languages: z.array(z.string().max(MAX_LABEL)).max(MAX_LIST).optional(),
 });
 
 export type Compatibility = z.infer<typeof CompatibilitySchema>;

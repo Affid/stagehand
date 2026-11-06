@@ -7,6 +7,7 @@ import {
   parseLock,
   parseProgress,
 } from "./page-progress.ts";
+import { parseUpdates, type Updates } from "./page-updates.ts";
 import {
   type EditorOpen,
   type EditorSave,
@@ -62,8 +63,23 @@ export const PACKAGE_ACTIONS = ["installPackage", "updateAll"] as const;
 export const PACKAGE_KINDS = ["module", "system"] as const;
 export type PackageKind = (typeof PACKAGE_KINDS)[number];
 
+/** Foundry's card-menu actions on one module or system. */
+export const PACKAGE_ID_ACTIONS = [
+  "updatePackage",
+  "favoritePackage",
+  "lockPackage",
+  "unlockPackage",
+  "backupPackage",
+  "uninstallPackage",
+] as const;
+
 export type FoundryAction =
   | { readonly action: (typeof SERVER_ACTIONS)[number] }
+  | {
+      readonly action: (typeof PACKAGE_ID_ACTIONS)[number];
+      readonly packageType: PackageKind;
+      readonly id: string;
+    }
   | {
       readonly action: (typeof PACKAGE_ACTIONS)[number];
       readonly packageType: PackageKind;
@@ -102,9 +118,13 @@ export type UiToPage =
   /** The server's backups and snapshots (answered by SERVER_BACKUPS_DONE). */
   | { readonly type: "SERVER_BACKUPS"; readonly payload: ServerBackupsRequest }
   /** Foundry's configuration: read, or save some settings (answered by CONFIG_DONE). */
-  | { readonly type: "CONFIG"; readonly payload: ConfigRequest };
+  | { readonly type: "CONFIG"; readonly payload: ConfigRequest }
+  /** Check Foundry's package list for updates (answered by UPDATES). */
+  | { readonly type: "CHECK_UPDATES"; readonly payload: Record<string, never> };
 
 export type PageToUi =
+  /** Newer versions Foundry would install (page-updates.ts). */
+  | { readonly type: "UPDATES"; readonly payload: Updates }
   /** Foundry's progress for a backup, snapshot or update (page-progress.ts). */
   | { readonly type: "PROGRESS"; readonly payload: Progress }
   /** Foundry's busy lock, mirrored on our page. */
@@ -148,8 +168,25 @@ function packageAction(p: Loose): FoundryAction | undefined {
   };
 }
 
+const PACKAGE_ID = /^[A-Za-z0-9_-]{1,200}$/;
+
+function packageIdAction(p: Loose): FoundryAction | undefined {
+  const { action, packageType, id } = p;
+  if (!(PACKAGE_KINDS as readonly unknown[]).includes(packageType))
+    return undefined;
+  if (typeof id !== "string" || !PACKAGE_ID.test(id)) return undefined;
+  if (Object.keys(p).length !== 3) return undefined;
+  return {
+    action: action as (typeof PACKAGE_ID_ACTIONS)[number],
+    packageType: packageType as PackageKind,
+    id,
+  };
+}
+
 function foundryAction(p: Loose): FoundryAction | undefined {
   const { action, worldId, note } = p;
+  if ((PACKAGE_ID_ACTIONS as readonly unknown[]).includes(action))
+    return packageIdAction(p);
   if ((PACKAGE_ACTIONS as readonly unknown[]).includes(action))
     return packageAction(p);
   if ((SERVER_ACTIONS as readonly unknown[]).includes(action))
@@ -192,6 +229,8 @@ export function parseUiToPage(type: string, p: unknown): UiToPage | undefined {
   if (!isObject(p)) return undefined;
   if (type.startsWith("EDITOR_")) return parseEditor(type, p);
   switch (type) {
+    case "CHECK_UPDATES":
+      return Object.keys(p).length === 0 ? { type, payload: {} } : undefined;
     case "NOTIFY":
       return typeof p.kind === "string" &&
         KINDS.includes(p.kind) &&
@@ -232,6 +271,10 @@ export function parsePageToUi(type: string, p: unknown): PageToUi | undefined {
   if (!isObject(p)) return undefined;
   if (type === "PROGRESS") {
     const payload = parseProgress(p);
+    return payload ? { type, payload } : undefined;
+  }
+  if (type === "UPDATES") {
+    const payload = parseUpdates(p);
     return payload ? { type, payload } : undefined;
   }
   if (type === "LOCK") {

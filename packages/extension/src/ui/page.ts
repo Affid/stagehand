@@ -40,6 +40,8 @@ export interface PageBridge {
   /** Take over Foundry's Setup layout, or give it back; the answer arrives as SHELL_STATE. */
   setShell(on: boolean): void;
   foundryAction(action: FoundryAction): void;
+  /** Ask for the updates Foundry would install; they arrive as UPDATES. */
+  checkUpdates(): void;
   /** Saves a world's details through Foundry; resolves with an error, or undefined. */
   saveWorld(
     worldId: string,
@@ -263,6 +265,9 @@ export function createPageBridge(win: Window): PageBridge {
     },
     foundryAction: (action) => {
       send({ type: "FOUNDRY_ACTION", payload: action });
+    },
+    checkUpdates: () => {
+      send({ type: "CHECK_UPDATES", payload: {} });
     },
     ...requests(send, listeners),
     subscribe(fn) {

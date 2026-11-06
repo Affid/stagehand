@@ -4,6 +4,7 @@ import type { ModuleFilterSpec } from "@module-library/shared/library/schema";
 import { useEffect, useState } from "preact/hooks";
 import type { SetupState } from "../messages.ts";
 import type { Lock, Progress } from "../page-progress.ts";
+import type { Updates } from "../page-updates.ts";
 import type { Adapter } from "../adapters/config.ts";
 import type { AdapterChoice } from "../adapters/select.ts";
 import type { GroupBy } from "./model/library-groups.ts";
@@ -32,6 +33,8 @@ export interface UiState {
   readonly tasks: readonly Progress[];
   /** Foundry's busy lock: on while a backup or restore runs. */
   readonly lock: Lock;
+  /** Newer versions Foundry would install, by package id. */
+  readonly updates: Updates;
 }
 
 /** The Library's side panels; tags and presets remember the one chosen. */

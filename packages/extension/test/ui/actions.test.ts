@@ -42,6 +42,7 @@ const initial: UiState = {
   panel: null,
   worldView: { by: "folder", layout: "cards" },
   tasks: [],
+  updates: { module: {}, system: {} },
   side: null,
   lock: { locked: false },
 };

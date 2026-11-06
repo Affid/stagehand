@@ -53,9 +53,20 @@ function ModuleColumn(props: { readonly here: string | undefined }) {
   );
 }
 
+/** Once per Setup load: which packages Foundry would update (behind its flag). */
+function useUpdateCheck(): void {
+  const { state, page } = useUi();
+  const a = state.adapter;
+  const on = a.status !== "safe-mode" && a.adapter.flags.updateCheck === true;
+  useEffect(() => {
+    if (on) page.checkUpdates();
+  }, [on, page]);
+}
+
 export function Shell() {
   const { state } = useUi();
   useScheduleSync();
+  useUpdateCheck();
   const worlds = state.data.setup?.worlds ?? [];
   const route = resolveRoute(state.route, worlds, state.data.setup?.lang);
   const world =

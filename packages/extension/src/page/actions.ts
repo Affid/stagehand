@@ -4,6 +4,13 @@
 // Returns an error message, or undefined when the action was started.
 import type { FoundryAction } from "../page-protocol.ts";
 import type { PageGlobals } from "./globals.ts";
+import {
+  backup,
+  setLock,
+  toggleFavorite,
+  uninstall,
+  update,
+} from "./package-actions.ts";
 import { saveWorld } from "./save-world.ts";
 
 const MENU_ACTION: Record<string, string> = {
@@ -11,7 +18,6 @@ const MENU_ACTION: Record<string, string> = {
   logout: "adminLogout",
   shutdown: "shutDown",
 };
-const FAVORITES = "setupPackageFavorites";
 
 interface WorldLike {
   readonly id: string;
@@ -61,67 +67,6 @@ async function backupThenLaunch(
   const done = await game.createBackup(world, note ? { note } : {});
   if (!done) return `The backup didn't finish, so ${id} was not launched`;
   return launch(doc, id);
-}
-
-/** As Foundry's card menu does (SetupPackages#toggleFavorite): its own setting, then a re-render. */
-async function toggleFavorite(
-  page: ActionGlobals,
-  id: string,
-): Promise<string | undefined> {
-  const world = worldOf(page, id),
-    settings = page.game?.settings;
-  if (!world || !settings) return `No world ${id}`;
-  const current = (settings.get("core", FAVORITES) ?? {}) as Record<
-    string,
-    readonly string[]
-  >;
-  const worlds = current.worlds ?? [];
-  const next = {
-    ...current,
-    worlds: world.favorite ? worlds.filter((w) => w !== id) : [...worlds, id],
-  };
-  await settings.set("core", FAVORITES, next);
-  world.favorite = !world.favorite;
-  const setup = page.ui?.setupPackages as
-    { render?: () => unknown } | undefined;
-  setup?.render?.();
-  return undefined;
-}
-
-/**
- * As Foundry's card menu does (SetupPackages#toggleLock): its internal
- * lockPackage request, then a re-render. Behind the `lockPackage` flag.
- */
-async function setLock(
-  page: ActionGlobals,
-  id: string,
-  shouldLock: boolean,
-): Promise<string | undefined> {
-  const world = worldOf(page, id) as
-    (WorldLike & { locked?: boolean }) | undefined;
-  const game = page.game;
-  if (!world || !game?.post) return `No world ${id}`;
-  await game.post({ action: "lockPackage", type: "world", id, shouldLock });
-  world.locked = shouldLock;
-  const setup = page.ui?.setupPackages as
-    { render?: () => unknown } | undefined;
-  await setup?.render?.();
-  return undefined;
-}
-
-/** Foundry's own uninstall: its confirm-code dialog, then Setup reloads. */
-async function deleteWorld(
-  page: ActionGlobals,
-  id: string,
-): Promise<string | undefined> {
-  const world = worldOf(page, id);
-  const uninstall = (
-    page.game as
-      { uninstallPackage?: (p: unknown) => Promise<unknown> } | undefined
-  )?.uninstallPackage;
-  if (!world || !uninstall) return `No world ${id}`;
-  await uninstall.call(page.game, world);
-  return undefined;
 }
 
 interface PickerClass {
@@ -192,7 +137,7 @@ function openWarnings(doc: Document, page: ActionGlobals): string | undefined {
 function packageAction(
   doc: Document,
   page: ActionGlobals,
-  a: Extract<FoundryAction, { packageType: unknown }>,
+  a: Extract<FoundryAction, { action: "installPackage" | "updateAll" }>,
 ): string | undefined {
   if (a.action === "installPackage") {
     const browse = (
@@ -207,6 +152,27 @@ function packageAction(
     `#setup-packages [data-package-type="${a.packageType}"] [data-action="updateAll"]`,
     "Update All",
   );
+}
+
+/** Foundry's card-menu actions on one module or system. */
+function runPackageAction(
+  doc: Document,
+  page: ActionGlobals,
+  a: Extract<FoundryAction, { id: string }>,
+): Promise<string | undefined> | string | undefined {
+  switch (a.action) {
+    case "updatePackage":
+      return update(doc, a.packageType, a.id);
+    case "favoritePackage":
+      return toggleFavorite(page, a.packageType, a.id);
+    case "lockPackage":
+    case "unlockPackage":
+      return setLock(page, a.packageType, a.id, a.action === "lockPackage");
+    case "backupPackage":
+      return backup(page, a.packageType, a.id);
+    case "uninstallPackage":
+      return uninstall(page, a.packageType, a.id);
+  }
 }
 
 export async function runFoundryAction(
@@ -236,17 +202,19 @@ export async function runFoundryAction(
       case "backupLaunch":
         return await backupThenLaunch(doc, page, a.worldId, a.note);
       case "favorite":
-        return await toggleFavorite(page, a.worldId);
+        return await toggleFavorite(page, "world", a.worldId);
       case "lock":
       case "unlock":
-        return await setLock(page, a.worldId, a.action === "lock");
+        return await setLock(page, "world", a.worldId, a.action === "lock");
       case "deleteWorld":
-        return await deleteWorld(page, a.worldId);
+        return await uninstall(page, "world", a.worldId);
       case "pickBackground":
         return pickBackground(page, a.worldId);
       case "installPackage":
       case "updateAll":
         return packageAction(doc, page, a);
+      default:
+        return await runPackageAction(doc, page, a);
     }
   } catch (e) {
     return e instanceof Error ? e.message : String(e);

@@ -71,7 +71,10 @@ export interface PageGlobals {
       /** Foundry's custom elements (prose-mirror and the rest). */
       readonly elements?: Readonly<Record<string, unknown>>;
     };
-    readonly utils?: { readonly escapeHTML?: (text: string) => string };
+    readonly utils?: {
+      readonly escapeHTML?: (text: string) => string;
+      readonly isNewerVersion?: (v1: string, v0: string) => boolean;
+    };
   };
 }
 

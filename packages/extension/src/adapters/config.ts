@@ -55,8 +55,14 @@ export const BUNDLED_CONFIG: SetupConfig = {
       selectors: V14_SELECTORS,
       // Foundry's internal editWorld and lockPackage requests, tested live
       // on 14.370 (docs/SETUP-SPIKE.md); diskFree reads free space through
-      // its checkRestoreSnapshotDiskSpace request.
-      flags: { editWorld: true, lockPackage: true, diskFree: true },
+      // its checkRestoreSnapshotDiskSpace request; updateCheck asks
+      // Foundry's package list (game.getPackages) once per Setup load.
+      flags: {
+        editWorld: true,
+        lockPackage: true,
+        diskFree: true,
+        updateCheck: true,
+      },
     },
   ],
 };

@@ -21,6 +21,7 @@ import { closeEditor, openEditor, saveFromEditor } from "../page/editor.ts";
 import { saveWorld } from "../page/save-world.ts";
 import { collect } from "../page/collect.ts";
 import { watchProgress } from "../page/progress.ts";
+import { checkUpdates } from "../page/updates.ts";
 import { pageGlobals } from "../page/globals.ts";
 import { setShell } from "../page/shell.ts";
 
@@ -183,6 +184,11 @@ function handle(m: UiToPage): void {
     case "EDITOR_CLOSE":
     case "EDITOR_SAVE":
       handleEditor(m);
+      break;
+    case "CHECK_UPDATES":
+      void checkUpdates(page).then((payload) => {
+        if (payload) postToUi({ type: "UPDATES", payload });
+      });
       break;
     case "SAVE_WORLD":
       answerSave(m.payload);

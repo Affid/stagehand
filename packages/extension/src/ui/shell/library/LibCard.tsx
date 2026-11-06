@@ -1,6 +1,7 @@
-// One module in the new Library: name, one line (not verified, note or
-// authors), up to three tags, version and how many worlds it is on in.
-// In select mode a checkbox picks it for the selection band.
+// One module in the new Library, as the prototype's libCard: name with
+// Foundry's star, lock and an update to install; one line (not verified,
+// note or description); up to three tags, version and how many worlds it is
+// on in. In select mode a checkbox picks it for the selection bar.
 import type { PackageInfo } from "@module-library/shared/package";
 import {
   type CoreVersion,
@@ -11,6 +12,7 @@ import { Icon } from "../../common/widgets.tsx";
 import { useUi } from "../../context.ts";
 import { plural } from "../../i18n.ts";
 import { unverifiedText } from "../../model/unverified.ts";
+import { updateFor } from "../../model/updates.ts";
 
 const MAX_TAGS = 3;
 
@@ -42,11 +44,54 @@ function Line(props: {
         <span>{note}</span>
       </div>
     );
-  const authors = pkg.authors.map((a) => a.name).join(", ");
   return (
     <div class="l2 desc">
-      <span>{authors ? t("wp.why.authors", { authors }) : ""}</span>
+      <span>{pkg.description ?? ""}</span>
     </div>
+  );
+}
+
+/** Foundry's star and lock, and an update it would install (not when locked). */
+function Marks(props: { readonly pkg: PackageInfo }) {
+  const { state, page, t, canChange } = useUi();
+  const { pkg } = props;
+  const update = updateFor(state.updates.module, pkg);
+  return (
+    <>
+      {pkg.favorite ? (
+        <i
+          class="fa-solid fa-star mlw-fav"
+          title={t("lib.favourite")}
+          aria-label={t("lib.favourite")}
+        />
+      ) : null}
+      {pkg.locked ? (
+        <i
+          class="fa-solid fa-lock mlw-lock"
+          title={t("lib.locked")}
+          aria-label={t("lib.locked")}
+        />
+      ) : null}
+      {update ? (
+        <button
+          type="button"
+          class="mlw-upd"
+          disabled={!canChange}
+          title={t("lib.updateFrom", { version: pkg.version })}
+          aria-label={t("lib.updateTo", { title: pkg.title, version: update })}
+          onClick={() =>
+            page.foundryAction({
+              action: "updatePackage",
+              packageType: "module",
+              id: pkg.id,
+            })
+          }
+        >
+          <Icon name="arrow-up" />
+          {update}
+        </button>
+      ) : null}
+    </>
   );
 }
 
@@ -140,15 +185,16 @@ export function LibCard(props: {
             onChange={toggle}
           />
         ) : null}
-        {state.data.fresh.includes(pkg.id) ? (
-          <span class="mll-new">{t("lib.new")}</span>
-        ) : null}
         <CardTitle
           pkg={pkg}
           selecting={props.selecting}
           open={props.open}
           onOpen={props.onOpen}
         />
+        {state.data.fresh.includes(pkg.id) ? (
+          <span class="mls-newtag">{t("lib.new")}</span>
+        ) : null}
+        <Marks pkg={pkg} />
       </div>
       <Line pkg={pkg} core={props.core} />
       <div class="l3">

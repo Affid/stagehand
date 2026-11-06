@@ -5,6 +5,7 @@ import { useMemo, useState } from "preact/hooks";
 import { BUILD, IS_DEV_BUILD } from "../../build-info.ts";
 import { Icon } from "../common/widgets.tsx";
 import { useUi } from "../context.ts";
+import { updateCount } from "../model/updates.ts";
 import { ago, plural } from "../i18n.ts";
 import { worldOrder } from "../model/order.ts";
 import { systemTitle } from "../model/system.ts";
@@ -104,9 +105,15 @@ function LibraryEntry(props: { readonly current: boolean }) {
   const { state, store, t } = useUi();
   const setup = state.data.setup;
   const fresh = state.data.fresh.length;
+  const updates = updateCount(
+    state.updates,
+    setup?.modules ?? [],
+    setup?.systems ?? [],
+  );
   const sub = [
     plural(t, "shell.librarySub", setup?.modules.length ?? 0),
     plural(t, "shell.systemsSub", setup?.systems.length ?? 0),
+    ...(updates ? [plural(t, "shell.updatesSub", updates)] : []),
   ].join(" · ");
   return (
     <button

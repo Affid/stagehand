@@ -16,6 +16,7 @@ import { createTranslator, pickLanguage } from "../ui/i18n.ts";
 import { createPageBridge } from "../ui/page.ts";
 import { syncShell } from "../ui/shell/mount.tsx";
 import { createStore, DEFAULT_WORLD_VIEW, EMPTY_FILTER } from "../ui/store.ts";
+import { NO_UPDATES } from "../page-updates.ts";
 import { trackProgress, UNLOCKED } from "../ui/tasks.ts";
 
 let deps: UiDeps | undefined;
@@ -51,6 +52,7 @@ function ensureDeps(
     worldView: DEFAULT_WORLD_VIEW,
     tasks: [],
     lock: UNLOCKED,
+    updates: NO_UPDATES,
   });
   trackProgress(store, page);
   deps = { store, actions: createActions(store, send, t, page), t, page };

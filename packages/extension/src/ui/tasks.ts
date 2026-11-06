@@ -1,6 +1,7 @@
-// Foundry's running tasks (backups, restores, snapshots, updates) and its busy
-// lock, as the page world forwards them (page-progress.ts). Kept in the store,
-// so a task survives switching pages.
+// Foundry's running tasks (backups, restores, snapshots, updates), its busy
+// lock and the updates it would install, as the page world forwards them
+// (page-progress.ts, page-updates.ts). Kept in the store, so they survive
+// switching pages.
 import { ENDS, type Lock, type Progress } from "../page-progress.ts";
 import type { PageBridge } from "./page.ts";
 import type { Store, UiState } from "./store.ts";
@@ -36,6 +37,7 @@ export function trackProgress(
     if (e.type === "PROGRESS")
       store.set((s) => ({ tasks: withTick(s.tasks, e.payload) }));
     else if (e.type === "LOCK") store.set({ lock: e.payload });
+    else if (e.type === "UPDATES") store.set({ updates: e.payload });
   });
 }
 

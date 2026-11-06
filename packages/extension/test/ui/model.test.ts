@@ -401,3 +401,22 @@ describe("attention (W-2)", () => {
     expect(age(at(1000 * 86_400_000), now)).toEqual({ n: 3, unit: "years" });
   });
 });
+
+describe("updates Foundry would install (6b)", () => {
+  test("a newer version, never for a locked package; counted for the rail", async () => {
+    const { updateCount, updateFor } =
+      await import("../../src/ui/model/updates.ts");
+    const u = { module: { a: "2.0", b: "1.0", c: "3.0" }, system: { s: "9" } };
+    expect(updateFor(u.module, { id: "a", version: "1.0" })).toBe("2.0");
+    expect(updateFor(u.module, { id: "b", version: "1.0" })).toBe(null);
+    expect(updateFor(u.module, { id: "c", version: "1.0", locked: true })).toBe(
+      null,
+    );
+    expect(updateFor(u.module, { id: "toString", version: "1" })).toBe(null);
+    expect(
+      updateCount(u, [{ id: "a", version: "1.0" }] as never, [
+        { id: "s", version: "1" },
+      ]),
+    ).toBe(2);
+  });
+});

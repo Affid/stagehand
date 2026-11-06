@@ -1,9 +1,9 @@
 // @vitest-environment happy-dom
 import type { Snapshot } from "@module-library/shared/world";
-import { cleanup, fireEvent, within } from "@testing-library/preact";
+import { cleanup, fireEvent, waitFor, within } from "@testing-library/preact";
 import { afterEach, describe, expect, test } from "vitest";
 import type { SetupState } from "../../src/messages.ts";
-import { el, renderUi } from "./harness.tsx";
+import { el, renderUi, setupState } from "./harness.tsx";
 
 afterEach(cleanup);
 
@@ -115,5 +115,58 @@ describe("the Library page", () => {
       target: { value: "module-lib" },
     });
     expect(store.get().selection).toEqual([]);
+  });
+});
+
+describe("a card's marks and line (6b)", () => {
+  const withPkg = (over: object) => {
+    const base = setupState();
+    return library({
+      setup: base.setup && {
+        ...base.setup,
+        modules: base.setup.modules.map((m) =>
+          m.id === "b" ? { ...m, ...over } : m,
+        ),
+      },
+    });
+  };
+
+  test("its description when there is no note or warning", () => {
+    const { container } = withPkg({
+      description: "Voice and video",
+      compatibility: { minimum: "13", verified: "14" },
+    });
+    expect(el(card(container, "b"), ".l2").textContent).toBe("Voice and video");
+  });
+
+  test("Foundry's star and lock show on the card", () => {
+    const { container } = withPkg({ favorite: true, locked: true });
+    expect(card(container, "b").querySelector(".mlw-fav")).toBeTruthy();
+    expect(card(container, "b").querySelector(".mlw-lock")).toBeTruthy();
+  });
+
+  test("an update Foundry would install: the chip runs Foundry's own update", () => {
+    const r = withPkg({ compatibility: { minimum: "13", verified: "14" } });
+    r.store.set({ updates: { module: { b: "2.0.0" }, system: {} } });
+    return waitFor(() => {
+      const chip = within(card(r.container, "b")).getByRole("button", {
+        name: "Update Title b to 2.0.0",
+      });
+      fireEvent.click(chip);
+      expect(r.page.foundryAction).toHaveBeenCalledWith({
+        action: "updatePackage",
+        packageType: "module",
+        id: "b",
+      });
+    });
+  });
+
+  test("a locked module offers no update", async () => {
+    const r = withPkg({ locked: true });
+    r.store.set({ updates: { module: { b: "2.0.0" }, system: {} } });
+    await waitFor(() => {
+      expect(card(r.container, "b").querySelector(".mlw-lock")).toBeTruthy();
+    });
+    expect(card(r.container, "b").querySelector(".mlw-upd")).toBe(null);
   });
 });

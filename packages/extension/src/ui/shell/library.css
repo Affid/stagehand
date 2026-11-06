@@ -433,19 +433,6 @@
   color: var(--color-text-subtle);
 }
 
-.mls-shell .mll-new {
-  flex: none;
-  font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  padding: 0 6px;
-  border-radius: 9px;
-  background: rgb(238 155 58 / 18%);
-  color: #ffd28a;
-  border: 1px solid rgb(238 155 58 / 45%);
-}
-
 .mls-shell .mll-grid tr.grp th button {
   display: inline-flex;
   align-items: center;

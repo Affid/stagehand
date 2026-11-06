@@ -1,10 +1,14 @@
 // Reads package data from Foundry's live package objects (or plain data)
 // defensively. Kept free of Zod so the Setup page script stays small.
-import type {
-  Author,
-  Compatibility,
-  PackageInfo,
-  Relation,
+import {
+  type Author,
+  type Compatibility,
+  MAX_DESCRIPTION,
+  MAX_LABEL,
+  MAX_LINK,
+  MAX_LIST,
+  type PackageInfo,
+  type Relation,
 } from "./package.ts";
 
 type Loose = Record<string, unknown>;
@@ -55,6 +59,43 @@ const author = (a: Loose): Author =>
     discord: text(a.discord),
   });
 
+const ENTITIES: Readonly<Record<string, string>> = {
+  amp: "&",
+  lt: "<",
+  gt: ">",
+  quot: '"',
+  apos: "'",
+  nbsp: " ",
+};
+
+/** A manifest's HTML description as plain text for a card line. */
+export function plainText(html: unknown): string | undefined {
+  if (typeof html !== "string") return undefined;
+  const plain = html
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&(#\d+|[a-z]+);/gi, (m, e: string) =>
+      e.startsWith("#")
+        ? String.fromCodePoint(Number(e.slice(1)) || 32)
+        : (ENTITIES[e.toLowerCase()] ?? m),
+    )
+    .replace(/\s+/g, " ")
+    .trim();
+  return plain ? plain.slice(0, MAX_DESCRIPTION) : undefined;
+}
+
+const link = (v: unknown): string | undefined =>
+  text(v) && String(v).length <= MAX_LINK ? String(v) : undefined;
+
+/** Labels of a list (packs, languages): bounded, blanks dropped. */
+function labels(v: unknown, key: string): string[] | undefined {
+  const list = items(v)
+    .map((x) => text(x[key]) ?? "")
+    .filter(Boolean)
+    .map((x) => x.slice(0, MAX_LABEL))
+    .slice(0, MAX_LIST);
+  return list.length ? list : undefined;
+}
+
 /** Reads a Foundry Module/System object (or its plain data) defensively. */
 export function toPackageInfo(pkg: unknown): PackageInfo {
   const p = asLoose(pkg);
@@ -74,5 +115,13 @@ export function toPackageInfo(pkg: unknown): PackageInfo {
     recommends: items(rel.recommends).map(relation),
     conflicts: items(rel.conflicts).map(relation),
     systems: items(rel.systems).map(relation),
+    description: plainText(p.description),
+    favorite: p.favorite === true ? true : undefined,
+    locked: p.locked === true ? true : undefined,
+    readme: link(p.readme),
+    changelog: link(p.changelog),
+    license: link(p.license),
+    packs: labels(p.packs, "label"),
+    languages: labels(p.languages, "name"),
   });
 }

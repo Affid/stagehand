@@ -1,12 +1,18 @@
 import { describe, expect, test } from "vitest";
-import { PackageInfoSchema, toPackageInfo } from "../src/package.ts";
+import {
+  MAX_DESCRIPTION,
+  MAX_LINK,
+  PackageInfoSchema,
+  toPackageInfo,
+} from "../src/package.ts";
+import { plainText } from "../src/package-read.ts";
 
 // Shaped like a live Foundry Module: relationships are Sets, authors too.
 const liveModule = {
   id: "a",
   title: "Module A",
   version: "1.2.0",
-  description: "<p>Long HTML we do not keep</p>",
+  description: "<p>Long HTML, kept as text</p>",
   authors: new Set([
     { name: "Ann", url: "https://ann.example", discord: "ann#1", flags: {} },
   ]),
@@ -48,6 +54,8 @@ describe("toPackageInfo", () => {
       recommends: [{ id: "nice", type: "module", reason: "Nice." }],
       conflicts: [{ id: "bad", type: "module", reason: "Breaks." }],
       systems: [{ id: "dnd5e", type: "system" }],
+      // Kept as plain text for the card's line (6b).
+      description: "Long HTML, kept as text",
     });
     expect(PackageInfoSchema.parse(info)).toEqual(info);
   });
@@ -67,5 +75,40 @@ describe("toPackageInfo", () => {
 
   test("schema rejects a package without an id", () => {
     expect(PackageInfoSchema.safeParse({ title: "x" }).success).toBe(false);
+  });
+});
+
+describe("what the Library shows from a manifest (6b)", () => {
+  test("the description as plain text, cut to a card's worth", () => {
+    expect(plainText("<p>Voice &amp; video<br>for <b>Foundry</b></p>")).toBe(
+      "Voice & video for Foundry",
+    );
+    expect(plainText("&#65;&nbsp;b")).toBe("A b");
+    expect(plainText("<p> </p>")).toBeUndefined();
+    expect(plainText(3)).toBeUndefined();
+    expect(plainText("x".repeat(900))?.length).toBe(MAX_DESCRIPTION);
+  });
+
+  test("favourite, lock, links, packs and languages, bounded", () => {
+    const info = toPackageInfo({
+      id: "m",
+      title: "M",
+      favorite: true,
+      locked: true,
+      readme: "https://x.example/readme",
+      license: "x".repeat(MAX_LINK + 1),
+      packs: [{ label: "Macros" }, { label: "" }],
+      languages: [{ name: "English" }],
+    });
+    expect(info).toMatchObject({
+      favorite: true,
+      locked: true,
+      readme: "https://x.example/readme",
+      packs: ["Macros"],
+      languages: ["English"],
+    });
+    expect(info).not.toHaveProperty("license");
+    expect(PackageInfoSchema.safeParse(info).success).toBe(true);
+    expect(toPackageInfo({ id: "n" })).not.toHaveProperty("favorite");
   });
 });
