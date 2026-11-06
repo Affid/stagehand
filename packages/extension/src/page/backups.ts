@@ -2,10 +2,14 @@
 // listBackups, createBackup, restoreBackup and deleteBackups, each with
 // Foundry's own dialog (a confirm code for restore and delete) and its own
 // lock and progress messages. Answers with the world's current backups.
-import type { BackupInfo, BackupsRequest } from "../page-backups.ts";
+import type {
+  BackupInfo,
+  BackupsRequest,
+  PackageType,
+} from "../page-backups.ts";
 import type { PageGlobals } from "./globals.ts";
 
-type Raw = Readonly<Record<string, unknown>>;
+export type Raw = Readonly<Record<string, unknown>>;
 
 interface BackupGame {
   listBackups?: () => Promise<unknown>;
@@ -38,7 +42,7 @@ function time(v: unknown): number {
   return Number.isFinite(t) && t >= 0 ? t : 0;
 }
 
-const toInfo = (b: Raw): BackupInfo => ({
+export const toInfo = (b: Raw): BackupInfo => ({
   id: String(b.id).slice(0, MAX_ID) || "?",
   createdAt: time(b.createdAt),
   size: typeof b.size === "number" && b.size >= 0 ? b.size : 0,
@@ -48,10 +52,27 @@ const toInfo = (b: Raw): BackupInfo => ({
     : {}),
 });
 
-async function listRaw(game: BackupGame, worldId: string): Promise<Raw[]> {
+async function listRaw(
+  game: BackupGame,
+  req: Pick<BackupsRequest, "worldId" | "type">,
+): Promise<Raw[]> {
   const listing = (await game.listBackups?.()) as
-    { world?: Record<string, Raw[]> } | null | undefined;
-  return listing?.world?.[worldId] ?? [];
+    Partial<Record<PackageType, Record<string, Raw[]>>> | null | undefined;
+  return listing?.[req.type]?.[req.worldId] ?? [];
+}
+
+/** Foundry's package object for a world, module or system. */
+function packageOf(
+  game: NonNullable<BackupGlobals["game"]>,
+  req: Pick<BackupsRequest, "worldId" | "type">,
+): unknown {
+  const collection =
+    req.type === "module"
+      ? game.modules
+      : req.type === "system"
+        ? game.systems
+        : game.worlds;
+  return collection?.get?.(req.worldId);
 }
 
 async function apply(
@@ -61,15 +82,13 @@ async function apply(
 ): Promise<void> {
   if (req.op === "create") await game.createBackup?.(world, { dialog: true });
   if (req.op === "restore") {
-    const data = (await listRaw(game, req.worldId)).find(
-      (b) => b.id === req.ids[0],
-    );
+    const data = (await listRaw(game, req)).find((b) => b.id === req.ids[0]);
     if (!data) throw new Error(`No backup ${req.ids[0] ?? ""}`);
     await game.restoreBackup?.(data, { dialog: true });
   }
   if (req.op === "delete") {
     // Foundry deletes from its own cached listing: list first.
-    await listRaw(game, req.worldId);
+    await listRaw(game, req);
     await game.deleteBackups?.(world, req.ids, { dialog: true });
   }
 }
@@ -79,11 +98,11 @@ export async function runBackups(
   req: BackupsRequest,
 ): Promise<BackupsResult> {
   const game = page.game as (BackupGlobals["game"] & BackupGame) | undefined;
-  const world = game?.worlds?.get?.(req.worldId);
-  if (!game || !world) return { error: `No world ${req.worldId}` };
+  const world = game ? packageOf(game, req) : undefined;
+  if (!game || !world) return { error: `No ${req.type} ${req.worldId}` };
   try {
     await apply(game, world, req);
-    const backups = (await listRaw(game, req.worldId)).map(toInfo);
+    const backups = (await listRaw(game, req)).map(toInfo);
     return {
       backups: [...backups]
         .sort((a, b) => b.createdAt - a.createdAt)

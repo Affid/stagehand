@@ -11,11 +11,17 @@ import {
   type WindowSpec,
   windowHostId,
 } from "../page-protocol.ts";
-import type { BackupOp, BackupInfo } from "../page-backups.ts";
+import type { BackupInfo, BackupOp, PackageType } from "../page-backups.ts";
 import type { WorldChanges } from "../page-save.ts";
+import type { ServerBackupOp, ServerListing } from "../page-server-backups.ts";
 
 export interface BackupsResult {
   readonly backups?: readonly BackupInfo[];
+  readonly error?: string;
+}
+
+export interface ServerBackupsResult {
+  readonly listing?: ServerListing;
   readonly error?: string;
 }
 
@@ -37,7 +43,13 @@ export interface PageBridge {
     worldId: string,
     op: BackupOp,
     ids: readonly string[],
+    type?: PackageType,
   ): Promise<BackupsResult>;
+  /** The server's backups and snapshots: list, or a snapshot operation. */
+  serverBackups(
+    op: ServerBackupOp,
+    ids: readonly string[],
+  ): Promise<ServerBackupsResult>;
   /** Our host element inside an open Foundry window, if it is there. */
   windowHost(id: string): HTMLElement | null;
   subscribe(fn: (event: PageToUi) => void): () => void;
@@ -90,11 +102,57 @@ function request<T>(
   });
 }
 
-/** The bridge's request and answer pairs: saving a world, its backups. */
+/** A world's or package's backups, and the server's snapshots. */
+function backupRequests(
+  send: (m: UiToPage) => void,
+  listeners: Set<(event: PageToUi) => void>,
+): Pick<PageBridge, "backups" | "serverBackups"> {
+  return {
+    backups: (worldId, op, ids, type = "world") =>
+      request<BackupsResult>(
+        send,
+        listeners,
+        (requestId) => ({
+          type: "BACKUPS",
+          payload: { requestId, worldId, type, op, ids: [...ids] },
+        }),
+        (e, id) =>
+          e.type === "BACKUPS_DONE" && e.payload.requestId === id
+            ? {
+                ...(e.payload.backups ? { backups: e.payload.backups } : {}),
+                ...(e.payload.error ? { error: e.payload.error } : {}),
+              }
+            : undefined,
+        // Foundry's dialogs wait for the admin; a list is quick.
+        op === "list" ? SAVE_TIMEOUT_MS : BACKUP_OP_TIMEOUT_MS,
+        { error: "Foundry did not answer in time." },
+      ),
+    serverBackups: (op, ids) =>
+      request<ServerBackupsResult>(
+        send,
+        listeners,
+        (requestId) => ({
+          type: "SERVER_BACKUPS",
+          payload: { requestId, op, ids: [...ids] },
+        }),
+        (e, id) =>
+          e.type === "SERVER_BACKUPS_DONE" && e.payload.requestId === id
+            ? {
+                ...(e.payload.listing ? { listing: e.payload.listing } : {}),
+                ...(e.payload.error ? { error: e.payload.error } : {}),
+              }
+            : undefined,
+        op === "list" ? SAVE_TIMEOUT_MS : BACKUP_OP_TIMEOUT_MS,
+        { error: "Foundry did not answer in time." },
+      ),
+  };
+}
+
+/** The bridge's request and answer pairs: saving a world, backups. */
 function requests(
   send: (m: UiToPage) => void,
   listeners: Set<(event: PageToUi) => void>,
-): Pick<PageBridge, "saveWorld" | "backups"> {
+): Pick<PageBridge, "saveWorld" | "backups" | "serverBackups"> {
   return {
     saveWorld: (worldId, changes) =>
       request<{ error?: string }>(
@@ -113,25 +171,7 @@ function requests(
         SAVE_TIMEOUT_MS,
         { error: "Foundry did not answer in time." },
       ).then((r) => r.error),
-    backups: (worldId, op, ids) =>
-      request<BackupsResult>(
-        send,
-        listeners,
-        (requestId) => ({
-          type: "BACKUPS",
-          payload: { requestId, worldId, op, ids: [...ids] },
-        }),
-        (e, id) =>
-          e.type === "BACKUPS_DONE" && e.payload.requestId === id
-            ? {
-                ...(e.payload.backups ? { backups: e.payload.backups } : {}),
-                ...(e.payload.error ? { error: e.payload.error } : {}),
-              }
-            : undefined,
-        // Foundry's dialogs wait for the admin; a list is quick.
-        op === "list" ? SAVE_TIMEOUT_MS : BACKUP_OP_TIMEOUT_MS,
-        { error: "Foundry did not answer in time." },
-      ),
+    ...backupRequests(send, listeners),
   };
 }
 

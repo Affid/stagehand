@@ -13,6 +13,8 @@ import { runFoundryAction } from "../page/actions.ts";
 import type { BackupsRequest } from "../page-backups.ts";
 import type { SaveWorld } from "../page-save.ts";
 import { runBackups } from "../page/backups.ts";
+import { runServerBackups } from "../page/server-backups.ts";
+import type { ServerBackupsRequest } from "../page-server-backups.ts";
 import { saveWorld } from "../page/save-world.ts";
 import { collect } from "../page/collect.ts";
 import { pageGlobals } from "../page/globals.ts";
@@ -69,6 +71,20 @@ function answerBackups(req: BackupsRequest): void {
   });
 }
 
+/** Runs a server backups request and answers with its id. */
+function answerServerBackups(req: ServerBackupsRequest): void {
+  void runServerBackups(page, req).then((r) => {
+    postToUi({
+      type: "SERVER_BACKUPS_DONE",
+      payload: {
+        requestId: req.requestId,
+        ...(r.listing ? { listing: r.listing } : {}),
+        ...(r.error ? { error: r.error.slice(0, MAX_ERROR) } : {}),
+      },
+    });
+  });
+}
+
 /** Saves a world's details and answers with its id. */
 function answerSave(req: SaveWorld): void {
   const { requestId, worldId, changes } = req;
@@ -113,6 +129,9 @@ function handle(bridge: Bridge, m: UiToPage): void {
       break;
     case "BACKUPS":
       answerBackups(m.payload);
+      break;
+    case "SERVER_BACKUPS":
+      answerServerBackups(m.payload);
       break;
     case "SAVE_WORLD":
       answerSave(m.payload);

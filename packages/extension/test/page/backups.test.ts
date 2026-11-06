@@ -39,6 +39,7 @@ const req = (
 ) => ({
   requestId: "r1",
   worldId: "w",
+  type: "world" as const,
   op,
   ids,
 });

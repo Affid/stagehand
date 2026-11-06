@@ -151,3 +151,28 @@ describe("a world's backups through the bridge", () => {
     spy.mockRestore();
   });
 });
+
+describe("the server's backups through the bridge", () => {
+  test("asks, and settles on the matching answer with the listing", async () => {
+    const spy = vi.spyOn(window, "postMessage");
+    const bridge = createPageBridge(window);
+    const done = bridge.serverBackups("list", []);
+    const msg = spy.mock.calls.at(-1)?.[0] as {
+      type: string;
+      payload: { requestId: string };
+    };
+    expect(msg).toMatchObject({
+      type: "SERVER_BACKUPS",
+      payload: { op: "list", ids: [] },
+    });
+    const listing = { snapshots: [], packages: [] };
+    window.dispatchEvent(
+      fromPage("SERVER_BACKUPS_DONE", {
+        requestId: msg.payload.requestId,
+        listing,
+      }),
+    );
+    await expect(done).resolves.toEqual({ listing });
+    spy.mockRestore();
+  });
+});

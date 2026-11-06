@@ -8,6 +8,12 @@ import {
   parseBackupsRequest,
 } from "./page-backups.ts";
 import {
+  parseServerBackupsReply,
+  parseServerBackupsRequest,
+  type ServerBackupsReply,
+  type ServerBackupsRequest,
+} from "./page-server-backups.ts";
+import {
   parseSaveDone,
   parseSaveWorld,
   type SaveDone,
@@ -84,7 +90,9 @@ export type UiToPage =
   /** Save a world's details through Foundry (answered by SAVE_DONE). */
   | { readonly type: "SAVE_WORLD"; readonly payload: SaveWorld }
   /** A world's backups: list, take, restore or delete (answered by BACKUPS_DONE). */
-  | { readonly type: "BACKUPS"; readonly payload: BackupsRequest };
+  | { readonly type: "BACKUPS"; readonly payload: BackupsRequest }
+  /** The server's backups and snapshots (answered by SERVER_BACKUPS_DONE). */
+  | { readonly type: "SERVER_BACKUPS"; readonly payload: ServerBackupsRequest };
 
 export type PageToUi =
   | { readonly type: "WINDOW_READY"; readonly payload: { readonly id: string } }
@@ -105,7 +113,11 @@ export type PageToUi =
       readonly payload: { readonly on: boolean; readonly error?: string };
     }
   | { readonly type: "SAVE_DONE"; readonly payload: SaveDone }
-  | { readonly type: "BACKUPS_DONE"; readonly payload: BackupsReply };
+  | { readonly type: "BACKUPS_DONE"; readonly payload: BackupsReply }
+  | {
+      readonly type: "SERVER_BACKUPS_DONE";
+      readonly payload: ServerBackupsReply;
+    };
 
 const WINDOW_ID = /^[a-z][a-z0-9-]{0,60}$/;
 const MAX_TEXT = 2000;
@@ -214,6 +226,10 @@ export function parseUiToPage(type: string, p: unknown): UiToPage | undefined {
       const payload = parseBackupsRequest(p);
       return payload ? { type, payload } : undefined;
     }
+    case "SERVER_BACKUPS": {
+      const payload = parseServerBackupsRequest(p);
+      return payload ? { type, payload } : undefined;
+    }
     default:
       return undefined;
   }
@@ -250,6 +266,10 @@ export function parsePageToUi(type: string, p: unknown): PageToUi | undefined {
     }
     case "BACKUPS_DONE": {
       const payload = parseBackupsReply(p);
+      return payload ? { type, payload } : undefined;
+    }
+    case "SERVER_BACKUPS_DONE": {
+      const payload = parseServerBackupsReply(p);
       return payload ? { type, payload } : undefined;
     }
     default:

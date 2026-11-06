@@ -9,6 +9,7 @@ describe("backups requests", () => {
     const base = { requestId: "r1", worldId: "w" };
     expect(parseBackupsRequest({ ...base, op: "list" })).toEqual({
       ...base,
+      type: "world",
       op: "list",
       ids: [],
     });

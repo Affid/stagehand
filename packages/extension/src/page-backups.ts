@@ -7,9 +7,14 @@ type Loose = Readonly<Record<string, unknown>>;
 export const BACKUP_OPS = ["list", "create", "restore", "delete"] as const;
 export type BackupOp = (typeof BACKUP_OPS)[number];
 
+export const PACKAGE_TYPES = ["world", "module", "system"] as const;
+export type PackageType = (typeof PACKAGE_TYPES)[number];
+
 export interface BackupsRequest {
   readonly requestId: string;
+  /** The package's id (a world's, unless `type` says otherwise). */
   readonly worldId: string;
+  readonly type: PackageType;
   readonly op: BackupOp;
   /** One id to restore; up to MAX_DELETE to delete; none otherwise. */
   readonly ids: readonly string[];
@@ -61,13 +66,21 @@ export function parseBackupsRequest(p: Loose): BackupsRequest | undefined {
     return undefined;
   if (!isId(worldId, 200)) return undefined;
   if (!(BACKUP_OPS as readonly unknown[]).includes(op)) return undefined;
+  const type = p.type ?? "world";
+  if (!(PACKAGE_TYPES as readonly unknown[]).includes(type)) return undefined;
   const list = ids(op as BackupOp, p.ids);
   return list
-    ? { requestId, worldId, op: op as BackupOp, ids: list }
+    ? {
+        requestId,
+        worldId,
+        type: type as PackageType,
+        op: op as BackupOp,
+        ids: list,
+      }
     : undefined;
 }
 
-function backup(v: unknown): BackupInfo | undefined {
+export function backup(v: unknown): BackupInfo | undefined {
   if (!isObject(v)) return undefined;
   const { id, createdAt, size, note, snapshot } = v;
   if (!isId(id) || !isCount(createdAt) || !isCount(size)) return undefined;
