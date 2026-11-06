@@ -81,8 +81,10 @@ function sbSnapshots(lock) {
     const restore = !v.ok ? `<span class="mlw-tipwrap" data-tooltip="${esc(v.tip)}"><button type="button" disabled>Restore…</button></span>`
       : lock ? `<span class="mlw-tipwrap" data-tooltip="${busyTip()}"><button type="button" disabled>Restore…</button></span>`
       : `<button type="button" data-act="foundry" data-what="Restore the snapshot of ${esc(s.date)}: Foundry checks disk space, lists packages added since, and asks you to type a code">Restore…</button>`;
+    const del = lock ? `<span class="mlw-tipwrap" data-tooltip="${busyTip()}"><button type="button" class="icon" disabled aria-label="Delete"><i class="fa-solid fa-trash"></i></button></span>`
+      : `<button type="button" class="icon" data-act="snapdelone" data-id="${s.id}" aria-label="Delete the snapshot ${esc(s.note || s.date)}" data-tooltip="Delete this snapshot and the backups in it"><i class="fa-solid fa-trash"></i></button>`;
     return `<li class="${sel?.has(s.id) ? "picked" : ""}">${pick}<div class="nm"><strong>${esc(s.note || s.date)}</strong><span>${s.note ? `${esc(s.date)}, ` : ""}${esc(s.time)} · ${esc(s.rel)} · ${plural(s.packages, "package")}</span></div>
-      <span class="core ${v.cls}" data-tooltip="${esc(v.tip)}"><i class="fa-solid ${v.cls ? "fa-triangle-exclamation" : "fa-code-branch"}"></i> ${esc(s.build)}</span><span class="sz">${esc(s.size)}</span>${sel ? "<span></span>" : restore}</li>`;
+      <span class="core ${v.cls}" data-tooltip="${esc(v.tip)}"><i class="fa-solid ${v.cls ? "fa-triangle-exclamation" : "fa-code-branch"}"></i> ${esc(s.build)}</span><span class="sz">${esc(s.size)}</span>${sel ? "<span></span><span></span>" : `${restore}${del}`}</li>`;
   }).join("");
   const bar = sel
     ? `<div class="mlw-bhead sel"><i class="fa-solid fa-square-check"></i><span><b>${sel.size ? `${plural(sel.size, "snapshot")} selected` : "Select snapshots to delete"}</b></span><span class="ml-spacer"></span>
@@ -152,6 +154,7 @@ A.sbdel = (key) => {
 };
 A.snapselect = () => { ST.snapSel = ST.snapSel ? null : new Set(); render(); };
 A.snappick = (id) => { ST.snapSel.has(id) ? ST.snapSel.delete(id) : ST.snapSel.add(id); render(); };
+A.snapdelone = (id) => { ST.snapSel = new Set([id]); A.snapdel(); };
 A.snapdel = () => {
   const n = ST.snapSel.size, gone = ST.snapSel;
   // Deleting a snapshot deletes the package backups taken with it.

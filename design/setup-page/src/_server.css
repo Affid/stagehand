@@ -54,3 +54,7 @@
 .mlb-head > div { min-width: 0; }
 .mlb-head h2 { text-align: left; }
 .mlb-head .ml-spacer { flex: 1; }
+.mlb-snaps li { grid-template-columns: 22px minmax(0, 1fr) 90px 80px 96px 30px; }
+.mlb-snaps button.icon { width: 30px; padding: 0; color: var(--color-light-4); }
+.mlb-snaps button.icon:hover:not([disabled]) { color: #ffb3a6; }
+.mlb-snaps button[disabled] { opacity: .45; }
