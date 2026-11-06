@@ -17,6 +17,7 @@ import { Banners, folderCounts } from "../../modules/ModulesView.tsx";
 import { LibraryTools, PresetList } from "../../modules/PresetList.tsx";
 import { TagList } from "../../modules/SideSections.tsx";
 import { LibCard } from "./LibCard.tsx";
+import { ModulePanel } from "./ModulePanel.tsx";
 
 interface ToolsProps {
   readonly model: ModulesModel;
@@ -98,6 +99,8 @@ function Section(props: {
   readonly open: boolean;
   readonly onToggle: () => void;
   readonly selecting: boolean;
+  readonly detail: string | null;
+  readonly onOpen: (id: string) => void;
 }) {
   const { t } = useUi();
   const { group } = props;
@@ -128,6 +131,8 @@ function Section(props: {
               core={props.model.core}
               worlds={props.model.usage[m.id]}
               selecting={props.selecting}
+              open={props.detail === m.id}
+              onOpen={props.onOpen}
             />
           ))}
         </ol>
@@ -153,6 +158,17 @@ function Organise(props: { readonly model: ModulesModel }) {
   );
 }
 
+/** The side slot: a module's details, else Organise when asked for. */
+function Side(props: {
+  readonly model: ModulesModel;
+  readonly page: ReturnType<typeof usePageState>;
+}) {
+  const { detail, setDetail, organise } = props.page;
+  const pkg = detail ? props.model.all.find((m) => m.id === detail) : undefined;
+  if (pkg) return <ModulePanel pkg={pkg} onClose={() => setDetail(null)} />;
+  return organise ? <Organise model={props.model} /> : null;
+}
+
 /** The page's own view state: grouping, select mode, panel, folded groups. */
 function usePageState() {
   const { store } = useUi();
@@ -160,6 +176,7 @@ function usePageState() {
   const [selecting, setSelecting] = useState(false);
   const [organise, setOrganise] = useState(false);
   const [closed, setClosed] = useState<ReadonlySet<string>>(new Set());
+  const [detail, setDetail] = useState<string | null>(null);
   const toggle = (key: string): void => {
     const next = new Set(closed);
     if (!next.delete(key)) next.add(key);
@@ -178,14 +195,43 @@ function usePageState() {
     setOrganise,
     closed,
     toggle,
+    detail,
+    setDetail,
   };
 }
 
+function Groups(props: {
+  readonly groups: readonly LibGroup[];
+  readonly model: ModulesModel;
+  readonly page: ReturnType<typeof usePageState>;
+}) {
+  const { t } = useUi();
+  const { page } = props;
+  if (props.groups.length === 0)
+    return <p class="ml-empty">{t("lib.empty")}</p>;
+  return (
+    <ol class="mll-sections">
+      {props.groups.map((g) => (
+        <Section
+          key={g.key}
+          group={g}
+          model={props.model}
+          open={!page.closed.has(g.key)}
+          onToggle={() => page.toggle(g.key)}
+          selecting={page.selecting}
+          detail={page.detail}
+          onOpen={(id) => page.setDetail(page.detail === id ? null : id)}
+        />
+      ))}
+    </ol>
+  );
+}
+
 export function LibraryPage() {
-  const { state, t } = useUi();
+  const { state } = useUi();
   const model = useModulesModel(state);
   const page = usePageState();
-  const { by, selecting, closed, toggle } = page;
+  const { by, selecting } = page;
   const groups = groupLibrary(model.visible, by, {
     library: state.data.library,
     smart: model.groups,
@@ -206,24 +252,9 @@ export function LibraryPage() {
       <div class="mll-body">
         <div class="mll-main">
           {selecting ? <BulkBar model={model} /> : null}
-          {groups.length ? (
-            <ol class="mll-sections">
-              {groups.map((g) => (
-                <Section
-                  key={g.key}
-                  group={g}
-                  model={model}
-                  open={!closed.has(g.key)}
-                  onToggle={() => toggle(g.key)}
-                  selecting={selecting}
-                />
-              ))}
-            </ol>
-          ) : (
-            <p class="ml-empty">{t("lib.empty")}</p>
-          )}
+          <Groups groups={groups} model={model} page={page} />
         </div>
-        {page.organise ? <Organise model={model} /> : null}
+        <Side model={model} page={page} />
       </div>
     </div>
   );

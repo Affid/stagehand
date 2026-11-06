@@ -93,3 +93,17 @@ test("Organise shows folders, tags and presets beside the cards", async () => {
   await expect(side).toContainText("Presets");
   await page.screenshot({ path: `${SCREENS}/library-organise.png` });
 });
+
+test("a module's name opens its details; the Package tab shows its manifest", async () => {
+  await lib().getByRole("button", { name: "Organise" }).click();
+  await card("ml-fixture-a")
+    .getByRole("button", { name: /ML Fixture: A/ })
+    .click();
+  const panel = lib().getByRole("complementary", { name: /ML Fixture: A/ });
+  await expect(panel.getByRole("combobox", { name: "Folder" })).toBeVisible();
+  await page.screenshot({ path: `${SCREENS}/library-details.png` });
+  await panel.getByRole("tab", { name: "Package" }).click();
+  await expect(panel.locator(".mll-pkg")).toContainText("ML Fixture: library");
+  await panel.getByRole("button", { name: "Close" }).click();
+  await expect(panel).toHaveCount(0);
+});

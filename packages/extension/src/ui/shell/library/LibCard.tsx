@@ -13,6 +13,9 @@ import { plural } from "../../i18n.ts";
 
 const MAX_TAGS = 3;
 
+const toggled = (list: readonly string[], id: string): string[] =>
+  list.includes(id) ? list.filter((x) => x !== id) : [...list, id];
+
 function Line(props: {
   readonly pkg: PackageInfo;
   readonly core: CoreVersion;
@@ -69,24 +72,48 @@ function Tags(props: { readonly id: string }) {
   );
 }
 
+/** The name opens the details; in select mode it is plain text. */
+function CardTitle(props: {
+  readonly pkg: PackageInfo;
+  readonly selecting: boolean;
+  readonly open: boolean;
+  readonly onOpen: (id: string) => void;
+}) {
+  const { pkg } = props;
+  if (props.selecting) return <span class="t">{pkg.title}</span>;
+  return (
+    <button
+      type="button"
+      class="t"
+      aria-expanded={props.open}
+      onClick={() => props.onOpen(pkg.id)}
+    >
+      {pkg.title}
+    </button>
+  );
+}
+
 export function LibCard(props: {
   readonly pkg: PackageInfo;
   readonly core: CoreVersion;
   readonly worlds: number | undefined;
   readonly selecting: boolean;
+  readonly open: boolean;
+  readonly onOpen: (id: string) => void;
 }) {
   const { state, store, t } = useUi();
   const { pkg } = props;
   const selected = state.selection.includes(pkg.id);
+  const where = (n: number | undefined): string =>
+    n ? plural(t, "lib.inWorlds", n) : t("lib.inNoWorld");
   const toggle = (): void => {
-    store.set((s) => ({
-      selection: s.selection.includes(pkg.id)
-        ? s.selection.filter((id) => id !== pkg.id)
-        : [...s.selection, pkg.id],
-    }));
+    store.set((s) => ({ selection: toggled(s.selection, pkg.id) }));
   };
   return (
-    <li class={`mll-card${selected ? " selected" : ""}`} data-module={pkg.id}>
+    <li
+      class={`mll-card${selected ? " selected" : ""}${props.open ? " viewing" : ""}`}
+      data-module={pkg.id}
+    >
       <div class="l1">
         {props.selecting ? (
           <input
@@ -96,16 +123,18 @@ export function LibCard(props: {
             onChange={toggle}
           />
         ) : null}
-        <span class="t">{pkg.title}</span>
+        <CardTitle
+          pkg={pkg}
+          selecting={props.selecting}
+          open={props.open}
+          onOpen={props.onOpen}
+        />
       </div>
       <Line pkg={pkg} core={props.core} />
       <div class="l3">
         <Tags id={pkg.id} />
         <span class="meta">
-          v{pkg.version} ·{" "}
-          {props.worlds
-            ? plural(t, "lib.inWorlds", props.worlds)
-            : t("lib.inNoWorld")}
+          v{pkg.version} · {where(props.worlds)}
         </span>
       </div>
     </li>

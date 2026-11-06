@@ -189,3 +189,196 @@
   border-radius: 50%;
   background: var(--ml-c, #777);
 }
+
+/* The card's name opens its details */
+.mls-shell .mll-card button.t {
+  width: auto;
+  height: auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  text-align: left;
+  justify-content: flex-start;
+  font: inherit;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--color-light-1);
+  cursor: pointer;
+}
+
+.mls-shell .mll-card button.t:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
+}
+
+.mls-shell .mll-card button.t:focus-visible {
+  outline: 2px solid var(--color-warm-1);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+.mls-shell .mll-card button.t:hover {
+  color: var(--color-warm-1);
+  text-decoration: underline;
+}
+
+.mls-shell .mll-card.viewing {
+  border-color: var(--color-warm-1);
+  box-shadow: 0 0 6px rgb(238 155 58 / 35%);
+}
+
+/* A module's details */
+.mls-shell .mll-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.mls-shell .mll-panel-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mls-shell .mll-panel-head h3 {
+  flex: 1;
+  margin: 0;
+  font-size: 17px;
+  border: 0;
+  color: var(--color-light-1);
+}
+
+.mls-shell .mll-tabs {
+  display: flex;
+  gap: 2px;
+  border-bottom: 1px solid var(--color-cool-4);
+}
+
+.mls-shell .mll-tabs button {
+  width: auto;
+  height: 30px;
+  padding: 0 12px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  margin-bottom: -1px;
+  background: none;
+  box-shadow: none;
+  color: var(--color-light-3);
+}
+
+.mls-shell .mll-tabs button[aria-selected="true"] {
+  color: var(--color-light-1);
+  border-bottom-color: var(--color-warm-1);
+}
+
+.mls-shell .mll-libtab {
+  display: grid;
+  gap: 10px;
+}
+
+.mls-shell .mll-libtab h4 {
+  margin: 6px 0 0;
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-subtle);
+  border-bottom: 1px solid var(--color-cool-4);
+  padding-bottom: 3px;
+}
+
+.mls-shell .mll-field {
+  display: grid;
+  gap: 4px;
+}
+
+.mls-shell .mll-field > span:first-child {
+  font-size: 12px;
+  color: var(--color-text-subtle);
+}
+
+.mls-shell .mll-field textarea {
+  min-height: 70px;
+  resize: vertical;
+}
+
+.mls-shell .mll-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+
+.mls-shell .mll-chips .ml-icon {
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 10px;
+}
+
+.mls-shell .mll-chips select {
+  height: 24px;
+  width: auto;
+  font-size: 12px;
+}
+
+.mls-shell .mll-worlds {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.mls-shell .mll-worlds li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mls-shell .mll-worlds .d {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.mls-shell .mll-worlds .d.on {
+  color: #8fd49b;
+}
+
+.mls-shell .mll-worlds .d.off {
+  color: #ff9c8f;
+}
+
+.mls-shell .mll-pkg {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr);
+  gap: 6px 10px;
+  margin: 0;
+}
+
+.mls-shell .mll-pkg dt {
+  color: var(--color-text-subtle);
+}
+
+.mls-shell .mll-pkg dd {
+  margin: 0;
+  color: var(--color-light-2);
+  overflow-wrap: anywhere;
+}
+
+.mls-shell .mll-pkg dd.links {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 14px;
+}
+
+.mls-shell .mll-pkg a {
+  color: var(--color-warm-1);
+  text-decoration: underline;
+}
