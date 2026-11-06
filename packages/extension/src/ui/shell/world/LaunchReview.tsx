@@ -45,9 +45,13 @@ function Changes(props: {
                     class="x"
                     aria-label={t("lr.drop", { module: r.pkg.title })}
                     title={t("lr.drop", { module: r.pkg.title })}
-                    onClick={() =>
-                      void actions.flip(props.worldId, r.pkg.id, r.now)
-                    }
+                    onClick={(e) => {
+                      // The row goes: keep focus inside the review.
+                      e.currentTarget
+                        .closest<HTMLElement>('[role="dialog"]')
+                        ?.focus();
+                      void actions.flip(props.worldId, r.pkg.id, r.now);
+                    }}
                   >
                     <Icon name="xmark" />
                   </button>

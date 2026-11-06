@@ -325,6 +325,31 @@ describe("router: review fixes", () => {
     );
   });
 
+  test("modules to turn on are kept only if installed (security review)", async () => {
+    const d = deps();
+    await registered(d);
+    await route(
+      d,
+      {
+        kind: "setup-seen",
+        data: { ...setupData(true), modules: [installedModule("a")] },
+      },
+      fromSetup,
+    );
+    await route(
+      d,
+      {
+        kind: "queue-apply",
+        worldId: "w",
+        mode: "add",
+        presetIds: [],
+        modules: ["a", "ghost"],
+      },
+      fromSetup,
+    );
+    expect((await d.state.commands(S))[0]?.payload.modules).toEqual(["a"]);
+  });
+
   test("modules can be queued without a preset; an empty change is refused", async () => {
     const d = deps();
     await registered(d);

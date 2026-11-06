@@ -8,7 +8,10 @@ import { IconButton } from "../../common/widgets.tsx";
 import { useUi } from "../../context.ts";
 import { worldOrder } from "../../model/order.ts";
 import { COMPANION_ID } from "../../model/preview.ts";
-import { worldModules } from "../../model/world-modules.ts";
+import {
+  type WorldModuleRow,
+  worldModules,
+} from "../../model/world-modules.ts";
 
 export function FolderField(props: { readonly id: string }) {
   const { state, actions, t, canChange } = useUi();
@@ -129,15 +132,21 @@ function NoteField(props: { readonly id: string }) {
   );
 }
 
+interface Where {
+  readonly world: WorldInfo;
+  readonly tracked: boolean;
+  readonly row: WorldModuleRow | undefined;
+}
+
 function WorldItem(props: {
   readonly pkg: PackageInfo;
-  readonly world: WorldInfo;
+  readonly where: Where;
   readonly here: boolean;
 }) {
-  const { state, actions, t, canChange } = useUi();
-  const { pkg, world } = props;
-  const model = worldModules(state.data, world.id);
-  const row = model.rows.find((r) => r.pkg.id === pkg.id);
+  const { actions, t, canChange } = useUi();
+  const { pkg } = props;
+  const { world, row } = props.where;
+  const model = { tracked: props.where.tracked };
   const on = row?.next ?? false;
   return (
     <li class={props.here ? "mls-here" : ""}>
@@ -182,11 +191,16 @@ function Worlds(props: {
     state.data.setup?.worlds ?? [],
     state.data.setup?.lang,
   );
-  const onIn = worlds.filter(
-    (w) =>
-      worldModules(state.data, w.id).rows.find((r) => r.pkg.id === props.pkg.id)
-        ?.next,
-  ).length;
+  // Each world's modules once per render (review: not twice per world).
+  const where: Where[] = worlds.map((w) => {
+    const m = worldModules(state.data, w.id);
+    return {
+      world: w,
+      tracked: m.tracked,
+      row: m.rows.find((r) => r.pkg.id === props.pkg.id),
+    };
+  });
+  const onIn = where.filter((x) => x.row?.next).length;
   return (
     <div class="mls-chg">
       <h4>
@@ -195,12 +209,12 @@ function Worlds(props: {
         </span>
       </h4>
       <ul class="mls-wlist">
-        {worlds.map((w) => (
+        {where.map((x) => (
           <WorldItem
-            key={w.id}
+            key={x.world.id}
             pkg={props.pkg}
-            world={w}
-            here={w.id === props.here}
+            where={x}
+            here={x.world.id === props.here}
           />
         ))}
       </ul>

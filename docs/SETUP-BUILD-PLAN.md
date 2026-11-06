@@ -313,4 +313,15 @@ no critical or high; fixed the star inside the heading, the repeated
 "couldn't reach" line, "Foundry 0" without a version, and bounded world and
 system names in Setup data.
 
+Package 3 done (`4cc07de`, `d0d2a12`): the module details as their own column
+(Library and world pages; every world listed, "companion off", this world
+marked), the world page's tab row with icons, counts and its tools, a group's
+"Turn all on / off", View options (group by, cards or list), and the launch
+review's drop (×) and latest-backup line. Reviews: no critical or high;
+fixed "Turn all on" queueing modules that can't turn on, a second flip while
+one is saving (now ignored for every caller), focus after a drop, the panel
+outliving its module, overlapping backup calls, popovers closing on Tab,
+groups over 500 modules (queued in parts), and queued module ids kept only if
+installed.
+
 Then Phase 6 (News and finish).

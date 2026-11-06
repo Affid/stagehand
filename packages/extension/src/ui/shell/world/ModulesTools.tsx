@@ -21,7 +21,7 @@ export interface Filters {
   readonly onText: (s: string) => void;
 }
 
-/** Group by and Layout, saved for every world's page. */
+/** Group by and Layout, for every world's page while Setup is open. */
 function ViewBody(props: { readonly first: { current: HTMLElement | null } }) {
   const { state, store, t } = useUi();
   const view = state.worldView;
@@ -69,7 +69,7 @@ function ViewOptions() {
   const { t } = useUi();
   const d = useDisclosure<HTMLSpanElement>();
   return (
-    <span class="mlc-viewwrap" ref={d.wrap}>
+    <span class="mlc-viewwrap" ref={d.wrap} onFocusOut={d.onFocusOut}>
       <button
         type="button"
         ref={d.trigger}
@@ -77,6 +77,7 @@ function ViewOptions() {
         aria-label={t("wp.view")}
         title={t("wp.view")}
         aria-expanded={d.open}
+        aria-haspopup="true"
         onClick={() => d.setOpen(!d.open)}
       >
         <Icon name="sliders" />

@@ -128,6 +128,18 @@ describe("actions", () => {
     });
   });
 
+  test("a second flip of the same module while the first is saving is ignored", async () => {
+    const ok = setup(() => undefined);
+    await Promise.all([
+      ok.actions.flip("w", "a", false),
+      ok.actions.flip("w", "a", false),
+    ]);
+    const kinds = vi
+      .mocked(ok.send)
+      .mock.calls.map((c) => (c[0] as { kind: string }).kind);
+    expect(kinds.filter((k) => k !== "get-state")).toHaveLength(1);
+  });
+
   test("a launch hold is sent, and a failure says so", async () => {
     const ok = setup(() => undefined);
     expect(await ok.actions.setLaunchHold("w", true)).toBe(true);

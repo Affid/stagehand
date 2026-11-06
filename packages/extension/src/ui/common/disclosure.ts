@@ -16,5 +16,10 @@ export function useDisclosure<W extends HTMLElement = HTMLElement>() {
   useEffect(() => {
     if (open) first.current?.focus();
   }, [open]);
-  return { open, setOpen, wrap, trigger, first, close };
+  /** Tabbing out of the popover closes it, like a click outside. */
+  const onFocusOut = (e: FocusEvent): void => {
+    const next = e.relatedTarget as Node | null;
+    if (open && !wrap.current?.contains(next)) close(false);
+  };
+  return { open, setOpen, wrap, trigger, first, close, onFocusOut };
 }

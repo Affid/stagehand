@@ -6,6 +6,7 @@ import { useDisclosure } from "../../common/disclosure.ts";
 import { Icon } from "../../common/widgets.tsx";
 import { useUi } from "../../context.ts";
 import { groupLibrary, type LibGroup } from "../../model/library-groups.ts";
+import { MAX_PICKED } from "@module-library/shared/world";
 import { COMPANION_ID } from "../../model/preview.ts";
 import type { WorldModuleRow } from "../../model/world-modules.ts";
 import { useModulesModel } from "../../modules/derived.ts";
@@ -22,24 +23,57 @@ export interface SectionsProps {
   readonly onFlip: (id: string, on: boolean) => void;
 }
 
+/** Ids in parts the background accepts in one change (MAX_PICKED). */
+export function inParts(ids: readonly string[], size = MAX_PICKED): string[][] {
+  const parts: string[][] = [];
+  for (let i = 0; i < ids.length; i += size) parts.push(ids.slice(i, i + size));
+  return parts;
+}
+
+/**
+ * Whether "Turn all" includes this row: never the companion off, never a
+ * module on that needs one that isn't installed (it would be blocked).
+ */
+const turns = (
+  r: WorldModuleRow,
+  on: boolean,
+  installed: ReadonlySet<string>,
+): boolean =>
+  r.next !== on &&
+  (on
+    ? r.pkg.requires.every((q) => q.type !== "module" || installed.has(q.id))
+    : r.pkg.id !== COMPANION_ID);
+
 /** Turn all on or off: one queued change for the group's other modules. */
+/** Queues "Turn all on / off" for a group, in parts the background accepts. */
+function useTurnAll(rows: readonly WorldModuleRow[], worldId: string) {
+  const { state, actions } = useUi();
+  return (on: boolean): void => {
+    const installed = new Set(state.data.setup?.modules.map((m) => m.id));
+    const ids = rows
+      .filter((r) => turns(r, on, installed))
+      .map((r) => r.pkg.id);
+    void (async () => {
+      for (const part of inParts(ids))
+        await actions.queueApply(worldId, on ? "add" : "remove", [], part);
+    })();
+  };
+}
+
 function GroupMenu(props: {
   readonly name: string;
   readonly rows: readonly WorldModuleRow[];
   readonly worldId: string;
 }) {
-  const { actions, t } = useUi();
+  const { t } = useUi();
   const d = useDisclosure<HTMLSpanElement>();
+  const turnAll = useTurnAll(props.rows, props.worldId);
   const turn = (on: boolean): void => {
     d.close(true);
-    const ids = props.rows
-      .filter((r) => r.next !== on && (on || r.pkg.id !== COMPANION_ID))
-      .map((r) => r.pkg.id);
-    if (ids.length)
-      void actions.queueApply(props.worldId, on ? "add" : "remove", [], ids);
+    turnAll(on);
   };
   return (
-    <span class="mlw-gmenu" ref={d.wrap}>
+    <span class="mlw-gmenu" ref={d.wrap} onFocusOut={d.onFocusOut}>
       <button
         type="button"
         ref={d.trigger}
@@ -47,6 +81,7 @@ function GroupMenu(props: {
         aria-label={t("wp.groupActions", { group: props.name })}
         title={t("wp.groupActionsHint")}
         aria-expanded={d.open}
+        aria-haspopup="true"
         onClick={() => d.setOpen(!d.open)}
       >
         <Icon name="ellipsis-vertical" />

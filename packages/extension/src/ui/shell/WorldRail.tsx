@@ -78,7 +78,11 @@ function WorldItem(props: {
         data-world={world.id}
         aria-current={props.current ? "page" : undefined}
         onClick={() =>
-          store.set({ route: { kind: "world", worldId: world.id } })
+          // Another world: its details panel starts closed, as the prototype.
+          store.set({
+            route: { kind: "world", worldId: world.id },
+            ...(props.current ? {} : { panel: null }),
+          })
         }
       >
         <span

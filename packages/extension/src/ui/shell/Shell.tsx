@@ -1,4 +1,5 @@
 // The new Setup page: header, worlds rail, and a world's page or the Library.
+import { useEffect } from "preact/hooks";
 import { useUi } from "../context.ts";
 import { LibraryPage } from "./library/LibraryPage.tsx";
 import { ModulePanel } from "./library/ModulePanel.tsx";
@@ -16,6 +17,10 @@ function PanelColumn(props: { readonly here: string | undefined }) {
   const pkg = state.panel
     ? state.data.setup?.modules.find((m) => m.id === state.panel)
     : undefined;
+  // Its module was uninstalled: close, so it doesn't reopen on a reinstall.
+  useEffect(() => {
+    if (state.panel && !pkg) store.set({ panel: null });
+  }, [state.panel, pkg, store]);
   if (!pkg) return null;
   return (
     <ModulePanel

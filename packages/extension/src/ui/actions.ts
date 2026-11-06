@@ -145,7 +145,48 @@ async function runFlip(
   await b.refresh();
 }
 
+/** Flips on their way to the background, by world and module. */
+const flipping = new Set<string>();
+
+/**
+ * A flip is planned from the stored state: a second one before the first
+ * lands would repeat it (review). Ignore it until then.
+ */
+async function onceAtATime(
+  key: string,
+  run: () => Promise<void>,
+): Promise<void> {
+  if (flipping.has(key)) return;
+  flipping.add(key);
+  try {
+    await run();
+  } finally {
+    flipping.delete(key);
+  }
+}
+
 /** Changes queued for worlds, and how their next launch goes. */
+async function sendLaunchHold(
+  b: Base,
+  send: Send,
+  h: {
+    worldId: string;
+    hold: boolean;
+    reviewed: readonly string[] | undefined;
+  },
+): Promise<boolean> {
+  const done = await b.guarded(async () => {
+    await send({
+      kind: "launch-hold",
+      worldId: h.worldId,
+      hold: h.hold,
+      ...(h.reviewed ? { reviewed: [...h.reviewed] } : {}),
+    });
+    return true;
+  });
+  return done === true;
+}
+
 function worldActions(
   b: Base,
   send: Send,
@@ -169,7 +210,9 @@ function worldActions(
       return queued !== undefined;
     },
     flip: (worldId, moduleId, on) =>
-      runFlip(b, send, store, { worldId, moduleId, on }),
+      onceAtATime(`${worldId}\u0000${moduleId}`, () =>
+        runFlip(b, send, store, { worldId, moduleId, on }),
+      ),
     async discard(worldId) {
       const ids = pendingFor(store.get().data, worldId).map((c) => c.id);
       await b.guarded(async () => {
@@ -177,18 +220,8 @@ function worldActions(
       });
       await b.refresh();
     },
-    async setLaunchHold(worldId, hold, reviewed) {
-      const done = await b.guarded(async () => {
-        await send({
-          kind: "launch-hold",
-          worldId,
-          hold,
-          ...(reviewed ? { reviewed: [...reviewed] } : {}),
-        });
-        return true;
-      });
-      return done === true;
-    },
+    setLaunchHold: (worldId, hold, reviewed) =>
+      sendLaunchHold(b, send, { worldId, hold, reviewed }),
     async cancelCommand(id) {
       await b.guarded(() => send({ kind: "cancel-command", id }));
       await b.refresh();

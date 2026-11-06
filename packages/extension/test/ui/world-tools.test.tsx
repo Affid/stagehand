@@ -7,7 +7,8 @@ import { cleanup, fireEvent, waitFor, within } from "@testing-library/preact";
 import { afterEach, describe, expect, test } from "vitest";
 import type { ExtensionMessage, SetupState } from "../../src/messages.ts";
 import type { BackupInfo } from "../../src/page-backups.ts";
-import { el, renderUi, sent } from "./harness.tsx";
+import { inParts } from "../../src/ui/shell/world/ModuleSections.tsx";
+import { el, pkg, renderUi, sent, setupState } from "./harness.tsx";
 
 afterEach(cleanup);
 
@@ -129,6 +130,66 @@ describe("a group's actions", () => {
         (m) => (m as { mode?: string }).mode === "remove",
       ) as { modules?: string[] } | undefined;
       expect(off?.modules).toEqual(["lib"]);
+    });
+  });
+});
+
+describe("review fixes (package 3)", () => {
+  test("Turn all on leaves out a module that can't turn on (blocked)", async () => {
+    const base = setupState();
+    const { container, getByRole, send } = page({
+      setup: base.setup && {
+        ...base.setup,
+        modules: [
+          ...base.setup.modules,
+          pkg("d", { requires: [{ id: "gone", type: "module" }] }),
+        ],
+      },
+    });
+    const unfiled = [...container.querySelectorAll<HTMLElement>(".mlw-sec")].at(
+      -1,
+    );
+    if (!unfiled) throw new Error("no unfiled group");
+    fireEvent.click(within(unfiled).getByRole("button", { name: /actions$/ }));
+    fireEvent.click(getByRole("button", { name: "Turn all on" }));
+    await waitFor(() => {
+      const add = sent(send).find(
+        (m) => (m as { mode?: string }).mode === "add",
+      ) as { modules?: string[] } | undefined;
+      expect(add?.modules).toEqual(["b", "c", "lib"]);
+    });
+  });
+
+  test("a big group is queued in parts the background accepts", () => {
+    const ids = Array.from({ length: 1201 }, (_, i) => `m${String(i)}`);
+    const parts = inParts(ids);
+    expect(parts.map((p) => p.length)).toEqual([500, 500, 201]);
+    expect(parts.flat()).toEqual(ids);
+  });
+
+  test("View options closes when focus leaves it", () => {
+    const { getByRole, queryByRole } = page();
+    fireEvent.click(getByRole("button", { name: "View options" }));
+    const pop = getByRole("region", { name: "View options" });
+    fireEvent.focusOut(pop, { relatedTarget: document.body });
+    expect(queryByRole("region", { name: "View options" })).toBe(null);
+  });
+
+  test("the details close when their module goes", async () => {
+    const r = page();
+    fireEvent.click(r.getByRole("button", { name: "Title a" }));
+    expect(r.store.get().panel).toBe("a");
+    r.store.set({ route: { kind: "library" } });
+    expect(r.store.get().panel).toBe("a");
+    const s = r.store.get().data.setup;
+    r.store.set((st) => ({
+      data: {
+        ...st.data,
+        setup: s && { ...s, modules: s.modules.filter((m) => m.id !== "a") },
+      },
+    }));
+    await waitFor(() => {
+      expect(r.store.get().panel).toBe(null);
     });
   });
 });

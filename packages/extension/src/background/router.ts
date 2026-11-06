@@ -136,6 +136,12 @@ async function queueApply(
   const unknown = m.presetIds.filter((id) => !known.has(id));
   if (unknown.length > 0)
     throw new Error(`Unknown preset ${unknown.join(", ")}`);
+  // Turning on a module that isn't installed changes nothing (security
+  // review); a removal may still name one the world remembers.
+  const modules =
+    m.mode !== "remove" && m.modules
+      ? await installedOnly(deps, server, m.modules)
+      : m.modules;
   const snap = (await deps.state.snapshots(server))[m.worldId];
   const id = deps.uuid();
   await deps.state.updateCommands(server, (list) =>
@@ -144,7 +150,7 @@ async function queueApply(
       worldId: m.worldId,
       mode: m.mode,
       presetIds: m.presetIds,
-      modules: m.modules,
+      modules,
       createdAt: deps.now(),
       baseSnapshotAt: snap?.takenAt ?? null,
     }),
