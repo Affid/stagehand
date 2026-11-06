@@ -406,7 +406,7 @@ A.asave = (field) => {
   const rte = document.getElementById("mlw-rte");
   const v = rte ? cleanDesc(rte.innerHTML) : document.getElementById("mlw-input")?.value ?? "";
   if (field === "title" && !v.trim()) { ST.aboutErr = "A world needs a title. Foundry's own check stops an empty one before anything is saved."; ST.aboutDraft = v; render(); document.getElementById("mlw-input")?.focus(); return; }
-  if (field === "desc") { w.desc = /\S/.test(rte?.innerText ?? "") ? v : ""; ST.descOpen = false; }
+  if (field === "desc") { w.desc = /\S/.test(rte?.innerText ?? "") ? v : ""; ST.descOpen = null; }
   if (field === "title") w.title = v.trim();
   if (field === "theme") w.joinTheme = v;
   if (field === "system") { const sys = SYSTEMS.find((x) => x.id === v); w.sysFull = `${sys.title} ${sys.version}`; w.system = sysShort(sys); }
@@ -532,11 +532,13 @@ function cleanDesc(html) {
   root.querySelectorAll("p, li, h2, h3, h4").forEach((n) => { if (!n.textContent.trim() && !n.querySelector("br, hr")) n.remove(); });
   return root.innerHTML.replace(/(<p><br><\/p>)+$/, "").trim();
 }
+const DESC_LINES = 6;
 function descView(w) {
   const html = cleanDesc(w.desc);
   if (!html) return '<p class="desc ml-muted">No description yet. Players see it on the screen they join from.</p>';
-  return `<div class="desc rich${ST.descOpen ? " open" : ""}" id="mlw-desc">${html}</div>
-    <a class="mlw-more" data-act="descmore" hidden>${ST.descOpen ? "Show less" : "Show more"}</a>`;
+  const open = ST.descOpen === w.id;
+  return `<div class="desc rich${open ? " open" : ""}" id="mlw-desc">${html}</div>
+    <a class="mlw-more" data-act="descmore" hidden>${open ? "Show less" : "Show more"}</a>`;
 }
 function descToolbar() {
   const b = (cmd, icon, label, arg = "") => `<button type="button" class="icon" data-act="rte" data-id="${cmd}" data-arg="${arg}" aria-label="${label}" data-tooltip="${label}"><i class="fa-solid ${icon}"></i></button>`;
@@ -550,13 +552,15 @@ A.rte = (cmd, el) => {
   if (cmd === "createLink") { const url = prompt("Link address (https://…)"); if (url && /^https?:/i.test(url)) document.execCommand(cmd, false, url); return; }
   document.execCommand(cmd, false, el.dataset.arg ? `<${el.dataset.arg}>` : null);
 };
-A.descmore = () => { ST.descOpen = !ST.descOpen; render(); };
+A.descmore = () => { ST.descOpen = ST.descOpen === ST.world ? null : ST.world; render(); };
 // After each render: show "Show more" only when the folded description is actually cut off.
 const renderBeforeDesc = render;
 // eslint-disable-next-line no-func-assign
 render = function () {
   renderBeforeDesc();
   const d = document.getElementById("mlw-desc"), more = document.querySelector(".mlw-more");
-  if (d && more) more.hidden = !ST.descOpen && d.scrollHeight <= d.clientHeight + 2;
-  if (d && more && ST.descOpen) more.hidden = false;
+  // Longer than the folded height (six lines)? Measured the same way whether open or folded.
+  const tooLong = !!d && d.scrollHeight > parseFloat(getComputedStyle(d).lineHeight) * DESC_LINES + 2;
+  d?.classList.toggle("cut", tooLong);
+  if (more) more.hidden = !tooLong;
 };

@@ -31,3 +31,29 @@ const plain = await p.evaluate(() => document.getElementById("mlw-desc").innerHT
 await p.click('.mls-world[data-id="heist"]'); await p.click("[data-act=wtab][data-id=about]"); await p.click("[data-act=aedit][data-id=desc]"); await p.evaluate(() => { document.getElementById("mlw-rte").innerHTML = "<p><br></p>"; }); await p.click("[data-act=asave][data-id=desc]"); await p.waitForTimeout(80);
 const empty = await p.evaluate(() => document.querySelector(".mlw-box .desc").textContent);
 console.log({ view, open, editor, saved, short, plain, empty }); console.log(errs.length ? errs : "no errors"); await b.close();
+// The fade appears only when text is actually hidden.
+{
+  const b2 = await chromium.launch(); const q = await (await b2.newContext({ viewport: { width: 1600, height: 1000 } })).newPage();
+  await q.goto(`file://${dir}out/setup-shell.html?calm=1`); await q.waitForTimeout(600);
+  const fade = async (id) => { await q.click(`.mls-world[data-id="${id}"]`); await q.click("[data-act=wtab][data-id=about]"); await q.waitForTimeout(80);
+    return q.evaluate(() => { const d = document.getElementById("mlw-desc"); return getComputedStyle(d, "::after").content !== "none"; }); };
+  const r = { shortFades: await fade("mltest"), longFades: await fade("strahd") };
+  await q.click(".mlw-more"); await q.waitForTimeout(60);
+  r.openFades = await q.evaluate(() => getComputedStyle(document.getElementById("mlw-desc"), "::after").content !== "none");
+  await q.click('.mls-world[data-id="mltest"]'); await q.click("[data-act=wtab][data-id=about]"); await q.waitForTimeout(60);
+  await q.screenshot({ path: `${dir}out/shots/d-4-short.png`, clip: { x: 340, y: 255, width: 700, height: 80 } });
+  console.log("fade", r, r.shortFades || !r.longFades || r.openFades ? "WRONG" : "ok");
+  await b2.close();
+}
+// Opening one world's description doesn't open others; a short one never offers Show more/less.
+{
+  const b3 = await chromium.launch(); const q = await (await b3.newContext({ viewport: { width: 1600, height: 1000 } })).newPage();
+  await q.goto(`file://${dir}out/setup-shell.html?calm=1`); await q.waitForTimeout(600);
+  const go = async (id) => { await q.click(`.mls-world[data-id="${id}"]`); await q.click("[data-act=wtab][data-id=about]"); await q.waitForTimeout(80); };
+  const link = () => q.evaluate(() => { const m = document.querySelector(".mlw-more"); return m && !m.hidden ? m.textContent : "none"; });
+  await go("strahd"); const a = await link(); await q.click(".mlw-more"); await q.waitForTimeout(60); const b = await link();
+  await go("mltest"); const c = await link();
+  await go("strahd"); const d = await link();
+  console.log("links", { strahd: a, strahdOpened: b, short: c, strahdAgain: d }, a === "Show more" && b === "Show less" && c === "none" && d === "Show less" ? "ok" : "WRONG");
+  await b3.close();
+}

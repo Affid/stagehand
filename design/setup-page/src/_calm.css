@@ -387,7 +387,7 @@
 /* Rich description: folded after about six lines */
 .mlw-box .desc.rich { font-size: 14px; line-height: 1.5; color: var(--color-light-1); max-height: calc(1.5em * 6); overflow: hidden; position: relative; }
 .mlw-box .desc.rich.open { max-height: none; }
-.mlw-box .desc.rich:not(.open)::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1.5em; background: linear-gradient(transparent, rgb(13 12 20)); pointer-events: none; }
+.mlw-box .desc.rich.cut:not(.open)::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1.5em; background: linear-gradient(transparent, rgb(13 12 20)); pointer-events: none; }
 .mlw-box .desc.rich > :first-child { margin-top: 0; }
 .mlw-box .desc.rich > :last-child { margin-bottom: 0; }
 .mlw-box .desc.rich p, .mlw-rte p { margin: 0 0 .5em; }
