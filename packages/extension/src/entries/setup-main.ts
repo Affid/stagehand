@@ -14,6 +14,8 @@ import type { BackupsRequest } from "../page-backups.ts";
 import type { SaveWorld } from "../page-save.ts";
 import { runBackups } from "../page/backups.ts";
 import { runServerBackups } from "../page/server-backups.ts";
+import { runConfig } from "../page/config.ts";
+import type { ConfigRequest } from "../page-config.ts";
 import type { ServerBackupsRequest } from "../page-server-backups.ts";
 import { saveWorld } from "../page/save-world.ts";
 import { collect } from "../page/collect.ts";
@@ -85,6 +87,23 @@ function answerServerBackups(req: ServerBackupsRequest): void {
   });
 }
 
+/** Reads or saves Foundry's configuration and answers with its id. */
+function answerConfig(req: ConfigRequest): void {
+  void runConfig(page, req).then((r) => {
+    postToUi({
+      type: "CONFIG_DONE",
+      payload: {
+        requestId: req.requestId,
+        ...(r.settings && r.choices
+          ? { settings: r.settings, choices: r.choices }
+          : {}),
+        ...(r.restart === undefined ? {} : { restart: r.restart }),
+        ...(r.error ? { error: r.error.slice(0, MAX_ERROR) } : {}),
+      },
+    });
+  });
+}
+
 /** Saves a world's details and answers with its id. */
 function answerSave(req: SaveWorld): void {
   const { requestId, worldId, changes } = req;
@@ -132,6 +151,9 @@ function handle(bridge: Bridge, m: UiToPage): void {
       break;
     case "SERVER_BACKUPS":
       answerServerBackups(m.payload);
+      break;
+    case "CONFIG":
+      answerConfig(m.payload);
       break;
     case "SAVE_WORLD":
       answerSave(m.payload);

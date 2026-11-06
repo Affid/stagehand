@@ -176,3 +176,27 @@ describe("the server's backups through the bridge", () => {
     spy.mockRestore();
   });
 });
+
+describe("configuration through the bridge", () => {
+  test("asks, and settles on the matching answer", async () => {
+    const spy = vi.spyOn(window, "postMessage");
+    const bridge = createPageBridge(window);
+    const done = bridge.config("save", { port: 30001 });
+    const msg = spy.mock.calls.at(-1)?.[0] as {
+      type: string;
+      payload: { requestId: string };
+    };
+    expect(msg).toMatchObject({
+      type: "CONFIG",
+      payload: { op: "save", changes: { port: 30001 } },
+    });
+    window.dispatchEvent(
+      fromPage("CONFIG_DONE", {
+        requestId: msg.payload.requestId,
+        error: "port: invalid",
+      }),
+    );
+    await expect(done).resolves.toEqual({ error: "port: invalid" });
+    spy.mockRestore();
+  });
+});

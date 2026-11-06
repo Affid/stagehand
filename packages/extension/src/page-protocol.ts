@@ -8,6 +8,12 @@ import {
   parseBackupsRequest,
 } from "./page-backups.ts";
 import {
+  type ConfigReply,
+  type ConfigRequest,
+  parseConfigReply,
+  parseConfigRequest,
+} from "./page-config.ts";
+import {
   parseServerBackupsReply,
   parseServerBackupsRequest,
   type ServerBackupsReply,
@@ -92,7 +98,9 @@ export type UiToPage =
   /** A world's backups: list, take, restore or delete (answered by BACKUPS_DONE). */
   | { readonly type: "BACKUPS"; readonly payload: BackupsRequest }
   /** The server's backups and snapshots (answered by SERVER_BACKUPS_DONE). */
-  | { readonly type: "SERVER_BACKUPS"; readonly payload: ServerBackupsRequest };
+  | { readonly type: "SERVER_BACKUPS"; readonly payload: ServerBackupsRequest }
+  /** Foundry's configuration: read, or save some settings (answered by CONFIG_DONE). */
+  | { readonly type: "CONFIG"; readonly payload: ConfigRequest };
 
 export type PageToUi =
   | { readonly type: "WINDOW_READY"; readonly payload: { readonly id: string } }
@@ -117,7 +125,8 @@ export type PageToUi =
   | {
       readonly type: "SERVER_BACKUPS_DONE";
       readonly payload: ServerBackupsReply;
-    };
+    }
+  | { readonly type: "CONFIG_DONE"; readonly payload: ConfigReply };
 
 const WINDOW_ID = /^[a-z][a-z0-9-]{0,60}$/;
 const MAX_TEXT = 2000;
@@ -230,6 +239,10 @@ export function parseUiToPage(type: string, p: unknown): UiToPage | undefined {
       const payload = parseServerBackupsRequest(p);
       return payload ? { type, payload } : undefined;
     }
+    case "CONFIG": {
+      const payload = parseConfigRequest(p);
+      return payload ? { type, payload } : undefined;
+    }
     default:
       return undefined;
   }
@@ -270,6 +283,10 @@ export function parsePageToUi(type: string, p: unknown): PageToUi | undefined {
     }
     case "SERVER_BACKUPS_DONE": {
       const payload = parseServerBackupsReply(p);
+      return payload ? { type, payload } : undefined;
+    }
+    case "CONFIG_DONE": {
+      const payload = parseConfigReply(p);
       return payload ? { type, payload } : undefined;
     }
     default:

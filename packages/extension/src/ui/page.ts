@@ -12,11 +12,24 @@ import {
   windowHostId,
 } from "../page-protocol.ts";
 import type { BackupInfo, BackupOp, PackageType } from "../page-backups.ts";
+import type {
+  Choices,
+  ReadOnly,
+  SettingChanges,
+  Settings,
+} from "../page-config.ts";
 import type { WorldChanges } from "../page-save.ts";
 import type { ServerBackupOp, ServerListing } from "../page-server-backups.ts";
 
 export interface BackupsResult {
   readonly backups?: readonly BackupInfo[];
+  readonly error?: string;
+}
+
+export interface ConfigResult {
+  readonly settings?: Settings & ReadOnly;
+  readonly choices?: Choices;
+  readonly restart?: boolean;
   readonly error?: string;
 }
 
@@ -50,6 +63,8 @@ export interface PageBridge {
     op: ServerBackupOp,
     ids: readonly string[],
   ): Promise<ServerBackupsResult>;
+  /** Foundry's configuration: read it, or save some settings. */
+  config(op: "read" | "save", changes?: SettingChanges): Promise<ConfigResult>;
   /** Our host element inside an open Foundry window, if it is there. */
   windowHost(id: string): HTMLElement | null;
   subscribe(fn: (event: PageToUi) => void): () => void;
@@ -152,7 +167,7 @@ function backupRequests(
 function requests(
   send: (m: UiToPage) => void,
   listeners: Set<(event: PageToUi) => void>,
-): Pick<PageBridge, "saveWorld" | "backups" | "serverBackups"> {
+): Pick<PageBridge, "saveWorld" | "backups" | "serverBackups" | "config"> {
   return {
     saveWorld: (worldId, changes) =>
       request<{ error?: string }>(
@@ -171,6 +186,29 @@ function requests(
         SAVE_TIMEOUT_MS,
         { error: "Foundry did not answer in time." },
       ).then((r) => r.error),
+    config: (op, changes = {}) =>
+      request<ConfigResult>(
+        send,
+        listeners,
+        (requestId) => ({
+          type: "CONFIG",
+          payload: { requestId, op, changes },
+        }),
+        (e, id) =>
+          e.type === "CONFIG_DONE" && e.payload.requestId === id
+            ? {
+                ...(e.payload.settings && e.payload.choices
+                  ? { settings: e.payload.settings, choices: e.payload.choices }
+                  : {}),
+                ...(e.payload.restart === undefined
+                  ? {}
+                  : { restart: e.payload.restart }),
+                ...(e.payload.error ? { error: e.payload.error } : {}),
+              }
+            : undefined,
+        SAVE_TIMEOUT_MS,
+        { error: "Foundry did not answer in time." },
+      ),
     ...backupRequests(send, listeners),
   };
 }

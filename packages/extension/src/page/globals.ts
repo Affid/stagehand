@@ -15,8 +15,23 @@ export interface ClientSettings {
 export interface SetupGame {
   readonly view?: string;
   readonly release?: { readonly generation: number; readonly build: number };
-  readonly data?: { readonly isAdmin?: boolean };
-  readonly i18n?: { readonly lang?: string };
+  readonly data?: {
+    readonly isAdmin?: boolean;
+    /** Foundry's server options (the password only as a hash). */
+    readonly options?: Readonly<Record<string, unknown>>;
+    readonly languages?: readonly {
+      readonly id: string;
+      readonly label: string;
+      readonly modules: readonly {
+        readonly id: string;
+        readonly label: string;
+      }[];
+    }[];
+  };
+  readonly i18n?: {
+    readonly lang?: string;
+    readonly localize?: (key: string) => string;
+  };
   readonly modules?: Collection;
   readonly worlds?: Collection;
   readonly systems?: Collection;
@@ -57,6 +72,11 @@ export type AppClass = abstract new (options?: object) => AppInstance;
 
 export interface PageGlobals {
   readonly game?: SetupGame;
+  /** Foundry's constants: setup themes and update channels, as i18n keys. */
+  readonly CONST?: {
+    readonly CSS_THEMES?: Readonly<Record<string, string>>;
+    readonly SOFTWARE_UPDATE_CHANNELS?: Readonly<Record<string, string>>;
+  };
   readonly Hooks?: { on(name: string, fn: () => void): number };
   readonly ui?: {
     readonly setupPackages?: unknown;

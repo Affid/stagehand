@@ -20,6 +20,7 @@ import {
 import { createTranslator } from "../../src/ui/i18n.ts";
 import type {
   BackupsResult,
+  ConfigResult,
   PageBridge,
   ServerBackupsResult,
 } from "../../src/ui/page.ts";
@@ -127,6 +128,7 @@ export function fakePage(windows = true) {
     setShell: vi.fn(),
     foundryAction: vi.fn(),
     saveWorld: vi.fn(() => Promise.resolve<string | undefined>(undefined)),
+    config: vi.fn(() => Promise.resolve<ConfigResult>({})),
     serverBackups: vi.fn(() =>
       Promise.resolve<ServerBackupsResult>({
         listing: { snapshots: [], packages: [] },
