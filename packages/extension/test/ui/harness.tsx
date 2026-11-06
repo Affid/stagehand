@@ -100,6 +100,7 @@ export function setupState(over: Partial<SetupState> = {}): SetupState {
     hellos: {},
     config: BUNDLED_CONFIG,
     prefs: { newSetupPage: false },
+    fresh: [],
     ...over,
   };
 }

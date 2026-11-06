@@ -28,6 +28,7 @@ const data: SetupState = {
   hellos: {},
   config: BUNDLED_CONFIG,
   prefs: { newSetupPage: false },
+  fresh: [],
 };
 
 const initial: UiState = {

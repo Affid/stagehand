@@ -164,6 +164,22 @@ function worldStore(kv: SerializedKeyValue) {
   };
 }
 
+/** Modules already sorted; the first Setup visit counts all as sorted. */
+function intakeStore(kv: SerializedKeyValue) {
+  const k = (id: ServerId): string => key("sorted", id);
+  return {
+    sortedModules: (id: ServerId) => kv.get<string[]>(k(id)),
+    async seedSorted(id: ServerId, ids: readonly string[]): Promise<void> {
+      await kv.update<string[] | null>(k(id), null, (cur) => cur ?? [...ids]);
+    },
+    async markSorted(id: ServerId, ids: readonly string[]): Promise<void> {
+      await kv.update<string[]>(k(id), [], (cur) => [
+        ...new Set([...cur, ...ids]),
+      ]);
+    },
+  };
+}
+
 /** Worlds whose next launch skips the queue; more is a bug, not a use. */
 const MAX_HOLDS = 200;
 /** A hold is for the launch that follows it, not one much later. */
@@ -226,5 +242,6 @@ export function createState(kv: SerializedKeyValue) {
     ...libraryStore(kv),
     ...worldStore(kv),
     ...commandStore(kv),
+    ...intakeStore(kv),
   };
 }

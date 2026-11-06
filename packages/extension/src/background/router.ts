@@ -53,6 +53,17 @@ async function isVerified(
   return Date.parse(deps.now()) - Date.parse(at) < ADMIN_VERIFIED_TTL_MS;
 }
 
+async function freshModules(
+  deps: RouterDeps,
+  server: ServerId,
+): Promise<string[]> {
+  const sorted = new Set((await deps.state.sortedModules(server)) ?? []);
+  const setup = await deps.state.setup(server);
+  return (setup?.modules ?? [])
+    .map((m) => m.id)
+    .filter((id) => !sorted.has(id));
+}
+
 async function state(deps: RouterDeps, server: ServerId): Promise<SetupState> {
   const s = deps.state;
   return {
@@ -65,6 +76,7 @@ async function state(deps: RouterDeps, server: ServerId): Promise<SetupState> {
     hellos: await s.hellos(server),
     config: await deps.loadConfig(),
     prefs: await s.prefs(server),
+    fresh: await freshModules(deps, server),
   };
 }
 
@@ -127,6 +139,10 @@ async function setupSeen(
   m: Msg<"setup-seen">,
 ) {
   await deps.state.putSetup(server, m.data, deps.now());
+  await deps.state.seedSorted(
+    server,
+    m.data.modules.map((x) => x.id),
+  );
   // PR-1: only an authenticated Setup page (Foundry's isAdmin) verifies.
   if (m.data.isAdmin) await deps.state.markAdminVerified(server, deps.now());
   else await deps.state.revokeAdmin(server);
@@ -140,6 +156,7 @@ const SETUP_WRITES: ReadonlySet<string> = new Set([
   "queue-apply",
   "cancel-command",
   "launch-hold",
+  "modules-sorted",
 ]);
 
 async function fromSetup(
@@ -167,6 +184,8 @@ async function fromSetup(
       return queueApply(deps, server, m);
     case "cancel-command":
       return deps.state.updateCommands(server, (list) => cancel(list, m.id));
+    case "modules-sorted":
+      return deps.state.markSorted(server, m.ids);
     case "launch-hold":
       return deps.state.setLaunchHold(server, m.worldId, m.hold, deps.now());
     default:

@@ -371,3 +371,53 @@ describe("router: new Setup page preference", () => {
     ).rejects.toThrow();
   });
 });
+
+describe("router: modules installed since they were last sorted (intake)", () => {
+  const mod = (id: string) => ({
+    id,
+    title: id,
+    version: "1",
+    authors: [],
+    library: false,
+    hasPacks: false,
+    hasCode: true,
+    compatibility: {},
+    requires: [],
+    recommends: [],
+    conflicts: [],
+    systems: [],
+  });
+  const seen = (ids: string[]): SetupData => ({
+    ...setupData(true),
+    modules: ids.map(mod),
+  });
+  const fresh = async (d: RouterDeps, ids: string[]): Promise<unknown> =>
+    (
+      (await route(d, { kind: "setup-seen", data: seen(ids) }, fromSetup)) as {
+        fresh: unknown;
+      }
+    ).fresh;
+
+  test("the first visit counts everything as sorted; later installs are new", async () => {
+    const d = deps();
+    await registered(d);
+    expect(await fresh(d, ["a", "b"])).toEqual([]);
+    expect(await fresh(d, ["a", "b", "c"])).toEqual(["c"]);
+  });
+
+  test("marking modules sorted clears them; it needs the verified admin", async () => {
+    const d = deps();
+    await registered(d);
+    await fresh(d, ["a"]);
+    await fresh(d, ["a", "c", "d"]);
+    await route(d, { kind: "modules-sorted", ids: ["c"] }, fromSetup);
+    const s = (await route(d, { kind: "get-state" }, fromSetup)) as {
+      fresh: string[];
+    };
+    expect(s.fresh).toEqual(["d"]);
+    await route(d, { kind: "setup-seen", data: setupData(false) }, fromSetup);
+    await expect(
+      route(d, { kind: "modules-sorted", ids: ["d"] }, fromSetup),
+    ).rejects.toThrow();
+  });
+});

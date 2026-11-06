@@ -26,6 +26,8 @@ export const EnvelopeSchema = z.object({
 });
 
 const Id = z.string().min(1).max(200);
+/** More installed modules than this is not a real server. */
+const MAX_SORTED = 5000;
 /** More presets than anyone combines in one change. */
 const MAX_PRESETS = 100;
 
@@ -51,6 +53,11 @@ export const ExtensionMessageSchema = z.discriminatedUnion("kind", [
       message: "Choose presets or modules to apply",
     }),
   z.object({ kind: z.literal("cancel-command"), id: Id }),
+  /** Intake: these modules have been sorted (no longer "new"). */
+  z.object({
+    kind: z.literal("modules-sorted"),
+    ids: z.array(Id).max(MAX_SORTED),
+  }),
   /** "Launch without changes": the world's next pull gets none, once. */
   z.object({ kind: z.literal("launch-hold"), worldId: Id, hold: z.boolean() }),
   z.object({
@@ -76,6 +83,8 @@ export interface SetupState {
   readonly config: SetupConfig;
   /** This browser's choices for this server. */
   readonly prefs: Prefs;
+  /** Installed modules not sorted yet (installed since the first visit). */
+  readonly fresh: readonly string[];
 }
 
 /** Per-server preferences, stored in this browser. */
