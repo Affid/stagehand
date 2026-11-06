@@ -246,11 +246,9 @@ describe("a world's page", () => {
     });
   });
 
-  test("today's world sheet content is on the page, with Apply presets", () => {
-    const { container, getByRole, store } = shell();
-    expect(container.querySelector(".ml-sheet-status")).toBeTruthy();
-    expect(container.querySelector(".ml-sheet-next")).toBeTruthy();
-    fireEvent.click(getByRole("button", { name: "Apply presets…" }));
-    expect(store.get().apply).toEqual({ worldId: "strahd" });
+  test("a world the companion hasn't reported explains the setup", () => {
+    const { container } = shell();
+    expect(container.querySelector(".mlw-empty")).toBeTruthy();
+    expect(container.querySelector(".mlw-card")).toBe(null);
   });
 });

@@ -56,14 +56,15 @@ test("Try the new Setup page takes over Foundry's layout", async () => {
   await expect(shell(page).locator(".mlh-ver")).toContainText("Version 14");
 });
 
-test("a world's page shows its banner and today's sheet", async () => {
+test("a world's page shows its banner, then how to set the world up", async () => {
   await shell(page)
     .locator(`.mls-world[data-world="${TEST_WORLD.id}"]`)
     .click();
   const banner = shell(page).locator(".mls-banner");
   await expect(banner.locator("h2")).toHaveText(TEST_WORLD.title);
   await expect(banner).toContainText(TEST_WORLD.system);
-  await expect(shell(page).locator(".ml-sheet-status")).toBeVisible();
+  // Fresh storage: the companion hasn't reported this world yet.
+  await expect(shell(page).locator(".mlw-empty")).toBeVisible();
   await page.screenshot({ path: `${SCREENS}/shell-world.png` });
 });
 

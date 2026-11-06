@@ -5,6 +5,8 @@ import type { Library } from "@module-library/shared/library/schema";
 import type { ApplyMode } from "@module-library/shared/resolver";
 import type { ExtensionMessage, Prefs, SetupState } from "../messages.ts";
 import type { Translate } from "./i18n.ts";
+import { pendingFor } from "./model/preview.ts";
+import { flipModule } from "./model/world-modules.ts";
 import type { PageBridge } from "./page.ts";
 import type { Store } from "./store.ts";
 
@@ -22,8 +24,15 @@ export interface Actions {
     worldId: string,
     mode: ApplyMode,
     presetIds: readonly string[],
+    modules?: readonly string[],
   ): Promise<boolean>;
   cancelCommand(id: string): Promise<void>;
+  /** A module's switch on the world page: undo its own change, or queue one. */
+  flip(worldId: string, moduleId: string, on: boolean): Promise<void>;
+  /** Cancels every change queued for the world. */
+  discard(worldId: string): Promise<void>;
+  /** "Launch without changes": the next launch gets none, once. */
+  setLaunchHold(worldId: string, hold: boolean): Promise<boolean>;
   exportLibrary(): Promise<string | undefined>;
   importLibrary(text: string): Promise<void>;
   /** Saves one of this browser's choices for the server; false if it failed. */
@@ -108,6 +117,73 @@ async function runImport(
   b.notify("info", t("notice.imported"));
 }
 
+async function runFlip(
+  b: Base,
+  send: Send,
+  store: Store,
+  f: { worldId: string; moduleId: string; on: boolean },
+): Promise<void> {
+  const plan = flipModule(store.get().data, f.worldId, f.moduleId, f.on);
+  await b.guarded(async () => {
+    for (const id of plan.cancel) await send({ kind: "cancel-command", id });
+    if (plan.queue)
+      await send({
+        kind: "queue-apply",
+        worldId: f.worldId,
+        mode: plan.queue.mode,
+        presetIds: [...plan.queue.presetIds],
+        modules: [...(plan.queue.modules ?? [])],
+      });
+  });
+  await b.refresh();
+}
+
+/** Changes queued for worlds, and how their next launch goes. */
+function worldActions(
+  b: Base,
+  send: Send,
+  store: Store,
+): Pick<
+  Actions,
+  "queueApply" | "cancelCommand" | "flip" | "discard" | "setLaunchHold"
+> {
+  return {
+    async queueApply(worldId, mode, presetIds, modules) {
+      const queued = await b.guarded(() =>
+        send({
+          kind: "queue-apply",
+          worldId,
+          mode,
+          presetIds: [...presetIds],
+          ...(modules?.length ? { modules: [...modules] } : {}),
+        }),
+      );
+      if (queued) await b.refresh();
+      return queued !== undefined;
+    },
+    flip: (worldId, moduleId, on) =>
+      runFlip(b, send, store, { worldId, moduleId, on }),
+    async discard(worldId) {
+      const ids = pendingFor(store.get().data, worldId).map((c) => c.id);
+      await b.guarded(async () => {
+        for (const id of ids) await send({ kind: "cancel-command", id });
+      });
+      await b.refresh();
+    },
+    async setLaunchHold(worldId, hold) {
+      const done = await b.guarded(async () => {
+        await send({ kind: "launch-hold", worldId, hold });
+        return true;
+      });
+      return done === true;
+    },
+    async cancelCommand(id) {
+      await b.guarded(() => send({ kind: "cancel-command", id }));
+      await b.refresh();
+    },
+  };
+}
+
 export function createActions(
   store: Store,
   send: Send,
@@ -119,17 +195,7 @@ export function createActions(
     notify: b.notify,
     refresh: b.refresh,
     op: (op) => runOp(b, send, t, op),
-    async queueApply(worldId, mode, presetIds) {
-      const queued = await b.guarded(() =>
-        send({ kind: "queue-apply", worldId, mode, presetIds: [...presetIds] }),
-      );
-      if (queued) await b.refresh();
-      return queued !== undefined;
-    },
-    async cancelCommand(id) {
-      await b.guarded(() => send({ kind: "cancel-command", id }));
-      await b.refresh();
-    },
+    ...worldActions(b, send, store),
     async exportLibrary() {
       const r = await b.guarded(() =>
         send<{ text: string }>({ kind: "library-export" }),

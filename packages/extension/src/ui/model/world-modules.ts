@@ -45,6 +45,8 @@ export interface WorldModules {
   readonly tracked: boolean;
   readonly rows: readonly WorldModuleRow[];
   readonly changes: number;
+  /** Queued commands, including any that change nothing. */
+  readonly queued: number;
   readonly problems: number;
   readonly nowCount: number;
   readonly nextCount: number;
@@ -151,11 +153,13 @@ function context(state: SetupState, worldId: string): Context | undefined {
 
 export function worldModules(state: SetupState, worldId: string): WorldModules {
   const ctx = context(state, worldId);
+  const queued = pendingFor(state, worldId).length;
   if (!ctx || !state.setup)
     return {
       tracked: false,
       rows: [],
       changes: 0,
+      queued,
       problems: 0,
       nowCount: 0,
       nextCount: 0,
@@ -165,6 +169,7 @@ export function worldModules(state: SetupState, worldId: string): WorldModules {
     tracked: true,
     rows,
     changes: rows.filter((r) => r.delta).length,
+    queued,
     problems: rows.filter((r) => r.problem).length,
     nowCount: rows.filter((r) => r.now).length,
     nextCount: rows.filter((r) => r.next).length,

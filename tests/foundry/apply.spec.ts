@@ -194,3 +194,34 @@ test("an Assistant GM gets nothing; the GM can discard (PR-4)", async () => {
     .toBe("declined");
   expect(await activeModules(page)).toEqual([COMPANION_ID]);
 });
+
+test("new Setup page: Launch without changes holds the queue for that launch", async () => {
+  await backToSetup();
+  await page.locator('#setup-packages [data-tab="modules"]').first().click();
+  await page
+    .locator("#ml-modules-root")
+    .getByRole("button", { name: "Try the new Setup page" })
+    .click();
+  const shell = page.locator("#ml-shell-root");
+  await shell.locator(`.mls-world[data-world="${TEST_WORLD.id}"]`).click();
+  const before = (await commands()).length;
+  await shell
+    .locator('.mlw-card[data-module="ml-fixture-a"] input[role="switch"]')
+    .click();
+  const banner = shell.locator(".mls-banner");
+  // Fixture A brings its library along: two modules turn on.
+  await expect(banner.locator(".mlc-badge")).toHaveText("2");
+  await banner.getByRole("button", { name: /^Launch/ }).click();
+  await page.getByRole("button", { name: "Launch without changes" }).click();
+  // A browser still signed in to the world goes straight to /game.
+  await page.waitForURL(/\/(join|game)$/);
+  if (page.url().endsWith("/join"))
+    await joinWorld(page, env.url, "Gamemaster");
+  else await waitReady(page);
+  await page.waitForTimeout(5000);
+  await expect(inWorldDialog(page)).toHaveCount(0);
+  const list = await commands();
+  expect(list).toHaveLength(before + 1);
+  expect(list.at(-1)?.status).toBe("pending");
+  expect((await storage(ext.worker))[`launchHolds:${env.url}`]).toEqual([]);
+});

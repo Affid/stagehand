@@ -1,42 +1,14 @@
 // The new Setup page's header bar: Foundry's name and version, Backups,
 // Configuration, the power menu, and the way back to Foundry's own page.
 // For now each opens Foundry's own screen (build plan, Phase 1).
-import type { RefObject } from "preact";
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import type { FoundryAction } from "../../page-protocol.ts";
+import { useDismiss } from "../common/dismiss.ts";
 import { Icon } from "../common/widgets.tsx";
 import { useUi } from "../context.ts";
 
 /** "14.370" reads as "14 · 370", as Foundry's own footer shows it. */
 const versionLabel = (version: string): string => version.replace(".", " · ");
-
-/**
- * Closes a popup on Escape (focus back on its button) or on a press outside
- * `wrap`. Escape stops here, so Foundry doesn't also act on it.
- */
-function useDismiss(
-  open: boolean,
-  close: (refocus: boolean) => void,
-  wrap: RefObject<HTMLElement | null>,
-): void {
-  useEffect(() => {
-    if (!open) return undefined;
-    const onKey = (e: KeyboardEvent): void => {
-      if (e.key !== "Escape") return;
-      e.stopPropagation();
-      close(true);
-    };
-    const onDown = (e: PointerEvent): void => {
-      if (!wrap.current?.contains(e.target as Node)) close(false);
-    };
-    document.addEventListener("keydown", onKey, true);
-    document.addEventListener("pointerdown", onDown);
-    return () => {
-      document.removeEventListener("keydown", onKey, true);
-      document.removeEventListener("pointerdown", onDown);
-    };
-  }, [open, close, wrap]);
-}
 
 /** Log out and Shut down: a disclosure of two plain buttons. */
 function PowerMenu() {

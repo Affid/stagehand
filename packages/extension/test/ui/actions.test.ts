@@ -114,6 +114,35 @@ describe("actions", () => {
     expect(await actions.queueApply("w", "add", ["p"])).toBe(true);
     expect(send).toHaveBeenLastCalledWith({ kind: "get-state" });
   });
+
+  test("modules picked one by one go with the change", async () => {
+    const { actions, send } = setup((m) =>
+      m.kind === "get-state" ? data : { queued: "c1" },
+    );
+    await actions.queueApply("w", "remove", [], ["a"]);
+    expect(send).toHaveBeenCalledWith({
+      kind: "queue-apply",
+      worldId: "w",
+      mode: "remove",
+      presetIds: [],
+      modules: ["a"],
+    });
+  });
+
+  test("a launch hold is sent, and a failure says so", async () => {
+    const ok = setup(() => undefined);
+    expect(await ok.actions.setLaunchHold("w", true)).toBe(true);
+    expect(ok.send).toHaveBeenCalledWith({
+      kind: "launch-hold",
+      worldId: "w",
+      hold: true,
+    });
+    const bad = setup(() => {
+      throw new Error("no");
+    });
+    expect(await bad.actions.setLaunchHold("w", true)).toBe(false);
+    expect(bad.page.notify).toHaveBeenCalled();
+  });
 });
 
 describe("helpers", () => {

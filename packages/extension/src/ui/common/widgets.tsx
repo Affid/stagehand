@@ -1,6 +1,7 @@
 // Small shared widgets: modal, inline text input, icons, colour dot.
 import type { ComponentChildren } from "preact";
 import { useEffect, useRef, useState } from "preact/hooks";
+import { useModalFocus } from "./modal-focus.ts";
 
 export function Modal(props: {
   readonly title: string;
@@ -8,21 +9,16 @@ export function Modal(props: {
   readonly children: ComponentChildren;
   readonly footer?: ComponentChildren;
 }) {
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent): void => {
-      if (e.key === "Escape") props.onClose();
-    };
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("keydown", onKey);
-    };
-  }, [props.onClose]);
+  const box = useRef<HTMLDivElement>(null);
+  useModalFocus(box, props.onClose);
   return (
     <div
       class="ml-backdrop"
       onClick={(e) => e.target === e.currentTarget && props.onClose()}
     >
       <div
+        ref={box}
+        tabIndex={-1}
         class="ml-modal"
         role="dialog"
         aria-modal="true"
