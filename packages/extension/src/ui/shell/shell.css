@@ -546,7 +546,7 @@
   font-weight: 700;
 }
 
-.mls-shell .mls-banner .acts .mlw-star {
+.mls-shell .mls-banner .mlw-star {
   width: 30px;
   height: 30px;
   padding: 0;
@@ -558,15 +558,23 @@
   text-shadow: 0 0 6px #000;
 }
 
-.mls-shell .mls-banner .acts .mlw-star:hover {
+.mls-shell .mls-banner .mlw-star:hover {
   color: #f5d77a;
 }
 
-.mls-shell .mls-banner .acts .mlw-star.on {
+.mls-shell .mls-banner .mlw-star.on {
   color: #e8c35a;
 }
 
+.mls-shell .mls-banner h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .mls-shell .mlw-locktag {
+  font-family: var(--font-body, Signika), sans-serif;
+  text-shadow: none;
   display: inline-flex;
   gap: 5px;
   align-items: center;

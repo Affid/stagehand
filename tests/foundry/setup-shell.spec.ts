@@ -75,7 +75,7 @@ test("a world's page shows its banner, then how to set the world up", async () =
     .locator(`.mls-world[data-world="${TEST_WORLD.id}"]`)
     .click();
   const banner = shell(page).locator(".mls-banner");
-  await expect(banner.locator("h2")).toHaveText(TEST_WORLD.title);
+  await expect(banner.locator("h2")).toContainText(TEST_WORLD.title);
   await expect(banner).toContainText(TEST_WORLD.system);
   // Fresh storage: the companion hasn't reported this world yet.
   await expect(shell(page).locator(".mlw-empty")).toBeVisible();

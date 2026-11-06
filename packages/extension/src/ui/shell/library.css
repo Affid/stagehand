@@ -310,6 +310,8 @@
 }
 
 .mls-shell .mll-field textarea {
+  font-family: var(--font-body, Signika), sans-serif;
+  font-size: 13px;
   min-height: 70px;
   resize: vertical;
 }

@@ -176,9 +176,9 @@ describe("the worlds rail", () => {
 describe("routing", () => {
   test("opens on the first world; a click opens another; Library switches", () => {
     const { container, getByRole, store } = shell();
-    expect(el(container, ".mls-banner h2").textContent).toBe("Curse of Strahd");
+    expect(el(container, ".mls-banner h2").textContent).toContain("Curse of Strahd");
     fireEvent.click(getByRole("button", { name: /Old Campaign/ }));
-    expect(el(container, ".mls-banner h2").textContent).toBe("Old Campaign");
+    expect(el(container, ".mls-banner h2").textContent).toContain("Old Campaign");
     expect(
       getByRole("button", { name: /Old Campaign/ }).getAttribute(
         "aria-current",
@@ -221,11 +221,11 @@ describe("a world's page", () => {
     ]);
   });
 
-  test("the star toggles Foundry's favourite", () => {
+  test("the title carries the star and the Locked tag; the star toggles Foundry's favourite", () => {
     const { container, page } = shell();
-    const star = within(el(container, ".mls-banner")).getByRole("button", {
-      name: "Favourite",
-    });
+    const title = el(container, ".mls-banner h2");
+    expect(title.textContent).toContain("Locked");
+    const star = within(title).getByRole("button", { name: "Favourite" });
     expect(star.getAttribute("aria-pressed")).toBe("true");
     fireEvent.click(star);
     expect(page.foundryAction).toHaveBeenCalledWith({

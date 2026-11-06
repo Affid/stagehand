@@ -37,13 +37,39 @@ function BannerMeta(props: {
           ? plural(t, "wp.modulesOn", model.nowCount)
           : t("wp.modulesUnknown")}
       </span>
+    </div>
+  );
+}
+
+/** The title, the Favourite star and the Locked tag, as the prototype. */
+function BannerTitle(props: { readonly world: WorldInfo }) {
+  const { page, t } = useUi();
+  const { world } = props;
+  return (
+    <h2>
+      {world.title}
+      <button
+        type="button"
+        class={`mlw-star${world.favorite ? " on" : ""}`}
+        aria-label={t("shell.favorite")}
+        title={t("shell.favorite")}
+        aria-pressed={world.favorite === true}
+        onClick={() =>
+          page.foundryAction({ action: "favorite", worldId: world.id })
+        }
+      >
+        <i
+          class={`fa-${world.favorite ? "solid" : "regular"} fa-star`}
+          aria-hidden="true"
+        />
+      </button>
       {world.locked ? (
         <span class="mlw-locktag">
           <Icon name="lock" />
           {t("shell.locked")}
         </span>
       ) : null}
-    </div>
+    </h2>
   );
 }
 
@@ -92,26 +118,10 @@ function BannerActions(props: {
   /** The pencil: the About tab. */
   readonly onEdit: () => void;
 }) {
-  const { page, t } = useUi();
-  const { world, changes } = props;
-  const act = (action: "favorite"): void => {
-    page.foundryAction({ action, worldId: world.id });
-  };
+  const { t } = useUi();
+  const { changes } = props;
   return (
     <div class="acts">
-      <button
-        type="button"
-        class={`mlw-star${world.favorite ? " on" : ""}`}
-        aria-label={t("shell.favorite")}
-        title={t("shell.favorite")}
-        aria-pressed={world.favorite === true}
-        onClick={() => act("favorite")}
-      >
-        <i
-          class={`fa-${world.favorite ? "solid" : "regular"} fa-star`}
-          aria-hidden="true"
-        />
-      </button>
       <button
         type="button"
         class="icon"
@@ -177,7 +187,7 @@ export function WorldPage(props: { readonly world: WorldInfo }) {
     <section class="application framed mls-main">
       <div class="mls-banner" style={image ? { "--img": image } : undefined}>
         <div>
-          <h2>{world.title}</h2>
+          <BannerTitle world={world} />
           <BannerMeta world={world} model={model} />
           <PendingLine world={world} model={model} onReview={launch.start} />
         </div>
