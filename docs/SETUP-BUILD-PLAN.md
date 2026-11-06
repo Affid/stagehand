@@ -350,5 +350,17 @@ calendar, Repeats, 24-hour time and quick times, time zone list and search),
 and moving a passed date on when Setup opens. Found live: Foundry's client
 merges editWorld's answer, so a "-=" deletion has to be applied to the
 client's copy too (`saveWorld` applies our changes, then the answer).
+Package 4 reviews: code (one high) and security, no critical. Fixed: a rule
+started long ago now jumps to its next dates (it gave up after 120 steps and
+the sync then cleared Foundry's date); monthly rules on the 29th to 31st use
+the month's last day; "today" in the editor is the viewer's date; a removed
+chosen date is deleted with a "-=" key per date (live: Foundry merges
+objects, and a delete and a set of the same key in one request leaves
+nothing); the sync only moves a missing or passed date, compares instants
+and skips a schedule whose math fails; the zone search works by keyboard; a
+description Setup had to cut isn't offered for editing; descriptions are
+cleaned (no attributes but checked links and image sources) before Foundry's
+editor opens them; a schedule's zone must be one the browser knows; the page
+world refuses Foundry writes unless Setup is the admin's.
 
 Then Phase 6 (News and finish).

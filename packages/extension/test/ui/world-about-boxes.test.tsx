@@ -145,6 +145,15 @@ describe("the About tab's boxes", () => {
     });
   });
 
+  test("a description Setup had to cut isn't edited here, so nothing is lost (review)", () => {
+    const { container } = about({ description: "x".repeat(20000) });
+    const d = box(container, "Description");
+    expect(within(d).queryByRole("button", { name: "Edit description" })).toBe(
+      null,
+    );
+    expect(d.textContent).toContain("too long to edit here");
+  });
+
   test("Background's Change opens Foundry's file picker", () => {
     const { container, page } = about({ background: "worlds/w1/bg.webp" });
     fireEvent.click(

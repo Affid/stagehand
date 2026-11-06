@@ -78,6 +78,55 @@ describe("saving a world through Foundry", () => {
     });
   });
 
+  test("a removed chosen date is deleted, not kept by Foundry's merge (review)", async () => {
+    const f = foundry();
+    const stored = {
+      start: "2026-12-01",
+      time: "19:00",
+      tz: "UTC",
+      freq: "dates" as const,
+      skips: [],
+      dates: { "2026-12-01": "19:00", "2026-12-08": "19:00" },
+    };
+    Object.assign(f.world, {
+      flags: { "module-library": { schedule: stored } },
+    });
+    await saveWorld(f.page, "w", {
+      schedule: { ...stored, dates: { "2026-12-01": "19:00" } },
+    });
+    expect(f.post).toHaveBeenLastCalledWith({
+      action: "editWorld",
+      id: "w",
+      flags: {
+        "module-library": {
+          schedule: {
+            ...stored,
+            dates: { "2026-12-01": "19:00", "-=2026-12-08": null },
+          },
+        },
+      },
+    });
+    // A rule without chosen dates drops the stored ones.
+    await saveWorld(f.page, "w", {
+      schedule: {
+        start: "2026-12-01",
+        time: "19:00",
+        tz: "UTC",
+        freq: "w1",
+        skips: [],
+      },
+    });
+    expect(f.post).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        flags: {
+          "module-library": {
+            schedule: expect.objectContaining({ "-=dates": null }) as unknown,
+          },
+        },
+      }),
+    );
+  });
+
   test("a value Foundry rejects is never sent", async () => {
     const f = foundry({
       validate: () => {

@@ -525,5 +525,6 @@
   "sched.noneChosen": "No dates chosen yet",
   "sched.cityTime": "{city} time",
   "sched.others": "Players see it in their own time, for example {list}",
-  "sched.clear": "No next session"
+  "sched.clear": "No next session",
+  "about.descTooLong": "This description is too long to edit here: change it in the world, or in Foundry's World Configuration."
 }

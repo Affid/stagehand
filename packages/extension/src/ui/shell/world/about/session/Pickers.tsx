@@ -140,23 +140,27 @@ export function findZones(q: string): { hits: string[]; total: number } {
 }
 
 function ZoneList(props: {
+  readonly hits: readonly string[];
+  readonly total: number;
   readonly q: string;
+  readonly active: number;
   readonly onPick: (tz: string) => void;
 }) {
   const { t } = useUi();
-  const q = props.q;
-  const { hits, total } = findZones(q);
+  const { hits, q } = props;
   return (
     <ul id="ml-tzlist" role="listbox" aria-label={t("sched.tz")}>
       {!q.trim() ? <li class="hint">{t("sched.findHint")}</li> : null}
       {q.trim() && !hits.length ? (
         <li class="hint">{t("sched.findNone")}</li>
       ) : null}
-      {hits.map((z) => (
+      {hits.map((z, i) => (
         <li
           key={z}
+          id={`ml-tz-${String(i)}`}
           role="option"
-          aria-selected="false"
+          aria-selected={i === props.active}
+          class={i === props.active ? "on" : ""}
           onClick={() => props.onPick(z)}
         >
           <span>{cityOf(z)}</span>
@@ -164,13 +168,39 @@ function ZoneList(props: {
           <span class="o">{tzLabel(z, Date.now())}</span>
         </li>
       ))}
-      {total > hits.length ? (
+      {props.total > hits.length ? (
         <li class="hint more">
-          {t("sched.findMore", { n: String(total - hits.length) })}
+          {t("sched.findMore", { n: String(props.total - hits.length) })}
         </li>
       ) : null}
     </ul>
   );
+}
+
+/** Arrows move, Enter picks, Escape goes back (active-descendant pattern). */
+function keys(
+  e: KeyboardEvent,
+  hits: readonly string[],
+  active: number,
+  go: {
+    readonly move: (i: number) => void;
+    readonly pick: (z: string) => void;
+    readonly back: () => void;
+  },
+): void {
+  const n = hits.length;
+  if ((e.key === "ArrowDown" || e.key === "ArrowUp") && n) {
+    e.preventDefault();
+    go.move((active + (e.key === "ArrowDown" ? 1 : -1) + n) % n);
+  } else if (e.key === "Enter") {
+    e.preventDefault();
+    const z = hits[active];
+    if (z) go.pick(z);
+  } else if (e.key === "Escape") {
+    e.preventDefault();
+    e.stopPropagation();
+    go.back();
+  }
 }
 
 function ZoneFinder(props: {
@@ -179,6 +209,8 @@ function ZoneFinder(props: {
 }) {
   const { t } = useUi();
   const [q, setQ] = useState("");
+  const [active, setActive] = useState(0);
+  const { hits, total } = findZones(q);
   return (
     <div class="mlw-tzfind">
       <div class="in">
@@ -187,18 +219,37 @@ function ZoneFinder(props: {
           type="search"
           role="combobox"
           list={undefined}
-          aria-expanded="true"
+          aria-expanded={hits.length > 0}
           aria-controls="ml-tzlist"
+          aria-activedescendant={
+            hits.length ? `ml-tz-${String(active)}` : undefined
+          }
           aria-label={t("sched.findLabel")}
           placeholder={t("sched.findLabel")}
           value={q}
-          onInput={(e) => setQ(e.currentTarget.value)}
+          onInput={(e) => {
+            setQ(e.currentTarget.value);
+            setActive(0);
+          }}
+          onKeyDown={(e) => {
+            keys(e, hits, active, {
+              move: setActive,
+              pick: props.onPick,
+              back: props.onBack,
+            });
+          }}
         />
         <button type="button" onClick={props.onBack}>
           {t("about.cancel")}
         </button>
       </div>
-      <ZoneList q={q} onPick={props.onPick} />
+      <ZoneList
+        hits={hits}
+        total={total}
+        q={q}
+        active={active}
+        onPick={props.onPick}
+      />
     </div>
   );
 }

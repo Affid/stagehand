@@ -8,6 +8,7 @@ import {
   addDays,
   type Freq,
   type Schedule,
+  todayIn,
   upcoming,
 } from "../../../../model/schedule.ts";
 import { Calendar, ZonePick } from "./Pickers.tsx";
@@ -22,7 +23,8 @@ interface Draft extends Schedule {
   readonly month: string;
 }
 
-const today = (): string => new Date().toISOString().slice(0, 10);
+/** Today in the viewer's own calendar, not the UTC date (review). */
+const today = (): string => todayIn(BROWSER_TZ, Date.now());
 
 function startDraft(s: Schedule | undefined): Draft {
   const start = s?.start ?? addDays(today(), 4);
@@ -45,7 +47,14 @@ function toSchedule(d: Draft, prev: Schedule | undefined): Schedule {
     time: d.time,
     tz: d.tz,
     freq: d.freq,
-    skips: prev?.freq === d.freq ? prev.skips : [],
+    // Skips belong to the rule as it was: a new start, time or zone resets them.
+    skips:
+      prev?.freq === d.freq &&
+      prev.start === d.start &&
+      prev.time === d.time &&
+      prev.tz === d.tz
+        ? prev.skips
+        : [],
     ...(d.freq === "dates" ? { dates: d.dates ?? {} } : {}),
   };
 }

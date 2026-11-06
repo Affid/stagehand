@@ -141,7 +141,24 @@ function handleEditor(
     );
 }
 
+/** Messages that change Foundry: only on an admin's Setup (defence in depth). */
+const WRITES: ReadonlySet<string> = new Set([
+  "SAVE_WORLD",
+  "EDITOR_SAVE",
+  "FOUNDRY_ACTION",
+  "BACKUPS",
+  "SERVER_BACKUPS",
+  "CONFIG",
+]);
+
 function handle(bridge: Bridge, m: UiToPage): void {
+  if (WRITES.has(m.type) && page.game?.data?.isAdmin !== true) {
+    notify(
+      "error",
+      "Module Library: only the administrator's Setup can change Foundry.",
+    );
+    return;
+  }
   switch (m.type) {
     case "WINDOW_OPEN":
       void bridge.windows?.open(m.payload);

@@ -92,11 +92,21 @@ const TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
 /** Chosen dates or skips past this are not a real schedule. */
 const MAX_DATES = 400;
 
+function isTimeZone(tz: string): boolean {
+  try {
+    new Intl.DateTimeFormat("en", { timeZone: tz });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 /** The next-session schedule, ours, in the world's flags["module-library"]. */
 export const ScheduleSchema = z.object({
   start: z.string().regex(DATE),
   time: z.string().regex(TIME),
-  tz: z.string().min(1).max(64),
+  /** A zone the browser knows: a bad one would throw in every date (review). */
+  tz: z.string().min(1).max(64).refine(isTimeZone),
   freq: z.enum(["none", "w1", "w2", "m1", "dates"]),
   skips: z.array(z.string().regex(DATE)).max(MAX_DATES).readonly(),
   dates: z

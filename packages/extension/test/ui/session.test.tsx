@@ -136,6 +136,67 @@ describe("the next session", () => {
   });
 });
 
+describe("the time zone search by keyboard (review)", () => {
+  test("arrows move through the results, Enter picks one", () => {
+    const { box } = about();
+    fireEvent.click(
+      within(box()).getByRole("button", { name: "Set the next session" }),
+    );
+    fireEvent.click(
+      within(box()).getByRole("button", { name: "Find another" }),
+    );
+    const input = within(box()).getByRole("combobox", {
+      name: "Find a time zone",
+    });
+    fireEvent.input(input, { target: { value: "Toky" } });
+    const first = input.getAttribute("aria-activedescendant") ?? "";
+    expect(
+      box().querySelector(`#${first}`)?.getAttribute("aria-selected"),
+    ).toBe("true");
+    fireEvent.keyDown(input, { key: "Enter" });
+    expect(box().textContent).toContain("Japan");
+  });
+
+  test("Escape goes back to the list of zones", () => {
+    const { box } = about();
+    fireEvent.click(
+      within(box()).getByRole("button", { name: "Set the next session" }),
+    );
+    fireEvent.click(
+      within(box()).getByRole("button", { name: "Find another" }),
+    );
+    fireEvent.keyDown(
+      within(box()).getByRole("combobox", { name: "Find a time zone" }),
+      {
+        key: "Escape",
+      },
+    );
+    expect(
+      within(box()).getByRole("combobox", { name: "Time zone" }),
+    ).toBeTruthy();
+  });
+});
+
+describe("moving the next session on (review)", () => {
+  test("a date still to come is left alone, even off the schedule", async () => {
+    const future = new Date(Date.now() + 2 * 864e5).toISOString();
+    const { page } = about({ schedule: weekly, nextSession: future });
+    await new Promise((r) => setTimeout(r, 50));
+    expect(page.saveWorld).not.toHaveBeenCalled();
+  });
+
+  test("a locked world is left alone", async () => {
+    const past = new Date(Date.now() - 2 * 864e5).toISOString();
+    const { page } = about({
+      schedule: weekly,
+      nextSession: past,
+      locked: true,
+    });
+    await new Promise((r) => setTimeout(r, 50));
+    expect(page.saveWorld).not.toHaveBeenCalled();
+  });
+});
+
 describe("moving the next session on", () => {
   test("when Setup opens, a passed date moves to the schedule's next one", async () => {
     const past = new Date(Date.now() - 2 * 864e5).toISOString();

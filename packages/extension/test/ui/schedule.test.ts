@@ -60,7 +60,44 @@ describe("the schedule's dates", () => {
     expect(
       upcoming({ ...weekly, freq: "m1", skips: [] }, NOW, 3).map((d) => d.date),
     ).toEqual(["2026-11-10", "2026-12-10", "2027-01-10"]);
-    expect(addMonths("2027-01-31", 1)).toBe("2027-03-03");
+    // The 31st in a shorter month is that month's last day.
+    expect(addMonths("2027-01-31", 1)).toBe("2027-02-28");
+    expect(addMonths("2028-01-31", 1)).toBe("2028-02-29");
+    const endOfMonth: Schedule = {
+      ...weekly,
+      start: "2026-11-30",
+      freq: "m1",
+      skips: [],
+    };
+    expect(upcoming(endOfMonth, NOW, 4).map((d) => d.date)).toEqual([
+      "2026-11-30",
+      "2026-12-30",
+      "2027-01-30",
+      "2027-02-28",
+    ]);
+  });
+
+  test("a rule started years ago still has its next dates (review)", () => {
+    const old: Schedule = { ...weekly, start: "2020-01-07", skips: [] };
+    expect(upcoming(old, NOW, 2).map((d) => d.date)).toEqual([
+      "2026-11-10",
+      "2026-11-17",
+    ]);
+    const monthly: Schedule = {
+      ...weekly,
+      start: "2010-01-10",
+      freq: "m1",
+      skips: [],
+    };
+    expect(nextOf(monthly, NOW)?.date).toBe("2026-11-10");
+    const fortnightly: Schedule = {
+      ...weekly,
+      start: "2026-11-10",
+      freq: "w2",
+      skips: [],
+    };
+    const later = zonedToUtc("2031-06-01", "12:00", "UTC");
+    expect(nextOf(fortnightly, later)?.ms).toBeGreaterThan(later);
   });
 
   test("a date that doesn't repeat is next only until it passes", () => {

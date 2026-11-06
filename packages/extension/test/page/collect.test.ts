@@ -173,11 +173,20 @@ describe("reading Setup's package data (V-1)", () => {
               id: "v",
               flags: { "module-library": { schedule: { time: "25:00" } } },
             },
+            {
+              id: "u",
+              flags: {
+                "module-library": {
+                  schedule: { ...schedule, tz: "Not/AZone" },
+                },
+              },
+            },
           ].values(),
       },
     });
     expect(data.worlds[0]?.schedule).toEqual(schedule);
     expect(data.worlds[1]).not.toHaveProperty("schedule");
+    expect(data.worlds[2]).not.toHaveProperty("schedule");
     expect(SetupDataSchema.safeParse(data).success).toBe(true);
   });
 

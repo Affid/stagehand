@@ -74,9 +74,11 @@ export function addDays(date: string, n: number): string {
   return iso(y, m - 1, d + n);
 }
 
+/** The same day n months on; the 31st in a shorter month is its last day. */
 export function addMonths(date: string, n: number): string {
   const [y = 0, m = 1, d = 1] = date.split("-").map(Number);
-  return iso(y, m - 1 + n, d);
+  const last = new Date(Date.UTC(y, m - 1 + n + 1, 0)).getUTCDate();
+  return iso(y, m - 1 + n, Math.min(d, last));
 }
 
 function chosen(s: Schedule, now: number, count: number): Session[] {
@@ -92,23 +94,40 @@ function chosen(s: Schedule, now: number, count: number): Session[] {
     .slice(0, count);
 }
 
-const step = (s: Schedule, k: number, date: string): string =>
+/** The rule's k-th date, counted from its start. */
+const dateAt = (s: Schedule, k: number): string =>
   s.freq === "m1"
-    ? addMonths(s.start, k + 1)
-    : addDays(date, s.freq === "w2" ? 14 : 7);
+    ? addMonths(s.start, k)
+    : addDays(s.start, k * (s.freq === "w2" ? 14 : 7));
+
+/**
+ * Steps of the rule already behind `now` (one short, for safety), so a
+ * rule started years ago still finds its next dates (review).
+ */
+function stepsBehind(s: Schedule, now: number): number {
+  const today = new Date(now).toISOString().slice(0, 10);
+  if (s.freq === "none" || today <= s.start) return 0;
+  if (s.freq === "m1") {
+    const [y0 = 0, m0 = 1] = s.start.split("-").map(Number);
+    const [y1 = 0, m1 = 1] = today.split("-").map(Number);
+    return Math.max(0, (y1 - y0) * 12 + (m1 - m0) - 1);
+  }
+  const days = (Date.parse(today) - Date.parse(s.start)) / DAY;
+  return Math.max(0, Math.floor(days / (s.freq === "w2" ? 14 : 7)) - 1);
+}
 
 /** The schedule's dates from `now` on, skipped ones marked. */
 export function upcoming(s: Schedule, now: number, count = 5): Session[] {
   if (s.freq === "dates") return chosen(s, now, count);
   const skips = new Set(s.skips);
   const out: Session[] = [];
-  let date = s.start;
-  for (let k = 0; out.length < count && k < MAX_STEPS; k++) {
+  const first = stepsBehind(s, now);
+  for (let k = first; out.length < count && k < first + MAX_STEPS; k++) {
+    const date = dateAt(s, k);
     const ms = zonedToUtc(date, s.time, s.tz);
     if (ms >= now)
       out.push({ date, time: s.time, ms, skipped: skips.has(date) });
     if (s.freq === "none") break;
-    date = step(s, k, date);
   }
   return out;
 }
@@ -124,6 +143,15 @@ export function daysUntil(ms: number, now: number, tz: string): number {
     Math.floor((t + offsetMinutes(t, tz) * 60000) / DAY);
   return day(ms) - day(now);
 }
+
+/** Today's date in that zone, "2026-11-06" (not the UTC date). */
+export const todayIn = (tz: string, now: number): string =>
+  new Intl.DateTimeFormat("en-CA", {
+    timeZone: tz,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(now);
 
 /** "Europe/Berlin" reads "Berlin"; "UTC" stays. */
 export const cityOf = (tz: string): string =>

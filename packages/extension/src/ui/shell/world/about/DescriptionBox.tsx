@@ -1,8 +1,9 @@
 // The About tab's Description: shown cleaned and folded when long; Edit
 // opens Foundry's own prose-mirror editor here (the page world mounts it in
 // our host) and Save stores its HTML through editWorld (SETUP-REDESIGN.md).
-import type { WorldInfo } from "@module-library/shared/world";
+import { MAX_DESCRIPTION, type WorldInfo } from "@module-library/shared/world";
 import { useEffect, useMemo, useState } from "preact/hooks";
+import { cleanForEditor } from "../../../common/clean-html.ts";
 import { RichText } from "../../../common/rich-text.tsx";
 import { useUi } from "../../../context.ts";
 
@@ -46,7 +47,8 @@ function Editor(props: {
     [props.world.id],
   );
   useEffect(() => {
-    page.editorOpen(hostId, props.world.description ?? "");
+    // Cleaned first: Foundry's editor sets it as live HTML (security review).
+    page.editorOpen(hostId, cleanForEditor(props.world.description ?? ""));
     return () => {
       page.editorClose(hostId);
     };
@@ -79,11 +81,14 @@ export function DescriptionBox(props: {
 }) {
   const { t } = useUi();
   const [editing, setEditing] = useState(false);
+  // Setup reads at most MAX_DESCRIPTION: saving a cut copy would lose the rest.
+  const cut = (props.world.description?.length ?? 0) >= MAX_DESCRIPTION;
+  const canEdit = props.canEdit && !cut;
   return (
     <section class="mlw-box">
       <h4>
         <span>{t("about.description")}</span>
-        {props.canEdit && !editing ? (
+        {canEdit && !editing ? (
           <button
             type="button"
             class="ml-link"
@@ -99,6 +104,9 @@ export function DescriptionBox(props: {
       ) : (
         <View html={props.world.description} />
       )}
+      {props.canEdit && cut ? (
+        <p class="hint">{t("about.descTooLong")}</p>
+      ) : null}
     </section>
   );
 }
