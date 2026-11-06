@@ -1,7 +1,7 @@
 // Runs in the Setup page's own JavaScript world. Posts package data to the
-// isolated UI (V-1), and lends it Foundry's own pieces: windows, the
-// right-click menu on world cards, and notifications. Every message from the
-// UI is checked; anything unexpected is ignored.
+// isolated UI (V-1), and lends it Foundry's own pieces: its actions, dialogs,
+// editor, progress and notifications. Every message from the UI is checked;
+// anything unexpected is ignored.
 import { logError } from "@module-library/shared/log";
 import { isEnvelope, makeEnvelope } from "@module-library/shared/protocol";
 import {
@@ -23,7 +23,6 @@ import { collect } from "../page/collect.ts";
 import { watchProgress } from "../page/progress.ts";
 import { pageGlobals } from "../page/globals.ts";
 import { setShell } from "../page/shell.ts";
-import { createWindowHost, type WindowHost } from "../page/windows.ts";
 
 const page = pageGlobals();
 const POLL_MS = 100;
@@ -53,10 +52,6 @@ function notify(kind: "info" | "warning" | "error", text: string): void {
   const level = kind === "warning" ? "warn" : kind;
   if (safe !== undefined && n?.[level]) n[level](safe, { console: false });
   else logError("notice", new Error(text));
-}
-
-interface Bridge {
-  readonly windows: WindowHost | undefined;
 }
 
 /** Runs a backups request and answers with its id. */
@@ -152,7 +147,7 @@ const WRITES: ReadonlySet<string> = new Set([
   "CONFIG",
 ]);
 
-function handle(bridge: Bridge, m: UiToPage): void {
+function handle(m: UiToPage): void {
   if (WRITES.has(m.type) && page.game?.data?.isAdmin !== true) {
     notify(
       "error",
@@ -161,12 +156,6 @@ function handle(bridge: Bridge, m: UiToPage): void {
     return;
   }
   switch (m.type) {
-    case "WINDOW_OPEN":
-      void bridge.windows?.open(m.payload);
-      break;
-    case "WINDOW_CLOSE":
-      void bridge.windows?.close(m.payload.id);
-      break;
     case "NOTIFY":
       notify(m.payload.kind, m.payload.text);
       break;
@@ -201,16 +190,11 @@ function handle(bridge: Bridge, m: UiToPage): void {
 }
 
 function connect(): void {
-  const api = page.foundry?.applications;
-  const base = api?.api?.ApplicationV2;
-  const bridge: Bridge = {
-    windows: base ? createWindowHost(base, postToUi) : undefined,
-  };
   window.addEventListener("message", (event: MessageEvent<unknown>) => {
     if (event.source !== window || event.origin !== location.origin) return;
     if (!isEnvelope(event.data, "setup-ui")) return;
     const m = parseUiToPage(event.data.type, event.data.payload);
-    if (m) handle(bridge, m);
+    if (m) handle(m);
   });
 }
 

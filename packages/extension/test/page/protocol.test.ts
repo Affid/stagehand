@@ -1,23 +1,8 @@
 import { describe, expect, test } from "vitest";
 import { parsePageToUi, parseUiToPage } from "../../src/page-protocol.ts";
 
-const spec = {
-  id: "apply-1",
-  title: "Apply presets",
-  icon: "fa-solid fa-layer-group",
-  width: 980,
-  height: 780,
-};
-
 describe("UI to page messages are checked", () => {
-  test("accepts well-formed windows, notices and menus", () => {
-    expect(parseUiToPage("WINDOW_OPEN", { ...spec, left: 10 })).toEqual({
-      type: "WINDOW_OPEN",
-      payload: { ...spec, left: 10 },
-    });
-    expect(parseUiToPage("WINDOW_CLOSE", { id: "apply-1" })?.type).toBe(
-      "WINDOW_CLOSE",
-    );
+  test("accepts well-formed notices", () => {
     expect(parseUiToPage("NOTIFY", { kind: "error", text: "x" })).toEqual({
       type: "NOTIFY",
       payload: { kind: "error", text: "x" },
@@ -26,11 +11,12 @@ describe("UI to page messages are checked", () => {
 
   test("refuses anything else", () => {
     const bad: [string, unknown][] = [
-      ["WINDOW_OPEN", { ...spec, id: "Bad Id" }],
-      ["WINDOW_OPEN", { ...spec, width: -1 }],
-      ["WINDOW_OPEN", { ...spec, top: "1" }],
-      ["WINDOW_OPEN", { ...spec, title: "" }],
-      ["WINDOW_CLOSE", { id: 3 }],
+      // Foundry windows of our own are gone with the preset editor (6a).
+      [
+        "WINDOW_OPEN",
+        { id: "apply-1", title: "x", icon: "x", width: 1, height: 1 },
+      ],
+      ["WINDOW_CLOSE", { id: "apply-1" }],
       ["NOTIFY", { kind: "success", text: "x" }],
       ["NOTIFY", { kind: "info", text: "x".repeat(3000) }],
       // Foundry's world-card menu is no longer ours (Phase 5b).
@@ -44,10 +30,8 @@ describe("UI to page messages are checked", () => {
 });
 
 describe("page to UI messages are checked", () => {
-  test("windows; menu actions are gone", () => {
-    expect(parsePageToUi("WINDOW_READY", { id: "sheet-2" })?.type).toBe(
-      "WINDOW_READY",
-    );
+  test("windows and menu actions are gone", () => {
+    expect(parsePageToUi("WINDOW_READY", { id: "sheet-2" })).toBeUndefined();
     expect(
       parsePageToUi("MENU_ACTION", { action: "apply", worldId: "w1" }),
     ).toBeUndefined();

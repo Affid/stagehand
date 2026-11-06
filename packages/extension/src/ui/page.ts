@@ -1,5 +1,5 @@
-// The UI's link to the Setup page's own world: Foundry windows, the world
-// card menu and notifications. Messages go over window.postMessage.
+// The UI's link to the Setup page's own world: Foundry's actions, dialogs,
+// editor and notifications. Messages go over window.postMessage.
 import { isEnvelope, makeEnvelope } from "@module-library/shared/protocol";
 import {
   type FoundryAction,
@@ -7,8 +7,6 @@ import {
   type PageToUi,
   parsePageToUi,
   type UiToPage,
-  type WindowSpec,
-  windowHostId,
 } from "../page-protocol.ts";
 import type { BackupInfo, BackupOp, PackageType } from "../page-backups.ts";
 import type {
@@ -39,8 +37,6 @@ export interface ServerBackupsResult {
 
 export interface PageBridge {
   notify(kind: NoticeKind, text: string): void;
-  openWindow(spec: WindowSpec): void;
-  closeWindow(id: string): void;
   /** Take over Foundry's Setup layout, or give it back; the answer arrives as SHELL_STATE. */
   setShell(on: boolean): void;
   foundryAction(action: FoundryAction): void;
@@ -70,8 +66,6 @@ export interface PageBridge {
   ): Promise<ServerBackupsResult>;
   /** Foundry's configuration: read it, or save some settings. */
   config(op: "read" | "save", changes?: SettingChanges): Promise<ConfigResult>;
-  /** Our host element inside an open Foundry window, if it is there. */
-  windowHost(id: string): HTMLElement | null;
   subscribe(fn: (event: PageToUi) => void): () => void;
 }
 
@@ -258,12 +252,6 @@ export function createPageBridge(win: Window): PageBridge {
     notify: (kind, text) => {
       if (text) send({ type: "NOTIFY", payload: { kind, text: clip(text) } });
     },
-    openWindow: (spec) => {
-      send({ type: "WINDOW_OPEN", payload: spec });
-    },
-    closeWindow: (id) => {
-      send({ type: "WINDOW_CLOSE", payload: { id } });
-    },
     setShell: (on) => {
       send({ type: "SHELL", payload: { on } });
     },
@@ -277,11 +265,6 @@ export function createPageBridge(win: Window): PageBridge {
       send({ type: "FOUNDRY_ACTION", payload: action });
     },
     ...requests(send, listeners),
-    windowHost: (id) => {
-      const host = win.document.getElementById(windowHostId(id));
-      // Only ever render into a host inside a Foundry window.
-      return host?.closest(".application.ml-window") ? host : null;
-    },
     subscribe(fn) {
       listeners.add(fn);
       return () => listeners.delete(fn);

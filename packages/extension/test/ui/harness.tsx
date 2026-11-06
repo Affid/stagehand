@@ -9,7 +9,7 @@ import { vi } from "vitest";
 import { BUNDLED_CONFIG, V14_SELECTORS } from "../../src/adapters/config.ts";
 import type { AdapterChoice } from "../../src/adapters/select.ts";
 import type { ExtensionMessage, SetupState } from "../../src/messages.ts";
-import { type PageToUi, windowHostId } from "../../src/page-protocol.ts";
+import { type PageToUi } from "../../src/page-protocol.ts";
 import type { BackupInfo } from "../../src/page-backups.ts";
 import { createActions, type Send } from "../../src/ui/actions.ts";
 import { ShellRoot } from "../../src/ui/App.tsx";
@@ -117,13 +117,9 @@ export function setupState(over: Partial<SetupState> = {}): SetupState {
   };
 }
 
-/**
- * A stand-in for the page world: opens "Foundry windows" as plain elements
- * (unless `windows` is false, as when Foundry can't), and records the rest.
- */
-export function fakePage(windows = true) {
+/** A stand-in for the page world: records what the UI asks for. */
+export function fakePage() {
   const listeners = new Set<(e: PageToUi) => void>();
-  const hosts = new Map<string, HTMLElement>();
   const emit = (e: PageToUi): void => {
     listeners.forEach((fn) => {
       fn(e);
@@ -144,35 +140,12 @@ export function fakePage(windows = true) {
       }),
     ),
     backups: vi.fn(() => Promise.resolve<BackupsResult>({ backups: [] })),
-    openWindow: vi.fn((spec: { id: string }) => {
-      if (!windows) return;
-      const frame = document.createElement("div");
-      frame.className = "application ml-window";
-      const host = document.createElement("div");
-      host.id = windowHostId(spec.id);
-      frame.append(host);
-      document.body.append(frame);
-      hosts.set(spec.id, host);
-      queueMicrotask(() => {
-        emit({ type: "WINDOW_READY", payload: { id: spec.id } });
-      });
-    }),
-    closeWindow: vi.fn((id: string) => {
-      hosts.get(id)?.parentElement?.remove();
-      hosts.delete(id);
-    }),
-    windowHost: (id: string) => hosts.get(id) ?? null,
     subscribe(fn: (e: PageToUi) => void) {
       listeners.add(fn);
       return () => listeners.delete(fn);
     },
   } satisfies PageBridge;
-  /** Closes the newest window as Foundry's close button would. */
-  const closeTopWindow = (): void => {
-    const id = [...hosts.keys()].at(-1);
-    if (id) emit({ type: "WINDOW_CLOSED", payload: { id } });
-  };
-  return { page, emit, closeTopWindow };
+  return { page, emit };
 }
 
 export const SUPPORTED: AdapterChoice = {
@@ -204,7 +177,6 @@ export function renderUi(
     state?: Partial<UiState>;
     data?: Partial<SetupState>;
     reply?: (m: ExtensionMessage) => unknown;
-    windows?: boolean;
     /** Foundry's backups of every world, as the page world answers. */
     backups?: readonly BackupInfo[];
     /** Or Foundry's error, as the page world answers it. */
@@ -219,7 +191,7 @@ export function renderUi(
       m.kind === "get-state" ? data : { ok: true, library: data.library });
   const send = vi.fn((m: ExtensionMessage) => Promise.resolve(reply(m)));
   const t = createTranslator("en");
-  const fake = fakePage(options.windows ?? true);
+  const fake = fakePage();
   if (options.backups)
     fake.page.backups.mockResolvedValue({ backups: [...options.backups] });
   if (options.backupsError)

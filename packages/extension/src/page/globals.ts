@@ -47,15 +47,6 @@ export interface SetupGame {
   ) => Promise<boolean>;
 }
 
-export interface AppInstance {
-  readonly element?: HTMLElement;
-  render(options: { force: boolean }): Promise<unknown>;
-  close(options?: unknown): Promise<unknown>;
-  bringToFront?(): void;
-}
-
-export type AppClass = abstract new (options?: object) => AppInstance;
-
 export interface PageGlobals {
   readonly game?: SetupGame;
   /** Foundry's constants: setup themes and update channels, as i18n keys. */
@@ -75,7 +66,6 @@ export interface PageGlobals {
   };
   readonly foundry?: {
     readonly applications?: {
-      readonly api?: { readonly ApplicationV2?: AppClass };
       /** Foundry's open windows, by id. */
       readonly instances?: ReadonlyMap<string, OpenWindow>;
       /** Foundry's custom elements (prose-mirror and the rest). */

@@ -15,10 +15,10 @@ describe("the UI's bridge to the page world", () => {
     const spy = vi.spyOn(window, "postMessage");
     const bridge = createPageBridge(window);
     bridge.notify("info", "Queued");
-    bridge.closeWindow("apply-1");
+    bridge.setShell(true);
     expect(spy.mock.calls.map((c) => (c[0] as { type: string }).type)).toEqual([
       "NOTIFY",
-      "WINDOW_CLOSE",
+      "SHELL",
     ]);
     expect(spy.mock.calls[0]?.[0]).toMatchObject({
       from: "setup-ui",
@@ -63,28 +63,19 @@ describe("the UI's bridge to the page world", () => {
     const bridge = createPageBridge(window);
     const seen = vi.fn();
     const stop = bridge.subscribe(seen);
-    window.dispatchEvent(fromPage("WINDOW_READY", { id: "apply-1" }));
-    window.dispatchEvent(fromPage("WINDOW_READY", { id: "../x" }));
+    window.dispatchEvent(fromPage("LOCK", { locked: true }));
+    window.dispatchEvent(fromPage("LOCK", { locked: "yes" }));
     window.dispatchEvent(
       new MessageEvent("message", {
-        data: makeEnvelope("module", "WINDOW_READY", { id: "apply-1" }),
+        data: makeEnvelope("module", "LOCK", { locked: true }),
         origin: window.location.origin,
         source: window,
       }),
     );
     expect(seen).toHaveBeenCalledTimes(1);
     stop();
-    window.dispatchEvent(fromPage("WINDOW_READY", { id: "apply-1" }));
+    window.dispatchEvent(fromPage("LOCK", { locked: true }));
     expect(seen).toHaveBeenCalledTimes(1);
-  });
-
-  test("renders only into a host inside a Foundry window", () => {
-    const bridge = createPageBridge(window);
-    document.body.innerHTML =
-      '<div class="application ml-window"><div id="ml-host-a-1"></div></div><div id="ml-host-b-1"></div>';
-    expect(bridge.windowHost("a-1")?.id).toBe("ml-host-a-1");
-    expect(bridge.windowHost("b-1")).toBeNull();
-    expect(bridge.windowHost("c-1")).toBeNull();
   });
 });
 
