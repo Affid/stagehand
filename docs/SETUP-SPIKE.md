@@ -124,6 +124,16 @@ nextSession})` saved one field, `world.json` kept every other field; an empty ti
 - resetKeys and safeMode are one-shot flags on the same request: resetKeys clears passwords
   on save (needs our own confirm), safeMode applies to the next launch.
 
+## Follow-up 2026-11-06 (build 370): world flags through editWorld, live
+
+- `game.post({action: "editWorld", id, flags: {"module-library": {schedule}}})` after
+  `world.validate` saved the flag: the reply, the client's `world.flags` and `world.json`
+  all held it. `flags: {"-=module-library": null}` removed it again (`world.json` back to
+  `{}`). So the next-session schedule can live in the world's flags, as designed.
+- Lock is `game.post({action: "lockPackage", type, id, shouldLock})` (internal, like
+  editWorld), then Setup re-renders; delete is the public `game.uninstallPackage(pkg)`
+  with Foundry's confirm-code dialog.
+
 ## Follow-up 2026-11-06 (build 370): snapshot and backup dialogs, live
 
 `design/setup-page/spikes/spike-snapshot.ts` created one snapshot through Foundry's own
