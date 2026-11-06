@@ -46,7 +46,7 @@ describe("a world's About tab", () => {
     const box = el(container, ".mlw-about");
     expect(box.querySelector(".ml-rich strong")?.textContent).toBe("horror");
     expect(box.querySelector("script")).toBe(null);
-    expect(box.textContent).toContain("dnd5e 5.1");
+    expect(box.textContent).toContain("Dungeons & Dragons Fifth Edition 5.1");
     expect(box.textContent).toContain("14.369");
   });
 

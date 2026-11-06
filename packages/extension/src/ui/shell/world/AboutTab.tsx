@@ -5,6 +5,7 @@ import type { WorldInfo } from "@module-library/shared/world";
 import { useState } from "preact/hooks";
 import { RichText } from "../../common/rich-text.tsx";
 import { useUi } from "../../context.ts";
+import { systemTitle } from "../../model/system.ts";
 import { useLastPlayed } from "../WorldRail.tsx";
 import { SessionField, TitleField, useCanEditWorld } from "./AboutEdit.tsx";
 
@@ -83,7 +84,7 @@ function Details(props: { readonly world: WorldInfo }) {
       ) : null}
       <dt>{t("about.system")}</dt>
       <dd>
-        {world.system} {world.systemVersion}
+        {systemTitle(state.data.setup, world.system)} {world.systemVersion}
       </dd>
       <dt>{t("about.core")}</dt>
       <dd>{world.coreVersion}</dd>

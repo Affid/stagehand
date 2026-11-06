@@ -114,7 +114,6 @@
   "shell.edit": "Edit World",
   "shell.launch": "Launch",
   "shell.lastPlayed": "Last played {when}",
-  "shell.core": "Core {version}",
   "shell.failed": "The new Setup page couldn't start, so Foundry's page is shown: {error}",
   "wp.filter": "Filter modules",
   "wp.show": "Show",

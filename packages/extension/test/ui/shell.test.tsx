@@ -204,7 +204,10 @@ describe("a world's page", () => {
   test("the banner has the system, last played, Edit and Launch", () => {
     const { container, page } = shell();
     const banner = el(container, ".mls-banner");
-    expect(banner.textContent).toContain("dnd5e");
+    // The system's title, as the prototype; no core version in the banner.
+    expect(banner.textContent).toContain("Dungeons & Dragons Fifth Edition");
+    expect(banner.textContent).not.toContain("dnd5e");
+    expect(banner.textContent).not.toContain("Core");
     expect(banner.textContent).toMatch(/Last played/);
     fireEvent.click(within(banner).getByRole("button", { name: "Edit World" }));
     // Edited in place: the pencil opens the About tab.

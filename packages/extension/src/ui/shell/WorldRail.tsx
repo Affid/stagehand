@@ -7,6 +7,7 @@ import { Icon } from "../common/widgets.tsx";
 import { useUi } from "../context.ts";
 import { ago, plural } from "../i18n.ts";
 import { worldOrder } from "../model/order.ts";
+import { systemTitle } from "../model/system.ts";
 import { age, type WorldRow, worldRow } from "../model/worlds.ts";
 import { cssImage, filterWorlds, type Route } from "./route.ts";
 
@@ -88,7 +89,7 @@ function WorldItem(props: {
         <strong>{world.title}</strong>
         <Marks row={row} />
         <span class="meta">
-          {world.system} · {lastPlayed(world)}
+          {systemTitle(state.data.setup, world.system)} · {lastPlayed(world)}
         </span>
       </button>
     </li>

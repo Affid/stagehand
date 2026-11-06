@@ -5,6 +5,7 @@ import type { WorldInfo } from "@module-library/shared/world";
 import { useState } from "preact/hooks";
 import { Icon } from "../common/widgets.tsx";
 import { useUi } from "../context.ts";
+import { systemTitle } from "../model/system.ts";
 import { plural } from "../i18n.ts";
 import { type WorldModules, worldModules } from "../model/world-modules.ts";
 import { cssImage } from "./route.ts";
@@ -17,18 +18,14 @@ function BannerMeta(props: {
   readonly world: WorldInfo;
   readonly model: WorldModules;
 }) {
-  const { t } = useUi();
+  const { state, t } = useUi();
   const { world, model } = props;
   const lastPlayed = useLastPlayed();
   return (
     <div class="meta">
       <span>
         <Icon name="dice-d20" />
-        {world.system} {world.systemVersion}
-      </span>
-      <span>
-        <Icon name="code-branch" />
-        {t("shell.core", { version: world.coreVersion })}
+        {systemTitle(state.data.setup, world.system)}
       </span>
       <span>
         <Icon name="clock" />

@@ -83,7 +83,13 @@ export function setupState(over: Partial<SetupState> = {}): SetupState {
         pkg("lib", { library: true }),
         pkg("module-library"),
       ],
-      systems: [],
+      systems: [
+        {
+          id: "dnd5e",
+          title: "Dungeons & Dragons Fifth Edition",
+          version: "5.1",
+        },
+      ],
       worlds: [
         {
           id: "w1",
