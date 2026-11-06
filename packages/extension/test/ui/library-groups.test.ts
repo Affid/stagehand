@@ -78,3 +78,43 @@ describe("grouping the Library", () => {
     expect(groupLibrary([], "folder", ctx)).toEqual([]);
   });
 });
+
+describe("empty folders on the Library (6b3)", () => {
+  test("kept, in order, when asked; Unfiled only when it holds any", () => {
+    const library = {
+      ...LIBRARY,
+      folders: [
+        {
+          id: "f1",
+          name: "One",
+          color: "#111111",
+          parentId: null,
+          order: 0,
+          collapsed: false,
+          revision: 1,
+        },
+        {
+          id: "f2",
+          name: "Two",
+          color: "#222222",
+          parentId: null,
+          order: 1,
+          collapsed: false,
+          revision: 1,
+        },
+      ],
+      modules: { a: { folderId: "f2", tags: [], note: "" } },
+    };
+    const mods = [pkg("a")];
+    const ctx = { library, smart: [], authors: [] };
+    expect(groupLibrary(mods, "folder", ctx).map((g) => g.key)).toEqual(["f2"]);
+    expect(
+      groupLibrary(mods, "folder", { ...ctx, keepEmptyFolders: true }).map(
+        (g) => [g.key, g.modules.length],
+      ),
+    ).toEqual([
+      ["f1", 0],
+      ["f2", 1],
+    ]);
+  });
+});

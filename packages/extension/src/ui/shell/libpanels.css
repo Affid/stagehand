@@ -713,3 +713,30 @@
   margin: 0;
   font-size: 12px;
 }
+
+/* A group's menu and, in select mode, its box */
+.mls-shell .mlh-menu .ml-swatches {
+  display: grid;
+  grid-template-columns: repeat(4, 28px);
+  gap: 6px;
+  padding: 4px;
+}
+
+.mls-shell .mlh-menu .ml-swatch {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 4px;
+}
+
+.mls-shell .mls-gcheck {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin: 0 4px 0 8px;
+}
+
+.mls-shell .mll-emptygroup {
+  margin: 4px 0 8px 30px;
+  font-size: 12.5px;
+}

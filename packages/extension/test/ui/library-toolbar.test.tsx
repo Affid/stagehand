@@ -231,3 +231,89 @@ describe("the selection's bar", () => {
     });
   });
 });
+
+describe("a group's menu (6b3)", () => {
+  const menu = (r: ReturnType<typeof library>, group: string) => {
+    fireEvent.click(r.getByRole("button", { name: `${group}: actions` }));
+    return r.getByRole("menu", { name: group });
+  };
+
+  test("a folder: Rename in place, Colour…, Move, Delete folder", async () => {
+    const r = library();
+    fireEvent.click(
+      within(menu(r, "Combat")).getByRole("button", { name: "Rename" }),
+    );
+    const input = r.getByRole("textbox", { name: "Rename" });
+    fireEvent.input(input, { target: { value: "Fights" } });
+    fireEvent.keyDown(input, { key: "Enter" });
+    await opSent(r, {
+      op: "folder.update",
+      id: "f1",
+      changes: { name: "Fights" },
+    });
+    fireEvent.click(
+      within(menu(r, "Combat")).getByRole("button", { name: "Colour…" }),
+    );
+    fireEvent.click(r.getByRole("button", { name: "Blue" }));
+    await opSent(r, {
+      op: "folder.update",
+      id: "f1",
+      changes: expect.objectContaining({
+        color: expect.any(String),
+      }) as unknown,
+    });
+    const m = menu(r, "Combat");
+    expect(
+      within(m).getByRole<HTMLButtonElement>("button", { name: "Move up" })
+        .disabled,
+    ).toBe(true);
+    vi.stubGlobal("confirm", () => true);
+    fireEvent.click(within(m).getByRole("button", { name: "Delete folder" }));
+    await opSent(r, { op: "folder.delete", id: "f1" });
+  });
+
+  test("any group: Select its modules, New preset from these, Turn on in a world…", async () => {
+    const r = library();
+    fireEvent.click(
+      within(menu(r, "Combat")).getByRole("button", {
+        name: "Select its modules",
+      }),
+    );
+    expect(r.store.get().selection).toEqual(["a"]);
+    expect(r.container.querySelector(".mls-selbar")).toBeTruthy();
+    fireEvent.click(r.getByRole("button", { name: "Done" }));
+    fireEvent.click(
+      within(menu(r, "Combat")).getByRole("button", {
+        name: "New preset from these",
+      }),
+    );
+    await opSent(r, {
+      op: "preset.create",
+      preset: expect.objectContaining({ modules: ["a"] }) as unknown,
+    });
+    fireEvent.click(
+      within(menu(r, "Combat")).getByRole("button", {
+        name: "Turn on in a world…",
+      }),
+    );
+    fireEvent.click(r.getByRole("button", { name: "Strahd" }));
+    await waitFor(() => {
+      expect(sent(r.send)).toContainEqual(
+        expect.objectContaining({
+          kind: "queue-apply",
+          worldId: "w1",
+          modules: ["a"],
+        }),
+      );
+    });
+  });
+
+  test("in select mode a group's box picks the whole group", () => {
+    const r = library();
+    fireEvent.click(r.getByRole("button", { name: "Select" }));
+    fireEvent.click(r.getByRole("checkbox", { name: "Select all in Combat" }));
+    expect(r.store.get().selection).toEqual(["a"]);
+    fireEvent.click(r.getByRole("checkbox", { name: "Select all in Combat" }));
+    expect(r.store.get().selection).toEqual([]);
+  });
+});

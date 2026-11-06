@@ -65,7 +65,7 @@ describe("the Library page", () => {
 
   test("a group folds and says how many it holds", () => {
     const { container, getByRole } = library();
-    const head = getByRole("button", { name: /^Combat/ });
+    const head = getByRole("button", { name: /^Combat\s*1 module/ });
     expect(head.textContent).toContain("1");
     fireEvent.click(head);
     expect(head.getAttribute("aria-expanded")).toBe("false");

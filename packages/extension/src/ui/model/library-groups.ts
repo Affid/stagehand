@@ -5,7 +5,7 @@ import type { AuthorEntry } from "@module-library/shared/organise/authors";
 import { authorsOf } from "@module-library/shared/organise/authors";
 import type { SmartGroup } from "@module-library/shared/organise/groups";
 import type { PackageInfo } from "@module-library/shared/package";
-import { groupByFolder, sortByTitle } from "./modules.ts";
+import { groupByFolder, orderedFolders, sortByTitle } from "./modules.ts";
 
 export type GroupBy = "folder" | "tag" | "author" | "smart";
 export const GROUP_BYS: readonly GroupBy[] = [
@@ -30,10 +30,30 @@ export interface GroupContext {
   readonly library: Library;
   readonly smart: readonly SmartGroup[];
   readonly authors: readonly AuthorEntry[];
+  /** Show folders with nothing in them (the Library, when not filtering). */
+  readonly keepEmptyFolders?: boolean;
+}
+
+/** Every folder in order, empty ones too, then Unfiled when it holds any. */
+function allFolders(mods: readonly PackageInfo[], library: Library) {
+  const found = groupByFolder(mods, library);
+  return [
+    ...orderedFolders(library).map(
+      (folder) =>
+        found.find((g) => g.folder?.id === folder.id) ?? {
+          folder,
+          modules: [],
+        },
+    ),
+    ...found.filter((g) => g.folder === null),
+  ];
 }
 
 const byFolder = (mods: readonly PackageInfo[], c: GroupContext): LibGroup[] =>
-  groupByFolder(mods, c.library).map((g) =>
+  (c.keepEmptyFolders
+    ? allFolders(mods, c.library)
+    : groupByFolder(mods, c.library)
+  ).map((g) =>
     g.folder
       ? {
           key: g.folder.id,
@@ -100,7 +120,12 @@ export function groupLibrary(
   by: GroupBy,
   ctx: GroupContext,
 ): LibGroup[] {
+  const keep = (g: LibGroup): boolean =>
+    g.modules.length > 0 ||
+    (ctx.keepEmptyFolders === true &&
+      by === "folder" &&
+      ctx.library.folders.some((f) => f.id === g.key));
   return GROUPERS[by](modules, ctx)
     .map((g) => ({ ...g, modules: sortByTitle(g.modules) }))
-    .filter((g) => g.modules.length > 0);
+    .filter(keep);
 }

@@ -702,5 +702,12 @@
   "pk.checkUpdate": "Check update",
   "pk.backup": "Backup",
   "pk.uninstall": "Uninstall",
-  "pk.foot": "Read from the module's manifest. Favourite and lock are Foundry's own settings; the buttons open Foundry's own dialogs."
+  "pk.foot": "Read from the module's manifest. Favourite and lock are Foundry's own settings; the buttons open Foundry's own dialogs.",
+  "folder.colorMenu": "Colour…",
+  "lib.g.select": "Select its modules",
+  "lib.g.preset": "New preset from these",
+  "lib.g.world": "Turn on in a world…",
+  "lib.g.actions": "{group}: actions",
+  "lib.g.check": "Select all in {group}",
+  "lib.emptyGroup": "No modules here. Select some and use Move to."
 }

@@ -124,6 +124,32 @@ test("Presets: a new preset with a module, then deleted", async () => {
   await panel.getByRole("button", { name: "Close" }).click();
 });
 
+test("New folder: named in place, a module moved in, then deleted", async () => {
+  await lib().getByRole("button", { name: "New folder" }).click();
+  const name = lib().getByRole("textbox", { name: "Rename" });
+  await name.fill("Live folder");
+  await name.press("Enter");
+  const head = lib().locator(".mll-sec", { hasText: "Live folder" });
+  await expect(head).toBeVisible();
+  await lib().getByRole("button", { name: "Select" }).click();
+  await card("ml-fixture-b").getByRole("checkbox").check();
+  const bar = lib().locator(".mls-selbar");
+  await bar.getByRole("button", { name: "Move to" }).click();
+  await bar.getByRole("button", { name: /Live folder/ }).click();
+  await bar.getByRole("button", { name: "Done" }).click();
+  await expect(
+    head.locator('.mll-card[data-module="ml-fixture-b"]'),
+  ).toBeVisible();
+  await page.screenshot({ path: `${SCREENS}/library-folder.png` });
+  await lib().getByRole("button", { name: "Live folder: actions" }).click();
+  page.once("dialog", (d) => void d.accept());
+  await lib().getByRole("button", { name: "Delete folder" }).click();
+  await expect(
+    lib().locator(".mll-sec", { hasText: "Live folder" }),
+  ).toHaveCount(0);
+  await expect(card("ml-fixture-b")).toBeVisible();
+});
+
 test("Install Module opens Foundry's own installer above our page", async () => {
   await lib().getByRole("button", { name: "Install Module" }).click();
   const installer = page.locator("#install-package");

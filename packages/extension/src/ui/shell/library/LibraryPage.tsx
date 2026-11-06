@@ -51,10 +51,16 @@ export function LibraryPage() {
   const { state } = useUi();
   const model = useModulesModel(state);
   const page = usePageState();
-  const groups = groupLibrary(model.visible, page.by, {
+  const context = {
     library: state.data.library,
     smart: model.groups,
     authors: model.authors,
+  };
+  const groups = groupLibrary(model.visible, page.by, context);
+  // The Modules tab shows empty folders too, so a new one can be filled.
+  const withEmpty = groupLibrary(model.visible, page.by, {
+    ...context,
+    keepEmptyFolders: !state.filter.text.trim(),
   });
   const setup = state.data.setup;
   return (
@@ -72,7 +78,7 @@ export function LibraryPage() {
           <SystemsTab />
         </>
       ) : (
-        <ModulesTab model={model} page={page} groups={groups} />
+        <ModulesTab model={model} page={page} groups={withEmpty} />
       )}
     </div>
   );
