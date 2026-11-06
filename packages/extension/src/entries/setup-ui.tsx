@@ -18,6 +18,7 @@ import { createTranslator, pickLanguage } from "../ui/i18n.ts";
 import { createPageBridge } from "../ui/page.ts";
 import { syncShell } from "../ui/shell/mount.tsx";
 import { createStore, DEFAULT_WORLD_VIEW, EMPTY_FILTER } from "../ui/store.ts";
+import { trackProgress, UNLOCKED } from "../ui/tasks.ts";
 
 const OVERLAY_ROOT = "ml-overlay-root";
 
@@ -62,7 +63,10 @@ function ensureDeps(
     route: null,
     panel: null,
     worldView: DEFAULT_WORLD_VIEW,
+    tasks: [],
+    lock: UNLOCKED,
   });
+  trackProgress(store, page);
   deps = { store, actions: createActions(store, send, t, page), t, page };
   // The new Setup page takes over whenever the extension runs (not in safe mode).
   const shell = syncShell(deps, document);

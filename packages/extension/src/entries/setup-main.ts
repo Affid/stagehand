@@ -20,6 +20,7 @@ import type { ServerBackupsRequest } from "../page-server-backups.ts";
 import { closeEditor, openEditor, saveFromEditor } from "../page/editor.ts";
 import { saveWorld } from "../page/save-world.ts";
 import { collect } from "../page/collect.ts";
+import { watchProgress } from "../page/progress.ts";
 import { pageGlobals } from "../page/globals.ts";
 import { setShell } from "../page/shell.ts";
 import { createWindowHost, type WindowHost } from "../page/windows.ts";
@@ -216,6 +217,7 @@ function connect(): void {
 function start(polls = 0): void {
   if (page.game?.view === "setup" && page.ui?.setupPackages) {
     connect();
+    watchProgress(page, postToUi);
     postSetupData();
     page.Hooks?.on("renderSetupPackages", postSetupData);
     return;

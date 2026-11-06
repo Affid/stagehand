@@ -2,6 +2,12 @@
 // UI (setup-ui). Both sides check every message by hand: the page world stays
 // free of Zod to keep it small, and page scripts can post anything.
 import {
+  type Lock,
+  type Progress,
+  parseLock,
+  parseProgress,
+} from "./page-progress.ts";
+import {
   type EditorOpen,
   type EditorSave,
   parseEditorClose,
@@ -104,6 +110,10 @@ export type UiToPage =
 
 export type PageToUi =
   | { readonly type: "WINDOW_READY"; readonly payload: { readonly id: string } }
+  /** Foundry's progress for a backup, snapshot or update (page-progress.ts). */
+  | { readonly type: "PROGRESS"; readonly payload: Progress }
+  /** Foundry's busy lock, mirrored on our page. */
+  | { readonly type: "LOCK"; readonly payload: Lock }
   | {
       readonly type: "WINDOW_CLOSED";
       readonly payload: { readonly id: string };
@@ -246,6 +256,14 @@ export function parseUiToPage(type: string, p: unknown): UiToPage | undefined {
 /** A message from the page world, checked; undefined when malformed. */
 export function parsePageToUi(type: string, p: unknown): PageToUi | undefined {
   if (!isObject(p)) return undefined;
+  if (type === "PROGRESS") {
+    const payload = parseProgress(p);
+    return payload ? { type, payload } : undefined;
+  }
+  if (type === "LOCK") {
+    const payload = parseLock(p);
+    return payload ? { type, payload } : undefined;
+  }
   switch (type) {
     case "WINDOW_READY":
     case "WINDOW_CLOSED":

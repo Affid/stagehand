@@ -43,6 +43,8 @@ const initial: UiState = {
   route: null,
   panel: null,
   worldView: { by: "folder", layout: "cards" },
+  tasks: [],
+  lock: { locked: false },
 };
 
 const t = createTranslator("en");

@@ -9,7 +9,7 @@ import { useUi } from "../../../context.ts";
 import { systemTitle } from "../../../model/system.ts";
 import { useLastPlayed } from "../../WorldRail.tsx";
 import { useSave } from "../AboutEdit.tsx";
-import { formatSize } from "../BackupsTab.tsx";
+import { formatSize } from "../../../common/size.ts";
 import { latestBackup } from "../useBackups.ts";
 import { EditRow } from "./EditRow.tsx";
 import { isOlder, madeFor, playedFor } from "./format.ts";

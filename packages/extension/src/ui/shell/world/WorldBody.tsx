@@ -9,7 +9,7 @@ import type { WorldModules } from "../../model/world-modules.ts";
 import { worldRow } from "../../model/worlds.ts";
 import { HistoryList } from "../../worlds/commands.tsx";
 import { AboutTab } from "./AboutTab.tsx";
-import { BackupsTab } from "./BackupsTab.tsx";
+import { BackupsTab } from "./backups/BackupsTab.tsx";
 import { ModulesTab, useFilters } from "./ModulesTab.tsx";
 import { ModulesTools } from "./ModulesTools.tsx";
 import { NotSetUp } from "./NotSetUp.tsx";
@@ -107,7 +107,11 @@ export function WorldBody(props: {
       {/* Kept once opened: a backup can wait on Foundry's dialog for minutes. */}
       {opened || tab === "backups" ? (
         <div hidden={tab !== "backups"}>
-          <BackupsTab world={world} backups={props.backups} />
+          <BackupsTab
+            world={world}
+            backups={props.backups}
+            changes={props.model.changes}
+          />
         </div>
       ) : null}
       {tab === "modules" && recent.length ? (

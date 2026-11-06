@@ -42,6 +42,18 @@ function time(v: unknown): number {
   return Number.isFinite(t) && t >= 0 ? t : 0;
 }
 
+const VERSION = /^[0-9][0-9A-Za-z.+-]{0,31}$/;
+
+/** Foundry's compatibility.verified, when it reads as a version. */
+function verifiedOf(b: Raw): { verified?: string } {
+  const c = b.compatibility as Raw | null | undefined;
+  const v = c && typeof c === "object" ? c.verified : undefined;
+  const text = typeof v === "number" ? String(v) : v;
+  return typeof text === "string" && VERSION.test(text)
+    ? { verified: text }
+    : {};
+}
+
 export const toInfo = (b: Raw): BackupInfo => ({
   id: String(b.id).slice(0, MAX_ID) || "?",
   createdAt: time(b.createdAt),
@@ -50,6 +62,7 @@ export const toInfo = (b: Raw): BackupInfo => ({
   ...(typeof b.note === "string" && b.note
     ? { note: b.note.slice(0, 1000) }
     : {}),
+  ...verifiedOf(b),
 });
 
 async function listRaw(

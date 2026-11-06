@@ -1,0 +1,307 @@
+/* Backups: a world's Backups tab and the server's Backups page, as the
+   prototype (design/setup-page/src/_calm.css). Appended to setup-ui.css. */
+
+/* The Backups tab */
+.mls-shell .mlw-backups {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+  padding: 4px 2px 16px;
+}
+
+.mls-shell .mlw-backups .hint {
+  margin: 0;
+  color: var(--color-text-subtle);
+  font-size: 12px;
+}
+
+.mls-shell .mlw-backups .hint .ml-link {
+  display: inline;
+  width: auto;
+  height: auto;
+  padding: 0;
+  font-size: inherit;
+}
+
+.mls-shell .mlw-nudge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 4px;
+  border: 1px solid rgb(238 155 58 / 55%);
+  background: rgb(238 155 58 / 10%);
+  color: #f6d3a8;
+  font-size: 13px;
+}
+
+.mls-shell .mlw-nudge > i {
+  color: var(--color-warm-1);
+  font-size: 16px;
+}
+
+.mls-shell .mlw-nudge > span:not(.nodel) {
+  flex: 1;
+}
+
+.mls-shell .mlw-nudge.done {
+  border-color: rgb(63 143 82 / 60%);
+  background: rgb(63 143 82 / 10%);
+  color: #d5eedb;
+}
+
+.mls-shell .mlw-nudge.done > i {
+  color: #8fd49b;
+}
+
+.mls-shell .mlw-nudge button,
+.mls-shell .mlw-bhead button {
+  height: 30px;
+  width: auto;
+  flex: none;
+  padding: 0 12px;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.mls-shell .mlw-nudge button[disabled] {
+  opacity: 0.5;
+}
+
+.mls-shell .mlw-bhead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  color: var(--color-light-2);
+  font-size: 13.5px;
+}
+
+.mls-shell .mlw-bhead .ml-spacer {
+  flex: 1;
+}
+
+.mls-shell .mlw-bhead.sel {
+  padding: 4px 8px;
+  border: 1px solid rgb(180 82 63 / 55%);
+  border-radius: 4px;
+  background: rgb(180 82 63 / 8%);
+}
+
+.mls-shell .mlw-bhead.sel > i {
+  color: #e39a8c;
+}
+
+.mls-shell .mlw-blist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.mls-shell .mlw-blist li {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr) 90px 80px 96px 30px;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border: 1px solid var(--color-cool-4);
+  border-radius: 4px;
+  background: rgb(11 10 19 / 55%);
+}
+
+.mls-shell .mlw-blist li.latest {
+  border-color: rgb(63 143 82 / 55%);
+}
+
+.mls-shell .mlw-blist li.picked {
+  border-color: rgb(180 82 63 / 60%);
+  background: rgb(180 82 63 / 10%);
+}
+
+.mls-shell .mlw-blist li > i {
+  color: var(--color-light-4);
+  text-align: center;
+}
+
+.mls-shell .mlw-blist li > input[type="checkbox"],
+.mls-shell .mlw-blist li > .nodel input {
+  margin: 0 auto;
+}
+
+.mls-shell .mlw-blist .nm {
+  display: grid;
+  min-width: 0;
+}
+
+.mls-shell .mlw-blist .nm strong {
+  color: var(--color-light-1);
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mls-shell .mlw-blist .nm span {
+  color: var(--color-text-subtle);
+  font-size: 12.5px;
+}
+
+.mls-shell .mlw-blist .core {
+  font-size: 12px;
+  color: var(--color-light-3);
+  white-space: nowrap;
+  cursor: help;
+}
+
+.mls-shell .mlw-blist .core.warn {
+  color: #f5c45e;
+}
+
+.mls-shell .mlw-blist .core i {
+  font-size: 10px;
+  margin-right: 2px;
+}
+
+.mls-shell .mlw-blist .sz {
+  font-size: 12.5px;
+  color: var(--color-light-3);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.mls-shell .mlw-blist button {
+  height: 28px;
+  width: auto;
+  flex: none;
+  padding: 0 12px;
+  font-size: 13px;
+}
+
+.mls-shell .mlw-blist button.icon {
+  width: 30px;
+  padding: 0;
+  color: var(--color-light-4);
+}
+
+.mls-shell .mlw-blist button.icon:hover {
+  color: #ffb3a6;
+}
+
+.mls-shell .mlw-blist button[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.mls-shell .mlw-blist button.icon[disabled] {
+  opacity: 0.35;
+}
+
+/* Disabled buttons get no hover: the reason sits on this wrapper. */
+.mls-shell .nodel {
+  display: inline-flex;
+}
+
+.mls-shell .nodel[title] {
+  cursor: help;
+}
+
+.mls-shell .nodel > button[disabled],
+.mls-shell .nodel > input[disabled] {
+  pointer-events: none;
+}
+
+.mls-shell .mlw-blist li.busy {
+  border-color: rgb(238 155 58 / 55%);
+  background: rgb(238 155 58 / 8%);
+  grid-template-columns: 22px minmax(0, 1fr) 200px 70px;
+}
+
+.mls-shell .mlw-blist li.busy > i {
+  color: var(--color-warm-1);
+}
+
+.mls-shell .mlw-blist li.busy .bar {
+  height: 6px;
+  border-radius: 3px;
+  background: rgb(255 255 255 / 10%);
+  overflow: hidden;
+}
+
+.mls-shell .mlw-blist li.busy .bar span {
+  display: block;
+  height: 100%;
+  background: var(--color-warm-1);
+  transition: width 0.2s;
+}
+
+/* The server Backups page */
+.mls-shell .mlb-page {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+}
+
+.mls-shell .mlb-page h2 {
+  margin: 0;
+  font-size: 20px;
+  border: 0;
+}
+
+.mls-shell .mlb-sec {
+  display: grid;
+  gap: 8px;
+}
+
+.mls-shell .mlb-sec > h3 {
+  margin: 6px 0 0;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-subtle);
+  border-bottom: 1px solid var(--color-cool-4);
+  padding-bottom: 4px;
+}
+
+.mls-shell .mlb-sec .note {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 12px;
+  color: var(--color-light-4);
+}
+
+.mls-shell .mlb-pkgs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.mls-shell .mlb-pkghead {
+  width: 100%;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  padding: 0 10px;
+  border: 1px solid var(--color-cool-4);
+  border-radius: 4px;
+  background: rgb(11 10 19 / 55%);
+  box-shadow: none;
+  transition: none;
+}
+
+.mls-shell .mlb-gone {
+  font-size: 11.5px;
+  padding: 0 6px;
+  border-radius: 3px;
+  border: 1px solid rgb(245 196 94 / 50%);
+  color: #f3dca4;
+}
+
+.mls-shell .mlb-pkg .mlw-blist {
+  margin: 6px 0 4px 24px;
+}

@@ -13,7 +13,8 @@ import type {
 import { Icon } from "../../common/widgets.tsx";
 import { useUi } from "../../context.ts";
 import { plural, type Translate } from "../../i18n.ts";
-import { formatSize, Row } from "../world/BackupsTab.tsx";
+import { formatSize } from "../../common/size.ts";
+import { BackupRow } from "../world/backups/BackupRow.tsx";
 import { PageHead } from "./PageHead.tsx";
 
 const TYPES: readonly PackageType[] = ["world", "module", "system"];
@@ -155,7 +156,7 @@ function Package(props: {
     ids: readonly string[],
   ) => void;
 }) {
-  const { canChange } = useUi();
+  const { t } = useUi();
   const [open, setOpen] = useState(false);
   const { p } = props;
   return (
@@ -164,12 +165,13 @@ function Package(props: {
       {open ? (
         <ul class="mlw-blist">
           {p.backups.map((b) => (
-            <Row
+            <BackupRow
               key={b.id}
               b={b}
-              busy={props.busy}
-              canChange={canChange}
-              onRun={(op, ids) => props.onRun(p, op, ids)}
+              latest={false}
+              off={props.busy ? t("bk.busy") : null}
+              onRestore={() => props.onRun(p, "restore", [b.id])}
+              onDelete={() => props.onRun(p, "delete", [b.id])}
             />
           ))}
         </ul>

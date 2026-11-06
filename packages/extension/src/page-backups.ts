@@ -29,6 +29,8 @@ export interface BackupInfo {
   readonly note?: string;
   /** Part of a snapshot: Foundry won't delete it alone. */
   readonly snapshot: boolean;
+  /** Foundry's badge: the core version the copy is verified for. */
+  readonly verified?: string;
 }
 
 export interface BackupsReply {
@@ -48,6 +50,9 @@ const isObject = (v: unknown): v is Loose =>
   typeof v === "object" && v !== null && !Array.isArray(v);
 const isId = (v: unknown, max = MAX_ID): v is string =>
   typeof v === "string" && v.length > 0 && v.length <= max;
+const VERSION = /^[0-9][0-9A-Za-z.+-]{0,31}$/;
+const isVersion = (v: unknown): v is string =>
+  typeof v === "string" && VERSION.test(v);
 const isCount = (v: unknown): v is number =>
   typeof v === "number" && Number.isFinite(v) && v >= 0;
 
@@ -82,7 +87,7 @@ export function parseBackupsRequest(p: Loose): BackupsRequest | undefined {
 
 export function backup(v: unknown): BackupInfo | undefined {
   if (!isObject(v)) return undefined;
-  const { id, createdAt, size, note, snapshot } = v;
+  const { id, createdAt, size, note, snapshot, verified } = v;
   if (!isId(id) || !isCount(createdAt) || !isCount(size)) return undefined;
   if (typeof snapshot !== "boolean") return undefined;
   if (
@@ -90,7 +95,15 @@ export function backup(v: unknown): BackupInfo | undefined {
     !(typeof note === "string" && note.length <= MAX_NOTE)
   )
     return undefined;
-  return { id, createdAt, size, snapshot, ...(note ? { note } : {}) };
+  if (verified !== undefined && !isVersion(verified)) return undefined;
+  return {
+    id,
+    createdAt,
+    size,
+    snapshot,
+    ...(note ? { note } : {}),
+    ...(verified ? { verified } : {}),
+  };
 }
 
 export function parseBackupsReply(p: Loose): BackupsReply | undefined {

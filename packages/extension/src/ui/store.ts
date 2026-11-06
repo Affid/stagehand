@@ -3,6 +3,7 @@
 import type { ModuleFilterSpec } from "@module-library/shared/library/schema";
 import { useEffect, useState } from "preact/hooks";
 import type { SetupState } from "../messages.ts";
+import type { Lock, Progress } from "../page-progress.ts";
 import type { Adapter } from "../adapters/config.ts";
 import type { AdapterChoice } from "../adapters/select.ts";
 import type { GroupBy } from "./model/library-groups.ts";
@@ -29,6 +30,10 @@ export interface UiState {
   readonly panel: string | null;
   /** A world page's View options: how its modules are grouped and laid out. */
   readonly worldView: WorldView;
+  /** Foundry's running backups, restores and updates (tasks.ts). */
+  readonly tasks: readonly Progress[];
+  /** Foundry's busy lock: on while a backup or restore runs. */
+  readonly lock: Lock;
 }
 
 export interface WorldView {

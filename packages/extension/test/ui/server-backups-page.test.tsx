@@ -98,7 +98,7 @@ describe("the server Backups page", () => {
       expect(page.serverBackups).toHaveBeenCalledWith("createSnapshot", []);
     });
     const snap = el(container, '.mlb-snaps li[data-snapshot="snapshot.1"]');
-    fireEvent.click(within(snap).getByRole("button", { name: "Restore" }));
+    fireEvent.click(within(snap).getByRole("button", { name: "Restore…" }));
     await waitFor(() => {
       expect(page.serverBackups).toHaveBeenCalledWith("restoreSnapshot", [
         "snapshot.1",
@@ -117,7 +117,7 @@ describe("the server Backups page", () => {
     const mod = el(container, '.mlb-pkg[data-package="module:old-mod"]');
     expect(mod.textContent).toContain("Not installed");
     fireEvent.click(within(mod).getByRole("button", { name: /Old Mod/ }));
-    fireEvent.click(within(mod).getByRole("button", { name: "Delete" }));
+    fireEvent.click(within(mod).getByRole("button", { name: /^Delete/ }));
     await waitFor(() => {
       expect(page.backups).toHaveBeenCalledWith(
         "old-mod",
@@ -157,7 +157,7 @@ describe("the server Backups page", () => {
     page.backups.mockResolvedValueOnce({ error: "Backup file missing" });
     const mod = el(container, '.mlb-pkg[data-package="module:old-mod"]');
     fireEvent.click(within(mod).getByRole("button", { name: /Old Mod/ }));
-    fireEvent.click(within(mod).getByRole("button", { name: "Restore" }));
+    fireEvent.click(within(mod).getByRole("button", { name: "Restore…" }));
     await waitFor(() => {
       expect(page.serverBackups).toHaveBeenLastCalledWith("list", []);
     });

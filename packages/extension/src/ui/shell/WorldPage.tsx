@@ -12,6 +12,7 @@ import { cssImage } from "./route.ts";
 import { type LaunchChoice, LaunchReview } from "./world/LaunchReview.tsx";
 import { useWhy } from "./world/useWhy.ts";
 import { useBackups } from "./world/useBackups.ts";
+import { lockReason } from "../tasks.ts";
 import { WorldBody, type WorldTab } from "./world/WorldBody.tsx";
 import { useLastPlayed } from "./WorldRail.tsx";
 
@@ -119,8 +120,12 @@ function BannerActions(props: {
   /** The pencil: the About tab. */
   readonly onEdit: () => void;
 }) {
-  const { t } = useUi();
+  const { t, state } = useUi();
   const { changes } = props;
+  // Locked worlds can't launch; nor can any while Foundry backs up or restores.
+  const off = props.world.locked
+    ? t("shell.launchLocked")
+    : lockReason(t, state);
   return (
     <div class="acts">
       <button
@@ -134,13 +139,13 @@ function BannerActions(props: {
       </button>
       {/* A locked world can't launch: the reason sits on a wrapper that gets the hover. */}
       <span
-        class={props.world.locked ? "mlw-tipwrap" : "mls-launchwrap"}
-        title={props.world.locked ? t("shell.launchLocked") : undefined}
+        class={off === null ? "mls-launchwrap" : "mlw-tipwrap"}
+        title={off ?? undefined}
       >
         <button
           type="button"
           class="bright mls-launch"
-          disabled={props.world.locked === true}
+          disabled={off !== null}
           onClick={props.onLaunch}
         >
           <Icon name="play" />

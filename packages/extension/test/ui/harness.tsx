@@ -14,6 +14,7 @@ import type { BackupInfo } from "../../src/page-backups.ts";
 import { createActions, type Send } from "../../src/ui/actions.ts";
 import { OverlayRoot, ShellRoot } from "../../src/ui/App.tsx";
 import { createTranslator } from "../../src/ui/i18n.ts";
+import { trackProgress, UNLOCKED } from "../../src/ui/tasks.ts";
 import type {
   BackupsResult,
   ConfigResult,
@@ -193,6 +194,8 @@ export const uiState = (over: Partial<UiState> = {}): UiState => ({
   route: null,
   panel: null,
   worldView: DEFAULT_WORLD_VIEW,
+  tasks: [],
+  lock: UNLOCKED,
   ...over,
 });
 
@@ -222,6 +225,7 @@ export function renderUi(
     fake.page.backups.mockResolvedValue({ backups: [...options.backups] });
   if (options.backupsError)
     fake.page.backups.mockResolvedValue({ error: options.backupsError });
+  trackProgress(store, fake.page);
   const deps = {
     store,
     actions: createActions(store, send as unknown as Send, t, fake.page),

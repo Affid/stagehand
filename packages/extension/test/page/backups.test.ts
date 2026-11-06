@@ -9,6 +9,7 @@ const raw = [
     size: 2048,
     note: "Session 2",
     snapshotId: null,
+    compatibility: { minimum: "13", verified: "14.370" },
   },
   {
     id: "b1",
@@ -55,10 +56,37 @@ describe("a world's backups through Foundry", () => {
           size: 2048,
           note: "Session 2",
           snapshot: false,
+          verified: "14.370",
         },
         { id: "b1", createdAt: 1000, size: 1024, snapshot: true },
       ],
     });
+  });
+
+  test("a version badge that isn't a version is left out", async () => {
+    const f = foundry();
+    f.game.listBackups.mockResolvedValue({
+      world: {
+        w: [
+          {
+            id: "b",
+            createdAt: 1,
+            size: 1,
+            compatibility: { verified: "<b>" },
+          },
+        ],
+      },
+    } as never);
+    const r = await runBackups(f.page, req("list"));
+    expect(r.backups?.[0]).not.toHaveProperty("verified");
+    expect(
+      parseBackupsReply({
+        requestId: "r",
+        backups: [
+          { id: "b", createdAt: 1, size: 1, snapshot: false, verified: "x y" },
+        ],
+      }),
+    ).toBeUndefined();
   });
 
   test("takes one with Foundry's own dialog, then lists", async () => {

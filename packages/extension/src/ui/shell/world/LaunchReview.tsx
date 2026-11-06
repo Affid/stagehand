@@ -9,7 +9,7 @@ import { useUi } from "../../context.ts";
 import type { BackupInfo } from "../../../page-backups.ts";
 import { ago, plural, type Translate } from "../../i18n.ts";
 import { age } from "../../model/worlds.ts";
-import { formatSize } from "./BackupsTab.tsx";
+import { formatSize } from "../../common/size.ts";
 import { latestBackup } from "./useBackups.ts";
 import { pendingFor } from "../../model/preview.ts";
 import type { WorldModules } from "../../model/world-modules.ts";
