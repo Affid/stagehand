@@ -91,9 +91,13 @@ function topBar() {
 }
 
 function rail() {
-  const worlds = WORLDS_X.filter((w) => !ST.wq || w.title.toLowerCase().includes(ST.wq.toLowerCase())).map((w) => {
+  // Favourites first, as Foundry orders its own list.
+  const favs = ST.wfav ?? new Set(), locks = ST.wlock ?? new Set();
+  const ordered = [...WORLDS_X].sort((a, b) => Number(favs.has(b.id)) - Number(favs.has(a.id)));
+  const worlds = ordered.filter((w) => !ST.wq || w.title.toLowerCase().includes(ST.wq.toLowerCase())).map((w) => {
     const flag = railFlag(w);
-    return `<li class="mls-world${ST.page === "world" && w.id === ST.world ? " mls-on" : ""}" data-act="world" data-id="${w.id}"><span class="thumb" style="--img:url(${IMG[w.img]});background-position:${w.pos}"></span><strong>${esc(w.title)}</strong>${flag}<span class="meta">${w.system} · ${w.last}</span></li>`;
+    const marks = `${favs.has(w.id) ? '<i class="fa-solid fa-star mls-wfav" aria-label="Favourite"></i>' : ""}${locks.has(w.id) ? '<i class="fa-solid fa-lock mls-wlock" aria-label="Locked"></i>' : ""}`;
+    return `<li class="mls-world${ST.page === "world" && w.id === ST.world ? " mls-on" : ""}" data-act="world" data-id="${w.id}"><span class="thumb" style="--img:url(${IMG[w.img]});background-position:${w.pos}"></span><strong>${marks}${esc(w.title)}</strong>${flag}<span class="meta">${w.system} · ${w.last}</span></li>`;
   }).join("");
   return `<aside class="application framed mls-rail" aria-label="Worlds and library">
     <a class="mls-lib${ST.page === "library" ? " mls-on" : ""}" data-act="library"><i class="fa-solid fa-books"></i><strong>Library${ST.fresh.size ? ` <span class="mls-newtag" data-tooltip="Installed since you last sorted">${ST.fresh.size} new</span>` : ""}</strong><span>${ALL_MODULES.length} modules · 3 systems · 2 updates</span></a>

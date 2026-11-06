@@ -1,0 +1,18 @@
+import { chromium } from "@playwright/test";
+const dir = new URL("../", import.meta.url).pathname;
+const b = await chromium.launch(); const errs = [];
+const p = await (await b.newContext({ viewport: { width: 1600, height: 1000 } })).newPage();
+p.on("pageerror", (e) => errs.push(e.message));
+await p.goto(`file://${dir}out/setup-shell.html?calm=1`); await p.waitForTimeout(700);
+const order = () => p.evaluate(() => [...document.querySelectorAll(".mls-world strong")].map((x) => x.textContent).slice(0, 3));
+const r = { menuGone: await p.evaluate(() => !document.querySelector("[data-act=wmenu]")), order1: await order() };
+await p.click('.mls-world[data-id="vaults"]'); await p.click(".mlw-star"); await p.waitForTimeout(80);
+r.order2 = await order();
+await p.click('.mls-world[data-id="strahd"]'); await p.click("[data-act=wtab][data-id=about]"); await p.click("[data-act=wlockt]"); await p.waitForTimeout(80);
+r.locked = await p.evaluate(() => ({ launch: document.querySelector(".mls-launch").disabled, editLinks: document.querySelectorAll("[data-act=aedit], [data-act=sedit], [data-act=abg], [data-act=sskip], [data-act=sdrop], [data-act=asafe]").length, del: document.querySelector(".danger button").disabled, tag: !!document.querySelector(".mlw-locktag"), railLock: !!document.querySelector('.mls-world[data-id="strahd"] .mls-wlock') }));
+await p.hover(".mls-banner .mlw-tipwrap"); await p.waitForTimeout(700);
+r.launchTip = await p.evaluate(() => document.querySelector("#tooltip.active")?.textContent ?? null);
+await p.screenshot({ path: `${dir}out/shots/f-locked.png` });
+await p.click("[data-act=wlockt]"); await p.waitForTimeout(80);
+r.unlocked = await p.evaluate(() => ({ launch: document.querySelector(".mls-launch").disabled, editLinks: document.querySelectorAll("[data-act=aedit], [data-act=sedit]").length }));
+console.log(r); console.log(errs.length ? errs : "no errors"); await b.close();

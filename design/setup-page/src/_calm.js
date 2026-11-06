@@ -13,10 +13,14 @@ function calmBanner(w) {
         <span>${n ? `${plural(n, "change")} wait${n === 1 ? "s" : ""} for the next launch` : ""}${probs.length ? `${n ? " · " : ""}${plural(probs.length, "problem")}` : ""}</span>
         <a data-act="launch">Review</a><a data-act="discard">Discard</a></div>` : "";
   const flags = safe ? `<div class="mlc-flags">${safe}</div>` : "";
-  return `<div class="mls-banner" style="--img:url(${IMG[w.img]});--pos:${w.pos}"><div><h2>${esc(w.title)}</h2>
+  const fav = ST.wfav.has(w.id), locked = ST.wlock.has(w.id);
+  const star = `<button type="button" class="mlw-star${fav ? " on" : ""}" data-act="wfav" aria-pressed="${fav}" aria-label="Favourite" data-tooltip="${fav ? "Favourite: shown first in the worlds list. Click to remove." : "Mark as favourite: shown first in the worlds list"}"><i class="fa-${fav ? "solid" : "regular"} fa-star"></i></button>`;
+  const lockTag = locked ? '<span class="mlw-locktag" data-tooltip="Locked in Foundry: it can\'t be launched, edited, updated or deleted. Unlock it on the About tab."><i class="fa-solid fa-lock"></i>Locked</span>' : "";
+  const block = ST.backupJob?.wid === w.id ? "Waiting for the backup to finish" : locked ? "Locked: unlock it on the About tab to launch" : "";
+  return `<div class="mls-banner" style="--img:url(${IMG[w.img]});--pos:${w.pos}"><div><h2>${esc(w.title)}${star}${lockTag}</h2>
     <div class="meta"><span><i class="fa-solid fa-dice-d20"></i>${esc(w.system)}</span><span><i class="fa-solid fa-clock"></i>Last played ${w.last}</span><span><i class="fa-solid fa-plug"></i>${w.noCompanion ? "Modules unknown" : `${onCount(w.id, baseOn)} modules on now`}</span></div>${pending}${flags}</div>
-    <div class="acts"><button type="button" class="icon" data-act="wtab" data-id="about" data-tooltip="Edit the world's details" aria-label="Edit the world's details"><i class="fa-solid fa-pen"></i></button><button type="button" class="icon" data-act="wmenu" data-tooltip="More" aria-label="More"><i class="fa-solid fa-ellipsis-vertical"></i></button>
-    ${ST.backupJob?.wid === w.id ? '<span class="mlw-tipwrap" data-tooltip="Waiting for the backup to finish">' : ""}<button type="button" class="bright mls-launch" data-act="launch"${ST.backupJob?.wid === w.id ? " disabled" : ""}><i class="fa-solid fa-play"></i>Launch${n ? `<span class="mlc-badge" aria-label="${plural(n, "change")} to review">${n}</span>` : ""}</button>${ST.backupJob?.wid === w.id ? "</span>" : ""}</div></div>`;
+    <div class="acts"><button type="button" class="icon" data-act="wtab" data-id="about" data-tooltip="Edit the world's details" aria-label="Edit the world's details"><i class="fa-solid fa-pen"></i></button>
+    ${block ? `<span class="mlw-tipwrap" data-tooltip="${block}">` : ""}<button type="button" class="bright mls-launch" data-act="launch"${block ? " disabled" : ""}><i class="fa-solid fa-play"></i>Launch${n ? `<span class="mlc-badge" aria-label="${plural(n, "change")} to review">${n}</span>` : ""}</button>${block ? "</span>" : ""}</div></div>`;
 }
 
 function calmTabs(w, tabs) {
@@ -339,7 +343,7 @@ function editable(field, view, input, { label = "Edit" } = {}) {
   return `<div class="mlw-edit" data-field="${field}">${input}${err}<div class="bar"><button type="button" class="bright" data-act="asave" data-id="${field}">Save</button><button type="button" data-act="acancel">Cancel</button></div></div>`;
 }
 const savedMark = (field) => (ST.justSaved === field ? '<span class="mlw-saved" role="status"><i class="fa-solid fa-check"></i>Saved</span>' : "");
-const editLink = (field, label = "Edit") => (ST.aboutEdit === field ? "" : `${savedMark(field)}<a data-act="aedit" data-id="${field}">${label}</a>`);
+const editLink = (field, label = "Edit") => (ST.aboutEdit === field ? "" : ST.wlock.has(ST.world) ? "" : `${savedMark(field)}<a data-act="aedit" data-id="${field}">${label}</a>`);
 function flashSaved(field) {
   ST.justSaved = field; render();
   clearTimeout(ST.savedTimer);
@@ -363,7 +367,7 @@ function calmAbout(w) {
     : `<li class="ok"><div><strong>Data</strong><span>Up to date for Foundry 14. Nothing to migrate.</span></div><i class="fa-solid fa-circle-check"></i></li>`;
   const reset = ST.aboutEdit === "reset"
     ? `<li class="confirm"><div><strong>Reset every player's password?</strong><span>They each set a new one the next time they join. You can't undo this.</span></div><button type="button" data-act="acancel">Cancel</button><button type="button" class="del" data-act="asave" data-id="reset">Reset passwords</button></li>`
-    : `<li><div><strong>Reset user passwords</strong><span>Clears every player's password, so each sets a new one when they next join.</span></div><button type="button" data-act="aedit" data-id="reset">Reset…</button></li>`;
+    : `<li><div><strong>Reset user passwords</strong><span>Clears every player's password, so each sets a new one when they next join.</span></div>${ST.wlock.has(w.id) ? '<span class="mlw-tipwrap" data-tooltip="Locked: unlock it first"><button type="button" disabled>Reset…</button></span>' : '<button type="button" data-act="aedit" data-id="reset">Reset…</button>'}</li>`;
   const safe = ST.safeMode.has(w.id);
   return `<div class="mlw-about">
     <div class="col">
@@ -381,14 +385,15 @@ function calmAbout(w) {
         ${row("Last played", w.last)}</dl></section>
     </div>
     <div class="col">
-      <section class="mlw-box"><h4><span>Background</span><a data-act="abg">Change</a></h4>
+      <section class="mlw-box"><h4><span>Background</span>${ST.wlock.has(w.id) ? "" : '<a data-act="abg">Change</a>'}</h4>
         <div class="mlw-bg" style="--img:url(${IMG[w.img]});background-position:${w.pos}"></div><p class="hint">Shown behind this page's title and on the screen players join from.</p></section>
       <section class="mlw-box"><h4><span>Maintenance</span></h4><ul class="mlw-acts">
         ${migrate}
-        <li><div><strong>Safe mode for the next launch</strong><span>${safe ? "On: the next launch runs with every module off. It turns itself off afterwards." : "Runs the next launch with every module off, to find one that breaks the world."}</span></div><input type="checkbox" class="mls-switch" data-act="asafe" ${safe ? "checked" : ""} aria-label="Safe mode for the next launch"></li>
-        ${reset}</ul></section>
+        <li><div><strong>Safe mode for the next launch</strong><span>${safe ? "On: the next launch runs with every module off. It turns itself off afterwards." : "Runs the next launch with every module off, to find one that breaks the world."}</span></div>${ST.wlock.has(w.id) ? `<span class="mlw-tipwrap" data-tooltip="Locked: unlock it first"><input type="checkbox" class="mls-switch" disabled ${safe ? "checked" : ""} aria-label="Safe mode for the next launch (locked)"></span>` : `<input type="checkbox" class="mls-switch" data-act="asafe" ${safe ? "checked" : ""} aria-label="Safe mode for the next launch">`}</li>
+        ${reset}
+        <li><div><strong>Lock this world</strong><span>${ST.wlock.has(w.id) ? "Locked: Foundry won't launch, edit, update or delete it until you unlock it." : "Stops it being launched, edited, updated or deleted by mistake, for example a finished campaign."}</span></div><input type="checkbox" class="mls-switch" data-act="wlockt" ${ST.wlock.has(w.id) ? "checked" : ""} aria-label="Lock this world"></li></ul></section>
       <section class="mlw-box danger"><h4><span>Danger zone</span></h4><ul class="mlw-acts">
-        <li><div><strong>Delete this world</strong><span>Removes the world folder for good${backupsOf(w.id).length ? "" : ", and it has no backups"}.</span></div><button type="button" class="del" data-act="foundry" data-what="Delete World (Foundry asks you to type a code)">Delete…</button></li></ul></section>
+        <li><div><strong>Delete this world</strong><span>Removes the world folder for good${backupsOf(w.id).length ? "" : ", and it has no backups"}.</span></div>${ST.wlock.has(w.id) ? '<span class="mlw-tipwrap" data-tooltip="Locked: unlock it first, under Maintenance"><button type="button" class="del" disabled>Delete…</button></span>' : '<button type="button" class="del" data-act="foundry" data-what="Delete World (Foundry asks you to type a code)">Delete…</button>'}</li></ul></section>
       <p class="hint">Settings kept inside the world (module settings, users, permissions) change only in the world itself.</p>
     </div></div>`;
 }
@@ -490,3 +495,10 @@ A.bdelete = () => {
   notify(`Mockup: Foundry asks once to confirm, then deletes ${plural(n, "backup")} (game.deleteBackups).`);
 };
 A.copypath = (path) => notify(`Copied <code>${esc(path)}</code>.`);
+
+// ---------- Favourite and Lock: Foundry's own world settings, from its card menu ----------
+// Favourite is Foundry's core.setupPackageFavorites setting; Lock is game.post({action: "lockPackage"}).
+ST.wfav = new Set(["strahd"]);
+ST.wlock = new Set();
+A.wfav = () => { ST.wfav.has(ST.world) ? ST.wfav.delete(ST.world) : ST.wfav.add(ST.world); render(); };
+A.wlockt = () => { ST.wlock.has(ST.world) ? ST.wlock.delete(ST.world) : ST.wlock.add(ST.world); ST.aboutEdit = null; render(); };

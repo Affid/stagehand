@@ -82,7 +82,7 @@ function sessionView(w) {
   const all = upcoming(s, custom ? 99 : 3), shown = all.slice(0, custom ? 4 : 3);
   const rows = shown.map((x) => {
     const isNext = x.ms === n.ms;
-    const act = custom ? `<a data-act="sdrop" data-id="${x.date}">Remove</a>` : `<a data-act="sskip" data-id="${x.date}">${x.skipped ? "Restore" : "Skip"}</a>`;
+    const act = ST.wlock.has(w.id) ? "<span></span>" : custom ? `<a data-act="sdrop" data-id="${x.date}">Remove</a>` : `<a data-act="sskip" data-id="${x.date}">${x.skipped ? "Restore" : "Skip"}</a>`;
     return `<li class="${x.skipped ? "skipped" : ""}${isNext ? " next" : ""}"><span class="d">${whenIn(x.ms, s.tz)}</span>
       ${isNext ? '<span class="mlw-pill ok">next</span>' : x.skipped ? '<span class="mlw-pill">skipped</span>' : "<span></span>"}${act}</li>`;
   }).join("") + (custom && all.length > shown.length ? `<li class="more"><span>and ${plural(all.length - shown.length, "more date")}</span><span></span><a data-act="sedit">Show all</a></li>` : "");
@@ -228,7 +228,7 @@ function sessionEditor(w) {
 
 function sessionBox(w) {
   const editing = ST.aboutEdit === "next";
-  const link = editing ? "" : `${savedMark("next")}<a data-act="sedit">${SCHEDULES[w.id] ? "Change" : "Set a date"}</a>`;
+  const link = editing || ST.wlock.has(w.id) ? "" : `${savedMark("next")}<a data-act="sedit">${SCHEDULES[w.id] ? "Change" : "Set a date"}</a>`;
   return `<section class="mlw-box mlw-sess"><h4><span>Next session</span>${link}</h4>${editing ? sessionEditor(w) : sessionView(w)}</section>`;
 }
 
