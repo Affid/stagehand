@@ -112,10 +112,6 @@ export async function openSetupAsAdmin(
 
 export const SCREENS = "test-results/screens";
 
-/** A Foundry window opened by Module Library. */
-export const mlWindow = (page: Page, text: string): Locator =>
-  page.locator(".application.ml-window", { hasText: text });
-
 /** Foundry's toast notifications. */
 export const toasts = (page: Page): Locator =>
   page.locator("#notifications .notification");

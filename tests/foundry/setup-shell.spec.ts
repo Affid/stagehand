@@ -100,7 +100,7 @@ test("the Library shows the module cards", async () => {
   await shell(page)
     .getByRole("button", { name: /^Library/ })
     .click();
-  await expect(shell(page).locator(".mll-page .mll-tools")).toBeVisible();
+  await expect(shell(page).locator(".mll-page .mll-toolbar")).toBeVisible();
   await expect(shell(page).locator(".mls-banner")).toHaveCount(0);
   await page.screenshot({ path: `${SCREENS}/shell-library.png` });
 });

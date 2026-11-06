@@ -230,7 +230,7 @@ test("About edits the description in Foundry's own editor and saves it", async (
 
 /** Deletes one of our backup rows with the code Foundry shows. */
 async function deleteBackup(row: Locator): Promise<void> {
-  await row.getByRole("button", { name: "Delete" }).click();
+  await row.getByRole("button", { name: /^Delete/ }).click();
   const dialog = page.locator("dialog.application", {
     has: page.locator("#delete-confirm"),
   });
@@ -245,7 +245,6 @@ test("Backups: take one with Foundry's dialog, cancel a restore, delete it with 
   const NOTE = `${PREFIX} ${Date.now()}`;
   await shell().getByRole("tab", { name: "Backups" }).click();
   const tab = shell().locator(".mlw-backups");
-  await expect(tab.locator(".mlw-bhead")).toContainText("backup");
   await expect(tab.getByText("Reading Foundry's backups…")).toHaveCount(0);
   // Leftovers from an earlier failed run go first.
   const leftovers = tab.locator(".mlw-blist li", { hasText: PREFIX });
@@ -254,7 +253,13 @@ test("Backups: take one with Foundry's dialog, cancel a restore, delete it with 
     await deleteBackup(leftovers.first());
     await expect(leftovers).toHaveCount(before - 1, { timeout: 60_000 });
   }
-  await tab.getByRole("button", { name: "Take a backup" }).click();
+  // With no backups yet it's the empty state's Take the first backup.
+  await tab
+    .getByRole("button", {
+      name: /^(Take a backup|Take the first backup|Back up now)$/,
+    })
+    .first()
+    .click();
   const prompt = page.locator("dialog.application").last();
   await prompt.locator("input").fill(NOTE);
   await prompt
@@ -265,7 +270,7 @@ test("Backups: take one with Foundry's dialog, cancel a restore, delete it with 
   await expect(mine).toHaveCount(1, { timeout: 120_000 });
   await page.screenshot({ path: `${SCREENS}/world-backups.png` });
   // Restore: open Foundry's confirm-code dialog and say no. Never confirmed.
-  await mine.getByRole("button", { name: "Restore" }).click();
+  await mine.getByRole("button", { name: "Restore…" }).click();
   const restore = page.locator("dialog.application").last();
   await restore.locator('[data-action="no"]').click();
   await expect(tab.getByText("Waiting for Foundry…")).toHaveCount(0);
