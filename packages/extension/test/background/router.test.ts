@@ -168,7 +168,9 @@ describe("router: admin verification (PR-1, PR-2, PR-3)", () => {
       { kind: "launch-hold", worldId: "w", hold: true },
       fromSetup,
     );
-    expect(await d.state.launchHolds(S)).toEqual(["w"]);
+    expect(await d.state.launchHolds(S)).toEqual([
+      { worldId: "w", at: "2026-11-05T00:00:00.000Z" },
+    ]);
     await route(
       d,
       { kind: "launch-hold", worldId: "w", hold: false },

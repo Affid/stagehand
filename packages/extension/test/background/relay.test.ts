@@ -5,6 +5,7 @@ import { handleRelay } from "../../src/background/relay.ts";
 import { createState } from "../../src/background/state.ts";
 
 const S = "http://localhost:30000";
+const NOW = "2026-11-06T12:00:00.000Z";
 
 async function setup() {
   const state = createState(serialized(memoryKeyValue()));
@@ -30,7 +31,7 @@ async function setup() {
       status: "pending",
     },
   ]);
-  const deps = { state, now: () => "now" };
+  const deps = { state, now: () => NOW };
   const send = (type: string, payload: unknown) =>
     handleRelay(deps, S, makeEnvelope("module", type, payload, "r1"));
   return { state, send };
@@ -156,7 +157,7 @@ describe("relay: review fixes", () => {
 
   test("a launch held on Setup gets no changes once; they stay queued for the next", async () => {
     const { state, send } = await setup();
-    await state.setLaunchHold(S, "w", true);
+    await state.setLaunchHold(S, "w", true, NOW);
     const held = await send("COMMANDS_PULL", { worldId: "w" });
     expect(held.payload).toEqual({ world: [], global: [] });
     expect((await state.commands(S))[0]?.status).toBe("pending");
@@ -166,10 +167,20 @@ describe("relay: review fixes", () => {
 
   test("a hold for another world doesn't hold this one", async () => {
     const { state, send } = await setup();
-    await state.setLaunchHold(S, "other", true);
+    await state.setLaunchHold(S, "other", true, NOW);
     const pulled = await send("COMMANDS_PULL", { worldId: "w" });
     expect((pulled.payload as { world: unknown[] }).world).toHaveLength(1);
-    expect(await state.launchHolds(S)).toEqual(["other"]);
+    expect((await state.launchHolds(S)).map((h) => h.worldId)).toEqual([
+      "other",
+    ]);
+  });
+
+  test("a hold older than ten minutes no longer holds, and is dropped", async () => {
+    const { state, send } = await setup();
+    await state.setLaunchHold(S, "w", true, "2026-11-06T11:49:00.000Z");
+    const pulled = await send("COMMANDS_PULL", { worldId: "w" });
+    expect((pulled.payload as { world: unknown[] }).world).toHaveLength(1);
+    expect(await state.launchHolds(S)).toEqual([]);
   });
 
   test("oversized snapshots are refused", async () => {

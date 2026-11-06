@@ -166,30 +166,47 @@ function worldStore(kv: SerializedKeyValue) {
 
 /** Worlds whose next launch skips the queue; more is a bug, not a use. */
 const MAX_HOLDS = 200;
+/** A hold is for the launch that follows it, not one much later. */
+export const HOLD_TTL_MS = 10 * 60 * 1000;
+
+export interface LaunchHold {
+  readonly worldId: string;
+  /** When "Launch without changes" was chosen (ISO time). */
+  readonly at: string;
+}
+
+const fresh = (h: LaunchHold, now: string): boolean =>
+  Date.parse(now) - Date.parse(h.at) < HOLD_TTL_MS;
 
 /** The command queue (P-5), and launches that skip it once. */
 function commandStore(kv: SerializedKeyValue) {
   const holdKey = (id: ServerId): string => key("launchHolds", id);
   return {
-    launchHolds: (id: ServerId) => reader(kv)<string[]>(holdKey(id), []),
+    launchHolds: (id: ServerId) => reader(kv)<LaunchHold[]>(holdKey(id), []),
     async setLaunchHold(
       id: ServerId,
       worldId: string,
       hold: boolean,
+      at: string,
     ): Promise<void> {
-      await kv.update<string[]>(holdKey(id), [], (list) => {
-        const others = list.filter((w) => w !== worldId);
-        return hold ? [...others, worldId].slice(-MAX_HOLDS) : others;
+      await kv.update<LaunchHold[]>(holdKey(id), [], (list) => {
+        const others = list.filter((h) => h.worldId !== worldId);
+        return hold ? [...others, { worldId, at }].slice(-MAX_HOLDS) : others;
       });
     },
-    /** True once if the world's launch was held; the hold is used up. */
-    takeLaunchHold(id: ServerId, worldId: string): Promise<boolean> {
-      return kv.update<string[], boolean>(holdKey(id), [], (list) =>
-        withResult(
-          list.filter((w) => w !== worldId),
-          list.includes(worldId),
-        ),
-      );
+    /** True once if the world's launch was held recently; the hold is used up. */
+    takeLaunchHold(
+      id: ServerId,
+      worldId: string,
+      now: string,
+    ): Promise<boolean> {
+      return kv.update<LaunchHold[], boolean>(holdKey(id), [], (list) => {
+        const mine = list.find((h) => h.worldId === worldId);
+        return withResult(
+          list.filter((h) => h.worldId !== worldId),
+          mine !== undefined && fresh(mine, now),
+        );
+      });
     },
     commands: (id: ServerId) => reader(kv)<Command[]>(key("commands", id), []),
     updateCommands<R = Command[]>(

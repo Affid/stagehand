@@ -168,7 +168,7 @@ async function fromSetup(
     case "cancel-command":
       return deps.state.updateCommands(server, (list) => cancel(list, m.id));
     case "launch-hold":
-      return deps.state.setLaunchHold(server, m.worldId, m.hold);
+      return deps.state.setLaunchHold(server, m.worldId, m.hold, deps.now());
     default:
       throw new Error(`Unexpected ${m.kind} from Setup`);
   }

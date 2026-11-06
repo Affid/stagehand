@@ -76,7 +76,7 @@ async function pull(deps: RelayDeps, server: ServerId, msg: Envelope) {
     failOrphans(all, library, worldId),
   );
   // "Launch without changes" on Setup: this launch gets none; they stay queued.
-  if (await deps.state.takeLaunchHold(server, worldId))
+  if (await deps.state.takeLaunchHold(server, worldId, deps.now()))
     return reply(msg, "COMMANDS", { world: [], global: [] });
   const world = expandForWorld(pendingFor(list, worldId), library);
   return reply(msg, "COMMANDS", { world, global: [] });
