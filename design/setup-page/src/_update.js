@@ -179,7 +179,7 @@ function updatePage() {
       <button type="button" data-act="updcheck"><i class="fa-solid fa-rotate"></i>Check again</button><p class="ml-muted">Foundry checks by itself when Setup opens.</p></div></div></section>`;
   }
   return `<section id="setup-packages" class="application framed mls-main mlb-page mlu-page"><div class="mls-body-main">${head}
-    <div class="mlu-cols">${updLeft(rel)}<div class="mlu-side">${updAction(rel)}${updCompat(rel)}</div></div></div></section>`;
+    <div class="mlu-cols">${updLeft(rel)}<div class="mlu-side">${updAction(rel)}${(ST.upd.view ?? "notes") === "compat" ? "" : updCompat(rel)}</div></div></div></section>`;
 }
 
 A.updpage = () => { ST.page = "update"; ST.pop = null; ST.panel = null; render(); };
