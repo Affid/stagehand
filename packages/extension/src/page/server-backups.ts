@@ -69,15 +69,25 @@ function collection(game: Game, type: PackageType) {
       : game.worlds;
 }
 
+/** Foundry lists every installed package; only those with backups show. */
 function packagesOf(game: Game, listing: Listing): PackageBackups[] {
   return TYPES.flatMap((type) =>
-    Object.entries(listing[type] ?? {}).map(([id, list]) => ({
-      type,
-      id: id.slice(0, 300),
-      title: text(list[0]?.title, 300) || id.slice(0, 300),
-      installed: collection(game, type)?.get?.(id) !== undefined,
-      backups: list.map(toInfo).slice(0, MAX_BACKUPS),
-    })),
+    Object.entries(listing[type] ?? {})
+      .filter(([, list]) => list.length > 0)
+      .map(([id, list]) => {
+        const pkg = collection(game, type)?.get?.(id) as
+          { readonly title?: unknown } | undefined;
+        return {
+          type,
+          id: id.slice(0, 300),
+          title:
+            text(list[0]?.title, 300) ||
+            text(pkg?.title, 300) ||
+            id.slice(0, 300),
+          installed: pkg !== undefined,
+          backups: list.map(toInfo).slice(0, MAX_BACKUPS),
+        };
+      }),
   ).slice(0, MAX_PACKAGES);
 }
 

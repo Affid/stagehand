@@ -27,12 +27,14 @@ const listing = {
     m: [
       {
         id: "module.m.1",
-        title: "Mod",
+        title: "",
         createdAt: 2,
         size: 20,
         snapshotId: "snapshot.1",
       },
     ],
+    // Foundry lists every installed package, with or without backups.
+    none: [],
   },
   system: {},
   snapshots: {
@@ -51,11 +53,12 @@ const listing = {
 function foundry() {
   const has = (ids: string[]) => ({
     values: () => [].values(),
-    get: (id: string) => (ids.includes(id) ? { id } : undefined),
+    get: (id: string) =>
+      ids.includes(id) ? { id, title: `Title ${id}` } : undefined,
   });
   const game = {
     worlds: has(["w"]),
-    modules: has(["m"]),
+    modules: has(["m", "none"]),
     systems: has([]),
     listBackups: vi.fn(() => Promise.resolve(listing)),
     createSnapshot: vi.fn(() => Promise.resolve()),
@@ -75,7 +78,7 @@ const req = (
 });
 
 describe("the server's backups through Foundry", () => {
-  test("lists snapshots and every package's backups, marking uninstalled ones", async () => {
+  test("lists snapshots and the packages that have backups, marking uninstalled ones", async () => {
     const f = foundry();
     const r = await runServerBackups(f.page, req("list"));
     expect(r.listing?.snapshots).toEqual([
@@ -94,7 +97,8 @@ describe("the server's backups through Foundry", () => {
     ).toEqual([
       ["world", "w", "Strahd", true],
       ["world", "gone", "Old world", false],
-      ["module", "m", "Mod", true],
+      // No title on the record: the installed package's title.
+      ["module", "m", "Title m", true],
     ]);
     expect(
       parseServerBackupsReply({ requestId: "r1", listing: r.listing }),

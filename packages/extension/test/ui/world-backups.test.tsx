@@ -106,6 +106,7 @@ describe("a world's Backups tab", () => {
 
   test("sizes read as KB, MB or GB", () => {
     expect(formatSize(300)).toBe("1 KB");
+    expect(formatSize(0)).toBe("0 KB");
     expect(formatSize(80 * 1024)).toBe("80 KB");
     expect(formatSize(441 * 1024 * 1024)).toBe("441 MB");
     expect(formatSize(3 * 1024 * 1024 * 1024)).toBe("3.0 GB");
