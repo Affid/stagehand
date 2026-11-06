@@ -260,7 +260,7 @@ Read from `public/scripts/foundry.mjs` and checked live with the new page:
   `SETUP.BACKUPS.BackingUp`. Its steps are `snapshotModules`, `snapshotSystems`,
   `snapshotWorlds`, each with its own percent.
 - Free space: `game.post({action: "checkRestoreSnapshotDiskSpace", snapshotData:
-  {originalSize: 0}})` answers `{required: 0, available}` at once;
+{originalSize: 0}})` answers `{required: 0, available}` at once;
   `checkCreateSnapshotDiskSpace` sizes every installed package first.
 - After `deleteSnapshots`, Foundry's backup cache is empty: list again before
   `deleteBackups`, or it throws on `null.world`.

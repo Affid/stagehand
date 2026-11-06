@@ -342,6 +342,7 @@
   "bk.all": "All",
   "bk.deleteN": "Delete {n}…",
   "bk.deleteSome": "Delete…",
+  "bk.pickFirst": "Pick what to delete first",
   "bk.done": "Done",
   "bk.emptyTitle": "No backups of {title} yet",
   "bk.emptyText": "A backup is a full copy of the world folder you can restore from Foundry. Take one before big changes or updates.",

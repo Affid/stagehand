@@ -10,6 +10,7 @@ import { Icon } from "../../../common/widgets.tsx";
 import { useUi } from "../../../context.ts";
 import { plural } from "../../../i18n.ts";
 import { agoMs, backupTime, tip } from "../../world/backups/text.ts";
+import { DeleteSome } from "../../world/backups/Head.tsx";
 import { versionTag } from "./version.ts";
 
 type Run = (op: ServerBackupOp, ids: readonly string[]) => void;
@@ -123,7 +124,7 @@ function SnapRow(props: {
 }
 
 function Bar(props: {
-  readonly count: number;
+  readonly ids: readonly string[];
   readonly picked: ReadonlySet<string> | null;
   readonly off: string | null;
   readonly onSelect: () => void;
@@ -136,7 +137,7 @@ function Bar(props: {
       <div class="mlw-bhead">
         <span>{t("sb.lead")}</span>
         <span class="ml-spacer" />
-        {props.count > 1 && props.off === null ? (
+        {props.ids.length > 1 && props.off === null ? (
           <button type="button" onClick={props.onSelect}>
             <Icon name="square-check" />
             {t("bk.select")}
@@ -144,7 +145,7 @@ function Bar(props: {
         ) : null}
       </div>
     );
-  const n = picked.size;
+  const n = props.ids.filter((id) => picked.has(id)).length;
   return (
     <div class="mlw-bhead sel">
       <Icon name="square-check" />
@@ -156,15 +157,7 @@ function Bar(props: {
         </b>
       </span>
       <span class="ml-spacer" />
-      <button
-        type="button"
-        class="del"
-        disabled={n === 0 || props.off !== null}
-        onClick={props.onDelete}
-      >
-        <Icon name="trash" />
-        {n ? t("bk.deleteN", { n: String(n) }) : t("bk.deleteSome")}
-      </button>
+      <DeleteSome n={n} off={props.off} onDelete={props.onDelete} />
       <button type="button" onClick={props.onSelect}>
         {t("bk.done")}
       </button>
@@ -212,7 +205,7 @@ export function SnapshotsTab(props: {
   return (
     <div class="mlb-scroll">
       <Bar
-        count={snapshots.length}
+        ids={snapshots.map((s) => s.id)}
         picked={picked}
         off={props.off}
         onSelect={flip}

@@ -33,10 +33,16 @@ export function SummaryHead(props: {
       </span>
       <span class="ml-spacer" />
       {deletable > 1 ? (
-        <button type="button" disabled={off !== null} onClick={props.onSelect}>
-          <Icon name="square-check" />
-          {t("bk.select")}
-        </button>
+        <span class="nodel" title={tip(off)}>
+          <button
+            type="button"
+            disabled={off !== null}
+            onClick={props.onSelect}
+          >
+            <Icon name="square-check" />
+            {t("bk.select")}
+          </button>
+        </span>
       ) : null}
       {props.nudged ? null : (
         <span class="nodel" title={tip(off)}>
@@ -55,6 +61,30 @@ export function SummaryHead(props: {
   );
 }
 
+/** Delete the picked ones; off, with its reason, until some are picked. */
+export function DeleteSome(props: {
+  readonly n: number;
+  readonly off: string | null;
+  readonly onDelete: () => void;
+}) {
+  const { t } = useUi();
+  const { n } = props;
+  const off = props.off ?? (n === 0 ? t("bk.pickFirst") : null);
+  return (
+    <span class="nodel" title={tip(off)}>
+      <button
+        type="button"
+        class="del"
+        disabled={off !== null}
+        onClick={props.onDelete}
+      >
+        <Icon name="trash" />
+        {n ? t("bk.deleteN", { n: String(n) }) : t("bk.deleteSome")}
+      </button>
+    </span>
+  );
+}
+
 export function SelectHead(props: {
   readonly list: readonly BackupInfo[];
   readonly picked: ReadonlySet<string>;
@@ -64,8 +94,10 @@ export function SelectHead(props: {
   readonly onDone: () => void;
 }) {
   const { t } = useUi();
-  const n = props.picked.size;
-  const frees = sizeOf(props.list.filter((b) => props.picked.has(b.id)));
+  // Only what is still listed: a refresh can drop a picked backup (review).
+  const chosen = props.list.filter((b) => props.picked.has(b.id));
+  const n = chosen.length;
+  const frees = sizeOf(chosen);
   return (
     <div class="mlw-bhead sel">
       <Icon name="square-check" />
@@ -81,15 +113,7 @@ export function SelectHead(props: {
         {t("bk.all")}
       </button>
       <span class="ml-spacer" />
-      <button
-        type="button"
-        class="del"
-        disabled={n === 0 || props.off !== null}
-        onClick={props.onDelete}
-      >
-        <Icon name="trash" />
-        {n ? t("bk.deleteN", { n: String(n) }) : t("bk.deleteSome")}
-      </button>
+      <DeleteSome n={n} off={props.off} onDelete={props.onDelete} />
       <button type="button" onClick={props.onDone}>
         {t("bk.done")}
       </button>

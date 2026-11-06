@@ -338,3 +338,23 @@ describe("Foundry's progress and lock", () => {
     expect(container.querySelector(".mlw-blist li.busy")).toBe(null);
   });
 });
+
+describe("select mode's reasons and counts (code review)", () => {
+  test("Delete says to pick first; Select says why it waits", async () => {
+    const { container, getByRole, emit } = await backups();
+    await waitFor(() => row(container, "b2"));
+    fireEvent.click(getByRole("button", { name: "Select" }));
+    const del = getByRole("button", { name: "Delete…" });
+    expect(del.closest("[title]")?.getAttribute("title")).toBe(
+      "Pick what to delete first",
+    );
+    fireEvent.click(getByRole("button", { name: "Done" }));
+    emit({ type: "LOCK", payload: { locked: true } });
+    await waitFor(() => {
+      const select = getByRole("button", { name: "Select" });
+      expect(select.closest("[title]")?.getAttribute("title")).toContain(
+        "Wait for",
+      );
+    });
+  });
+});

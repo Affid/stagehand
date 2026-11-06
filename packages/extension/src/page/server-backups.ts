@@ -85,7 +85,11 @@ function packagesOf(game: Game, listing: Listing): PackageBackups[] {
             text(pkg?.title, 300) ||
             id.slice(0, 300),
           installed: pkg !== undefined,
-          backups: list.map(toInfo).slice(0, MAX_BACKUPS),
+          // Newest first: the page restores and labels backups[0] as latest.
+          backups: list
+            .map(toInfo)
+            .sort((a, b) => b.createdAt - a.createdAt)
+            .slice(0, MAX_BACKUPS),
         };
       }),
   ).slice(0, MAX_PACKAGES);

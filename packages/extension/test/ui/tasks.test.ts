@@ -60,3 +60,21 @@ describe("odd lock messages (security review)", () => {
       ).toBe("lock.busy");
   });
 });
+
+describe("a step without a number (code review)", () => {
+  test("a new step doesn't carry the last step's percent", () => {
+    const store = createStore(uiState());
+    const { page, emit } = fakePage();
+    trackProgress(store, page);
+    const snap = (over: object) => ({
+      type: "PROGRESS" as const,
+      payload: { action: "createSnapshot" as const, id: "snapshot.1", ...over },
+    });
+    emit(snap({ step: "snapshotModules", pct: 100 }));
+    emit(snap({ step: "snapshotSystems" }));
+    expect(store.get().tasks[0]?.pct).toBeUndefined();
+    emit(snap({ step: "snapshotSystems", pct: 40 }));
+    emit(snap({ step: "snapshotSystems" }));
+    expect(store.get().tasks[0]?.pct).toBe(40);
+  });
+});

@@ -19,7 +19,10 @@ function withTick(
   const prev = tasks.find((x) => x.id === p.id);
   // A step without a number keeps the last one.
   const next =
-    prev && p.pct === undefined && prev.pct !== undefined
+    prev &&
+    p.pct === undefined &&
+    prev.pct !== undefined &&
+    prev.step === p.step
       ? { ...p, pct: prev.pct }
       : p;
   return [...rest, next].slice(-MAX_TASKS);

@@ -359,3 +359,31 @@ describe("a snapshot in progress", () => {
     expect(restore.disabled).toBe(true);
   });
 });
+
+describe("select mode after a refresh (code review)", () => {
+  test("a picked snapshot that is gone no longer counts", async () => {
+    const two: ServerListing = {
+      ...LISTING,
+      snapshots: [snap("snapshot.1"), snap("snapshot.2", { note: "Second" })],
+    };
+    const { container, getByRole, page } = await open(two);
+    fireEvent.click(getByRole("button", { name: "Select" }));
+    for (const id of ["snapshot.1", "snapshot.2"])
+      fireEvent.click(
+        within(el(container, `[data-snapshot="${id}"]`)).getByRole("checkbox"),
+      );
+    page.serverBackups.mockResolvedValueOnce({
+      listing: { ...two, snapshots: [snap("snapshot.1")] },
+    });
+    fireEvent.click(getByRole("button", { name: "Create a snapshot" }));
+    await waitFor(() => {
+      expect(container.querySelector('[data-snapshot="snapshot.2"]')).toBe(
+        null,
+      );
+    });
+    expect(el(container, ".mlw-bhead.sel").textContent).toContain(
+      "1 snapshot selected",
+    );
+    expect(getByRole("button", { name: "Delete 1…" })).toBeTruthy();
+  });
+});

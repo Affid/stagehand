@@ -191,3 +191,24 @@ describe("free disk space and package versions (5b)", () => {
     expect(m?.backups[0]?.version).toBe("0.10.4");
   });
 });
+
+describe("package backups in order (code review)", () => {
+  test("newest first, whatever order Foundry lists them in", async () => {
+    const f = foundry();
+    f.game.listBackups.mockResolvedValue({
+      ...listing,
+      module: {
+        m: [
+          { id: "module.m.old", createdAt: 1, size: 1 },
+          { id: "module.m.new", createdAt: 9, size: 1 },
+        ],
+      },
+    } as never);
+    const r = await runServerBackups(f.page, req("list"));
+    const m = r.listing?.packages.find((p) => p.id === "m");
+    expect(m?.backups.map((b) => b.id)).toEqual([
+      "module.m.new",
+      "module.m.old",
+    ]);
+  });
+});
