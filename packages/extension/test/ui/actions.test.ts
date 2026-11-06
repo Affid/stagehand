@@ -43,6 +43,7 @@ const initial: UiState = {
   apply: null,
   sheetWorld: null,
   collapsedGroups: [],
+  route: null,
 };
 
 const t = createTranslator("en");

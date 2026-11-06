@@ -3,6 +3,8 @@
 // buttons, menus, hooks and progress events keep working (docs/SETUP-SPIKE.md).
 export const SHELL_CLASS = "ml-shell-on";
 const STYLE_ID = "ml-shell-style";
+/** The UI's host for the new page (ui/shell/mount.tsx's SHELL_HOST). */
+const HOST_ID = "ml-shell-root";
 
 export interface ShellSelectors {
   /** Must all exist, or the take-over is refused and nothing changes. */
@@ -25,7 +27,9 @@ function ensureStyle(doc: Document, sel: ShellSelectors): void {
   if (doc.getElementById(STYLE_ID)) return;
   const style = doc.createElement("style");
   style.id = STYLE_ID;
-  style.textContent = `body.${SHELL_CLASS} :is(${sel.hide.join(", ")}) { display: none !important; }`;
+  // Only while our page is mounted: if the UI script stops (extension
+  // reloaded or disabled), Foundry's page shows again.
+  style.textContent = `body.${SHELL_CLASS}:has(#${HOST_ID}) :is(${sel.hide.join(", ")}) { display: none !important; }`;
   doc.head.append(style);
 }
 

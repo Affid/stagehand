@@ -6,6 +6,7 @@ import type { SetupState } from "../messages.ts";
 import type { Adapter } from "../adapters/config.ts";
 import type { AdapterChoice } from "../adapters/select.ts";
 import type { Scope } from "./model/modules.ts";
+import type { Route } from "./shell/route.ts";
 
 /** The Apply dialog: for one world, or with a world picker (null). */
 export interface ApplyTarget {
@@ -30,6 +31,8 @@ export interface UiState {
   readonly sheetWorld: string | null;
   /** Collapsed groups that have no folder record to keep it, as "unfiled". */
   readonly collapsedGroups: readonly string[];
+  /** The new Setup page's current page; null until one is chosen. */
+  readonly route: Route | null;
 }
 
 export const EMPTY_FILTER: ModuleFilterSpec = {

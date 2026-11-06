@@ -1,6 +1,13 @@
 // Builds each extension entry as a classic script (content scripts and
-// Firefox's background page can't be ES modules), then copies static files.
-import { cpSync, existsSync, rmSync } from "node:fs";
+// Firefox's background page can't be ES modules), then copies static files
+// and appends the new Setup page's styles to setup-ui.css.
+import {
+  appendFileSync,
+  cpSync,
+  existsSync,
+  readFileSync,
+  rmSync,
+} from "node:fs";
 import { join } from "node:path";
 import { build } from "vite";
 
@@ -43,3 +50,7 @@ for (const name of entries) {
   });
 }
 cpSync(join(root, "static"), outDir, { recursive: true });
+appendFileSync(
+  join(outDir, "setup-ui.css"),
+  `\n${readFileSync(join(root, "src", "ui", "shell", "shell.css"), "utf8")}`,
+);

@@ -1,4 +1,7 @@
-// View toggle (S-8), search (S-4), tag AND/OR (S-3) and filter state.
+// View toggle (S-8), search (S-4), tag AND/OR (S-3) and filter state,
+// and the switch to the new Setup page.
+import { allowsChanges } from "../../adapters/select.ts";
+import { Icon } from "../common/widgets.tsx";
 import { useUi } from "../context.ts";
 import { EMPTY_FILTER } from "../store.ts";
 import type { ModulesModel } from "./derived.ts";
@@ -64,12 +67,30 @@ function Filters(props: { readonly model: ModulesModel }) {
   );
 }
 
+/** Opt-in until the new page does everything; safe mode never offers it. */
+function TryShell() {
+  const { state, actions, t } = useUi();
+  if (!allowsChanges(state.adapter) || state.data.prefs.newSetupPage)
+    return null;
+  return (
+    <button
+      type="button"
+      class="ml-try-shell"
+      onClick={() => void actions.setPref("newSetupPage", true)}
+    >
+      <Icon name="wand-magic-sparkles" />
+      {t("shell.try")}
+    </button>
+  );
+}
+
 export function Toolbar(props: { readonly model: ModulesModel }) {
   const { state } = useUi();
   return (
     <div class="ml-toolbar">
       <ViewToggle />
       {state.view === "organised" ? <Filters model={props.model} /> : null}
+      <TryShell />
     </div>
   );
 }

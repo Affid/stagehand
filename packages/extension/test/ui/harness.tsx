@@ -11,7 +11,12 @@ import type { AdapterChoice } from "../../src/adapters/select.ts";
 import type { ExtensionMessage, SetupState } from "../../src/messages.ts";
 import { type PageToUi, windowHostId } from "../../src/page-protocol.ts";
 import { createActions, type Send } from "../../src/ui/actions.ts";
-import { ModulesRoot, OverlayRoot, WorldsRoot } from "../../src/ui/App.tsx";
+import {
+  ModulesRoot,
+  OverlayRoot,
+  ShellRoot,
+  WorldsRoot,
+} from "../../src/ui/App.tsx";
 import { createTranslator } from "../../src/ui/i18n.ts";
 import type { PageBridge } from "../../src/ui/page.ts";
 import { createStore, EMPTY_FILTER, type UiState } from "../../src/ui/store.ts";
@@ -166,11 +171,12 @@ export const uiState = (over: Partial<UiState> = {}): UiState => ({
   apply: null,
   sheetWorld: null,
   collapsedGroups: [],
+  route: null,
   ...over,
 });
 
 export function renderUi(
-  root: "modules" | "worlds" | "overlay",
+  root: "modules" | "worlds" | "overlay" | "shell",
   options: {
     state?: Partial<UiState>;
     data?: Partial<SetupState>;
@@ -197,6 +203,7 @@ export function renderUi(
     modules: ModulesRoot,
     worlds: WorldsRoot,
     overlay: OverlayRoot,
+    shell: ShellRoot,
   }[root];
   const view = render(<Root deps={deps} />);
   return { ...view, store, send, ...fake };

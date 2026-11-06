@@ -1,5 +1,6 @@
 // Isolated content script on Setup: receives package data from the main
-// world, reports it to the background and mounts the organisation UI.
+// world, reports it to the background and mounts the organisation UI, or
+// the new Setup page when this browser chose it.
 // Never breaks the Setup page: if a mount point is missing, it skips it.
 import "@module-library/shared/zod-config";
 import { logError } from "@module-library/shared/log";
@@ -21,6 +22,7 @@ import type { UiDeps } from "../ui/context.ts";
 import { createTranslator, pickLanguage } from "../ui/i18n.ts";
 import { worldRows } from "../ui/model/worlds.ts";
 import { createPageBridge, type PageBridge } from "../ui/page.ts";
+import { syncShell } from "../ui/shell/mount.tsx";
 import { createStore, EMPTY_FILTER, type Store } from "../ui/store.ts";
 import { syncWorldTags } from "../ui/worlds/tags.ts";
 
@@ -147,6 +149,7 @@ function ensureDeps(
     apply: null,
     sheetWorld: null,
     collapsedGroups: [],
+    route: null,
   });
   store.subscribe(syncCoreList);
   store.subscribe(syncTags);
@@ -155,6 +158,10 @@ function ensureDeps(
   menu();
   listenToPage(store, page);
   deps = { store, actions: createActions(store, send, t, page), t, page };
+  // The new Setup page, when this browser chose it (build plan, Phase 1).
+  const shell = syncShell(deps, document);
+  store.subscribe(shell);
+  shell();
   return deps;
 }
 

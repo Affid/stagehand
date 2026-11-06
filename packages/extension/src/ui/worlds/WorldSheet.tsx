@@ -97,6 +97,24 @@ function NextLaunch(props: { readonly row: WorldRow }) {
   );
 }
 
+/** Status, the next launch and history: the sheet, and the new world page. */
+export function SheetSections(props: { readonly row: WorldRow }) {
+  const { t } = useUi();
+  const { row } = props;
+  return (
+    <>
+      <Status row={row} />
+      <NextLaunch row={row} />
+      {row.recent.length > 0 ? (
+        <section class="ml-sheet-history">
+          <h3>{t("sheet.history")}</h3>
+          <HistoryList commands={row.recent} />
+        </section>
+      ) : null}
+    </>
+  );
+}
+
 function SheetFooter(props: { readonly row: WorldRow }) {
   const { state, store, actions, t, canChange } = useUi();
   const { world, pending } = props.row;
@@ -170,14 +188,7 @@ export function WorldSheet(props: { readonly worldId: string }) {
               ? ` · ${t("sheet.lastPlayed", { date: played(row) })}`
               : ""}
           </p>
-          <Status row={row} />
-          <NextLaunch row={row} />
-          {row.recent.length > 0 ? (
-            <section class="ml-sheet-history">
-              <h3>{t("sheet.history")}</h3>
-              <HistoryList commands={row.recent} />
-            </section>
-          ) : null}
+          <SheetSections row={row} />
         </>
       ) : (
         <p>{t("sheet.gone")}</p>

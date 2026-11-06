@@ -21,6 +21,10 @@ describe("taking over Foundry's Setup layout", () => {
     expect(setShell(document, true)).toEqual({ on: true });
     expect(document.body.classList.contains(SHELL_CLASS)).toBe(true);
     expect(document.querySelectorAll("style#ml-shell-style")).toHaveLength(1);
+    // Only while our page is mounted: if the UI script dies, Foundry's page shows.
+    expect(document.getElementById("ml-shell-style")?.textContent).toContain(
+      ":has(#ml-shell-root)",
+    );
     setShell(document, true);
     expect(document.querySelectorAll("style#ml-shell-style")).toHaveLength(1);
     expect(setShell(document, false)).toEqual({ on: false });

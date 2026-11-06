@@ -3,7 +3,7 @@
 import type { LibraryOp, OpResult } from "@module-library/shared/library/ops";
 import type { Library } from "@module-library/shared/library/schema";
 import type { ApplyMode } from "@module-library/shared/resolver";
-import type { ExtensionMessage, SetupState } from "../messages.ts";
+import type { ExtensionMessage, Prefs, SetupState } from "../messages.ts";
 import type { Translate } from "./i18n.ts";
 import type { PageBridge } from "./page.ts";
 import type { Store } from "./store.ts";
@@ -26,6 +26,8 @@ export interface Actions {
   cancelCommand(id: string): Promise<void>;
   exportLibrary(): Promise<string | undefined>;
   importLibrary(text: string): Promise<void>;
+  /** Saves one of this browser's choices for the server; false if it failed. */
+  setPref(key: keyof Prefs, value: boolean): Promise<boolean>;
 }
 
 type Imported =
@@ -135,6 +137,17 @@ export function createActions(
       return r?.text;
     },
     importLibrary: (text) => runImport(b, send, t, text),
+    async setPref(key, value) {
+      const ok = await b.guarded(async () => {
+        await send({ kind: "set-pref", key, value });
+        return true;
+      });
+      if (!ok) return false;
+      store.set((s) => ({
+        data: { ...s.data, prefs: { ...s.data.prefs, [key]: value } },
+      }));
+      return true;
+    },
   };
 }
 
