@@ -4,6 +4,9 @@
 import { toPackageInfo } from "@module-library/shared/package-read";
 import {
   MAX_DESCRIPTION,
+  MAX_ID,
+  MAX_TITLE,
+  MAX_VERSION,
   type SetupData,
   type WorldInfo,
 } from "@module-library/shared/world";
@@ -19,11 +22,11 @@ const toWorld = (w: Loose): WorldInfo => {
   const description = str(w.description).slice(0, MAX_DESCRIPTION);
   const nextSession = str(w.nextSession).slice(0, 64);
   return {
-    id: str(w.id),
-    title: str(w.title),
-    system: str(w.system),
-    systemVersion: str(w.systemVersion),
-    coreVersion: str(w.coreVersion),
+    id: str(w.id).slice(0, MAX_ID),
+    title: str(w.title).slice(0, MAX_TITLE),
+    system: str(w.system).slice(0, MAX_ID),
+    systemVersion: str(w.systemVersion).slice(0, MAX_VERSION),
+    coreVersion: str(w.coreVersion).slice(0, MAX_VERSION),
     // Foundry's Setup marks favourites on its package objects when it renders.
     favorite: w.favorite === true,
     locked: w.locked === true,
@@ -76,9 +79,9 @@ export function collect(game: SetupGame): SetupData {
     lang: game.i18n?.lang ?? "",
     modules: all(game.modules).map(toPackageInfo),
     systems: all(game.systems).map((s) => ({
-      id: str(s.id),
-      title: str(s.title),
-      version: str(s.version),
+      id: str(s.id).slice(0, MAX_ID),
+      title: str(s.title).slice(0, MAX_TITLE),
+      version: str(s.version).slice(0, MAX_VERSION),
     })),
     worlds: all(game.worlds).map(toWorld),
     ...coreUpdate(game),

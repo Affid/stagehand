@@ -41,13 +41,13 @@ function BannerMeta(props: {
   );
 }
 
-/** The title, the Favourite star and the Locked tag, as the prototype. */
+/** The title, then the Favourite star and the Locked tag beside it (not in the heading). */
 function BannerTitle(props: { readonly world: WorldInfo }) {
   const { page, t } = useUi();
   const { world } = props;
   return (
-    <h2>
-      {world.title}
+    <div class="mls-titlerow">
+      <h2>{world.title}</h2>
       <button
         type="button"
         class={`mlw-star${world.favorite ? " on" : ""}`}
@@ -69,7 +69,7 @@ function BannerTitle(props: { readonly world: WorldInfo }) {
           {t("shell.locked")}
         </span>
       ) : null}
-    </h2>
+    </div>
   );
 }
 

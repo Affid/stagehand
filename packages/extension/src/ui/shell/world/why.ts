@@ -1,5 +1,6 @@
 // The words, icon and fix for a card's "why" line (SETUP-REDESIGN.md: world
 // page cards). Pure, so the card stays a plain view.
+import { unverifiedText } from "../../model/unverified.ts";
 import type { Translate } from "../../i18n.ts";
 import { plural } from "../../i18n.ts";
 import type { WorldModuleRow } from "../../model/world-modules.ts";
@@ -24,8 +25,8 @@ export interface WhyContext {
   readonly t: Translate;
   /** A module's title, or its id when it isn't installed. */
   readonly name: (id: string) => string;
-  /** "14": a risk is not verified for the running generation. */
-  readonly coreGeneration: string;
+  /** 14: a risk is not verified for the running generation. */
+  readonly coreGeneration: number | undefined;
 }
 
 function problemLine(row: WorldModuleRow, c: WhyContext): WhyLine | undefined {
@@ -96,7 +97,7 @@ export function whyLine(row: WorldModuleRow, c: WhyContext): WhyLine {
       return {
         tone: "warn",
         icon: "code-branch",
-        text: t("wp.why.unverified", { version: c.coreGeneration }),
+        text: unverifiedText(t, c.coreGeneration),
       };
     case "note":
       return { tone: "note", icon: "note-sticky", text: why.text };

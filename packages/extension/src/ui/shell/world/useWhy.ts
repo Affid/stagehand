@@ -9,6 +9,6 @@ export function useWhy(): WhyContext {
   return {
     t,
     name: (id) => modules.find((m) => m.id === id)?.title ?? id,
-    coreGeneration: String(state.data.setup?.core.generation ?? ""),
+    coreGeneration: state.data.setup?.core.generation,
   };
 }

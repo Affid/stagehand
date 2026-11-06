@@ -72,6 +72,19 @@ describe("the Library page", () => {
     expect(cards(container)).not.toContain("a");
   });
 
+  test("a group folded in By world is folded on Modules too", () => {
+    const r = library({ snapshots: { w1: snap(["a"]) } });
+    fireEvent.click(r.getByRole("tab", { name: /^By world/ }));
+    const head = el(r.container, ".mll-grid tr.grp button");
+    const name = head.textContent;
+    fireEvent.click(head);
+    fireEvent.click(r.getByRole("tab", { name: /^Modules/ }));
+    const folded = [...r.container.querySelectorAll(".mll-sec .mlw-head")].find(
+      (b) => name.startsWith(b.querySelector(".name")?.textContent ?? "?"),
+    );
+    expect(folded?.getAttribute("aria-expanded")).toBe("false");
+  });
+
   test("Select shows checkboxes and the selection band; Done leaves it", () => {
     const { container, getByRole, store } = library();
     expect(container.querySelector(".mll-card input[type=checkbox]")).toBe(

@@ -10,6 +10,7 @@ import {
 import { Icon } from "../../common/widgets.tsx";
 import { useUi } from "../../context.ts";
 import { plural } from "../../i18n.ts";
+import { unverifiedText } from "../../model/unverified.ts";
 
 const MAX_TAGS = 3;
 
@@ -30,11 +31,7 @@ function Line(props: {
     return (
       <div class="l2 warn">
         <Icon name="code-branch" />
-        <span>
-          {t("wp.why.unverified", {
-            version: String(props.core.generation),
-          })}
-        </span>
+        <span>{unverifiedText(t, props.core.generation)}</span>
       </div>
     );
   const note = state.data.library.modules[pkg.id]?.note.trim();

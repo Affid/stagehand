@@ -133,6 +133,7 @@
   "wp.why.neededBy.other": "{n} modules here need it",
   "wp.why.preset": "From the preset {name}",
   "wp.why.unverified": "Not verified for Foundry {version}",
+  "wp.why.unverifiedAny": "Not verified for this Foundry version",
   "wp.why.authors": "By {authors}",
   "wp.fix.turnOn": "Turn it on",
   "wp.fix.turnOff": "Turn this off",

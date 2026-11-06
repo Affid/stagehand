@@ -71,10 +71,11 @@ function Summary() {
   const on = channel
     ? t("up.youreOn", { version, channel })
     : t("up.youreOnNoChannel", { version });
+  // Unreachable: the box below says so; the heading doesn't repeat it.
   const then = update?.hasUpdate
     ? t("up.isAvailable", { version: update.version })
     : update?.reachable === false
-      ? t("up.unreachable")
+      ? ""
       : t("up.latest");
   return (
     <>

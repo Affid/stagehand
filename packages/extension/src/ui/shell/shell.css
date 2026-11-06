@@ -566,7 +566,7 @@
   color: #e8c35a;
 }
 
-.mls-shell .mls-banner h2 {
+.mls-shell .mls-banner .mls-titlerow {
   display: flex;
   align-items: center;
   gap: 10px;

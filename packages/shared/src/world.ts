@@ -82,12 +82,17 @@ export type WorldCommand = z.infer<typeof WorldCommandSchema>;
 /** Longer world descriptions are cut when Setup is read. */
 export const MAX_DESCRIPTION = 20000;
 
+/** Bounds for names read from manifests (security review, package 2). */
+export const MAX_ID = 200;
+export const MAX_TITLE = 300;
+export const MAX_VERSION = 50;
+
 export const WorldInfoSchema = z.object({
-  id: z.string().min(1),
-  title: z.string(),
-  system: z.string(),
-  systemVersion: z.string(),
-  coreVersion: z.string(),
+  id: z.string().min(1).max(MAX_ID),
+  title: z.string().max(MAX_TITLE),
+  system: z.string().max(MAX_ID),
+  systemVersion: z.string().max(MAX_VERSION),
+  coreVersion: z.string().max(MAX_VERSION),
   lastPlayed: z.string().optional(),
   /** Foundry's own favourite star (core.setupPackageFavorites). */
   favorite: z.boolean().optional(),
@@ -115,10 +120,16 @@ export const SetupDataSchema = z.object({
   isAdmin: z.boolean(),
   lang: z.string(),
   modules: z.array(PackageInfoSchema).max(MAX_PACKAGES),
-  systems: z.array(
-    z.object({ id: z.string(), title: z.string(), version: z.string() }),
-  ),
-  worlds: z.array(WorldInfoSchema),
+  systems: z
+    .array(
+      z.object({
+        id: z.string().max(MAX_ID),
+        title: z.string().max(MAX_TITLE),
+        version: z.string().max(MAX_VERSION),
+      }),
+    )
+    .max(MAX_PACKAGES),
+  worlds: z.array(WorldInfoSchema).max(MAX_PACKAGES),
   /** Foundry's count of setup warnings (Support and issues). */
   issues: z.number().int().nonnegative().max(1_000_000).optional(),
   /** Foundry's update check: only these three fields, never its download link. */

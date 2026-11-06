@@ -120,6 +120,22 @@ describe("reading Setup's package data (V-1)", () => {
     expect(SetupDataSchema.safeParse(data).success).toBe(true);
   });
 
+  test("world and system names are cut to their bounds (security review)", () => {
+    const long = "x".repeat(5000);
+    const data = collect({
+      worlds: {
+        values: () => [{ id: "w", title: long, system: long }].values(),
+      },
+      systems: {
+        values: () => [{ id: "s", title: long, version: long }].values(),
+      },
+    });
+    expect(data.worlds[0]?.title).toHaveLength(300);
+    expect(data.systems[0]?.title).toHaveLength(300);
+    expect(data.systems[0]?.version).toHaveLength(50);
+    expect(SetupDataSchema.safeParse(data).success).toBe(true);
+  });
+
   test("Foundry's count of setup warnings is read, when it is a count", () => {
     expect(collect({ issueCount: { total: 3 } }).issues).toBe(3);
     expect(collect({ issueCount: { total: -1 } })).not.toHaveProperty("issues");

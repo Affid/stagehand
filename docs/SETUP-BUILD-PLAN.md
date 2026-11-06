@@ -300,4 +300,17 @@ up to ten minutes and is used by the world's next launch from this browser,
 even one started from Foundry's own page (limited to exactly what was
 reviewed).
 
+Package 2 done (`d4fd0cd`..): compatibility as Foundry rates it (a newer
+build of the verified generation is neutral; `isCompatibilityRisk`), system
+titles, the Update page's channel and its disabled or unreachable states,
+server Backups listing only packages with backups by title, server page
+headings in Foundry's display face with a summary line, the star and Locked
+tag beside the world's title, Configuration in two columns, foldable grid
+group rows shared with the Modules tab, "companion off" world columns.
+Found on the way: Foundry never saves `noBackups` (options.json drops it), so
+Backups is set at server start, as the prototype says (package 7). Reviews:
+no critical or high; fixed the star inside the heading, the repeated
+"couldn't reach" line, "Foundry 0" without a version, and bounded world and
+system names in Setup data.
+
 Then Phase 6 (News and finish).

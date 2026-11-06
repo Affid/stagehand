@@ -227,7 +227,9 @@ describe("a world's page", () => {
 
   test("the title carries the star and the Locked tag; the star toggles Foundry's favourite", () => {
     const { container, page } = shell();
-    const title = el(container, ".mls-banner h2");
+    // The heading is the bare title; the star and tag sit beside it.
+    expect(el(container, ".mls-banner h2").textContent).toBe("Curse of Strahd");
+    const title = el(container, ".mls-banner .mls-titlerow");
     expect(title.textContent).toContain("Locked");
     const star = within(title).getByRole("button", { name: "Favourite" });
     expect(star.getAttribute("aria-pressed")).toBe("true");
