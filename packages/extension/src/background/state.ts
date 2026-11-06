@@ -164,9 +164,33 @@ function worldStore(kv: SerializedKeyValue) {
   };
 }
 
-/** The command queue (P-5). */
+/** Worlds whose next launch skips the queue; more is a bug, not a use. */
+const MAX_HOLDS = 200;
+
+/** The command queue (P-5), and launches that skip it once. */
 function commandStore(kv: SerializedKeyValue) {
+  const holdKey = (id: ServerId): string => key("launchHolds", id);
   return {
+    launchHolds: (id: ServerId) => reader(kv)<string[]>(holdKey(id), []),
+    async setLaunchHold(
+      id: ServerId,
+      worldId: string,
+      hold: boolean,
+    ): Promise<void> {
+      await kv.update<string[]>(holdKey(id), [], (list) => {
+        const others = list.filter((w) => w !== worldId);
+        return hold ? [...others, worldId].slice(-MAX_HOLDS) : others;
+      });
+    },
+    /** True once if the world's launch was held; the hold is used up. */
+    takeLaunchHold(id: ServerId, worldId: string): Promise<boolean> {
+      return kv.update<string[], boolean>(holdKey(id), [], (list) =>
+        withResult(
+          list.filter((w) => w !== worldId),
+          list.includes(worldId),
+        ),
+      );
+    },
     commands: (id: ServerId) => reader(kv)<Command[]>(key("commands", id), []),
     updateCommands<R = Command[]>(
       id: ServerId,

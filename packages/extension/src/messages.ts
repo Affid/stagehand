@@ -51,6 +51,8 @@ export const ExtensionMessageSchema = z.discriminatedUnion("kind", [
       message: "Choose presets or modules to apply",
     }),
   z.object({ kind: z.literal("cancel-command"), id: Id }),
+  /** "Launch without changes": the world's next pull gets none, once. */
+  z.object({ kind: z.literal("launch-hold"), worldId: Id, hold: z.boolean() }),
   z.object({
     kind: z.literal("set-pref"),
     key: z.literal("newSetupPage"),

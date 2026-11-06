@@ -139,6 +139,7 @@ const SETUP_WRITES: ReadonlySet<string> = new Set([
   "library-export",
   "queue-apply",
   "cancel-command",
+  "launch-hold",
 ]);
 
 async function fromSetup(
@@ -166,6 +167,8 @@ async function fromSetup(
       return queueApply(deps, server, m);
     case "cancel-command":
       return deps.state.updateCommands(server, (list) => cancel(list, m.id));
+    case "launch-hold":
+      return deps.state.setLaunchHold(server, m.worldId, m.hold);
     default:
       throw new Error(`Unexpected ${m.kind} from Setup`);
   }

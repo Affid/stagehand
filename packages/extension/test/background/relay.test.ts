@@ -154,6 +154,24 @@ describe("relay: review fixes", () => {
     });
   });
 
+  test("a launch held on Setup gets no changes once; they stay queued for the next", async () => {
+    const { state, send } = await setup();
+    await state.setLaunchHold(S, "w", true);
+    const held = await send("COMMANDS_PULL", { worldId: "w" });
+    expect(held.payload).toEqual({ world: [], global: [] });
+    expect((await state.commands(S))[0]?.status).toBe("pending");
+    const next = await send("COMMANDS_PULL", { worldId: "w" });
+    expect((next.payload as { world: unknown[] }).world).toHaveLength(1);
+  });
+
+  test("a hold for another world doesn't hold this one", async () => {
+    const { state, send } = await setup();
+    await state.setLaunchHold(S, "other", true);
+    const pulled = await send("COMMANDS_PULL", { worldId: "w" });
+    expect((pulled.payload as { world: unknown[] }).world).toHaveLength(1);
+    expect(await state.launchHolds(S)).toEqual(["other"]);
+  });
+
   test("oversized snapshots are refused", async () => {
     const { send } = await setup();
     const huge = snapshot(

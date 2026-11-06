@@ -159,6 +159,36 @@ describe("router: admin verification (PR-1, PR-2, PR-3)", () => {
     expect((await d.state.commands(S))[0]?.status).toBe("cancelled");
   });
 
+  test("a launch hold is set and cleared from Setup once verified", async () => {
+    const d = deps();
+    await registered(d);
+    await route(d, { kind: "setup-seen", data: setupData(true) }, fromSetup);
+    await route(
+      d,
+      { kind: "launch-hold", worldId: "w", hold: true },
+      fromSetup,
+    );
+    expect(await d.state.launchHolds(S)).toEqual(["w"]);
+    await route(
+      d,
+      { kind: "launch-hold", worldId: "w", hold: false },
+      fromSetup,
+    );
+    expect(await d.state.launchHolds(S)).toEqual([]);
+  });
+
+  test("a launch hold needs the verified admin, and only Setup may ask", async () => {
+    const d = deps();
+    await registered(d);
+    await route(d, { kind: "setup-seen", data: setupData(false) }, fromSetup);
+    await expect(
+      route(d, { kind: "launch-hold", worldId: "w", hold: true }, fromSetup),
+    ).rejects.toThrow();
+    await expect(
+      route(d, { kind: "launch-hold", worldId: "w", hold: true }, fromGame),
+    ).rejects.toThrow();
+  });
+
   test("export and import round-trip", async () => {
     const d = deps();
     await registered(d);
