@@ -100,7 +100,7 @@ Open item: our power menu is always shown, but Foundry only offers Log out and S
 when an admin password is set (SETUP-SPIKE.md); without one the action reports a missing
 control. Collect that flag and hide the menu then (Phase 5, server pages).
 
-### Phase 2: world page
+### Phase 2: world page (done)
 
 Done (commits from `1290e9f`):
 
@@ -126,4 +126,10 @@ Not yet: About and Backups tabs (Phase 4), progress of Foundry's backup on our p
 own notification shows), a group's "turn all on/off" menu, and View options from the
 mockup.
 
-Next: close Phase 2 (reviews, commit, report), then Phase 3 (Library).
+Reviews (code, security): no critical or high findings. Fixed: a read-only browser
+launches from the review without a hold; queued changes that change nothing still show,
+can be discarded and are reviewed; holds expire after ten minutes; a second flip while
+saving is ignored; copying more than `MAX_PICKED` modules is refused with a reason; modals
+take focus, trap Tab, stop Escape and return focus.
+
+Next: Phase 3 (Library).
