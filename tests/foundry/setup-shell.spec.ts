@@ -68,11 +68,16 @@ test("a world's page shows its banner, then how to set the world up", async () =
   await page.screenshot({ path: `${SCREENS}/shell-world.png` });
 });
 
-test("Edit World opens Foundry's World Configuration above our page", async () => {
+test("the pencil opens About; Edit in Foundry opens its World Configuration above our page", async () => {
   await shell(page)
     .locator(".mls-banner")
     .getByRole("button", { name: "Edit World" })
     .click();
+  await expect(shell(page).getByRole("tab", { name: "About" })).toHaveAttribute(
+    "aria-selected",
+    "true",
+  );
+  await shell(page).getByRole("button", { name: "Edit in Foundry" }).click();
   const form = page
     .locator(".application", { hasText: TEST_WORLD.title })
     .filter({
