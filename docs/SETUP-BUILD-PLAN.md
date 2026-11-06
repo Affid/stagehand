@@ -170,4 +170,34 @@ channel (MessageChannel or nonce created by the isolated script) should replace 
 open `postMessage` for SETUP_DATA. Also open: tab keyboard pattern (arrow keys,
 `tabpanel`) for the Library and module panel tabs.
 
-Next: Phase 4 (World details).
+### Phase 4: world details (done)
+
+Done (commits from `92eda91`):
+
+- World data: description (cut at 20000 characters) and next session.
+- `ui/common/rich-text.tsx`: descriptions rendered through a whitelist rebuilt as Preact
+  elements (no innerHTML, no attributes but checked http(s) links, no images, frames,
+  scripts or styles); plain text keeps its paragraphs.
+- World page tabs: Modules, About, Backups. The banner's pencil opens About.
+- About: cleaned description (folded when long), Foundry's details, next session in local
+  time with its zone (24-hour). With the adapter flag `editWorld` (on for V14): title and
+  next session edited in place and saved through Foundry's `editWorld` (`SAVE_WORLD` /
+  `SAVE_DONE`, validate first, then re-render). Without it: Foundry's World Configuration.
+- Backups: Foundry's backups of the world (`BACKUPS` / `BACKUPS_DONE`): list, Take a
+  backup, Restore, Delete through Foundry's own dialogs; a snapshot's backup can't be
+  deleted alone. Live: take one, cancel a restore, delete it with the code.
+
+Not yet: description editing (Foundry's prose-mirror lives in the page world, so it needs a
+window or a page-world editor), background picker, join theme, safe mode and reset
+passwords (one-shot flags), Lock switch, the next-session schedule (repeats and chosen
+dates, stored in the world's `flags`, still untested live), progress drawn on our page and
+mirroring Foundry's lock during backups, multi-select delete, the "a backup covers the
+queued changes" nudge.
+
+Reviews (code, security): no critical or high findings. Fixed: the Backups tab keeps its
+list on errors and stays mounted once opened; backup records clamped to the reply schema;
+editors stay open until saved; dates survive odd language tags; description links show
+their host; nesting deeper than 32 is flattened. Noted: our SAVE_DONE / BACKUPS_DONE
+replies can be forged by page scripts (cosmetic only: real state comes from Setup's data).
+
+Next: Phase 5 (server pages).
