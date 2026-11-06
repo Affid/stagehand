@@ -119,7 +119,9 @@ function changes(v: unknown, requireSome: boolean): SettingChanges | undefined {
 export function parseConfigRequest(p: Loose): ConfigRequest | undefined {
   if (!isRequestId(p.requestId)) return undefined;
   if (p.op === "read") {
-    if (p.changes !== undefined) return undefined;
+    // A read carries no changes (an empty object is fine).
+    const none = changes(p.changes, false);
+    if (!none || Object.keys(none).length > 0) return undefined;
     return { requestId: p.requestId, op: "read", changes: {} };
   }
   if (p.op !== "save") return undefined;

@@ -88,14 +88,10 @@ describe("the header bar", () => {
     expect(el(container, ".mlh-ver").textContent).toContain("14 · 369");
   });
 
-  test("Configuration and the version open Foundry's own screens", () => {
-    const { getByRole, page, container } = shell();
-    fireEvent.click(getByRole("button", { name: "Configuration" }));
+  test("the version opens Foundry's update screen", () => {
+    const { page, container } = shell();
     fireEvent.click(el(container, ".mlh-ver"));
-    expect(sent(page.foundryAction)).toEqual([
-      { action: "configure" },
-      { action: "update" },
-    ]);
+    expect(sent(page.foundryAction)).toEqual([{ action: "update" }]);
   });
 
   test("the power menu holds Log out and Shut down, and closes with Escape", () => {

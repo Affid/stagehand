@@ -8,6 +8,10 @@ describe("configuration requests", () => {
       op: "read",
       changes: {},
     });
+    // What the bridge sends for a read.
+    expect(
+      parseConfigRequest({ requestId: "r1", op: "read", changes: {} })?.op,
+    ).toBe("read");
     expect(
       parseConfigRequest({
         requestId: "r1",

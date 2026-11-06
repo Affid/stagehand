@@ -86,3 +86,22 @@ test("a snapshot is taken with Foundry's dialog and deleted with its code", asyn
   await confirm.locator('[data-action="yes"]').click();
   await expect(mine).toHaveCount(0, { timeout: 120_000 });
 });
+
+test("Configuration reads Foundry's settings and saves one through Foundry, then back", async () => {
+  await shell().getByRole("button", { name: "Configuration" }).click();
+  const cfg = shell().locator(".mlc-page");
+  await expect(cfg.getByLabel("Port", { exact: true })).toHaveValue(/\d+/);
+  const toggle = cfg.getByRole("switch", { name: "Compress socket data" });
+  const was = await toggle.isChecked();
+  await toggle.click();
+  await expect(cfg.locator(".mlc-bar")).toContainText("1 change not saved");
+  await page.screenshot({ path: `${SCREENS}/server-config.png` });
+  await cfg.getByRole("button", { name: "Save" }).click();
+  await expect(cfg.locator(".mlc-bar")).toContainText("after Foundry restarts");
+  await expect(toggle).toBeChecked({ checked: !was });
+  // Put it back, so options.json ends as it began.
+  await toggle.click();
+  await cfg.getByRole("button", { name: "Save" }).click();
+  await expect(toggle).toBeChecked({ checked: was });
+  await expect(cfg.locator(".mlc-bar")).not.toContainText("not saved");
+});

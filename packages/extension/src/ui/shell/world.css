@@ -843,3 +843,92 @@ ul.mlw-check.warn {
 .mls-shell .mlb-pkg .mlw-blist {
   margin: 6px 0 4px 24px;
 }
+
+/* The Configuration page */
+.mls-shell .mlc-page {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+}
+
+.mls-shell .mlc-page h2 {
+  margin: 0;
+  font-size: 20px;
+  border: 0;
+}
+
+.mls-shell .mlc-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 6px 12px;
+  border: 1px solid var(--color-cool-4);
+  border-radius: 4px;
+  font-size: 13.5px;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: rgb(11 10 19 / 92%);
+}
+
+.mls-shell .mlc-bar.dirty {
+  border-color: rgb(238 155 58 / 55%);
+  color: #f6d3a8;
+}
+
+.mls-shell .mlc-bar button {
+  width: auto;
+  height: 30px;
+  padding: 0 12px;
+}
+
+.mls-shell .mlc-page form {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+  gap: 14px;
+  align-items: start;
+}
+
+.mls-shell .mlc-page fieldset {
+  margin: 0;
+  display: grid;
+  gap: 10px;
+  padding: 10px 14px 14px;
+  border: 1px solid var(--color-cool-4);
+  border-radius: 4px;
+  background: rgb(11 10 19 / 55%);
+}
+
+.mls-shell .mlc-page legend {
+  padding: 0 6px;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-subtle);
+}
+
+.mls-shell .mlc-field {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  font-size: 13.5px;
+}
+
+.mls-shell .mlc-field.mlc-toggle {
+  grid-template-columns: auto 1fr;
+}
+
+.mls-shell .mlc-value {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  overflow-wrap: anywhere;
+}
+
+.mls-shell .mlc-value button {
+  width: auto;
+  height: 26px;
+  padding: 0 10px;
+}

@@ -64,8 +64,10 @@ function PowerMenu() {
 
 /** Back to Foundry's page, the server pages and the power menu. */
 function Actions() {
-  const { state, store, page, actions, t } = useUi();
-  const onBackups = state.route?.kind === "server";
+  const { state, store, actions, t } = useUi();
+  const on = state.route?.kind === "server" ? state.route.page : null;
+  const onBackups = on === "backups";
+  const onConfig = on === "config";
   return (
     <div class="mlh-acts">
       <button
@@ -90,7 +92,9 @@ function Actions() {
       </button>
       <button
         type="button"
-        onClick={() => page.foundryAction({ action: "configure" })}
+        class={onConfig ? "ml-on" : ""}
+        aria-current={onConfig ? "page" : undefined}
+        onClick={() => store.set({ route: { kind: "server", page: "config" } })}
       >
         <Icon name="gears" />
         {t("shell.configuration")}

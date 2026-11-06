@@ -7,7 +7,7 @@ export type Route =
   | { readonly kind: "library" }
   | { readonly kind: "world"; readonly worldId: string }
   /** A page of the server's own: Backups (Configuration and Update follow). */
-  | { readonly kind: "server"; readonly page: "backups" };
+  | { readonly kind: "server"; readonly page: "backups" | "config" };
 
 const LIBRARY: Route = { kind: "library" };
 

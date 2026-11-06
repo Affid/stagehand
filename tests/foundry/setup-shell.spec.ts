@@ -99,16 +99,19 @@ test("the Library shows the module cards", async () => {
   await page.screenshot({ path: `${SCREENS}/shell-library.png` });
 });
 
-test("Configuration opens Foundry's own window", async () => {
+test("Configuration opens our page; Foundry's window is one click away", async () => {
   const before = await page.locator(".application:visible").count();
   await shell(page).getByRole("button", { name: "Configuration" }).click();
+  await expect(shell(page).locator(".mlc-page form")).toBeVisible();
+  await shell(page)
+    .getByRole("button", { name: "Foundry's Application Configuration" })
+    .click();
   await expect
     .poll(() => page.locator(".application:visible").count())
     .toBeGreaterThan(before);
   await page.screenshot({ path: `${SCREENS}/shell-configuration.png` });
-  const config = page.locator(".application", {
-    hasText: "Application Configuration",
-  });
+  // Foundry's own window, by its id (our page says the same words).
+  const config = page.locator("#server-settings-config");
   await config.locator('[data-action="close"]').first().click();
   await expect(config).toHaveCount(0);
 });
