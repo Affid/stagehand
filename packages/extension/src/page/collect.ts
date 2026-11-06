@@ -11,13 +11,18 @@ const all = (c?: Collection): Loose[] => [...(c?.values() ?? [])] as Loose[];
 
 const toWorld = (w: Loose): WorldInfo => {
   const lastPlayed = str(w.lastPlayed);
+  const background = str(w.background);
   return {
     id: str(w.id),
     title: str(w.title),
     system: str(w.system),
     systemVersion: str(w.systemVersion),
     coreVersion: str(w.coreVersion),
+    // Foundry's Setup marks favourites on its package objects when it renders.
+    favorite: w.favorite === true,
+    locked: w.locked === true,
     ...(lastPlayed ? { lastPlayed } : {}),
+    ...(background ? { background } : {}),
   };
 };
 

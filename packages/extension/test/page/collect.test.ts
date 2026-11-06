@@ -29,6 +29,28 @@ describe("reading Setup's package data (V-1)", () => {
     expect(data.worlds[1]).not.toHaveProperty("lastPlayed");
   });
 
+  test("worlds carry favourite, lock and background, as Foundry's Setup marks them", () => {
+    const data = collect({
+      worlds: list(
+        {
+          id: "w",
+          title: "W",
+          favorite: true,
+          locked: true,
+          background: "worlds/w/bg.webp",
+        },
+        { id: "x", title: "X", favorite: "yes", background: 7 },
+      ),
+    });
+    expect(data.worlds[0]).toMatchObject({
+      favorite: true,
+      locked: true,
+      background: "worlds/w/bg.webp",
+    });
+    expect(data.worlds[1]).toMatchObject({ favorite: false, locked: false });
+    expect(data.worlds[1]).not.toHaveProperty("background");
+  });
+
   test("missing pieces read as empty, never throw", () => {
     expect(collect({})).toMatchObject({
       core: { version: "0.0" },

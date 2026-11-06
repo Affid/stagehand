@@ -75,3 +75,62 @@ describe("page to UI messages are checked", () => {
     expect(parsePageToUi("WINDOW_READY", "x")).toBeUndefined();
   });
 });
+
+describe("new Setup page messages are checked", () => {
+  test("the shell can be turned on and off, and reports its state", () => {
+    expect(parseUiToPage("SHELL", { on: true })).toEqual({
+      type: "SHELL",
+      payload: { on: true },
+    });
+    expect(parseUiToPage("SHELL", { on: false })?.payload).toEqual({
+      on: false,
+    });
+    expect(parsePageToUi("SHELL_STATE", { on: true })).toEqual({
+      type: "SHELL_STATE",
+      payload: { on: true },
+    });
+    expect(
+      parsePageToUi("SHELL_STATE", { on: false, error: "missing #setup" })
+        ?.payload,
+    ).toEqual({ on: false, error: "missing #setup" });
+  });
+
+  test("Foundry actions come from a fixed list; world actions need a world", () => {
+    for (const action of [
+      "configure",
+      "backups",
+      "update",
+      "logout",
+      "shutdown",
+      "createWorld",
+    ]) {
+      expect(parseUiToPage("FOUNDRY_ACTION", { action })).toEqual({
+        type: "FOUNDRY_ACTION",
+        payload: { action },
+      });
+    }
+    for (const action of ["launch", "editWorld", "favorite"]) {
+      expect(
+        parseUiToPage("FOUNDRY_ACTION", { action, worldId: "strahd" })?.payload,
+      ).toEqual({ action, worldId: "strahd" });
+      expect(parseUiToPage("FOUNDRY_ACTION", { action })).toBeUndefined();
+    }
+  });
+
+  test("refuses anything else", () => {
+    const bad: [string, unknown][] = [
+      ["SHELL", { on: "yes" }],
+      ["SHELL", {}],
+      ["FOUNDRY_ACTION", { action: "eval" }],
+      ["FOUNDRY_ACTION", { action: "uninstall", worldId: "x" }],
+      ["FOUNDRY_ACTION", { action: "launch", worldId: "" }],
+      ["FOUNDRY_ACTION", { action: "launch", worldId: "x".repeat(201) }],
+      ["FOUNDRY_ACTION", { action: "configure", worldId: 3 }],
+    ];
+    for (const [type, p] of bad) expect(parseUiToPage(type, p)).toBeUndefined();
+    expect(parsePageToUi("SHELL_STATE", { on: 1 })).toBeUndefined();
+    expect(
+      parsePageToUi("SHELL_STATE", { on: false, error: "x".repeat(2001) }),
+    ).toBeUndefined();
+  });
+});

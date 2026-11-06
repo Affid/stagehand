@@ -86,6 +86,12 @@ export const WorldInfoSchema = z.object({
   systemVersion: z.string(),
   coreVersion: z.string(),
   lastPlayed: z.string().optional(),
+  /** Foundry's own favourite star (core.setupPackageFavorites). */
+  favorite: z.boolean().optional(),
+  /** Locked in Foundry: no launch, edit, update or delete. */
+  locked: z.boolean().optional(),
+  /** The world's background image path, as Foundry stores it. */
+  background: z.string().max(2000).optional(),
 });
 
 export type WorldInfo = z.infer<typeof WorldInfoSchema>;

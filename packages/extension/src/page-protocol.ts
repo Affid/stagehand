@@ -24,6 +24,23 @@ export interface MenuLabels {
 
 export type MenuAction = "details" | "apply";
 
+/** Foundry actions the new Setup page may ask for. World actions need a world id. */
+export const SERVER_ACTIONS = [
+  "configure",
+  "backups",
+  "update",
+  "logout",
+  "shutdown",
+  "createWorld",
+] as const;
+export const WORLD_ACTIONS = ["launch", "editWorld", "favorite"] as const;
+export type FoundryAction =
+  | { readonly action: (typeof SERVER_ACTIONS)[number] }
+  | {
+      readonly action: (typeof WORLD_ACTIONS)[number];
+      readonly worldId: string;
+    };
+
 export type UiToPage =
   | { readonly type: "WINDOW_OPEN"; readonly payload: WindowSpec }
   | { readonly type: "WINDOW_CLOSE"; readonly payload: { readonly id: string } }
@@ -37,7 +54,10 @@ export type UiToPage =
         readonly labels: MenuLabels | null;
         readonly worldCard: string;
       };
-    };
+    }
+  /** Take over Foundry's Setup layout (on) or give it back (off). */
+  | { readonly type: "SHELL"; readonly payload: { readonly on: boolean } }
+  | { readonly type: "FOUNDRY_ACTION"; readonly payload: FoundryAction };
 
 export type PageToUi =
   | { readonly type: "WINDOW_READY"; readonly payload: { readonly id: string } }
@@ -51,6 +71,11 @@ export type PageToUi =
         readonly action: MenuAction;
         readonly worldId: string;
       };
+    }
+  /** Whether Foundry's layout is taken over; an error means it could not be and was left alone. */
+  | {
+      readonly type: "SHELL_STATE";
+      readonly payload: { readonly on: boolean; readonly error?: string };
     };
 
 const WINDOW_ID = /^[a-z][a-z0-9-]{0,60}$/;
@@ -100,6 +125,20 @@ function menuLabels(v: unknown): MenuLabels | null | undefined {
     : undefined;
 }
 
+function foundryAction(p: Loose): FoundryAction | undefined {
+  const { action, worldId } = p;
+  if ((SERVER_ACTIONS as readonly unknown[]).includes(action))
+    return worldId === undefined
+      ? { action: action as (typeof SERVER_ACTIONS)[number] }
+      : undefined;
+  if (
+    (WORLD_ACTIONS as readonly unknown[]).includes(action) &&
+    isText(worldId, 200)
+  )
+    return { action: action as (typeof WORLD_ACTIONS)[number], worldId };
+  return undefined;
+}
+
 /** A message from the UI, checked; undefined when malformed. */
 export function parseUiToPage(type: string, p: unknown): UiToPage | undefined {
   if (!isObject(p)) return undefined;
@@ -121,6 +160,14 @@ export function parseUiToPage(type: string, p: unknown): UiToPage | undefined {
       return labels === undefined || !isText(p.worldCard, 200)
         ? undefined
         : { type, payload: { labels, worldCard: p.worldCard } };
+    }
+    case "SHELL":
+      return typeof p.on === "boolean"
+        ? { type, payload: { on: p.on } }
+        : undefined;
+    case "FOUNDRY_ACTION": {
+      const payload = foundryAction(p);
+      return payload ? { type, payload } : undefined;
     }
     default:
       return undefined;
@@ -145,6 +192,12 @@ export function parsePageToUi(type: string, p: unknown): PageToUi | undefined {
               worldId: p.worldId,
             },
           }
+        : undefined;
+    case "SHELL_STATE":
+      if (typeof p.on !== "boolean") return undefined;
+      if (p.error === undefined) return { type, payload: { on: p.on } };
+      return isText(p.error)
+        ? { type, payload: { on: p.on, error: p.error } }
         : undefined;
     default:
       return undefined;

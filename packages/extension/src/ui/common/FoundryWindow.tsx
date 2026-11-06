@@ -52,7 +52,8 @@ function useFoundryWindow(
     };
     const timer = setTimeout(toModal, FALLBACK_MS);
     const stop = page.subscribe((e) => {
-      if (e.type === "MENU_ACTION" || e.payload.id !== id) return;
+      if (e.type !== "WINDOW_READY" && e.type !== "WINDOW_CLOSED") return;
+      if (e.payload.id !== id) return;
       if (e.type === "WINDOW_CLOSED") closeRef.current();
       else if (usingModal.current) page.closeWindow(id);
       else {
