@@ -125,3 +125,29 @@ describe("saving a world through the bridge", () => {
     vi.useRealTimers();
   });
 });
+
+describe("a world's backups through the bridge", () => {
+  test("asks, and settles on the matching answer with the list", async () => {
+    const spy = vi.spyOn(window, "postMessage");
+    const bridge = createPageBridge(window);
+    const done = bridge.backups("w", "list", []);
+    const msg = spy.mock.calls.at(-1)?.[0] as {
+      type: string;
+      payload: { requestId: string };
+    };
+    expect(msg).toMatchObject({
+      type: "BACKUPS",
+      payload: { worldId: "w", op: "list", ids: [] },
+    });
+    window.dispatchEvent(
+      fromPage("BACKUPS_DONE", {
+        requestId: msg.payload.requestId,
+        backups: [{ id: "b", createdAt: 1, size: 2, snapshot: false }],
+      }),
+    );
+    await expect(done).resolves.toEqual({
+      backups: [{ id: "b", createdAt: 1, size: 2, snapshot: false }],
+    });
+    spy.mockRestore();
+  });
+});

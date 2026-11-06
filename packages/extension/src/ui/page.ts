@@ -11,7 +11,13 @@ import {
   type WindowSpec,
   windowHostId,
 } from "../page-protocol.ts";
+import type { BackupOp, BackupInfo } from "../page-backups.ts";
 import type { WorldChanges } from "../page-save.ts";
+
+export interface BackupsResult {
+  readonly backups?: readonly BackupInfo[];
+  readonly error?: string;
+}
 
 export interface PageBridge {
   notify(kind: NoticeKind, text: string): void;
@@ -26,6 +32,12 @@ export interface PageBridge {
     worldId: string,
     changes: WorldChanges,
   ): Promise<string | undefined>;
+  /** A world's backups: list, take, restore or delete, then the current list. */
+  backups(
+    worldId: string,
+    op: BackupOp,
+    ids: readonly string[],
+  ): Promise<BackupsResult>;
   /** Our host element inside an open Foundry window, if it is there. */
   windowHost(id: string): HTMLElement | null;
   subscribe(fn: (event: PageToUi) => void): () => void;
@@ -33,6 +45,8 @@ export interface PageBridge {
 
 /** A save goes to Foundry's server; longer than this is a failure. */
 const SAVE_TIMEOUT_MS = 20_000;
+/** Taking or restoring a backup waits on Foundry's dialog and the copy. */
+const BACKUP_OP_TIMEOUT_MS = 30 * 60 * 1000;
 
 const newRequestId = (): string =>
   [...crypto.getRandomValues(new Uint8Array(12))]
@@ -45,30 +59,80 @@ const MAX_NOTICE = 2000;
 const clip = (text: string): string =>
   text.length > MAX_NOTICE ? `${text.slice(0, MAX_NOTICE - 1)}…` : text;
 
-/** One SAVE_WORLD, settled by the SAVE_DONE with its id or by the timeout. */
-function requestSave(
+/**
+ * One request to the page world, settled by the answer that carries its id,
+ * or by the timeout with `onTimeout`'s value.
+ */
+function request<T>(
   send: (m: UiToPage) => void,
   listeners: Set<(event: PageToUi) => void>,
-  worldId: string,
-  changes: WorldChanges,
-): Promise<string | undefined> {
+  ask: (requestId: string) => UiToPage,
+  answer: (e: PageToUi, requestId: string) => T | undefined,
+  timeoutMs: number,
+  onTimeout: T,
+): Promise<T> {
   return new Promise((resolve) => {
     const requestId = newRequestId();
-    const finish = (error: string | undefined): void => {
+    const finish = (value: T): void => {
       clearTimeout(timer);
       listeners.delete(onReply);
-      resolve(error);
+      resolve(value);
     };
     const onReply = (e: PageToUi): void => {
-      if (e.type === "SAVE_DONE" && e.payload.requestId === requestId)
-        finish(e.payload.error);
+      const value = answer(e, requestId);
+      if (value !== undefined) finish(value);
     };
     const timer = setTimeout(() => {
-      finish("Foundry did not answer in time.");
-    }, SAVE_TIMEOUT_MS);
+      finish(onTimeout);
+    }, timeoutMs);
     listeners.add(onReply);
-    send({ type: "SAVE_WORLD", payload: { requestId, worldId, changes } });
+    send(ask(requestId));
   });
+}
+
+/** The bridge's request and answer pairs: saving a world, its backups. */
+function requests(
+  send: (m: UiToPage) => void,
+  listeners: Set<(event: PageToUi) => void>,
+): Pick<PageBridge, "saveWorld" | "backups"> {
+  return {
+    saveWorld: (worldId, changes) =>
+      request<{ error?: string }>(
+        send,
+        listeners,
+        (requestId) => ({
+          type: "SAVE_WORLD",
+          payload: { requestId, worldId, changes },
+        }),
+        (e, id) =>
+          e.type === "SAVE_DONE" && e.payload.requestId === id
+            ? e.payload.error === undefined
+              ? {}
+              : { error: e.payload.error }
+            : undefined,
+        SAVE_TIMEOUT_MS,
+        { error: "Foundry did not answer in time." },
+      ).then((r) => r.error),
+    backups: (worldId, op, ids) =>
+      request<BackupsResult>(
+        send,
+        listeners,
+        (requestId) => ({
+          type: "BACKUPS",
+          payload: { requestId, worldId, op, ids: [...ids] },
+        }),
+        (e, id) =>
+          e.type === "BACKUPS_DONE" && e.payload.requestId === id
+            ? {
+                ...(e.payload.backups ? { backups: e.payload.backups } : {}),
+                ...(e.payload.error ? { error: e.payload.error } : {}),
+              }
+            : undefined,
+        // Foundry's dialogs wait for the admin; a list is quick.
+        op === "list" ? SAVE_TIMEOUT_MS : BACKUP_OP_TIMEOUT_MS,
+        { error: "Foundry did not answer in time." },
+      ),
+  };
 }
 
 export function createPageBridge(win: Window): PageBridge {
@@ -107,8 +171,7 @@ export function createPageBridge(win: Window): PageBridge {
     foundryAction: (action) => {
       send({ type: "FOUNDRY_ACTION", payload: action });
     },
-    saveWorld: (worldId, changes) =>
-      requestSave(send, listeners, worldId, changes),
+    ...requests(send, listeners),
     windowHost: (id) => {
       const host = win.document.getElementById(windowHostId(id));
       // Only ever render into a host inside a Foundry window.

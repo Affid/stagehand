@@ -10,6 +10,9 @@ import {
   type UiToPage,
 } from "../page-protocol.ts";
 import { runFoundryAction } from "../page/actions.ts";
+import type { BackupsRequest } from "../page-backups.ts";
+import type { SaveWorld } from "../page-save.ts";
+import { runBackups } from "../page/backups.ts";
 import { saveWorld } from "../page/save-world.ts";
 import { collect } from "../page/collect.ts";
 import { pageGlobals } from "../page/globals.ts";
@@ -52,6 +55,33 @@ interface Bridge {
   readonly setMenu: ((config: MenuConfig | null) => void) | undefined;
 }
 
+/** Runs a backups request and answers with its id. */
+function answerBackups(req: BackupsRequest): void {
+  void runBackups(page, req).then((r) => {
+    postToUi({
+      type: "BACKUPS_DONE",
+      payload: {
+        requestId: req.requestId,
+        ...(r.backups ? { backups: r.backups } : {}),
+        ...(r.error ? { error: r.error.slice(0, MAX_ERROR) } : {}),
+      },
+    });
+  });
+}
+
+/** Saves a world's details and answers with its id. */
+function answerSave(req: SaveWorld): void {
+  const { requestId, worldId, changes } = req;
+  void saveWorld(page, worldId, changes).then((error) => {
+    postToUi({
+      type: "SAVE_DONE",
+      payload: error
+        ? { requestId, error: error.slice(0, MAX_ERROR) }
+        : { requestId },
+    });
+  });
+}
+
 function handle(bridge: Bridge, m: UiToPage): void {
   switch (m.type) {
     case "WINDOW_OPEN":
@@ -81,17 +111,11 @@ function handle(bridge: Bridge, m: UiToPage): void {
         if (error) notify("error", error);
       });
       break;
-    case "SAVE_WORLD": {
-      const { requestId, worldId, changes } = m.payload;
-      void saveWorld(page, worldId, changes).then((error) => {
-        postToUi({
-          type: "SAVE_DONE",
-          payload: error
-            ? { requestId, error: error.slice(0, MAX_ERROR) }
-            : { requestId },
-        });
-      });
-    }
+    case "BACKUPS":
+      answerBackups(m.payload);
+      break;
+    case "SAVE_WORLD":
+      answerSave(m.payload);
   }
 }
 

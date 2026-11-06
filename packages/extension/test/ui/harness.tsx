@@ -18,7 +18,7 @@ import {
   WorldsRoot,
 } from "../../src/ui/App.tsx";
 import { createTranslator } from "../../src/ui/i18n.ts";
-import type { PageBridge } from "../../src/ui/page.ts";
+import type { BackupsResult, PageBridge } from "../../src/ui/page.ts";
 import { createStore, EMPTY_FILTER, type UiState } from "../../src/ui/store.ts";
 
 export const pkg = (
@@ -123,6 +123,7 @@ export function fakePage(windows = true) {
     setShell: vi.fn(),
     foundryAction: vi.fn(),
     saveWorld: vi.fn(() => Promise.resolve<string | undefined>(undefined)),
+    backups: vi.fn(() => Promise.resolve<BackupsResult>({ backups: [] })),
     openWindow: vi.fn((spec: { id: string }) => {
       if (!windows) return;
       const frame = document.createElement("div");

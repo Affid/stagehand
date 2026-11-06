@@ -2,6 +2,12 @@
 // UI (setup-ui). Both sides check every message by hand: the page world stays
 // free of Zod to keep it small, and page scripts can post anything.
 import {
+  type BackupsReply,
+  type BackupsRequest,
+  parseBackupsReply,
+  parseBackupsRequest,
+} from "./page-backups.ts";
+import {
   parseSaveDone,
   parseSaveWorld,
   type SaveDone,
@@ -76,7 +82,9 @@ export type UiToPage =
   | { readonly type: "SHELL"; readonly payload: { readonly on: boolean } }
   | { readonly type: "FOUNDRY_ACTION"; readonly payload: FoundryAction }
   /** Save a world's details through Foundry (answered by SAVE_DONE). */
-  | { readonly type: "SAVE_WORLD"; readonly payload: SaveWorld };
+  | { readonly type: "SAVE_WORLD"; readonly payload: SaveWorld }
+  /** A world's backups: list, take, restore or delete (answered by BACKUPS_DONE). */
+  | { readonly type: "BACKUPS"; readonly payload: BackupsRequest };
 
 export type PageToUi =
   | { readonly type: "WINDOW_READY"; readonly payload: { readonly id: string } }
@@ -96,7 +104,8 @@ export type PageToUi =
       readonly type: "SHELL_STATE";
       readonly payload: { readonly on: boolean; readonly error?: string };
     }
-  | { readonly type: "SAVE_DONE"; readonly payload: SaveDone };
+  | { readonly type: "SAVE_DONE"; readonly payload: SaveDone }
+  | { readonly type: "BACKUPS_DONE"; readonly payload: BackupsReply };
 
 const WINDOW_ID = /^[a-z][a-z0-9-]{0,60}$/;
 const MAX_TEXT = 2000;
@@ -201,6 +210,10 @@ export function parseUiToPage(type: string, p: unknown): UiToPage | undefined {
       const payload = parseSaveWorld(p);
       return payload ? { type, payload } : undefined;
     }
+    case "BACKUPS": {
+      const payload = parseBackupsRequest(p);
+      return payload ? { type, payload } : undefined;
+    }
     default:
       return undefined;
   }
@@ -233,6 +246,10 @@ export function parsePageToUi(type: string, p: unknown): PageToUi | undefined {
         : undefined;
     case "SAVE_DONE": {
       const payload = parseSaveDone(p);
+      return payload ? { type, payload } : undefined;
+    }
+    case "BACKUPS_DONE": {
+      const payload = parseBackupsReply(p);
       return payload ? { type, payload } : undefined;
     }
     default:
