@@ -93,11 +93,38 @@ async function assertCanChange(
     throw new Error("Unsupported Foundry version: read-only.");
 }
 
+/** Changes are only for worlds Setup listed. */
+async function assertKnownWorld(
+  deps: RouterDeps,
+  server: ServerId,
+  worldId: string,
+): Promise<void> {
+  const setup = await deps.state.setup(server);
+  if (!setup?.worlds.some((w) => w.id === worldId))
+    throw new Error(`Unknown world ${worldId}`);
+}
+
+/** Only modules that are installed are remembered as sorted. */
+async function markSorted(
+  deps: RouterDeps,
+  server: ServerId,
+  ids: readonly string[],
+): Promise<void> {
+  const installed = new Set(
+    ((await deps.state.setup(server))?.modules ?? []).map((m) => m.id),
+  );
+  await deps.state.markSorted(
+    server,
+    ids.filter((id) => installed.has(id)),
+  );
+}
+
 async function queueApply(
   deps: RouterDeps,
   server: ServerId,
   m: Msg<"queue-apply">,
 ) {
+  await assertKnownWorld(deps, server, m.worldId);
   const known = new Set(
     (await deps.state.library(server)).presets.map((p) => p.id),
   );
@@ -139,10 +166,12 @@ async function setupSeen(
   m: Msg<"setup-seen">,
 ) {
   await deps.state.putSetup(server, m.data, deps.now());
-  await deps.state.seedSorted(
-    server,
-    m.data.modules.map((x) => x.id),
-  );
+  // Only a real admin visit seeds what counts as sorted.
+  if (m.data.isAdmin)
+    await deps.state.seedSorted(
+      server,
+      m.data.modules.map((x) => x.id),
+    );
   // PR-1: only an authenticated Setup page (Foundry's isAdmin) verifies.
   if (m.data.isAdmin) await deps.state.markAdminVerified(server, deps.now());
   else await deps.state.revokeAdmin(server);
@@ -185,8 +214,9 @@ async function fromSetup(
     case "cancel-command":
       return deps.state.updateCommands(server, (list) => cancel(list, m.id));
     case "modules-sorted":
-      return deps.state.markSorted(server, m.ids);
+      return markSorted(deps, server, m.ids);
     case "launch-hold":
+      await assertKnownWorld(deps, server, m.worldId);
       return deps.state.setLaunchHold(server, m.worldId, m.hold, deps.now());
     default:
       throw new Error(`Unexpected ${m.kind} from Setup`);

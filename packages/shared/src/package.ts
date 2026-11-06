@@ -24,7 +24,7 @@ export const AuthorSchema = z.object({
 });
 
 export const PackageInfoSchema = z.object({
-  id: z.string().min(1),
+  id: z.string().min(1).max(200),
   title: z.string(),
   version: z.string(),
   authors: z.array(AuthorSchema),

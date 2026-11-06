@@ -41,7 +41,15 @@ const setupData = (isAdmin: boolean, version = "14.369"): SetupData => ({
   lang: "en",
   modules: [],
   systems: [],
-  worlds: [],
+  worlds: [
+    {
+      id: "w",
+      title: "W",
+      system: "dnd5e",
+      systemVersion: "5",
+      coreVersion: "14.369",
+    },
+  ],
 });
 
 async function registered(d: RouterDeps) {
@@ -419,5 +427,71 @@ describe("router: modules installed since they were last sorted (intake)", () =>
     await expect(
       route(d, { kind: "modules-sorted", ids: ["d"] }, fromSetup),
     ).rejects.toThrow();
+  });
+});
+
+describe("router: review fixes (Phase 3)", () => {
+  const mod = (id: string) => ({
+    id,
+    title: id,
+    version: "1",
+    authors: [],
+    library: false,
+    hasPacks: false,
+    hasCode: true,
+    compatibility: {},
+    requires: [],
+    recommends: [],
+    conflicts: [],
+    systems: [],
+  });
+  const seen = (ids: string[], isAdmin = true): SetupData => ({
+    ...setupData(isAdmin),
+    modules: ids.map(mod),
+  });
+  const freshOf = async (d: RouterDeps): Promise<unknown> =>
+    ((await route(d, { kind: "get-state" }, fromSetup)) as { fresh: unknown })
+      .fresh;
+
+  test("only a real admin visit seeds the sorted modules", async () => {
+    const d = deps();
+    await registered(d);
+    await route(d, { kind: "setup-seen", data: seen([], false) }, fromSetup);
+    await route(d, { kind: "setup-seen", data: seen(["a", "b"]) }, fromSetup);
+    expect(await freshOf(d)).toEqual([]);
+  });
+
+  test("sorting keeps only modules that are installed", async () => {
+    const d = deps();
+    await registered(d);
+    await route(d, { kind: "setup-seen", data: seen(["a"]) }, fromSetup);
+    await route(
+      d,
+      { kind: "modules-sorted", ids: ["a", "ghost-1", "ghost-2"] },
+      fromSetup,
+    );
+    expect(await d.state.sortedModules(S)).toEqual(["a"]);
+  });
+
+  test("changes and holds for a world Setup doesn't list are refused", async () => {
+    const d = deps();
+    await registered(d);
+    await route(d, { kind: "setup-seen", data: setupData(true) }, fromSetup);
+    await expect(
+      route(
+        d,
+        {
+          kind: "queue-apply",
+          worldId: "nope",
+          mode: "add",
+          presetIds: [],
+          modules: ["a"],
+        },
+        fromSetup,
+      ),
+    ).rejects.toThrow(/world/i);
+    await expect(
+      route(d, { kind: "launch-hold", worldId: "nope", hold: true }, fromSetup),
+    ).rejects.toThrow(/world/i);
   });
 });

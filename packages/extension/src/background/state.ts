@@ -10,10 +10,11 @@ import {
   type Library,
 } from "@module-library/shared/library/schema";
 import { rebaseRevisions } from "@module-library/shared/library/transfer";
-import type {
-  Command,
-  SetupData,
-  Snapshot,
+import {
+  type Command,
+  MAX_PACKAGES,
+  type SetupData,
+  type Snapshot,
 } from "@module-library/shared/world";
 import { DEFAULT_PREFS, type Prefs } from "../messages.ts";
 import { type SerializedKeyValue, type Updated, withResult } from "./kv.ts";
@@ -170,12 +171,16 @@ function intakeStore(kv: SerializedKeyValue) {
   return {
     sortedModules: (id: ServerId) => kv.get<string[]>(k(id)),
     async seedSorted(id: ServerId, ids: readonly string[]): Promise<void> {
-      await kv.update<string[] | null>(k(id), null, (cur) => cur ?? [...ids]);
+      await kv.update<string[] | null>(
+        k(id),
+        null,
+        (cur) => cur ?? ids.slice(0, MAX_PACKAGES),
+      );
     },
     async markSorted(id: ServerId, ids: readonly string[]): Promise<void> {
-      await kv.update<string[]>(k(id), [], (cur) => [
-        ...new Set([...cur, ...ids]),
-      ]);
+      await kv.update<string[]>(k(id), [], (cur) =>
+        [...new Set([...cur, ...ids])].slice(-MAX_PACKAGES),
+      );
     },
   };
 }

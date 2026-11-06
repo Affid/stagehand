@@ -96,6 +96,9 @@ export const WorldInfoSchema = z.object({
 
 export type WorldInfo = z.infer<typeof WorldInfoSchema>;
 
+/** More packages of one kind than this is not a real server. */
+export const MAX_PACKAGES = 5000;
+
 export const SetupDataSchema = z.object({
   core: z.object({
     version: z.string(),
@@ -104,7 +107,7 @@ export const SetupDataSchema = z.object({
   }),
   isAdmin: z.boolean(),
   lang: z.string(),
-  modules: z.array(PackageInfoSchema),
+  modules: z.array(PackageInfoSchema).max(MAX_PACKAGES),
   systems: z.array(
     z.object({ id: z.string(), title: z.string(), version: z.string() }),
   ),
