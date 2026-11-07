@@ -137,3 +137,32 @@ test("2560: the server pages fill the screen too", async () => {
     });
   }
 });
+
+test("1366×768: the Library's lists scroll under their head (owner's bug)", async () => {
+  await page.setViewportSize({ width: 1366, height: 768 });
+  const main = shell(page).locator(".mls-main");
+  await shell(page).locator(".mls-lib").click();
+  const tabs: readonly [RegExp, string][] = [
+    [/^Modules/, ".mll-sections"],
+    [/^Systems/, ".mll-systems"],
+  ];
+  for (const [tab, list] of tabs) {
+    await main.getByRole("tab", { name: tab }).click();
+    const box = main.locator(list);
+    // Inside the window, whatever the list holds: it scrolls, not spills.
+    const bottom = await box.evaluate((e) => e.getBoundingClientRect().bottom);
+    expect(bottom).toBeLessThanOrEqual(768);
+    expect(await box.evaluate((e) => getComputedStyle(e).overflowY)).toBe(
+      "auto",
+    );
+  }
+  await main.getByRole("tab", { name: /^Modules/ }).click();
+  const sections = main.locator(".mll-sections");
+  const tall = await sections.evaluate((e) => e.scrollHeight > e.clientHeight);
+  expect(tall).toBe(true);
+  // The last module comes into view by scrolling the list, head kept.
+  await main.locator(".mll-card").last().scrollIntoViewIfNeeded();
+  await expect(main.locator(".mll-card").last()).toBeInViewport();
+  await expect(main.getByRole("tab", { name: /^Modules/ })).toBeInViewport();
+  expect(await sections.evaluate((e) => e.scrollTop)).toBeGreaterThan(0);
+});

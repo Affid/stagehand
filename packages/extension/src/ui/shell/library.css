@@ -20,6 +20,20 @@
   align-content: start;
 }
 
+/* The Modules and Systems lists scroll under the Library's head, as the
+   prototype's .ml-sections; the pane itself doesn't scroll (the By world
+   grid has its own box). They spilled past the window (owner, 2026-11-07).
+   The padding keeps cards' focus rings clear of the scrolling edge. */
+.mls-shell .mll-sections,
+.mls-shell .mll-systems {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  padding-inline: 3px;
+  margin-inline: -3px;
+}
+
 .mls-shell .mll-card {
   display: grid;
   gap: 4px;
