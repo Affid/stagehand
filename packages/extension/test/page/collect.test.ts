@@ -326,3 +326,13 @@ test("whether an admin password is set, and nothing else of it (Phase 6)", () =>
     JSON.stringify(collect({ data: { options: { adminPassword: "x" } } })),
   ).not.toContain('"x"');
 });
+
+test("no password is false, not left out; true after a change is true (review)", () => {
+  expect(
+    collect({ data: { options: { adminPassword: null } } }).passwordSet,
+  ).toBe(false);
+  expect(collect({ data: { options: {} } }).passwordSet).toBe(false);
+  expect(
+    collect({ data: { options: { adminPassword: true } } }).passwordSet,
+  ).toBe(true);
+});

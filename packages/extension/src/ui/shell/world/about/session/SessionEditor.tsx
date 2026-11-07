@@ -263,6 +263,12 @@ const markedDays = (d: Draft): ReadonlySet<string> =>
       : upcoming({ ...d, skips: [] }, Date.now(), 40).map((x) => x.date),
   );
 
+/** A chosen date's own time; a date removed meanwhile stays removed (review). */
+const timeOn = (x: Draft, date: string, time: string): Partial<Draft> =>
+  x.dates && Object.hasOwn(x.dates, date)
+    ? { dates: { ...x.dates, [date]: time } }
+    : {};
+
 export function SessionEditor(props: {
   readonly world: WorldInfo;
   readonly onDone: (saved: boolean) => void;
@@ -297,7 +303,7 @@ export function SessionEditor(props: {
           dates={d.dates ?? {}}
           tz={d.tz}
           onTime={(date, time) => {
-            set((x) => ({ dates: { ...x.dates, [date]: time } }));
+            set((x) => timeOn(x, date, time));
           }}
           onRemove={(date) => {
             set((x) => dropDate(x, date));

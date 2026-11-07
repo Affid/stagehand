@@ -4,6 +4,7 @@
 import { plural, type Translate } from "./i18n.ts";
 import { worldModules } from "./model/world-modules.ts";
 import type { PageBridge } from "./page.ts";
+import { resolveRoute } from "./shell/route.ts";
 import type { Store } from "./store.ts";
 
 const problemsOf = (store: Store, worldId: string): number => {
@@ -25,7 +26,13 @@ export async function watchProblems<T>(
   const result = await write();
   const after = problemsOf(deps.store, worldId);
   const state = deps.store.get();
-  const here = state.route?.kind === "world" && state.route.worldId === worldId;
+  // The world actually shown: with no route yet, Setup opens on the first.
+  const shown = resolveRoute(
+    state.route,
+    state.data.setup?.worlds ?? [],
+    state.data.setup?.lang,
+  );
+  const here = shown.kind === "world" && shown.worldId === worldId;
   if (after > before && !here) {
     const title =
       state.data.setup?.worlds.find((w) => w.id === worldId)?.title ?? worldId;

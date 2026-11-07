@@ -6,7 +6,7 @@ import { useEffect, useMemo, useState } from "preact/hooks";
 import { cleanForEditor } from "../../../common/clean-html.ts";
 import { RichText } from "../../../common/rich-text.tsx";
 import { useUi } from "../../../context.ts";
-import { SavedMark } from "./EditRow.tsx";
+import { SavedMark, useBackToLink } from "./EditRow.tsx";
 
 /** Longer descriptions fold until "Show more". */
 const FOLD_CHARS = 600;
@@ -83,6 +83,7 @@ export function DescriptionBox(props: {
   const { t } = useUi();
   const [editing, setEditing] = useState(false);
   const [saved, setSaved] = useState(false);
+  const focus = useBackToLink(editing);
   // Setup reads at most MAX_DESCRIPTION: saving a cut copy would lose the rest.
   const cut = (props.world.description?.length ?? 0) >= MAX_DESCRIPTION;
   const canEdit = props.canEdit && !cut;
@@ -90,10 +91,11 @@ export function DescriptionBox(props: {
     <section class="mlw-box">
       <h4>
         <span>{t("about.description")}</span>
-        {saved && !editing ? <SavedMark /> : null}
+        <SavedMark on={saved && !editing} />
         {canEdit && !editing ? (
           <button
             type="button"
+            ref={focus.link}
             class="ml-link"
             aria-label={t("about.editDescription")}
             onClick={() => {
@@ -109,6 +111,7 @@ export function DescriptionBox(props: {
         <Editor
           world={props.world}
           onDone={(ok) => {
+            focus.closed();
             setEditing(false);
             setSaved(ok);
           }}

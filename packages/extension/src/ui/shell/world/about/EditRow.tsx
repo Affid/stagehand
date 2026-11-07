@@ -2,7 +2,7 @@
 // the link opens the field in place with Save and Cancel. Closes only once
 // Foundry has saved; a refusal keeps what was picked.
 import type { ComponentChildren } from "preact";
-import { useState } from "preact/hooks";
+import { useEffect, useRef, useState } from "preact/hooks";
 import { useUi } from "../../../context.ts";
 
 export interface EditorProps<T> {
@@ -49,15 +49,42 @@ function Editing<T>(props: {
   );
 }
 
-/** A short "Saved", announced politely (role=status). */
-export function SavedMark() {
+/**
+ * "Saved", in a status region that is always there and fills on a save, so
+ * screen readers hear it (review: a region inserted with its text often
+ * isn't read).
+ */
+export function SavedMark(props: { readonly on: boolean }) {
   const { t } = useUi();
   return (
     <span class="mlw-saved" role="status">
-      <i class="fa-solid fa-check" aria-hidden="true" />
-      {t("about.saved")}
+      {props.on ? (
+        <>
+          <i class="fa-solid fa-check" aria-hidden="true" />
+          {t("about.saved")}
+        </>
+      ) : null}
     </span>
   );
+}
+
+/**
+ * After an editor closes, focus goes back to the link that opened it
+ * (review): call `closed()` when it closes, put `link` on the link.
+ */
+export function useBackToLink(open: boolean) {
+  const link = useRef<HTMLButtonElement>(null);
+  const back = useRef(false);
+  useEffect(() => {
+    if (!open && back.current) link.current?.focus();
+    back.current = false;
+  }, [open]);
+  return {
+    link,
+    closed: () => {
+      back.current = true;
+    },
+  };
 }
 
 export function EditRow<T>(props: {
@@ -69,6 +96,7 @@ export function EditRow<T>(props: {
   const [draft, setDraft] = useState<{ value: T } | null>(null);
   // "Saved" after Foundry saved, until the next edit (prototype savedMark).
   const [saved, setSaved] = useState(false);
+  const focus = useBackToLink(draft !== null);
   const edit = props.edit;
   return (
     <>
@@ -80,6 +108,7 @@ export function EditRow<T>(props: {
             value={draft.value}
             onValue={(value) => setDraft({ value })}
             onDone={(ok) => {
+              focus.closed();
               setDraft(null);
               setSaved(ok);
             }}
@@ -87,10 +116,10 @@ export function EditRow<T>(props: {
         ) : (
           <>
             <span class="v">{props.view}</span>
-            {saved ? <SavedMark /> : null}
             {edit ? (
               <button
                 type="button"
+                ref={focus.link}
                 class="ml-link"
                 aria-label={edit.linkLabel}
                 onClick={() => {
@@ -103,6 +132,7 @@ export function EditRow<T>(props: {
             ) : null}
           </>
         )}
+        <SavedMark on={saved && draft === null} />
       </dd>
     </>
   );

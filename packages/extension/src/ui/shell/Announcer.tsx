@@ -26,13 +26,18 @@ export function Announcer() {
     last.current = counts;
     // Nothing on load: only changes are news.
     if (!before) return;
-    const changed = [...counts].find(([id, n]) => (before.get(id) ?? 0) !== n);
-    if (!changed) return;
-    const [id, n] = changed;
-    const title =
-      state.data.setup?.worlds.find((w) => w.id === id)?.title ?? id;
-    const what = n ? plural(t, "wp.pending.changes", n) : t("announce.none");
-    setSaid(t("announce.world", { world: title, what }));
+    // Every world that changed at once (a refresh can bring several).
+    const lines = [...counts]
+      .filter(([id, n]) => (before.get(id) ?? 0) !== n)
+      .map(([id, n]) => {
+        const title =
+          state.data.setup?.worlds.find((w) => w.id === id)?.title ?? id;
+        const what = n
+          ? plural(t, "wp.pending.changes", n)
+          : t("announce.none");
+        return t("announce.world", { world: title, what });
+      });
+    if (lines.length) setSaid(lines.join(". "));
     // Only when the counts change.
   }, [key]);
   return (

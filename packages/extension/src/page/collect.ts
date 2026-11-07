@@ -108,8 +108,9 @@ function issues(game: SetupGame): Pick<SetupData, "issues"> {
  * down then. Only the yes or no crosses; Setup sends a placeholder anyway.
  */
 function passwordSet(game: SetupGame): Pick<SetupData, "passwordSet"> {
-  const pw = game.data?.options?.adminPassword;
-  return typeof pw === "string" ? { passwordSet: pw.length > 0 } : {};
+  const options = game.data?.options;
+  // Foundry sends a placeholder string, "" or null; true after a change.
+  return options ? { passwordSet: Boolean(options.adminPassword) } : {};
 }
 
 /** Foundry's News and Featured Content, when it has any (Phase 6). */

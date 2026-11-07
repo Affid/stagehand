@@ -83,8 +83,16 @@ describe("editing a world's details in place", () => {
       target: { value: "Curse of Strahd" },
     });
     fireEvent.click(r.getByRole("button", { name: "Save" }));
-    const saved = await r.findByRole("status");
-    expect(saved.textContent).toBe("Saved");
+    // Its status region was there before and now says it.
+    await waitFor(() =>
+      expect(
+        r.getAllByRole("status").some((x) => x.textContent === "Saved"),
+      ).toBe(true),
+    );
+    // Focus goes back to where the edit began (review).
+    expect(document.activeElement).toBe(
+      r.getByRole("button", { name: "Rename" }),
+    );
     // A new edit starts clean.
     fireEvent.click(r.getByRole("button", { name: "Rename" }));
     expect(r.queryByText("Saved")).toBeNull();

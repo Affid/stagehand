@@ -5,7 +5,7 @@ import { useState } from "preact/hooks";
 import { useUi } from "../../../../context.ts";
 import { SessionEditor } from "./SessionEditor.tsx";
 import { SessionView } from "./SessionView.tsx";
-import { SavedMark } from "../EditRow.tsx";
+import { SavedMark, useBackToLink } from "../EditRow.tsx";
 
 export function SessionBox(props: {
   readonly world: WorldInfo;
@@ -14,16 +14,18 @@ export function SessionBox(props: {
   const { t } = useUi();
   const [editing, setEditing] = useState(false);
   const [saved, setSaved] = useState(false);
+  const focus = useBackToLink(editing);
   const { world } = props;
   const has = world.schedule !== undefined || world.nextSession !== undefined;
   return (
     <section class="mlw-box mlw-sess">
       <h4>
         <span>{t("about.nextBox")}</span>
-        {saved && !editing ? <SavedMark /> : null}
+        <SavedMark on={saved && !editing} />
         {props.canEdit && !editing ? (
           <button
             type="button"
+            ref={focus.link}
             class="ml-link"
             aria-label={has ? t("sched.changeLabel") : t("sched.setLabel")}
             onClick={() => {
@@ -39,6 +41,7 @@ export function SessionBox(props: {
         <SessionEditor
           world={world}
           onDone={(ok) => {
+            focus.closed();
             setEditing(false);
             setSaved(ok);
           }}

@@ -406,8 +406,14 @@ describe("the Repeats row and switching to chosen dates (Phase 6)", () => {
   });
 
   test("Save says Saved on the box", async () => {
-    const { box, findByRole } = edit({ schedule: weekly });
+    const { box } = edit({ schedule: weekly });
     fireEvent.click(within(box()).getByRole("button", { name: "Save" }));
-    expect((await findByRole("status")).textContent).toBe("Saved");
+    await waitFor(() =>
+      expect(
+        within(box())
+          .getAllByRole("status")
+          .some((x) => x.textContent === "Saved"),
+      ).toBe(true),
+    );
   });
 });

@@ -2,7 +2,7 @@
 import type { Command } from "@module-library/shared/world";
 import { act, cleanup } from "@testing-library/preact";
 import { afterEach, describe, expect, test } from "vitest";
-import { renderUi } from "./harness.tsx";
+import { renderUi, setupState } from "./harness.tsx";
 
 afterEach(cleanup);
 
@@ -39,5 +39,36 @@ describe("queued changes are announced wherever they come from (Phase 6)", () =>
       r.store.set((s) => ({ data: { ...s.data, commands: [] } }));
     });
     expect(said(r.container)).toBe("Strahd: nothing waits for the next launch");
+  });
+});
+
+describe("several worlds at once (review)", () => {
+  test("each world that changed is said", () => {
+    const base = setupState();
+    const worlds = [
+      ...(base.setup?.worlds ?? []),
+      {
+        id: "w2",
+        title: "Vaults",
+        system: "dnd5e",
+        systemVersion: "5",
+        coreVersion: "14.370",
+      },
+    ];
+    const r = renderUi("shell", {
+      data: { setup: base.setup ? { ...base.setup, worlds } : undefined },
+      state: { route: { kind: "library" } },
+    });
+    void act(() => {
+      r.store.set((s) => ({
+        data: {
+          ...s.data,
+          commands: [queued("a1"), { ...queued("b1"), worldId: "w2" }],
+        },
+      }));
+    });
+    expect(said(r.container)).toBe(
+      "Strahd: 1 change waits for the next launch. Vaults: 1 change waits for the next launch",
+    );
   });
 });
