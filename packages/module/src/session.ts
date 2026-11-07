@@ -4,6 +4,7 @@ import { PROTOCOL_VERSIONS } from "@module-library/shared/protocol";
 import { WorldCommandSchema } from "@module-library/shared/world";
 import { z } from "zod";
 import { type ApplyDeps, applyCommands, type Outcome } from "./apply.ts";
+import { ChannelTimeout } from "./channel.ts";
 import { MODULE_ID } from "./foundry.ts";
 import { coreVersionOf, takeSnapshot } from "./world-state.ts";
 
@@ -23,7 +24,10 @@ const CommandsSchema = z.object({
   reviewed: z.array(z.string().max(200)).max(5000).optional(),
 });
 
-/** Says HELLO until the bridge answers; no answer means no extension. */
+/**
+ * Says HELLO until the bridge answers; no answer means no extension. Other
+ * errors are thrown (and logged by the caller).
+ */
 export async function handshake(deps: ApplyDeps): Promise<Handshake> {
   const { game } = deps;
   const hello = {
@@ -40,8 +44,11 @@ export async function handshake(deps: ApplyDeps): Promise<Handshake> {
         HELLO_TIMEOUT_MS,
       );
       return reply.type === "HELLO_ACK" ? "ok" : "rejected";
-    } catch {
-      // No bridge yet: it may still be starting. Try again.
+    } catch (error: unknown) {
+      // No answer: the bridge may still be starting, so try again. Anything
+      // else is a fault, not a missing extension (a thrown error once hid
+      // that the handshake never ran on plain http: Android spike review).
+      if (!(error instanceof ChannelTimeout)) throw error;
     }
   }
   return "none";

@@ -1,8 +1,9 @@
-import { describe, expect, test } from "vitest";
+import { afterEach, describe, expect, test, vi } from "vitest";
 import {
   NS,
   isEnvelope,
   makeEnvelope,
+  newRequestId,
   negotiateProtocol,
 } from "../src/protocol.ts";
 
@@ -35,5 +36,28 @@ describe("negotiateProtocol", () => {
 
   test("returns undefined when there is no common version", () => {
     expect(negotiateProtocol([1], [2])).toBeUndefined();
+  });
+});
+
+describe("newRequestId (Android spike, finding 4)", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  test("24 hex characters, a new one each time", () => {
+    const a = newRequestId();
+    expect(a).toMatch(/^[0-9a-f]{24}$/);
+    expect(newRequestId()).not.toBe(a);
+  });
+
+  test("works where crypto.randomUUID is missing (plain http on a network address)", () => {
+    const real = globalThis.crypto;
+    vi.stubGlobal("crypto", {
+      getRandomValues: (a: Uint8Array<ArrayBuffer>) => real.getRandomValues(a),
+    });
+    expect(
+      (globalThis.crypto as { randomUUID?: unknown }).randomUUID,
+    ).toBeUndefined();
+    expect(newRequestId()).toMatch(/^[0-9a-f]{24}$/);
   });
 });

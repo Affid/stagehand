@@ -1,7 +1,7 @@
 import { makeEnvelope } from "@module-library/shared/protocol";
-import { describe, expect, test, vi } from "vitest";
+import { afterEach, describe, expect, test, vi } from "vitest";
 import type { ApplyDeps } from "../src/apply.ts";
-import { createChannel } from "../src/channel.ts";
+import { ChannelTimeout, createChannel } from "../src/channel.ts";
 import { HELLO_ATTEMPTS, handshake, runSession } from "../src/session.ts";
 import { fakeChannel, fakeDialog, fakeGame, ok } from "./fakes.ts";
 
@@ -42,7 +42,7 @@ describe("handshake (8.7)", () => {
   });
 
   test("none after retrying when no bridge answers (no extension)", async () => {
-    const { d, requests } = deps(() => new Error("No answer"));
+    const { d, requests } = deps(() => new ChannelTimeout("HELLO"));
     expect(await handshake(d)).toBe("none");
     expect(requests).toHaveLength(HELLO_ATTEMPTS);
   });
@@ -99,7 +99,7 @@ describe("runSession (8.4)", () => {
   });
 
   test("stays idle without the extension", async () => {
-    const { d, requests } = deps(() => new Error("No answer"));
+    const { d, requests } = deps(() => new ChannelTimeout("HELLO"));
     expect(await runSession(d)).toEqual({ handshake: "none" });
     expect(requests.every((r) => r.type === "HELLO")).toBe(true);
   });
@@ -134,6 +134,16 @@ function fakeWindow() {
   return { win: win as unknown as Window, posted, deliver };
 }
 
+describe("handshake errors (Android spike review)", () => {
+  test("an error other than no answer stops at once and is not taken for 'no extension'", async () => {
+    const { d, requests } = deps(
+      () => new TypeError("crypto.randomUUID is not a function"),
+    );
+    await expect(handshake(d)).rejects.toThrow("crypto.randomUUID");
+    expect(requests).toHaveLength(1);
+  });
+});
+
 describe("channel (8.6)", () => {
   test("resolves a request with the bridge's answer to the same requestId", async () => {
     const { win, posted, deliver } = fakeWindow();
@@ -165,6 +175,7 @@ describe("channel (8.6)", () => {
     const pending = createChannel(win).request("HELLO", {}, 50);
     vi.advanceTimersByTime(60);
     await expect(pending).rejects.toThrow("No answer to HELLO");
+    await expect(pending).rejects.toBeInstanceOf(ChannelTimeout);
     vi.useRealTimers();
   });
 
@@ -175,5 +186,24 @@ describe("channel (8.6)", () => {
     channel.onBridgeReady(ready);
     deliver(makeEnvelope("bridge", "BRIDGE_READY", {}));
     expect(ready).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("channel on plain http (Android spike, finding 4)", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  test("still asks and gets answered without crypto.randomUUID", async () => {
+    const real = globalThis.crypto;
+    vi.stubGlobal("crypto", {
+      getRandomValues: (a: Uint8Array<ArrayBuffer>) => real.getRandomValues(a),
+    });
+    const { win, posted, deliver } = fakeWindow();
+    const pending = createChannel(win).request("HELLO", {});
+    const sent = posted[0] as { requestId: string } | undefined;
+    expect(sent?.requestId).toMatch(/^[0-9a-f]{24}$/);
+    deliver(makeEnvelope("bridge", "HELLO_ACK", {}, sent?.requestId));
+    await expect(pending).resolves.toMatchObject({ type: "HELLO_ACK" });
   });
 });

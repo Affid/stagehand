@@ -1,6 +1,10 @@
 // The UI's link to the Setup page's own world: Foundry's actions, dialogs,
 // editor and notifications. Messages go over window.postMessage.
-import { isEnvelope, makeEnvelope } from "@module-library/shared/protocol";
+import {
+  isEnvelope,
+  makeEnvelope,
+  newRequestId,
+} from "@module-library/shared/protocol";
 import {
   type FoundryAction,
   type NoticeKind,
@@ -148,11 +152,6 @@ const UPDATE_TIMEOUTS = {
   preview: PREVIEW_TIMEOUT_MS,
   download: BACKUP_OP_TIMEOUT_MS,
 } as const;
-
-const newRequestId = (): string =>
-  [...crypto.getRandomValues(new Uint8Array(12))]
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
 
 /** NOTIFY's limit; longer text is cut rather than dropped. */
 const MAX_NOTICE = 2000;

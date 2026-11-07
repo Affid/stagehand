@@ -4,6 +4,7 @@ import {
   type Envelope,
   isEnvelope,
   makeEnvelope,
+  newRequestId,
 } from "@module-library/shared/protocol";
 
 export interface Channel {
@@ -16,6 +17,14 @@ export interface Channel {
 }
 
 const DEFAULT_TIMEOUT_MS = 5000;
+
+/** Nobody answered in time: the only failure worth asking again for. */
+export class ChannelTimeout extends Error {
+  constructor(type: string) {
+    super(`No answer to ${type}`);
+    this.name = "ChannelTimeout";
+  }
+}
 
 export function createChannel(win: Window): Channel {
   const pending = new Map<string, (msg: Envelope) => void>();
@@ -37,11 +46,11 @@ export function createChannel(win: Window): Channel {
 
   return {
     request(type, payload, timeoutMs = DEFAULT_TIMEOUT_MS) {
-      const requestId = crypto.randomUUID();
+      const requestId = newRequestId();
       return new Promise((resolve, reject) => {
         const timer = setTimeout(() => {
           pending.delete(requestId);
-          reject(new Error(`No answer to ${type}`));
+          reject(new ChannelTimeout(type));
         }, timeoutMs);
         pending.set(requestId, (msg) => {
           clearTimeout(timer);

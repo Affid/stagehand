@@ -92,3 +92,17 @@ Build: `cd spikes/android && JAVA_HOME=~/opt/jdk-21.0.13+9 ./gradlew assembleDeb
    extension's background is unaffected (a service worker is always a
    secure context), and so is the app's background on its https asset
    origin.
+
+   **Fixed** (owner's go-ahead, 2026-11-07): request ids come from
+   `newRequestId()` in `packages/shared/src/protocol.ts`
+   (`crypto.getRandomValues`), shared by the companion and the extension's
+   page bridge and ids. Live: `tests/foundry/companion-http.spec.ts` joins
+   the world at the machine's network address in plain Chromium (not a
+   secure context) and expects the companion's HELLO; it failed before the
+   fix and passes after. Reviews: code and security, no critical or high.
+   Fixed from the reviews: the companion now retries only when nobody
+   answers (`ChannelTimeout`) and throws anything else, so a fault like
+   this is logged instead of read as "no extension"; About's "Copy the
+   path" had the same class of bug (`navigator.clipboard` is missing on
+   plain http, the call threw before its fallback) and now shows the path
+   in a notice; the spec skips an https server and cleans up safely.

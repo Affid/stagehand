@@ -229,3 +229,23 @@ describe("the About tab's boxes", () => {
     expect(el(container, ".mlw-about").textContent).toContain("Locked:");
   });
 });
+
+describe("copying the world's path (Android spike review)", () => {
+  test("with no clipboard (plain http on a network address) the path shows in a notice", async () => {
+    const had = Object.getOwnPropertyDescriptor(navigator, "clipboard");
+    Object.defineProperty(navigator, "clipboard", {
+      value: undefined,
+      configurable: true,
+    });
+    try {
+      const r = about();
+      fireEvent.click(r.getByRole("button", { name: "Copy the path" }));
+      await waitFor(() => {
+        expect(r.page.notify).toHaveBeenCalledWith("info", "worlds/w1");
+      });
+    } finally {
+      if (had) Object.defineProperty(navigator, "clipboard", had);
+      else Reflect.deleteProperty(navigator, "clipboard");
+    }
+  });
+});

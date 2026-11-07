@@ -40,7 +40,13 @@ function Folder(props: { readonly id: string }) {
         icon="copy"
         label={t("about.copyPath")}
         onClick={() => {
-          void navigator.clipboard.writeText(path).catch(() => {
+          // No clipboard outside secure contexts (plain http on a network
+          // address): the call throws, which the async wrapper turns into a
+          // rejection, and the path shows instead (Android spike review).
+          const copy = async (): Promise<void> => {
+            await navigator.clipboard.writeText(path);
+          };
+          void copy().catch(() => {
             actions.notify("info", path);
           });
         }}

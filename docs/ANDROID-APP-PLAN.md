@@ -176,8 +176,8 @@ From `docs/ANDROID-SPIKE.md`, on the emulator:
   login cookie across restarts, and Playwright driving the WebView from WSL.
 - **A companion bug blocks the launch flow on plain-http network
   addresses**, desktop included (`crypto.randomUUID` exists only in secure
-  contexts). It is fixed before phase 2, with a live test on a non-localhost
-  address.
+  contexts). Fixed on 2026-11-07, with a live test on a non-localhost
+  address (`tests/foundry/companion-http.spec.ts`).
 - **WebView version:** Foundry 14 needs Chromium 146. Phase 4 adds a check
   with an "update Android System WebView" message; the emulator needs a
   Google Play image (signed in once) for an up-to-date WebView.

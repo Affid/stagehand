@@ -26,6 +26,18 @@ export function makeEnvelope<P>(
   return requestId === undefined ? base : { ...base, requestId };
 }
 
+/**
+ * A random id that matches an answer to its request. Not
+ * `crypto.randomUUID`: browsers offer it only in secure contexts (https or
+ * localhost), and Foundry is often plain http on a network address, where
+ * the companion's handshake then never ran (Android spike, finding 4).
+ */
+export function newRequestId(): string {
+  return [...crypto.getRandomValues(new Uint8Array(12))]
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
 /** True for a message of this protocol, posted by `expected`. */
 export function isEnvelope<S extends Sender>(
   value: unknown,

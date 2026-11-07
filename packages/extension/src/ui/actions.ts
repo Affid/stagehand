@@ -3,6 +3,7 @@
 import type { LibraryOp, OpResult } from "@module-library/shared/library/ops";
 import type { Library } from "@module-library/shared/library/schema";
 import type { ApplyMode } from "@module-library/shared/resolver";
+import { newRequestId } from "@module-library/shared/protocol";
 import type { ExtensionMessage, SetupState } from "../messages.ts";
 import type { Translate } from "./i18n.ts";
 import { watchProblems } from "./broken.ts";
@@ -346,8 +347,7 @@ export function createActions(
 
 /** Random ids that also work outside secure contexts (LAN servers). */
 export function newId(): string {
-  const bytes = crypto.getRandomValues(new Uint8Array(12));
-  return [...bytes].map((b) => b.toString(16).padStart(2, "0")).join("");
+  return newRequestId();
 }
 
 export const PALETTE = [
