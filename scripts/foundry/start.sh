@@ -27,4 +27,14 @@ if [[ ! -f "$app_dir/main.js" ]]; then
 fi
 mkdir -p "$data_dir"
 
-exec node "$app_dir/main.js" --dataPath="$data_dir" --port="$port" --noupnp --noupdate
+# Updates stay off, except for an older build kept to check the Update page
+# against a real newer release (README, "An older build"). Only from the
+# command line, never .env.local, so the usual install can't update by
+# accident (security review).
+update_flag=(--noupdate)
+if [[ "${FOUNDRY_ALLOW_UPDATE:-}" == "1" ]]; then
+  update_flag=()
+  echo "Updates allowed for $app_dir: use a throwaway copy only." >&2
+fi
+
+exec node "$app_dir/main.js" --dataPath="$data_dir" --port="$port" --noupnp "${update_flag[@]}"

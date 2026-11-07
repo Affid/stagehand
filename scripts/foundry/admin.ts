@@ -9,6 +9,8 @@ const POLL_MS = 1000;
 export interface PackageListing {
   readonly id: string;
   readonly manifest: string;
+  /** The newest version Foundry's list offers. */
+  readonly version?: string;
 }
 
 /** Foundry rejects POSTs without a same-origin Origin header (CSRF check). */

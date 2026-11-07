@@ -745,8 +745,10 @@ Deviations kept, for the owner to confirm:
 - Free disk space and a snapshot's space come from Foundry's internal
   checks behind the `diskFree` flag.
 
-Not verifiable on the local server: a core update download, Let's Encrypt,
-a module update chip against foundryvtt.com, phones.
+Not verifiable on the local server: a core update download (no build after
+14.370 that updates in place exists yet), Let's Encrypt, phones. The rest of
+the Update page and the module update are checked live since the follow-up
+below.
 
 Package 6.6 reviews: code and security on each part, no critical or high;
 no new reach for a page script (Foundry's snapshot dialog was never a
@@ -758,3 +760,37 @@ regions that are always there with focus back on the edit link, a removed
 chosen date stays removed, the snapshot dialog's Create waits while Foundry
 is busy (reason on a wrapper) and warns when the space won't do, and its
 space line has a "not known" state.
+
+Follow-up (2026-11-07): the Update page against a real newer release, and a
+module update.
+
+- Foundry's update check asks foundryvtt.com once with the installed
+  version and gets one release, `latest_release`, back; it doesn't step
+  through the builds in between. A release that needs a reinstall still
+  comes back as the target, its flags marked (`status: "error"`,
+  `requires_full_reinstall`), and Setup's `/update` route hands it to the
+  page as it is. So an older build shows everything but the download.
+- Run on 14.369 (a copy, with a copy of the data, main server stopped):
+  the Version chip says 14.370 is available, its notes read and search,
+  Foundry's real compatibility preview lists every package, and the Update
+  box says Manual installation required with the download page.
+  `setup-update-older.spec.ts` checks this and skips on an up-to-date server;
+  the README says how to run it (`FOUNDRY_ALLOW_UPDATE=1` drops
+  `--noupdate` in `pnpm foundry:start`).
+- `setup-module-update.spec.ts` installs socketlib 1.1.2 from its pinned
+  release manifest; Foundry's list offers 1.1.4. The Library card shows
+  Update 1.1.4, pressing it runs Foundry's own check and install, and the
+  module is removed afterwards.
+- Found and fixed: the Version chip's name lacked a space before "update"
+  when an update is out, so its text and name didn't match (axe); after a
+  module update the card still offered the update (the list is read once
+  per Setup load and compared as text, and socketlib's release says
+  `v1.1.4` where Foundry's list says `1.1.4`), so it now compares versions;
+  and that version read "vv1.1.4", so versions now get one "v" wherever we
+  show them.
+- Reviews: code and security, no critical or high. Fixed: the module spec
+  leaves any socketlib already installed alone and cleans up step by step;
+  `FOUNDRY_ALLOW_UPDATE` is taken from the command line only, never
+  `.env.local`, and warns; the probe redacts links with a query as well as
+  the download link. Kept on purpose: pre-release versions follow Foundry's
+  own `isNewerVersion`, as the update list it builds does (a test says so).

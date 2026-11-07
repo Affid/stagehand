@@ -52,6 +52,25 @@ The test world has `Gamemaster` (full GM), `Assistant` (Assistant GM) and
 `Player1`, all without passwords. `fixtures/modules` holds three tiny test
 modules: a library, a module that requires it, and one that conflicts with it.
 
+### An older build
+
+The Update page's checks against a real newer release
+(`tests/foundry/setup-update-older.spec.ts`) run only on an older Foundry
+build; on the usual up-to-date server they skip. Stop the usual server, then
+run a copy of an older build with a copy of the data, so neither the install
+nor the worlds are touched:
+
+```bash
+cp -a ~/foundry/vtt-14.369-backup ~/foundry/test-369/vtt
+cp -a ~/foundry/data ~/foundry/test-369/data
+FOUNDRY_APP_DIR=~/foundry/test-369/vtt FOUNDRY_DATA_DIR=~/foundry/test-369/data \
+  FOUNDRY_ALLOW_UPDATE=1 pnpm foundry:start
+pnpm test:foundry setup-update-older
+```
+
+The tests never press Update. Delete `~/foundry/test-369` afterwards and
+start the usual server again.
+
 ## Layout
 
 ```
