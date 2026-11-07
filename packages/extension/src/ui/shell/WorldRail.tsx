@@ -10,6 +10,7 @@ import { updateCount } from "../model/updates.ts";
 import { ago, plural } from "../i18n.ts";
 import { worldOrder } from "../model/order.ts";
 import { systemTitle } from "../model/system.ts";
+import { worldModules } from "../model/world-modules.ts";
 import { age, type WorldRow, worldRow } from "../model/worlds.ts";
 import { RailNews } from "./RailNews.tsx";
 import { cssImage, filterWorlds, type Route } from "./route.ts";
@@ -25,8 +26,24 @@ export function useLastPlayed(): (world: WorldInfo) => string {
   };
 }
 
+/** A problem at the next launch, with the queued count (prototype railFlag). */
+function ProblemFlag(props: {
+  readonly problems: number;
+  readonly queued: number;
+}) {
+  const { t } = useUi();
+  return (
+    <span class="flag p" title={plural(t, "grid.problems", props.problems)}>
+      <Icon name="triangle-exclamation" />{" "}
+      {props.queued
+        ? t("shell.queued", { n: props.queued })
+        : t("shell.problem")}
+    </span>
+  );
+}
+
 /** Favourite, lock, queued changes and problems, after the title. */
-function Marks(props: { readonly row: WorldRow }) {
+function Marks(props: { readonly row: WorldRow; readonly problems: number }) {
   const { t } = useUi();
   const { world, pending, attention, status, snapshot } = props.row;
   return (
@@ -45,7 +62,9 @@ function Marks(props: { readonly row: WorldRow }) {
           aria-label={t("shell.locked")}
         />
       ) : null}
-      {pending.length > 0 ? (
+      {props.problems > 0 ? (
+        <ProblemFlag problems={props.problems} queued={pending.length} />
+      ) : pending.length > 0 ? (
         <span class="flag q" title={t("shell.queuedHint")}>
           {t("shell.queued", { n: pending.length })}
         </span>
@@ -72,6 +91,9 @@ function WorldItem(props: {
   const { world } = props;
   const lastPlayed = useLastPlayed();
   const row = worldRow(state.data, world);
+  // Problems only count where the companion reports the modules.
+  const model = worldModules(state.data, world.id);
+  const problems = model.tracked ? model.problems : 0;
   const image = cssImage(world.background, location.origin);
   return (
     <li class="mls-world-item">
@@ -94,7 +116,7 @@ function WorldItem(props: {
           aria-hidden="true"
         />
         <strong>{world.title}</strong>
-        <Marks row={row} />
+        <Marks row={row} problems={problems} />
         <span class="meta">
           {systemTitle(state.data.setup, world.system)} · {lastPlayed(world)}
         </span>

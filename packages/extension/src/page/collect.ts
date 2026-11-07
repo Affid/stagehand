@@ -1,6 +1,6 @@
 // Reads package data from Foundry's `game` on Setup (V-1). Reads package data
-// and the UI language only: never game.data.options, licence or certificate
-// (8.6).
+// and the UI language only; of game.data.options only the update channel and
+// whether a password is set; never the licence or certificate (8.6).
 import { logError } from "@module-library/shared/log";
 import { MAX_NEWS, toNewsItem } from "@module-library/shared/news";
 import { toPackageInfo } from "@module-library/shared/package-read";
@@ -103,6 +103,15 @@ function issues(game: SetupGame): Pick<SetupData, "issues"> {
     : {};
 }
 
+/**
+ * Whether an admin password is set: Foundry only offers Log out and Shut
+ * down then. Only the yes or no crosses; Setup sends a placeholder anyway.
+ */
+function passwordSet(game: SetupGame): Pick<SetupData, "passwordSet"> {
+  const pw = game.data?.options?.adminPassword;
+  return typeof pw === "string" ? { passwordSet: pw.length > 0 } : {};
+}
+
 /** Foundry's News and Featured Content, when it has any (Phase 6). */
 function news(game: SetupGame): Pick<SetupData, "news" | "featured"> {
   const raw = game.data?.news;
@@ -153,5 +162,6 @@ export function collect(game: SetupGame): SetupData {
     ...coreUpdate(game),
     ...issues(game),
     ...news(game),
+    ...passwordSet(game),
   };
 }

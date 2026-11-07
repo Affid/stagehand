@@ -227,3 +227,28 @@
     grid-template-columns: 112px minmax(0, 1fr);
   }
 }
+
+/* "Saved" after a save in place (prototype _calm.css .mlw-saved). */
+.mls-shell .mlw-saved {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  margin-left: 8px;
+  color: #8fd49b;
+  font-size: 12px;
+  text-transform: none;
+  letter-spacing: 0;
+  animation: mlw-saved-in 0.18s ease-out;
+}
+
+@keyframes mlw-saved-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mls-shell .mlw-saved {
+    animation: none;
+  }
+}

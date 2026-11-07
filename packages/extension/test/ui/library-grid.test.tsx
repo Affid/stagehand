@@ -283,3 +283,52 @@ describe("group counts (package 6 review)", () => {
     });
   });
 });
+
+describe("a change made outside the world's page that breaks it (Phase 6)", () => {
+  test("says so: the world now has problems, open it to fix", async () => {
+    const base = setupState();
+    const before: Partial<SetupState> = {
+      setup: base.setup
+        ? { ...base.setup, worlds: [world("w1", "Strahd")] }
+        : undefined,
+      snapshots: { w1: snap("w1", ["module-library", "c", "lib"]) },
+    };
+    let queued = false;
+    const r = renderUi("shell", {
+      data: before,
+      state: { route: { kind: "library" } },
+      reply: (m) => {
+        if (m.kind === "queue-apply") {
+          queued = true;
+          return { queued: "n" };
+        }
+        if (m.kind !== "get-state") return undefined;
+        return setupState({
+          ...before,
+          commands: queued
+            ? [
+                {
+                  id: "n",
+                  scope: "world",
+                  worldId: "w1",
+                  type: "preset.apply",
+                  payload: { mode: "remove", presetIds: [], modules: ["lib"] },
+                  createdAt: "2026-11-05T01:00:00.000Z",
+                  baseSnapshotAt: null,
+                  status: "pending",
+                },
+              ]
+            : [],
+        });
+      },
+    });
+    fireEvent.click(r.getByRole("tab", { name: /^By world/ }));
+    fireEvent.click(r.getByRole("switch", { name: "Title lib on in Strahd" }));
+    await waitFor(() =>
+      expect(r.page.notify).toHaveBeenCalledWith(
+        "warning",
+        "Strahd now has 2 modules that need attention. Open it to fix.",
+      ),
+    );
+  });
+});

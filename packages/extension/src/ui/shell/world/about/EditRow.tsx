@@ -22,7 +22,7 @@ function Editing<T>(props: {
   readonly edit: Edit<T>;
   readonly value: T;
   readonly onValue: (v: T) => void;
-  readonly onDone: () => void;
+  readonly onDone: (saved: boolean) => void;
 }) {
   const { t } = useUi();
   const { edit } = props;
@@ -35,17 +35,28 @@ function Editing<T>(props: {
           class="bright"
           onClick={() =>
             void edit.save(props.value).then((ok) => {
-              if (ok) props.onDone();
+              if (ok) props.onDone(true);
             })
           }
         >
           {t("about.save")}
         </button>
-        <button type="button" onClick={props.onDone}>
+        <button type="button" onClick={() => props.onDone(false)}>
           {t("about.cancel")}
         </button>
       </div>
     </div>
+  );
+}
+
+/** A short "Saved", announced politely (role=status). */
+export function SavedMark() {
+  const { t } = useUi();
+  return (
+    <span class="mlw-saved" role="status">
+      <i class="fa-solid fa-check" aria-hidden="true" />
+      {t("about.saved")}
+    </span>
   );
 }
 
@@ -56,6 +67,8 @@ export function EditRow<T>(props: {
   readonly edit?: Edit<T>;
 }) {
   const [draft, setDraft] = useState<{ value: T } | null>(null);
+  // "Saved" after Foundry saved, until the next edit (prototype savedMark).
+  const [saved, setSaved] = useState(false);
   const edit = props.edit;
   return (
     <>
@@ -66,17 +79,24 @@ export function EditRow<T>(props: {
             edit={edit}
             value={draft.value}
             onValue={(value) => setDraft({ value })}
-            onDone={() => setDraft(null)}
+            onDone={(ok) => {
+              setDraft(null);
+              setSaved(ok);
+            }}
           />
         ) : (
           <>
             <span class="v">{props.view}</span>
+            {saved ? <SavedMark /> : null}
             {edit ? (
               <button
                 type="button"
                 class="ml-link"
                 aria-label={edit.linkLabel}
-                onClick={() => setDraft({ value: edit.initial })}
+                onClick={() => {
+                  setSaved(false);
+                  setDraft({ value: edit.initial });
+                }}
               >
                 {edit.link}
               </button>

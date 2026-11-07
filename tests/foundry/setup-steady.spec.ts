@@ -81,6 +81,17 @@ test("a world: the first queued change adds the banner's line without moving the
     cards.first().locator('input[role="switch"]').click(),
   );
   await expect(main(page).locator(".mls-banner")).toContainText("wait");
+  // Only changes and problems get a coloured edge: a module simply on and
+  // one simply off share the neutral one.
+  const edge = (l: Locator) =>
+    l.evaluate((e) => getComputedStyle(e).borderLeftColor);
+  const plainOn = main(page)
+    .locator(".mlw-card.on:not(.plus):not(.minus):not(.risk):not(.prob)")
+    .first();
+  const plainOff = main(page)
+    .locator(".mlw-card.off:not(.plus):not(.minus):not(.risk):not(.prob)")
+    .first();
+  expect(await edge(plainOn)).toBe(await edge(plainOff));
   await main(page).getByRole("button", { name: "Discard" }).click();
 });
 

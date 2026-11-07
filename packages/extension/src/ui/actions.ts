@@ -5,6 +5,7 @@ import type { Library } from "@module-library/shared/library/schema";
 import type { ApplyMode } from "@module-library/shared/resolver";
 import type { ExtensionMessage, SetupState } from "../messages.ts";
 import type { Translate } from "./i18n.ts";
+import { watchProblems } from "./broken.ts";
 import { pendingFor } from "./model/preview.ts";
 import { flipModule } from "./model/world-modules.ts";
 import type { PageBridge } from "./page.ts";
@@ -97,7 +98,9 @@ function base(store: Store, send: Send, t: Translate, page: PageBridge) {
   const setLibrary = (library: Library): void => {
     store.set((s) => ({ data: { ...s.data, library } }));
   };
-  return { notify, fail, guarded, refresh, setLibrary };
+  const watch = <T>(worldId: string, write: () => Promise<T>): Promise<T> =>
+    watchProblems({ store, t, page }, worldId, write);
+  return { notify, fail, guarded, refresh, setLibrary, watch };
 }
 
 type Base = ReturnType<typeof base>;
@@ -254,7 +257,7 @@ function worldActions(
   return {
     queueApply: (worldId, mode, presetIds, modules) =>
       tracked(
-        (async () => {
+        b.watch(worldId, async () => {
           const queued = await b.guarded(() =>
             send({
               kind: "queue-apply",
@@ -266,12 +269,14 @@ function worldActions(
           );
           if (queued) await b.refresh();
           return queued !== undefined;
-        })(),
+        }),
       ),
     flip: (worldId, moduleId, on) =>
       tracked(
         onceAtATime(`${worldId}\u0000${moduleId}`, () =>
-          runFlip(b, send, store, { worldId, moduleId, on }),
+          b.watch(worldId, () =>
+            runFlip(b, send, store, { worldId, moduleId, on }),
+          ),
         ),
       ),
     discard: (worldId) =>

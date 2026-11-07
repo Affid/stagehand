@@ -76,6 +76,20 @@ describe("editing a world's details in place", () => {
     });
   });
 
+  test("a save says Saved where it happened, for screen readers too (Phase 6)", async () => {
+    const r = about();
+    fireEvent.click(r.getByRole("button", { name: "Rename" }));
+    fireEvent.input(r.getByRole("textbox", { name: "Title" }), {
+      target: { value: "Curse of Strahd" },
+    });
+    fireEvent.click(r.getByRole("button", { name: "Save" }));
+    const saved = await r.findByRole("status");
+    expect(saved.textContent).toBe("Saved");
+    // A new edit starts clean.
+    fireEvent.click(r.getByRole("button", { name: "Rename" }));
+    expect(r.queryByText("Saved")).toBeNull();
+  });
+
   test("a save Foundry refuses is reported", async () => {
     const r = about();
     r.page.saveWorld.mockResolvedValueOnce("title: may not be blank");

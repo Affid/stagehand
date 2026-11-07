@@ -10,6 +10,7 @@ import { TagsPanel } from "./library/panels/TagsPanel.tsx";
 import { ServerBackupsPage } from "./server/backups/BackupsPage.tsx";
 import { ConfigPage } from "./server/config/ConfigPage.tsx";
 import { UpdatePage } from "./server/UpdatePage.tsx";
+import { Announcer } from "./Announcer.tsx";
 import { Header } from "./Header.tsx";
 import { resolveRoute } from "./route.ts";
 import { WorldPage } from "./WorldPage.tsx";
@@ -111,6 +112,7 @@ export function Shell() {
         )}
         {route.kind === "server" ? null : <PanelColumn here={world?.id} />}
       </div>
+      <Announcer />
     </div>
   );
 }

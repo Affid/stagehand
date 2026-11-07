@@ -313,3 +313,16 @@ test("a news link listed twice is read once (review)", () => {
     n,
   ]);
 });
+
+test("whether an admin password is set, and nothing else of it (Phase 6)", () => {
+  expect(
+    collect({ data: { options: { adminPassword: "••••••••" } } }).passwordSet,
+  ).toBe(true);
+  expect(
+    collect({ data: { options: { adminPassword: "" } } }).passwordSet,
+  ).toBe(false);
+  expect(collect({ data: {} })).not.toHaveProperty("passwordSet");
+  expect(
+    JSON.stringify(collect({ data: { options: { adminPassword: "x" } } })),
+  ).not.toContain('"x"');
+});

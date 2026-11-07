@@ -56,8 +56,12 @@ const tagOp = {
 
 function setup(reply: (m: { kind: string }) => unknown) {
   const store = createStore(initial);
+  // get-state answers a state unless the test says otherwise, as the
+  // background always does.
   const send = vi.fn((m: { kind: string }) =>
-    Promise.resolve(reply(m)),
+    Promise.resolve(
+      reply(m) ?? (m.kind === "get-state" ? initial.data : undefined),
+    ),
   ) as unknown as Send;
   const { page } = fakePage();
   return { store, actions: createActions(store, send, t, page), send, page };

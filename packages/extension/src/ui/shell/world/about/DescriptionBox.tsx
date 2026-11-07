@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "preact/hooks";
 import { cleanForEditor } from "../../../common/clean-html.ts";
 import { RichText } from "../../../common/rich-text.tsx";
 import { useUi } from "../../../context.ts";
+import { SavedMark } from "./EditRow.tsx";
 
 /** Longer descriptions fold until "Show more". */
 const FOLD_CHARS = 600;
@@ -38,7 +39,7 @@ function View(props: { readonly html: string | undefined }) {
 /** Foundry's editor in our host; stays open until Foundry has saved. */
 function Editor(props: {
   readonly world: WorldInfo;
-  readonly onDone: () => void;
+  readonly onDone: (saved: boolean) => void;
 }) {
   const { page, actions, t } = useUi();
   const hostId = useMemo(
@@ -57,7 +58,7 @@ function Editor(props: {
   const save = (): void => {
     void page.editorSave(props.world.id, hostId).then((error) => {
       if (error) actions.notify("error", t("about.saveFailed", { error }));
-      else props.onDone();
+      else props.onDone(true);
     });
   };
   return (
@@ -67,7 +68,7 @@ function Editor(props: {
         <button type="button" class="bright" onClick={save}>
           {t("about.save")}
         </button>
-        <button type="button" onClick={props.onDone}>
+        <button type="button" onClick={() => props.onDone(false)}>
           {t("about.cancel")}
         </button>
       </div>
@@ -81,6 +82,7 @@ export function DescriptionBox(props: {
 }) {
   const { t } = useUi();
   const [editing, setEditing] = useState(false);
+  const [saved, setSaved] = useState(false);
   // Setup reads at most MAX_DESCRIPTION: saving a cut copy would lose the rest.
   const cut = (props.world.description?.length ?? 0) >= MAX_DESCRIPTION;
   const canEdit = props.canEdit && !cut;
@@ -88,19 +90,29 @@ export function DescriptionBox(props: {
     <section class="mlw-box">
       <h4>
         <span>{t("about.description")}</span>
+        {saved && !editing ? <SavedMark /> : null}
         {canEdit && !editing ? (
           <button
             type="button"
             class="ml-link"
             aria-label={t("about.editDescription")}
-            onClick={() => setEditing(true)}
+            onClick={() => {
+              setSaved(false);
+              setEditing(true);
+            }}
           >
             {t("about.edit")}
           </button>
         ) : null}
       </h4>
       {editing ? (
-        <Editor world={props.world} onDone={() => setEditing(false)} />
+        <Editor
+          world={props.world}
+          onDone={(ok) => {
+            setEditing(false);
+            setSaved(ok);
+          }}
+        />
       ) : (
         <View html={props.world.description} />
       )}

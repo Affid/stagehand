@@ -172,6 +172,8 @@ export const SetupDataSchema = z.object({
   modules: z.array(PackageInfoSchema).max(MAX_PACKAGES),
   systems: z.array(SystemInfoSchema).max(MAX_PACKAGES),
   worlds: z.array(WorldInfoSchema).max(MAX_PACKAGES),
+  /** Whether Foundry has an admin password (never the password itself). */
+  passwordSet: z.boolean().optional(),
   /** Foundry's News and Featured Content (news.ts). */
   news: z.array(NewsItemSchema).max(MAX_NEWS).optional(),
   featured: NewsItemSchema.optional(),

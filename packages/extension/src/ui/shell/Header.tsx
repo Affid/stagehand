@@ -87,7 +87,8 @@ function Actions() {
         <Icon name="gears" />
         {t("shell.configuration")}
       </button>
-      <PowerMenu />
+      {/* Foundry offers Log out and Shut down only with an admin password. */}
+      {state.data.setup?.passwordSet === false ? null : <PowerMenu />}
     </div>
   );
 }

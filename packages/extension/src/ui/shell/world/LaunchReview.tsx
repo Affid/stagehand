@@ -10,6 +10,7 @@ import type { BackupInfo } from "../../../page-backups.ts";
 import { ago, plural, type Translate } from "../../i18n.ts";
 import { age } from "../../model/worlds.ts";
 import { formatSize } from "../../common/size.ts";
+import { backupForQueue } from "./backups/Nudge.tsx";
 import { latestBackup } from "./useBackups.ts";
 import { pendingFor } from "../../model/preview.ts";
 import type { WorldModules } from "../../model/world-modules.ts";
@@ -175,6 +176,21 @@ function BackupFirst(props: {
   );
 }
 
+/**
+ * "Back up first": ticked unless a backup already covers every queued change
+ * (SETUP-REDESIGN.md, open item 3), until the reader ticks it themselves.
+ */
+function useBackupFirst(
+  worldId: string,
+  backups: readonly BackupInfo[] | undefined,
+): { readonly on: boolean; readonly set: (on: boolean) => void } {
+  const { state } = useUi();
+  const [chosen, setChosen] = useState<boolean | null>(null);
+  const queuedAt = pendingFor(state.data, worldId).map((c) => c.createdAt);
+  const covered = backupForQueue(queuedAt, latestBackup(backups)) !== undefined;
+  return { on: chosen ?? !covered, set: setChosen };
+}
+
 export function LaunchReview(props: {
   readonly world: WorldInfo;
   readonly model: WorldModules;
@@ -187,8 +203,8 @@ export function LaunchReview(props: {
   readonly backups?: readonly BackupInfo[] | undefined;
 }) {
   const { state, t } = useUi();
-  const [backup, setBackup] = useState(true);
   const { world, model } = props;
+  const backup = useBackupFirst(world.id, props.backups);
   const presets = presetNames(state, world.id);
   const footer = (
     <Footer
@@ -196,7 +212,9 @@ export function LaunchReview(props: {
       canHold={props.canHold}
       onClose={props.onClose}
       onLaunch={(kind) =>
-        props.onLaunch(kind === "plain" ? { kind } : { kind, backup })
+        props.onLaunch(
+          kind === "plain" ? { kind } : { kind, backup: backup.on },
+        )
       }
     />
   );
@@ -216,8 +234,8 @@ export function LaunchReview(props: {
         ) : null}
         <BackupFirst
           world={world}
-          on={backup}
-          onChange={setBackup}
+          on={backup.on}
+          onChange={backup.set}
           backups={props.backups}
         />
       </div>

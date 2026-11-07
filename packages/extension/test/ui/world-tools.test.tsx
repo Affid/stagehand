@@ -235,6 +235,31 @@ describe("the launch review's extras", () => {
     });
   });
 
+  test("Back up first is ticked only when no backup covers the queued changes (Phase 6)", async () => {
+    // b1 is from 3 days ago: older than the change, so a backup is offered.
+    const older = page({ commands: [cmd("c1", ["b"])] });
+    fireEvent.click(older.getByRole("button", { name: /^Launch/ }));
+    const d1 = await screen.findByRole("dialog", { name: "Launch Strahd" });
+    await waitFor(() =>
+      expect(
+        within(d1).getByRole("checkbox", { name: /Back up/ }),
+      ).toHaveProperty("checked", true),
+    );
+    cleanup();
+    // A backup taken after the change already covers it.
+    const newer = page({ commands: [cmd("c1", ["b"])] }, [
+      { id: "b0", createdAt: Date.now(), size: 2048, snapshot: false },
+      ...BACKUPS,
+    ]);
+    fireEvent.click(newer.getByRole("button", { name: /^Launch/ }));
+    const d2 = await screen.findByRole("dialog", { name: "Launch Strahd" });
+    await waitFor(() =>
+      expect(
+        within(d2).getByRole("checkbox", { name: /Back up/ }),
+      ).toHaveProperty("checked", false),
+    );
+  });
+
   test("Back up first says how big and how old the latest backup is", async () => {
     const { getByRole } = page({ commands: [cmd("c1", ["b"])] });
     fireEvent.click(getByRole("button", { name: /^Launch/ }));

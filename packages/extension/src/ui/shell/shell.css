@@ -462,6 +462,20 @@
   border: 1px solid rgb(238 155 58 / 45%);
 }
 
+/* A problem at the next launch (prototype _ideas.css .flag.p). */
+.mls-shell .mls-world .flag.p {
+  font-size: 11px;
+  padding: 1px 6px;
+  border-radius: 9px;
+  white-space: nowrap;
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  background: rgb(245 196 94 / 14%);
+  color: #f5c45e;
+  border: 1px solid rgb(245 196 94 / 50%);
+}
+
 .mls-shell .mls-world .flag.a {
   color: #f5c45e;
   font-size: 12px;

@@ -95,6 +95,14 @@ describe("the header bar", () => {
     expect(queryByRole("button", { name: "Foundry's Setup page" })).toBe(null);
   });
 
+  test("no admin password: no power menu, as Foundry offers neither then (Phase 6)", () => {
+    const b = setupState();
+    const { queryByRole } = shell({
+      data: { setup: b.setup ? { ...b.setup, passwordSet: false } : undefined },
+    });
+    expect(queryByRole("button", { name: "Log out or shut down" })).toBeNull();
+  });
+
   test("the power menu holds Log out and Shut down, and closes with Escape", () => {
     const { getByRole, queryByRole, page } = shell();
     const item = (name: string) => getByRole("button", { name });
@@ -164,6 +172,46 @@ describe("the worlds rail", () => {
     expect(row.querySelector(".flag.q")?.textContent).toMatch(/1/);
     // No companion snapshot for any world: each one is flagged.
     expect(row.querySelector(".flag.a")).toBeTruthy();
+  });
+
+  test("a world whose next launch has a problem is flagged with it (Phase 6)", () => {
+    const { container } = shell({
+      data: {
+        ...withWorlds,
+        snapshots: {
+          new: {
+            worldId: "new",
+            title: "New One",
+            system: { id: "dnd5e", version: "5" },
+            coreVersion: "14.370",
+            active: ["module-library", "c", "lib"].map((id) => ({
+              id,
+              version: "1.0.0",
+            })),
+            companionVersion: "0.1.0",
+            takenAt: "2026-11-02T00:00:00Z",
+          },
+        },
+        commands: [
+          {
+            id: "c1",
+            scope: "world",
+            worldId: "new",
+            type: "preset.apply",
+            // "c" needs "lib": turning lib off is a problem at the next launch.
+            payload: { mode: "remove", presetIds: [], modules: ["lib"] },
+            createdAt: "2026-11-02T01:00:00Z",
+            baseSnapshotAt: null,
+            status: "pending",
+          },
+        ],
+      },
+    });
+    const row = el(container, '.mls-world[data-world="new"]');
+    const flag = el(row, ".flag.p");
+    expect(flag.textContent).toContain("1 queued");
+    expect(flag.getAttribute("title")).toBe("2 modules need attention");
+    expect(row.querySelector(".flag.q")).toBeNull();
   });
 
   test("Create World opens Foundry's own form", () => {

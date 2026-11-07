@@ -252,9 +252,8 @@
   min-width: 0;
 }
 
-.mls-shell .mlw-card.on {
-  border-left-color: #3f8f52;
-}
+/* A module that is simply on keeps the neutral edge: only changes and
+   problems are coloured (SETUP-REDESIGN.md; prototype _calm.css). */
 
 .mls-shell .mlw-card.off {
   background: rgb(11 10 19 / 38%);
