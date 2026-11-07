@@ -3,3 +3,8 @@ docs/PRD.md
 
 # Throwaway design mockups (not product code)
 design/
+
+# Android build output
+spikes/android/build/
+spikes/android/app/build/
+.gradle/

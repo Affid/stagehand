@@ -11,3 +11,10 @@ playwright-report/
 .env
 .env.*
 !.env.example
+
+# Android (spikes/android, later packages/android): Gradle caches, build
+# output and the machine's SDK path
+.gradle/
+local.properties
+spikes/android/build/
+spikes/android/app/build/
