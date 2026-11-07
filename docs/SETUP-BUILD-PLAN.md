@@ -911,5 +911,8 @@ by one; ask for any still in mind when the pass starts.
   the whole pane (two worlds at 2560 are about 830 px each). Consider
   columns of a set width, as with many worlds (92 px), and the rest left
   free.
-- Release history: the options page opens once per click on "Allow"
-  (carried over from package 7, minor).
+- Release history: the options page opened once per click on "Allow"
+  (package 7). Gone with the settings panel (one panel, at most once every
+  2 s); nothing left to do.
+- A `/setup*` page that never sends Setup's data stays hidden until the
+  veil's 15 s timer (no-jump review); fine unless it is seen in practice.
