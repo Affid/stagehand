@@ -80,6 +80,7 @@ function answerServerBackups(req: ServerBackupsRequest): void {
       payload: {
         requestId: req.requestId,
         ...(r.listing ? { listing: r.listing } : {}),
+        ...(r.space ? { space: r.space } : {}),
         ...(r.error ? { error: r.error.slice(0, MAX_ERROR) } : {}),
       },
     });

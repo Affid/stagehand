@@ -58,11 +58,25 @@ const snapshotIds = (): Promise<string[]> =>
       els.map((e) => e.getAttribute("data-snapshot") ?? ""),
     );
 
-test("a snapshot is taken with Foundry's dialog and deleted with its code", async () => {
+test("a snapshot is taken from our dialog and deleted with Foundry's code", async () => {
   const pageEl = shell().locator(".mlb-page");
   const before = await snapshotIds();
   await pageEl.getByRole("button", { name: "Create a snapshot" }).click();
-  await page.locator(".snapshot-dialog button[type=submit]").click();
+  // Ours, as the prototype: what it holds, Foundry's own space check, a note.
+  const dialog = page.getByRole("dialog", { name: "Create a snapshot" });
+  await expect(dialog).toContainText(
+    /\d+ worlds?, \d+ modules? and \d+ systems?/,
+  );
+  await expect(dialog).toContainText(/About .+ needed · .+ free/, {
+    timeout: 60_000,
+  });
+  await page.screenshot({ path: `${SCREENS}/server-snapshot-dialog.png` });
+  await dialog
+    .getByRole("textbox", { name: "Note" })
+    .fill("Module Library live test");
+  await dialog.getByRole("button", { name: "Create the snapshot" }).click();
+  // Foundry's own dialog stays shut.
+  await expect(page.locator(".snapshot-dialog")).toHaveCount(0);
   // Ours is the one that wasn't there before; only ours is deleted.
   await expect
     .poll(async () => (await snapshotIds()).length, { timeout: 180_000 })

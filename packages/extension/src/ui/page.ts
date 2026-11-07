@@ -18,7 +18,11 @@ import type {
   Settings,
 } from "../page-config.ts";
 import type { WorldChanges } from "../page-save.ts";
-import type { ServerBackupOp, ServerListing } from "../page-server-backups.ts";
+import type {
+  ServerBackupOp,
+  ServerListing,
+  SnapshotSpace,
+} from "../page-server-backups.ts";
 import type { Preview } from "../page-compat.ts";
 import type { Release, UpdateOp, UpdateReply } from "../page-update.ts";
 
@@ -39,6 +43,8 @@ export interface ConfigResult {
 
 export interface ServerBackupsResult {
   readonly listing?: ServerListing;
+  /** The space a snapshot needs and the space free (op "space"). */
+  readonly space?: SnapshotSpace;
   readonly error?: string;
 }
 
@@ -89,6 +95,8 @@ export interface PageBridge {
     ids: readonly string[],
     /** Also ask for the free disk space (adapter flag diskFree). */
     disk?: boolean,
+    /** createSnapshot: the note from our dialog. */
+    note?: string,
   ): Promise<ServerBackupsResult>;
   /** Foundry's configuration: read it, or save some settings. */
   config(
@@ -208,18 +216,25 @@ function backupRequests(
         op === "list" ? SAVE_TIMEOUT_MS : BACKUP_OP_TIMEOUT_MS,
         { error: "Foundry did not answer in time." },
       ),
-    serverBackups: (op, ids, disk) =>
+    serverBackups: (op, ids, disk, note) =>
       request<ServerBackupsResult>(
         send,
         listeners,
         (requestId) => ({
           type: "SERVER_BACKUPS",
-          payload: { requestId, op, ids: [...ids], ...(disk ? { disk } : {}) },
+          payload: {
+            requestId,
+            op,
+            ids: [...ids],
+            ...(disk ? { disk } : {}),
+            ...(note === undefined ? {} : { note }),
+          },
         }),
         (e, id) =>
           e.type === "SERVER_BACKUPS_DONE" && e.payload.requestId === id
             ? {
                 ...(e.payload.listing ? { listing: e.payload.listing } : {}),
+                ...(e.payload.space ? { space: e.payload.space } : {}),
                 ...(e.payload.error ? { error: e.payload.error } : {}),
               }
             : undefined,

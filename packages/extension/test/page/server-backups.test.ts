@@ -105,10 +105,14 @@ describe("the server's backups through Foundry", () => {
     ).toBeTruthy();
   });
 
-  test("snapshots are taken, restored and deleted with Foundry's dialogs", async () => {
+  test("snapshots are taken (after our dialog), restored and deleted with Foundry's dialogs", async () => {
     const f = foundry();
     await runServerBackups(f.page, req("createSnapshot"));
-    expect(f.game.createSnapshot).toHaveBeenCalledWith({ dialog: true });
+    // Our dialog asked already: Foundry's stays shut (Phase 6).
+    expect(f.game.createSnapshot).toHaveBeenCalledWith({
+      dialog: false,
+      note: "",
+    });
     await runServerBackups(f.page, req("restoreSnapshot", ["snapshot.1"]));
     expect(f.game.restoreSnapshot).toHaveBeenCalledWith(
       listing.snapshots["snapshot.1"],
@@ -210,5 +214,52 @@ describe("package backups in order (code review)", () => {
       "module.m.new",
       "module.m.old",
     ]);
+  });
+});
+
+describe("our snapshot dialog through Foundry (Phase 6)", () => {
+  test("space asks Foundry's own create check; create runs without its dialog, with the note", async () => {
+    const f = foundry();
+    const post = vi.fn(() =>
+      Promise.resolve({ required: 3_400_000_000, available: 48_000_000_000 }),
+    );
+    const game = { ...f.game, post };
+    const page = { game };
+    const r = await runServerBackups(page, {
+      requestId: "r1",
+      op: "space",
+      ids: [],
+    });
+    expect(post).toHaveBeenCalledWith({
+      action: "checkCreateSnapshotDiskSpace",
+    });
+    expect(r.space).toEqual({
+      required: 3_400_000_000,
+      available: 48_000_000_000,
+    });
+    await runServerBackups(page, {
+      requestId: "r2",
+      op: "createSnapshot",
+      ids: [],
+      note: "Before 14.371",
+    });
+    expect(f.game.createSnapshot).toHaveBeenCalledWith({
+      dialog: false,
+      note: "Before 14.371",
+    });
+  });
+
+  test("a space check Foundry can't answer is left out, not an error", async () => {
+    const f = foundry();
+    const game = {
+      ...f.game,
+      post: vi.fn(() => Promise.reject(new Error("no"))),
+    };
+    const r = await runServerBackups(
+      { game },
+      { requestId: "r1", op: "space", ids: [] },
+    );
+    expect(r.space).toBeUndefined();
+    expect(r.error).toBeUndefined();
   });
 });

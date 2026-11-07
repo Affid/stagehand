@@ -43,6 +43,12 @@ export function useServerBackups() {
   };
   const run = (op: ServerBackupOp, ids: readonly string[] = []) =>
     busy(() => (op === "list" ? list() : page.serverBackups(op, ids)));
+  /** Our dialog's snapshot: its note, without Foundry's dialog. */
+  const createSnapshot = (note: string) =>
+    busy(() => page.serverBackups("createSnapshot", [], false, note));
+  /** The space a snapshot needs and has, behind the same flag as free space. */
+  const askSpace = async () =>
+    disk ? (await page.serverBackups("space", [], false)).space : undefined;
   /** A package's backup, then the whole listing again. */
   const runPackage = (
     p: PackageBackups,
@@ -57,7 +63,14 @@ export function useServerBackups() {
   useEffect(() => {
     void run("list");
   }, []);
-  return { view, busy: running > 0, run, runPackage };
+  return {
+    view,
+    busy: running > 0,
+    run,
+    runPackage,
+    createSnapshot,
+    askSpace,
+  };
 }
 
 export type ServerBackups = ReturnType<typeof useServerBackups>;

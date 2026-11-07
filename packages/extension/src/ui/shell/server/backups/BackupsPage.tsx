@@ -15,6 +15,7 @@ import { lockReason } from "../../../tasks.ts";
 import { tip } from "../../world/backups/text.ts";
 import { PageHead } from "../PageHead.tsx";
 import { PackagesTab } from "./PackagesTab.tsx";
+import { SnapshotDialog } from "./SnapshotDialog.tsx";
 import { SnapshotJob, snapshotTask } from "./SnapshotJob.tsx";
 import { SnapshotsTab } from "./SnapshotsTab.tsx";
 import { type ServerBackups, useServerBackups } from "./useServerBackups.ts";
@@ -136,6 +137,7 @@ function Body(props: {
 export function ServerBackupsPage() {
   const { t, state, canChange } = useUi();
   const data = useServerBackups();
+  const [asking, setAsking] = useState(false);
   const { view } = data;
   const off =
     lockReason(t, state) ?? (data.busy ? t("bk.busy") : canChange ? null : "");
@@ -145,9 +147,19 @@ export function ServerBackupsPage() {
         title={t("sb.title")}
         summary={view.listing ? summary(view.listing, t) : undefined}
       >
-        <Create off={off} onCreate={() => void data.run("createSnapshot")} />
+        <Create off={off} onCreate={() => setAsking(true)} />
       </PageHead>
       {view.error ? <p class="ml-banner ml-warn">{view.error}</p> : null}
+      {asking ? (
+        <SnapshotDialog
+          onClose={() => setAsking(false)}
+          askSpace={data.askSpace}
+          onCreate={(note) => {
+            setAsking(false);
+            void data.createSnapshot(note);
+          }}
+        />
+      ) : null}
       {view.listing ? (
         <Body listing={view.listing} off={off} data={data} />
       ) : view.error ? null : (

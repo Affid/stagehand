@@ -540,3 +540,46 @@
 .mls-shell .mlb-open:hover {
   color: var(--color-warm-1);
 }
+
+/* "Create a snapshot", our dialog (prototype _server.css). */
+.mls-shell .mlb-snapdialog {
+  display: grid;
+  gap: 12px;
+  max-width: 480px;
+}
+
+.mls-shell .mlb-snapdialog p {
+  margin: 0;
+}
+
+.mls-shell .mlb-facts {
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--color-light-2);
+}
+
+.mls-shell .mlb-facts i {
+  width: 20px;
+  color: var(--color-light-4);
+}
+
+.mls-shell .mlb-facts .ml-muted {
+  font-size: 12px;
+}
+
+.mls-shell .mlb-note {
+  display: grid;
+  grid-template-columns: 50px 1fr;
+  gap: 8px;
+  align-items: center;
+}
+
+.mls-shell .mlb-note span {
+  color: var(--color-text-subtle);
+  font-size: 13px;
+}
+
+.mls-shell .mlb-note input {
+  height: 30px;
+}

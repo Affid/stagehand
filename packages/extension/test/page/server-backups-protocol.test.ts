@@ -158,3 +158,59 @@ describe("server backups replies", () => {
       expect(parseServerBackupsReply(p)).toBeUndefined();
   });
 });
+
+describe("our snapshot dialog's requests (Phase 6, as the prototype)", () => {
+  test("space is its own request; createSnapshot carries a short note", () => {
+    expect(
+      parseServerBackupsRequest({ requestId: "r1", op: "space", ids: [] }),
+    ).toEqual({ requestId: "r1", op: "space", ids: [] });
+    expect(
+      parseServerBackupsRequest({
+        requestId: "r1",
+        op: "createSnapshot",
+        ids: [],
+        note: "  Before 14.371  ",
+      }),
+    ).toEqual({
+      requestId: "r1",
+      op: "createSnapshot",
+      ids: [],
+      note: "Before 14.371",
+    });
+    // A note only goes with a create, and never longer than 200.
+    expect(
+      parseServerBackupsRequest({
+        requestId: "r1",
+        op: "list",
+        ids: [],
+        note: "x",
+      }),
+    ).toEqual({ requestId: "r1", op: "list", ids: [] });
+    expect(
+      parseServerBackupsRequest({
+        requestId: "r1",
+        op: "createSnapshot",
+        ids: [],
+        note: "x".repeat(201),
+      }),
+    ).toBeUndefined();
+  });
+
+  test("the reply can carry the space needed and free, both sound numbers", () => {
+    expect(
+      parseServerBackupsReply({
+        requestId: "r1",
+        space: { required: 3_400_000_000, available: 48_000_000_000 },
+      }),
+    ).toEqual({
+      requestId: "r1",
+      space: { required: 3_400_000_000, available: 48_000_000_000 },
+    });
+    expect(
+      parseServerBackupsReply({
+        requestId: "r1",
+        space: { required: -1, available: 1 },
+      }),
+    ).toBeUndefined();
+  });
+});

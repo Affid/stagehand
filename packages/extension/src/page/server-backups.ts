@@ -7,13 +7,14 @@ import type {
   ServerBackupsRequest,
   ServerListing,
   SnapshotInfo,
+  SnapshotSpace,
 } from "../page-server-backups.ts";
 import { type Raw, toInfo } from "./backups.ts";
 import type { PageGlobals } from "./globals.ts";
 
 interface SnapshotGame {
   listBackups?: () => Promise<unknown>;
-  createSnapshot?: (o: { dialog: boolean }) => Promise<unknown>;
+  createSnapshot?: (o: { dialog: boolean; note?: string }) => Promise<unknown>;
   restoreSnapshot?: (data: unknown, o: { dialog: boolean }) => Promise<unknown>;
   deleteSnapshots?: (
     ids: readonly string[],
@@ -28,6 +29,7 @@ type Listing = Partial<Record<PackageType, Record<string, Raw[]>>> & {
 
 export interface ServerBackupsResult {
   readonly listing?: ServerListing;
+  readonly space?: SnapshotSpace;
   readonly error?: string;
 }
 
@@ -96,8 +98,9 @@ function packagesOf(game: Game, listing: Listing): PackageBackups[] {
 }
 
 async function apply(game: Game, req: ServerBackupsRequest): Promise<void> {
+  // Our dialog asked already (prototype): Foundry's own stays shut.
   if (req.op === "createSnapshot")
-    await game.createSnapshot?.({ dialog: true });
+    await game.createSnapshot?.({ dialog: false, note: req.note ?? "" });
   if (req.op === "restoreSnapshot") {
     const listing = ((await game.listBackups?.()) ?? {}) as Listing;
     const id = req.ids[0] ?? "";
@@ -111,6 +114,29 @@ async function apply(game: Game, req: ServerBackupsRequest): Promise<void> {
     // Foundry deletes from its own cached listing: list first.
     await game.listBackups?.();
     await game.deleteSnapshots?.(req.ids, { dialog: true });
+  }
+}
+
+/**
+ * What a snapshot needs and what is free: the check Foundry's own create
+ * dialog makes (it sizes every package, so it takes a moment). Left out
+ * when Foundry can't say.
+ */
+async function snapshotSpace(game: Game): Promise<ServerBackupsResult> {
+  try {
+    const r = (await game.post?.({
+      action: "checkCreateSnapshotDiskSpace",
+    })) as
+      { readonly required?: unknown; readonly available?: unknown } | undefined;
+    const { required, available } = r ?? {};
+    return typeof required === "number" &&
+      typeof available === "number" &&
+      required >= 0 &&
+      available >= 0
+      ? { space: { required, available } }
+      : {};
+  } catch {
+    return {};
   }
 }
 
@@ -137,6 +163,7 @@ export async function runServerBackups(
   const game = page.game as Game | undefined;
   if (!game?.listBackups)
     return { error: "Foundry's backups are not available" };
+  if (req.op === "space") return snapshotSpace(game);
   try {
     await apply(game, req);
     const listing = ((await game.listBackups()) ?? {}) as Listing;

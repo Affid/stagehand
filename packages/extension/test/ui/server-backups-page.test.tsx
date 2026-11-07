@@ -133,12 +133,43 @@ describe("the server Backups page", () => {
     );
   });
 
-  test("Create a snapshot, Restore… and Delete go to Foundry's dialogs", async () => {
-    const { container, getByRole, page } = await open();
+  test("Create a snapshot opens our dialog: what's in it, the space, a note, then Create (Phase 6)", async () => {
+    const { getByRole, page } = await open();
+    page.serverBackups.mockImplementation((op) =>
+      Promise.resolve(
+        op === "space"
+          ? { space: { required: 3.4 * 2 ** 30, available: 48 * 2 ** 30 } }
+          : { listing: LISTING },
+      ),
+    );
     fireEvent.click(getByRole("button", { name: "Create a snapshot" }));
-    await waitFor(() => {
-      expect(page.serverBackups).toHaveBeenCalledWith("createSnapshot", []);
+    const dialog = getByRole("dialog", { name: "Create a snapshot" });
+    expect(dialog.textContent).toContain("1 world, 5 modules and 1 system");
+    await waitFor(() =>
+      expect(dialog.textContent).toContain(
+        "About 3.4 GB needed · 48.0 GB free",
+      ),
+    );
+    expect(dialog.textContent).toContain("can't be interrupted");
+    fireEvent.input(within(dialog).getByRole("textbox", { name: "Note" }), {
+      target: { value: "Before 14.371" },
     });
+    fireEvent.click(
+      within(dialog).getByRole("button", { name: "Create the snapshot" }),
+    );
+    await waitFor(() =>
+      expect(page.serverBackups).toHaveBeenCalledWith(
+        "createSnapshot",
+        [],
+        false,
+        "Before 14.371",
+      ),
+    );
+    expect(page.serverBackups).toHaveBeenCalledWith("space", [], false);
+  });
+
+  test("Restore… and Delete go to Foundry's dialogs", async () => {
+    const { container, page } = await open();
     const s = el(container, '.mlb-snaps li[data-snapshot="snapshot.1"]');
     fireEvent.click(within(s).getByRole("button", { name: "Restore…" }));
     await waitFor(() => {
@@ -210,10 +241,15 @@ describe("the server Backups page", () => {
 
   test("an error keeps the listing and shows above it", async () => {
     const { container, getByRole, page } = await open();
-    page.serverBackups.mockResolvedValueOnce({
-      error: "Not enough disk space",
-    });
+    page.serverBackups.mockImplementation((op) =>
+      Promise.resolve(
+        op === "createSnapshot"
+          ? { error: "Not enough disk space" }
+          : { listing: LISTING },
+      ),
+    );
     fireEvent.click(getByRole("button", { name: "Create a snapshot" }));
+    fireEvent.click(getByRole("button", { name: "Create the snapshot" }));
     await waitFor(() => {
       expect(container.textContent).toContain("Not enough disk space");
     });
@@ -372,10 +408,15 @@ describe("select mode after a refresh (code review)", () => {
       fireEvent.click(
         within(el(container, `[data-snapshot="${id}"]`)).getByRole("checkbox"),
       );
-    page.serverBackups.mockResolvedValueOnce({
-      listing: { ...two, snapshots: [snap("snapshot.1")] },
-    });
+    page.serverBackups.mockImplementation((op) =>
+      Promise.resolve(
+        op === "createSnapshot"
+          ? { listing: { ...two, snapshots: [snap("snapshot.1")] } }
+          : { listing: two },
+      ),
+    );
     fireEvent.click(getByRole("button", { name: "Create a snapshot" }));
+    fireEvent.click(getByRole("button", { name: "Create the snapshot" }));
     await waitFor(() => {
       expect(container.querySelector('[data-snapshot="snapshot.2"]')).toBe(
         null,

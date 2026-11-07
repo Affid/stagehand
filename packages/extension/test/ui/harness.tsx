@@ -11,6 +11,7 @@ import type { AdapterChoice } from "../../src/adapters/select.ts";
 import type { ExtensionMessage, SetupState } from "../../src/messages.ts";
 import { type PageToUi } from "../../src/page-protocol.ts";
 import type { BackupInfo } from "../../src/page-backups.ts";
+import type { ServerBackupOp } from "../../src/page-server-backups.ts";
 import { createActions, type Send } from "../../src/ui/actions.ts";
 import { ShellRoot } from "../../src/ui/App.tsx";
 import { createTranslator } from "../../src/ui/i18n.ts";
@@ -142,10 +143,16 @@ export function fakePage() {
     update: vi.fn((_ask: UpdateAsk) =>
       Promise.resolve<UpdateResult>({ info: "SETUP.UpdateNotAvailable" }),
     ),
-    serverBackups: vi.fn(() =>
-      Promise.resolve<ServerBackupsResult>({
-        listing: { snapshots: [], packages: [] },
-      }),
+    serverBackups: vi.fn(
+      (
+        _op: ServerBackupOp,
+        _ids?: readonly string[],
+        _disk?: boolean,
+        _note?: string,
+      ) =>
+        Promise.resolve<ServerBackupsResult>({
+          listing: { snapshots: [], packages: [] },
+        }),
     ),
     backups: vi.fn(() => Promise.resolve<BackupsResult>({ backups: [] })),
     subscribe(fn: (e: PageToUi) => void) {

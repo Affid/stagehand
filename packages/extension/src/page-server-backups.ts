@@ -13,6 +13,8 @@ type Loose = Readonly<Record<string, unknown>>;
 
 export const SERVER_OPS = [
   "list",
+  /** Foundry's own create-snapshot space check: needed and free. */
+  "space",
   "createSnapshot",
   "restoreSnapshot",
   "deleteSnapshots",
@@ -26,6 +28,14 @@ export interface ServerBackupsRequest {
   readonly ids: readonly string[];
   /** Also ask Foundry for the free disk space (adapter flag diskFree). */
   readonly disk?: boolean;
+  /** createSnapshot: the note from our dialog (Foundry's dialog stays shut). */
+  readonly note?: string;
+}
+
+/** Bytes a snapshot needs (before compression) and bytes free. */
+export interface SnapshotSpace {
+  readonly required: number;
+  readonly available: number;
 }
 
 export interface SnapshotInfo {
@@ -59,6 +69,7 @@ export interface ServerListing {
 export interface ServerBackupsReply {
   readonly requestId: string;
   readonly listing?: ServerListing;
+  readonly space?: SnapshotSpace;
   readonly error?: string;
 }
 
@@ -71,6 +82,8 @@ const MAX_PACKAGES = 5000;
 const MAX_BACKUPS = 1000;
 const MAX_NOTE = 1000;
 const MAX_ERROR = 2000;
+/** As the prototype's note field. */
+export const MAX_SNAPSHOT_NOTE = 200;
 
 const isObject = (v: unknown): v is Loose =>
   typeof v === "object" && v !== null && !Array.isArray(v);
@@ -100,9 +113,21 @@ export function parseServerBackupsRequest(
   const op = p.op as ServerBackupOp;
   const ids = opIds(op, p.ids);
   if (!ids) return undefined;
-  return p.disk === true && op === "list"
-    ? { requestId: p.requestId, op, ids, disk: true }
-    : { requestId: p.requestId, op, ids };
+  const base = { requestId: p.requestId, op, ids };
+  if (op === "list" && p.disk === true) return { ...base, disk: true };
+  if (op !== "createSnapshot" || p.note === undefined) return base;
+  if (typeof p.note !== "string" || p.note.length > MAX_SNAPSHOT_NOTE)
+    return undefined;
+  return { ...base, note: p.note.trim() };
+}
+
+/** Two sound byte counts, or undefined. */
+function space(v: unknown): SnapshotSpace | undefined {
+  if (!isObject(v)) return undefined;
+  const { required, available } = v;
+  return isCount(required) && isCount(available)
+    ? { required, available }
+    : undefined;
 }
 
 function snapshot(v: unknown): SnapshotInfo | undefined {
@@ -177,6 +202,10 @@ export function parseServerBackupsReply(
   )
     return undefined;
   const e = error === undefined ? {} : { error };
+  if (p.space !== undefined) {
+    const sp = space(p.space);
+    return sp ? { requestId: p.requestId, space: sp, ...e } : undefined;
+  }
   if (p.listing === undefined) return { requestId: p.requestId, ...e };
   const l = listing(p.listing);
   return l ? { requestId: p.requestId, listing: l, ...e } : undefined;
