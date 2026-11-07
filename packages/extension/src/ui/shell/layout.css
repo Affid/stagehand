@@ -1,0 +1,36 @@
+/* Page widths (Phase 6), as the prototype (design/setup-page/src/_shell.css):
+   wide screens keep Foundry's window width for the middle pane, left-aligned
+   beside the rail, with the header across the whole screen; at 1280 px and
+   below the rail narrows and the details panel floats over the page. */
+
+.mls-shell .mls > .application.mls-main {
+  /* Foundry's .application width cap, which the prototype keeps. */
+  max-width: 1200px;
+}
+
+@media (max-width: 1280px) {
+  .mls-shell .mls-rail {
+    flex-basis: 240px;
+  }
+
+  .mls-shell .mls > .application.mls-panel {
+    position: fixed;
+    right: 16px;
+    top: 76px;
+    bottom: 16px;
+    width: 340px;
+    height: auto;
+    /* Foundry's .application margin would shorten it. */
+    margin: 0;
+    z-index: 110;
+    box-shadow: -8px 0 24px rgb(0 0 0 / 70%);
+  }
+}
+
+/* The selection bar is wider than a narrowed middle pane (a details panel
+   open at 1366 or less): it wraps rather than putting Done under the panel.
+   The prototype overflows here too. */
+.mls-shell .mls-selbar {
+  flex-wrap: wrap;
+  row-gap: 4px;
+}

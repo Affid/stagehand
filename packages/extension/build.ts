@@ -94,6 +94,7 @@ for (const sheet of [
   "config.css",
   "update.css",
   "news.css",
+  "layout.css",
 ])
   appendFileSync(
     join(outDir, "setup-ui.css"),
