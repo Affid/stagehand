@@ -35,7 +35,7 @@ Mockup to match: `design/setup-page/` (playground: https://claude.ai/artifact/YK
 | 3   | **Library**         | New cards, calm group headers, module details panel (Library and Package tabs), selection band, intake for new installs, By world grid with Show filter.                                                                                                                                                                                                                                                                                                               | Library parity with the mockup, existing organisation features intact.                                                         |
 | 4   | **World details**   | About tab edited in place (`editWorld` behind remote config, fallback to World Configuration), next-session picker and schedule (stored in the world's `flags`, moved forward when Setup opens), Favourite and Lock, Backups tab (public backup calls, progress from Foundry's socket, locking).                                                                                                                                                                       | About and Backups work without Foundry's windows.                                                                              |
 | 5   | **Server pages**    | Backups (snapshots and package backups), Configuration (`adminConfigure`, restart notice, Shut down now), Update (release notes reader, history from foundryvtt.com with optional host permission, compatibility preview).                                                                                                                                                                                                                                             | Foundry's Backup Manager, Configuration and Update screens are no longer needed.                                               |
-| 6   | **News and finish** | News and Featured Content at the foot of the rail, read state; accessibility pass; 1280 and 1366 layouts; many worlds; make the new page the default.                                                                                                                                                                                                                                                                                                                  | Acceptance: every requirement in SETUP-REDESIGN.md checked on Foundry 14.                                                      |
+| 6   | **News and finish** | News and Featured Content at the foot of the rail, read state; accessibility pass; 1280 and 1366 layouts and wide screens; many worlds; make the new page the default.                                                                                                                                                                                                                                                                                                 | Acceptance: every requirement in SETUP-REDESIGN.md checked on Foundry 14.                                                      |
 
 ## Phase 1 detail
 
@@ -515,4 +515,59 @@ Phase 5b results: https://claude.ai/artifact/D4H4nCYeMMfJ3DJJtesL6b (private).
 Owner, 2026-11-07: accepted; the small imperfections left are a polish pass
 after Phase 6.
 
-Then Phase 6 (News and finish).
+### Phase 6: News and finish (in progress)
+
+Started 2026-11-07. "Make the new page the default" was done in Phase 5b package 1.
+
+Where Foundry's news comes from (read from 14.370's `dist/core/update.mjs`,
+`dist/core/game.mjs`, `dist/server/views/setup.mjs` and `SetupSidebar` in
+`public/scripts/foundry.mjs`; no live spike needed): the server's update check
+(`/_api/license/check/`, at most once a day from Setup) answers `news` and
+`featured_content` with the release. The server keeps them in `Logs/news.json`
+and sends them in Setup's data as `game.data.news` (a list) and
+`game.data.featuredContent` (one item or null). Each item is
+`{title, image, url, caption?}`; images are on `r2.foundryvtt.com`, links on
+foundryvtt.com or foundryvtt.store. Foundry's own sidebar (`SetupSidebar`,
+hidden under our page) draws them with links that open a new tab. Without a
+check ever reaching foundryvtt.com there is no news ("No featured content").
+
+Work packages, each committed on its own after `pnpm verify`, the live suite,
+a code review and a security review:
+
+1. **News and Featured Content** at the foot of the worlds rail, as the
+   prototype (`design/setup-page/src/_calm.js` railNews, `_calm.css`
+   `.mlr-news`, `.mlr-feat`). Setup data gains `news` (up to 20) and
+   `featured`, read field by field: https links only, images only https on
+   foundryvtt.com or its subdomains (else no image), titles cut. Read state
+   is ours, per server, in the background: the URLs seen (bounded); the first
+   Setup visit with news counts all as seen ("nothing new on a fresh
+   install", SETUP-REDESIGN.md open item 3); opening any article marks the
+   current ones seen. News is open while something is unread and folded to
+   one line (latest title) after; the fold arrow or header wins for this
+   load. Carousel of Foundry's 2.39:1 banners, sliding, preloaded, arrows and
+   "1 / 4" over the banner, other slides inert, no motion with reduced
+   motion. Featured Content: its own label and full banner, always open.
+   Links open a new tab without opener or referrer. No news: the section is
+   left out.
+2. **Tabs** for every tab row at once (left from package 7): one shared
+   `TabList` with the ARIA tabs pattern (tablist label, roving tabindex,
+   Left / Right / Home / End move and select, `aria-controls` to a
+   `tabpanel` labelled by its tab). Rows: world page, Library, module panel,
+   server Backups, Update, Your packages' kinds.
+3. **Accessibility pass** on every page: axe-core in the live suite (no
+   serious or critical violations on the world page, Library, By world,
+   Backups, Configuration, Update and their panels), keyboard paths through
+   each page, focus visible everywhere and kept after actions, labels and
+   names, contrast at least 4.5:1 for text (3:1 for large text and controls).
+4. **Layouts**: 1280×800 and 1366×768 as the prototype (rail 240 px at 1280,
+   the details panel over the page at 1280); wide screens as the prototype:
+   the middle pane capped at Foundry's 1200 px window width, left-aligned
+   beside the rail, header full width.
+5. **Many worlds and modules**: a dev script that adds and removes test worlds
+   and stub modules on the local server; the rail, the By world grid
+   (`checks/gridwide.mjs`: 30 worlds, 92 px columns, pinned header and
+   names, fade at the cut-off edge) and the Library with a lot of both;
+   scrolling lists fade where they are cut off.
+6. **Acceptance**: every requirement in SETUP-REDESIGN.md checked on Foundry
+   14.370 and recorded below; the full live suite; the results artifact with
+   the build beside the prototype at 1366 and 2560.
