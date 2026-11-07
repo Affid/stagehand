@@ -7,6 +7,7 @@ import type { ScriptingPlatform } from "../../src/background/registration.ts";
 import type { ContentScript } from "../../src/background/servers.ts";
 import {
   grantedOrigins,
+  restoreServers,
   type RouterDeps,
   route,
 } from "../../src/background/router.ts";
@@ -788,5 +789,93 @@ describe("router: registrations run one at a time", () => {
       ]),
     ).resolves.toBeTruthy();
     expect(Object.keys(await d.state.servers())).toEqual([S]);
+  });
+});
+
+describe("router: servers come back after an update or reload (owner's bug)", () => {
+  /** Scripts the browser holds, as Chrome keeps them. */
+  function liveScripts(d: RouterDeps, granted: (o: string) => boolean) {
+    const live = new Set<string>();
+    d.scripting.hasPermission = vi.fn((o: string) =>
+      Promise.resolve(granted(o)),
+    );
+    d.scripting.registeredIds = vi.fn((ids: readonly string[]) =>
+      Promise.resolve(ids.filter((id) => live.has(id))),
+    );
+    d.scripting.unregister = vi.fn((ids: readonly string[]) => {
+      ids.forEach((id) => live.delete(id));
+      return Promise.resolve();
+    });
+    d.scripting.register = vi.fn((scripts: readonly ContentScript[]) => {
+      scripts.forEach((sc) => live.add(sc.id));
+      return Promise.resolve();
+    });
+    return live;
+  }
+
+  test("a saved server whose scripts the browser dropped gets them back; one no longer allowed stays off", async () => {
+    const d = deps();
+    const live = liveScripts(d, (o) => o === "http://localhost:30000/*");
+    await registered(d);
+    await route(
+      d,
+      { kind: "register-server", server: "http://h:1" },
+      fromOptions,
+    ).catch(() => undefined);
+    await d.state.addServer("http://h:1", "t");
+    live.clear(); // Chrome dropped them on the update.
+    await restoreServers(d);
+    expect([...live].filter((id) => id.includes("localhost"))).toHaveLength(3);
+    expect([...live].filter((id) => id.includes("h_1"))).toHaveLength(0);
+  });
+
+  test("one server failing doesn't keep the others off (code review)", async () => {
+    const d = deps();
+    const live = liveScripts(d, () => true);
+    await registered(d);
+    await d.state.addServer("http://h:1", "t");
+    live.clear();
+    const register = vi.mocked(d.scripting.register).getMockImplementation();
+    d.scripting.register = vi.fn((scripts: readonly ContentScript[]) =>
+      scripts[0]?.id.includes("localhost")
+        ? Promise.reject(new Error("broken"))
+        : (register?.(scripts) ?? Promise.resolve()),
+    );
+    await restoreServers(d);
+    expect([...live].filter((id) => id.includes("h_1"))).toHaveLength(3);
+  });
+
+  test("a server removed while the restore waits isn't brought back (code review)", async () => {
+    const d = deps();
+    const live = liveScripts(d, () => true);
+    await registered(d);
+    await d.state.addServer("http://localhost:30000/b", "t");
+    live.clear();
+    const restoring = restoreServers(d);
+    await route(
+      d,
+      { kind: "remove-server", server: "http://localhost:30000/b" },
+      fromOptions,
+    );
+    await restoring;
+    expect([...live].filter((id) => id.includes("_b"))).toHaveLength(0);
+    expect([...live].filter((id) => !id.includes("_b"))).toHaveLength(3);
+  });
+
+  test("the list says which servers are really on", async () => {
+    const d = deps();
+    const live = liveScripts(d, (o) => o === "http://localhost:30000/*");
+    await registered(d);
+    await d.state.addServer("http://h:1", "t");
+    let r = (await route(d, { kind: "list-servers" }, fromOptions)) as {
+      servers: { id: string; active: boolean }[];
+    };
+    expect(r.servers.map((x) => [x.id, x.active])).toEqual([
+      [S, true],
+      ["http://h:1", false],
+    ]);
+    live.clear();
+    r = (await route(d, { kind: "list-servers" }, fromOptions)) as typeof r;
+    expect(r.servers[0]?.active).toBe(false);
   });
 });

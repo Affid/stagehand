@@ -140,6 +140,29 @@ body {
   flex-basis: 100%;
 }
 
+.mlp-servers .mlp-addr {
+  flex: 1;
+  min-width: 0;
+}
+
+.mlp-off {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mlp-tag {
+  padding: 0 6px;
+  border: 1px solid var(--err);
+  border-radius: 999px;
+  color: var(--err);
+  font-size: 11px;
+}
+
+.mlp .mlp-off button {
+  padding: 1px 8px;
+}
+
 .mlp input {
   min-width: 0;
   padding: 6px 8px;

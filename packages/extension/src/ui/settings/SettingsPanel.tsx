@@ -44,7 +44,8 @@ export function SettingsPanel(props: { readonly platform: SettingsPlatform }) {
           t={t}
           server={here}
           tab={tab}
-          on={servers.list.some((s) => s.id === here)}
+          saved={servers.list.some((s) => s.id === here)}
+          on={servers.list.some((s) => s.id === here && s.active)}
           add={servers.add}
           reload={platform.reload}
         />

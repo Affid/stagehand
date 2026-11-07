@@ -80,3 +80,43 @@ test("Setup's rail opens the settings panel", async () => {
     .click();
   await waitForSettingsPanel(ext, page);
 });
+
+/** As Chrome on an update or reload: the servers' scripts are gone. */
+async function dropScripts(): Promise<void> {
+  await panel.goto(settingsUrl(ext));
+  await panel.evaluate(() => chrome.scripting.unregisterContentScripts());
+}
+
+test("scripts the browser dropped show as Off; Turn on brings Setup back (owner's bug)", async () => {
+  await dropScripts();
+  await panel.reload();
+  const row = panel.locator(".mlp-servers li").filter({ hasText: HOST });
+  await expect(row.getByText("Off")).toBeVisible();
+  await page.reload();
+  await page.locator("#setup-packages").waitFor({ state: "attached" });
+  await expect(shell()).toHaveCount(0);
+  await row.getByRole("button", { name: `Turn ${HOST} back on` }).click();
+  await expect(row.getByText("Off")).toHaveCount(0);
+  await page.reload();
+  await expect(shell().locator(".mls-top")).toBeVisible();
+});
+
+test("when the background starts again it puts the dropped scripts back by itself", async () => {
+  await dropScripts();
+  const cdp = await ext.context.newCDPSession(panel);
+  await cdp.send("ServiceWorker.enable");
+  await cdp.send("ServiceWorker.stopAllWorkers");
+  await cdp.detach();
+  // Anything that wakes the background starts it again (here, the panel).
+  await panel.reload();
+  await expect
+    .poll(() =>
+      panel.evaluate(
+        async () =>
+          (await chrome.scripting.getRegisteredContentScripts()).length,
+      ),
+    )
+    .toBeGreaterThanOrEqual(3);
+  await page.reload();
+  await expect(shell().locator(".mls-top")).toBeVisible();
+});

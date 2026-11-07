@@ -34,19 +34,27 @@ function fake(
     /** Whether the page is Foundry's (its stylesheet); true by default. */
     readonly foundry?: boolean;
     readonly failRemove?: boolean;
+    /** Saved servers whose scripts the browser dropped. */
+    readonly off?: readonly string[];
   } = {},
 ): Fake {
   const sent: ExtensionMessage[] = [];
   const granted = new Set<string>();
-  let servers: ServerRecord[] = (opts.servers ?? []).map((id) => ({
+  let servers: (ServerRecord & { active: boolean })[] = (
+    opts.servers ?? []
+  ).map((id) => ({
     id,
     addedAt: "2026-11-07T00:00:00.000Z",
+    active: !(opts.off ?? []).includes(id),
   }));
   const send = vi.fn((m: ExtensionMessage): Promise<unknown> => {
     sent.push(m);
     if (m.kind === "register-server") {
       const id = m.server.replace(/\/+$/, "");
-      servers = [...servers, { id, addedAt: "2026-11-07T01:00:00.000Z" }];
+      servers = [
+        ...servers.filter((s) => s.id !== id),
+        { id, addedAt: "2026-11-07T01:00:00.000Z", active: true },
+      ];
       return Promise.resolve({ server: id });
     }
     if (m.kind === "remove-server") {
@@ -150,6 +158,34 @@ describe("this site, in one click", () => {
       kinds.indexOf("register-server"),
     );
     expect(f.sent).toContainEqual({ kind: "adding-server", server: S });
+  });
+});
+
+describe("a server that is saved but off (owner's bug)", () => {
+  test("This site doesn't claim On; Turn back on registers it again and reloads the page", async () => {
+    const f = fake({ url: `${S}/setup`, servers: [S], off: [S] });
+    show(f);
+    const again = await screen.findByRole("button", {
+      name: "Turn Module Library back on here",
+    });
+    expect(screen.queryByText("On for this server.")).toBeNull();
+    fireEvent.click(again);
+    await waitFor(() => {
+      expect(f.platform.reload).toHaveBeenCalledWith(7);
+    });
+    expect(f.sent).toContainEqual({ kind: "register-server", server: S });
+  });
+
+  test("the list marks it off, with a way to turn it back on", async () => {
+    const f = fake({ servers: [S], off: [S] });
+    show(f);
+    expect(await screen.findByText("Off")).toBeTruthy();
+    fireEvent.click(
+      screen.getByRole("button", { name: "Turn localhost:30000 back on" }),
+    );
+    await waitFor(() => {
+      expect(screen.queryByText("Off")).toBeNull();
+    });
   });
 });
 

@@ -47,3 +47,13 @@ export async function unregisterServer(
   if (!others.some((o) => permissionOrigin(o) === origin))
     await platform.removePermission(origin);
 }
+
+/** Whether the server's site is allowed and all its scripts are registered. */
+export async function isActive(
+  server: ServerId,
+  platform: ScriptingPlatform,
+): Promise<boolean> {
+  if (!(await platform.hasPermission(permissionOrigin(server)))) return false;
+  const ids = contentScriptsFor(server).map((s) => s.id);
+  return (await platform.registeredIds(ids)).length === ids.length;
+}

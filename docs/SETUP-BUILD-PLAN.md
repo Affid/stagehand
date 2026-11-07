@@ -861,6 +861,21 @@ a normal window the popup opens.
 - A live test hard-coded the Foundry theme's orange for an active tab; it
   now compares with the theme's own accent (`--color-warm-1`).
 
+Found by the owner after reloading the extension: Setup showed Foundry's
+own page again although the panel listed the servers. Chrome drops an
+extension's dynamically registered content scripts on an update or reload;
+its storage and granted permissions stay, so the extension stopped silently
+until a server was re-added (every store update would have done the same).
+Now the background re-registers the scripts of every saved server whose site
+is still allowed whenever it starts, installs or updates
+(`restoreServers`), and the panel shows a server as on only when its scripts
+are really registered: otherwise Off with Turn on, and "Turn Module Library
+back on here" on that server's page. Live: scripts dropped as Chrome does,
+then Turn on; and scripts dropped, then the service worker stopped and woken,
+and they come back by themselves (fails with the restore switched off).
+Review: one server failing no longer keeps the rest off, and a server removed
+while the restore waits isn't brought back.
+
 ### Polish pass (after Phase 6)
 
 Small things seen and left for the polish pass the owner set after Phase 6

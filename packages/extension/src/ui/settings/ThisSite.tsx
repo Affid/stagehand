@@ -46,6 +46,8 @@ export function ThisSite(props: {
   readonly t: Translate;
   readonly server: ServerId;
   readonly tab: SettingsTab;
+  /** Saved in this browser, though maybe off (scripts dropped). */
+  readonly saved: boolean;
   readonly on: boolean;
   readonly add: (server: ServerId) => Promise<boolean>;
   readonly reload: (tabId: number) => Promise<void>;
@@ -71,7 +73,7 @@ export function ThisSite(props: {
           disabled={status === "busy"}
           onClick={use}
         >
-          {t("set.use")}
+          {props.saved ? t("set.again") : t("set.use")}
         </button>
       )}
       {status === "refused" ? <Problem text={t("set.refused")} /> : null}

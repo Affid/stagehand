@@ -1,5 +1,6 @@
 // Routes background messages after checking who sent them (PRD 7.11, 8.6):
 // the server comes from the sender's page URL, never from the message.
+import { logError } from "@module-library/shared/log";
 import {
   exportLibrary,
   parseLibraryImport,
@@ -15,6 +16,7 @@ import {
 } from "../messages.ts";
 import { cancel, queue } from "./commands.ts";
 import {
+  isActive,
   registerServer,
   type ScriptingPlatform,
   unregisterServer,
@@ -368,12 +370,43 @@ export async function grantedOrigins(
   return ready;
 }
 
-/** The registered servers, oldest first. */
+/** The registered servers, oldest first, and whether each is really on. */
 async function listServers(deps: RouterDeps): Promise<unknown> {
-  const servers = Object.values(await deps.state.servers());
-  return {
-    servers: [...servers].sort((a, b) => a.addedAt.localeCompare(b.addedAt)),
-  };
+  const records = Object.values(await deps.state.servers());
+  const sorted = [...records].sort((a, b) =>
+    a.addedAt.localeCompare(b.addedAt),
+  );
+  const servers = await Promise.all(
+    sorted.map(async (r) => ({
+      ...r,
+      active: await isActive(r.id, deps.scripting),
+    })),
+  );
+  return { servers };
+}
+
+/**
+ * Puts back the scripts the browser dropped: Chrome clears dynamically
+ * registered content scripts when an extension is updated or reloaded,
+ * while its storage and permissions stay (owner's bug). A saved server whose
+ * site is no longer allowed stays off until it is turned on again.
+ */
+export async function restoreServers(deps: RouterDeps): Promise<void> {
+  for (const server of Object.keys(await deps.state.servers()))
+    await oneAtATime(deps, () => restoreOne(deps, server)).catch(
+      (error: unknown) => {
+        // One server failing doesn't keep the others off (code review).
+        logError("background", error);
+      },
+    );
+}
+
+async function restoreOne(deps: RouterDeps, server: ServerId): Promise<void> {
+  // Removed while this turn waited: not brought back (code review).
+  if (!(server in (await deps.state.servers()))) return;
+  const allowed = await deps.scripting.hasPermission(permissionOrigin(server));
+  if (allowed && !(await isActive(server, deps.scripting)))
+    await registerServer(server, deps.scripting);
 }
 
 async function removeServer(

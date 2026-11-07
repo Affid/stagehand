@@ -52,19 +52,43 @@ function AddServer(props: { readonly t: Translate; readonly s: Servers }) {
   );
 }
 
+/** Saved but off (the browser dropped its scripts): turn it back on. */
+function Off(props: {
+  readonly t: Translate;
+  readonly id: string;
+  readonly s: Servers;
+}) {
+  const { t, id } = props;
+  return (
+    <span class="mlp-off">
+      <span class="mlp-tag">{t("set.off")}</span>
+      <button
+        type="button"
+        aria-label={t("set.turnOnAria", { server: serverLabel(id) })}
+        onClick={() => {
+          props.s.add(id).catch(() => undefined);
+        }}
+      >
+        {t("set.turnOn")}
+      </button>
+    </span>
+  );
+}
+
 /** One server, with Remove and what went wrong removing it. */
 function ServerRow(props: {
   readonly t: Translate;
   readonly id: string;
-  readonly remove: (id: string) => Promise<void>;
+  readonly active: boolean;
+  readonly s: Servers;
 }) {
-  const { t, id } = props;
+  const { t, id, s } = props;
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const remove = (): void => {
     setBusy(true);
     setError("");
-    props.remove(id).catch((err: unknown) => {
+    s.remove(id).catch((err: unknown) => {
       setError(messageOf(err));
       setBusy(false);
     });
@@ -72,6 +96,7 @@ function ServerRow(props: {
   return (
     <li>
       <span class="mlp-addr">{serverLabel(id)}</span>
+      {props.active ? null : <Off t={t} id={id} s={s} />}
       <button
         type="button"
         class="mlp-quiet"
@@ -101,7 +126,7 @@ export function ServerList(props: {
       {s.list?.length === 0 ? <p class="mlp-muted">{t("set.none")}</p> : null}
       <ul class="mlp-servers">
         {(s.list ?? []).map((r) => (
-          <ServerRow key={r.id} t={t} id={r.id} remove={s.remove} />
+          <ServerRow key={r.id} t={t} id={r.id} active={r.active} s={s} />
         ))}
       </ul>
       <AddServer t={t} s={s} />

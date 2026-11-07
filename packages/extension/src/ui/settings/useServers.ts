@@ -6,23 +6,28 @@ import type { ServerRecord } from "../../background/state.ts";
 import { permissionOrigin, type ServerId } from "../../background/servers.ts";
 import type { SettingsPlatform } from "./platform.ts";
 
+/** A saved server, and whether its scripts are really registered. */
+export interface ListedServer extends ServerRecord {
+  readonly active: boolean;
+}
+
 export interface Servers {
   /** Null until the background answers. */
-  readonly list: readonly ServerRecord[] | null;
+  readonly list: readonly ListedServer[] | null;
   /** Asks for the site, then registers it; false when the user refused. */
   readonly add: (server: ServerId) => Promise<boolean>;
   readonly remove: (server: ServerId) => Promise<void>;
 }
 
-const listOf = (reply: unknown): readonly ServerRecord[] =>
-  (reply as { servers?: readonly ServerRecord[] }).servers ?? [];
+const listOf = (reply: unknown): readonly ListedServer[] =>
+  (reply as { servers?: readonly ListedServer[] }).servers ?? [];
 
 /** "localhost:30000", "vtt.example.com/foundry": the address without http. */
 export const serverLabel = (server: ServerId): string =>
   server.replace(/^https?:\/\//, "");
 
 export function useServers(platform: SettingsPlatform): Servers {
-  const [list, setList] = useState<readonly ServerRecord[] | null>(null);
+  const [list, setList] = useState<readonly ListedServer[] | null>(null);
   const refresh = useCallback(async (): Promise<void> => {
     setList(listOf(await platform.send({ kind: "list-servers" })));
   }, [platform]);

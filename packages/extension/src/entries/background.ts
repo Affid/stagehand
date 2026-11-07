@@ -6,7 +6,7 @@ import { loadSetupConfig } from "../adapters/remote.ts";
 import { serialized } from "../background/kv.ts";
 import { chromeKeyValue, chromeScripting } from "../platform/chrome.ts";
 import { FOUNDRY_ORIGIN, fetchRelease } from "../background/releases.ts";
-import { grantedOrigins, route } from "../background/router.ts";
+import { grantedOrigins, restoreServers, route } from "../background/router.ts";
 import { createState } from "../background/state.ts";
 
 const FETCH_TIMEOUT_MS = 5000;
@@ -65,6 +65,17 @@ const deps = {
   now: () => new Date().toISOString(),
   uuid: () => crypto.randomUUID(),
 };
+
+// Each start, install and update: the browser may have dropped the servers'
+// scripts (it does on an update or reload), so they are put back.
+const restore = (): void => {
+  restoreServers(deps).catch((error: unknown) => {
+    logError("background", error);
+  });
+};
+restore();
+chrome.runtime.onInstalled.addListener(restore);
+chrome.runtime.onStartup.addListener(restore);
 
 // A server the panel was adding, once its site is allowed (code review).
 chrome.permissions.onAdded.addListener((granted) => {
