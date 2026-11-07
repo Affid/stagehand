@@ -403,3 +403,16 @@
   background: rgb(245 196 94 / 8%);
   color: #f3dca4;
 }
+
+/* The link beside a state ("On · Backups"), as the prototype
+   (_config.css `.mlc-state + a`): the bare link accent is the theme's
+   `--color-warm-2`, too dark in Fantasy and Sci-Fi (1.9:1 and 1.7:1,
+   polish pass). Size and padding come from `.mlc-set .c > .ml-link`. */
+.mls-shell .mlc-state + .ml-link {
+  color: var(--color-light-3);
+  text-decoration: underline;
+}
+
+.mls-shell .mlc-state + .ml-link:hover {
+  color: var(--color-light-1);
+}

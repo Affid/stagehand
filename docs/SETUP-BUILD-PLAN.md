@@ -916,3 +916,61 @@ by one; ask for any still in mind when the pass starts.
   2 s); nothing left to do.
 - A `/setup*` page that never sends Setup's data stays hidden until the
   veil's 15 s timer (no-jump review); fine unless it is seen in practice.
+
+Asked when the pass started (2026-11-07), the owner added one Phase 5b
+leftover: "improve size ratio of panes on big screens"; the rest were
+already listed.
+
+Before screenshots (`themes.ts`, `wide.ts`) showed: in Fantasy the Note box
+is invisible (Foundry 14.370's themes set `--input-background-color` on
+`input` and `select` only, and Foundry's `textarea` reads that variable);
+Configuration's "Backups" link is the bare `.ml-link` accent
+(`--color-warm-2`), measured at 4.69:1 in Foundry's theme, 1.86:1 in Fantasy
+and 1.65:1 in Sci-Fi (`scripts/dev/link-colours.ts` under
+`scripts/dev/with-theme.ts`; every other text link already uses
+`--color-light-3`, at least 13:1 in each theme; axe passes in all three
+themes but can't measure text over Foundry's translucent panes); at 2560
+the rail (544 px) and the details panel (637 px) hold far less than their
+width while the cards are squeezed between them.
+
+Packages, each committed on its own after `pnpm verify`, the live suite, a
+code review and a security review:
+
+1. **Fields and links in every theme.** Our text boxes take the theme's
+   field colours as inputs do (Fantasy and Sci-Fi, values as Foundry
+   14.370's theme rules); Configuration's Backups link as the prototype
+   (`_config.css` `.mlc-state + a`: `--color-light-3`, underlined, 12.5 px).
+   Live: `setup-themes.spec.ts` sets each theme, checks that the module
+   panel's Note box has the Folder select's background, and that every
+   text link on the world's About and on Configuration reaches 4.5:1
+   against its pane; it puts the theme back.
+2. **By world columns of a set width.** World columns are always 92 px
+   (the many-worlds width); the module column keeps 250 px; the table and
+   its frame end after the last world instead of stretching across the
+   pane; with more worlds than fit it scrolls sideways as before. Unit:
+   the table's width is 250 px plus 92 px per shown world. Live: at 2560
+   with the two local worlds each column is 92 px and the frame ends at
+   the table.
+3. **Pane sizes on big screens.** From 1366 to 2560 the rail grows from
+   290 to 380 px and the details panel from 340 to 460 px (was 544 and
+   637 px at 2560), so the middle pane gains about 340 px at 2560; past
+   2560 only the middle pane grows; 1366 and 1280 unchanged; still no gap
+   on the right. `setup-layout.spec.ts` updated first.
+
+Package 1 done. `shell/themes.css`: in Fantasy and Sci-Fi our text boxes
+(the module panel's Note, About's description, presets, the snapshot note)
+take the theme's field colours; Configuration's Backups link is
+`--color-light-3`, underlined, as the prototype. Live:
+`setup-themes.spec.ts` (each theme: the Note box has the Folder select's
+background; every text link on About and Configuration reaches 4.5:1 with
+`tests/foundry/contrast.ts`, which takes the worse of black and white art
+behind Foundry's translucent panes); the full live suite passes. Reviews:
+code and security, no critical or high. Fixed: the contrast check used only
+black behind the panes (best case for light text), now the worse of black
+and white, with the text's own alpha, unrounded, and a non-rgb colour
+throws; the spec won't change a theme it can't read back, cleans up even if
+restoring fails, and each test sets its own theme; `with-theme.ts` puts the
+theme back on Ctrl-C (the script runs as a child; we wait for it) and reads
+the theme from Setup's body tag; the link rule takes its size from the
+existing row rule. Kept: `with-theme.ts` runs any script it is given (a dev
+aid run by the developer).

@@ -95,6 +95,7 @@ for (const sheet of [
   "config.css",
   "update.css",
   "news.css",
+  "themes.css",
   "layout.css",
   "veil.css",
 ])

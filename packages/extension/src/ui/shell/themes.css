@@ -1,0 +1,15 @@
+/* Fields in Foundry's Setup themes. Foundry 14.370's Fantasy and Sci-Fi
+   themes give inputs and selects their field colours
+   (`body.theme-fantasy input, body.theme-fantasy select` in foundry2.css)
+   but not text boxes, although Foundry's textarea reads the same variables:
+   in Fantasy our Note boxes were nearly invisible (polish pass). Ours take
+   the theme's values. */
+
+body.theme-fantasy .mls-shell textarea {
+  --input-background-color: var(--color-warm-3);
+}
+
+body.theme-scifi .mls-shell textarea {
+  --input-background-color: #202137;
+  --input-focus-outline-color: #3a9bee;
+}
