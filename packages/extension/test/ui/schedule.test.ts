@@ -128,3 +128,13 @@ describe("the schedule's dates", () => {
     expect(nextOf(skipFirst, NOW)?.date).toBe("2026-11-17");
   });
 });
+
+describe("a calendar day's name (Phase 6, label in content)", () => {
+  test("says the date in words and holds the day number shown", async () => {
+    const { dayName } =
+      await import("../../src/ui/shell/world/about/session/text.ts");
+    expect(dayName("2026-11-01")).toBe("Sunday, 1 November 2026");
+    expect(dayName("2026-02-28")).toContain("28");
+    expect(dayName("not a date")).toBe("not a date");
+  });
+});

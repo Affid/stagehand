@@ -689,7 +689,7 @@
   "sched.change": "Change",
   "sched.set": "Set a date",
   "sched.changeLabel": "Change the next session",
-  "sched.setLabel": "Set the next session",
+  "sched.setLabel": "Set a date for the next session",
   "sched.repeats": "Repeats",
   "sched.freq.none": "Doesn't repeat",
   "sched.freq.w1": "Every week",

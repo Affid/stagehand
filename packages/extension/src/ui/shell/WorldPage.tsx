@@ -7,6 +7,7 @@ import { Icon } from "../common/widgets.tsx";
 import { useUi } from "../context.ts";
 import { systemTitle } from "../model/system.ts";
 import { plural } from "../i18n.ts";
+import { pendingFor } from "../model/preview.ts";
 import { type WorldModules, worldModules } from "../model/world-modules.ts";
 import { cssImage } from "./route.ts";
 import { type LaunchChoice, LaunchReview } from "./world/LaunchReview.tsx";
@@ -166,10 +167,13 @@ function BannerActions(props: {
 
 /** Launching, with the review when changes are queued. */
 function useLaunch(world: WorldInfo, model: WorldModules) {
-  const { page, actions, t, canChange } = useUi();
+  const { page, actions, store, t, canChange } = useUi();
   const [review, setReview] = useState(false);
-  const start = (): void => {
-    if (model.queued) setReview(true);
+  // A change still saving must be reviewed too, not launched past (Phase 6):
+  // wait for it, then read the queue as it now is.
+  const start = async (): Promise<void> => {
+    await actions.settled();
+    if (pendingFor(store.get().data, world.id).length > 0) setReview(true);
     else page.foundryAction({ action: "launch", worldId: world.id });
   };
   const run = async (choice: LaunchChoice): Promise<void> => {
@@ -192,6 +196,32 @@ function useLaunch(world: WorldInfo, model: WorldModules) {
   return { review, start, run, close: () => setReview(false) };
 }
 
+function Banner(props: {
+  readonly world: WorldInfo;
+  readonly model: WorldModules;
+  readonly image: string | undefined;
+  readonly onLaunch: () => void;
+  readonly onEdit: () => void;
+}) {
+  const { world, model, image } = props;
+  return (
+    <div class="mls-banner" style={image ? { "--img": image } : undefined}>
+      <div>
+        <BannerTitle world={world} />
+        <BannerMeta world={world} model={model} />
+        {/* Review goes through Launch: it waits for changes still saving. */}
+        <PendingLine world={world} model={model} onReview={props.onLaunch} />
+      </div>
+      <BannerActions
+        world={world}
+        changes={model.changes}
+        onLaunch={props.onLaunch}
+        onEdit={props.onEdit}
+      />
+    </div>
+  );
+}
+
 export function WorldPage(props: { readonly world: WorldInfo }) {
   const { state, canChange } = useUi();
   const { world } = props;
@@ -205,19 +235,13 @@ export function WorldPage(props: { readonly world: WorldInfo }) {
   const image = cssImage(world.background, location.origin);
   return (
     <section class="application framed mls-main">
-      <div class="mls-banner" style={image ? { "--img": image } : undefined}>
-        <div>
-          <BannerTitle world={world} />
-          <BannerMeta world={world} model={model} />
-          <PendingLine world={world} model={model} onReview={launch.start} />
-        </div>
-        <BannerActions
-          world={world}
-          changes={model.changes}
-          onLaunch={launch.start}
-          onEdit={() => setTab("about")}
-        />
-      </div>
+      <Banner
+        world={world}
+        model={model}
+        image={image}
+        onLaunch={() => void launch.start()}
+        onEdit={() => setTab("about")}
+      />
       <div class="mls-body-main ml-app">
         <WorldBody
           world={world}

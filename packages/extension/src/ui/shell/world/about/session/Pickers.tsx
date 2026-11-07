@@ -3,7 +3,7 @@ import { useState } from "preact/hooks";
 import { Icon } from "../../../../common/widgets.tsx";
 import { useUi } from "../../../../context.ts";
 import { cityOf } from "../../../../model/schedule.ts";
-import { BROWSER_TZ, tzLabel } from "./text.ts";
+import { BROWSER_TZ, dayName, tzLabel } from "./text.ts";
 
 const pad = (n: number): string => String(n).padStart(2, "0");
 const DOW = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
@@ -70,7 +70,7 @@ function Day(
       type="button"
       class={cls}
       disabled={props.date < props.today}
-      aria-label={props.date}
+      aria-label={dayName(props.date)}
       aria-pressed={picked}
       onClick={() => props.onDay(props.date)}
     >

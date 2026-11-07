@@ -10,6 +10,7 @@ import {
   zonedToUtc,
 } from "../../src/ui/model/schedule.ts";
 import { el, renderUi, setupState } from "./harness.tsx";
+import { dayName } from "../../src/ui/shell/world/about/session/text.ts";
 
 afterEach(cleanup);
 
@@ -47,7 +48,11 @@ describe("the next session", () => {
   test("without one it says so and offers Set a date", () => {
     const { box } = about();
     expect(box().textContent).toContain("No next session set");
-    expect(within(box()).getByRole("button", { name: "Set the next session" }));
+    expect(
+      within(box()).getByRole("button", {
+        name: "Set a date for the next session",
+      }),
+    );
   });
 
   test("a schedule shows the next date with its zone, the rule and the next dates", () => {
@@ -77,9 +82,11 @@ describe("the next session", () => {
   test("set a weekly session: a day, a time, Repeats, Save", async () => {
     const { box, page } = about();
     fireEvent.click(
-      within(box()).getByRole("button", { name: "Set the next session" }),
+      within(box()).getByRole("button", {
+        name: "Set a date for the next session",
+      }),
     );
-    fireEvent.click(within(box()).getByRole("button", { name: soon }));
+    fireEvent.click(within(box()).getByRole("button", { name: dayName(soon) }));
     fireEvent.change(within(box()).getByRole("combobox", { name: "Hour" }), {
       target: { value: "20" },
     });
@@ -120,7 +127,9 @@ describe("the next session", () => {
   test("Find another time zone searches every zone by city", () => {
     const { box } = about();
     fireEvent.click(
-      within(box()).getByRole("button", { name: "Set the next session" }),
+      within(box()).getByRole("button", {
+        name: "Set a date for the next session",
+      }),
     );
     fireEvent.click(
       within(box()).getByRole("button", { name: "Find another" }),
@@ -140,7 +149,9 @@ describe("the time zone search by keyboard (review)", () => {
   test("arrows move through the results, Enter picks one", () => {
     const { box } = about();
     fireEvent.click(
-      within(box()).getByRole("button", { name: "Set the next session" }),
+      within(box()).getByRole("button", {
+        name: "Set a date for the next session",
+      }),
     );
     fireEvent.click(
       within(box()).getByRole("button", { name: "Find another" }),
@@ -160,7 +171,9 @@ describe("the time zone search by keyboard (review)", () => {
   test("Escape goes back to the list of zones", () => {
     const { box } = about();
     fireEvent.click(
-      within(box()).getByRole("button", { name: "Set the next session" }),
+      within(box()).getByRole("button", {
+        name: "Set a date for the next session",
+      }),
     );
     fireEvent.click(
       within(box()).getByRole("button", { name: "Find another" }),

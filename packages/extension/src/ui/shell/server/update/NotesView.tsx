@@ -88,11 +88,18 @@ export function Items(props: { readonly items: readonly NoteEntry[] }) {
 export function Intro(props: { readonly blocks: readonly Element[] }) {
   return (
     <>
-      {props.blocks.map((b, n) => (
-        <div class="mlu-p" key={n}>
-          {cleanChildren(b)}
-        </div>
-      ))}
+      {props.blocks.map((b, n) =>
+        // A highlights list keeps its own element: dt and dd need their dl.
+        b.tagName === "DL" ? (
+          <dl class="mlu-p" key={n}>
+            {cleanChildren(b)}
+          </dl>
+        ) : (
+          <div class="mlu-p" key={n}>
+            {cleanChildren(b)}
+          </div>
+        ),
+      )}
     </>
   );
 }

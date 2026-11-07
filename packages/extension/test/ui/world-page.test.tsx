@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
 import type { Command, Snapshot } from "@module-library/shared/world";
 import { cleanup, fireEvent, waitFor, within } from "@testing-library/preact";
+import { screen } from "@testing-library/preact";
 import { afterEach, describe, expect, test } from "vitest";
 import type { ExtensionMessage, SetupState } from "../../src/messages.ts";
 import { el, pkg, renderUi, sent, setupState } from "./harness.tsx";
@@ -192,6 +193,22 @@ describe("the Modules tab", () => {
     });
   });
 
+  test("Add takes focus to its first choice, and to the copy step's first (Phase 6)", async () => {
+    const { getByRole } = page();
+    fireEvent.click(getByRole("button", { name: "Add" }));
+    await waitFor(() =>
+      expect(document.activeElement).toBe(
+        getByRole("button", { name: "Preset: QoL" }),
+      ),
+    );
+    fireEvent.click(getByRole("button", { name: "Copy from Vaults" }));
+    await waitFor(() =>
+      expect(document.activeElement).toBe(
+        getByRole("button", { name: "Match Vaults" }),
+      ),
+    );
+  });
+
   test("Add: copy another world's modules, matching it", async () => {
     const { getByRole, send } = page();
     fireEvent.click(getByRole("button", { name: "Add" }));
@@ -231,13 +248,49 @@ describe("the banner and launching", () => {
     });
   });
 
-  test("with nothing queued, Launch launches", () => {
+  test("with nothing queued, Launch launches", async () => {
     const { getByRole, page: p } = page();
     fireEvent.click(getByRole("button", { name: /^Launch/ }));
-    expect(p.foundryAction).toHaveBeenCalledWith({
-      action: "launch",
-      worldId: "w1",
+    await waitFor(() =>
+      expect(p.foundryAction).toHaveBeenCalledWith({
+        action: "launch",
+        worldId: "w1",
+      }),
+    );
+  });
+
+  test("Launch right after a switch waits for the change to save, then reviews it (Phase 6)", async () => {
+    let release = (): void => undefined;
+    const saved = new Promise<void>((r) => {
+      release = r;
     });
+    const before = setupState({
+      setup: base.setup ? { ...base.setup, worlds } : undefined,
+      snapshots: { w1: snap("w1", ["module-library", "a"]) },
+    });
+    let queued = false;
+    const r = renderUi("shell", {
+      data: before,
+      state: { route: { kind: "world", worldId: "w1" } },
+      reply: (m) => {
+        if (m.kind === "queue-apply")
+          return saved.then(() => {
+            queued = true;
+            return { queued: "n" };
+          });
+        if (m.kind === "get-state")
+          return queued
+            ? { ...before, commands: [cmd("n", "add", { modules: ["b"] })] }
+            : before;
+        return undefined;
+      },
+    });
+    fireEvent.click(toggle(r.container, "b"));
+    // Launch while the change is still on its way to the background.
+    fireEvent.click(r.getByRole("button", { name: /^Launch/ }));
+    release();
+    await waitFor(() => expect(r.getByRole("dialog")).toBeTruthy());
+    expect(r.page.foundryAction).not.toHaveBeenCalled();
   });
 
   test("with changes, Launch opens the review; apply backs up first, then launches", async () => {
@@ -249,7 +302,7 @@ describe("the banner and launching", () => {
       commands: [cmd("c1", "add", { modules: ["b"] })],
     });
     fireEvent.click(getByRole("button", { name: /^Launch/ }));
-    const dialog = getByRole("dialog", { name: "Launch Strahd" });
+    const dialog = await screen.findByRole("dialog", { name: "Launch Strahd" });
     expect(dialog.textContent).toContain("Turns on · 1");
     expect(dialog.textContent).toContain("Title b");
     const backup = within(dialog).getByRole<HTMLInputElement>("checkbox", {
@@ -280,7 +333,7 @@ describe("the banner and launching", () => {
       commands: [cmd("c1", "add", { modules: ["b"] })],
     });
     fireEvent.click(getByRole("button", { name: /^Launch/ }));
-    const dialog = getByRole("dialog", { name: "Launch Strahd" });
+    const dialog = await screen.findByRole("dialog", { name: "Launch Strahd" });
     fireEvent.click(
       within(dialog).getByRole("checkbox", { name: /Back up Strahd first/ }),
     );
@@ -304,6 +357,7 @@ describe("the banner and launching", () => {
       commands: [cmd("c1", "add", { modules: ["b"] })],
     });
     fireEvent.click(getByRole("button", { name: /^Launch/ }));
+    await screen.findByRole("dialog");
     fireEvent.click(getByRole("button", { name: "Launch without changes" }));
     await waitFor(() => {
       expect(p.foundryAction).toHaveBeenCalledWith({
@@ -318,7 +372,7 @@ describe("the banner and launching", () => {
     });
   });
 
-  test("Cancel closes the review without launching", () => {
+  test("Cancel closes the review without launching", async () => {
     const {
       getByRole,
       queryByRole,
@@ -327,6 +381,7 @@ describe("the banner and launching", () => {
       commands: [cmd("c1", "add", { modules: ["b"] })],
     });
     fireEvent.click(getByRole("button", { name: /^Launch/ }));
+    await screen.findByRole("dialog");
     fireEvent.click(getByRole("button", { name: "Cancel" }));
     expect(queryByRole("dialog")).toBe(null);
     expect(p.foundryAction).not.toHaveBeenCalled();
@@ -360,6 +415,7 @@ describe("review findings", () => {
       commands: [cmd("c1", "add", { modules: ["b"] })],
     });
     fireEvent.click(getByRole("button", { name: /^Launch/ }));
+    await screen.findByRole("dialog");
     expect(queryByRole("button", { name: "Launch without changes" })).toBe(
       null,
     );
@@ -383,7 +439,9 @@ describe("review findings", () => {
     const banner = el(container, ".mls-banner");
     expect(banner.textContent).toContain("1 queued change changes nothing");
     fireEvent.click(getByRole("button", { name: /^Launch/ }));
-    expect(getByRole("dialog", { name: "Launch Strahd" })).toBeTruthy();
+    expect(
+      await screen.findByRole("dialog", { name: "Launch Strahd" }),
+    ).toBeTruthy();
     fireEvent.click(getByRole("button", { name: "Cancel" }));
     fireEvent.click(getByRole("button", { name: "Discard" }));
     await waitFor(() => {
@@ -404,15 +462,17 @@ describe("review findings", () => {
     });
   });
 
-  test("the review takes focus, and Escape gives it back to Launch", () => {
+  test("the review takes focus, and Escape gives it back to Launch", async () => {
     const { getByRole, queryByRole } = page({
       commands: [cmd("c1", "add", { modules: ["b"] })],
     });
     const launch = getByRole("button", { name: /^Launch/ });
     launch.focus();
     fireEvent.click(launch);
-    const dialog = getByRole("dialog", { name: "Launch Strahd" });
-    expect(dialog.contains(document.activeElement)).toBe(true);
+    const dialog = await screen.findByRole("dialog", { name: "Launch Strahd" });
+    await waitFor(() =>
+      expect(dialog.contains(document.activeElement)).toBe(true),
+    );
     fireEvent.keyDown(document.activeElement ?? document, { key: "Escape" });
     expect(queryByRole("dialog")).toBe(null);
     expect(document.activeElement).toBe(launch);

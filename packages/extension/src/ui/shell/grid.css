@@ -76,8 +76,15 @@
   color: #f5c45e;
 }
 
-.mls-shell .mll-grid th.w.na {
+/* A world without the companion: dimmed artwork, text still readable
+   (4.5:1; the prototype dims the whole header to 60%). */
+.mls-shell .mll-grid th.w.na .thumb {
   opacity: 0.6;
+}
+
+.mls-shell .mll-grid th.w.na .t,
+.mls-shell .mll-grid th.w.na .sub {
+  color: var(--color-light-3);
 }
 
 /* Group rows: each world's count, which turns all on or off */

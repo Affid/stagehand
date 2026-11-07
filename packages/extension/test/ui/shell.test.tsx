@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import type { WorldInfo } from "@module-library/shared/world";
-import { cleanup, fireEvent, within } from "@testing-library/preact";
+import { cleanup, fireEvent, waitFor, within } from "@testing-library/preact";
 import { afterEach, describe, expect, test } from "vitest";
 import { el, renderUi, sent, setupState } from "./harness.tsx";
 
@@ -228,7 +228,7 @@ describe("a world's page", () => {
     expect(page.foundryAction).not.toHaveBeenCalled();
   });
 
-  test("an unlocked world launches from the banner", () => {
+  test("an unlocked world launches from the banner", async () => {
     const { container, page } = shell({
       state: { route: { kind: "world", worldId: "new" } },
     });
@@ -237,9 +237,11 @@ describe("a world's page", () => {
         name: "Launch",
       }),
     );
-    expect(sent(page.foundryAction)).toEqual([
-      { action: "launch", worldId: "new" },
-    ]);
+    await waitFor(() =>
+      expect(sent(page.foundryAction)).toEqual([
+        { action: "launch", worldId: "new" },
+      ]),
+    );
   });
 
   test("the title carries the star and the Locked tag; the star toggles Foundry's favourite", () => {

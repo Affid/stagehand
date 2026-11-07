@@ -98,6 +98,11 @@
   font-size: 11.5px;
 }
 
+/* On the chosen segment the count stays readable (4.5:1, Phase 6). */
+.mls-shell .ml-seg2 button.on .c {
+  color: var(--color-light-2);
+}
+
 .mls-shell .mlw-add {
   position: relative;
 }

@@ -635,3 +635,10 @@
 .mls-shell .mlh-upd .avail.warn > i {
   color: #f5c45e;
 }
+
+/* Foundry's plain checkboxes show no focus on our pages: give them the same
+   ring as our switches (Phase 6, focus visible). */
+.mls-shell input[type="checkbox"]:not(.mls-switch):focus-visible {
+  outline: 2px solid var(--color-warm-1);
+  outline-offset: 2px;
+}

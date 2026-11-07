@@ -18,6 +18,21 @@ const fmt = (ms: number, tz: string, opts: Intl.DateTimeFormatOptions) =>
 export const whenIn = (ms: number, tz: string): string =>
   `${fmt(ms, tz, { weekday: "short", day: "numeric", month: "short" })}, ${fmt(ms, tz, { hour: "2-digit", minute: "2-digit", hourCycle: "h23" })}`;
 
+/**
+ * A calendar day's name for screen readers, "Sunday, 1 November 2026": it
+ * holds the day number the button shows (label in content, WCAG 2.5.3).
+ */
+export function dayName(date: string): string {
+  const ms = Date.parse(`${date}T12:00:00Z`);
+  if (!Number.isFinite(ms)) return date;
+  return fmt(ms, "UTC", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+}
+
 /** "Central European Standard Time (UTC+1)". */
 export function tzLabel(tz: string, ms: number): string {
   const part = (style: "shortOffset" | "long"): string =>

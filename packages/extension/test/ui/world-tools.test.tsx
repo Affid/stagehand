@@ -4,6 +4,7 @@
 // review's extras.
 import type { Command, Snapshot } from "@module-library/shared/world";
 import { cleanup, fireEvent, waitFor, within } from "@testing-library/preact";
+import { screen } from "@testing-library/preact";
 import { afterEach, describe, expect, test } from "vitest";
 import type { ExtensionMessage, SetupState } from "../../src/messages.ts";
 import type { BackupInfo } from "../../src/page-backups.ts";
@@ -220,7 +221,7 @@ describe("the launch review's extras", () => {
   test("a change can be dropped from the review", async () => {
     const { getByRole, send } = page({ commands: [cmd("c1", ["b"])] });
     fireEvent.click(getByRole("button", { name: /^Launch/ }));
-    const dialog = getByRole("dialog", { name: "Launch Strahd" });
+    const dialog = await screen.findByRole("dialog", { name: "Launch Strahd" });
     fireEvent.click(
       within(dialog).getByRole("button", { name: "Drop Title b" }),
     );
@@ -232,7 +233,7 @@ describe("the launch review's extras", () => {
   test("Back up first says how big and how old the latest backup is", async () => {
     const { getByRole } = page({ commands: [cmd("c1", ["b"])] });
     fireEvent.click(getByRole("button", { name: /^Launch/ }));
-    const dialog = getByRole("dialog", { name: "Launch Strahd" });
+    const dialog = await screen.findByRole("dialog", { name: "Launch Strahd" });
     await waitFor(() => {
       expect(dialog.textContent).toContain("About 441 MB");
     });

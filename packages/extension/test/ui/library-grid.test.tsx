@@ -166,7 +166,9 @@ describe("the By world grid", () => {
 describe("the grid's extras (6c2)", () => {
   test("a group row shows each world's count; a click turns them all on there", async () => {
     const r = grid();
-    const [count] = r.getAllByRole("button", { name: "Turn all on in Vaults" });
+    const [count] = r.getAllByRole("button", {
+      name: /Turn all on in Vaults$/,
+    });
     if (!count) throw new Error("no count");
     expect(count.textContent).toMatch(/^\d+\/\d+$/);
     fireEvent.click(count);
@@ -210,6 +212,22 @@ describe("the grid's extras (6c2)", () => {
     expect(r.store.get().route).toEqual({ kind: "world", worldId: "w1" });
   });
 
+  test("a world's menu takes focus to its first item, on each step (Phase 6)", async () => {
+    const r = grid();
+    fireEvent.click(r.getByRole("button", { name: "Strahd: actions" }));
+    await waitFor(() =>
+      expect(document.activeElement).toBe(
+        r.getByRole("button", { name: "Open world" }),
+      ),
+    );
+    fireEvent.click(r.getByRole("button", { name: "Copy this set to…" }));
+    await waitFor(() =>
+      expect(document.activeElement).toBe(
+        r.getByRole("button", { name: "Vaults" }),
+      ),
+    );
+  });
+
   test("the legend explains the colours; the filter narrows the modules", () => {
     const r = grid();
     expect(el(r.container, ".mls-gridlegend").textContent).toContain(
@@ -250,7 +268,9 @@ describe("group counts (package 6 review)", () => {
 
   test("a double click queues the group once", async () => {
     const r = grid();
-    const [count] = r.getAllByRole("button", { name: "Turn all on in Vaults" });
+    const [count] = r.getAllByRole("button", {
+      name: /Turn all on in Vaults$/,
+    });
     if (!count) throw new Error("no count");
     fireEvent.click(count);
     fireEvent.click(count);

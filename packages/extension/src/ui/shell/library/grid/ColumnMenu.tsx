@@ -3,8 +3,8 @@
 // Discard its changes.
 import type { WorldInfo } from "@module-library/shared/world";
 import { MAX_PICKED } from "@module-library/shared/world";
-import { useState } from "preact/hooks";
-import { useDisclosure } from "../../../common/disclosure.ts";
+import { useRef, useState } from "preact/hooks";
+import { useDisclosure, useFocusFirst } from "../../../common/disclosure.ts";
 import { Icon } from "../../../common/widgets.tsx";
 import { useUi } from "../../../context.ts";
 import { worldOrder } from "../../../model/order.ts";
@@ -154,6 +154,8 @@ export function ColumnMenu(props: { readonly world: WorldInfo }) {
   const { t } = useUi();
   const d = useDisclosure<HTMLSpanElement>();
   const [step, setStep] = useState<Step>({ kind: "main" });
+  const menu = useRef<HTMLDivElement>(null);
+  useFocusFirst(menu, d.open, step.kind);
   const close = (): void => {
     d.close(true);
     setStep({ kind: "main" });
@@ -176,7 +178,12 @@ export function ColumnMenu(props: { readonly world: WorldInfo }) {
         <Icon name="ellipsis-vertical" />
       </button>
       {d.open ? (
-        <div class="mlh-menu" role="group" aria-label={props.world.title}>
+        <div
+          class="mlh-menu"
+          role="group"
+          aria-label={props.world.title}
+          ref={menu}
+        >
           <Body
             world={props.world}
             step={step}

@@ -171,7 +171,9 @@ test("About saves the title and next session through Foundry, and they come back
   await expect(shell().locator(".mls-banner h2")).toHaveText(TEST_WORLD.title);
   // Next session: set a weekly one, see it, clear it (schedule and date).
   const sess = shell().locator(".mlw-sess");
-  await sess.getByRole("button", { name: "Set the next session" }).click();
+  await sess
+    .getByRole("button", { name: "Set a date for the next session" })
+    .click();
   await sess.getByRole("combobox", { name: "Repeats" }).selectOption("w1");
   await sess.getByRole("button", { name: "Save" }).click();
   await expect(sess).toContainText(/Every \w+day at 19:00/);

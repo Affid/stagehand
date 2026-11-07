@@ -35,6 +35,8 @@ export interface Actions {
   cancelCommand(id: string): Promise<void>;
   /** A module's switch on the world page: undo its own change, or queue one. */
   flip(worldId: string, moduleId: string, on: boolean): Promise<void>;
+  /** Resolves once every change on its way to the background has landed. */
+  settled(): Promise<void>;
   /** Cancels every change queued for the world. */
   discard(worldId: string): Promise<void>;
   /**
@@ -160,6 +162,22 @@ async function runFlip(
 /** Flips on their way to the background, by world and module. */
 const flipping = new Set<string>();
 
+/** Queue writes on their way, so Launch can wait for them (Phase 6). */
+const inflight = new Set<Promise<unknown>>();
+
+function tracked<T>(p: Promise<T>): Promise<T> {
+  inflight.add(p);
+  const done = (): void => {
+    inflight.delete(p);
+  };
+  p.then(done, done);
+  return p;
+}
+
+async function settled(): Promise<void> {
+  while (inflight.size > 0) await Promise.allSettled([...inflight]);
+}
+
 /**
  * A flip is planned from the stored state: a second one before the first
  * lands would repeat it (review). Ignore it until then.
@@ -209,21 +227,25 @@ function worldActions(
 > {
   return {
     async queueApply(worldId, mode, presetIds, modules) {
-      const queued = await b.guarded(() =>
-        send({
-          kind: "queue-apply",
-          worldId,
-          mode,
-          presetIds: [...presetIds],
-          ...(modules?.length ? { modules: [...modules] } : {}),
-        }),
+      const queued = await tracked(
+        b.guarded(() =>
+          send({
+            kind: "queue-apply",
+            worldId,
+            mode,
+            presetIds: [...presetIds],
+            ...(modules?.length ? { modules: [...modules] } : {}),
+          }),
+        ),
       );
       if (queued) await b.refresh();
       return queued !== undefined;
     },
     flip: (worldId, moduleId, on) =>
-      onceAtATime(`${worldId}\u0000${moduleId}`, () =>
-        runFlip(b, send, store, { worldId, moduleId, on }),
+      tracked(
+        onceAtATime(`${worldId}\u0000${moduleId}`, () =>
+          runFlip(b, send, store, { worldId, moduleId, on }),
+        ),
       ),
     async discard(worldId) {
       const ids = pendingFor(store.get().data, worldId).map((c) => c.id);
@@ -253,6 +275,7 @@ export function createActions(
     refresh: b.refresh,
     op: (op) => runOp(b, send, t, op),
     ...worldActions(b, send, store),
+    settled,
     async exportLibrary() {
       const r = await b.guarded(() =>
         send<{ text: string }>({ kind: "library-export" }),

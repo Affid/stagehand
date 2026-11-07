@@ -2,6 +2,7 @@
 // modules (match it, or add only). Everything waits for the next launch.
 import { useCallback, useId, useRef, useState } from "preact/hooks";
 import { MAX_PICKED } from "@module-library/shared/world";
+import { useFocusFirst } from "../../common/disclosure.ts";
 import { useDismiss } from "../../common/dismiss.ts";
 import { Icon } from "../../common/widgets.tsx";
 import { useUi } from "../../context.ts";
@@ -119,18 +120,22 @@ function useMenu() {
   const [source, setSource] = useState<Source | null>(null);
   const wrap = useRef<HTMLDivElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
+  const menu = useRef<HTMLDivElement>(null);
   const close = useCallback((refocus: boolean) => {
     setOpen(false);
     setSource(null);
     if (refocus) trigger.current?.focus();
   }, []);
   useDismiss(open, close, wrap);
-  return { open, setOpen, source, setSource, wrap, trigger, close };
+  // Like every other menu: the first choice takes focus, on each step.
+  useFocusFirst(menu, open, source);
+  return { open, setOpen, source, setSource, wrap, trigger, menu, close };
 }
 
 export function AddMenu(props: { readonly worldId: string }) {
   const { actions, t } = useUi();
-  const { open, setOpen, source, setSource, wrap, trigger, close } = useMenu();
+  const { open, setOpen, source, setSource, wrap, trigger, menu, close } =
+    useMenu();
   const queue = (
     mode: "add" | "replace",
     presets: string[],
@@ -152,7 +157,7 @@ export function AddMenu(props: { readonly worldId: string }) {
         <i class="fa-solid fa-caret-down" aria-hidden="true" />
       </button>
       {open ? (
-        <div class="mlw-addmenu">
+        <div class="mlw-addmenu" ref={menu}>
           {source ? (
             <CopyStep
               source={source}

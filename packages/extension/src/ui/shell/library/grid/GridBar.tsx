@@ -93,6 +93,7 @@ export function GridBar(props: BarProps) {
       <span class="ml-spacer" />
       <span
         class="ml-muted mll-gridhelp"
+        role="img"
         title={t("grid.help")}
         aria-label={t("grid.help")}
       >

@@ -73,7 +73,8 @@ function GroupCount(props: {
         class={`mls-gcount${all ? " full" : on ? " some" : ""}`}
         disabled={!canChange || !can}
         title={label}
-        aria-label={label}
+        // The count it shows comes first (label in content, WCAG 2.5.3).
+        aria-label={`${String(on)}/${String(rows.length)}: ${label}`}
         onClick={() => turnAll(!all)}
       >
         {on}/{rows.length}

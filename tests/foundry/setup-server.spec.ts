@@ -20,6 +20,7 @@ import {
   openSetupAsAdmin,
   SCREENS,
 } from "./extension.ts";
+import { audit } from "./axe.ts";
 
 const env = loadFoundryEnv();
 let ext: LoadedExtension;
@@ -188,6 +189,7 @@ test("the Update page reads Foundry's release notes; --noupdate disables the upd
     )
     .toBeGreaterThan(0);
   await page.screenshot({ path: `${SCREENS}/server-update.png` });
+  await audit(page, "update: what's new");
   await notes
     .getByRole("searchbox", { name: "Search the notes" })
     .fill("password");
@@ -235,6 +237,7 @@ test("Your packages: Foundry's compatibility preview for the release, with where
     /14\.371|verified/,
   );
   await page.screenshot({ path: `${SCREENS}/server-update-compat.png` });
+  await audit(page, "update: your packages");
   await view.getByRole("tab", { name: /^Worlds/ }).click();
   await expect(view.locator(".mlu-clist li")).not.toHaveCount(0);
 });
@@ -243,6 +246,8 @@ test("Release history without the permission: why, and the options page to allow
   const upd = shell().locator(".mlu-page");
   await upd.getByRole("tab", { name: /Release history/ }).click();
   const ask = upd.locator(".mlu-hask");
+  await expect(ask).toBeVisible();
+  await audit(page, "update: release history, not allowed");
   await expect(ask).toContainText("one extra permission for foundryvtt.com");
   const [options] = await Promise.all([
     ext.context.waitForEvent("page"),

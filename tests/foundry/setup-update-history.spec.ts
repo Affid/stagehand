@@ -10,6 +10,7 @@ import {
   openSetupAsAdmin,
   SCREENS,
 } from "./extension.ts";
+import { audit } from "./axe.ts";
 
 const env = loadFoundryEnv();
 let ext: LoadedExtension;
@@ -61,5 +62,6 @@ test("Release history reads Foundry's list and the release's notes from foundryv
   });
   await expect(hist.locator(".mlu-hhead")).toContainText(/\d+ changes/);
   await page.screenshot({ path: `${SCREENS}/server-update-history.png` });
+  await audit(page, "update: release history");
   await page.unroute(`${env.url}/update`);
 });

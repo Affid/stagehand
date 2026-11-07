@@ -23,3 +23,19 @@ export function useDisclosure<W extends HTMLElement = HTMLElement>() {
   };
   return { open, setOpen, wrap, trigger, first, close, onFocusOut };
 }
+
+const FIRST_CHOICE = "button:not(:disabled), select, input, a[href]";
+
+/**
+ * A menu with steps: its first choice takes focus whenever it opens or its
+ * step changes, as every menu does (Phase 6).
+ */
+export function useFocusFirst(
+  menu: { readonly current: HTMLElement | null },
+  open: boolean,
+  step: unknown,
+): void {
+  useEffect(() => {
+    if (open) menu.current?.querySelector<HTMLElement>(FIRST_CHOICE)?.focus();
+  }, [open, step]);
+}
