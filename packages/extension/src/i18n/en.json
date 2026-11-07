@@ -122,6 +122,7 @@
   "snap.notePlaceholder": "Optional, for example: Before updating Foundry",
   "snap.warn": "It can take a while and can't be interrupted. Launching, restoring and deleting wait until it's done.",
   "snap.go": "Create the snapshot",
+  "snap.short": "Not enough free space: Foundry would stop part way.",
   "announce.world": "{world}: {what}",
   "announce.none": "nothing waits for the next launch",
   "notice.broken.one": "{world} now has {n} module that needs attention. Open it to fix.",

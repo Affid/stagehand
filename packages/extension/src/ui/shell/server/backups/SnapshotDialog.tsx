@@ -23,32 +23,57 @@ function useCounts(): string {
   });
 }
 
+type Space =
+  | { readonly kind: "checking" }
+  | { readonly kind: "unknown" }
+  | { readonly kind: "known"; readonly space: SnapshotSpace };
+
 /** Foundry sizes every package first: "Checking…" until it answers. */
-function SpaceLine(props: {
-  readonly ask: () => Promise<SnapshotSpace | undefined>;
-}) {
-  const { t } = useUi();
-  const [space, setSpace] = useState<SnapshotSpace | null | undefined>(null);
+function useSpace(ask: () => Promise<SnapshotSpace | undefined>): Space {
+  const [space, setSpace] = useState<Space>({ kind: "checking" });
   useEffect(() => {
-    void props.ask().then(setSpace);
+    void ask().then((s) => {
+      setSpace(s ? { kind: "known", space: s } : { kind: "unknown" });
+    });
   }, []);
-  if (space === undefined) return null;
+  return space;
+}
+
+/** The space it needs and has; a warning when it won't fit (review). */
+function SpaceLines(props: { readonly space: Space }) {
+  const { t } = useUi();
+  const { space } = props;
+  if (space.kind === "unknown") return null;
+  if (space.kind === "checking")
+    return (
+      <span>
+        <Icon name="hard-drive" />
+        {t("snap.checking")}
+      </span>
+    );
+  const { required, available } = space.space;
   return (
-    <span>
-      <Icon name="hard-drive" />
-      {space === null
-        ? t("snap.checking")
-        : t("snap.space", {
-            needed: formatSize(space.required),
-            free: formatSize(space.available),
-          })}
-    </span>
+    <>
+      <span>
+        <Icon name="hard-drive" />
+        {t("snap.space", {
+          needed: formatSize(required),
+          free: formatSize(available),
+        })}
+      </span>
+      <span class="ml-muted">{t("snap.neededHint")}</span>
+      {required > available ? (
+        <span class="mlb-short">{t("snap.short")}</span>
+      ) : null}
+    </>
   );
 }
 
 function Footer(props: {
   readonly onClose: () => void;
   readonly onCreate: () => void;
+  /** Why it can't run now (Foundry busy, a backup running), or null. */
+  readonly off: string | null;
 }) {
   const { t } = useUi();
   return (
@@ -56,10 +81,21 @@ function Footer(props: {
       <button type="button" onClick={props.onClose}>
         {t("about.cancel")}
       </button>
-      <button type="button" class="bright" onClick={props.onCreate}>
-        <Icon name="camera-retro" />
-        {t("snap.go")}
-      </button>
+      {/* The reason sits on a wrapper: disabled buttons get no hover. */}
+      <span
+        class="nodel"
+        title={props.off === "" ? undefined : (props.off ?? undefined)}
+      >
+        <button
+          type="button"
+          class="bright"
+          disabled={props.off !== null}
+          onClick={props.onCreate}
+        >
+          <Icon name="camera-retro" />
+          {t("snap.go")}
+        </button>
+      </span>
     </>
   );
 }
@@ -68,14 +104,17 @@ export function SnapshotDialog(props: {
   readonly onClose: () => void;
   readonly onCreate: (note: string) => void;
   readonly askSpace: () => Promise<SnapshotSpace | undefined>;
+  readonly off: string | null;
 }) {
   const { t } = useUi();
   const [note, setNote] = useState("");
   const counts = useCounts();
+  const space = useSpace(props.askSpace);
   const footer = (
     <Footer
       onClose={props.onClose}
       onCreate={() => props.onCreate(note.trim())}
+      off={props.off}
     />
   );
   return (
@@ -87,8 +126,7 @@ export function SnapshotDialog(props: {
             <Icon name="box-archive" />
             {counts}
           </span>
-          <SpaceLine ask={props.askSpace} />
-          <span class="ml-muted">{t("snap.neededHint")}</span>
+          <SpaceLines space={space} />
         </div>
         <label class="mlb-note">
           <span>{t("snap.note")}</span>

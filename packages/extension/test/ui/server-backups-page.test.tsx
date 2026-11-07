@@ -3,7 +3,13 @@
 // space, tabs Snapshots / Worlds / Modules / Systems with counts and sizes,
 // snapshot rows with Select, package lists with filter and sort, Foundry's
 // version tags, and the snapshot's progress.
-import { cleanup, fireEvent, waitFor, within } from "@testing-library/preact";
+import {
+  act,
+  cleanup,
+  fireEvent,
+  waitFor,
+  within,
+} from "@testing-library/preact";
 import { afterEach, describe, expect, test } from "vitest";
 import type { ServerListing } from "../../src/page-server-backups.ts";
 import { el, renderUi } from "./harness.tsx";
@@ -166,6 +172,28 @@ describe("the server Backups page", () => {
       ),
     );
     expect(page.serverBackups).toHaveBeenCalledWith("space", [], false);
+  });
+
+  test("the dialog says when the space won't do, and waits while Foundry is busy (review)", async () => {
+    const r = await open();
+    r.page.serverBackups.mockImplementation((op) =>
+      Promise.resolve(
+        op === "space"
+          ? { space: { required: 2 * 2 ** 30, available: 2 ** 30 } }
+          : { listing: LISTING },
+      ),
+    );
+    fireEvent.click(r.getByRole("button", { name: "Create a snapshot" }));
+    const dialog = r.getByRole("dialog", { name: "Create a snapshot" });
+    await waitFor(() =>
+      expect(dialog.textContent).toContain("Not enough free space"),
+    );
+    void act(() => {
+      r.store.set({ lock: { locked: true, message: "Foundry is busy" } });
+    });
+    expect(
+      within(dialog).getByRole("button", { name: "Create the snapshot" }),
+    ).toHaveProperty("disabled", true);
   });
 
   test("Restore… and Delete go to Foundry's dialogs", async () => {

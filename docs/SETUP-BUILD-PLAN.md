@@ -515,7 +515,7 @@ Phase 5b results: https://claude.ai/artifact/D4H4nCYeMMfJ3DJJtesL6b (private).
 Owner, 2026-11-07: accepted; the small imperfections left are a polish pass
 after Phase 6.
 
-### Phase 6: News and finish (in progress)
+### Phase 6: News and finish (done)
 
 Started 2026-11-07. "Make the new page the default" was done in Phase 5b package 1.
 
@@ -678,3 +678,83 @@ data behind if the browser never started) and the mediums (the script
 deletes before it logs in, refuses while a world runs, starts clean; the
 fade checks before paint, follows the content's size, and a world reached
 by keyboard scrolls clear of the fade); a real two-line title test.
+
+Package 6, acceptance (2026-11-07, Foundry 14.370, the full live suite: every
+test passes). Every requirement in SETUP-REDESIGN.md was mapped to its
+evidence (live test, unit test or code) by a read-through of the specs,
+tests and sources. Gaps it found were built first (package 6.6, commits
+`1f4ee15`..`1c0383e`): the worlds rail flags a world whose next launch has
+problems (with the queued count) and a change made elsewhere that breaks a
+world says so; modules that are simply on keep the neutral edge (only
+changes and problems are coloured); About shows "Saved" after a save (in a
+status region, focus back on the edit link); one live region announces
+every world's queue when it changes; "Back up first" is ticked only when no
+backup covers the queued changes; no power menu without an admin password;
+the Next session editor's quick times come from your own schedules, it shows
+players' own times, chosen dates each have their own time in a list, the
+Repeats row says the rule, and switching to chosen dates starts from the
+rule's next dates; Create a snapshot opens our own dialog as the prototype
+(what it holds, Foundry's own space check, a note, the warning), and Foundry
+runs it without its dialog. New live checks: `setup-steady.spec.ts`
+(nothing moves under the pointer: the banner's first queued change, Select's
+bar, the not-saved bar, the backup progress row; a click right after typing
+lands; disabled controls explain themselves on a wrapper; neutral edges).
+
+Result by area:
+
+| Area (SETUP-REDESIGN.md)                                                                                                                                      | Result                                                                            | Evidence                                                               |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| Layout, details panel only when open                                                                                                                          | Met                                                                               | setup-shell, setup-layout                                              |
+| Queued changes, review at launch, Back up first                                                                                                               | Met                                                                               | setup-world, apply, world-page and world-tools units                   |
+| World cards (switch, name, why line, edges)                                                                                                                   | Met                                                                               | setup-world, setup-steady (edges), world-modules units                 |
+| Library cards (star, lock, Update button)                                                                                                                     | Met; the Update button live needs a module with a newer version on foundryvtt.com | setup-library, library-page units                                      |
+| Group headers, one style                                                                                                                                      | Met (code shared; not compared by a test)                                         | ModuleSections, Sections, grid rows                                    |
+| World banner (star, Locked, pencil, Launch, no menu)                                                                                                          | Met                                                                               | setup-shell, shell units                                               |
+| Lock in About › Maintenance                                                                                                                                   | Met (unit)                                                                        | world-about-boxes                                                      |
+| Header (chip menu, Backups, Configuration, power menu)                                                                                                        | Met                                                                               | setup-shell, setup-server                                              |
+| News and Featured Content                                                                                                                                     | Met                                                                               | setup-news, rail-news units                                            |
+| By world, intake, copy a world's set                                                                                                                          | Met                                                                               | setup-library, setup-many, library-grid units                          |
+| About edited in place                                                                                                                                         | Met                                                                               | setup-world (title, schedule, description), units                      |
+| Next session picker                                                                                                                                           | Met                                                                               | setup-world, session and schedule units                                |
+| Backups tab                                                                                                                                                   | Met                                                                               | setup-world, setup-steady, world-backups units                         |
+| World without the companion                                                                                                                                   | Met                                                                               | setup-world                                                            |
+| Server backups and snapshots                                                                                                                                  | Met                                                                               | setup-server (our dialog, delete), server-backups units                |
+| Configuration                                                                                                                                                 | Met; HTTPS certificates need a public domain                                      | setup-server, setup-steady, config units                               |
+| Update page                                                                                                                                                   | Met; a real download needs a newer release                                        | setup-server, setup-update-history, update units                       |
+| Build requirements (keyboard, focus, live regions, typing, many worlds, order, grid, Show, steady page, wrappers, busy lock, problems flagged, 1366 and 1280) | Met                                                                               | setup-a11y (axe on every page), setup-many, setup-layout, setup-steady |
+
+Not built, for the owner:
+
+1. The companion moving the next session forward from a running world
+   (SETUP-REDESIGN.md, "Data", and Open 1b). Setup moves it on when it
+   opens. Foundry accepts `editWorld` from a GM in a running world (read in
+   14.370's `setup.mjs`), so it can be built in the companion; not done in
+   Phase 6.
+2. Server sync of the library (`library.json`, PRD D-3): still to decide.
+3. Open 2 (mockup gaps, not requirements): no undo for deleting folders,
+   tags and presets or for discarding queued changes; the Library's bulk
+   "Turn on" works in one world at a time.
+
+Deviations kept, for the owner to confirm:
+
+- The selection bar wraps to a second row when a details panel narrows the
+  page (the prototype overflows and hides Done under the panel).
+- Foundry's own button hover colours (3.8:1) stay; ours pass 4.5:1.
+- Release history asks for the foundryvtt.com permission on the options
+  page (a page script can't ask).
+- Free disk space and a snapshot's space come from Foundry's internal
+  checks behind the `diskFree` flag.
+
+Not verifiable on the local server: a core update download, Let's Encrypt,
+a module update chip against foundryvtt.com, phones.
+
+Package 6.6 reviews: code and security on each part, no critical or high;
+no new reach for a page script (Foundry's snapshot dialog was never a
+boundary: page scripts can call `game.createSnapshot` themselves). Fixed:
+the password flag fails closed (no password is false, not left out), every
+world that changes at once is announced, no "now has problems" notice for
+the world on screen when no route was chosen yet, "Saved" sits in status
+regions that are always there with focus back on the edit link, a removed
+chosen date stays removed, the snapshot dialog's Create waits while Foundry
+is busy (reason on a wrapper) and warns when the space won't do, and its
+space line has a "not known" state.

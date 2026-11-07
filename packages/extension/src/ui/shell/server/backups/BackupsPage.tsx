@@ -154,6 +154,7 @@ export function ServerBackupsPage() {
         <SnapshotDialog
           onClose={() => setAsking(false)}
           askSpace={data.askSpace}
+          off={off}
           onCreate={(note) => {
             setAsking(false);
             void data.createSnapshot(note);

@@ -583,3 +583,7 @@
 .mls-shell .mlb-note input {
   height: 30px;
 }
+
+.mls-shell .mlb-facts .mlb-short {
+  color: #f5c45e;
+}

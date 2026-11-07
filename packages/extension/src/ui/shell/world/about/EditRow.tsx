@@ -57,12 +57,12 @@ function Editing<T>(props: {
 export function SavedMark(props: { readonly on: boolean }) {
   const { t } = useUi();
   return (
-    <span class="mlw-saved" role="status">
+    <span role="status">
       {props.on ? (
-        <>
+        <span class="mlw-saved">
           <i class="fa-solid fa-check" aria-hidden="true" />
           {t("about.saved")}
-        </>
+        </span>
       ) : null}
     </span>
   );
