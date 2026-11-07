@@ -1,7 +1,10 @@
 # Android spike (phase 0)
 
 Phase 0 of `docs/ANDROID-APP-PLAN.md`: the tools, and a throwaway app that
-answers the spike questions on a real device. Started 2026-11-07.
+answers the spike questions on a real device. Started and closed 2026-11-07:
+every question is answered on the emulator; the phone checks (Q6 on the
+phone's Wi-Fi, and a WebView of version 146 or newer) moved to the start of
+phase 4, when there is a real app to install (owner, 2026-11-07).
 
 ## Tooling (done)
 
@@ -48,9 +51,10 @@ Build: `cd spikes/android && JAVA_HOME=~/opt/jdk-21.0.13+9 ./gradlew assembleDeb
   port 5037 for WSL too (mirrored networking), so WSL's own adb can't start.
   Use Windows' `adb.exe` from WSL; APKs are installed from a Windows path.
 - **The emulator reaches the WSL Foundry** at `http://10.0.2.2:30000`.
-- **Phone** (wireless debugging, same Wi-Fi): not set up yet. It needs
-  `http://192.168.178.25:30000` let in by a Hyper-V firewall rule (owner,
-  admin PowerShell).
+- **Phone** (wireless debugging, same Wi-Fi): set up at the start of phase 4.
+  It needs `http://192.168.178.25:30000` let in by a Hyper-V firewall rule
+  (owner, admin PowerShell):
+  `New-NetFirewallHyperVRule -Name FoundryDev30000 -DisplayName "Foundry dev (WSL) 30000" -Direction Inbound -VMCreatorId '{40E0AC32-46A5-438A-A0B2-2B479E8F2E90}' -Protocol TCP -LocalPorts 30000`
 
 ## Answers (2026-11-07, emulator, WebView 133 on API 36 and 145 on API 37)
 
@@ -61,7 +65,7 @@ Build: `cd spikes/android && JAVA_HOME=~/opt/jdk-21.0.13+9 ./gradlew assembleDeb
 | 3   | Admin login survives an app restart          | **Yes**: logged in, Home, force-stop, start: the app opens `/setup` without the login page                                                                                                                            |
 | 4   | Main-world game-bridge meets the companion   | **The bridge side works** (a document-start listener on `/game` receives the module's messages), **but the companion never says HELLO on a plain-http address**: see finding 4                                        |
 | 5   | Bridge kept, global name removed             | **Yes**: `delete window.mlApp` succeeds, later page scripts see `undefined`, and the reference kept in the closure still sends and receives                                                                           |
-| 6   | Plain http                                   | **Yes** from the emulator; the phone is not set up yet                                                                                                                                                                |
+| 6   | Plain http                                   | **Yes** from the emulator; the phone check moved to phase 4                                                                                                                                                           |
 | 7   | Playwright drives the app's WebView from WSL | **Yes**, with Playwright's Android support through Windows' adb server on 127.0.0.1:5037 (`scripts/dev/android-spike.ts`). `connectOverCDP` on the forwarded DevTools socket fails: a WebView has no browser contexts |
 | 8   | Fonts                                        | **Yes**: Modesto Condensed, Amiri and Font Awesome 7 load from the server                                                                                                                                             |
 
@@ -106,3 +110,9 @@ Build: `cd spikes/android && JAVA_HOME=~/opt/jdk-21.0.13+9 ./gradlew assembleDeb
    path" had the same class of bug (`navigator.clipboard` is missing on
    plain http, the call threw before its fallback) and now shows the path
    in a notice; the spec skips an https server and cleans up safely.
+
+5. **The app draws under Android's bars.** From Android 15 (target SDK 35)
+   apps are edge to edge: the spike's status line and the top of Foundry's
+   page sit under the action bar. The real app applies the system bar
+   insets (or has no action bar), and the phone layout keeps its own top
+   bar clear of the status bar.
