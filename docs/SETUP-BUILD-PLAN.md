@@ -231,7 +231,7 @@ survive the re-list; uninstalled packages' backups can be restored and deleted; 
 snapshot lookups; port validation blocks Save; trimming at save; the restart notice
 accumulates. Open: unsaved Configuration edits are dropped when leaving the page.
 
-### Phase 5b: prototype parity (in progress)
+### Phase 5b: prototype parity (done)
 
 A side-by-side check of the build against the prototype at 2560 and 1366 wide (report:
 https://claude.ai/artifact/NwhDMdn4e6vaTPb9TLF1Mf) found 11 bugs, 17 gaps and 8 differences
