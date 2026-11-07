@@ -876,6 +876,25 @@ and they come back by themselves (fails with the restore switched off).
 Review: one server failing no longer keeps the rest off, and a server removed
 while the restore waits isn't brought back.
 
+No jump to the new page (owner, 2026-11-07): Foundry's own Setup showed for
+about 0.4 s before the new page took over (23 frames on the local server,
+whose takeover comes about 1.1 s into the load; a remote server is slower).
+Now `setup-veil.js` runs first (document_start) and marks the page as
+waiting; `shell/veil.css` (content-script CSS, applied before the first
+paint) keeps Foundry's Setup pieces hidden while waiting, Foundry's
+background stays, and the new page fades in (160 ms; none with reduced
+motion). Foundry's page comes back at once when the new page gives up or
+won't start (safe mode), after 15 s if nothing took over, and after 4 s by
+CSS alone if even the early script never ran. Live (`setup-veil.spec.ts`):
+every frame of a Setup load is checked and Foundry's UI is never seen;
+giving up, the CSS failsafe and the wait are checked on a bare page.
+Review: no critical or high. Fixed: the veil ended when `ml-shell-on` was
+set, a moment before the take-over rule (which needs the new page's host)
+hid Foundry's pieces, so a frame could slip through; it now ends exactly
+when the host exists, and the lift carries the same condition so it still
+outweighs the veil. Left: a `/setup*` page that never sends Setup's data
+stays hidden until the 15 s timer.
+
 ### Polish pass (after Phase 6)
 
 Small things seen and left for the polish pass the owner set after Phase 6

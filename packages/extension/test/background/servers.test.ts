@@ -42,10 +42,16 @@ describe("contentScriptsFor", () => {
   test("registers the Setup scripts in both worlds and the bridge on /game", () => {
     const scripts = contentScriptsFor("http://localhost:30000");
     expect(scripts.map((s) => [s.js, s.world, s.matches])).toEqual([
+      [["setup-veil.js"], "ISOLATED", ["http://localhost:30000/setup*"]],
       [["setup-main.js"], "MAIN", ["http://localhost:30000/setup*"]],
       [["setup-ui.js"], "ISOLATED", ["http://localhost:30000/setup*"]],
       [["game-bridge.js"], "ISOLATED", ["http://localhost:30000/game*"]],
     ]);
+  });
+
+  test("the veil runs first, before the page draws (no jump to the new page)", () => {
+    const [veil] = contentScriptsFor("http://localhost:30000");
+    expect(veil?.runAt).toBe("document_start");
   });
 
   test("gives each server its own script ids", () => {

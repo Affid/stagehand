@@ -4,7 +4,10 @@ import type { SetupData } from "@module-library/shared/world";
 import { BUNDLED_CONFIG } from "../../src/adapters/config.ts";
 import { memoryKeyValue, serialized } from "../../src/background/kv.ts";
 import type { ScriptingPlatform } from "../../src/background/registration.ts";
-import type { ContentScript } from "../../src/background/servers.ts";
+import {
+  type ContentScript,
+  contentScriptsFor,
+} from "../../src/background/servers.ts";
 import {
   grantedOrigins,
   restoreServers,
@@ -14,6 +17,8 @@ import {
 import { createState } from "../../src/background/state.ts";
 
 const S = "http://localhost:30000";
+/** Content scripts per server (servers.ts contentScriptsFor). */
+const SCRIPTS = contentScriptsFor(S).length;
 const EXT = "chrome-extension://ext/";
 
 function deps(granted = true) {
@@ -825,7 +830,9 @@ describe("router: servers come back after an update or reload (owner's bug)", ()
     await d.state.addServer("http://h:1", "t");
     live.clear(); // Chrome dropped them on the update.
     await restoreServers(d);
-    expect([...live].filter((id) => id.includes("localhost"))).toHaveLength(3);
+    expect([...live].filter((id) => id.includes("localhost"))).toHaveLength(
+      SCRIPTS,
+    );
     expect([...live].filter((id) => id.includes("h_1"))).toHaveLength(0);
   });
 
@@ -842,7 +849,7 @@ describe("router: servers come back after an update or reload (owner's bug)", ()
         : (register?.(scripts) ?? Promise.resolve()),
     );
     await restoreServers(d);
-    expect([...live].filter((id) => id.includes("h_1"))).toHaveLength(3);
+    expect([...live].filter((id) => id.includes("h_1"))).toHaveLength(SCRIPTS);
   });
 
   test("a server removed while the restore waits isn't brought back (code review)", async () => {
@@ -859,7 +866,7 @@ describe("router: servers come back after an update or reload (owner's bug)", ()
     );
     await restoring;
     expect([...live].filter((id) => id.includes("_b"))).toHaveLength(0);
-    expect([...live].filter((id) => !id.includes("_b"))).toHaveLength(3);
+    expect([...live].filter((id) => !id.includes("_b"))).toHaveLength(SCRIPTS);
   });
 
   test("the list says which servers are really on", async () => {

@@ -41,6 +41,7 @@ const BUILD = buildLabel();
 const outDir = join(root, "dist");
 const entries = [
   "background",
+  "setup-veil",
   "setup-main",
   "setup-ui",
   "game-bridge",
@@ -95,6 +96,7 @@ for (const sheet of [
   "update.css",
   "news.css",
   "layout.css",
+  "veil.css",
 ])
   appendFileSync(
     join(outDir, "setup-ui.css"),

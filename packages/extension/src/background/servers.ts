@@ -40,6 +40,14 @@ const scriptId = (kind: string, server: ServerId): string =>
 export function contentScriptsFor(server: ServerId): readonly ContentScript[] {
   return [
     {
+      // First, before the page draws: no jump to the new page (page/veil.ts).
+      id: scriptId("setup-veil", server),
+      matches: [`${server}/setup*`],
+      js: ["setup-veil.js"],
+      world: "ISOLATED",
+      runAt: "document_start",
+    },
+    {
       id: scriptId("setup-main", server),
       matches: [`${server}/setup*`],
       js: ["setup-main.js"],

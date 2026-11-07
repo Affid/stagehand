@@ -9,7 +9,12 @@ import { fakePage, SUPPORTED, setupState, uiState } from "./harness.tsx";
 
 afterEach(() => {
   document.body.innerHTML = "";
+  document.documentElement.className = "";
 });
+
+/** Foundry's own Setup shown again (the veil lifted). */
+const foundryShown = (): boolean =>
+  document.documentElement.classList.contains("ml-shell-off");
 
 function setup(over: Parameters<typeof uiState>[0] = {}) {
   const store = createStore(uiState(over));
@@ -62,6 +67,7 @@ describe("mounting the new Setup page", () => {
       "error",
       expect.stringContaining("#setup"),
     );
+    expect(foundryShown()).toBe(true);
   });
 
   test("safe mode later: unmounts and gives Foundry's layout back", () => {
@@ -74,10 +80,18 @@ describe("mounting the new Setup page", () => {
     expect(page.setShell).toHaveBeenLastCalledWith(false);
   });
 
-  test("safe mode never takes over the page", () => {
+  test("safe mode never takes over the page, and shows Foundry's at once", () => {
     const { page, sync } = setup({ adapter: { status: "safe-mode" } });
     sync();
     expect(page.setShell).not.toHaveBeenCalled();
+    expect(foundryShown()).toBe(true);
+  });
+
+  test("taking over keeps Foundry's page out of sight", () => {
+    const { sync, emit } = setup();
+    sync();
+    emit({ type: "SHELL_STATE", payload: { on: true } });
+    expect(foundryShown()).toBe(false);
   });
 
   test("a late acknowledgement of off doesn't spoil turning on again", () => {

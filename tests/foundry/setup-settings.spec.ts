@@ -116,7 +116,7 @@ test("when the background starts again it puts the dropped scripts back by itsel
           (await chrome.scripting.getRegisteredContentScripts()).length,
       ),
     )
-    .toBeGreaterThanOrEqual(3);
+    .toBeGreaterThanOrEqual(4);
   await page.reload();
   await expect(shell().locator(".mls-top")).toBeVisible();
 });

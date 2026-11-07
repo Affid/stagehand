@@ -6,6 +6,7 @@
 import { logError } from "@module-library/shared/log";
 import { render } from "preact";
 import { allowsChanges } from "../../adapters/select.ts";
+import { liftVeil } from "../../page/veil.ts";
 import { ShellRoot } from "../App.tsx";
 import type { UiDeps } from "../context.ts";
 
@@ -44,6 +45,7 @@ export function syncShell(deps: UiDeps, doc: Document): () => void {
     logError("new setup page", error);
     phase = "failed";
     unmount(doc);
+    liftVeil(doc);
     if (giveBack) page.setShell(false);
     page.notify("error", t("shell.failed", { error: message(error) }));
   };
@@ -76,7 +78,11 @@ export function syncShell(deps: UiDeps, doc: Document): () => void {
     if (wanted && phase === "off") {
       phase = "asking";
       page.setShell(true);
-    } else if (!wanted && phase !== "off") {
+    } else if (!wanted) {
+      // Won't take over (safe mode): Foundry's page shows at once.
+      liftVeil(doc);
+    }
+    if (!wanted && phase !== "off") {
       if (phase !== "failed") {
         unmount(doc);
         page.setShell(false);
