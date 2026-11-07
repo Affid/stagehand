@@ -4,6 +4,7 @@
 // with Check again. The update itself is Foundry's (page/update.ts).
 import { useMemo, useState } from "preact/hooks";
 import type { Release } from "../../../page-update.ts";
+import { TabList, TabPanel } from "../../common/tabs.tsx";
 import { Icon } from "../../common/widgets.tsx";
 import { useUi } from "../../context.ts";
 import { channelName } from "../../model/update.ts";
@@ -18,6 +19,13 @@ import { usePreview } from "./update/usePreview.ts";
 import { type UpdateState, useUpdate } from "./update/useUpdate.ts";
 
 type View = "notes" | "compat" | "history";
+const VIEWS: readonly View[] = ["notes", "compat", "history"];
+const VIEW_ICONS: Record<View, string> = {
+  notes: "newspaper",
+  compat: "puzzle-piece",
+  history: "clock-rotate-left",
+};
+const UPDATE_TABS = "ml-ut";
 
 /** "You're on Foundry 14.370 (Stable). 14.371 is available." */
 function Summary(props: {
@@ -97,28 +105,24 @@ function Tabs(props: {
   readonly toCheck: number;
 }) {
   const { t } = useUi();
-  const tab = (v: View, icon: string, label: string, extra?: number) => (
-    <button
-      type="button"
-      role="tab"
-      class={props.view === v ? "active" : ""}
-      aria-selected={props.view === v}
-      onClick={() => {
-        props.onView(v);
-      }}
-    >
-      <Icon name={icon} />
-      {label}
-      {extra ? <span class="c w"> {extra}</span> : null}
-    </button>
-  );
   return (
     <nav class="mls-subtabs mlu-tabs">
-      <span class="mls-tablist" role="tablist">
-        {tab("notes", "newspaper", t("up.tab.notes"))}
-        {tab("compat", "puzzle-piece", t("up.tab.compat"), props.toCheck)}
-        {tab("history", "clock-rotate-left", t("up.tab.history"))}
-      </span>
+      <TabList
+        id={UPDATE_TABS}
+        label={t("up.tabs")}
+        tabs={VIEWS}
+        current={props.view}
+        onTab={props.onView}
+        render={(v) => (
+          <>
+            <Icon name={VIEW_ICONS[v]} />
+            {t(`up.tab.${v}`)}
+            {v === "compat" && props.toCheck ? (
+              <span class="c w"> {props.toCheck}</span>
+            ) : null}
+          </>
+        )}
+      />
     </nav>
   );
 }
@@ -137,11 +141,44 @@ function useCompat(u: UpdateState, release: Release) {
   return { data, error };
 }
 
+/** The open tab's panel: the notes, Your packages or the history. */
+function LeftPanel(props: {
+  readonly view: View;
+  readonly onView: (v: View) => void;
+  readonly u: UpdateState;
+  readonly release: Release;
+  readonly compat: ReturnType<typeof useCompat>;
+}) {
+  const { t } = useUi();
+  const { view, release, compat: c } = props;
+  return (
+    <TabPanel id={UPDATE_TABS} tab={view}>
+      {view === "compat" ? (
+        c.data ? (
+          <CompatView release={release} data={c.data} />
+        ) : (
+          <div class="mlu-notes" role="status">
+            <p class="ml-muted">{c.error ?? t("up.previewing")}</p>
+          </div>
+        )
+      ) : view === "history" ? (
+        <HistoryView channel={props.u.channel ?? "stable"} />
+      ) : (
+        <NotesView
+          release={release}
+          onHistory={() => {
+            props.onView("history");
+          }}
+        />
+      )}
+    </TabPanel>
+  );
+}
+
 function ReleaseView(props: {
   readonly u: UpdateState;
   readonly release: Release;
 }) {
-  const { t } = useUi();
   const { u, release } = props;
   const [view, setView] = useState<View>("notes");
   const c = useCompat(u, release);
@@ -152,24 +189,13 @@ function ReleaseView(props: {
     <div class="mlu-cols">
       <div class="mlu-left">
         <Tabs view={view} onView={setView} toCheck={bad} />
-        {view === "compat" ? (
-          c.data ? (
-            <CompatView release={release} data={c.data} />
-          ) : (
-            <div class="mlu-notes" role="status">
-              <p class="ml-muted">{c.error ?? t("up.previewing")}</p>
-            </div>
-          )
-        ) : view === "history" ? (
-          <HistoryView channel={u.channel ?? "stable"} />
-        ) : (
-          <NotesView
-            release={release}
-            onHistory={() => {
-              setView("history");
-            }}
-          />
-        )}
+        <LeftPanel
+          view={view}
+          onView={setView}
+          u={u}
+          release={release}
+          compat={c}
+        />
       </div>
       <div class="mlu-side">
         <ActionBox u={u} release={release} />

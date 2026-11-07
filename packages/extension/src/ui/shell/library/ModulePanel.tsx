@@ -3,12 +3,15 @@
 // Package tab (PackageTab.tsx: Foundry's manifest and its own actions).
 import type { PackageInfo } from "@module-library/shared/package";
 import { useState } from "preact/hooks";
+import { TabList, TabPanel } from "../../common/tabs.tsx";
 import { Icon } from "../../common/widgets.tsx";
 import { useUi } from "../../context.ts";
 import { LibraryTab } from "./LibraryTab.tsx";
 import { PackageTab } from "./PackageTab.tsx";
 
 type Tab = "library" | "package";
+const TABS: readonly Tab[] = ["library", "package"];
+const PANEL_TABS = "ml-mp";
 
 /** "modular-av · v0.11.0 · Andrei Fedorov". */
 function Sub(props: { readonly pkg: PackageInfo }) {
@@ -22,6 +25,31 @@ function Sub(props: { readonly pkg: PackageInfo }) {
 }
 
 const TAB_ICON: Record<Tab, string> = { library: "books", package: "box-open" };
+
+function PanelTabs(props: {
+  readonly title: string;
+  readonly tab: Tab;
+  readonly onTab: (tab: Tab) => void;
+}) {
+  const { t } = useUi();
+  return (
+    <nav class="mls-subtabs">
+      <TabList
+        id={PANEL_TABS}
+        label={t("mp.tabs", { title: props.title })}
+        tabs={TABS}
+        current={props.tab}
+        onTab={props.onTab}
+        render={(k) => (
+          <>
+            <Icon name={TAB_ICON[k]} />
+            {t(`mp.tab.${k}`)}
+          </>
+        )}
+      />
+    </nav>
+  );
+}
 
 /** The details column, as the prototype: "Module", the name, two tabs. */
 export function ModulePanel(props: {
@@ -50,26 +78,14 @@ export function ModulePanel(props: {
           <h3>{pkg.title}</h3>
           <Sub pkg={pkg} />
         </div>
-        <nav class="mls-subtabs" role="tablist">
-          {(["library", "package"] as const).map((k) => (
-            <button
-              type="button"
-              key={k}
-              role="tab"
-              class={tab === k ? "active" : ""}
-              aria-selected={tab === k}
-              onClick={() => setTab(k)}
-            >
-              <Icon name={TAB_ICON[k]} />
-              {t(`mp.tab.${k}`)}
-            </button>
-          ))}
-        </nav>
-        {tab === "library" ? (
-          <LibraryTab pkg={pkg} here={props.here} />
-        ) : (
-          <PackageTab pkg={pkg} />
-        )}
+        <PanelTabs title={pkg.title} tab={tab} onTab={setTab} />
+        <TabPanel id={PANEL_TABS} tab={tab}>
+          {tab === "library" ? (
+            <LibraryTab pkg={pkg} here={props.here} />
+          ) : (
+            <PackageTab pkg={pkg} />
+          )}
+        </TabPanel>
       </div>
     </aside>
   );

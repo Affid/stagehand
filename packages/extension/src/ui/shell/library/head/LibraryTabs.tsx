@@ -1,10 +1,13 @@
 // The Library's tabs, as the prototype: Modules, Systems and By world, each
 // with its icon and count.
+import { TabList } from "../../../common/tabs.tsx";
 import { Icon } from "../../../common/widgets.tsx";
 import { useUi } from "../../../context.ts";
 
 export type LibTab = "modules" | "systems" | "grid";
 const TABS: readonly LibTab[] = ["modules", "systems", "grid"];
+/** The tabs' and panel's ids (LibraryPage draws the panel). */
+export const LIBRARY_TABS = "ml-lt";
 const ICONS: Record<LibTab, string> = {
   modules: "plug",
   systems: "dice",
@@ -24,21 +27,19 @@ export function LibraryTabs(props: {
   };
   return (
     <nav class="mls-subtabs">
-      <span class="mls-tablist" role="tablist">
-        {TABS.map((k) => (
-          <button
-            type="button"
-            key={k}
-            role="tab"
-            class={props.tab === k ? "active" : ""}
-            aria-selected={props.tab === k}
-            onClick={() => props.onTab(k)}
-          >
+      <TabList
+        id={LIBRARY_TABS}
+        label={t("lib.tab.label")}
+        tabs={TABS}
+        current={props.tab}
+        onTab={props.onTab}
+        render={(k) => (
+          <>
             <Icon name={ICONS[k]} />
             {t(`lib.tab.${k}`)} <span class="c">{counts[k]}</span>
-          </button>
-        ))}
-      </span>
+          </>
+        )}
+      />
     </nav>
   );
 }

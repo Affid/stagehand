@@ -7,6 +7,7 @@ import { useState } from "preact/hooks";
 import type { PackageType } from "../../../../page-backups.ts";
 import type { ServerListing } from "../../../../page-server-backups.ts";
 import { formatSize } from "../../../common/size.ts";
+import { TabList, TabPanel } from "../../../common/tabs.tsx";
 import { Icon } from "../../../common/widgets.tsx";
 import { useUi } from "../../../context.ts";
 import { plural, type Translate } from "../../../i18n.ts";
@@ -20,6 +21,7 @@ import { type ServerBackups, useServerBackups } from "./useServerBackups.ts";
 
 type Tab = "snapshots" | PackageType;
 const TABS: readonly Tab[] = ["snapshots", "world", "module", "system"];
+const BACKUP_TABS = "ml-sb";
 const ICONS: Record<Tab, string> = {
   snapshots: "camera-retro",
   world: "globe",
@@ -60,22 +62,20 @@ function Tabs(props: {
   const { t } = useUi();
   return (
     <nav class="mls-subtabs">
-      <span class="mls-tablist" role="tablist">
-        {TABS.map((k) => (
-          <button
-            type="button"
-            key={k}
-            role="tab"
-            class={props.tab === k ? "active" : ""}
-            aria-selected={props.tab === k}
-            onClick={() => props.onTab(k)}
-          >
+      <TabList
+        id={BACKUP_TABS}
+        label={t("sb.tabs")}
+        tabs={TABS}
+        current={props.tab}
+        onTab={props.onTab}
+        render={(k) => (
+          <>
             <Icon name={ICONS[k]} />
             {t(k === "snapshots" ? "sb.snapshots" : `sb.${k}`)}{" "}
             <span class="c">{count(props.listing, k)}</span>
-          </button>
-        ))}
-      </span>
+          </>
+        )}
+      />
     </nav>
   );
 }
@@ -112,21 +112,23 @@ function Body(props: {
   return (
     <>
       <Tabs listing={listing} tab={tab} onTab={setTab} />
-      {tab === "snapshots" ? (
-        <SnapshotsTab
-          snapshots={listing.snapshots}
-          off={off}
-          run={(op, ids) => void data.run(op, ids)}
-        />
-      ) : (
-        <PackagesTab
-          key={tab}
-          type={tab}
-          packages={listing.packages.filter((p) => p.type === tab)}
-          off={off}
-          run={(p, op, ids) => void data.runPackage(p, op, ids)}
-        />
-      )}
+      <TabPanel id={BACKUP_TABS} tab={tab}>
+        {tab === "snapshots" ? (
+          <SnapshotsTab
+            snapshots={listing.snapshots}
+            off={off}
+            run={(op, ids) => void data.run(op, ids)}
+          />
+        ) : (
+          <PackagesTab
+            key={tab}
+            type={tab}
+            packages={listing.packages.filter((p) => p.type === tab)}
+            off={off}
+            run={(p, op, ids) => void data.runPackage(p, op, ids)}
+          />
+        )}
+      </TabPanel>
     </>
   );
 }

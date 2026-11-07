@@ -8,7 +8,8 @@ import { Banners } from "../../modules/banners.tsx";
 import { type ModulesModel, useModulesModel } from "../../modules/derived.ts";
 import { FilterRow } from "./head/FilterRow.tsx";
 import { IntakeBand } from "./head/IntakeBand.tsx";
-import { LibraryTabs } from "./head/LibraryTabs.tsx";
+import { LIBRARY_TABS, LibraryTabs } from "./head/LibraryTabs.tsx";
+import { TabPanel } from "../../common/tabs.tsx";
 import { SelectBar } from "./head/SelectBar.tsx";
 import { Toolbar } from "./head/Toolbar.tsx";
 import { Sections } from "./Sections.tsx";
@@ -67,21 +68,23 @@ export function LibraryPage() {
     <div class="mll-page ml-app">
       <Banners />
       <LibraryTabs tab={page.tab} onTab={page.setTab} />
-      {page.tab === "grid" ? (
-        <WorldGrid
-          groups={groups}
-          folding={{ closed: page.closed, onToggle: page.toggle }}
-          by={page.by}
-          onBy={page.setBy}
-        />
-      ) : page.tab === "systems" ? (
-        <>
-          <FilterRow kind="system" count={setup?.systems.length ?? 0} />
-          <SystemsTab />
-        </>
-      ) : (
-        <ModulesTab model={model} page={page} groups={withEmpty} />
-      )}
+      <TabPanel id={LIBRARY_TABS} tab={page.tab}>
+        {page.tab === "grid" ? (
+          <WorldGrid
+            groups={groups}
+            folding={{ closed: page.closed, onToggle: page.toggle }}
+            by={page.by}
+            onBy={page.setBy}
+          />
+        ) : page.tab === "systems" ? (
+          <>
+            <FilterRow kind="system" count={setup?.systems.length ?? 0} />
+            <SystemsTab />
+          </>
+        ) : (
+          <ModulesTab model={model} page={page} groups={withEmpty} />
+        )}
+      </TabPanel>
     </div>
   );
 }

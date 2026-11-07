@@ -3,6 +3,7 @@
 import type { WorldInfo } from "@module-library/shared/world";
 import type { ComponentChildren } from "preact";
 import { useEffect, useState } from "preact/hooks";
+import { TabList, TabPanel } from "../../common/tabs.tsx";
 import { Icon } from "../../common/widgets.tsx";
 import { useUi } from "../../context.ts";
 import type { WorldModules } from "../../model/world-modules.ts";
@@ -18,6 +19,7 @@ import type { WorldBackups } from "./useBackups.ts";
 export type WorldTab = "modules" | "about" | "backups";
 type Tab = WorldTab;
 const TABS: readonly Tab[] = ["modules", "about", "backups"];
+const WORLD_TABS = "ml-wt";
 const ICONS: Record<Tab, string> = {
   modules: "plug",
   about: "scroll",
@@ -48,16 +50,14 @@ function TabRow(props: {
   const { t } = useUi();
   return (
     <nav class="mls-subtabs">
-      <span class="mls-tablist" role="tablist">
-        {TABS.map((k) => (
-          <button
-            type="button"
-            key={k}
-            role="tab"
-            class={props.tab === k ? "active" : ""}
-            aria-selected={props.tab === k}
-            onClick={() => props.onTab(k)}
-          >
+      <TabList
+        id={WORLD_TABS}
+        label={t("wt.label")}
+        tabs={TABS}
+        current={props.tab}
+        onTab={props.onTab}
+        render={(k) => (
+          <>
             <Icon name={ICONS[k]} />
             {t(`wt.${k}`)}
             {props.counts[k] ? (
@@ -66,12 +66,21 @@ function TabRow(props: {
                 <span class="c">{props.counts[k]}</span>
               </>
             ) : null}
-          </button>
-        ))}
-      </span>
+          </>
+        )}
+      />
       {props.children}
     </nav>
   );
+}
+
+/** The Backups tab stays mounted once opened. */
+function useOpened(tab: Tab): boolean {
+  const [opened, setOpened] = useState(false);
+  useEffect(() => {
+    if (tab === "backups") setOpened(true);
+  }, [tab]);
+  return opened;
 }
 
 export function WorldBody(props: {
@@ -85,10 +94,7 @@ export function WorldBody(props: {
   const { world, model, tab, onTab } = props;
   const filters = useFilters();
   const counts = useCounts(model, props.backups);
-  const [opened, setOpened] = useState(false);
-  useEffect(() => {
-    if (tab === "backups") setOpened(true);
-  }, [tab]);
+  const opened = useOpened(tab);
   const recent = worldRow(state.data, world).recent;
   return (
     <>
@@ -97,29 +103,31 @@ export function WorldBody(props: {
           <ModulesTools world={world} model={model} filters={filters} />
         ) : null}
       </TabRow>
-      {tab === "about" ? (
-        <AboutTab world={world} backups={props.backups.view.list} />
-      ) : tab === "backups" ? null : model.tracked ? (
-        <ModulesTab world={world} model={model} filters={filters} />
-      ) : (
-        <NotSetUp world={world} />
-      )}
-      {/* Kept once opened: a backup can wait on Foundry's dialog for minutes. */}
-      {opened || tab === "backups" ? (
-        <div hidden={tab !== "backups"}>
-          <BackupsTab
-            world={world}
-            backups={props.backups}
-            changes={props.model.changes}
-          />
-        </div>
-      ) : null}
-      {tab === "modules" && recent.length ? (
-        <details class="mlw-history">
-          <summary>{t("wp.history")}</summary>
-          <HistoryList commands={recent} />
-        </details>
-      ) : null}
+      <TabPanel id={WORLD_TABS} tab={tab}>
+        {tab === "about" ? (
+          <AboutTab world={world} backups={props.backups.view.list} />
+        ) : tab === "backups" ? null : model.tracked ? (
+          <ModulesTab world={world} model={model} filters={filters} />
+        ) : (
+          <NotSetUp world={world} />
+        )}
+        {/* Kept once opened: a backup can wait on Foundry's dialog for minutes. */}
+        {opened || tab === "backups" ? (
+          <div hidden={tab !== "backups"}>
+            <BackupsTab
+              world={world}
+              backups={props.backups}
+              changes={props.model.changes}
+            />
+          </div>
+        ) : null}
+        {tab === "modules" && recent.length ? (
+          <details class="mlw-history">
+            <summary>{t("wp.history")}</summary>
+            <HistoryList commands={recent} />
+          </details>
+        ) : null}
+      </TabPanel>
     </>
   );
 }

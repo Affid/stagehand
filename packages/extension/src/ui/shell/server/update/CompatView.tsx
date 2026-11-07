@@ -5,6 +5,7 @@
 import { useState } from "preact/hooks";
 import type { Release } from "../../../../page-update.ts";
 import { safeUrl } from "../../../common/files.ts";
+import { TabList, TabPanel } from "../../../common/tabs.tsx";
 import { Icon } from "../../../common/widgets.tsx";
 import { useUi } from "../../../context.ts";
 import { plural } from "../../../i18n.ts";
@@ -23,6 +24,7 @@ import { useOpenRow } from "./useOpenRow.ts";
 type Chip = "all" | Exclude<Status, "dep">;
 const CHIPS: readonly Chip[] = ["all", "ok", "unv", "risk", "bad"];
 const KINDS: readonly Kind[] = ["system", "module", "world"];
+const KIND_TABS = "ml-uk";
 
 /** Incompatible includes a missing dependency. */
 const inChip = (x: CompatRow, c: Chip): boolean =>
@@ -34,36 +36,33 @@ function Kinds(props: {
   readonly onKind: (k: Kind) => void;
 }) {
   const { t } = useUi();
+  const tab = (k: Kind) => {
+    const list = props.data[k];
+    const bad = list.filter(toCheck).length;
+    return (
+      <>
+        {t(`up.kind.${k}`)}{" "}
+        <span class="c">
+          {list.length}
+          {bad ? (
+            <>
+              {" · "}
+              <b class="w">{t("up.toCheck", { n: bad })}</b>
+            </>
+          ) : null}
+        </span>
+      </>
+    );
+  };
   return (
-    <span class="mls-tablist" role="tablist">
-      {KINDS.map((k) => {
-        const list = props.data[k];
-        const bad = list.filter(toCheck).length;
-        return (
-          <button
-            type="button"
-            role="tab"
-            key={k}
-            aria-selected={props.kind === k}
-            class={props.kind === k ? "active" : ""}
-            onClick={() => {
-              props.onKind(k);
-            }}
-          >
-            {t(`up.kind.${k}`)}{" "}
-            <span class="c">
-              {list.length}
-              {bad ? (
-                <>
-                  {" · "}
-                  <b class="w">{t("up.toCheck", { n: bad })}</b>
-                </>
-              ) : null}
-            </span>
-          </button>
-        );
-      })}
-    </span>
+    <TabList
+      id={KIND_TABS}
+      label={t("up.kinds")}
+      tabs={KINDS}
+      current={props.kind}
+      onTab={props.onKind}
+      render={tab}
+    />
   );
 }
 
@@ -262,15 +261,17 @@ export function CompatView(props: {
           }}
         />
       </nav>
-      <Chips list={list} chip={chip} onChip={f.setChip} />
-      <ol class="mlu-clist">
-        {shown.length ? (
-          shown.map((x) => <Row key={x.id} x={x} version={release.version} />)
-        ) : (
-          <li class="empty">{t("up.nothing")}</li>
-        )}
-      </ol>
-      <Hint updates={updatesNeeded(data)} version={release.version} />
+      <TabPanel id={KIND_TABS} tab={f.kind}>
+        <Chips list={list} chip={chip} onChip={f.setChip} />
+        <ol class="mlu-clist">
+          {shown.length ? (
+            shown.map((x) => <Row key={x.id} x={x} version={release.version} />)
+          ) : (
+            <li class="empty">{t("up.nothing")}</li>
+          )}
+        </ol>
+        <Hint updates={updatesNeeded(data)} version={release.version} />
+      </TabPanel>
     </div>
   );
 }
