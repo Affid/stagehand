@@ -1,6 +1,12 @@
 // @vitest-environment happy-dom
 import type { NewsItem } from "@module-library/shared/news";
-import { cleanup, fireEvent, waitFor, within } from "@testing-library/preact";
+import {
+  act,
+  cleanup,
+  fireEvent,
+  waitFor,
+  within,
+} from "@testing-library/preact";
 import { afterEach, describe, expect, test } from "vitest";
 import type { SetupState } from "../../src/messages.ts";
 import { el, renderUi, sent, setupState } from "./harness.tsx";
@@ -81,26 +87,86 @@ describe("News and Featured Content at the foot of the rail (Phase 6)", () => {
     expect(box.querySelector("a.banner")).toBeNull();
     expect(within(box).getByText("Year in Review")).toBeTruthy();
     expect(within(box).queryByText("New")).toBeNull();
-    const toggle = getByRole("button", { name: "Show news" });
+    const toggle = getByRole("button", { name: "News" });
     expect(toggle.getAttribute("aria-expanded")).toBe("false");
     fireEvent.click(toggle);
     expect(news(container).classList.contains("folded")).toBe(false);
     expect(
-      getByRole("button", { name: "Hide news" }).getAttribute("aria-expanded"),
+      getByRole("button", { name: "News" }).getAttribute("aria-expanded"),
     ).toBe("true");
   });
 
-  test("opening an article marks every article seen", async () => {
+  test("opening an article marks every article seen; the section stays put until the next load", async () => {
+    const after = data({ newsUnread: [] });
     const { container, send } = renderUi("shell", {
       data: data({ newsUnread: [NEWS[0]!.url] }),
+      reply: (m) => (m.kind === "news-seen" ? setupState(after) : {}),
     });
-    fireEvent.click(el(news(container), "a.banner"));
+    const banner = el(news(container), "a.banner");
+    banner.focus();
+    fireEvent.click(banner);
     await waitFor(() =>
       expect(sent(send)).toContainEqual({
         kind: "news-seen",
         urls: [...NEWS.map((n) => n.url), FEATURED.url],
       }),
     );
+    await waitFor(() =>
+      expect(within(news(container)).queryByText("New")).toBeNull(),
+    );
+    // Still open, so keyboard focus stays on the banner (review).
+    expect(news(container).classList.contains("folded")).toBe(false);
+    expect(document.activeElement).toBe(banner);
+  });
+
+  test("a right click only shows the browser's menu; a middle click opens", () => {
+    const { container, send } = renderUi("shell", {
+      data: data({ newsUnread: [NEWS[0]!.url] }),
+    });
+    const banner = el(news(container), "a.banner");
+    fireEvent(banner, new MouseEvent("auxclick", { button: 2, bubbles: true }));
+    expect(
+      sent(send).some((m) => (m as { kind: string }).kind === "news-seen"),
+    ).toBe(false);
+    fireEvent(banner, new MouseEvent("auxclick", { button: 1, bubbles: true }));
+    expect(
+      sent(send).some((m) => (m as { kind: string }).kind === "news-seen"),
+    ).toBe(true);
+  });
+
+  test("folding and unfolding keeps the slide; the live region names the article", () => {
+    const { container, getByRole } = renderUi("shell", {
+      data: data({ newsUnread: [NEWS[0]!.url] }),
+    });
+    fireEvent.click(getByRole("button", { name: "Next article" }));
+    fireEvent.click(getByRole("button", { name: "News" }));
+    fireEvent.click(getByRole("button", { name: "News" }));
+    const live = el(news(container), ".navs .c");
+    expect(live.textContent).toBe("2 / 3: Anniversary");
+  });
+
+  test("a list that shrinks under the shown slide still steps one by one", () => {
+    const r = renderUi("shell", {
+      data: data({ newsUnread: [NEWS[0]!.url] }),
+    });
+    const next = () =>
+      fireEvent.click(r.getByRole("button", { name: "Next article" }));
+    next();
+    next();
+    const two = setupState();
+    void act(() => {
+      r.store.set((s) => ({
+        data: {
+          ...s.data,
+          setup: two.setup
+            ? { ...two.setup, news: NEWS.slice(0, 2) }
+            : undefined,
+        },
+      }));
+    });
+    expect(el(news(r.container), ".navs .c").textContent).toMatch(/^2 \/ 2/);
+    next();
+    expect(el(news(r.container), ".navs .c").textContent).toMatch(/^1 \/ 2/);
   });
 
   test("Featured Content: its own label and banner, always open", () => {

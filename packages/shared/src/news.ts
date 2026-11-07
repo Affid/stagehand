@@ -6,7 +6,7 @@ import { z } from "zod";
 
 export const MAX_NEWS = 20;
 const MAX_NEWS_TITLE = 300;
-const MAX_NEWS_URL = 1000;
+export const MAX_NEWS_URL = 1000;
 
 const parse = (s: string): URL | undefined => {
   try {
@@ -16,19 +16,25 @@ const parse = (s: string): URL | undefined => {
   }
 };
 
-/** An article link: any https page (foundryvtt.com, its store). */
+/** https on one of these domains or their subdomains, without a user name. */
+function onDomains(s: string, domains: readonly string[]): boolean {
+  const url = s.length <= MAX_NEWS_URL ? parse(s) : undefined;
+  if (url?.protocol !== "https:" || url.username || url.password) return false;
+  const host = url.hostname;
+  return domains.some((d) => host === d || host.endsWith(`.${d}`));
+}
+
+/**
+ * An article link: Foundry's site or its store, as its news links (security
+ * review: a forged item must not put another site in Foundry's news).
+ */
 export function isNewsLink(s: string): boolean {
-  return s.length <= MAX_NEWS_URL && parse(s)?.protocol === "https:";
+  return onDomains(s, ["foundryvtt.com", "foundryvtt.store"]);
 }
 
 /** A banner: only Foundry's own images, so a forged item can't track viewers. */
 export function isNewsImage(s: string): boolean {
-  const url = s.length <= MAX_NEWS_URL ? parse(s) : undefined;
-  if (url?.protocol !== "https:") return false;
-  return (
-    url.hostname === "foundryvtt.com" ||
-    url.hostname.endsWith(".foundryvtt.com")
-  );
+  return onDomains(s, ["foundryvtt.com"]);
 }
 
 export const NewsItemSchema = z.object({

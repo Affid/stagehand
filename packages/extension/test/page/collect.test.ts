@@ -303,3 +303,13 @@ describe("Foundry's News and Featured Content (Phase 6)", () => {
     expect(data.news).toHaveLength(20);
   });
 });
+
+test("a news link listed twice is read once (review)", () => {
+  const n = {
+    title: "a",
+    url: "https://foundryvtt.com/article/a/",
+  };
+  expect(collect({ data: { news: [n, { ...n, title: "b" }] } }).news).toEqual([
+    n,
+  ]);
+});

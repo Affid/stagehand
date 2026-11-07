@@ -81,7 +81,12 @@ test("the arrows step through the articles; only the one shown is reachable", as
   test.skip(count < 2, "Only one article.");
   await news(page).locator(".viewport").hover();
   await news(page).getByRole("button", { name: "Next article" }).click();
-  await expect(news(page).locator(".navs .c")).toHaveText(`2 / ${count}`);
+  // Shown "2 / 4"; screen readers also hear the article's title.
+  await expect(news(page).locator(".navs .c")).toHaveText(
+    new RegExp(`^2 / ${String(count)}: .+`),
+  );
+  const shown = await news(page).locator(".navs .c").boundingBox();
+  expect(shown?.width).toBeLessThan(60);
   await expect(news(page).locator("a.banner").nth(0)).toHaveAttribute(
     "inert",
     "",
@@ -107,8 +112,9 @@ test("opening an article opens Foundry's page in a new tab and marks News read",
   ]);
   expect(tab.url()).toContain(new URL(href ?? "").host);
   await tab.close();
-  await expect(news(page)).toHaveClass(/folded/);
+  // Read now, but left open until the next load, so focus isn't lost.
   await expect(news(page).locator("header .new")).toHaveCount(0);
+  await expect(news(page)).not.toHaveClass(/folded/);
   const stored = await storage(ext.worker);
   const k = Object.keys(stored).find((x) => x.startsWith("news-seen:"));
   expect((stored[k ?? ""] as string[]).length).toBeGreaterThan(0);
@@ -118,11 +124,11 @@ test("opening an article opens Foundry's page in a new tab and marks News read",
 });
 
 test("the fold works by keyboard", async () => {
-  const toggle = news(page).getByRole("button", { name: "Show news" });
+  const toggle = news(page).getByRole("button", { name: "News" });
+  await expect(toggle).toHaveAttribute("aria-expanded", "false");
   await toggle.focus();
   await page.keyboard.press("Enter");
   await expect(news(page)).not.toHaveClass(/folded/);
-  await expect(
-    news(page).getByRole("button", { name: "Hide news" }),
-  ).toBeFocused();
+  await expect(toggle).toHaveAttribute("aria-expanded", "true");
+  await expect(toggle).toBeFocused();
 });

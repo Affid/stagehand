@@ -11,6 +11,13 @@ import { SetupDataSchema } from "../src/world.ts";
 const IMG = "https://r2.foundryvtt.com/website-uploads-public/a.webp";
 
 describe("Foundry's news items (Phase 6)", () => {
+  test("links only to Foundry's site or store, over https, without a user name", () => {
+    expect(isNewsLink("https://evil.example/x")).toBe(false);
+    expect(isNewsLink("https://foundryvtt.com.evil.example/x")).toBe(false);
+    expect(isNewsLink("https://user:pw@foundryvtt.com/x")).toBe(false);
+    expect(isNewsLink("https://www.foundryvtt.com/x")).toBe(true);
+  });
+
   test("links must be https", () => {
     expect(isNewsLink("https://foundryvtt.com/article/x/")).toBe(true);
     expect(isNewsLink("https://foundryvtt.store/products/y")).toBe(true);

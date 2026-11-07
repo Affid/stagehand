@@ -21,24 +21,35 @@ function usePreload(items: readonly NewsItem[]): void {
   }, [key]);
 }
 
-/** Opening an article (any button, any tab) marks everything listed seen. */
-function useOpen(): () => void {
+/** What the reader chose this load: folded or not, and the slide shown. */
+interface View {
+  readonly folded: boolean | null;
+  readonly index: number;
+}
+
+/**
+ * Opening an article (any tab) marks everything listed seen. The section
+ * stays as it is until the next load, so a keyboard user's focus stays on
+ * the banner (review); "folded once read" applies from then on.
+ */
+function useOpen(hold: () => void): () => void {
   const { state, actions } = useUi();
   const setup = state.data.setup;
   return () => {
-    if (setup && state.data.newsUnread.length > 0)
-      void actions.newsSeen(newsUrls(setup));
+    if (!setup || state.data.newsUnread.length === 0) return;
+    hold();
+    void actions.newsSeen(newsUrls(setup));
   };
 }
 
 function Banner(props: {
   readonly item: NewsItem;
   readonly isNew: boolean;
+  readonly onOpen: () => void;
   readonly inert?: boolean;
 }) {
   const { t } = useUi();
-  const open = useOpen();
-  const { item } = props;
+  const { item, onOpen } = props;
   return (
     <a
       class="banner"
@@ -47,8 +58,11 @@ function Banner(props: {
       rel="noopener noreferrer"
       title={new URL(item.url).host}
       inert={props.inert}
-      onClick={open}
-      onAuxClick={open}
+      onClick={onOpen}
+      // A middle click opens it too; a right click only shows the menu.
+      onAuxClick={(e) => {
+        if (e.button === 1) onOpen();
+      }}
     >
       {item.image ? <img src={item.image} alt="" decoding="async" /> : null}
       <span class="cap">
@@ -64,22 +78,25 @@ function Banner(props: {
 function Carousel(props: {
   readonly list: readonly NewsItem[];
   readonly unread: ReadonlySet<string>;
+  readonly at: number;
+  readonly onStep: (to: number) => void;
+  readonly onOpen: () => void;
 }) {
   const { t } = useUi();
-  const [index, setIndex] = useState(0);
-  const { list } = props;
+  const { list, at } = props;
   const n = list.length;
-  const at = Math.min(index, n - 1);
-  const step = (d: number) => setIndex((i) => (((i + d) % n) + n) % n);
+  // From the slide shown, so a list that shrank still steps one by one (review).
+  const step = (d: number) => props.onStep((((at + d) % n) + n) % n);
   return (
     <div class="viewport">
       <div class="track" style={{ transform: `translateX(-${at * 100}%)` }}>
         {list.map((x, k) => (
           <Banner
-            key={x.url}
+            key={`${String(k)}:${x.url}`}
             item={x}
             isNew={props.unread.has(x.url)}
             inert={k !== at}
+            onOpen={props.onOpen}
           />
         ))}
       </div>
@@ -94,6 +111,7 @@ function Carousel(props: {
           </button>
           <span class="c" aria-live="polite">
             {t("news.count", { i: at + 1, n })}
+            <span class="ml-sr-only">: {list[at]?.title}</span>
           </span>
           <button
             type="button"
@@ -111,14 +129,16 @@ function Carousel(props: {
 function News(props: {
   readonly list: readonly NewsItem[];
   readonly unread: ReadonlySet<string>;
+  readonly view: View;
+  readonly onView: (v: View) => void;
+  readonly onOpen: () => void;
 }) {
   const { t } = useUi();
-  const { list, unread } = props;
+  const { list, unread, view } = props;
   const fresh = list.some((x) => unread.has(x.url));
   // Open while something is unread; the reader's own choice wins this load.
-  const [choice, setChoice] = useState<boolean | null>(null);
-  const folded = choice ?? !fresh;
-  const toggle = () => setChoice(!folded);
+  const folded = view.folded ?? !fresh;
+  const toggle = () => props.onView({ ...view, folded: !folded });
   return (
     <section
       class={`mlr-news${folded ? " folded" : ""}`}
@@ -130,15 +150,25 @@ function News(props: {
           type="button"
           class="icon"
           aria-expanded={!folded}
-          aria-label={t(folded ? "news.show" : "news.hide")}
+          aria-label={t("news.title")}
         >
           <Icon name={folded ? "chevron-right" : "chevron-down"} />
         </button>
-        <span title={t("news.from")}>{t("news.title")}</span>
+        <span title={t("news.from")} aria-hidden="true">
+          {t("news.title")}
+        </span>
         {fresh ? <span class="new">{t("news.new")}</span> : null}
         {folded ? <span class="latest">{list[0]?.title}</span> : null}
       </header>
-      {folded ? null : <Carousel list={list} unread={unread} />}
+      {folded ? null : (
+        <Carousel
+          list={list}
+          unread={unread}
+          at={Math.min(view.index, list.length - 1)}
+          onStep={(index) => props.onView({ ...view, index })}
+          onOpen={props.onOpen}
+        />
+      )}
     </section>
   );
 }
@@ -150,15 +180,29 @@ export function RailNews() {
   const featured = setup?.featured;
   usePreload(featured ? [...list, featured] : list);
   const unread = new Set(state.data.newsUnread);
+  // Kept here, so folding and unfolding returns to the same slide (review).
+  const [view, setView] = useState<View>({ folded: null, index: 0 });
+  const fresh = list.some((x) => unread.has(x.url));
+  const open = useOpen(() =>
+    setView((v) => ({ ...v, folded: v.folded ?? !fresh })),
+  );
   return (
     <>
-      {list.length > 0 ? <News list={list} unread={unread} /> : null}
+      {list.length > 0 ? (
+        <News
+          list={list}
+          unread={unread}
+          view={view}
+          onView={setView}
+          onOpen={open}
+        />
+      ) : null}
       {featured ? (
         <section class="mlr-feat" aria-label={t("news.featured")}>
           <span class="lbl" aria-hidden="true">
             {t("news.featured")}
           </span>
-          <Banner item={featured} isNew={false} />
+          <Banner item={featured} isNew={false} onOpen={open} />
         </section>
       ) : null}
     </>

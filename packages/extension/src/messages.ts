@@ -2,7 +2,7 @@
 // Validated with Zod in the background: content scripts run on web pages.
 import { LibraryOpSchema } from "@module-library/shared/library/ops";
 import type { Library } from "@module-library/shared/library/schema";
-import { MAX_NEWS } from "@module-library/shared/news";
+import { MAX_NEWS, MAX_NEWS_URL } from "@module-library/shared/news";
 import { NS } from "@module-library/shared/protocol";
 import {
   ApplyModeSchema,
@@ -62,7 +62,7 @@ export const ExtensionMessageSchema = z.discriminatedUnion("kind", [
   /** News: these articles have been opened (no longer "New"). */
   z.object({
     kind: z.literal("news-seen"),
-    urls: z.array(z.string().max(1000)).max(MAX_NEWS + 5),
+    urls: z.array(z.string().max(MAX_NEWS_URL)).max(MAX_NEWS + 5),
   }),
   /** "Launch without changes": the world's next pull gets none, once. */
   z.object({

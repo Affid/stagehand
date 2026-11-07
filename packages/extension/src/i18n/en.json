@@ -115,8 +115,6 @@
   "news.aria": "News from foundryvtt.com",
   "news.from": "From foundryvtt.com",
   "news.new": "New",
-  "news.show": "Show news",
-  "news.hide": "Hide news",
   "news.prev": "Previous article",
   "news.next": "Next article",
   "news.count": "{i} / {n}",

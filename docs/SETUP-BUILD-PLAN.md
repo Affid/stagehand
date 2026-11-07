@@ -571,3 +571,22 @@ a code review and a security review:
 6. **Acceptance**: every requirement in SETUP-REDESIGN.md checked on Foundry
    14.370 and recorded below; the full live suite; the results artifact with
    the build beside the prototype at 1366 and 2560.
+
+Package 1 done (`61ed0a7`, fixes after it). Live on 14.370
+(`tests/foundry/setup-news.spec.ts`): a first visit has nothing new and News
+folded to "2026 Year in Review"; an article forgotten from the read state
+shows New and opens News; the arrows slide the track; an article opens
+foundryvtt.com in a new tab and News reads as read after a reload; the fold
+works by keyboard. Reviews: no critical or high. Fixed: article links only
+to foundryvtt.com or foundryvtt.store (and subdomains), never with a user
+name (security, medium: a forged item could put another site in Foundry's
+news); one article per link; the URL cap shared; the carousel steps from the
+slide shown when the list shrinks; opening an article keeps the section as
+it is until the next load, so keyboard focus stays on the banner (the
+prototype folds at once, but it is a mouse mockup); a right click no longer
+counts as opening; the slide survives folding; the live region names the
+article; the toggle keeps one name ("News") with `aria-expanded`. Kept, with
+reasons: images from any foundryvtt.com subdomain (Foundry serves them from
+r2.foundryvtt.com and may move them; the release notes banner follows the
+same rule); a first visit without news seeds nothing, so the first news a
+server ever gets is not New either ("nothing new on a fresh install").

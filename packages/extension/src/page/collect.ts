@@ -106,8 +106,12 @@ function issues(game: SetupGame): Pick<SetupData, "issues"> {
 /** Foundry's News and Featured Content, when it has any (Phase 6). */
 function news(game: SetupGame): Pick<SetupData, "news" | "featured"> {
   const raw = game.data?.news;
-  const list = (Array.isArray(raw) ? (raw as unknown[]) : [])
-    .flatMap((n) => toNewsItem(n) ?? [])
+  const items = (Array.isArray(raw) ? (raw as unknown[]) : []).flatMap(
+    (n) => toNewsItem(n) ?? [],
+  );
+  // One article per link: the link is its key (review).
+  const list = items
+    .filter((n, i) => items.findIndex((m) => m.url === n.url) === i)
     .slice(0, MAX_NEWS);
   const featured = toNewsItem(game.data?.featuredContent);
   return {
