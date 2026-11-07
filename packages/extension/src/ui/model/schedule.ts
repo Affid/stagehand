@@ -156,3 +156,51 @@ export const todayIn = (tz: string, now: number): string =>
 /** "Europe/Berlin" reads "Berlin"; "UTC" stays. */
 export const cityOf = (tz: string): string =>
   tz === "UTC" ? "UTC" : (tz.split("/").pop() ?? tz).replace(/_/g, " ");
+
+/** Foundry-evening times that fill the quick times you don't use yet. */
+export const DEFAULT_TIMES: readonly string[] = [
+  "18:00",
+  "18:30",
+  "19:00",
+  "19:30",
+  "20:00",
+];
+const QUICK_TIMES = 5;
+export const HH_MM = /^([01]\d|2[0-3]):[0-5]\d$/;
+
+export interface QuickTimes {
+  /** At most five, sorted, always holding the current time. */
+  readonly list: readonly string[];
+  /** The ones your schedules use. */
+  readonly fromYou: ReadonlySet<string>;
+}
+
+/** Times a schedule uses: its rule's time, or each chosen date's own. */
+const timesOf = (s: Schedule): readonly string[] =>
+  s.freq === "dates" ? Object.values(s.dates ?? {}) : [s.time];
+
+/**
+ * Quick times (prototype usedTimes): the times your worlds' schedules use,
+ * most used first, then the defaults, with the current time kept.
+ */
+export function usedTimes(
+  schedules: readonly Schedule[],
+  current: string,
+): QuickTimes {
+  const counts = schedules
+    .flatMap(timesOf)
+    .filter((t) => HH_MM.test(t))
+    .reduce<ReadonlyMap<string, number>>(
+      (m, t) => new Map([...m, [t, (m.get(t) ?? 0) + 1]]),
+      new Map(),
+    );
+  const mine = [...counts]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .map(([t]) => t);
+  const top = [...new Set([...mine, ...DEFAULT_TIMES])].slice(0, QUICK_TIMES);
+  const list =
+    !current || top.includes(current)
+      ? top
+      : [...top.slice(0, QUICK_TIMES - 1), current];
+  return { list: [...list].sort(), fromYou: new Set(mine) };
+}

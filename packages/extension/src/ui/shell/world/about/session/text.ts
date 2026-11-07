@@ -87,3 +87,37 @@ export function ruleText(t: Translate, s: Schedule, now: number): string {
     time: s.time,
   });
 }
+
+/** Zones the summary shows as examples of the players' own time. */
+const EXAMPLE_ZONES = ["Europe/London", "America/New_York", "Australia/Sydney"];
+
+export interface ZoneExample {
+  /** "19:00", 24-hour. */
+  readonly time: string;
+  readonly city: string;
+  /** "Wed" when the day there differs from the schedule's, else "". */
+  readonly weekday: string;
+}
+
+/** That instant in the example zones, the schedule's own zone left out. */
+export function otherZones(ms: number, tz: string): ZoneExample[] {
+  const day = (z: string): string => fmt(ms, z, { day: "numeric" });
+  return EXAMPLE_ZONES.filter((z) => z !== tz).map((z) => ({
+    time: fmt(ms, z, { hour: "2-digit", minute: "2-digit", hourCycle: "h23" }),
+    city: cityOf(z),
+    weekday: day(z) === day(tz) ? "" : fmt(ms, z, { weekday: "short" }),
+  }));
+}
+
+/** A chosen date, "Tue 10 Nov"; the year only when it is not this year. */
+export function dateLabel(date: string, thisYear: number): string {
+  const ms = Date.parse(`${date}T12:00:00Z`);
+  if (!Number.isFinite(ms)) return date;
+  const label = fmt(ms, "UTC", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+  }).replace(",", "");
+  const year = new Date(ms).getUTCFullYear();
+  return year === thisYear ? label : `${label} ${String(year)}`;
+}

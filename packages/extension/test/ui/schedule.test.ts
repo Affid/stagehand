@@ -4,8 +4,13 @@ import {
   nextOf,
   type Schedule,
   upcoming,
+  usedTimes,
   zonedToUtc,
 } from "../../src/ui/model/schedule.ts";
+import {
+  dateLabel,
+  otherZones,
+} from "../../src/ui/shell/world/about/session/text.ts";
 
 const NOW = zonedToUtc("2026-11-06", "12:00", "Europe/Berlin");
 
@@ -136,5 +141,79 @@ describe("a calendar day's name (Phase 6, label in content)", () => {
     expect(dayName("2026-11-01")).toBe("Sunday, 1 November 2026");
     expect(dayName("2026-02-28")).toContain("28");
     expect(dayName("not a date")).toBe("not a date");
+  });
+});
+
+describe("quick times from the owner's own schedules", () => {
+  const chosen: Schedule = {
+    ...weekly,
+    freq: "dates",
+    skips: [],
+    dates: { "2026-11-14": "15:00", "2026-11-27": "21:15" },
+  };
+
+  test("most used first, then the defaults, at most five, sorted", () => {
+    const mine = [
+      { ...weekly, time: "20:15" },
+      { ...weekly, time: "20:15" },
+      chosen,
+    ];
+    const { list, fromYou } = usedTimes(mine, "20:15");
+    expect(list).toEqual(["15:00", "18:00", "18:30", "20:15", "21:15"]);
+    expect([...fromYou].sort()).toEqual(["15:00", "20:15", "21:15"]);
+  });
+
+  test("a chosen date's own time counts, not the usual time", () => {
+    const { fromYou } = usedTimes([chosen], "19:00");
+    expect(fromYou.has("19:00")).toBe(false);
+    expect(fromYou.has("21:15")).toBe(true);
+  });
+
+  test("without schedules it is the defaults", () => {
+    expect(usedTimes([], "19:00").list).toEqual([
+      "18:00",
+      "18:30",
+      "19:00",
+      "19:30",
+      "20:00",
+    ]);
+  });
+
+  test("the current time is always there", () => {
+    const { list } = usedTimes([], "07:45");
+    expect(list).toHaveLength(5);
+    expect(list).toContain("07:45");
+    expect(list[0]).toBe("07:45");
+  });
+
+  test("a stored time that is not HH:MM is ignored", () => {
+    const odd = { ...weekly, time: "late" };
+    expect(usedTimes([odd], "19:00").list).not.toContain("late");
+  });
+});
+
+describe("the time players see, for example", () => {
+  test("three zones with the weekday when the day differs", () => {
+    const ms = zonedToUtc("2026-11-10", "19:00", "Europe/Berlin");
+    expect(otherZones(ms, "Europe/Berlin")).toEqual([
+      { time: "18:00", city: "London", weekday: "" },
+      { time: "13:00", city: "New York", weekday: "" },
+      { time: "05:00", city: "Sydney", weekday: "Wed" },
+    ]);
+  });
+
+  test("the schedule's own zone is left out", () => {
+    const ms = zonedToUtc("2026-11-10", "19:00", "Europe/London");
+    expect(otherZones(ms, "Europe/London").map((x) => x.city)).toEqual([
+      "New York",
+      "Sydney",
+    ]);
+  });
+});
+
+describe("a chosen date's label", () => {
+  test("weekday, day and month; the year only when it is not this year", () => {
+    expect(dateLabel("2026-11-10", 2026)).toBe("Tue 10 Nov");
+    expect(dateLabel("2027-01-05", 2026)).toBe("Tue 5 Jan 2027");
   });
 });

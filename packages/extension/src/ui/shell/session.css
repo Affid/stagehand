@@ -356,6 +356,61 @@
   opacity: 0.45;
 }
 
+/* Chosen dates under the calendar, each with its own time (prototype). */
+.mls-shell .mlw-chosen {
+  grid-column: 1 / -1;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 4px 10px;
+}
+
+.mls-shell .mlw-chosen li {
+  display: grid;
+  grid-template-columns: 1fr 62px 24px;
+  gap: 6px;
+  align-items: center;
+  padding: 3px 4px 3px 8px;
+  border-radius: 3px;
+  background: rgb(255 255 255 / 4%);
+  font-size: 13px;
+  color: var(--color-light-1);
+}
+
+.mls-shell .mlw-chosen li.past {
+  opacity: 0.5;
+}
+
+.mls-shell .mlw-chosen li.none {
+  display: block;
+  color: var(--color-text-subtle);
+  background: none;
+}
+
+.mls-shell .mlw-chosen .tt {
+  height: 24px;
+  font-size: 12.5px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  padding: 0 4px;
+}
+
+.mls-shell .mlw-chosen button {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  font-size: 11px;
+  background: none;
+  border: 0;
+  color: var(--color-light-4);
+}
+
+.mls-shell .mlw-chosen button:hover {
+  color: #ffb3a6;
+}
+
 .mls-shell .mlw-tzrow {
   display: flex;
   gap: 6px;

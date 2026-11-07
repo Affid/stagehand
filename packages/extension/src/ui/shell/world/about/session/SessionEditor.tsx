@@ -7,17 +7,21 @@ import { useUi } from "../../../../context.ts";
 import {
   addDays,
   type Freq,
+  type QuickTimes,
   type Schedule,
   todayIn,
   upcoming,
+  usedTimes,
+  zonedToUtc,
 } from "../../../../model/schedule.ts";
+import { ChosenDates } from "./ChosenDates.tsx";
 import { Calendar, ZonePick } from "./Pickers.tsx";
-import { BROWSER_TZ, tzLabel, whenIn } from "./text.ts";
+import { BROWSER_TZ, tzLabel } from "./text.ts";
 import { nextIso, useSaveSchedule } from "./SessionView.tsx";
+import { Summary } from "./Summary.tsx";
 
 const FREQS: readonly Freq[] = ["none", "w1", "w2", "m1", "dates"];
 const HOURS = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0"));
-const DEFAULT_TIMES = ["18:00", "18:30", "19:00", "19:30", "20:00"];
 
 interface Draft extends Schedule {
   readonly month: string;
@@ -61,6 +65,9 @@ function toSchedule(d: Draft, prev: Schedule | undefined): Schedule {
 
 function TimeRow(props: {
   readonly time: string;
+  readonly quick: QuickTimes;
+  /** Under the quick times: chosen dates say new dates get this time. */
+  readonly hint?: string | undefined;
   readonly onTime: (t: string) => void;
 }) {
   const { t } = useUi();
@@ -91,17 +98,19 @@ function TimeRow(props: {
         <span class="h24">{t("sched.h24")}</span>
       </div>
       <div class="chips">
-        {DEFAULT_TIMES.map((x) => (
+        {props.quick.list.map((x) => (
           <button
             type="button"
             key={x}
             class={x === props.time ? "on" : ""}
+            title={props.quick.fromYou.has(x) ? t("sched.usedTime") : undefined}
             onClick={() => props.onTime(x)}
           >
             {x}
           </button>
         ))}
       </div>
+      {props.hint ? <span class="tzl">{props.hint}</span> : null}
     </div>
   );
 }
@@ -153,13 +162,11 @@ function Side(props: {
 }) {
   const { state, t } = useUi();
   const { d, set } = props;
-  const used = [
-    ...new Set(
-      (state.data.setup?.worlds ?? []).flatMap((w) =>
-        w.schedule ? [w.schedule.tz] : [],
-      ),
-    ),
-  ];
+  const custom = d.freq === "dates";
+  const schedules = (state.data.setup?.worlds ?? []).flatMap((w) =>
+    w.schedule ? [w.schedule] : [],
+  );
+  const used = [...new Set(schedules.map((s) => s.tz))];
   return (
     <div class="side">
       <label>{t("sched.repeats")}</label>
@@ -174,10 +181,13 @@ function Side(props: {
           </option>
         ))}
       </select>
-      <label>
-        {d.freq === "dates" ? t("sched.usualTime") : t("sched.time")}
-      </label>
-      <TimeRow time={d.time} onTime={(time) => set({ time })} />
+      <label>{custom ? t("sched.usualTime") : t("sched.time")}</label>
+      <TimeRow
+        time={d.time}
+        quick={usedTimes(schedules, d.time)}
+        hint={custom ? t("sched.newDates") : undefined}
+        onTime={(time) => set({ time })}
+      />
       <label>{t("sched.tz")}</label>
       <div>
         <ZonePick tz={d.tz} used={used} onTz={(tz) => set({ tz })} />
@@ -189,33 +199,43 @@ function Side(props: {
   );
 }
 
+const dropDate = (d: Draft, date: string): Partial<Draft> => ({
+  dates: Object.fromEntries(
+    Object.entries(d.dates ?? {}).filter(([k]) => k !== date),
+  ),
+});
+
 /** A day on the calendar: the start of a rule, or a chosen date in or out. */
 function pickDay(d: Draft, date: string): Partial<Draft> {
   if (d.freq !== "dates") return { start: date };
   const dates = d.dates ?? {};
-  return {
-    dates:
-      date in dates
-        ? Object.fromEntries(Object.entries(dates).filter(([k]) => k !== date))
-        : { ...dates, [date]: d.time },
-  };
+  return date in dates
+    ? dropDate(d, date)
+    : { dates: { ...dates, [date]: d.time } };
 }
+
+/** Days the calendar marks: the chosen dates, or the rule's next ones. */
+const markedDays = (d: Draft): ReadonlySet<string> =>
+  new Set(
+    d.freq === "dates"
+      ? Object.keys(d.dates ?? {})
+      : upcoming({ ...d, skips: [] }, Date.now(), 40).map((x) => x.date),
+  );
 
 export function SessionEditor(props: {
   readonly world: WorldInfo;
   readonly onDone: () => void;
 }) {
   const [d, setD] = useState<Draft>(() => startDraft(props.world.schedule));
-  const set = (next: Partial<Draft>): void => {
-    setD((x) => ({ ...x, ...next }));
+  /** A change, or one worked out from the latest draft (blur, then click). */
+  const set = (next: Partial<Draft> | ((x: Draft) => Partial<Draft>)): void => {
+    setD((x) => ({ ...x, ...(typeof next === "function" ? next(x) : next) }));
   };
   const custom = d.freq === "dates";
-  const marked = new Set(
-    custom
-      ? Object.keys(d.dates ?? {})
-      : upcoming({ ...d, skips: [] }, Date.now(), 40).map((x) => x.date),
-  );
+  const marked = markedDays(d);
   const first = nextIso(toSchedule(d, undefined), Date.now());
+  // As the prototype: with no date still to come, the draft's own date.
+  const firstMs = first ? Date.parse(first) : zonedToUtc(d.start, d.time, d.tz);
   return (
     <div class={`mlw-sched${custom ? " custom" : ""}`}>
       <Calendar
@@ -224,14 +244,30 @@ export function SessionEditor(props: {
         marked={marked}
         today={today()}
         onDay={(date) => {
-          set(pickDay(d, date));
+          set((x) => pickDay(x, date));
         }}
         onMonth={(month) => {
           set({ month });
         }}
       />
       <Side d={d} set={set} first={first} />
-      {first ? <p class="sum">{whenIn(Date.parse(first), d.tz)}</p> : null}
+      {custom ? (
+        <ChosenDates
+          dates={d.dates ?? {}}
+          tz={d.tz}
+          onTime={(date, time) => {
+            set((x) => ({ dates: { ...x.dates, [date]: time } }));
+          }}
+          onRemove={(date) => {
+            set((x) => dropDate(x, date));
+          }}
+        />
+      ) : null}
+      <Summary
+        ms={firstMs}
+        tz={d.tz}
+        chosen={custom ? Object.keys(d.dates ?? {}).length : undefined}
+      />
       <Bar draft={d} world={props.world} onDone={props.onDone} />
     </div>
   );

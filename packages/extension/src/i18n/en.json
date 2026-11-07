@@ -719,6 +719,7 @@
   "sched.prevMonth": "Previous month",
   "sched.nextMonth": "Next month",
   "sched.clickDays": "Click days on the calendar to add or remove them.",
+  "sched.clickToAdd": "Click days on the calendar to add them.",
   "sched.newDates": "New dates get this time; change any date below.",
   "sched.noDates": "No dates yet.",
   "sched.timeOn": "Time on {date}",
