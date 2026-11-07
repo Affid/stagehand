@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { cleanup, fireEvent, render } from "@testing-library/preact";
+import { cleanup, fireEvent, render, waitFor } from "@testing-library/preact";
 import { useRef } from "preact/hooks";
 import { afterEach, describe, expect, test } from "vitest";
 import { useScrollFade } from "../../src/ui/common/scroll-fade.ts";
@@ -47,5 +47,18 @@ describe("a list cut off where more is hidden fades (Phase 6)", () => {
     sized(l, { scrollHeight: 300, clientHeight: 300, scrollTop: 0 });
     fireEvent.scroll(l);
     expect(l.className).toBe("");
+  });
+});
+
+describe("the fade follows changes without a scroll (review)", () => {
+  test("new content re-checks; unmounting stops listening", async () => {
+    const { getByTestId, unmount } = render(<List axis="y" />);
+    const l = getByTestId("l");
+    sized(l, { scrollHeight: 900, clientHeight: 300, scrollTop: 0 });
+    l.append(document.createElement("span"));
+    await waitFor(() => expect(l.className).toBe("more"));
+    unmount();
+    // No listener left: a scroll after unmounting changes nothing, and throws nothing.
+    expect(() => fireEvent.scroll(l)).not.toThrow();
   });
 });

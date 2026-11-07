@@ -5,6 +5,7 @@
 // Only ids starting with ml-many- (worlds) and ml-stub- (modules) are
 // touched. Foundry must be running on Setup; no world may be running.
 import {
+  existsSync,
   mkdirSync,
   readdirSync,
   readFileSync,
@@ -15,6 +16,7 @@ import { join } from "node:path";
 import {
   createAdminClient,
   createWorld,
+  hasActiveWorld,
   loginAsAdmin,
   setupPost,
 } from "./admin.ts";
@@ -83,14 +85,36 @@ function addModules(n: number): void {
 }
 
 function ours(kind: "worlds" | "modules", prefix: string): string[] {
-  return readdirSync(join(data, kind)).filter((d) => d.startsWith(prefix));
+  const dir = join(data, kind);
+  if (!existsSync(dir)) return [];
+  return readdirSync(dir).filter((d) => d.startsWith(prefix));
+}
+
+/** Logged in, on Setup with no world running; else it says why (review). */
+async function adminOnSetup(api: Parameters<typeof setupPost>[0]) {
+  const login = await loginAsAdmin(
+    api,
+    env.adminPassword,
+    join(env.dataDir, "Config"),
+  );
+  if (login !== "logged-in")
+    throw new Error("Foundry needs a restart to take its new admin password.");
+  if (await hasActiveWorld(api))
+    throw new Error("A world is running: shut it down first.");
+}
+
+function count(text: string, label: string): number {
+  const n = Number(text);
+  if (!Number.isInteger(n) || n < 0 || n > 500)
+    throw new Error(`${label} must be a whole number from 0 to 500`);
+  return n;
 }
 
 /** Adds the test worlds and stub modules; Foundry rereads its packages. */
 export async function addMany(worlds = 30, modules = 120): Promise<void> {
   const api = await createAdminClient(env.url);
   try {
-    await loginAsAdmin(api, env.adminPassword, join(env.dataDir, "Config"));
+    await adminOnSetup(api);
     addModules(modules);
     await addWorlds(api, worlds);
     await setupPost(api, { action: "resetPackages" });
@@ -99,15 +123,21 @@ export async function addMany(worlds = 30, modules = 120): Promise<void> {
   }
 }
 
-/** Takes every test world and stub module away again. */
+/**
+ * Takes every test world and stub module away again. The folders go first,
+ * so they go even when Foundry can't be told (review); a running world is
+ * left alone.
+ */
 export async function removeMany(): Promise<void> {
   const api = await createAdminClient(env.url);
   try {
-    await loginAsAdmin(api, env.adminPassword, join(env.dataDir, "Config"));
+    if (await hasActiveWorld(api).catch(() => false))
+      throw new Error("A world is running: shut it down first.");
     for (const id of ours("worlds", WORLD))
       rmSync(join(data, "worlds", id), { recursive: true, force: true });
     for (const id of ours("modules", STUB))
       rmSync(join(data, "modules", id), { recursive: true, force: true });
+    await adminOnSetup(api);
     await setupPost(api, { action: "resetPackages" });
   } finally {
     await api.dispose();
@@ -121,7 +151,8 @@ export const countMany = (): { worlds: number; modules: number } => ({
 
 if (import.meta.main) {
   const [cmd = "add", worlds = "30", modules = "120"] = process.argv.slice(2);
-  if (cmd === "add") await addMany(Number(worlds), Number(modules));
+  if (cmd === "add")
+    await addMany(count(worlds, "worlds"), count(modules, "modules"));
   else if (cmd === "remove") await removeMany();
   else throw new Error(`Unknown command ${cmd}: add or remove`);
   const n = countMany();

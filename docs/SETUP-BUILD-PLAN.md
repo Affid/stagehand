@@ -640,3 +640,41 @@ read. Reviews: security none (dev-only dependency, not bundled); code no
 critical or high; its four medium findings were this race's other paths
 (Add's reload, Discard, Cancel, a failed reload, a second press) and are
 fixed with tests.
+
+Package 4 done (`d8e6e19`, fixes in `2d42566`). `shell/layout.css`: the
+middle pane keeps Foundry's 1200 px window width on wide screens,
+left-aligned beside the rail, header across the screen (the build filled
+2560 px); at 1280 px and below the rail is 240 px and the details panel
+floats over the page (fixed, 16 px from the edges, above the page's sticky
+headers; dropdowns in the page open above it). Measured against the
+prototype with `scripts/dev/layout-compare.ts` on the world page, the
+Library with a module's details, server Backups and Configuration at 2560,
+1366 and 1280: every column box equal. Live: `setup-layout.spec.ts`. Found
+on the way: with a side panel at 1366 the selection bar was 708 px in a
+610 px pane and put Done under the panel (the prototype overflows the same
+way); it now wraps. `scripts/dev/overflow-scan.ts` finds nothing past its
+column on any page or tab at 1280 or 1366. Review (code and security in
+one, CSS only): no critical or high, no security issue. Fixed: the time-zone
+list and the Add menu open above a floating panel; comments; a server-pages
+test. Kept as the prototype: at 1280 the floating panel covers the pane's
+right edge until closed (Launch included, on a world page with a module's
+details open), and opening a panel can re-wrap the selection bar.
+
+Package 5 done (`2d42566`, fixes after it). `scripts/foundry/many.ts` adds
+30 test worlds (spread-out last played dates, a few never) and 120 stub
+modules to the local server and takes them away (only `ml-many-*` and
+`ml-stub-*`). Live: `setup-many.spec.ts` (adds, checks, removes): the rail
+scrolls and fades while more worlds are below (`common/scroll-fade.ts`, as
+the prototype's `more`); By world keeps 92 px columns, pins module names and
+world headers and fades at the right edge while worlds are hidden; Show
+narrows to "N of 32 worlds"; a module's details list all 32 worlds and
+scroll; the intake offers only a new module's worlds with "Choose from 30
+worlds…". Found on the way: the grid's names and headers scrolled away
+sideways (Foundry's tables clip, which pinned them to the table; the
+prototype sets `overflow: visible`), and long world titles in the grid ran
+into each other on one line (an old rule overrode the prototype's two-line
+clamp). Review: no critical; fixed the high (the suite could leave its test
+data behind if the browser never started) and the mediums (the script
+deletes before it logs in, refuses while a world runs, starts clean; the
+fade checks before paint, follows the content's size, and a world reached
+by keyboard scrolls clear of the fade); a real two-line title test.

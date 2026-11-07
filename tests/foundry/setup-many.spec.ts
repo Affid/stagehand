@@ -3,7 +3,7 @@
 // modules are added to the local server for this suite and taken away after.
 import { expect, type Page, test } from "@playwright/test";
 import { loadFoundryEnv } from "../../scripts/foundry/env.ts";
-import { addMany, countMany, removeMany } from "../../scripts/foundry/many.ts";
+import { addMany, removeMany } from "../../scripts/foundry/many.ts";
 import {
   type LoadedExtension,
   loadExtension,
@@ -22,7 +22,9 @@ test.describe.configure({ mode: "serial" });
 
 test.beforeAll(async () => {
   test.setTimeout(10 * 60_000);
-  if (countMany().worlds < 30) await addMany(30, 120);
+  // A clean start: leftovers of an earlier run go first (review).
+  await removeMany();
+  await addMany(30, 120);
   ext = await loadExtension();
   page = await ext.context.newPage();
   await page.setViewportSize({ width: 1366, height: 768 });
@@ -30,8 +32,12 @@ test.beforeAll(async () => {
 });
 
 test.afterAll(async () => {
-  await ext.context.close();
-  await removeMany();
+  // The test data goes even if the browser never started (review).
+  try {
+    await (ext as LoadedExtension | undefined)?.context.close();
+  } finally {
+    await removeMany();
+  }
 });
 
 test("the rail scrolls; it fades while more worlds are below, not at the end", async () => {

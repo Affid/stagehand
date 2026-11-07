@@ -1,6 +1,6 @@
 // Lists that scroll fade where they are cut off while more is hidden there
 // (SETUP-REDESIGN.md: many worlds; prototype _calm.js `more`, `more-right`).
-import { useEffect, useState } from "preact/hooks";
+import { useLayoutEffect, useState } from "preact/hooks";
 
 /** More than this past the visible edge counts as hidden. */
 const SLACK = 2;
@@ -19,7 +19,8 @@ export function useScrollFade(
   axis: "x" | "y",
 ): boolean {
   const [more, setMore] = useState(false);
-  useEffect(() => {
+  // Before paint, so the fade never shows a frame late (review).
+  useLayoutEffect(() => {
     const el = ref.current;
     if (!el) return undefined;
     const check = (): void => {
@@ -30,6 +31,8 @@ export function useScrollFade(
     const resized =
       typeof ResizeObserver === "function" ? new ResizeObserver(check) : null;
     resized?.observe(el);
+    // The content's own size too: a title wrapping changes no children.
+    if (el.firstElementChild) resized?.observe(el.firstElementChild);
     const changed =
       typeof MutationObserver === "function"
         ? new MutationObserver(check)

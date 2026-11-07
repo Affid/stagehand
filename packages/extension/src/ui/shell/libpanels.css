@@ -130,7 +130,9 @@
      than put Done under the panel. The prototype overflows here. */
   flex-wrap: wrap;
   row-gap: 4px;
-  padding: 4px 8px;
+  /* The toolbar's height (30 px: 28 px buttons and its border), so the
+     cards don't move when it replaces the toolbar (Phase 6). */
+  padding: 0 8px;
   border: 1px solid var(--color-warm-1);
   border-radius: 4px;
   background: rgb(238 155 58 / 14%);

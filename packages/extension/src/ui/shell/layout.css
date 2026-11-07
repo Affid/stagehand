@@ -42,6 +42,11 @@
   mask-image: linear-gradient(to bottom, #000 calc(100% - 36px), transparent);
 }
 
+/* A world reached by keyboard scrolls clear of the fade (review). */
+.mls-shell .mls-worlds {
+  scroll-padding-bottom: 36px;
+}
+
 .mls-shell .mll-gridwrap.more-right {
   mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent);
 }
