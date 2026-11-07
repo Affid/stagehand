@@ -93,3 +93,15 @@ describe("testDependencyCompatibility", () => {
     expect(testDependencyCompatibility(range, "3.0.0")).toBe(false);
   });
 });
+
+describe("versions as shown (Phase 6 live)", () => {
+  test("one v before the number, whether the package wrote one or not", async () => {
+    const { shownVersion, bareVersion } = await import("../src/version.ts");
+    expect(shownVersion("1.1.4")).toBe("v1.1.4");
+    expect(shownVersion("v1.1.4")).toBe("v1.1.4");
+    expect(shownVersion("V2")).toBe("V2");
+    expect(shownVersion("")).toBe("");
+    expect(bareVersion("v1.1.4")).toBe("1.1.4");
+    expect(bareVersion("version-x")).toBe("version-x");
+  });
+});

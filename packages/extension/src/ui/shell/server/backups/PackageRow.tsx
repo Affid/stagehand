@@ -10,6 +10,7 @@ import { plural } from "../../../i18n.ts";
 import { BackupRow } from "../../world/backups/BackupRow.tsx";
 import { backupAge, tip } from "../../world/backups/text.ts";
 import { versionTag } from "./version.ts";
+import { shownVersion } from "@module-library/shared/version";
 
 export type RunPackage = (
   p: PackageBackups,
@@ -24,9 +25,11 @@ function useTag(p: PackageBackups, b: BackupInfo | undefined, row: boolean) {
   const ver = p.type === "world" ? undefined : b.version;
   const text = row
     ? ver
-      ? `v${ver}`
+      ? shownVersion(ver)
       : (b.verified ?? "")
-    : [ver ? `v${ver}` : "", b.verified ?? ""].filter(Boolean).join(" · ");
+    : [ver ? shownVersion(ver) : "", b.verified ?? ""]
+        .filter(Boolean)
+        .join(" · ");
   const gen = state.data.setup?.core.generation;
   const tag = versionTag(t, b.verified, "made", gen, text);
   return tag ?? (text ? { text, cls: "" as const, tip: "" } : null);

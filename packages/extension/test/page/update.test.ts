@@ -122,6 +122,17 @@ describe("checking for an update", () => {
     expect(releaseOf({ ...RELEASE, flags })?.manual).toBe(true);
     expect(releaseOf({ ...RELEASE, generation: "x" })).toBeUndefined();
   });
+
+  test("Foundry 14.369's real answer for 14.370: the release, marked to install by hand", async () => {
+    // As /update answered on 14.369: the status sits in the flags.
+    const flags = { status: "error", requires_full_reinstall: true };
+    vi.stubGlobal("fetch", () =>
+      Promise.resolve(answer({ ...RELEASE, build: 370, flags })),
+    );
+    const r = await runUpdate(foundry().page, req());
+    expect(r.error).toBeUndefined();
+    expect(r.release).toMatchObject({ version: "14.370", manual: true });
+  });
 });
 
 type Tick = Record<string, unknown>;

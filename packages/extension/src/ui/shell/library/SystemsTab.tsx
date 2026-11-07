@@ -8,6 +8,7 @@ import { useUi } from "../../context.ts";
 import { plural } from "../../i18n.ts";
 import { worldsUsing } from "../../model/systems.ts";
 import { updateFor } from "../../model/updates.ts";
+import { shownVersion } from "@module-library/shared/version";
 
 function Marks(props: { readonly s: SystemInfo }) {
   const { state, page, t, canChange } = useUi();
@@ -85,7 +86,7 @@ function SysCard(props: { readonly s: SystemInfo }) {
       <div class="l3">
         <span class="tg" />
         <span class="meta">
-          v{s.version}
+          {shownVersion(s.version)}
           {authors ? ` · ${authors}` : ""}
         </span>
       </div>

@@ -8,6 +8,7 @@ import { Icon } from "../../common/widgets.tsx";
 import { useUi } from "../../context.ts";
 import { LibraryTab } from "./LibraryTab.tsx";
 import { PackageTab } from "./PackageTab.tsx";
+import { shownVersion } from "@module-library/shared/version";
 
 type Tab = "library" | "package";
 const TABS: readonly Tab[] = ["library", "package"];
@@ -19,7 +20,7 @@ function Sub(props: { readonly pkg: PackageInfo }) {
   const authors = pkg.authors.map((a) => a.name).join(", ");
   return (
     <div class="sub">
-      {[pkg.id, `v${pkg.version}`, authors].filter(Boolean).join(" · ")}
+      {[pkg.id, shownVersion(pkg.version), authors].filter(Boolean).join(" · ")}
     </div>
   );
 }

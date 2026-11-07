@@ -8,6 +8,7 @@ import { plural } from "../../../i18n.ts";
 import { asPackage, worldsUsing } from "../../../model/systems.ts";
 import { PackageTab } from "../PackageTab.tsx";
 import { PanelFrame } from "./PanelFrame.tsx";
+import { shownVersion } from "@module-library/shared/version";
 
 function UsedBy(props: { readonly s: SystemInfo }) {
   const { state, store, t } = useUi();
@@ -58,7 +59,7 @@ export function SystemPanel(props: { readonly id: string }) {
       <div class="mls-modhead">
         <h3>{s.title}</h3>
         <div class="sub">
-          {[s.id, `v${s.version}`, authors].filter(Boolean).join(" · ")}
+          {[s.id, shownVersion(s.version), authors].filter(Boolean).join(" · ")}
         </div>
       </div>
       <UsedBy s={s} />

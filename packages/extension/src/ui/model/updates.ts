@@ -1,6 +1,7 @@
 // Updates Foundry would install, as the Library counts and marks them: a
 // newer version than the installed one, and never for a locked package.
 import type { PackageInfo } from "@module-library/shared/package";
+import { bareVersion, isNewerVersion } from "@module-library/shared/version";
 import type { Updates } from "../../page-updates.ts";
 
 interface Installed {
@@ -9,13 +10,20 @@ interface Installed {
   readonly locked?: boolean | undefined;
 }
 
-/** The version to update to, or null. */
+/**
+ * The version to update to, or null. Still newer than what is installed:
+ * the list is read once per Setup load, and a release may spell its version
+ * with a "v" Foundry's list leaves out (Phase 6 live: socketlib).
+ */
 export function updateFor(
   updates: Readonly<Record<string, string>>,
   pkg: Installed,
 ): string | null {
   const next = Object.hasOwn(updates, pkg.id) ? updates[pkg.id] : undefined;
-  return next && next !== pkg.version && !pkg.locked ? next : null;
+  if (!next || pkg.locked) return null;
+  return isNewerVersion(bareVersion(next), bareVersion(pkg.version))
+    ? next
+    : null;
 }
 
 export function updateCount(

@@ -20,6 +20,7 @@ import {
 } from "./compat.ts";
 import { STATUS_ICON, statusLabel, why } from "./compat-text.ts";
 import { useOpenRow } from "./useOpenRow.ts";
+import { shownVersion } from "@module-library/shared/version";
 
 type Chip = "all" | Exclude<Status, "dep">;
 const CHIPS: readonly Chip[] = ["all", "ok", "unv", "risk", "bad"];
@@ -162,10 +163,10 @@ function Version(props: { readonly x: CompatRow; readonly system: string }) {
     <span class="v">
       {x.needsUpdate ? (
         <>
-          v{x.installed} → <b>{x.latest}</b>
+          {shownVersion(x.installed ?? "")} → <b>{x.latest}</b>
         </>
       ) : (
-        `v${x.installed ?? x.latest ?? "?"}`
+        shownVersion(x.installed ?? x.latest ?? "?")
       )}
     </span>
   );

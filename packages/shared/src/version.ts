@@ -51,6 +51,13 @@ export function isNewerVersion(
   return false;
 }
 
+/** A version without the "v" some packages write before the number. */
+export const bareVersion = (v: string): string => v.replace(/^v(?=\d)/i, "");
+
+/** A version as shown: one "v" before the number, never two ("vv1.1.4"). */
+export const shownVersion = (v: string): string =>
+  !v || /^v\d/i.test(v) ? v : `v${v}`;
+
 export function parseCoreVersion(version: string): CoreVersion {
   const [generation = "0", build = "0"] = version.split(".");
   return { version, generation: Number(generation), build: Number(build) };

@@ -110,6 +110,7 @@ function Menu(props: MenuProps) {
 export function VersionMenu() {
   const { state, t } = useUi();
   const [open, setOpen] = useState(false);
+  const hasUpdate = state.data.setup?.coreUpdate?.hasUpdate === true;
   const wrap = useRef<HTMLSpanElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
   const first = useRef<HTMLButtonElement | null>(null);
@@ -136,7 +137,9 @@ export function VersionMenu() {
         <span class="v">
           {t("shell.version", { version: versionLabel(version) })}
         </span>
-        {state.data.setup?.coreUpdate?.hasUpdate ? (
+        {/* A space for the name read from the text (axe joins spans as is). */}
+        {hasUpdate ? " " : null}
+        {hasUpdate ? (
           <span class="upd">
             <Icon name="arrow-up" />
             {t("up.chip")}

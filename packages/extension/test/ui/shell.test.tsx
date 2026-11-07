@@ -84,6 +84,15 @@ describe("the header bar", () => {
     });
     const chip = el(container, ".mlh-ver");
     expect(chip.textContent).toContain("update");
+    // The name holds the words shown, in order (axe, label-content-name-mismatch).
+    const norm = (x: string | null): string =>
+      (x ?? "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, " ")
+        .trim();
+    expect(norm(chip.getAttribute("aria-label"))).toContain(
+      norm(chip.textContent),
+    );
     fireEvent.click(chip);
     const menu = getByRole("region", { name: "Foundry Virtual Tabletop" });
     expect(menu.textContent).toContain("14.371 is available");

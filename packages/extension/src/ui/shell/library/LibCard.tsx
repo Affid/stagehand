@@ -6,6 +6,7 @@ import type { PackageInfo } from "@module-library/shared/package";
 import {
   type CoreVersion,
   isCompatibilityRisk,
+  shownVersion,
   testAvailability,
 } from "@module-library/shared/version";
 import { Icon } from "../../common/widgets.tsx";
@@ -150,7 +151,7 @@ function Meta(props: {
   return (
     <span class="meta">
       <span class={isRisk(props.pkg, props.core) ? "uv" : ""}>
-        v{props.pkg.version}
+        {shownVersion(props.pkg.version)}
       </span>{" "}
       · {n ? plural(t, "lib.inWorlds", n) : t("lib.inNoWorld")}
     </span>

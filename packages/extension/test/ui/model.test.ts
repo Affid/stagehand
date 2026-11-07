@@ -420,4 +420,26 @@ describe("updates Foundry would install (6b)", () => {
       ]),
     ).toBe(2);
   });
+
+  test("once installed, the update is gone, however the release spells its version (Phase 6 live)", async () => {
+    const { updateFor } = await import("../../src/ui/model/updates.ts");
+    // Foundry lists socketlib 1.1.4; its release's module.json says v1.1.4.
+    const u = { socketlib: "1.1.4" };
+    expect(updateFor(u, { id: "socketlib", version: "1.1.2" })).toBe("1.1.4");
+    expect(updateFor(u, { id: "socketlib", version: "v1.1.4" })).toBe(null);
+    expect(updateFor(u, { id: "socketlib", version: "1.1.5" })).toBe(null);
+    expect(updateFor(u, { id: "socketlib", version: "v1.1.3" })).toBe("1.1.4");
+  });
+
+  test("pre-releases follow Foundry's own isNewerVersion, as the list it builds does (code review)", async () => {
+    const { updateFor } = await import("../../src/ui/model/updates.ts");
+    // Foundry would not list 1.2.0 over 1.2.0-beta ("0" < "0-beta" as text),
+    // and would list 1.2.0-rc1 over 1.2.0: the card says what Foundry does.
+    expect(updateFor({ m: "1.2.0" }, { id: "m", version: "1.2.0-beta" })).toBe(
+      null,
+    );
+    expect(updateFor({ m: "1.2.0-rc1" }, { id: "m", version: "1.2.0" })).toBe(
+      "1.2.0-rc1",
+    );
+  });
 });
