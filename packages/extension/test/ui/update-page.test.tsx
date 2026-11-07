@@ -469,3 +469,29 @@ describe("package 7 review", () => {
     });
   });
 });
+
+describe("the Update page's tab rows (ARIA tabs, Phase 6)", () => {
+  test("Update sections and Package types: labelled, each naming its panel", async () => {
+    const r = await open();
+    fireEvent.click(r.getByRole("tab", { name: /Your packages/ }));
+    await waitFor(() => el(r.container, ".mlu-compat"));
+    const lists = r.getAllByRole("tablist");
+    expect(lists.map((l) => l.getAttribute("aria-label"))).toEqual([
+      "Update sections",
+      "Package types",
+    ]);
+    for (const list of lists) {
+      const tab = within(list).getAllByRole("tab", { selected: true })[0]!;
+      const panel = r.container.querySelector(
+        `[id="${tab.getAttribute("aria-controls") ?? ""}"]`,
+      );
+      expect(panel?.getAttribute("role")).toBe("tabpanel");
+      expect(panel?.getAttribute("aria-labelledby")).toBe(tab.id);
+    }
+    // The kinds' panel sits inside the Update sections' panel, not over it.
+    const outer = r.getByRole("tabpanel", { name: /Your packages/ });
+    expect(
+      within(outer).getByRole("tabpanel", { name: /^Systems/ }),
+    ).toBeTruthy();
+  });
+});

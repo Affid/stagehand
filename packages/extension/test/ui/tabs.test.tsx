@@ -78,9 +78,13 @@ describe("the ARIA tabs pattern (Phase 6)", () => {
     expect(getByRole("tabpanel").textContent).toBe("Panel three");
   });
 
-  test("the panel can be reached with Tab", () => {
-    const { getByRole } = render(<Harness />);
-    expect(getByRole("tabpanel").tabIndex).toBe(0);
+  test("keys move from the focused tab", () => {
+    const { getAllByRole } = render(<Harness start="two" />);
+    const tabs = () => getAllByRole("tab");
+    tabs()[1]?.focus();
+    fireEvent.keyDown(tabs()[1]!, { key: "ArrowLeft" });
+    expect(document.activeElement).toBe(tabs()[0]);
+    expect(tabs()[0]?.getAttribute("aria-selected")).toBe("true");
   });
 });
 

@@ -590,3 +590,21 @@ reasons: images from any foundryvtt.com subdomain (Foundry serves them from
 r2.foundryvtt.com and may move them; the release notes banner follows the
 same rule); a first visit without news seeds nothing, so the first news a
 server ever gets is not New either ("nothing new on a fresh install").
+
+Package 2 done (`ae6caf4`, fixes after it): `common/tabs.tsx` (`TabList`,
+`TabPanel`) on the world page, Library, module panel, server Backups, Update
+and Your packages' kinds. Tab rows are labelled ("World sections", "Library
+sections", "Details of X", "Backup categories", "Update sections",
+"Package types"); one tab in the Tab order; arrows, Home and End move and
+select; the selected tab controls its `tabpanel`, which its tab names.
+Layout checked unchanged with `scripts/dev/tab-boxes.ts` (every element's box
+on every reachable tab, before and after; the only new box is the module
+panel's tablist). Live: `tests/foundry/setup-a11y.spec.ts` walks the world,
+Library, module panel and Backups rows by keyboard. Reviews: security none;
+code no critical or high. Fixed: the panel wrapper shrank inside scrolling
+parents and lost their end padding (About scrolled 16 px short), and broke a
+child selector on the Update page; the panel is now `display: contents`, so
+it has no box and changes no layout, and keeps its role and name (checked
+in Chromium 156's accessibility tree); panels have no Tab stop of their own
+(each holds controls); keys move from the focused tab; unit tests for the
+Update page's two nested rows.

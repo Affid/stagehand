@@ -40,7 +40,8 @@ export function TabList<K extends string>(props: TabListProps<K>) {
   const refs = useRef<(HTMLButtonElement | null)[]>([]);
   const { tabs, current, id } = props;
   const onKeyDown = (e: KeyboardEvent) => {
-    const at = tabs.indexOf(current);
+    // From the tab that has focus, so focus and selection can't drift apart.
+    const at = refs.current.indexOf(e.currentTarget as HTMLButtonElement);
     const next = moveTo(e.key, at, tabs.length);
     const key = next === undefined ? undefined : tabs[next];
     if (next === undefined || key === undefined) return;
@@ -82,8 +83,9 @@ export function TabList<K extends string>(props: TabListProps<K>) {
 }
 
 /**
- * The selected tab's panel. It passes its parent's flex layout through
- * (`.mls-tabpanel`), so wrapping a tab's content moves nothing.
+ * The selected tab's panel. It has no box (`.mls-tabpanel` is
+ * `display: contents`), so wrapping a tab's content changes no layout; every
+ * panel starts with or holds controls, so it needs no Tab stop of its own.
  */
 export function TabPanel(props: {
   readonly id: string;
@@ -96,7 +98,6 @@ export function TabPanel(props: {
       role="tabpanel"
       id={panelId(props.id, props.tab)}
       aria-labelledby={tabId(props.id, props.tab)}
-      tabIndex={0}
       class={`mls-tabpanel${props.class ? ` ${props.class}` : ""}`}
     >
       {props.children}

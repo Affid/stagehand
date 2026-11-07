@@ -21,7 +21,8 @@
   gap: 8px;
 }
 
-.mls-shell .mlu-left > .mlu-notes {
+.mls-shell .mlu-left > .mlu-notes,
+.mls-shell .mlu-left > .mls-tabpanel > .mlu-notes {
   flex: 1;
 }
 
