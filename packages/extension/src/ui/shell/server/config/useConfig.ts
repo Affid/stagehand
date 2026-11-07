@@ -112,6 +112,9 @@ export function useConfig() {
     );
     if (r.error) return false;
     discard();
+    // Foundry's own restart flag, as it is: today it says restart for any
+    // change (even the theme, which applies at once), but we follow it so a
+    // finer check in Foundry reaches the page as is (owner, 2026-11-07).
     if (r.restart) setWaiting((w) => [...new Set([...w, ...keys])]);
     return true;
   };

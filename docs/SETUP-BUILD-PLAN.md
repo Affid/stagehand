@@ -803,3 +803,10 @@ and 340 px there, `clamp()` in `shell/layout.css`) until 2560 (544 and
 637 px), and the middle pane takes the rest; past 2560 only the middle pane
 grows. 1366 and 1280 are unchanged. `setup-layout.spec.ts` measures 1280,
 1366, 1920, 2560 and 3440 and the server pages at 2560.
+
+Restart after saving Configuration (2026-11-07, the owner's call): Foundry
+answers `restart: true` for any saved change (`updateServerConfiguration`),
+although some settings apply at once (the Setup theme is read on every page
+render). We keep following Foundry's flag rather than our own list of which
+settings need a restart, so a finer check in a later Foundry reaches the
+page unchanged.
