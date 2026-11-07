@@ -167,6 +167,37 @@ function phLibrary() {
   if (sel) { const bar = Object.assign(document.createElement("div"), { className: "mlp-actbar mlp-selbar" }); bar.append(sel); document.querySelector(".mlp-tabs")?.before(bar); }
 }
 
+/** Backups: the summary and "Create a snapshot" move to a bar above the tabs, as Launch on a world. */
+function phBackupsBar() {
+  if (ST.page !== "backups" || ST.dialog) return "";
+  const tab = ST.sbTab ?? "snapshots";
+  const lock = ST.serverJob || ST.backupJob;
+  const sel = tab === "snapshots" && ST.snapSel;
+  if (sel) {
+    return `<div class="mlp-actbar mlp-bkbar"><span class="mlp-what"><strong>${sel.size ? `${sel.size} selected` : "Select snapshots"}</strong><span>to delete</span></span>
+      <button type="button" class="del" data-act="snapdel"${sel.size ? "" : " disabled"}><i class="fa-solid fa-trash"></i>Delete…</button><button type="button" data-act="snapselect">Done</button></div>`;
+  }
+  const [top, sub] = tab === "snapshots"
+    ? [plural(SNAPSHOTS.length, "snapshot"), "48 GB of disk free"]
+    : [plural(sbCount(tab), "backup"), `${fmtSize(sbTotal(tab))} · 48 GB free`];
+  return `<div class="mlp-actbar mlp-bkbar"><span class="mlp-what"><strong>${top}</strong><span>${sub}</span></span>
+    <button type="button" class="bright mlp-launch" data-act="snapnew"${lock ? " disabled" : ""}><i class="fa-solid fa-camera-retro"></i>New snapshot</button></div>`;
+}
+
+/** Backups: one row of tabs (names and counts), a one-line note, and a filter row without the label and the count. */
+function phBackups() {
+  if (ST.page !== "backups") return;
+  const head = document.querySelector(".mls-main .mlb-head");
+  const job = head?.querySelector(".mlb-job");
+  if (job) head.replaceWith(job); else head?.remove();
+  document.querySelectorAll(".mls-main .mls-subtabs .c").forEach((c) => { c.textContent = c.textContent.split(" · ")[0]; });
+  document.querySelector(".mls-main .mlw-bhead.sel")?.remove();
+  document.querySelectorAll(".mls-main .mlb-snaps .nm span").forEach((el) => { el.textContent = el.textContent.replace(/^\w+day /, ""); });
+  const note = document.querySelector(".mls-main .mlw-bhead:not(.sel) > span:first-child");
+  if (note) note.textContent = "Restoring one rolls the whole server back.";
+  document.querySelectorAll(".mls-main .mlb-tools > .ml-label, .mls-main .mlb-tools > .ml-muted, .mls-main .mlb-tools > .ml-spacer").forEach((el) => el.remove());
+}
+
 const phScrollers = () => [...document.querySelectorAll(".mls-rail, .mls-main, .mls-panel .scroll")];
 function phScrollTop() { phScrollers().forEach((el) => { el.scrollTop = 0; }); }
 
@@ -181,12 +212,13 @@ if (PHONE) {
     b.dataset.screen = phWide() ? "page" : PH.screen;
     b.dataset.page = ST.page;
     document.querySelector("header.mls-top")?.replaceWith(Object.assign(document.createElement("div"), { innerHTML: phTopBar() }).firstElementChild);
-    document.getElementById("setup")?.insertAdjacentHTML("afterend", phActionBar() + phTabBar());
+    document.getElementById("setup")?.insertAdjacentHTML("afterend", phActionBar() + phBackupsBar() + phTabBar());
     if (ST.panel?.kind === "queue" && ST.page === "world") document.querySelector(".mls-main")?.insertAdjacentHTML("afterend", phQueueSheet());
     const panel = document.querySelector(".mls-panel");
     if (panel) { phPanelBar(panel); phSheetDrag(panel); panel.insertAdjacentHTML("beforebegin", `<div class="mlp-scrim" data-act="closepanel"></div>`); }
     if (ST.pop || document.querySelector("#context-menu.mls-menu-live")) b.insertAdjacentHTML("beforeend", `<div class="mlp-scrim pop" data-act="closepop"></div>`);
     phLibrary();
+    phBackups();
     // Configuration's "not saved" and "apply after a restart" bars sit above the tabs, where Save stays in reach.
     const cfgBar = ST.page === "config" && document.querySelector(".mls-main .mlc-pending, .mls-main .mlc-waiting");
     if (cfgBar) { const wrap = Object.assign(document.createElement("div"), { className: "mlp-actbar mlp-cfgbar" }); wrap.append(cfgBar); document.querySelector(".mlp-tabs")?.before(wrap); }

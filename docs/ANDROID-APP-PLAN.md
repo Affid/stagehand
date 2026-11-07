@@ -220,6 +220,12 @@ stands, for the owner to approve:
   four actions sit in a bar above the tabs; By world has a 150 px module
   column (three worlds across on a 412 px phone) and its Group by and Show
   in View; the desktop's "Foundry's" card layout is hidden.
+- Backups (calmer after the owner's review): the summary and New snapshot
+  sit in a bar above the tabs, as Launch on a world, with the tab's count and
+  size and the disk space free; one row of tabs with names and counts; the
+  explanation shortened to one line beside Select; the filter and Sort by in
+  one row; while selecting snapshots, the count, Delete and Done take over
+  the bottom bar; dates without the weekday.
 - What's new puts the update first; Configuration's Save bar sits above the
   tabs; a world without the companion has one Launch, in the bottom bar.
 - Touch sizes 44-48 px; no hover-only controls or tooltips; a phone on its

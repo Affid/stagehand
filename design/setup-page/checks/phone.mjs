@@ -51,6 +51,14 @@ for (const width of [360, 412]) {
   await click(p, ".mls-dialog [data-act=closedialog]");
   await click(p, ".mlp-back"); await expect(p, "home/world", `${tag} Back`);
   for (const t of ["backups", "config", "library"]) { await click(p, `.mlp-tabs [data-id=${t}]`); await expect(p, `page/${t}`, `${tag} tab ${t}`); await check(p, `${tag} ${t}`); }
+  await click(p, ".mlp-tabs [data-id=backups]");
+  if (!(await p.evaluate(() => new Set([...document.querySelectorAll(".mls-subtabs > a")].map((a) => a.offsetTop)).size === 1))) bad.push(`${tag}: Backups tabs wrap to a second row`);
+  if (!(await p.$(".mlp-bkbar [data-act=snapnew]"))) bad.push(`${tag}: Backups has no New snapshot bar`);
+  await click(p, "[data-act=snapselect]"); await click(p, "[data-act=snappick]"); await check(p, `${tag} select snapshots`);
+  if (!(await p.$(".mlp-bkbar [data-act=snapdel]:not([disabled])"))) bad.push(`${tag}: selecting a snapshot didn't enable Delete in the bar`);
+  await click(p, ".mlp-bkbar [data-act=snapselect]");
+  for (const t of ["world", "module"]) { await click(p, `[data-act=sbtab][data-id=${t}]`); await click(p, "[data-act=sbopen]"); await check(p, `${tag} backups ${t}`); }
+  await click(p, ".mlp-tabs [data-id=library]");
   await click(p, ".mlp-more"); await check(p, `${tag} library menu`); await click(p, "#context-menu [data-act=panel][data-id=tags]");
   if (!(await p.$(".mls-panel"))) bad.push(`${tag}: Tags didn't open from the menu`);
   await click(p, ".mlp-sheetbar [data-act=closepanel]");
