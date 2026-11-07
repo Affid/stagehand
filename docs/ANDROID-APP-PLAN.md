@@ -1,6 +1,6 @@
 # Android app: the new Setup page on a phone
 
-Status: planned 2026-11-07, not started. Owner's choices: an Android app that
+Status: planned 2026-11-07, not started; the owner's decisions are below. Owner's choices: an Android app that
 loads the user's Foundry server in a WebView and draws our Setup page over it
 (option 2 of three; the others were the extension in Firefox for Android, and
 a native client speaking Foundry's protocol); **Setup only** (a world, once
@@ -92,7 +92,8 @@ a commit per package, results with screenshots.
   cleartext is allowed (`networkSecurityConfig`); the server list marks such
   servers "Not encrypted", as Configuration does.
 - **Certificate errors** (a self-signed https server) are refused with a
-  message in v1; trusting a certificate the user confirms is an open item.
+  message in v1 (owner); trusting a certificate the user confirms can come
+  later.
 - **Data.** App-private storage. Cookies (the admin session) and the library
   are left out of cloud backup and device transfer (`dataExtractionRules`)
   until server sync (PRD D-3) is decided. The release signing key stays
@@ -150,20 +151,21 @@ build plan.
   `scripts/dev` screenshots at 360, 412 and 768 px in each theme.
 - **On device:** the phase 5 smoke suite, not the whole live suite.
 
-## Open decisions for the owner
+## Owner's decisions (2026-11-07)
 
-1. **Test device:** your phone over wireless debugging, or an emulator on
-   Windows (Android Studio; WSL has no KVM, so an emulator inside WSL is
-   too slow)? Phase 0 needs one.
-2. **Tooling:** may I install JDK 21 and the Android SDK in WSL (about
-   5 GB), and will you accept Google's SDK licence for it?
-3. **Tablets:** the phone layout up to which width? The 1280 layout floats
-   the details panel and suits a landscape tablet; a portrait tablet
-   (768-1024) could take either. Decided with the phone design.
-4. **Self-signed https servers:** refuse in v1 (planned), or let the user
-   trust a certificate after seeing its fingerprint?
-5. **App name and icon:** "Module Library" with our own icon, unless you
-   prefer another.
+1. **Test device:** both. An emulator on Windows (Android Studio; WSL has
+   no KVM) for day-to-day checks, the owner's phone over wireless debugging
+   for the phase 5 smoke suite.
+2. **Tooling:** JDK 21 and the Android SDK go into WSL; the owner accepted
+   Google's Android SDK licence for the install.
+3. **Self-signed https servers:** refused with a message in v1.
+4. **App name and icon:** "Module Library", with our own icon (none of
+   Foundry's branding).
+
+Still open: **tablets** (the phone layout up to which width; the 1280
+layout floats the details panel and suits a landscape tablet, a portrait
+tablet at 768-1024 could take either), decided with the phone design in
+phase 1.
 
 ## Risks
 
