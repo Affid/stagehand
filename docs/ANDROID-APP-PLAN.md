@@ -1,6 +1,6 @@
 # Android app: the new Setup page on a phone
 
-Status: planned 2026-11-07, not started; the owner's decisions are below. Owner's choices: an Android app that
+Status: planned 2026-11-07; phase 0 spike answered on the emulator (phone still to do); the owner's decisions are below. Owner's choices: an Android app that
 loads the user's Foundry server in a WebView and draws our Setup page over it
 (option 2 of three; the others were the extension in Firefox for Android, and
 a native client speaking Foundry's protocol); **Setup only** (a world, once
@@ -166,6 +166,25 @@ Still open: **tablets** (the phone layout up to which width; the 1280
 layout floats the details panel and suits a landscape tablet, a portrait
 tablet at 768-1024 could take either), decided with the phone design in
 phase 1.
+
+## What the spike changed (2026-11-07)
+
+From `docs/ANDROID-SPIKE.md`, on the emulator:
+
+- The approach holds: document-start scripts, the origin-pinned bridge
+  (its global name can be removed), the veil before the first paint, the
+  login cookie across restarts, and Playwright driving the WebView from WSL.
+- **A companion bug blocks the launch flow on plain-http network
+  addresses**, desktop included (`crypto.randomUUID` exists only in secure
+  contexts). It is fixed before phase 2, with a live test on a non-localhost
+  address.
+- **WebView version:** Foundry 14 needs Chromium 146. Phase 4 adds a check
+  with an "update Android System WebView" message; the emulator needs a
+  Google Play image (signed in once) for an up-to-date WebView.
+- **Foundry's own pages on a phone:** its "window smaller than 1024×768"
+  notice shows on every page (phase 3 handles it on Setup), and `/join`
+  hides its Join button at phone width (phase 4 adds a small fix there,
+  since a launch can pass through it).
 
 ## Risks
 
