@@ -4,7 +4,8 @@
 // and menu, a Show filter for busy servers, and a legend. Columns never
 // shrink below MIN_COL: past that it scrolls sideways, names pinned.
 import type { WorldInfo } from "@module-library/shared/world";
-import { useMemo, useState } from "preact/hooks";
+import { useMemo, useRef, useState } from "preact/hooks";
+import { useScrollFade } from "../../../common/scroll-fade.ts";
 import { useUi } from "../../../context.ts";
 import type { GroupBy, LibGroup } from "../../../model/library-groups.ts";
 import { type GridShow, gridWorlds } from "../../../model/world-grid.ts";
@@ -96,8 +97,10 @@ function Table(props: {
 }) {
   const { state, t } = useUi();
   const models = useWorldRows(props.shown);
+  const wrap = useRef<HTMLDivElement>(null);
+  const more = useScrollFade(wrap, "x");
   return (
-    <div class="mll-gridwrap">
+    <div class={`mll-gridwrap${more ? " more-right" : ""}`} ref={wrap}>
       <table
         class="mll-grid"
         aria-label={t("lib.tab.grid")}

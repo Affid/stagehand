@@ -285,6 +285,10 @@
   table-layout: fixed;
   width: 100%;
   font-size: 13px;
+  /* Foundry's tables clip, which pins the sticky names and headers to the
+     table instead of the scrolling box: they scrolled away (Phase 6, as the
+     prototype's .mls-gridwrap .mls-grid). */
+  overflow: visible;
 }
 
 .mls-shell .mll-grid th,
@@ -331,13 +335,6 @@
   justify-content: center;
   color: var(--color-light-1);
   font-weight: 600;
-}
-
-.mls-shell .mll-grid th.w .t {
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .mls-shell .mll-grid th.w .sub {

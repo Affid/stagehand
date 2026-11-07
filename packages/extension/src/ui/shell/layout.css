@@ -20,17 +20,28 @@
     bottom: 16px;
     width: 340px;
     height: auto;
-    /* Foundry's .application margin would shorten it. */
+    /* Foundry's .application bottom margin (12 px, seen live) would
+       shorten it. */
     margin: 0;
+    /* Above the page's sticky headers; only orders things inside our root
+       (#ml-shell-root is its own stacking context, under Foundry's windows).
+       Popovers (120) and the dropdowns below stay above it. */
     z-index: 110;
     box-shadow: -8px 0 24px rgb(0 0 0 / 70%);
   }
 }
 
-/* The selection bar is wider than a narrowed middle pane (a details panel
-   open at 1366 or less): it wraps rather than putting Done under the panel.
-   The prototype overflows here too. */
-.mls-shell .mls-selbar {
-  flex-wrap: wrap;
-  row-gap: 4px;
+/* Dropdowns inside the page open above a floating panel (review). */
+.mls-shell .mlw-tzfind ul,
+.mls-shell .mlw-addmenu {
+  z-index: 120;
+}
+
+/* Lists cut off while more is hidden fade there (common/scroll-fade.ts). */
+.mls-shell .mls-worlds.more {
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 36px), transparent);
+}
+
+.mls-shell .mll-gridwrap.more-right {
+  mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent);
 }

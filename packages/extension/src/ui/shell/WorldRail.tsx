@@ -1,7 +1,8 @@
 // The rail on the left: the Library, then the worlds in Foundry's order
 // with a filter, Create World and each world's flags.
 import type { WorldInfo } from "@module-library/shared/world";
-import { useMemo, useState } from "preact/hooks";
+import { useMemo, useRef, useState } from "preact/hooks";
+import { useScrollFade } from "../common/scroll-fade.ts";
 import { BUILD, IS_DEV_BUILD } from "../../build-info.ts";
 import { Icon } from "../common/widgets.tsx";
 import { useUi } from "../context.ts";
@@ -137,37 +138,51 @@ function LibraryEntry(props: { readonly current: boolean }) {
   );
 }
 
+/** The worlds' filter and Create World. */
+function RailBar(props: {
+  readonly count: number;
+  readonly text: string;
+  readonly onText: (text: string) => void;
+}) {
+  const { page, t } = useUi();
+  return (
+    <div class="mls-railbar">
+      <input
+        type="search"
+        aria-label={t("shell.filter", { n: props.count })}
+        placeholder={t("shell.filter", { n: props.count })}
+        value={props.text}
+        onInput={(e) => props.onText(e.currentTarget.value)}
+      />
+      <button
+        type="button"
+        class="icon"
+        aria-label={t("shell.create")}
+        title={t("shell.create")}
+        onClick={() => page.foundryAction({ action: "createWorld" })}
+      >
+        <Icon name="plus" />
+      </button>
+    </div>
+  );
+}
+
 export function WorldRail(props: { readonly route: Route }) {
-  const { state, page, t } = useUi();
+  const { state, t } = useUi();
   const [text, setText] = useState("");
   const worlds = state.data.setup?.worlds ?? [];
   const lang = state.data.setup?.lang;
   const ordered = useMemo(() => worldOrder(worlds, lang), [worlds, lang]);
   const shown = filterWorlds(ordered, text);
+  const list = useRef<HTMLOListElement>(null);
+  const more = useScrollFade(list, "y");
   const { route } = props;
   return (
     <aside class="application framed mls-rail" aria-label={t("shell.rail")}>
       <LibraryEntry current={route.kind === "library"} />
       <h2 class="divider">{t("shell.worlds")}</h2>
-      <div class="mls-railbar">
-        <input
-          type="search"
-          aria-label={t("shell.filter", { n: worlds.length })}
-          placeholder={t("shell.filter", { n: worlds.length })}
-          value={text}
-          onInput={(e) => setText(e.currentTarget.value)}
-        />
-        <button
-          type="button"
-          class="icon"
-          aria-label={t("shell.create")}
-          title={t("shell.create")}
-          onClick={() => page.foundryAction({ action: "createWorld" })}
-        >
-          <Icon name="plus" />
-        </button>
-      </div>
-      <ol class="mls-worlds">
+      <RailBar count={worlds.length} text={text} onText={setText} />
+      <ol class={`mls-worlds${more ? " more" : ""}`} ref={list}>
         {shown.map((w) => (
           <WorldItem
             key={w.id}

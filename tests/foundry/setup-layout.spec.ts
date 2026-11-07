@@ -108,3 +108,15 @@ test("1366 with a side panel: the selection bar keeps Done inside the page", asy
     .getByRole("button", { name: "Close" })
     .click();
 });
+
+test("2560: the server pages keep Foundry's 1200 px too", async () => {
+  await page.setViewportSize({ width: 2560, height: 1440 });
+  const top = shell(page).locator(".mls-top");
+  for (const name of ["Backups", "Configuration"]) {
+    await top.getByRole("button", { name }).click();
+    expect(await box(shell(page).locator(".mls-main"))).toEqual({
+      x: 330,
+      w: 1200,
+    });
+  }
+});

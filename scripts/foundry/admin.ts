@@ -41,6 +41,14 @@ async function post(
   return body;
 }
 
+/** One of Setup's own requests (POST /setup), as Foundry's page sends it. */
+export function setupPost(
+  api: APIRequestContext,
+  data: SetupRequest,
+): Promise<unknown> {
+  return post(api, "/setup", data);
+}
+
 export async function waitFor(
   label: string,
   timeoutMs: number,
