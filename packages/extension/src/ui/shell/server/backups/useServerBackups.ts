@@ -13,6 +13,17 @@ export interface View {
   readonly error?: string;
 }
 
+/** A new answer over the last view: only a list asks for free space. */
+function merged(v: View, r: View): View {
+  const free = r.listing?.free ?? v.listing?.free;
+  const next = r.listing ?? v.listing;
+  const listing = next && free !== undefined ? { ...next, free } : next;
+  return {
+    ...(listing ? { listing } : {}),
+    ...(r.error ? { error: r.error } : {}),
+  };
+}
+
 export function useServerBackups() {
   const { page, state } = useUi();
   const a = state.adapter;
@@ -21,16 +32,7 @@ export function useServerBackups() {
   const [view, setView] = useState<View>({});
   const [running, setRunning] = useState(0);
   const settle = (r: View): void => {
-    setView((v) => {
-      // Only a list asks for free space: keep the last one known.
-      const free = r.listing?.free ?? v.listing?.free;
-      const next = r.listing ?? v.listing;
-      const listing = next && free !== undefined ? { ...next, free } : next;
-      return {
-        ...(listing ? { listing } : {}),
-        ...(r.error ? { error: r.error } : {}),
-      };
-    });
+    setView((v) => merged(v, r));
   };
   const list = () => page.serverBackups("list", [], disk);
   const busy = async (work: () => Promise<View>): Promise<void> => {

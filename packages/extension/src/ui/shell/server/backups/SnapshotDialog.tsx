@@ -46,6 +46,24 @@ function SpaceLine(props: {
   );
 }
 
+function Footer(props: {
+  readonly onClose: () => void;
+  readonly onCreate: () => void;
+}) {
+  const { t } = useUi();
+  return (
+    <>
+      <button type="button" onClick={props.onClose}>
+        {t("about.cancel")}
+      </button>
+      <button type="button" class="bright" onClick={props.onCreate}>
+        <Icon name="camera-retro" />
+        {t("snap.go")}
+      </button>
+    </>
+  );
+}
+
 export function SnapshotDialog(props: {
   readonly onClose: () => void;
   readonly onCreate: (note: string) => void;
@@ -55,19 +73,10 @@ export function SnapshotDialog(props: {
   const [note, setNote] = useState("");
   const counts = useCounts();
   const footer = (
-    <>
-      <button type="button" onClick={props.onClose}>
-        {t("about.cancel")}
-      </button>
-      <button
-        type="button"
-        class="bright"
-        onClick={() => props.onCreate(note.trim())}
-      >
-        <Icon name="camera-retro" />
-        {t("snap.go")}
-      </button>
-    </>
+    <Footer
+      onClose={props.onClose}
+      onCreate={() => props.onCreate(note.trim())}
+    />
   );
   return (
     <Modal title={t("sb.create")} onClose={props.onClose} footer={footer}>
