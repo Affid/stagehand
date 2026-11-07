@@ -171,7 +171,7 @@ describe("Release history", () => {
       }),
     );
     await waitFor(() => {
-      expect(sent(r.send)).toContainEqual({ kind: "ask-foundryvtt" });
+      expect(sent(r.send)).toContainEqual({ kind: "open-settings" });
     });
   });
 

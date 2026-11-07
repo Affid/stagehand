@@ -1,6 +1,10 @@
 // Dev aid: opens Setup with the built extension and saves screenshots of
 // both tabs to test-results/screens/. Foundry must be running on Setup.
-import { exitTour, loadExtension } from "../../tests/foundry/extension.ts";
+import {
+  addServer,
+  exitTour,
+  loadExtension,
+} from "../../tests/foundry/extension.ts";
 import { loadFoundryEnv } from "../foundry/env.ts";
 
 const env = loadFoundryEnv();
@@ -9,10 +13,7 @@ const page = await ext.context.newPage();
 page.on("console", (m) => {
   if (m.type() === "error") console.log(`[page error] ${m.text()}`);
 });
-await page.goto(`chrome-extension://${ext.id}/options.html`);
-await page.locator("#server-url").fill(env.url);
-await page.locator("#add-server button").click();
-await page.locator("#status").filter({ hasText: "Registered" }).waitFor();
+await addServer(ext, page, env.url);
 await ext.context.request.post(`${env.url}/auth`, {
   form: { action: "adminAuth", adminPassword: env.adminPassword },
   headers: { Origin: env.url },

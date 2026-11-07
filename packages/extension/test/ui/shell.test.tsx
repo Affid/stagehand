@@ -245,7 +245,7 @@ describe("routing", () => {
         "aria-current",
       ),
     ).toBe("page");
-    fireEvent.click(getByRole("button", { name: /Library/ }));
+    fireEvent.click(getByRole("button", { name: /^Library/ }));
     expect(store.get().route).toEqual({ kind: "library" });
     expect(container.querySelector(".mls-world.mls-on")).toBe(null);
     expect(container.querySelector(".mls-world[aria-current]")).toBe(null);
@@ -325,5 +325,13 @@ describe("a world's page", () => {
   test("the rail's foot names the extension's build", () => {
     const { container } = shell();
     expect(el(container, ".mls-build").textContent).toBe("Module Library dev");
+  });
+
+  test("the rail's foot opens Module Library's settings panel", async () => {
+    const r = shell();
+    fireEvent.click(r.getByRole("button", { name: "Module Library settings" }));
+    await waitFor(() => {
+      expect(sent(r.send)).toContainEqual({ kind: "open-settings" });
+    });
   });
 });

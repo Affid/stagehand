@@ -34,6 +34,11 @@ const MAX_PRESETS = 100;
 
 export const ExtensionMessageSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("register-server"), server: z.string().max(500) }),
+  /** The settings panel's list of servers, and taking one off. */
+  z.object({ kind: z.literal("list-servers") }),
+  z.object({ kind: z.literal("remove-server"), server: z.string().max(500) }),
+  /** The panel is about to ask for this server's site (a popup may close). */
+  z.object({ kind: z.literal("adding-server"), server: z.string().max(500) }),
   z.object({ kind: z.literal("setup-seen"), data: SetupDataSchema }),
   z.object({ kind: z.literal("get-state") }),
   z.object({ kind: z.literal("library-op"), op: LibraryOpSchema }),
@@ -80,8 +85,8 @@ export const ExtensionMessageSchema = z.discriminatedUnion("kind", [
       .regex(/^\d{1,4}\.\d{1,6}$/)
       .optional(),
   }),
-  /** Opens the options page to allow reading foundryvtt.com. */
-  z.object({ kind: z.literal("ask-foundryvtt") }),
+  /** Setup opens the settings panel (servers, foundryvtt.com). */
+  z.object({ kind: z.literal("open-settings") }),
   z.object({ kind: z.literal("bridge-init") }),
   z.object({ kind: z.literal("relay"), msg: EnvelopeSchema }),
 ]);

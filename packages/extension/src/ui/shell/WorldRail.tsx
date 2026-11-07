@@ -189,6 +189,26 @@ function RailBar(props: {
   );
 }
 
+/** The rail's foot: Module Library's settings panel, and a dev build's label. */
+function RailFoot() {
+  const { t, actions } = useUi();
+  return (
+    <footer class="mls-foot">
+      <button
+        type="button"
+        class="mls-settings"
+        onClick={() => void actions.openSettings()}
+      >
+        <Icon name="gear" />
+        {t("shell.settings")}
+      </button>
+      {IS_DEV_BUILD ? (
+        <p class="mls-build">{t("app.build", { build: BUILD })}</p>
+      ) : null}
+    </footer>
+  );
+}
+
 export function WorldRail(props: { readonly route: Route }) {
   const { state, t } = useUi();
   const [text, setText] = useState("");
@@ -217,9 +237,7 @@ export function WorldRail(props: { readonly route: Route }) {
         <p class="ml-empty">{t("shell.noMatch")}</p>
       ) : null}
       <RailNews />
-      {IS_DEV_BUILD ? (
-        <p class="mls-build">{t("app.build", { build: BUILD })}</p>
-      ) : null}
+      <RailFoot />
     </aside>
   );
 }

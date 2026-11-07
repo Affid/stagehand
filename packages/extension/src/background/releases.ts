@@ -35,8 +35,6 @@ export interface ReleasesPlatform {
   readonly permitted: () => Promise<boolean>;
   /** A page of foundryvtt.com, never redirected elsewhere, at most MAX_HTML. */
   readonly fetchText: (url: string) => Promise<string>;
-  /** Opens the options page at its foundryvtt.com section. */
-  readonly openOptions: () => Promise<void>;
 }
 
 export type ReleasesAnswer =

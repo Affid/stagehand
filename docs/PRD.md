@@ -111,7 +111,7 @@ Priority: **P0** = MVP, **P1** = next release, **P2** = later.
 | R-2 | No `<all_urls>` permission. | P0 |
 | R-3 | Server aliases: several origins can point to one library (e.g. LAN IP and domain). | P1 |
 | R-4 | **Remote config (data only):** fragile Setup-page selectors and per-core-version feature flags load from a versioned JSON file in the project repo, with a bundled fallback. This lets us fix breakage after a Foundry release without waiting for store review. Never remote code. | P0 |
-| R-5 | **Minimal permissions:** `storage`, `scripting` and per-server optional host permissions only. | P0 |
+| R-5 | **Minimal permissions:** `storage`, `scripting`, `activeTab` (the settings panel offers the Foundry server you are on, owner 2026-11-07) and per-server optional host permissions only. | P0 |
 
 ### 7.2 Setup screen organisation
 | ID | Requirement | P |

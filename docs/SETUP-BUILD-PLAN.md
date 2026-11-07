@@ -811,6 +811,56 @@ render). We keep following Foundry's flag rather than our own list of which
 settings need a restart, so a finer check in a later Foundry reaches the
 page unchanged.
 
+### Settings panel (2026-11-07, owner's request)
+
+The options page was a bare form in its own tab (add a server, allow
+foundryvtt.com) with no list of servers and no way to remove one. The owner
+asked for a modal reachable from any page, Foundry's included, and chose
+`activeTab` for a one-click "use it here" (PRD R-5 updated).
+
+- S.1 Background: list and remove servers (scripts unregistered, the host
+  permission given back, the library kept so re-adding restores it);
+  `open-settings` from Setup opens the panel (`chrome.action.openPopup`,
+  else the options dialog); the server a Foundry page belongs to, from its
+  URL (`/setup`, `/join`, `/game`, `/auth`, `/players`, `/license`).
+- S.2 The panel: the toolbar button's popup, also the options entry
+  (`open_in_tab: false`), in Preact with our strings. This site (only on a
+  Foundry page): Use Module Library here, then the page reloads. Servers:
+  each with Remove; add by address. Release history: allow or remove
+  foundryvtt.com. The build line. `options.html` goes.
+- S.3 Setup: a settings entry at the foot of the rail; Release history's
+  "Allow…" opens the panel too. Live: the test helper registers through the
+  panel; a settings suite adds, lists and removes a server.
+
+Settings panel results: built as planned. The panel is `ui/settings/`
+(`SettingsPanel`, `ThisSite`, `ServerList`, `ReleaseAccess`, `useServers`,
+`platform.ts`) with `static/popup.html` and `popup.css` (Foundry's dark
+palette, system fonts; an extension page has none of Foundry's). Live:
+`setup-settings.spec.ts` (lists the server, Remove gives Setup back to
+Foundry, adding by address restores ours, the rail opens the panel, axe
+clean); the test helper registers through the panel. Chrome won't open the
+toolbar popup for an automated window ("no active browser window"), so
+there the options dialog opens instead (seen through DevTools targets); in
+a normal window the popup opens.
+
+- Reviews: code and security, no critical or high. Fixed: "This site"
+  shows only when the page itself is Foundry's (its stylesheet or script,
+  checked in the tab with `activeTab`), not for any address ending in
+  `/join` or `/auth`; the background is told which server is being added
+  before the browser asks and finishes the add when the permission arrives
+  (a popup may close while Firefox asks); registrations and removals run one
+  at a time (the panel and the background would register the same scripts
+  twice; two removals on one origin would keep its permission); a list that
+  fails to refresh after adding no longer hides that the add worked; Remove
+  shows its errors and waits while busy; `open-settings` opens at most once
+  every 2 s; giving a permission back is best effort (a required one can't
+  be removed) and never leaves a server half removed.
+- Found on the way (owner): the Library's Modules and Systems lists spilled
+  past the window with no scrolling; they now scroll under the Library's
+  head as the prototype's `.ml-sections` (`cc361b4`, live test at 1366×768).
+- A live test hard-coded the Foundry theme's orange for an active tab; it
+  now compares with the theme's own accent (`--color-warm-1`).
+
 ### Polish pass (after Phase 6)
 
 Small things seen and left for the polish pass the owner set after Phase 6

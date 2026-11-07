@@ -44,7 +44,7 @@ const entries = [
   "setup-main",
   "setup-ui",
   "game-bridge",
-  "options",
+  "popup",
 ];
 
 const entryFile = (name: string): string => {

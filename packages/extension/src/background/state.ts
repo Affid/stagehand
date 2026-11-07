@@ -75,6 +75,12 @@ function serverStore(kv: SerializedKeyValue) {
           : s;
       });
     },
+    /** Taken off this browser; its library stays, for when it comes back. */
+    async removeServer(id: ServerId): Promise<void> {
+      await update((s) =>
+        Object.fromEntries(Object.entries(s).filter(([k]) => k !== id)),
+      );
+    },
     /** Setup said this browser is no longer the admin (security review). */
     async revokeAdmin(id: ServerId): Promise<void> {
       await update((s) => {

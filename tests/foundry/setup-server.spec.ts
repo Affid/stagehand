@@ -19,6 +19,7 @@ import {
   loadExtension,
   openSetupAsAdmin,
   SCREENS,
+  waitForSettingsPanel,
 } from "./extension.ts";
 import { audit } from "./axe.ts";
 
@@ -233,14 +234,20 @@ test("Your packages: Foundry's compatibility preview for the release, with where
   await expect(view.getByRole("tab", { name: /^Systems/ })).not.toHaveClass(
     /active/,
   );
-  // Foundry's buttons fade their borders: wait until the tab has its line.
+  // Foundry's buttons fade their borders: wait until the tab has its line,
+  // in the theme's own accent (orange in Foundry's, blue in Sci-Fi).
   await expect
     .poll(() =>
-      view
-        .getByRole("tab", { name: /^Modules/ })
-        .evaluate((e) => getComputedStyle(e).borderBottomColor),
+      view.getByRole("tab", { name: /^Modules/ }).evaluate((e) => {
+        const probe = document.createElement("span");
+        probe.style.color = "var(--color-warm-1)";
+        e.append(probe);
+        const accent = getComputedStyle(probe).color;
+        probe.remove();
+        return getComputedStyle(e).borderBottomColor === accent;
+      }),
     )
-    .toBe("rgb(238, 155, 58)");
+    .toBe(true);
   const installed = await page.evaluate(
     () =>
       (window as unknown as { game: { modules: { size: number } } }).game
@@ -256,21 +263,16 @@ test("Your packages: Foundry's compatibility preview for the release, with where
   await expect(view.locator(".mlu-clist li")).not.toHaveCount(0);
 });
 
-test("Release history without the permission: why, and the options page to allow it", async () => {
+test("Release history without the permission: why, and the settings panel to allow it", async () => {
   const upd = shell().locator(".mlu-page");
   await upd.getByRole("tab", { name: /Release history/ }).click();
   const ask = upd.locator(".mlu-hask");
   await expect(ask).toBeVisible();
   await audit(page, "update: release history, not allowed");
   await expect(ask).toContainText("one extra permission for foundryvtt.com");
-  const [options] = await Promise.all([
-    ext.context.waitForEvent("page"),
-    ask.getByRole("button", { name: "Allow reading foundryvtt.com…" }).click(),
-  ]);
-  await expect(options).toHaveURL(/options\.html#foundryvtt$/);
-  await expect(
-    options.getByRole("button", { name: "Allow reading foundryvtt.com" }),
-  ).toBeVisible();
-  await options.close();
+  await ask
+    .getByRole("button", { name: "Allow reading foundryvtt.com…" })
+    .click();
+  await waitForSettingsPanel(ext, page);
   await page.unroute(`${env.url}/update`);
 });

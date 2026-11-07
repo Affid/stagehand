@@ -4,7 +4,12 @@ import type { SetupData } from "@module-library/shared/world";
 import { BUNDLED_CONFIG } from "../../src/adapters/config.ts";
 import { memoryKeyValue, serialized } from "../../src/background/kv.ts";
 import type { ScriptingPlatform } from "../../src/background/registration.ts";
-import { type RouterDeps, route } from "../../src/background/router.ts";
+import type { ContentScript } from "../../src/background/servers.ts";
+import {
+  grantedOrigins,
+  type RouterDeps,
+  route,
+} from "../../src/background/router.ts";
 import { createState } from "../../src/background/state.ts";
 
 const S = "http://localhost:30000";
@@ -16,6 +21,7 @@ function deps(granted = true) {
     registeredIds: vi.fn().mockResolvedValue(["old"]),
     unregister: vi.fn().mockResolvedValue(undefined),
     register: vi.fn().mockResolvedValue(undefined),
+    removePermission: vi.fn().mockResolvedValue(undefined),
   };
   let n = 0;
   const d: RouterDeps = {
@@ -24,8 +30,8 @@ function deps(granted = true) {
     releases: {
       permitted: vi.fn().mockResolvedValue(true),
       fetchText: vi.fn().mockResolvedValue("<ol></ol>"),
-      openOptions: vi.fn().mockResolvedValue(undefined),
     },
+    openSettings: vi.fn().mockResolvedValue(undefined),
     extensionId: "ext",
     extensionUrl: EXT,
     extensionVersion: "0.1.0",
@@ -568,11 +574,11 @@ describe("router: Foundry's release pages (package 7)", () => {
     expect(d.releases.fetchText).not.toHaveBeenCalled();
   });
 
-  test("the permission is asked on the options page; a game page can't read", async () => {
+  test("the permission is asked in the settings panel; a game page can't read", async () => {
     const d = deps();
     await registered(d);
-    await route(d, { kind: "ask-foundryvtt" }, fromSetup);
-    expect(d.releases.openOptions).toHaveBeenCalled();
+    await route(d, { kind: "open-settings" }, fromSetup);
+    expect(d.openSettings).toHaveBeenCalled();
     await expect(
       route(d, { kind: "foundry-releases" }, fromGame),
     ).rejects.toThrow();
@@ -663,5 +669,124 @@ describe("router: news read state (Phase 6)", () => {
       );
     }
     expect((await d.state.newsSeen(S))?.length).toBeLessThanOrEqual(200);
+  });
+});
+
+describe("router: the settings panel lists and removes servers", () => {
+  const other = "http://localhost:30000/other";
+
+  test("lists the registered servers, oldest first", async () => {
+    const d = deps();
+    await registered(d);
+    await route(
+      d,
+      { kind: "register-server", server: "http://h:1" },
+      fromOptions,
+    );
+    const r = (await route(d, { kind: "list-servers" }, fromOptions)) as {
+      servers: { id: string }[];
+    };
+    expect(r.servers.map((x) => x.id)).toEqual([S, "http://h:1"]);
+  });
+
+  test("removing unregisters its scripts and gives the host permission back", async () => {
+    const d = deps();
+    await registered(d);
+    vi.mocked(d.scripting.registeredIds).mockResolvedValue(["ml-setup-main-x"]);
+    await route(d, { kind: "remove-server", server: S }, fromOptions);
+    expect(d.scripting.unregister).toHaveBeenLastCalledWith([
+      "ml-setup-main-x",
+    ]);
+    expect(d.scripting.removePermission).toHaveBeenCalledWith(
+      "http://localhost:30000/*",
+    );
+    expect(await d.state.servers()).toEqual({});
+  });
+
+  test("the permission stays while another server shares the origin", async () => {
+    const d = deps();
+    await registered(d);
+    await route(d, { kind: "register-server", server: other }, fromOptions);
+    await route(d, { kind: "remove-server", server: S }, fromOptions);
+    expect(d.scripting.removePermission).not.toHaveBeenCalled();
+    expect(Object.keys(await d.state.servers())).toEqual([other]);
+  });
+
+  test("only the extension's own pages list or remove; Setup can only open the panel", async () => {
+    const d = deps();
+    await registered(d);
+    await expect(
+      route(d, { kind: "list-servers" }, fromSetup),
+    ).rejects.toThrow();
+    await expect(
+      route(d, { kind: "remove-server", server: S }, fromSetup),
+    ).rejects.toThrow();
+    await expect(
+      route(d, { kind: "open-settings" }, fromGame),
+    ).rejects.toThrow();
+    expect(Object.keys(await d.state.servers())).toEqual([S]);
+  });
+
+  test("removing a server that isn't registered changes nothing", async () => {
+    const d = deps();
+    await registered(d);
+    await route(
+      d,
+      { kind: "remove-server", server: "http://nope:1" },
+      fromOptions,
+    );
+    expect(d.scripting.removePermission).not.toHaveBeenCalled();
+    expect(Object.keys(await d.state.servers())).toEqual([S]);
+  });
+});
+
+describe("router: a server being added finishes in the background (code review)", () => {
+  test("once its site is allowed, a server the panel was adding is registered", async () => {
+    const d = deps();
+    await route(d, { kind: "adding-server", server: `${S}/` }, fromOptions);
+    const done = await grantedOrigins(d, ["http://localhost:30000/*"]);
+    expect(done).toEqual([S]);
+    expect(Object.keys(await d.state.servers())).toEqual([S]);
+    // Once only.
+    expect(await grantedOrigins(d, ["http://localhost:30000/*"])).toEqual([]);
+  });
+
+  test("another site's permission registers nothing; a page can't announce one", async () => {
+    const d = deps();
+    await route(d, { kind: "adding-server", server: S }, fromOptions);
+    expect(await grantedOrigins(d, ["https://foundryvtt.com/*"])).toEqual([]);
+    await registered(d);
+    await expect(
+      route(d, { kind: "adding-server", server: "http://evil:1" }, fromSetup),
+    ).rejects.toThrow();
+  });
+});
+
+describe("router: registrations run one at a time", () => {
+  test("the panel's add and the background's finishing it don't clash", async () => {
+    const d = deps();
+    const live = new Set<string>();
+    d.scripting.registeredIds = vi.fn((ids: readonly string[]) =>
+      Promise.resolve(ids.filter((id) => live.has(id))),
+    );
+    d.scripting.unregister = vi.fn((ids: readonly string[]) => {
+      ids.forEach((id) => live.delete(id));
+      return Promise.resolve();
+    });
+    d.scripting.register = vi.fn(async (scripts: readonly ContentScript[]) => {
+      await Promise.resolve();
+      for (const sc of scripts) {
+        if (live.has(sc.id)) throw new Error(`Duplicate script ID ${sc.id}`);
+        live.add(sc.id);
+      }
+    });
+    await route(d, { kind: "adding-server", server: S }, fromOptions);
+    await expect(
+      Promise.all([
+        grantedOrigins(d, ["http://localhost:30000/*"]),
+        route(d, { kind: "register-server", server: S }, fromOptions),
+      ]),
+    ).resolves.toBeTruthy();
+    expect(Object.keys(await d.state.servers())).toEqual([S]);
   });
 });

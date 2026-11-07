@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import {
   contentScriptsFor,
+  foundryServerOfPage,
   normalizeServerUrl,
   pathWithinServer,
   permissionOrigin,
@@ -95,4 +96,31 @@ describe("serverIdOfPage", () => {
 
 test("a server URL with a wildcard is refused", () => {
   expect(() => normalizeServerUrl("http://h/foundry*")).toThrow(/\*/);
+});
+
+describe("foundryServerOfPage (settings panel)", () => {
+  test.each([
+    ["http://localhost:30000/setup", "http://localhost:30000"],
+    ["http://192.168.1.20:30000/join", "http://192.168.1.20:30000"],
+    ["https://vtt.example.com/foundry/game", "https://vtt.example.com/foundry"],
+    [
+      "https://vtt.example.com/foundry/auth?x=1#y",
+      "https://vtt.example.com/foundry",
+    ],
+    ["http://h:1/players", "http://h:1"],
+    ["http://h:1/license", "http://h:1"],
+  ])("%s belongs to %s", (url, server) => {
+    expect(foundryServerOfPage(url)).toBe(server);
+  });
+
+  test.each([
+    "https://example.com/",
+    "https://example.com/setup-guide",
+    "chrome://extensions/",
+    "chrome-extension://abc/popup.html",
+    "file:///tmp/setup",
+    "not a url",
+  ])("%s is not a Foundry page", (url) => {
+    expect(foundryServerOfPage(url)).toBeUndefined();
+  });
 });

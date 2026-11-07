@@ -32,8 +32,11 @@ pnpm verify           # all of the above
 ```
 
 Load the extension unpacked from `packages/extension/dist` (Chrome:
-`chrome://extensions`, developer mode). Open its options page, add your
-server URL (for example `http://localhost:30000`) and grant the permission.
+`chrome://extensions`, developer mode). Open your Foundry server, click the
+extension's toolbar button and choose Use Module Library here (or add the
+server's address, for example `http://localhost:30000`), then allow the
+site. The same panel opens from the Setup page's rail and as the
+extension's options.
 
 ## Local Foundry
 

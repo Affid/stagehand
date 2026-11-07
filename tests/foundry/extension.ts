@@ -4,6 +4,7 @@ import { join } from "node:path";
 import {
   type BrowserContext,
   chromium,
+  expect,
   type Locator,
   type Page,
   type Worker,
@@ -94,17 +95,59 @@ export async function waitReady(page: Page): Promise<void> {
   );
 }
 
-/** Registers the server on the options page and opens Setup as admin. */
+/** The settings panel (the toolbar popup), opened as a page. */
+export const settingsUrl = (ext: LoadedExtension): string =>
+  `chrome-extension://${ext.id}/popup.html`;
+
+/**
+ * Waits until the settings panel has opened over the page: the toolbar popup,
+ * or, where the browser won't open it (an automated window is never
+ * focused), the options dialog with the panel inside. Neither is a page
+ * Playwright lists, so Chrome's DevTools protocol is asked.
+ */
+export async function waitForSettingsPanel(
+  ext: LoadedExtension,
+  page: Page,
+): Promise<void> {
+  const cdp = await ext.context.newCDPSession(page);
+  try {
+    await expect
+      .poll(
+        async () => {
+          const { targetInfos } = await cdp.send("Target.getTargets");
+          return targetInfos.some((t) => t.url === settingsUrl(ext));
+        },
+        { timeout: 10_000 },
+      )
+      .toBe(true);
+  } finally {
+    await cdp.detach();
+  }
+}
+
+/** Adds a server by its address in the settings panel. */
+export async function addServer(
+  ext: LoadedExtension,
+  page: Page,
+  url: string,
+): Promise<void> {
+  await page.goto(settingsUrl(ext));
+  await page.getByLabel("Server address").fill(`${url}/`);
+  await page.getByRole("button", { name: "Add", exact: true }).click();
+  await page
+    .locator(".mlp-servers li")
+    .filter({ hasText: new URL(url).host })
+    .waitFor();
+}
+
+/** Registers the server in the settings panel and opens Setup as admin. */
 export async function openSetupAsAdmin(
   ext: LoadedExtension,
   page: Page,
   url: string,
   password: string,
 ): Promise<void> {
-  await page.goto(`chrome-extension://${ext.id}/options.html`);
-  await page.locator("#server-url").fill(`${url}/`);
-  await page.locator("#add-server button").click();
-  await page.locator("#status").filter({ hasText: "Registered" }).waitFor();
+  await addServer(ext, page, url);
   await ext.context.request.post(`${url}/auth`, {
     form: { action: "adminAuth", adminPassword: password },
     headers: { Origin: url },

@@ -1,0 +1,198 @@
+/* The settings panel (popup.html): Foundry's dark palette with system fonts,
+   since an extension page has none of Foundry's CSS or fonts. Calm: one
+   column, quiet buttons, one primary action at most. */
+:root {
+  --bg: #15131c;
+  --surface: #1d1a26;
+  --line: #34303f;
+  --fg: #efe6d8;
+  --muted: #b0a8b4;
+  --accent: #ee9b3a;
+  --accent-fg: #1b1205;
+  --ok: #8fd3ad;
+  --err: #f0907f;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font:
+    14px/1.45 system-ui,
+    "Segoe UI",
+    sans-serif;
+}
+
+body {
+  min-width: 340px;
+}
+
+.mlp {
+  display: grid;
+  gap: 14px;
+  padding: 14px 16px 12px;
+  max-width: 460px;
+}
+
+.mlp h1 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+}
+
+.mlp h2 {
+  margin: 0 0 6px;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.mlp section {
+  display: grid;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.mlp p {
+  margin: 0;
+}
+
+.mlp-site {
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+}
+
+.mlp .mlp-site {
+  border-top: 1px solid var(--line);
+}
+
+.mlp-addr {
+  font-family: ui-monospace, "Cascadia Mono", Menlo, monospace;
+  font-size: 12.5px;
+  overflow-wrap: anywhere;
+}
+
+.mlp-muted {
+  color: var(--muted);
+}
+
+.mlp-small {
+  font-size: 12px;
+}
+
+.mlp-ok {
+  color: var(--ok);
+}
+
+.mlp-err {
+  color: var(--err);
+}
+
+.mlp-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mlp-servers {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.mlp-servers li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--surface);
+}
+
+.mlp-add {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px;
+}
+
+.mlp-add .mlp-err {
+  grid-column: 1 / -1;
+}
+
+.mlp-servers .mlp-err {
+  flex-basis: 100%;
+}
+
+.mlp input {
+  min-width: 0;
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: #0f0d14;
+  color: var(--fg);
+  font: inherit;
+}
+
+.mlp button {
+  justify-self: start;
+  padding: 5px 12px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--fg);
+  font: inherit;
+  cursor: pointer;
+}
+
+.mlp button:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.mlp button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.mlp button.mlp-primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-fg);
+  font-weight: 650;
+}
+
+.mlp button.mlp-quiet {
+  padding: 2px 8px;
+  border-color: transparent;
+  color: var(--muted);
+}
+
+.mlp button.mlp-quiet:hover {
+  color: var(--fg);
+}
+
+.mlp :focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.mlp footer {
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}

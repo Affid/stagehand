@@ -3,15 +3,19 @@
   "name": "Module Library for Foundry VTT",
   "version": "0.2.0",
   "description": "Organise Foundry VTT modules on the Setup screen.",
-  "permissions": ["storage", "scripting"],
+  "permissions": ["storage", "scripting", "activeTab"],
   "optional_host_permissions": ["http://*/*", "https://*/*"],
+  "action": {
+    "default_title": "Module Library",
+    "default_popup": "popup.html"
+  },
   "background": {
     "service_worker": "background.js",
     "scripts": ["background.js"]
   },
   "options_ui": {
-    "page": "options.html",
-    "open_in_tab": true
+    "page": "popup.html",
+    "open_in_tab": false
   },
   "browser_specific_settings": {
     "gecko": {

@@ -61,8 +61,8 @@ export interface Actions {
   newsSeen(urls: readonly string[]): Promise<void>;
   /** Foundry's public release list, or one release's page (Release history). */
   releases(version?: string): Promise<ReleasesAnswer>;
-  /** Opens the options page, where reading foundryvtt.com can be allowed. */
-  askFoundryvtt(): Promise<void>;
+  /** Opens the settings panel (servers, foundryvtt.com). */
+  openSettings(): Promise<void>;
 }
 
 type Imported =
@@ -338,8 +338,8 @@ export function createActions(
       }).catch((e: unknown) => ({
         error: e instanceof Error ? e.message : String(e),
       })),
-    async askFoundryvtt() {
-      await b.guarded(() => send({ kind: "ask-foundryvtt" }));
+    async openSettings() {
+      await b.guarded(() => send({ kind: "open-settings" }));
     },
   };
 }

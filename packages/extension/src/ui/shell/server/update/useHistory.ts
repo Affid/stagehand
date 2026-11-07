@@ -67,7 +67,7 @@ export function useHistory() {
       );
     });
   };
-  return { list, notes, load, read, ask: () => actions.askFoundryvtt() };
+  return { list, notes, load, read, ask: () => actions.openSettings() };
 }
 
 export type History = ReturnType<typeof useHistory>;

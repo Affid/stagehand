@@ -14,10 +14,20 @@ import {
   type SetupState,
 } from "../messages.ts";
 import { cancel, queue } from "./commands.ts";
-import { registerServer, type ScriptingPlatform } from "./registration.ts";
+import {
+  registerServer,
+  type ScriptingPlatform,
+  unregisterServer,
+} from "./registration.ts";
 import { type ReleasesPlatform, readReleases } from "./releases.ts";
 import { handleRelay } from "./relay.ts";
-import { pathWithinServer, type ServerId, serverIdOfPage } from "./servers.ts";
+import {
+  normalizeServerUrl,
+  pathWithinServer,
+  permissionOrigin,
+  type ServerId,
+  serverIdOfPage,
+} from "./servers.ts";
 import type { ServerState } from "./state.ts";
 
 export interface SenderInfo {
@@ -30,6 +40,8 @@ export interface RouterDeps {
   readonly state: ServerState;
   readonly scripting: ScriptingPlatform;
   readonly releases: ReleasesPlatform;
+  /** Opens the settings panel: the toolbar popup, else the options dialog. */
+  readonly openSettings: () => Promise<void>;
   readonly extensionId: string;
   readonly extensionUrl: string;
   readonly extensionVersion: string;
@@ -239,7 +251,7 @@ async function fromSetup(
   // Foundry's public release notes: read only, nothing of this server's.
   if (m.kind === "foundry-releases")
     return readReleases(deps.releases, m.version);
-  if (m.kind === "ask-foundryvtt") return deps.releases.openOptions();
+  if (m.kind === "open-settings") return deps.openSettings();
   // Read state for this browser's view only, like the page's other views.
   if (m.kind === "news-seen") {
     await markNewsSeen(deps, server, m.urls);
@@ -295,11 +307,85 @@ async function fromExtension(
   deps: RouterDeps,
   m: ExtensionMessage,
 ): Promise<unknown> {
+  if (m.kind === "list-servers") return listServers(deps);
+  if (m.kind === "adding-server") {
+    pendingOf(deps).add(normalizeServerUrl(m.server));
+    return {};
+  }
+  if (m.kind === "remove-server")
+    return oneAtATime(deps, () => removeServer(deps, m.server));
   if (m.kind !== "register-server")
     throw new Error(`Unexpected ${m.kind} from the extension`);
-  const server = await registerServer(m.server, deps.scripting);
-  await deps.state.addServer(server, deps.now());
-  return { server };
+  return oneAtATime(deps, async () => {
+    const server = await registerServer(m.server, deps.scripting);
+    pendingOf(deps).delete(server);
+    await deps.state.addServer(server, deps.now());
+    return { server };
+  });
+}
+
+/**
+ * Registrations and removals one at a time: the panel's add and the
+ * background finishing it would register the same scripts twice, and two
+ * removals on one origin would each keep its permission for the other.
+ */
+const queues = new WeakMap<RouterDeps, Promise<unknown>>();
+function oneAtATime<T>(deps: RouterDeps, work: () => Promise<T>): Promise<T> {
+  const run = (queues.get(deps) ?? Promise.resolve()).then(work, work);
+  queues.set(
+    deps,
+    run.catch(() => undefined),
+  );
+  return run;
+}
+
+/** Servers the panel was adding, per background (code review). */
+const pending = new WeakMap<RouterDeps, Set<ServerId>>();
+const pendingOf = (deps: RouterDeps): Set<ServerId> => {
+  const found = pending.get(deps) ?? new Set<ServerId>();
+  pending.set(deps, found);
+  return found;
+};
+
+/**
+ * Sites just allowed: a server the panel was adding there is registered,
+ * even if the popup closed while the browser asked (Firefox may close it).
+ */
+export async function grantedOrigins(
+  deps: RouterDeps,
+  origins: readonly string[],
+): Promise<ServerId[]> {
+  const waiting = pendingOf(deps);
+  const ready = [...waiting].filter((s) =>
+    origins.includes(permissionOrigin(s)),
+  );
+  ready.forEach((s) => waiting.delete(s));
+  for (const server of ready)
+    await oneAtATime(deps, async () => {
+      await registerServer(server, deps.scripting);
+      await deps.state.addServer(server, deps.now());
+    });
+  return ready;
+}
+
+/** The registered servers, oldest first. */
+async function listServers(deps: RouterDeps): Promise<unknown> {
+  const servers = Object.values(await deps.state.servers());
+  return {
+    servers: [...servers].sort((a, b) => a.addedAt.localeCompare(b.addedAt)),
+  };
+}
+
+async function removeServer(
+  deps: RouterDeps,
+  server: ServerId,
+): Promise<unknown> {
+  const ids = Object.keys(await deps.state.servers());
+  if (!ids.includes(server)) return listServers(deps);
+  const others = ids.filter((id) => id !== server);
+  await unregisterServer(server, others, deps.scripting);
+  await deps.state.removeServer(server);
+  return listServers(deps);
 }
 
 const isPage = (path: string, page: string): boolean =>

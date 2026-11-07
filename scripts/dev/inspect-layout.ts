@@ -1,14 +1,11 @@
 // Dev aid: prints how Foundry lays out the modules tab around our root.
-import { loadExtension } from "../../tests/foundry/extension.ts";
+import { addServer, loadExtension } from "../../tests/foundry/extension.ts";
 import { loadFoundryEnv } from "../foundry/env.ts";
 
 const env = loadFoundryEnv();
 const ext = await loadExtension();
 const page = await ext.context.newPage();
-await page.goto(`chrome-extension://${ext.id}/options.html`);
-await page.locator("#server-url").fill(env.url);
-await page.locator("#add-server button").click();
-await page.locator("#status").filter({ hasText: "Registered" }).waitFor();
+await addServer(ext, page, env.url);
 await ext.context.request.post(`${env.url}/auth`, {
   form: { action: "adminAuth", adminPassword: env.adminPassword },
   headers: { Origin: env.url },

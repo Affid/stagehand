@@ -100,3 +100,19 @@ describe("state: review fixes", () => {
     expect((await state.servers())[S]?.adminVerifiedAt).toBeUndefined();
   });
 });
+
+describe("state: removing a server (settings panel)", () => {
+  test("the record goes; another server and the library stay", async () => {
+    const state = createState(serialized(memoryKeyValue()));
+    await state.addServer(S, "t1");
+    await state.addServer("http://other:1", "t1");
+    await state.applyLibraryOp(S, {
+      op: "tag.create",
+      tag: { id: "t1", name: "kept", color: "#000000" },
+    });
+    const before = await state.library(S);
+    await state.removeServer(S);
+    expect(Object.keys(await state.servers())).toEqual(["http://other:1"]);
+    expect(await state.library(S)).toEqual(before);
+  });
+});

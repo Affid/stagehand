@@ -632,7 +632,31 @@
   box-shadow: none;
 }
 
-/* Which build is running (build-info.ts), at the rail's foot */
+/* The rail's foot: the settings panel, then which build is running. */
+.mls-shell .mls-foot {
+  flex: none;
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+}
+
+.mls-shell .mls-foot .mls-settings {
+  width: auto;
+  height: auto;
+  min-height: 0;
+  padding: 2px 8px;
+  border: none;
+  background: none;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--color-light-3);
+}
+
+.mls-shell .mls-foot .mls-settings:hover {
+  color: var(--color-light-1);
+  text-shadow: none;
+}
+
 .mls-shell .mls-build {
   margin: 0;
   flex: none;
