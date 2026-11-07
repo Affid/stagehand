@@ -1,0 +1,157 @@
+<title>Setup on a Phone</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Signika:wght@400;600&family=Amiri:wght@700&display=swap">
+<style>
+/* A control bar, a phone (or tablet) on a stage, and notes beside it. Single dark look on purpose:
+   it frames Foundry's own dark Setup screen, as the desktop playground does. */
+:root {
+  --bg: #0b0a13; --bar: #17151f; --line: #2c2836; --fg: #e9e4f2; --muted: #a59eb4;
+  --accent: #ee9b3a; --accent-ink: #1a1206; --bezel: #1d1b24; --bezel-edge: #3a3646;
+  --display: "Amiri", Georgia, serif; --body: "Signika", "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 14px/1.45 var(--body); display: flex; flex-direction: column; }
+.bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding-block: 10px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); background: var(--bar); border-bottom: 1px solid var(--line); }
+.bar h1 { margin: 0; font: 700 1.35rem/1 var(--display); letter-spacing: .01em; }
+.bar .tag { font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line); padding: 2px 8px; border-radius: 999px; }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; margin-left: auto; }
+.seg { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.seg .lbl { padding: 0 10px; color: var(--muted); font-size: .86rem; }
+.seg button, .tools > button { font: inherit; color: var(--muted); background: transparent; border: 0; border-left: 1px solid var(--line); padding: 6px 12px; cursor: pointer; }
+.tools > button { color: var(--fg); border: 1px solid var(--line); border-radius: 6px; }
+.tools > button:hover, .seg button:hover { background: rgb(255 255 255 / 5%); }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.main { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) 340px; }
+.stage { position: relative; min-height: 0; overflow: hidden; display: grid; place-items: start center; padding-block: 14px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: 16px; }
+.device { transform-origin: top center; background: var(--bezel); border: 1px solid var(--bezel-edge); border-radius: 34px; padding: 10px; box-shadow: 0 20px 60px rgb(0 0 0 / 60%); }
+.device.tablet { border-radius: 26px; padding: 14px; }
+.screen { position: relative; overflow: hidden; border-radius: 24px; background: #000; display: flex; flex-direction: column; }
+.device.tablet .screen { border-radius: 14px; }
+.status { flex: none; height: 24px; display: flex; align-items: center; justify-content: space-between; padding: 0 18px; color: #f2eef8; font: 600 12px/1 var(--body); background: #0b0a13; }
+.status svg { width: 15px; height: 12px; fill: currentColor; }
+.status .icons { display: flex; gap: 6px; align-items: center; }
+iframe { display: block; border: 0; background: #000; }
+.gesture { flex: none; height: 20px; display: grid; place-items: center; background: #0d0c16; }
+.gesture span { width: 108px; height: 4px; border-radius: 2px; background: #cfc8dc; opacity: .8; }
+.today { overflow: auto; background: #000; }
+.today img { display: block; width: 100%; height: auto; }
+.notes { min-height: 0; overflow: auto; border-left: 1px solid var(--line); background: var(--bar); padding-block: 16px 24px; padding-left: 18px; padding-right: max(18px, env(safe-area-inset-right, 0px)); display: grid; gap: 18px; align-content: start; }
+.notes h2 { margin: 0; font: 700 1.25rem/1.15 var(--display); text-wrap: balance; }
+.notes h3 { margin: 0 0 6px; font-size: .74rem; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.notes p, .notes li { margin: 0; color: #d6d0e2; max-width: 62ch; }
+.notes ul, .notes ol { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
+.notes b { color: var(--fg); font-weight: 600; }
+.notes .q li::marker { color: var(--accent); font-weight: 600; }
+.cmp { width: 100%; border-collapse: collapse; font-size: .86rem; }
+.cmp th, .cmp td { text-align: left; vertical-align: top; padding: 6px 6px 6px 0; border-bottom: 1px solid var(--line); }
+.cmp th { color: var(--muted); font-weight: 600; }
+.cmp tr:first-child th { color: var(--fg); }
+.cmp td { width: 36%; }
+.cmp td { color: #d6d0e2; }
+@media (max-width: 960px) {
+  body { height: auto; min-height: 100%; }
+  .main { grid-template-columns: minmax(0, 1fr); }
+  .stage { overflow: visible; }
+  .notes { border-left: 0; border-top: 1px solid var(--line); }
+  .tools { margin-left: 0; }
+}
+</style>
+
+<header class="bar">
+  <h1>Setup on a Phone</h1>
+  <span class="tag">Mockup · nothing is saved</span>
+  <div class="tools">
+    <span class="seg" role="group" aria-label="Variant"><span class="lbl">Variant</span><button type="button" data-v="a" aria-pressed="true">A · Stack</button><button type="button" data-v="b" aria-pressed="false">B · Tabs</button><button type="button" data-v="today" aria-pressed="false">Foundry today</button></span>
+    <span class="seg" role="group" aria-label="Device"><span class="lbl">Device</span><button type="button" data-d="360" aria-pressed="false">Small phone</button><button type="button" data-d="412" aria-pressed="true">Phone</button><button type="button" data-d="768" aria-pressed="false">Tablet</button></span>
+    <span class="seg" role="group" aria-label="Worlds on the server"><span class="lbl">Worlds</span><button type="button" data-w="6" aria-pressed="true">6</button><button type="button" data-w="12" aria-pressed="false">12</button></span>
+    <button type="button" id="reset">Reset</button>
+  </div>
+</header>
+<div class="main">
+  <main class="stage" id="stage">
+    <div class="device" id="device">
+      <div class="screen" id="screen">
+        <div class="status" aria-hidden="true"><span>19:35</span><span class="icons">
+          <svg viewBox="0 0 16 12"><rect x="0" y="8" width="3" height="4" rx=".5"/><rect x="4.3" y="5.5" width="3" height="6.5" rx=".5"/><rect x="8.6" y="3" width="3" height="9" rx=".5"/><rect x="12.9" y="0" width="3" height="12" rx=".5"/></svg>
+          <svg viewBox="0 0 16 12"><path d="M8 11.5 5.6 8.9a3.4 3.4 0 0 1 4.8 0zM3.4 6.7a6.5 6.5 0 0 1 9.2 0l-1.3 1.3a4.7 4.7 0 0 0-6.6 0zM1.2 4.5a9.6 9.6 0 0 1 13.6 0l-1.3 1.3a7.8 7.8 0 0 0-11 0z"/></svg>
+          <svg viewBox="0 0 22 12" style="width:22px"><rect x=".5" y=".5" width="18" height="11" rx="2.5" fill="none" stroke="currentColor"/><rect x="2" y="2" width="13" height="8" rx="1.2"/><rect x="19.6" y="3.8" width="1.8" height="4.4" rx=".8"/></svg>
+        </span></div>
+        <iframe id="view" title="Setup page on a phone"></iframe>
+        <div class="today" id="today" hidden><img src="today.jpg" alt="Foundry's own Setup page at phone width, covered by its warning that the window is smaller than 1024 by 768"></div>
+        <div class="gesture" aria-hidden="true"><span></span></div>
+      </div>
+    </div>
+  </main>
+  <aside class="notes" id="notes" aria-live="polite"></aside>
+</div>
+
+<script>
+// Sizes of the WebView area: the screen minus Android's status bar (24) and gesture bar (20).
+const DEVICES = { 360: [360, 736], 412: [412, 871], 768: [768, 980] };
+const S = { v: "a", d: "412", w: "6" };
+const view = document.getElementById("view"), today = document.getElementById("today");
+const device = document.getElementById("device"), stage = document.getElementById("stage");
+
+const NOTES = {
+  a: `<div><h2>A · Stack</h2><p>The worlds list is home. Everything else opens over it, with Back in the top left.</p></div>
+    <div><h3>Try</h3><ul><li>Tap <b>Curse of Strahd</b>, flip a switch, then <b>Launch</b> (top right) to review the changes.</li>
+    <li>Tap a module card: its details open <b>full screen</b>; Back closes them.</li>
+    <li><b>⋮</b> holds Backups, Configuration, the update, Support, Log out and Shut down.</li>
+    <li>The <b>version chip</b> (14 · 370 ↑) opens the update and help, as on the desktop.</li>
+    <li><b>Library</b> on top of the list: Sort them, Select, and By world (scrolls sideways).</li></ul></div>`,
+  b: `<div><h2>B · Tabs</h2><p>Four tabs at the bottom, one tap from anywhere: Worlds, Library, Backups, Configuration.</p></div>
+    <div><h3>Try</h3><ul><li>Tap <b>Curse of Strahd</b>: Launch sits in a bar at the bottom, by your thumb, with what will change.</li>
+    <li>Tap a module card: its details <b>slide up as a sheet</b>; tap the dimmed page to close.</li>
+    <li>The tab badges count worlds with queued changes and newly installed modules.</li>
+    <li><b>⏻</b> (top right on Worlds) for Log out and Shut down; the version chip for the update.</li></ul></div>`,
+  today: `<div><h2>Foundry today</h2><p>Foundry's own Setup page on a 412 px phone (Foundry 14.370, no extension), the whole page from top to bottom.</p></div>
+    <div><h3>What a phone gets now</h3><ul><li>Foundry warns on every page that the window is smaller than 1024 × 768; the warning covers the worlds.</li>
+    <li>The menu is a row of unlabelled icons; Worlds, Systems and Add-ons tabs are cut off.</li>
+    <li>Each world is a big card with a date and two badges; News and Featured Content follow below.</li></ul></div>`,
+};
+const COMMON = `<div><h3>A and B differ in</h3><table class="cmp"><tr><th></th><th>A · Stack</th><th>B · Tabs</th></tr>
+    <tr><th>Getting around</th><td>Back to the worlds list; server pages in ⋮</td><td>Tab bar, always there</td></tr>
+    <tr><th>Launch</th><td>Top right</td><td>Bottom bar, with what will change</td></tr>
+    <tr><th>Details</th><td>Full screen</td><td>Sheet from the bottom</td></tr>
+    <tr><th>Tablet upright</th><td colspan="2">Both keep the worlds list on the left; details slide in from the right</td></tr></table></div>
+  <div><h3>Same in both</h3><ul><li>Every page of the desktop design: world (Modules, About, Backups), Library, server Backups, Configuration, What's new.</li>
+    <li>Touch sizes: switches, rows and buttons are 44–48 px; group menus show without hover.</li>
+    <li>Menus and dialogs (Add, launch review, snapshot) open from the bottom.</li>
+    <li>On a world's page the banner names it; the top bar takes the name once you scroll.</li></ul></div>
+  <div class="q"><h3>For you to decide</h3><ol><li><b>A or B</b>, or a mix (for example A's stack with B's Launch bar).</li>
+    <li><b>Tablet upright</b> (768 px): worlds list on the left, as shown, or the phone layout?</li>
+    <li>Anything that should <b>not</b> come to the phone (By world grid, Configuration)?</li></ol></div>`;
+
+function load() {
+  const [w, h] = DEVICES[S.d];
+  view.style.width = today.style.width = `${w}px`;
+  view.style.height = today.style.height = `${h}px`;
+  device.classList.toggle("tablet", S.d === "768");
+  const isToday = S.v === "today";
+  view.hidden = isToday; today.hidden = !isToday;
+  if (!isToday) view.src = `setup-shell.html?calm=1&phone=${S.v}${S.w === "12" ? "&worlds=12" : ""}`;
+  document.getElementById("notes").innerHTML = NOTES[S.v] + (isToday ? "" : COMMON);
+  scale();
+}
+function scale() {
+  device.style.transform = "";
+  const narrow = matchMedia("(max-width: 960px)").matches;
+  const availW = stage.clientWidth - 32, availH = narrow ? Infinity : stage.clientHeight - 28;
+  const s = Math.min(1, availW / device.offsetWidth, availH / device.offsetHeight);
+  device.style.transform = s < 1 ? `scale(${s})` : "";
+  stage.style.height = narrow ? `${Math.ceil(device.offsetHeight * s) + 28}px` : "";
+}
+function pick(attr, key) {
+  document.querySelectorAll(`[data-${attr}]`).forEach((b) => b.addEventListener("click", () => {
+    document.querySelectorAll(`[data-${attr}]`).forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+    S[key] = b.dataset[attr]; load();
+  }));
+}
+pick("v", "v"); pick("d", "d"); pick("w", "w");
+document.getElementById("reset").addEventListener("click", load);
+addEventListener("resize", scale);
+load();
+</script>

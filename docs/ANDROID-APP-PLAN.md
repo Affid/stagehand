@@ -1,6 +1,6 @@
 # Android app: the new Setup page on a phone
 
-Status: planned 2026-11-07; phase 0 closed the same day (answered on the emulator; the phone checks moved to phase 4); phase 1 (phone design) started. The owner's decisions are below. Owner's choices: an Android app that
+Status: planned 2026-11-07; phase 0 closed the same day (answered on the emulator; the phone checks moved to phase 4); phase 1 (phone design): mockups published, waiting for the owner's choice. The owner's decisions are below. Owner's choices: an Android app that
 loads the user's Foundry server in a WebView and draws our Setup page over it
 (option 2 of three; the others were the extension in Firefox for Android, and
 a native client speaking Foundry's protocol); **Setup only** (a world, once
@@ -185,6 +185,30 @@ From `docs/ANDROID-SPIKE.md`, on the emulator:
   notice shows on every page (phase 3 handles it on Setup), and `/join`
   hides its Join button at phone width (phase 4 adds a small fix there,
   since a launch can pass through it).
+
+## Phase 1: phone design (2026-11-07)
+
+Mockups in the desktop prototype (`design/setup-page/`): `src/_phone.*` rearranges
+the same pages for a phone (`?phone=a` or `?phone=b`), `phone.html` is the
+playground (private artifact https://claude.ai/artifact/R12jn3MMQiXuKMuFnmYCuK),
+and `checks/phone.mjs` walks both variants at 360 and 412 px (no sideways
+overflow, Back, tabs, details, launch review). Foundry's own page at phone
+width is the "Foundry today" view (`scripts/dev/phone-today.ts`).
+
+- **A · Stack:** the worlds list is home; a world, the Library and the server
+  pages open over it with Back; server pages and Log out sit in a ⋮ menu;
+  Launch in the top bar; details full screen.
+- **B · Tabs:** a bottom tab bar (Worlds, Library, Backups, Configuration);
+  Launch in a bar at the bottom of a world's page with what will change;
+  details in a bottom sheet.
+- **Both:** every desktop page, one column; 44-48 px touch targets; menus and
+  dialogs from the bottom; the banner names the world and the top bar takes
+  the name once it scrolls away; from 700 px (a tablet upright) the worlds
+  list stays on the left and details slide in from the right.
+
+Asked of the owner: A or B (or a mix); the tablet-upright layout; anything
+that should stay off the phone. The answer goes into `docs/SETUP-REDESIGN.md`
+(a "Phone" section) and the losing variant leaves the mockup.
 
 ## Risks
 

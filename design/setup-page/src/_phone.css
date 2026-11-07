@@ -1,0 +1,199 @@
+/* ---------- "?phone=a|b": the Setup page on a phone (see _phone.js) ----------
+   One screen at a time; 48 px touch targets; controls that show on hover on a desktop are always shown.
+   Everything is scoped to body.mlp, so the desktop page is untouched. */
+body.mlp { --mlp-bar: 56px; --mlp-tabs: 64px; --mlp-tap: 44px; height: 100vh; height: 100dvh; overflow: hidden; }
+body.mlp #main-background { position: fixed; inset: 0; }
+
+/* Top bar */
+body.mlp .mlp-top { position: relative; z-index: 20; flex: none; height: var(--mlp-bar); display: flex; align-items: center; gap: 8px; padding: 0 8px 0 12px; background: rgb(11 10 19 / 88%); border-bottom: 1px solid var(--color-cool-4); backdrop-filter: blur(6px); }
+body.mlp .mlp-top .logo { width: 32px; height: 32px; flex: none; background: url(fvtt/icons/vtt-512.png) center / contain no-repeat; }
+body.mlp .mlp-top h1 { margin: 0; min-width: 0; font-family: "Modesto Condensed", serif; font-size: 26px; line-height: 1; color: var(--color-light-1); border: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 0 8px #000; }
+body.mlp .mlp-top h1.pt { font-size: 24px; }
+body.mlp .mlp-top .ml-spacer { flex: 1; }
+body.mlp .mlp-top button { flex: none; width: auto; height: 40px; }
+body.mlp .mlp-top button.icon, body.mlp .mlp-back { width: var(--mlp-tap); height: var(--mlp-tap); padding: 0; font-size: 18px; border-color: transparent; background: transparent; box-shadow: none; }
+body.mlp .mlp-back { margin-left: -6px; color: var(--color-light-1); }
+body.mlp .mlp-top button.ml-on { border-color: var(--color-warm-1); }
+body.mlp .mlp-ver { display: inline-flex; align-items: center; gap: 6px; height: 32px !important; padding: 0 10px; border-radius: 16px; font-size: 13px; color: var(--color-light-2); border: 1px solid var(--color-cool-3); background: rgb(0 0 0 / 35%); }
+body.mlp .mlp-ver i { color: #6fcf7f; font-size: 12px; }
+body.mlp .mlp-launch { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; padding: 0 16px; }
+body.mlp .mlp-launch.compact { height: 38px; padding: 0 12px; font-size: 14px; }
+body.mlp .mlp-launch .mlc-badge { position: static; margin-left: 2px; }
+
+/* One screen at a time */
+body.mlp #setup.mls { position: relative; z-index: 1; display: block; flex: 1; min-height: 0; padding: 0; gap: 0; }
+body.mlp #setup.mls > .application { height: 100%; border-radius: 0; border-left: 0; border-right: 0; }
+body.mlp[data-screen="home"] .mls-main, body.mlp[data-screen="page"]:not(.mlp-wide) .mls-rail { display: none; }
+
+/* Home: the worlds list, the whole screen scrolls */
+body.mlp .mls-rail { width: 100%; overflow: auto; padding: 12px 12px 20px; gap: 10px; }
+body.mlp .mls-rail .mls-worlds { overflow: visible; flex: none; gap: 6px; }
+body.mlp .mls-rail .mls-worlds.more { -webkit-mask-image: none; mask-image: none; }
+body.mlp .mls-lib { padding: 12px; grid-template-columns: 44px 1fr auto; border-color: var(--color-cool-4); background: rgb(0 0 0 / 25%); }
+body.mlp .mls-lib::after { content: "\f054"; font: var(--fa-font-solid); color: var(--color-light-4); grid-row: span 2; grid-column: 3; }
+body.mlp .mls-rail .mls-railbar input { height: var(--mlp-tap); font-size: 15px; }
+body.mlp .mls-rail .mls-railbar button { width: var(--mlp-tap); height: var(--mlp-tap); font-size: 16px; }
+body.mlp .mls-world { grid-template-columns: 84px 1fr auto; padding: 8px; gap: 3px 12px; min-height: 64px; }
+body.mlp .mls-world .thumb { width: 84px; height: 56px; }
+body.mlp .mls-world strong { font-size: 15.5px; }
+body.mlp .mls-world .meta { font-size: 13px; }
+body.mlp:not(.mlp-wide) .mls-rail .mls-on, body.mlp:not(.mlp-wide) .mls-world.mls-on { background: transparent; border-color: transparent; box-shadow: none; }
+body.mlp .mls-rail h2.divider { font-size: 20px; }
+
+/* A page: the whole page scrolls; the tab row sticks under the top bar */
+body.mlp .mls-main { width: 100%; overflow: auto; display: block; }
+body.mlp .mls-main .mls-body-main { display: block; padding: 0 12px 24px; }
+body.mlp .mls-main .ml-sections, body.mlp .mls-main .scrollable { overflow: visible; max-height: none; }
+body.mlp .mls-subtabs { position: sticky; top: 0; z-index: 5; flex-wrap: wrap; margin: 0 -12px; padding: 0 8px; background: #0e0d17; }
+body.mlp .mls-subtabs a { padding: 12px 10px; font-size: 15px; }
+body.mlp .mls-body-main > .mlc-tools { margin: 0; padding: 10px 0 6px; display: grid; grid-template-columns: 1fr auto var(--mlp-tap); gap: 8px; }
+body.mlp .mlc-tools input[type=search] { width: 100%; height: var(--mlp-tap); font-size: 15px; grid-column: 1 / 3; }
+body.mlp .mlc-tools .ml-seg2 { height: 40px; grid-column: 1; }
+body.mlp .mlc-tools .ml-seg2 span { padding: 0 14px; font-size: 14px; }
+body.mlp .mlc-tools button { height: 40px; font-size: 14px; }
+body.mlp .mlc-tools button.icon { width: var(--mlp-tap); height: var(--mlp-tap); grid-row: 1; grid-column: 3; }
+
+/* World banner: shorter, Launch lives in the top bar (A) or the bottom bar (B) */
+body.mlp .mls-banner { height: auto; min-height: 132px; margin: 0; padding: 40px 14px 14px; align-items: flex-end; background: linear-gradient(180deg, rgb(11 10 19 / 20%), rgb(11 10 19 / 92%) 70%), var(--img) var(--pos, center) / cover; }
+body.mlp .mls-banner > div:first-child { min-width: 0; }
+body.mlp .mls-banner h2 { font-size: 34px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
+body.mlp .mls-banner .meta { font-size: 13px; gap: 4px 12px; }
+body.mlp .mls-banner .acts { display: none; }
+body.mlp .mlc-pending { display: flex; flex-wrap: wrap; margin-top: 10px; padding: 8px 10px; font-size: 14px; }
+body.mlp .mlc-pending a { padding: 4px 2px; }
+body.mlp .mlw-star { width: var(--mlp-tap); height: var(--mlp-tap); }
+
+/* Cards: one column, bigger switches and rows */
+body.mlp .mlw-grid { grid-template-columns: 1fr; gap: 8px; }
+body.mlp .mlw-card { padding: 10px 12px 10px 10px; min-height: 60px; }
+body.mlp .mlw-card .t { font-size: 15px; }
+body.mlp .mlw-card .l2 { font-size: 13px; }
+body.mlp .mlw-card .mls-switch, body.mlp .mlc-row .mls-switch { width: 40px; height: 24px; border-radius: 12px; }
+body.mlp .mlw-card .mls-switch::after, body.mlp .mlc-row .mls-switch::after { top: 3px; left: 3px; width: 18px; height: 18px; }
+body.mlp .mlw-card .mls-switch:checked::after, body.mlp .mlc-row .mls-switch:checked::after { left: 19px; }
+body.mlp .mlc-head { min-height: var(--mlp-tap); font-size: 15px; }
+body.mlp .mlc-head .ml-hbtn { width: var(--mlp-tap); height: var(--mlp-tap); opacity: 1; visibility: visible; }
+body.mlp .mlc-row { min-height: 52px; }
+
+/* Details: full screen (A) or a bottom sheet (B, and tablets) */
+body.mlp .mls-panel { position: fixed !important; z-index: 120 !important; inset: 0 !important; width: auto !important; height: auto !important; border-radius: 0; box-shadow: none; display: flex; flex-direction: column; animation: mlp-in .18s ease-out; }
+body.mlp .mls-panel > h2.divider, body.mlp .mls-panel > .mls-close { display: none; }
+body.mlp .mlp-sheetbar { flex: none; display: flex; align-items: center; gap: 8px; min-height: var(--mlp-bar); padding: 0 8px 0 12px; border-bottom: 1px solid var(--color-cool-4); position: relative; }
+body.mlp .mlp-sheetbar strong { flex: 1; font-family: "Modesto Condensed", serif; font-size: 24px; color: var(--color-light-1); font-weight: normal; }
+body.mlp .mlp-sheetbar button { width: var(--mlp-tap); height: var(--mlp-tap); padding: 0; font-size: 18px; border-color: transparent; background: transparent; }
+body.mlp .mlp-sheetbar .grab { position: absolute; top: 6px; left: 50%; width: 40px; height: 4px; margin-left: -20px; border-radius: 2px; background: var(--color-light-5); }
+body.mlp .mls-panel .scroll { padding: 12px 16px 24px; font-size: 14px; }
+body.mlp .mls-panel footer { padding: 10px 12px 14px; }
+body.mlp .mls-panel footer button { height: var(--mlp-tap); font-size: 14px; }
+body.mlp .mlp-scrim { position: fixed; inset: 0; z-index: 115; background: rgb(0 0 0 / 55%); }
+body.mlp.mlp-a:not(.mlp-wide) .mlp-scrim:not(.pop) { display: none; }
+@keyframes mlp-in { from { transform: translateX(24px); opacity: .4; } }
+@keyframes mlp-up { from { transform: translateY(40px); opacity: .4; } }
+body.mlp.mlp-b .mls-panel, body.mlp.mlp-wide .mls-panel { top: auto !important; max-height: 88%; height: 88% !important; border-radius: 14px 14px 0 0; border: 1px solid var(--color-cool-3); animation-name: mlp-up; }
+body.mlp.mlp-wide .mls-panel { top: var(--mlp-bar) !important; bottom: 0 !important; left: auto !important; right: 0 !important; width: 420px !important; max-height: none; height: auto !important; border-radius: 0; animation-name: mlp-in; }
+body.mlp.mlp-wide .mlp-sheetbar .grab { display: none; }
+
+/* Menus and small popups become bottom sheets */
+body.mlp .ml-pop, body.mlp #context-menu.mls-menu-live, body.mlp #context-menu.ml-static-menu { position: fixed !important; z-index: 130 !important; left: 0 !important; right: 0 !important; top: auto !important; bottom: 0 !important; width: auto !important; min-width: 0; max-height: 75%; overflow: auto; border-radius: 14px 14px 0 0; padding-bottom: 8px; animation: mlp-up .16s ease-out; }
+body.mlp .mlp-scrim.pop { z-index: 125; }
+body.mlp #context-menu .context-item { min-height: 48px; display: flex; align-items: center; font-size: 15px; padding: 0 16px; }
+body.mlp #context-menu .context-item i { width: 24px; }
+body.mlp .ml-pop header { padding: 14px 16px 10px; }
+body.mlp .ml-pop ul.mls-pick { max-height: none; }
+body.mlp .ml-pop ul.mls-pick li { min-height: 48px; padding: 0 16px; font-size: 15px; }
+body.mlp .ml-pop select, body.mlp .ml-pop input:not([type=checkbox]) { height: var(--mlp-tap); font-size: 15px; }
+
+/* Dialogs (launch review, snapshot, save configuration): full width, from the bottom */
+body.mlp .application.ml-window.mls-dialog { left: 0 !important; right: 0 !important; top: auto !important; bottom: 0 !important; width: auto !important; max-height: 92%; border-radius: 14px 14px 0 0; animation: mlp-up .18s ease-out; }
+body.mlp .mls-dialog .ml-window-footer { flex-wrap: wrap; padding: 10px 12px 14px; }
+body.mlp .mls-dialog .ml-window-footer button { height: var(--mlp-tap); flex: 1 1 40%; font-size: 14px; }
+body.mlp .mls-dialog .ml-window-footer button.bright { flex-basis: 100%; order: -1; }
+
+/* Variant B: Launch bar and the tab bar */
+body.mlp .mlp-actbar { position: relative; z-index: 10; flex: none; display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: rgb(11 10 19 / 94%); border-top: 1px solid var(--color-cool-4); }
+body.mlp .mlp-actbar .mlp-what { flex: 1; min-width: 0; display: grid; color: var(--color-light-2); font-size: 13px; line-height: 1.3; }
+body.mlp .mlp-actbar a.mlp-what strong { color: #f6d3a8; }
+body.mlp .mlp-actbar a.mlp-what.warn strong, body.mlp .mlp-actbar a.mlp-what.warn span { color: #f3dca4; }
+body.mlp .mlp-actbar .mlp-what strong { font-size: 15px; color: var(--color-light-1); }
+body.mlp .mlp-actbar .mlp-what span { color: var(--color-text-subtle); text-decoration: underline; text-underline-offset: 2px; }
+body.mlp .mlp-actbar span.mlp-what span { text-decoration: none; }
+body.mlp .mlp-actbar .mlp-launch { height: 48px; width: auto; flex: none; font-size: 16px; padding: 0 22px; }
+body.mlp .mlp-tabs { position: relative; z-index: 10; flex: none; height: var(--mlp-tabs); display: grid; grid-template-columns: repeat(4, 1fr); background: #0d0c16; border-top: 1px solid var(--color-cool-4); }
+body.mlp .mlp-tabs button { position: relative; height: 100%; width: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border: 0; border-radius: 0; background: transparent; box-shadow: none; color: var(--color-light-4); font-size: 11.5px; padding: 0; }
+body.mlp .mlp-tabs button i { font-size: 19px; width: 56px; height: 28px; display: grid; place-items: center; border-radius: 14px; }
+body.mlp .mlp-tabs button.on { color: var(--color-light-1); }
+body.mlp .mlp-tabs button.on i { background: rgb(238 155 58 / 22%); color: var(--color-warm-1); }
+body.mlp .mlp-tabs .pip { position: absolute; top: 6px; left: calc(50% + 8px); min-width: 16px; height: 16px; padding: 0 4px; border-radius: 8px; background: var(--color-warm-2); color: #fff; font-size: 10px; display: grid; place-items: center; }
+
+/* Tablet held upright: the worlds list stays on the left */
+body.mlp.mlp-wide #setup.mls { display: flex; }
+body.mlp.mlp-wide .mls-rail { flex: 0 0 290px; width: 290px; border-right: 1px solid var(--color-cool-4); }
+body.mlp.mlp-wide .mls-main { flex: 1; min-width: 0; }
+body.mlp.mlp-wide .mls-world { grid-template-columns: 64px 1fr auto; }
+body.mlp.mlp-wide .mls-world .thumb { width: 64px; height: 44px; }
+body.mlp.mlp-wide .mls-world strong { font-size: 14.5px; }
+
+/* News drawer and tooltips: tooltips need a hover a phone doesn't have */
+body.mlp #tooltip { display: none !important; }
+
+/* Fixes after the first look */
+body.mlp .mlp-top, body.mlp .mlp-actbar, body.mlp .mlp-tabs, body.mlp #setup.mls { align-self: stretch; width: 100%; max-width: none; margin: 0; }
+body.mlp .mls-lib strong, body.mlp .mls-lib > span { grid-column: 2; }
+body.mlp .mlc-tools .ml-seg2 { justify-self: start; }
+/* On a world's page the banner already says its name: the bar shows it once the banner scrolls away */
+body.mlp[data-page="world"]:not(.mlp-wide) .mlp-top h1.pt { opacity: 0; transition: opacity .15s; }
+body.mlp.mlp-scrolled[data-page="world"] .mlp-top h1.pt { opacity: 1; }
+/* Sheets are opaque and sit above every bar (the page section makes no stacking context) */
+body.mlp #setup.mls { z-index: auto; }
+body.mlp .mls-panel { background: #100f1a; }
+body.mlp .application.ml-window.mls-dialog { background: #100f1a; }
+body.mlp.mlp-a:not(.mlp-wide) .mls-panel { max-height: none !important; }
+/* Library on a phone: the toolbar wraps, the intake notice stacks */
+body.mlp .mls-main header.controls, body.mlp .mls-main .ml-row, body.mlp .mls-main .mll-bar, body.mlp .mls-main .ml-toolbar { flex-wrap: wrap; row-gap: 8px; }
+body.mlp .mls-main header.controls input[type=search] { height: var(--mlp-tap); font-size: 15px; }
+body.mlp .mls-main header.controls button { height: var(--mlp-tap); }
+body.mlp .mls-intake-band { flex-wrap: wrap; }
+body.mlp .mls-intake-band > span { flex: 1 1 calc(100% - 40px); }
+body.mlp .mls-intake-band > button { flex: 1; height: var(--mlp-tap); }
+body.mlp .ml-row .ml-label { white-space: nowrap; }
+body.mlp .ml-row select { height: 40px; }
+body.mlp .ml-row button { height: 40px; }
+body.mlp .ml-row button.icon { width: 40px; }
+
+/* About, Configuration, Update: one column */
+body.mlp:not(.mlp-wide) .mlw-about, body.mlp .mlc-cols, body.mlp .mlu-cols, body.mlp .mlu-hcols { display: grid; grid-template-columns: minmax(0, 1fr); overflow: visible; }
+body.mlp.mlp-wide .mlu-cols { grid-template-columns: minmax(0, 1fr); }
+body.mlp .mlw-box dl { grid-template-columns: 104px minmax(0, 1fr); font-size: 14px; }
+body.mlp .mlw-sched, body.mlp .mlw-sched .side { grid-template-columns: minmax(0, 1fr); }
+body.mlp .mlc-set { grid-template-columns: minmax(0, 1fr); padding: 12px 0; }
+body.mlp .mlc-set .c { justify-content: flex-start; }
+body.mlp .mlc-set select, body.mlp .mlc-set input:not([type=checkbox]) { height: var(--mlp-tap); font-size: 15px; width: 100%; }
+body.mlp .mlc-diff li { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+
+/* Server pages: the top bar names the page, the page keeps its summary and main button */
+body.mlp:not(.mlp-wide) .mlb-head h2 { display: none; }
+body.mlp .mlb-head { flex-wrap: wrap; align-items: center; padding-top: 12px; min-height: 0; }
+body.mlp .mlb-head > div { flex: 1 1 100%; }
+body.mlp .mlb-head button { height: var(--mlp-tap); flex: 1 1 auto; }
+body.mlp .mlb-head .mlb-job { width: 100%; }
+body.mlp .mlb-scroll, body.mlp .mlb-pkgs { overflow: visible; max-height: none; }
+body.mlp .mlw-bhead { flex-wrap: wrap; }
+body.mlp .mlw-bhead button { height: 40px; }
+
+/* Backup rows (a world's, snapshots, a package's): name on top, version, size and buttons below */
+body.mlp .mlw-blist li, body.mlp .mlw-blist.mlb-snaps li, body.mlp .mlb-inner li, body.mlp .mlb-pkg .row { grid-template-columns: 26px minmax(0, 1fr) auto auto auto; gap: 6px 10px; padding: 10px; }
+body.mlp .mlw-blist li > :first-child, body.mlp .mlb-inner li > :first-child, body.mlp .mlb-pkg .row > :first-child { grid-row: span 2; align-self: start; margin-top: 2px; }
+body.mlp .mlw-blist li > .nm, body.mlp .mlb-inner li > .nm, body.mlp .mlb-pkg .row > .nm { grid-column: 2 / -1; }
+body.mlp .mlw-blist li .nm strong, body.mlp .mlb-pkg .row .nm strong { font-size: 15px; white-space: normal; }
+body.mlp .mlw-blist li .nm span, body.mlp .mlb-pkg .row .nm span { white-space: normal; }
+body.mlp .mlw-blist li button, body.mlp .mlb-inner li button, body.mlp .mlb-pkg .row button { height: 40px; }
+body.mlp .mlw-blist li button.icon, body.mlp .mlb-inner li button.icon { width: 40px; }
+body.mlp .mlw-blist li.busy { grid-template-columns: 26px minmax(0, 1fr) auto; }
+body.mlp .mlw-blist li.busy .bar { grid-column: 2 / -1; }
+body.mlp .mlb-pkg .row button.tog { width: 26px; height: 26px; }
+body.mlp .mlu-clist li { grid-template-columns: 22px minmax(0, 1fr); }
+body.mlp .mlu-clist li > :nth-child(n+3) { grid-column: 2; }
+body.mlp #context-menu.mls-menu-live, body.mlp #context-menu.ml-static-menu { max-width: none !important; }
+body.mlp.mlp-a.mlp-wide .mls-banner .acts { display: flex; }
+body.mlp .mlu-tools { flex-wrap: wrap; row-gap: 8px; }
+body.mlp .mlu-tools input[type=search] { flex: 1 1 100%; height: var(--mlp-tap); font-size: 15px; }
