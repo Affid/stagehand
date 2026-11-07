@@ -64,7 +64,7 @@ iframe { display: block; border: 0; background: #000; }
   <h1>Setup on a Phone</h1>
   <span class="tag">Mockup · nothing is saved</span>
   <div class="tools">
-    <span class="seg" role="group" aria-label="Variant"><span class="lbl">Variant</span><button type="button" data-v="a" aria-pressed="true">A · Stack</button><button type="button" data-v="b" aria-pressed="false">B · Tabs</button><button type="button" data-v="today" aria-pressed="false">Foundry today</button></span>
+    <span class="seg" role="group" aria-label="Show"><span class="lbl">Show</span><button type="button" data-v="new" aria-pressed="true">New page</button><button type="button" data-v="today" aria-pressed="false">Foundry today</button></span>
     <span class="seg" role="group" aria-label="Device"><span class="lbl">Device</span><button type="button" data-d="360" aria-pressed="false">Small phone</button><button type="button" data-d="412" aria-pressed="true">Phone</button><button type="button" data-d="768" aria-pressed="false">Tablet</button></span>
     <span class="seg" role="group" aria-label="Worlds on the server"><span class="lbl">Worlds</span><button type="button" data-w="6" aria-pressed="true">6</button><button type="button" data-w="12" aria-pressed="false">12</button></span>
     <button type="button" id="reset">Reset</button>
@@ -91,38 +91,36 @@ iframe { display: block; border: 0; background: #000; }
 <script>
 // Sizes of the WebView area: the screen minus Android's status bar (24) and gesture bar (20).
 const DEVICES = { 360: [360, 736], 412: [412, 871], 768: [768, 980] };
-const S = { v: "a", d: "412", w: "6" };
+const S = { v: "new", d: "412", w: "6" };
 const view = document.getElementById("view"), today = document.getElementById("today");
 const device = document.getElementById("device"), stage = document.getElementById("stage");
 
 const NOTES = {
-  a: `<div><h2>A · Stack</h2><p>The worlds list is home. Everything else opens over it, with Back in the top left.</p></div>
-    <div><h3>Try</h3><ul><li>Tap <b>Curse of Strahd</b>, flip a switch, then <b>Launch</b> (top right) to review the changes.</li>
-    <li>Tap a module card: its details open <b>full screen</b>; Back closes them.</li>
-    <li><b>⋮</b> holds Backups, Configuration, the update, Support, Log out and Shut down.</li>
-    <li>The <b>version chip</b> (14 · 370 ↑) opens the update and help, as on the desktop.</li>
-    <li><b>Library</b> on top of the list: Sort them, Select, and By world (scrolls sideways).</li></ul></div>`,
-  b: `<div><h2>B · Tabs</h2><p>Four tabs at the bottom, one tap from anywhere: Worlds, Library, Backups, Configuration.</p></div>
-    <div><h3>Try</h3><ul><li>Tap <b>Curse of Strahd</b>: Launch sits in a bar at the bottom, by your thumb, with what will change.</li>
-    <li>Tap a module card: its details <b>slide up as a sheet</b>; tap the dimmed page to close.</li>
-    <li>The tab badges count worlds with queued changes and newly installed modules.</li>
-    <li><b>⏻</b> (top right on Worlds) for Log out and Shut down; the version chip for the update.</li></ul></div>`,
+  new: `<div><h2>Tabs</h2><p>The layout you chose: four tabs at the bottom (Worlds, Library, Backups, Configuration), sheets from the bottom, Launch by your thumb.</p></div>
+    <div><h3>Try</h3><ul><li>Tap <b>Curse of Strahd</b>, flip a switch, then <b>5 changes · See or undo</b> at the bottom: undo one, or Discard all.</li>
+    <li><b>Launch</b> shows the changes once more before anything happens.</li>
+    <li>Tap a module card: its details slide up. Drag the sheet down by its top, or tap the dimmed page, to close it.</li>
+    <li><b>Library</b>: Sort them, Select, By world (scrolls sideways); <b>⋮</b> holds Tags, Presets, folders, import and export.</li>
+    <li><b>Configuration</b>: change a setting; the Save bar sits above the tabs.</li>
+    <li>The <b>version chip</b> (14 · 370 ↑) for the update; <b>⏻</b> for Log out and Shut down.</li></ul></div>
+    <div><h3>Changed since the first version</h3><ul>
+    <li>Only the tabs layout; the stack layout is gone.</li>
+    <li>The Library card left the Worlds list: it has its own tab.</li>
+    <li>A world's picture runs under the top bar; the bar turns solid with the name as you scroll.</li>
+    <li>The banner's "5 changes wait … Review · Discard" moved into the bottom bar, which opens a <b>Next launch</b> sheet with undo per change.</li>
+    <li>Library: the row of small icons folds into one ⋮ menu; the desktop-only "Foundry's" card layout is hidden.</li>
+    <li>What's new: the update button comes first, before the release notes.</li>
+    <li>Configuration's Save bar stays above the tabs instead of at the foot of the page.</li>
+    <li>A world without the companion: one Launch, in the bottom bar.</li>
+    <li>Sheets close by dragging them down.</li></ul></div>`,
   today: `<div><h2>Foundry today</h2><p>Foundry's own Setup page on a 412 px phone (Foundry 14.370, no extension), the whole page from top to bottom.</p></div>
     <div><h3>What a phone gets now</h3><ul><li>Foundry warns on every page that the window is smaller than 1024 × 768; the warning covers the worlds.</li>
     <li>The menu is a row of unlabelled icons; Worlds, Systems and Add-ons tabs are cut off.</li>
     <li>Each world is a big card with a date and two badges; News and Featured Content follow below.</li></ul></div>`,
 };
-const COMMON = `<div><h3>A and B differ in</h3><table class="cmp"><tr><th></th><th>A · Stack</th><th>B · Tabs</th></tr>
-    <tr><th>Getting around</th><td>Back to the worlds list; server pages in ⋮</td><td>Tab bar, always there</td></tr>
-    <tr><th>Launch</th><td>Top right</td><td>Bottom bar, with what will change</td></tr>
-    <tr><th>Details</th><td>Full screen</td><td>Sheet from the bottom</td></tr>
-    <tr><th>Tablet upright</th><td colspan="2">Both keep the worlds list on the left; details slide in from the right</td></tr></table></div>
-  <div><h3>Same in both</h3><ul><li>Every page of the desktop design: world (Modules, About, Backups), Library, server Backups, Configuration, What's new.</li>
-    <li>Touch sizes: switches, rows and buttons are 44–48 px; group menus show without hover.</li>
-    <li>Menus and dialogs (Add, launch review, snapshot) open from the bottom.</li>
-    <li>On a world's page the banner names it; the top bar takes the name once you scroll.</li></ul></div>
-  <div class="q"><h3>For you to decide</h3><ol><li><b>A or B</b>, or a mix (for example A's stack with B's Launch bar).</li>
-    <li><b>Tablet upright</b> (768 px): worlds list on the left, as shown, or the phone layout?</li>
+const COMMON = `<div><h3>Same as the desktop</h3><ul><li>Every page: a world (Modules, About, Backups), Library, server Backups, Configuration, What's new.</li>
+    <li>Touch sizes: switches, rows and buttons are 44–48 px; group menus show without hover.</li></ul></div>
+  <div class="q"><h3>Still open</h3><ol><li><b>Tablet upright</b> (768 px): worlds list on the left, as shown, or the phone layout?</li>
     <li>Anything that should <b>not</b> come to the phone (By world grid, Configuration)?</li></ol></div>`;
 
 function load() {
@@ -132,7 +130,7 @@ function load() {
   device.classList.toggle("tablet", S.d === "768");
   const isToday = S.v === "today";
   view.hidden = isToday; today.hidden = !isToday;
-  if (!isToday) view.src = `setup-shell.html?calm=1&phone=${S.v}${S.w === "12" ? "&worlds=12" : ""}`;
+  if (!isToday) view.src = `setup-shell.html?calm=1&phone=1${S.w === "12" ? "&worlds=12" : ""}`;
   document.getElementById("notes").innerHTML = NOTES[S.v] + (isToday ? "" : COMMON);
   scale();
 }

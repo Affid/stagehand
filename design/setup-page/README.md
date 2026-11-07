@@ -12,9 +12,9 @@ node checks/run.mjs    # 40 Playwright checks; screenshots go to out/shots/
 - `src/` — the page: `_data.js` (sample library), `_kit.*` (Foundry card markup), `_shell.*`
   (layout, world page, Library), `_ideas.*` (grid, intake, copy, review at launch),
   `_calm.*` (current cards, header, About, Backups), `_sched.*` (next session), `_server.*` (server backups page), `_config.*` (Configuration page), `_update.*` (update and release notes), `_tips.js`
-  (tooltips), `_news.js`, `_phone.*` (the phone layouts, `?phone=a` stack or `?phone=b` tabs; Android
-  app phase 1), `_boot.js`.
-- `phone.html` — the phone playground: variant A or B, small phone, phone or tablet, and Foundry's own
+  (tooltips), `_news.js`, `_phone.*` (the phone layout, `?phone=1`, the "tabs" layout the owner
+  chose; Android app phase 1), `_boot.js`.
+- `phone.html` — the phone playground: the new page or Foundry's, small phone, phone or tablet, and Foundry's own
   page today (`out/today.jpg`, made by `node scripts/dev/phone-today.ts` from the repo root while
   Foundry runs; copied by the build when present).
 - `tools/` — `look.mjs` (a screenshot at any size after some clicks) and `sheet.mjs` (screenshots side
