@@ -76,6 +76,12 @@
   opacity: 1;
 }
 
+/* A column with its menu open sits above the pinned Module head (z-index
+   3): with set-width columns the menu reaches over it (polish pass). */
+.mls-shell .mll-grid thead th.w:has(.mlh-menu) {
+  z-index: 4;
+}
+
 .mls-shell .mll-grid .wh .mlh-menu {
   text-align: left;
   font-weight: 400;

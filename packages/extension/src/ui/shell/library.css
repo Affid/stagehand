@@ -289,6 +289,14 @@
 .mls-shell .mll-gridwrap {
   overflow: auto;
   max-height: 100%;
+  /* The frame ends with the table, whose columns have a set width
+     (WorldGrid.tsx), rather than across the pane. */
+  width: fit-content;
+  max-width: 100%;
+  /* No scrollbar-gutter: Chrome widens a fit-content frame for its
+     vertical scrollbar by itself (measured with real scrollbars), and with
+     Playwright's hidden scrollbars a stable gutter stops the frame 10 px
+     short of its right end (review). */
   border: 1px solid var(--color-cool-4);
   border-radius: 4px;
 }
@@ -297,7 +305,8 @@
   border-collapse: separate;
   border-spacing: 0;
   table-layout: fixed;
-  width: 100%;
+  /* Its width is set inline: the module column plus a set width per
+     world (WorldGrid.tsx). */
   font-size: 13px;
   /* Foundry's tables clip, which pins the sticky names and headers to the
      table instead of the scrolling box: they scrolled away (Phase 6, as the

@@ -1,8 +1,10 @@
 // The Library's By world grid, as the prototype: every module in every
 // world, a switch per cell that queues a change for that world's next
 // launch, group rows with each world's count, world columns with their art
-// and menu, a Show filter for busy servers, and a legend. Columns never
-// shrink below MIN_COL: past that it scrolls sideways, names pinned.
+// and menu, a Show filter for busy servers, and a legend. World columns are
+// always WORLD_COL wide (the prototype stretched them across the pane; two
+// worlds at 2560 were 830 px each, polish pass): the table ends after the
+// last world, and past the pane it scrolls sideways, names pinned.
 import type { WorldInfo } from "@module-library/shared/world";
 import { useMemo, useRef, useState } from "preact/hooks";
 import { useScrollFade } from "../../../common/scroll-fade.ts";
@@ -17,7 +19,7 @@ import type { Folding, Models } from "./types.ts";
 
 export type { Folding } from "./types.ts";
 
-const MIN_COL = 92;
+const WORLD_COL = 92;
 const MOD_COL = 250;
 
 function Picker(props: {
@@ -104,7 +106,9 @@ function Table(props: {
       <table
         class="mll-grid"
         aria-label={t("lib.tab.grid")}
-        style={{ minWidth: `${MOD_COL + props.shown.length * MIN_COL}px` }}
+        style={{
+          width: `${String(MOD_COL + props.shown.length * WORLD_COL)}px`,
+        }}
       >
         <thead>
           <tr>

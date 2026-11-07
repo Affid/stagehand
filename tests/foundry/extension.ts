@@ -40,14 +40,22 @@ function prepareCopy(hosts: readonly string[]): string {
   return UNDER_TEST;
 }
 
+export interface LoadOptions {
+  /** Classic scrollbars that take room, as a desktop Chrome draws them
+   * (Playwright hides them by default). */
+  readonly scrollbars?: boolean;
+}
+
 export async function loadExtension(
   hosts: readonly string[] = [],
+  options: LoadOptions = {},
 ): Promise<LoadedExtension> {
   const dir = prepareCopy(hosts);
   const context = await chromium.launchPersistentContext("", {
     channel: "chromium",
     viewport: { width: 1600, height: 1000 },
     args: [`--disable-extensions-except=${dir}`, `--load-extension=${dir}`],
+    ...(options.scrollbars ? { ignoreDefaultArgs: ["--hide-scrollbars"] } : {}),
   });
   const worker =
     context.serviceWorkers()[0] ??

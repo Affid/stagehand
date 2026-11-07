@@ -126,6 +126,64 @@ test("1366 with a side panel: the selection bar keeps Done inside the page", asy
     .click();
 });
 
+test("2560: By world columns keep their width; the frame ends at the table (polish)", async () => {
+  await page.setViewportSize({ width: 2560, height: 1440 });
+  await shell(page).locator(".mls-lib").click();
+  await shell(page)
+    .locator(".mls-main")
+    .getByRole("tab", { name: /By world/ })
+    .click();
+  const heads = shell(page).locator(".mll-grid thead th.w");
+  const n = await heads.count();
+  expect(n).toBeGreaterThan(0);
+  for (const w of await heads.evaluateAll((els) =>
+    els.map((e) => Math.round(e.getBoundingClientRect().width)),
+  ))
+    expect(w).toBe(92);
+  const table = await box(shell(page).locator(".mll-grid"));
+  expect(table.w).toBe(250 + n * 92);
+  // The frame holds the table and no more (its border and scrollbar
+  // gutter aside).
+  expect(
+    await shell(page)
+      .locator(".mll-gridwrap")
+      .evaluate((e) => e.clientWidth),
+  ).toBe(table.w);
+  await page.screenshot({ path: `${SCREENS}/layout-grid-2560.png` });
+  await shell(page)
+    .locator(".mls-main")
+    .getByRole("tab", { name: /^Modules/ })
+    .click();
+});
+
+test("1366×768: a long grid scrolls down without cutting the last world (review)", async () => {
+  // Its own browser with scrollbars that take room, as a desktop Chrome.
+  const own = await loadExtension([], { scrollbars: true });
+  try {
+    const p = await own.context.newPage();
+    await p.setViewportSize({ width: 1366, height: 768 });
+    await openSetupAsAdmin(own, p, env.url, env.adminPassword);
+    await shell(p).locator(".mls-lib").click();
+    await shell(p)
+      .locator(".mls-main")
+      .getByRole("tab", { name: /By world/ })
+      .click();
+    const frame = shell(p).locator(".mll-gridwrap");
+    await expect(frame).toBeVisible();
+    const m = await frame.evaluate((e) => ({
+      down: e.scrollHeight > e.clientHeight,
+      gutter: (e as HTMLElement).offsetWidth - e.clientWidth - 2,
+      sideways: e.scrollWidth - e.clientWidth,
+    }));
+    expect(m.down).toBe(true);
+    expect(m.gutter).toBeGreaterThan(0);
+    expect(m.sideways).toBe(0);
+    await p.screenshot({ path: `${SCREENS}/layout-grid-1366.png` });
+  } finally {
+    await own.context.close();
+  }
+});
+
 test("2560: the server pages fill the screen too", async () => {
   await page.setViewportSize({ width: 2560, height: 1440 });
   const top = shell(page).locator(".mls-top");

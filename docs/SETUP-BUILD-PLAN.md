@@ -974,3 +974,24 @@ theme back on Ctrl-C (the script runs as a child; we wait for it) and reads
 the theme from Setup's body tag; the link rule takes its size from the
 existing row rule. Kept: `with-theme.ts` runs any script it is given (a dev
 aid run by the developer).
+
+Package 2 done. World columns are always 92 px: the table is 250 px plus
+92 px per shown world (`WorldGrid.tsx`), and its frame ends with it
+(`width: fit-content`, at most the pane); with more worlds than fit it
+scrolls sideways as before. Live (`setup-layout.spec.ts`): at 2560 each
+column is 92 px and the frame holds the table and no more; at 1366×768, in
+a browser with real scrollbars, the grid scrolls down and the scrollbar
+sits beside the last world without cutting it. The full live suite passes.
+Found on the way: the open world menu (210 px) now reached under the
+pinned Module head (drawn above the world heads), which washed out its
+left half; the column with an open menu is raised above it. axe's
+target-size then counted the cells the open menu half covers against them
+(their switches can't be used while it is open); the open menu is audited
+with its column, the grid at rest as before. Reviews: code and security,
+no critical or high. Fixed: the scoped audit first checks the menu is
+open. Checked and kept: Chrome widens the fit-content frame for its
+vertical scrollbar by itself (measured with real scrollbars: 434 px table,
+446 px frame, no sideways scroll), so no `scrollbar-gutter` (with
+Playwright's hidden scrollbars a stable gutter stops the frame 10 px short
+of its end); a forged world list is capped at 5000 by the schema as before.
+`loadExtension` takes `{ scrollbars: true }` for desktop-style scrollbars.

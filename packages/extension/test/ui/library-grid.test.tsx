@@ -146,6 +146,19 @@ describe("the By world grid", () => {
     expect(heads(container)).toHaveLength(3);
   });
 
+  test("world columns keep a set width; the table ends after the last (polish)", () => {
+    const { container, getByRole } = grid();
+    const table = el(container, ".mll-grid");
+    // 250 px for the module names, 92 px per world: never stretched.
+    expect(table.style.width).toBe(`${String(250 + 3 * 92)}px`);
+    fireEvent.change(getByRole("combobox", { name: "Show" }), {
+      target: { value: "fav" },
+    });
+    expect(el(container, ".mll-grid").style.width).toBe(
+      `${String(250 + 92)}px`,
+    );
+  });
+
   test("nothing to show offers to show all", () => {
     const { container, getByRole } = grid();
     fireEvent.change(getByRole("combobox", { name: "Show" }), {
