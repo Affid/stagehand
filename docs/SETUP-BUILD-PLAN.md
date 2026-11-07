@@ -794,3 +794,12 @@ module update.
   `.env.local`, and warns; the probe redacts links with a query as well as
   the download link. Kept on purpose: pre-release versions follow Foundry's
   own `isNewerVersion`, as the update list it builds does (a test says so).
+
+Wide screens filled (2026-11-07, the owner's call, replacing package 6.4's
+1200 px cap): on a 2560 screen the capped middle pane left a third of the
+page empty, even with a module's details open. Now from 1366 px up the rail
+and the details panel grow with the screen in their 1366 proportions (290
+and 340 px there, `clamp()` in `shell/layout.css`) until 2560 (544 and
+637 px), and the middle pane takes the rest; past 2560 only the middle pane
+grows. 1366 and 1280 are unchanged. `setup-layout.spec.ts` measures 1280,
+1366, 1920, 2560 and 3440 and the server pages at 2560.

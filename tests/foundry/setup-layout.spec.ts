@@ -1,7 +1,8 @@
-// Page widths of the new Setup page (Phase 6), against the prototype's own
-// boxes (measured with scripts/dev/layout-compare.ts): 2560 keeps Foundry's
-// 1200 px window for the middle pane; 1366 fits three columns; 1280 narrows
-// the rail and floats the details panel over the page.
+// Page widths of the new Setup page (Phase 6). 1366 fits three columns as
+// the prototype; from there to 2560 the rail and the details panel grow with
+// the screen in the same proportions and the middle pane fills the rest, so
+// wide screens have no empty gap (owner, 2026-11-07); 1280 narrows the rail
+// and floats the details panel over the page.
 import { expect, type Locator, type Page, test } from "@playwright/test";
 import { loadFoundryEnv } from "../../scripts/foundry/env.ts";
 import {
@@ -67,12 +68,28 @@ async function measure(w: number, h: number) {
   return { world, library };
 }
 
-test("2560: the middle pane keeps Foundry's 1200 px, beside the rail", async () => {
+test("2560: rail, middle pane and details grow together, filling the screen", async () => {
   const m = await measure(2560, 1440);
-  expect(m.world.rail).toEqual({ x: 24, w: 290 });
-  expect(m.world.main).toEqual({ x: 330, w: 1200 });
-  expect(m.library.panel).toEqual({ x: 1546, w: 340 });
+  expect(m.world.rail).toEqual({ x: 24, w: 543 });
+  expect(m.world.main).toEqual({ x: 583, w: 1953 });
+  expect(m.library.main).toEqual({ x: 583, w: 1300 });
+  expect(m.library.panel).toEqual({ x: 1899, w: 637 });
   expect(await box(shell(page).locator(".mls-top"))).toEqual({ x: 0, w: 2560 });
+});
+
+test("1920: the same proportions as 1366", async () => {
+  const m = await measure(1920, 1080);
+  expect(m.world.rail).toEqual({ x: 24, w: 408 });
+  expect(m.world.main).toEqual({ x: 448, w: 1448 });
+  expect(m.library.main).toEqual({ x: 448, w: 955 });
+  expect(m.library.panel).toEqual({ x: 1418, w: 478 });
+});
+
+test("3440: past 2560 only the middle pane grows; still no gap", async () => {
+  const m = await measure(3440, 1440);
+  expect(m.world.rail).toEqual({ x: 24, w: 544 });
+  expect(m.world.main).toEqual({ x: 584, w: 2832 });
+  expect(m.library.panel).toEqual({ x: 2779, w: 637 });
 });
 
 test("1366: three columns, as the prototype", async () => {
@@ -109,14 +126,14 @@ test("1366 with a side panel: the selection bar keeps Done inside the page", asy
     .click();
 });
 
-test("2560: the server pages keep Foundry's 1200 px too", async () => {
+test("2560: the server pages fill the screen too", async () => {
   await page.setViewportSize({ width: 2560, height: 1440 });
   const top = shell(page).locator(".mls-top");
   for (const name of ["Backups", "Configuration"]) {
     await top.getByRole("button", { name }).click();
     expect(await box(shell(page).locator(".mls-main"))).toEqual({
-      x: 330,
-      w: 1200,
+      x: 583,
+      w: 1953,
     });
   }
 });

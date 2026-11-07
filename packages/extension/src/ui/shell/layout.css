@@ -1,11 +1,23 @@
-/* Page widths (Phase 6), as the prototype (design/setup-page/src/_shell.css):
-   wide screens keep Foundry's window width for the middle pane, left-aligned
-   beside the rail, with the header across the whole screen; at 1280 px and
-   below the rail narrows and the details panel floats over the page. */
+/* Page widths. The prototype (design/setup-page/src/_shell.css) kept
+   Foundry's 1200 px window cap for the middle pane, which left a gap on the
+   right of wide screens; the owner chose to fill the screen instead
+   (2026-11-07). From 1366 px up the rail and the details panel grow with the
+   screen in their 1366 proportions (290 and 340 px there) until 2560, and
+   the middle pane takes the rest, so the page keeps one shape at every
+   size. At 1280 px and below the rail narrows and the details panel floats
+   over the page. */
 
-.mls-shell .mls > .application.mls-main {
-  /* Foundry's .application width cap, which the prototype keeps. */
-  max-width: 1200px;
+.mls-shell {
+  --mls-rail-w: clamp(290px, calc(100vw * 290 / 1366), 544px);
+  --mls-panel-w: clamp(340px, calc(100vw * 340 / 1366), 637px);
+}
+
+.mls-shell .mls-rail {
+  flex-basis: var(--mls-rail-w);
+}
+
+.mls-shell .mls-panel {
+  flex-basis: var(--mls-panel-w);
 }
 
 @media (max-width: 1280px) {
