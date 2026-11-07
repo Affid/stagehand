@@ -19,6 +19,9 @@ export interface SetupGame {
   readonly release?: { readonly generation: number; readonly build: number };
   readonly data?: {
     readonly isAdmin?: boolean;
+    /** Foundry's News and Featured Content, from its update check. */
+    readonly news?: unknown;
+    readonly featuredContent?: unknown;
     /** Foundry's server options (the password only as a hash). */
     readonly options?: Readonly<Record<string, unknown>>;
     readonly languages?: readonly {

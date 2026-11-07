@@ -170,6 +170,26 @@ function intakeStore(kv: SerializedKeyValue) {
   };
 }
 
+/** News articles remembered as seen; Foundry lists a handful at a time. */
+export const MAX_NEWS_SEEN = 200;
+
+/** News read state: the first Setup visit with news counts all as seen. */
+function newsStore(kv: SerializedKeyValue) {
+  const k = (id: ServerId): string => key("news-seen", id);
+  return {
+    newsSeen: (id: ServerId) => kv.get<string[]>(k(id)),
+    async seedNews(id: ServerId, urls: readonly string[]): Promise<void> {
+      if (urls.length === 0) return;
+      await kv.update<string[] | null>(k(id), null, (cur) => cur ?? [...urls]);
+    },
+    async markNewsSeen(id: ServerId, urls: readonly string[]): Promise<void> {
+      await kv.update<string[]>(k(id), [], (cur) =>
+        [...new Set([...cur, ...urls])].slice(-MAX_NEWS_SEEN),
+      );
+    },
+  };
+}
+
 /** Worlds whose next launch skips the queue; more is a bug, not a use. */
 const MAX_HOLDS = 200;
 /** A hold is for the launch that follows it, not one much later. */
@@ -256,5 +276,6 @@ export function createState(kv: SerializedKeyValue) {
     ...worldStore(kv),
     ...commandStore(kv),
     ...intakeStore(kv),
+    ...newsStore(kv),
   };
 }

@@ -1,0 +1,227 @@
+/* News and Featured Content at the foot of the worlds rail (Phase 6).
+   Matches design/setup-page/src/_calm.css .mlr-news and .mlr-feat. */
+
+.mls-shell .mlr-news {
+  flex: none;
+  display: grid;
+  gap: 6px;
+  border-top: 1px solid var(--color-cool-4);
+  padding-top: 8px;
+  margin-top: 4px;
+}
+
+.mls-shell .mlr-news header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  white-space: nowrap;
+  cursor: pointer;
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-subtle);
+}
+
+.mls-shell .mlr-news header button {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  flex: none;
+  background: none;
+  border: 0;
+  font-size: 10px;
+  color: var(--color-light-4);
+}
+
+.mls-shell .mlr-news header > .new {
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: #ffd28a;
+  font-weight: 700;
+}
+
+.mls-shell .mlr-news header .latest {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 12.5px;
+  color: var(--color-light-3);
+}
+
+.mls-shell .mlr-news header:hover .latest {
+  color: var(--color-light-1);
+}
+
+.mls-shell .mlr-news .viewport {
+  position: relative;
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.mls-shell .mlr-news .track {
+  display: flex;
+  transition: transform 0.38s cubic-bezier(0.22, 0.7, 0.2, 1);
+  will-change: transform;
+}
+
+.mls-shell .mlr-news .track .banner {
+  flex: 0 0 100%;
+  min-width: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mls-shell .mlr-news .track {
+    transition: none;
+  }
+}
+
+/* Banners: Foundry's own 2.39:1 artwork, shown whole. */
+.mls-shell .mlr-news .banner,
+.mls-shell .mlr-feat .banner {
+  display: grid;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid rgb(255 255 255 / 10%);
+  background: rgb(0 0 0 / 35%);
+  text-decoration: none;
+}
+
+.mls-shell .mlr-news .banner:hover,
+.mls-shell .mlr-feat .banner:hover,
+.mls-shell .mlr-news .banner:focus-visible,
+.mls-shell .mlr-feat .banner:focus-visible {
+  border-color: var(--color-warm-1);
+}
+
+.mls-shell .mlr-news .banner img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 2.39;
+  height: auto;
+  object-fit: cover;
+}
+
+.mls-shell .mlr-feat .banner img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 2.7;
+  height: auto;
+  object-fit: cover;
+}
+
+.mls-shell .mlr-news .banner .cap,
+.mls-shell .mlr-feat .banner .cap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  min-width: 0;
+}
+
+.mls-shell .mlr-news .banner .cap strong,
+.mls-shell .mlr-feat .banner .cap strong {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  color: var(--color-light-1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mls-shell .mlr-news .banner .cap .k {
+  flex: none;
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-text-subtle);
+}
+
+.mls-shell .mlr-news .banner .cap .k.new {
+  color: #ffd28a;
+  font-weight: 700;
+}
+
+.mls-shell .mlr-news .banner .cap i,
+.mls-shell .mlr-feat .banner .cap i {
+  flex: none;
+  font-size: 10px;
+  color: var(--color-light-4);
+}
+
+/* Arrows and the counter sit on the banner, shown on hover or focus. */
+.mls-shell .mlr-news .navs {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  aspect-ratio: 2.39;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 6px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.mls-shell .mlr-news .viewport:hover .navs,
+.mls-shell .mlr-news .navs:focus-within {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .mls-shell .mlr-news .navs {
+    opacity: 1;
+  }
+}
+
+.mls-shell .mlr-news .navs button {
+  pointer-events: auto;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  flex: none;
+  border-radius: 50%;
+  border: 1px solid rgb(255 255 255 / 25%);
+  background: rgb(0 0 0 / 60%);
+  color: #fff;
+  font-size: 11px;
+}
+
+.mls-shell .mlr-news .navs button:hover {
+  background: rgb(0 0 0 / 85%);
+  border-color: var(--color-warm-1);
+}
+
+.mls-shell .mlr-news .navs .c {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  padding: 0 6px;
+  border-radius: 8px;
+  background: rgb(0 0 0 / 60%);
+  color: #fff;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Featured Content: its own small section under News, as on Foundry's page. */
+.mls-shell .mlr-feat {
+  flex: none;
+  display: grid;
+  gap: 5px;
+  margin-top: 2px;
+}
+
+.mls-shell .mlr-feat .lbl {
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-subtle);
+  padding-left: 2px;
+}

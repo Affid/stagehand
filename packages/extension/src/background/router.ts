@@ -4,6 +4,7 @@ import {
   exportLibrary,
   parseLibraryImport,
 } from "@module-library/shared/library/transfer";
+import { newsUrls } from "@module-library/shared/news";
 import { parseCoreVersion } from "@module-library/shared/version";
 import type { SetupConfig } from "../adapters/config.ts";
 import { allowsChanges, selectAdapter } from "../adapters/select.ts";
@@ -66,6 +67,30 @@ async function freshModules(
     .filter((id) => !sorted.has(id));
 }
 
+async function unreadNews(
+  deps: RouterDeps,
+  server: ServerId,
+): Promise<string[]> {
+  const setup = await deps.state.setup(server);
+  const seen = await deps.state.newsSeen(server);
+  if (!setup || !seen) return [];
+  const known = new Set(seen);
+  return newsUrls(setup).filter((url) => !known.has(url));
+}
+
+/** Only articles Setup listed are remembered as seen. */
+async function markNewsSeen(
+  deps: RouterDeps,
+  server: ServerId,
+  urls: readonly string[],
+): Promise<void> {
+  const listed = new Set(newsUrls((await deps.state.setup(server)) ?? {}));
+  await deps.state.markNewsSeen(
+    server,
+    urls.filter((url) => listed.has(url)),
+  );
+}
+
 async function state(deps: RouterDeps, server: ServerId): Promise<SetupState> {
   const s = deps.state;
   return {
@@ -78,6 +103,7 @@ async function state(deps: RouterDeps, server: ServerId): Promise<SetupState> {
     hellos: await s.hellos(server),
     config: await deps.loadConfig(),
     fresh: await freshModules(deps, server),
+    newsUnread: await unreadNews(deps, server),
   };
 }
 
@@ -185,6 +211,8 @@ async function setupSeen(
       server,
       m.data.modules.map((x) => x.id),
     );
+  // Nothing is new on a first visit (SETUP-REDESIGN.md, open item 3).
+  await deps.state.seedNews(server, newsUrls(m.data));
   // PR-1: only an authenticated Setup page (Foundry's isAdmin) verifies.
   if (m.data.isAdmin) await deps.state.markAdminVerified(server, deps.now());
   else await deps.state.revokeAdmin(server);
@@ -212,6 +240,11 @@ async function fromSetup(
   if (m.kind === "foundry-releases")
     return readReleases(deps.releases, m.version);
   if (m.kind === "ask-foundryvtt") return deps.releases.openOptions();
+  // Read state for this browser's view only, like the page's other views.
+  if (m.kind === "news-seen") {
+    await markNewsSeen(deps, server, m.urls);
+    return state(deps, server);
+  }
   if (!SETUP_WRITES.has(m.kind))
     throw new Error(`Unexpected ${m.kind} from Setup`);
   await assertCanChange(deps, server);

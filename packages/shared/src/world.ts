@@ -1,5 +1,6 @@
 // World snapshots, commands and the Setup data they're built from (PRD 9).
 import { z } from "zod";
+import { MAX_NEWS, NewsItemSchema } from "./news.ts";
 import { PackageInfoSchema } from "./package.ts";
 
 /** Page scripts can post snapshots: every field is bounded (security review). */
@@ -171,6 +172,9 @@ export const SetupDataSchema = z.object({
   modules: z.array(PackageInfoSchema).max(MAX_PACKAGES),
   systems: z.array(SystemInfoSchema).max(MAX_PACKAGES),
   worlds: z.array(WorldInfoSchema).max(MAX_PACKAGES),
+  /** Foundry's News and Featured Content (news.ts). */
+  news: z.array(NewsItemSchema).max(MAX_NEWS).optional(),
+  featured: NewsItemSchema.optional(),
   /** Foundry's count of setup warnings (Support and issues). */
   issues: z.number().int().nonnegative().max(1_000_000).optional(),
   /** Foundry's update check: only these three fields, never its download link. */

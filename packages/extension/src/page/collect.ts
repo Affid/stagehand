@@ -2,6 +2,7 @@
 // and the UI language only: never game.data.options, licence or certificate
 // (8.6).
 import { logError } from "@module-library/shared/log";
+import { MAX_NEWS, toNewsItem } from "@module-library/shared/news";
 import { toPackageInfo } from "@module-library/shared/package-read";
 import {
   MAX_DESCRIPTION,
@@ -102,6 +103,19 @@ function issues(game: SetupGame): Pick<SetupData, "issues"> {
     : {};
 }
 
+/** Foundry's News and Featured Content, when it has any (Phase 6). */
+function news(game: SetupGame): Pick<SetupData, "news" | "featured"> {
+  const raw = game.data?.news;
+  const list = (Array.isArray(raw) ? (raw as unknown[]) : [])
+    .flatMap((n) => toNewsItem(n) ?? [])
+    .slice(0, MAX_NEWS);
+  const featured = toNewsItem(game.data?.featuredContent);
+  return {
+    ...(list.length ? { news: list } : {}),
+    ...(featured ? { featured } : {}),
+  };
+}
+
 /** One package's data; a manifest we can't read is left out, not the list (review). */
 function readable<T>(pkg: unknown, read: (p: unknown) => T): T[] {
   try {
@@ -134,5 +148,6 @@ export function collect(game: SetupGame): SetupData {
     worlds: all(game.worlds).map(toWorld),
     ...coreUpdate(game),
     ...issues(game),
+    ...news(game),
   };
 }

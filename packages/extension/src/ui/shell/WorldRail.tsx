@@ -10,6 +10,7 @@ import { ago, plural } from "../i18n.ts";
 import { worldOrder } from "../model/order.ts";
 import { systemTitle } from "../model/system.ts";
 import { age, type WorldRow, worldRow } from "../model/worlds.ts";
+import { RailNews } from "./RailNews.tsx";
 import { cssImage, filterWorlds, type Route } from "./route.ts";
 
 /** "3 days ago", or "never played" when Foundry has no date. */
@@ -178,6 +179,7 @@ export function WorldRail(props: { readonly route: Route }) {
       {shown.length === 0 && worlds.length > 0 ? (
         <p class="ml-empty">{t("shell.noMatch")}</p>
       ) : null}
+      <RailNews />
       {IS_DEV_BUILD ? (
         <p class="mls-build">{t("app.build", { build: BUILD })}</p>
       ) : null}

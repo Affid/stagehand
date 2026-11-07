@@ -28,6 +28,7 @@ const data: SetupState = {
   hellos: {},
   config: BUNDLED_CONFIG,
   fresh: [],
+  newsUnread: [],
 };
 
 const initial: UiState = {

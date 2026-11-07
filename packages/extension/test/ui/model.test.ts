@@ -168,6 +168,7 @@ const state = (over: Partial<SetupState> = {}): SetupState => ({
   hellos: {},
   config: BUNDLED_CONFIG,
   fresh: [],
+  newsUnread: [],
   ...over,
 });
 

@@ -578,3 +578,90 @@ describe("router: Foundry's release pages (package 7)", () => {
     ).rejects.toThrow();
   });
 });
+
+describe("router: news read state (Phase 6)", () => {
+  const article = (n: string) => ({
+    title: n,
+    url: `https://foundryvtt.com/article/${n}/`,
+  });
+  const withNews = (names: string[], featured?: string): SetupData => ({
+    ...setupData(true),
+    news: names.map(article),
+    ...(featured ? { featured: article(featured) } : {}),
+  });
+  const unread = async (d: RouterDeps, data: SetupData): Promise<unknown> =>
+    (
+      (await route(d, { kind: "setup-seen", data }, fromSetup)) as {
+        newsUnread: unknown;
+      }
+    ).newsUnread;
+  const url = (n: string) => article(n).url;
+
+  test("nothing is new on the first visit; a later article is", async () => {
+    const d = deps();
+    await registered(d);
+    expect(await unread(d, withNews(["a", "b"], "f"))).toEqual([]);
+    expect(await unread(d, withNews(["c", "a", "b"], "g"))).toEqual([
+      url("c"),
+      url("g"),
+    ]);
+  });
+
+  test("a visit without news seeds nothing, so the first news isn't new", async () => {
+    const d = deps();
+    await registered(d);
+    expect(await unread(d, setupData(true))).toEqual([]);
+    expect(await unread(d, withNews(["a"]))).toEqual([]);
+  });
+
+  test("marking news seen clears only articles Setup listed", async () => {
+    const d = deps();
+    await registered(d);
+    await unread(d, withNews(["a"]));
+    await unread(d, withNews(["b", "a"], "f"));
+    await route(
+      d,
+      { kind: "news-seen", urls: [url("b"), url("f"), url("ghost")] },
+      fromSetup,
+    );
+    const s = (await route(d, { kind: "get-state" }, fromSetup)) as {
+      newsUnread: string[];
+    };
+    expect(s.newsUnread).toEqual([]);
+    // An article that was never listed was not remembered.
+    expect(await d.state.newsSeen(S)).not.toContain(url("ghost"));
+  });
+
+  test("news-seen is refused from a world's page and when too long", async () => {
+    const d = deps();
+    await registered(d);
+    await expect(
+      route(d, { kind: "news-seen", urls: [url("a")] }, fromGame),
+    ).rejects.toThrow();
+    await expect(
+      route(
+        d,
+        {
+          kind: "news-seen",
+          urls: Array.from({ length: 50 }, (_, i) => url(`x${i}`)),
+        },
+        fromSetup,
+      ),
+    ).rejects.toThrow();
+  });
+
+  test("the remembered list stays bounded", async () => {
+    const d = deps();
+    await registered(d);
+    for (let round = 0; round < 12; round++) {
+      const names = Array.from({ length: 20 }, (_, i) => `r${round}-${i}`);
+      await unread(d, withNews(names));
+      await route(
+        d,
+        { kind: "news-seen", urls: names.map((n) => url(n)) },
+        fromSetup,
+      );
+    }
+    expect((await d.state.newsSeen(S))?.length).toBeLessThanOrEqual(200);
+  });
+});

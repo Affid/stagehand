@@ -50,6 +50,8 @@ export interface Actions {
   importLibrary(text: string): Promise<void>;
   /** Intake: these modules are sorted and no longer "new". */
   markSorted(ids: readonly string[]): Promise<void>;
+  /** News: these articles were opened and are no longer "New". */
+  newsSeen(urls: readonly string[]): Promise<void>;
   /** Foundry's public release list, or one release's page (Release history). */
   releases(version?: string): Promise<ReleasesAnswer>;
   /** Opens the options page, where reading foundryvtt.com can be allowed. */
@@ -261,6 +263,15 @@ export function createActions(
     async markSorted(ids) {
       await b.guarded(() => send({ kind: "modules-sorted", ids: [...ids] }));
       await b.refresh();
+    },
+    async newsSeen(urls) {
+      const next = await b.guarded(() =>
+        send<SetupState>({ kind: "news-seen", urls: [...urls] }),
+      );
+      if (next)
+        store.set((s) => ({
+          data: { ...s.data, newsUnread: next.newsUnread },
+        }));
     },
     // Errors come back as answers: the history says what went wrong itself.
     releases: (version) =>

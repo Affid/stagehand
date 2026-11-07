@@ -250,3 +250,56 @@ describe("one manifest we can't read (security review)", () => {
     expect(collect(game as never).modules.map((m) => m.id)).toEqual(["ok"]);
   });
 });
+
+describe("Foundry's News and Featured Content (Phase 6)", () => {
+  const IMG = "https://r2.foundryvtt.com/website-uploads-public/a.webp";
+  const item = (title: string, over: object = {}) => ({
+    title,
+    url: `https://foundryvtt.com/article/${title}/`,
+    image: IMG,
+    caption: "A caption",
+    ...over,
+  });
+
+  test("reads the news list and the featured item, without captions", () => {
+    const data = collect({
+      data: {
+        news: [item("a"), item("b")],
+        featuredContent: item("f", {
+          url: "https://foundryvtt.store/products/f",
+        }),
+      },
+    });
+    expect(data.news).toEqual([
+      { title: "a", url: "https://foundryvtt.com/article/a/", image: IMG },
+      { title: "b", url: "https://foundryvtt.com/article/b/", image: IMG },
+    ]);
+    expect(data.featured).toEqual({
+      title: "f",
+      url: "https://foundryvtt.store/products/f",
+      image: IMG,
+    });
+    expect(SetupDataSchema.safeParse(data).success).toBe(true);
+  });
+
+  test("unsafe items are left out; none at all leaves the fields out", () => {
+    const data = collect({
+      data: {
+        news: [item("a", { url: "javascript:x" }), item("b"), 7],
+        featuredContent: null,
+      },
+    });
+    expect(data.news?.map((n) => n.title)).toEqual(["b"]);
+    expect(data).not.toHaveProperty("featured");
+    const none = collect({ data: { news: "nope" } });
+    expect(none).not.toHaveProperty("news");
+    expect(none).not.toHaveProperty("featured");
+  });
+
+  test("at most twenty news items", () => {
+    const data = collect({
+      data: { news: Array.from({ length: 30 }, (_, i) => item(`n${i}`)) },
+    });
+    expect(data.news).toHaveLength(20);
+  });
+});
