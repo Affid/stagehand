@@ -2,12 +2,11 @@
 // Edit and Launch, a line for queued changes; then its modules, or how to
 // set it up. Launch reviews queued changes first.
 import type { WorldInfo } from "@module-library/shared/world";
-import { useState } from "preact/hooks";
+import { useRef, useState } from "preact/hooks";
 import { Icon } from "../common/widgets.tsx";
 import { useUi } from "../context.ts";
 import { systemTitle } from "../model/system.ts";
 import { plural } from "../i18n.ts";
-import { pendingFor } from "../model/preview.ts";
 import { type WorldModules, worldModules } from "../model/world-modules.ts";
 import { cssImage } from "./route.ts";
 import { type LaunchChoice, LaunchReview } from "./world/LaunchReview.tsx";
@@ -118,6 +117,8 @@ function BannerActions(props: {
   readonly world: WorldInfo;
   readonly changes: number;
   readonly onLaunch: () => void;
+  /** Launch is reading the queue (changes still saving). */
+  readonly busy: boolean;
   /** The pencil: the About tab. */
   readonly onEdit: () => void;
 }) {
@@ -147,6 +148,7 @@ function BannerActions(props: {
           type="button"
           class="bright mls-launch"
           disabled={off !== null}
+          aria-busy={props.busy || undefined}
           onClick={props.onLaunch}
         >
           <Icon name="play" />
@@ -167,14 +169,26 @@ function BannerActions(props: {
 
 /** Launching, with the review when changes are queued. */
 function useLaunch(world: WorldInfo, model: WorldModules) {
-  const { page, actions, store, t, canChange } = useUi();
+  const { page, actions, t, canChange } = useUi();
   const [review, setReview] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const running = useRef(false);
   // A change still saving must be reviewed too, not launched past (Phase 6):
-  // wait for it, then read the queue as it now is.
+  // wait for it, read the queue as it now is, and never twice at once.
   const start = async (): Promise<void> => {
-    await actions.settled();
-    if (pendingFor(store.get().data, world.id).length > 0) setReview(true);
-    else page.foundryAction({ action: "launch", worldId: world.id });
+    if (running.current) return;
+    running.current = true;
+    setBusy(true);
+    try {
+      const queued = await actions.queuedFor(world.id);
+      // Unreadable: the notice says why, and nothing launches past it.
+      if (queued === undefined) return;
+      if (queued > 0) setReview(true);
+      else page.foundryAction({ action: "launch", worldId: world.id });
+    } finally {
+      running.current = false;
+      setBusy(false);
+    }
   };
   const run = async (choice: LaunchChoice): Promise<void> => {
     setReview(false);
@@ -193,13 +207,14 @@ function useLaunch(world: WorldInfo, model: WorldModules) {
       });
     else page.foundryAction({ action: "launch", worldId: world.id });
   };
-  return { review, start, run, close: () => setReview(false) };
+  return { review, busy, start, run, close: () => setReview(false) };
 }
 
 function Banner(props: {
   readonly world: WorldInfo;
   readonly model: WorldModules;
   readonly image: string | undefined;
+  readonly busy: boolean;
   readonly onLaunch: () => void;
   readonly onEdit: () => void;
 }) {
@@ -215,6 +230,7 @@ function Banner(props: {
       <BannerActions
         world={world}
         changes={model.changes}
+        busy={props.busy}
         onLaunch={props.onLaunch}
         onEdit={props.onEdit}
       />
@@ -239,6 +255,7 @@ export function WorldPage(props: { readonly world: WorldInfo }) {
         world={world}
         model={model}
         image={image}
+        busy={launch.busy}
         onLaunch={() => void launch.start()}
         onEdit={() => setTab("about")}
       />

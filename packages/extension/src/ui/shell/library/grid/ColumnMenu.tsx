@@ -155,7 +155,7 @@ export function ColumnMenu(props: { readonly world: WorldInfo }) {
   const d = useDisclosure<HTMLSpanElement>();
   const [step, setStep] = useState<Step>({ kind: "main" });
   const menu = useRef<HTMLDivElement>(null);
-  useFocusFirst(menu, d.open, step.kind);
+  useFocusFirst(menu, d.open, step);
   const close = (): void => {
     d.close(true);
     setStep({ kind: "main" });

@@ -259,6 +259,84 @@ describe("the banner and launching", () => {
     );
   });
 
+  test("Launch right after Add waits for the queue to reload, then reviews (review)", async () => {
+    let reload = (): void => undefined;
+    const reloaded = new Promise<void>((r) => {
+      reload = r;
+    });
+    const before = setupState({
+      setup: base.setup ? { ...base.setup, worlds } : undefined,
+      snapshots: { w1: snap("w1", ["module-library", "a"]) },
+    });
+    let queued = false;
+    const r = renderUi("shell", {
+      data: before,
+      state: { route: { kind: "world", worldId: "w1" } },
+      reply: (m) => {
+        if (m.kind === "queue-apply") {
+          queued = true;
+          return { queued: "n" };
+        }
+        if (m.kind === "get-state")
+          return queued
+            ? reloaded.then(() => ({
+                ...before,
+                commands: [cmd("n", "add", { presetIds: ["p1"] })],
+              }))
+            : before;
+        return undefined;
+      },
+    });
+    fireEvent.click(r.getByRole("button", { name: "Add" }));
+    fireEvent.click(r.getByRole("button", { name: "Preset: QoL" }));
+    fireEvent.click(r.getByRole("button", { name: /^Launch/ }));
+    reload();
+    await waitFor(() => expect(r.getByRole("dialog")).toBeTruthy());
+    expect(r.page.foundryAction).not.toHaveBeenCalled();
+  });
+
+  test("Launch pressed twice launches once; it says it is busy meanwhile (review)", async () => {
+    let answer = (): void => undefined;
+    const later = new Promise<void>((res) => {
+      answer = res;
+    });
+    const data = setupState({
+      setup: base.setup ? { ...base.setup, worlds } : undefined,
+      snapshots: { w1: snap("w1", ["module-library", "a"]) },
+    });
+    const r = renderUi("shell", {
+      data,
+      state: { route: { kind: "world", worldId: "w1" } },
+      reply: (m) =>
+        m.kind === "get-state" ? later.then(() => data) : undefined,
+    });
+    const launch = r.getByRole("button", { name: /^Launch/ });
+    fireEvent.click(launch);
+    fireEvent.click(launch);
+    await waitFor(() => expect(launch.getAttribute("aria-busy")).toBe("true"));
+    answer();
+    await waitFor(() => expect(r.page.foundryAction).toHaveBeenCalledTimes(1));
+    expect(launch.getAttribute("aria-busy")).not.toBe("true");
+  });
+
+  test("when the queue can't be read, Launch doesn't launch past it (review)", async () => {
+    const data = setupState({
+      setup: base.setup ? { ...base.setup, worlds } : undefined,
+      snapshots: { w1: snap("w1", ["module-library", "a"]) },
+    });
+    const r = renderUi("shell", {
+      data,
+      state: { route: { kind: "world", worldId: "w1" } },
+      reply: (m) => {
+        if (m.kind === "get-state") throw new Error("background gone");
+        return undefined;
+      },
+    });
+    fireEvent.click(r.getByRole("button", { name: /^Launch/ }));
+    await waitFor(() => expect(r.page.notify).toHaveBeenCalled());
+    expect(r.page.foundryAction).not.toHaveBeenCalled();
+  });
+
   test("Launch right after a switch waits for the change to save, then reviews it (Phase 6)", async () => {
     let release = (): void => undefined;
     const saved = new Promise<void>((r) => {

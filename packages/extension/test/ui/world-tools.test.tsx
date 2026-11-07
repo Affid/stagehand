@@ -52,8 +52,13 @@ function page(over: Partial<SetupState> = {}, backups = BACKUPS) {
   };
   const r = renderUi("shell", {
     data,
+    // As the background answers: the state for get-state.
     reply: (m: ExtensionMessage) =>
-      m.kind === "queue-apply" ? { queued: "n" } : undefined,
+      m.kind === "queue-apply"
+        ? { queued: "n" }
+        : m.kind === "get-state"
+          ? setupState(data)
+          : undefined,
     state: { route: { kind: "world", worldId: "w1" } },
     backups,
   });

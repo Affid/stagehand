@@ -859,6 +859,7 @@
   "grid.m.discard": "Discard its changes",
   "grid.problems.one": "{n} module needs attention",
   "grid.problems.other": "{n} modules need attention",
+  "grid.countLabel": "{on}/{n}: {label}",
   "grid.allOn": "Turn all on in {world}",
   "grid.allOff": "Turn all off in {world}",
   "grid.tag": "Tag: {name}",

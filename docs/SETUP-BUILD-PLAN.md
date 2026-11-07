@@ -608,3 +608,35 @@ it has no box and changes no layout, and keeps its role and name (checked
 in Chromium 156's accessibility tree); panels have no Tab stop of their own
 (each holds controls); keys move from the focused tab; unit tests for the
 Update page's two nested rows.
+
+Package 3 done (`e9117ed`, fixes after it). axe-core (WCAG 2.2 A and AA) runs
+in the live suite (`tests/foundry/axe.ts`) on every page at rest: a world's
+Modules (with a queued change, View options, Add, a group menu, the launch
+review), About (Rename, the next-session editor), Backups, the Library
+(Tags, Presets, select mode, a module's Library and Package tabs, Systems,
+By world and a world's menu), the server Backups, Configuration, the
+Version and power menus, open News, and the Update page (What's new, Your
+packages, Release history allowed and not). All pass with no violations.
+Dev probes: `scripts/dev/axe-scan.ts`, `focus-walk.ts` (every Tab stop on
+each page is visible and shows focus), `menu-keys.ts` (every menu and dialog
+opens by keyboard, takes focus, and gives it back on Escape). Fixed on the
+way: a button whose name didn't hold its text ("Set a date"), calendar days
+named "2026-11-01" (now "Sunday, 1 November 2026"), the grid's group counts
+named without their count, an `aria-label` on a plain span, contrast below
+4.5:1 (the grid's "companion off" columns, dimmed to 60% whole, now only
+their artwork; the count on the chosen segment), no focus ring on Foundry's
+plain checkboxes, the release notes' highlights list drawn as loose `dt` and
+`dd`, and the Add and By world column menus not moving focus to their first
+choice like the others. Kept, with reasons: Foundry's own button hover
+colours (3.8:1 for light text on its orange) are its look on every button,
+not ours; the axe scan is of the page at rest.
+
+Found on the way, a real bug: Launch pressed right after a change (a switch,
+Add, Discard) read the queue before the change had saved, and could launch
+without the review. Launch now waits for every queue write and its reload
+(at most 10 s), reads the queue as it is, launches once even if pressed
+twice (`aria-busy` meanwhile), and launches nothing when the queue can't be
+read. Reviews: security none (dev-only dependency, not bundled); code no
+critical or high; its four medium findings were this race's other paths
+(Add's reload, Discard, Cancel, a failed reload, a second press) and are
+fixed with tests.

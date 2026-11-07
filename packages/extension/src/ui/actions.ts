@@ -25,7 +25,8 @@ export interface Actions {
   /** A Foundry notification (L-1 strings already filled in). */
   notify(kind: "error" | "info", text: string): void;
   op(op: LibraryOp): Promise<OpOutcome>;
-  refresh(): Promise<void>;
+  /** Reloads the state; false when it couldn't (a notice says why). */
+  refresh(): Promise<boolean>;
   queueApply(
     worldId: string,
     mode: ApplyMode,
@@ -35,8 +36,11 @@ export interface Actions {
   cancelCommand(id: string): Promise<void>;
   /** A module's switch on the world page: undo its own change, or queue one. */
   flip(worldId: string, moduleId: string, on: boolean): Promise<void>;
-  /** Resolves once every change on its way to the background has landed. */
-  settled(): Promise<void>;
+  /**
+   * The world's queued changes once every change on its way has landed and
+   * the state is reloaded; undefined when it couldn't be read (Launch).
+   */
+  queuedFor(worldId: string): Promise<number | undefined>;
   /** Cancels every change queued for the world. */
   discard(worldId: string): Promise<void>;
   /**
@@ -83,10 +87,12 @@ function base(store: Store, send: Send, t: Translate, page: PageBridge) {
       return undefined;
     }
   };
-  const refresh = async (): Promise<void> => {
-    await guarded(async () => {
+  const refresh = async (): Promise<boolean> => {
+    const done = await guarded(async () => {
       store.set({ data: await send<SetupState>({ kind: "get-state" }) });
+      return true;
     });
+    return done === true;
   };
   const setLibrary = (library: Library): void => {
     store.set((s) => ({ data: { ...s.data, library } }));
@@ -174,8 +180,28 @@ function tracked<T>(p: Promise<T>): Promise<T> {
   return p;
 }
 
+/** A change to the queue, then a reload; Launch waits for both. */
+function queueWrite(b: Base, write: () => Promise<void>): Promise<void> {
+  return tracked(
+    (async () => {
+      await b.guarded(write);
+      await b.refresh();
+    })(),
+  );
+}
+
+/** Longest Launch waits for changes still saving before it reads anyway. */
+const SETTLE_MS = 10_000;
+
 async function settled(): Promise<void> {
-  while (inflight.size > 0) await Promise.allSettled([...inflight]);
+  const until = Date.now() + SETTLE_MS;
+  while (inflight.size > 0 && Date.now() < until) {
+    const left = until - Date.now();
+    await Promise.race([
+      Promise.allSettled([...inflight]),
+      new Promise((r) => setTimeout(r, left)),
+    ]);
+  }
 }
 
 /**
@@ -226,40 +252,39 @@ function worldActions(
   "queueApply" | "cancelCommand" | "flip" | "discard" | "setLaunchHold"
 > {
   return {
-    async queueApply(worldId, mode, presetIds, modules) {
-      const queued = await tracked(
-        b.guarded(() =>
-          send({
-            kind: "queue-apply",
-            worldId,
-            mode,
-            presetIds: [...presetIds],
-            ...(modules?.length ? { modules: [...modules] } : {}),
-          }),
-        ),
-      );
-      if (queued) await b.refresh();
-      return queued !== undefined;
-    },
+    queueApply: (worldId, mode, presetIds, modules) =>
+      tracked(
+        (async () => {
+          const queued = await b.guarded(() =>
+            send({
+              kind: "queue-apply",
+              worldId,
+              mode,
+              presetIds: [...presetIds],
+              ...(modules?.length ? { modules: [...modules] } : {}),
+            }),
+          );
+          if (queued) await b.refresh();
+          return queued !== undefined;
+        })(),
+      ),
     flip: (worldId, moduleId, on) =>
       tracked(
         onceAtATime(`${worldId}\u0000${moduleId}`, () =>
           runFlip(b, send, store, { worldId, moduleId, on }),
         ),
       ),
-    async discard(worldId) {
-      const ids = pendingFor(store.get().data, worldId).map((c) => c.id);
-      await b.guarded(async () => {
+    discard: (worldId) =>
+      queueWrite(b, async () => {
+        const ids = pendingFor(store.get().data, worldId).map((c) => c.id);
         for (const id of ids) await send({ kind: "cancel-command", id });
-      });
-      await b.refresh();
-    },
+      }),
     setLaunchHold: (worldId, hold, reviewed) =>
       sendLaunchHold(b, send, { worldId, hold, reviewed }),
-    async cancelCommand(id) {
-      await b.guarded(() => send({ kind: "cancel-command", id }));
-      await b.refresh();
-    },
+    cancelCommand: (id) =>
+      queueWrite(b, async () => {
+        await send({ kind: "cancel-command", id });
+      }),
   };
 }
 
@@ -275,7 +300,11 @@ export function createActions(
     refresh: b.refresh,
     op: (op) => runOp(b, send, t, op),
     ...worldActions(b, send, store),
-    settled,
+    async queuedFor(worldId) {
+      await settled();
+      if (!(await b.refresh())) return undefined;
+      return pendingFor(store.get().data, worldId).length;
+    },
     async exportLibrary() {
       const r = await b.guarded(() =>
         send<{ text: string }>({ kind: "library-export" }),

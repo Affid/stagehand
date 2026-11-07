@@ -74,7 +74,7 @@ function GroupCount(props: {
         disabled={!canChange || !can}
         title={label}
         // The count it shows comes first (label in content, WCAG 2.5.3).
-        aria-label={`${String(on)}/${String(rows.length)}: ${label}`}
+        aria-label={t("grid.countLabel", { on, n: rows.length, label })}
         onClick={() => turnAll(!all)}
       >
         {on}/{rows.length}
