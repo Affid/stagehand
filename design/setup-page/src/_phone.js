@@ -31,16 +31,21 @@ if (PHONE) {
   /** The world's queued changes, as the desktop's banner line and Review/Discard did: a sheet. */
   A.phqueue = () => { ST.pop = null; ST.panel = { kind: "queue" }; render(); };
   A.phlibmenu = (_id, el) => { openPop("phlib", el); render(); };
+  A.phview = (_id, el) => { openPop("phview", el); render(); };
+  A.phgrid = (_id, el) => { openPop("phgrid", el); render(); };
   const launchBefore = A.launch;
   A.launch = (...a) => { if (ST.panel?.kind === "queue") ST.panel = null; launchBefore(...a); };
   const popBefore = calmPop;
   // eslint-disable-next-line no-func-assign
   calmPop = function (p, x, y) {
+    if (p.kind === "phgrid") return pop(x, y, "View", `<div class="mlc-viewpop mlp-gridview"></div>`, 320);
+    if (p.kind === "phview") return pop(x, y, "View", `<div class="mlc-viewpop">${groupSelect()}</div>`, 320);
     if (p.kind !== "phlib") return popBefore(p, x, y);
+    const updates = Object.keys(UPDATES).filter((id) => !ST.lock.has(id)).length;
     return menu(x, y, [
-      [["fa-tags", "Tags…", "panel", "tags"], ["fa-layer-group", "Presets…", "panel", "presets"]],
-      [["fa-folder-plus", "New folder", "newfolder"], ["fa-angles-up", "Collapse or expand all", "collapseall"]],
-      [["fa-file-export", "Import and export", "foundry", "Import and export"]],
+      [["fa-square-check", "Select modules", "select"], ["fa-download", "Install a module…", "foundry", "Install Module"], ...(updates ? [["fa-cloud-arrow-down", `Update all · ${updates}`, "foundry", "Update All"]] : [])],
+      [["fa-tags", "Tags…", "panel", "tags"], ["fa-layer-group", "Presets…", "panel", "presets"], ["fa-folder-plus", "New folder", "newfolder"]],
+      [["fa-angles-up", "Collapse or expand all", "collapseall"], ["fa-file-export", "Import and export", "foundry", "Import and export"]],
     ]);
   };
   addEventListener("resize", () => render());
@@ -131,12 +136,35 @@ function phSheetDrag(panel) {
   });
 }
 
-/** Library: the row of small icon buttons folds into one ⋮ menu; Group by and Select stay. */
-function phLibraryRow() {
-  const row = ST.page === "library" && ST.lsub === "modules" && !ST.select && document.querySelector(".mls-main .ml-row:not(.mls-selbar)");
-  if (!row) return;
-  row.querySelectorAll('[data-act="collapseall"], [data-act="newfolder"], [data-act="panel"], [data-what="Import and export"]').forEach((el) => el.remove());
-  row.insertAdjacentHTML("beforeend", `<button type="button" class="icon mlp-more${ST.pop?.kind === "phlib" ? " ml-on" : ""}" data-act="phlibmenu" aria-label="Tags, presets, folders, import and export"><i class="fa-solid fa-ellipsis-vertical"></i></button>`);
+/** Library: one row (filter, Group by, ⋮) instead of four; a short "new modules" line; selecting works from a bar above the tabs. */
+function phLibrary() {
+  if (ST.page !== "library") return;
+  const head = document.querySelector(".mls-main header.controls");
+  if (head && ST.lsub !== "grid") {
+    head.querySelectorAll("button").forEach((el) => el.remove());
+    const sys = ST.lsub === "systems";
+    head.insertAdjacentHTML("beforeend", sys
+      ? `<button type="button" class="icon mlp-iconbtn" data-act="foundry" data-id="Install System" aria-label="Install a system"><i class="fa-solid fa-plus"></i></button>`
+      : `<button type="button" class="icon mlp-iconbtn${ST.pop?.kind === "phview" ? " ml-on" : ""}" data-act="phview" aria-label="Group by: ${esc(GROUPS[ST.group])}"><i class="fa-solid fa-sliders"></i></button>
+         <button type="button" class="icon mlp-iconbtn mlp-more${ST.pop?.kind === "phlib" ? " ml-on" : ""}" data-act="phlibmenu" aria-label="Select, install, update, tags, presets, folders"><i class="fa-solid fa-ellipsis-vertical"></i></button>`);
+    head.classList.add("mlp-libhead");
+  }
+  // By world: the filter and one View button; Group by and Show move into the View sheet.
+  const grow = ST.lsub === "grid" && document.querySelector(".mls-main .ml-row");
+  if (grow) {
+    const search = grow.querySelector("input[type=search]"), view = document.querySelector(".mlp-gridview");
+    const showing = grow.querySelector(".mls-showing");
+    [...grow.children].filter((el) => el !== search && !(el === showing && showing.querySelector("a"))).forEach((el) => (view && !el.matches(".ml-spacer, .ml-muted") ? view.append(el) : el.remove()));
+    grow.classList.add("mlp-gridrow");
+    grow.insertAdjacentHTML("beforeend", `<button type="button" class="icon mlp-iconbtn${view ? " ml-on" : ""}" data-act="phgrid" aria-label="Group by and which worlds to show"><i class="fa-solid fa-sliders"></i></button>`);
+  }
+  const band = document.querySelector(".mls-main .mls-intake-band");
+  if (band) band.innerHTML = `<i class="fa-solid fa-box-open"></i><span><b>${plural(ST.fresh.size, "new module")}</b> to sort</span><button type="button" class="bright" data-act="intake">Sort</button><button type="button" class="icon" data-act="intakelater" aria-label="Later: leave them in Unfiled"><i class="fa-solid fa-xmark"></i></button>`;
+  const row = document.querySelector(".mls-main .ml-row:not(.mls-selbar)");
+  if (row && ST.lsub === "modules") row.remove();
+  const sel = document.querySelector(".mls-main .mls-selbar");
+  sel?.querySelector('[data-act="bulk"][data-id="world"]')?.lastChild?.replaceWith("In a world…");
+  if (sel) { const bar = Object.assign(document.createElement("div"), { className: "mlp-actbar mlp-selbar" }); bar.append(sel); document.querySelector(".mlp-tabs")?.before(bar); }
 }
 
 const phScrollers = () => [...document.querySelectorAll(".mls-rail, .mls-main, .mls-panel .scroll")];
@@ -158,7 +186,7 @@ if (PHONE) {
     const panel = document.querySelector(".mls-panel");
     if (panel) { phPanelBar(panel); phSheetDrag(panel); panel.insertAdjacentHTML("beforebegin", `<div class="mlp-scrim" data-act="closepanel"></div>`); }
     if (ST.pop || document.querySelector("#context-menu.mls-menu-live")) b.insertAdjacentHTML("beforeend", `<div class="mlp-scrim pop" data-act="closepop"></div>`);
-    phLibraryRow();
+    phLibrary();
     // Configuration's "not saved" and "apply after a restart" bars sit above the tabs, where Save stays in reach.
     const cfgBar = ST.page === "config" && document.querySelector(".mls-main .mlc-pending, .mls-main .mlc-waiting");
     if (cfgBar) { const wrap = Object.assign(document.createElement("div"), { className: "mlp-actbar mlp-cfgbar" }); wrap.append(cfgBar); document.querySelector(".mlp-tabs")?.before(wrap); }

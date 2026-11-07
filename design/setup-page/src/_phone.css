@@ -227,3 +227,49 @@ body.mlp .mls-panel .mls-subtabs { position: static; margin: 0; background: tran
   body.mlp .mls-panel { height: 94% !important; max-height: 94%; }
 }
 body.mlp .mls-panel .mls-wlist li { min-height: 44px; font-size: 14.5px; }
+
+/* ---------- Library, decluttered: one control row, a one-line "new modules" notice, quieter cards ---------- */
+body.mlp .mls-main header.controls.mlp-libhead { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 8px; align-items: center; padding: 10px 0 4px; }
+body.mlp .mls-main header.controls.mlp-libhead .filter { grid-column: auto; margin: 0; }
+body.mlp .mlp-iconbtn { width: var(--mlp-tap) !important; height: var(--mlp-tap) !important; padding: 0; font-size: 16px; flex: none; }
+body.mlp .mls-intake-band { flex-wrap: nowrap; padding: 4px 4px 4px 12px; margin: 6px 0; font-size: 14px; }
+body.mlp .mls-intake-band > span { flex: 1; }
+body.mlp .mls-intake-band > button { flex: none; height: 36px; padding: 0 16px; }
+body.mlp .mls-intake-band > button.icon { width: 36px; padding: 0; border-color: transparent; background: transparent; }
+body.mlp .mlw-lib .l3 .tg { display: inline-flex; gap: 3px; }
+body.mlp .mlw-lib .mlw-tag { font-size: 0; padding: 0; border: 0; background: none; min-width: 0; }
+body.mlp .mlw-lib .mlw-tag .ml-dot { margin: 0; }
+body.mlp .mlw-lib .mlw-tag:not(:has(.ml-dot)) { display: none; }
+body.mlp .mlw-lib { gap: 3px; }
+body.mlp .mlw-lib .l3 { font-size: 12.5px; }
+/* Selecting: count, All and None, the actions and Done in a bar above the tabs */
+body.mlp .mlp-selbar { padding: 8px 12px 10px; }
+body.mlp .mlp-selbar .mls-selbar { flex: 1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 0; padding: 0; border: 0; background: transparent; align-items: center; }
+body.mlp .mlp-selbar .mls-selbar > i, body.mlp .mlp-selbar .mls-sep, body.mlp .mlp-selbar .ml-spacer { display: none; }
+body.mlp .mlp-selbar .mls-selcount { grid-column: 1; grid-row: 1; font-size: 14.5px; }
+body.mlp .mlp-selbar [data-act="selall"] { grid-column: 2; grid-row: 1; }
+body.mlp .mlp-selbar [data-act="clearsel"] { grid-column: 3; grid-row: 1; }
+body.mlp .mlp-selbar button { height: 40px; width: 100%; padding: 0 4px; font-size: 12.5px; gap: 4px; }
+body.mlp .mlp-selbar button[data-act="bulk"] { flex-direction: column; height: 52px; font-size: 11.5px; line-height: 1.1; }
+body.mlp .mlp-selbar button[data-act="bulk"] i { font-size: 15px; }
+body.mlp .mlp-selbar button.bright[data-act="select"] { grid-column: 4; grid-row: 1; }
+/* By world on a phone: a narrower module column, so two or three worlds show */
+body.mlp .mls-main .ml-row.mlp-gridrow { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; padding: 10px 0 8px; }
+body.mlp .mlp-gridrow input[type=search] { width: 100%; height: var(--mlp-tap); font-size: 15px; }
+body.mlp .mlp-gridrow .mls-showing { grid-column: 1 / -1; font-size: 13px; }
+body.mlp .mlp-gridview { grid-template-columns: 70px minmax(0, 1fr); }
+body.mlp .mlp-gridview select { height: var(--mlp-tap); }
+body.mlp .mlp-gridview .mls-showing { grid-column: 1 / -1; color: var(--color-text-subtle); font-size: 13px; }
+body.mlp:not(.mlp-wide) .mls-grid { width: auto; min-width: 0 !important; }
+body.mlp:not(.mlp-wide) .mls-grid col.mod { width: 150px; }
+body.mlp:not(.mlp-wide) .mls-grid col:not(.mod) { width: 84px; }
+body.mlp:not(.mlp-wide) .mls-grid th[scope=row] .mh .t { white-space: normal; line-height: 1.2; }
+body.mlp:not(.mlp-wide) .mls-grid th[scope=row] .dots { display: none; }
+body.mlp .mls-gridlegend { flex-wrap: wrap; gap: 4px 12px; font-size: 12.5px; }
+/* The Sort sheet: labels above their controls */
+body.mlp .mls-intake-item .mls-kv { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+body.mlp .mls-intake-item .mls-kv > :nth-child(odd) { margin-top: 6px; }
+body.mlp .mls-grid .mls-switch { width: 40px; height: 24px; border-radius: 12px; }
+body.mlp .mls-grid .mls-switch::after { top: 3px; left: 3px; width: 18px; height: 18px; }
+body.mlp .mls-grid .mls-switch:checked::after { left: 19px; }
+body.mlp .mls-grid tbody td { height: 44px; }

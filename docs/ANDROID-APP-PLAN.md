@@ -212,9 +212,14 @@ stands, for the owner to approve:
   and Discard on the phone.
 - Details, Tags, Presets and Next launch are bottom sheets (drag down or tap
   outside to close); menus and dialogs open from the bottom.
-- Library: Group by, Select and one ⋮ menu (Tags, Presets, New folder,
-  Collapse or expand all, Import and export); the desktop's "Foundry's" card
-  layout is hidden.
+- Library (decluttered after the owner found it cluttered): one row on top
+  (filter, View for Group by, ⋮ for Select, Install, Update all, Tags,
+  Presets, New folder, Collapse or expand all, Import and export); new
+  installs as one line ("3 new modules to sort", Sort, ×); tags as coloured
+  dots on the cards; while selecting, the count, All, None, Done and the
+  four actions sit in a bar above the tabs; By world has a 150 px module
+  column (three worlds across on a 412 px phone) and its Group by and Show
+  in View; the desktop's "Foundry's" card layout is hidden.
 - What's new puts the update first; Configuration's Save bar sits above the
   tabs; a world without the companion has one Launch, in the bottom bar.
 - Touch sizes 44-48 px; no hover-only controls or tooltips; a phone on its
