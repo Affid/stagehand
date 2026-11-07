@@ -379,3 +379,35 @@ describe("chosen dates in the editor", () => {
     expect(first?.classList.contains("past")).toBe(true);
   });
 });
+
+describe("the Repeats row and switching to chosen dates (Phase 6)", () => {
+  test("a repeating rule is said under Repeats; chosen dates say to click days", () => {
+    const { box } = edit({ schedule: weekly });
+    const repeats = within(box()).getByRole("combobox", { name: "Repeats" });
+    // The rule in words, as the box's view says it.
+    expect(repeats.parentElement?.querySelector(".tzl")?.textContent).toContain(
+      "19:00",
+    );
+    fireEvent.change(repeats, { target: { value: "dates" } });
+    expect(
+      within(box())
+        .getByRole("combobox", { name: "Repeats" })
+        .parentElement?.querySelector(".tzl")?.textContent,
+    ).toBe("Click days on the calendar to add or remove them.");
+  });
+
+  test("switching to chosen dates starts from the rule's next dates", () => {
+    const { box } = edit({ schedule: weekly });
+    fireEvent.change(within(box()).getByRole("combobox", { name: "Repeats" }), {
+      target: { value: "dates" },
+    });
+    const items = box().querySelectorAll(".mlw-chosen li:not(.none)");
+    expect(items.length).toBe(4);
+  });
+
+  test("Save says Saved on the box", async () => {
+    const { box, findByRole } = edit({ schedule: weekly });
+    fireEvent.click(within(box()).getByRole("button", { name: "Save" }));
+    expect((await findByRole("status")).textContent).toBe("Saved");
+  });
+});

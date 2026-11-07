@@ -16,7 +16,7 @@ import {
 } from "../../../../model/schedule.ts";
 import { ChosenDates } from "./ChosenDates.tsx";
 import { Calendar, ZonePick } from "./Pickers.tsx";
-import { BROWSER_TZ, tzLabel } from "./text.ts";
+import { BROWSER_TZ, ruleText, tzLabel } from "./text.ts";
 import { nextIso, useSaveSchedule } from "./SessionView.tsx";
 import { Summary } from "./Summary.tsx";
 
@@ -61,6 +61,57 @@ function toSchedule(d: Draft, prev: Schedule | undefined): Schedule {
         : [],
     ...(d.freq === "dates" ? { dates: d.dates ?? {} } : {}),
   };
+}
+
+/**
+ * Switching to chosen dates starts from the rule's next dates (four, or the
+ * one date of a session that doesn't repeat), as the prototype.
+ */
+function seededDates(d: Draft): Readonly<Record<string, string>> {
+  const rule = d.freq === "none" ? "w1" : d.freq;
+  const seed = upcoming(
+    { ...toSchedule(d, undefined), freq: rule, skips: [] },
+    Date.now(),
+    d.freq === "none" ? 1 : 4,
+  );
+  return Object.fromEntries(seed.map((x) => [x.date, d.time]));
+}
+
+/** Repeats, with the rule in words, or how chosen dates are picked. */
+function Repeats(props: {
+  readonly d: Draft;
+  readonly set: (next: Partial<Draft>) => void;
+}) {
+  const { t } = useUi();
+  const { d } = props;
+  const pick = (freq: Freq): void => {
+    const empty = Object.keys(d.dates ?? {}).length === 0;
+    props.set(
+      freq === "dates" && d.freq !== "dates" && empty
+        ? { freq, dates: seededDates(d) }
+        : { freq },
+    );
+  };
+  const hint =
+    d.freq === "dates"
+      ? t("sched.clickDays")
+      : ruleText(t, toSchedule(d, undefined), Date.now());
+  return (
+    <div>
+      <select
+        aria-label={t("sched.repeats")}
+        value={d.freq}
+        onChange={(e) => pick(e.currentTarget.value as Freq)}
+      >
+        {FREQS.map((f) => (
+          <option key={f} value={f}>
+            {t(`sched.freq.${f}`)}
+          </option>
+        ))}
+      </select>
+      {hint ? <span class="tzl">{hint}</span> : null}
+    </div>
+  );
 }
 
 function TimeRow(props: {
@@ -118,7 +169,7 @@ function TimeRow(props: {
 function Bar(props: {
   readonly draft: Draft;
   readonly world: WorldInfo;
-  readonly onDone: () => void;
+  readonly onDone: (saved: boolean) => void;
 }) {
   const { t } = useUi();
   const saveSchedule = useSaveSchedule(props.world.id);
@@ -126,7 +177,7 @@ function Bar(props: {
   const empty = s.freq === "dates" && Object.keys(s.dates ?? {}).length === 0;
   const run = (v: Schedule | null): void => {
     void saveSchedule(v).then((ok) => {
-      if (ok) props.onDone();
+      if (ok) props.onDone(true);
     });
   };
   return (
@@ -139,7 +190,7 @@ function Bar(props: {
       >
         {t("about.save")}
       </button>
-      <button type="button" onClick={props.onDone}>
+      <button type="button" onClick={() => props.onDone(false)}>
         {t("about.cancel")}
       </button>
       {props.world.schedule || props.world.nextSession ? (
@@ -170,17 +221,7 @@ function Side(props: {
   return (
     <div class="side">
       <label>{t("sched.repeats")}</label>
-      <select
-        aria-label={t("sched.repeats")}
-        value={d.freq}
-        onChange={(e) => set({ freq: e.currentTarget.value as Freq })}
-      >
-        {FREQS.map((f) => (
-          <option key={f} value={f}>
-            {t(`sched.freq.${f}`)}
-          </option>
-        ))}
-      </select>
+      <Repeats d={d} set={set} />
       <label>{custom ? t("sched.usualTime") : t("sched.time")}</label>
       <TimeRow
         time={d.time}
@@ -224,7 +265,7 @@ const markedDays = (d: Draft): ReadonlySet<string> =>
 
 export function SessionEditor(props: {
   readonly world: WorldInfo;
-  readonly onDone: () => void;
+  readonly onDone: (saved: boolean) => void;
 }) {
   const [d, setD] = useState<Draft>(() => startDraft(props.world.schedule));
   /** A change, or one worked out from the latest draft (blur, then click). */

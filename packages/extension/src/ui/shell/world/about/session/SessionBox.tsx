@@ -5,6 +5,7 @@ import { useState } from "preact/hooks";
 import { useUi } from "../../../../context.ts";
 import { SessionEditor } from "./SessionEditor.tsx";
 import { SessionView } from "./SessionView.tsx";
+import { SavedMark } from "../EditRow.tsx";
 
 export function SessionBox(props: {
   readonly world: WorldInfo;
@@ -12,25 +13,36 @@ export function SessionBox(props: {
 }) {
   const { t } = useUi();
   const [editing, setEditing] = useState(false);
+  const [saved, setSaved] = useState(false);
   const { world } = props;
   const has = world.schedule !== undefined || world.nextSession !== undefined;
   return (
     <section class="mlw-box mlw-sess">
       <h4>
         <span>{t("about.nextBox")}</span>
+        {saved && !editing ? <SavedMark /> : null}
         {props.canEdit && !editing ? (
           <button
             type="button"
             class="ml-link"
             aria-label={has ? t("sched.changeLabel") : t("sched.setLabel")}
-            onClick={() => setEditing(true)}
+            onClick={() => {
+              setSaved(false);
+              setEditing(true);
+            }}
           >
             {has ? t("sched.change") : t("sched.set")}
           </button>
         ) : null}
       </h4>
       {editing ? (
-        <SessionEditor world={world} onDone={() => setEditing(false)} />
+        <SessionEditor
+          world={world}
+          onDone={(ok) => {
+            setEditing(false);
+            setSaved(ok);
+          }}
+        />
       ) : (
         <SessionView world={world} canEdit={props.canEdit} />
       )}
