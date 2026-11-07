@@ -1,15 +1,26 @@
 /* Page widths. The prototype (design/setup-page/src/_shell.css) kept
    Foundry's 1200 px window cap for the middle pane, which left a gap on the
    right of wide screens; the owner chose to fill the screen instead
-   (2026-11-07). From 1366 px up the rail and the details panel grow with the
-   screen in their 1366 proportions (290 and 340 px there) until 2560, and
-   the middle pane takes the rest, so the page keeps one shape at every
-   size. At 1280 px and below the rail narrows and the details panel floats
-   over the page. */
+   (2026-11-07). From 1366 px to 2560 the rail grows from 290 to 400 px and
+   the details panel from 340 to 460 px, and the middle pane takes the rest;
+   past 2560 only the middle pane grows. Growing the side panes in their
+   1366 proportions (544 and 637 px at 2560) left them half empty while the
+   cards were squeezed (polish pass, the owner's "size ratio of panes"); a
+   400 px rail fits "Dungeons & Dragons Fifth Edition · 29 minutes ago" in a
+   world's row. At 1280 px and below the rail narrows and the details panel
+   floats over the page. */
 
 .mls-shell {
-  --mls-rail-w: clamp(290px, calc(100vw * 290 / 1366), 544px);
-  --mls-panel-w: clamp(340px, calc(100vw * 340 / 1366), 637px);
+  --mls-rail-w: clamp(
+    290px,
+    calc(290px + (100vw - 1366px) * 110 / 1194),
+    400px
+  );
+  --mls-panel-w: clamp(
+    340px,
+    calc(340px + (100vw - 1366px) * 120 / 1194),
+    460px
+  );
 }
 
 .mls-shell .mls-rail {

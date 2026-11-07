@@ -801,7 +801,7 @@ page empty, even with a module's details open. Now from 1366 px up the rail
 and the details panel grow with the screen in their 1366 proportions (290
 and 340 px there, `clamp()` in `shell/layout.css`) until 2560 (544 and
 637 px), and the middle pane takes the rest; past 2560 only the middle pane
-grows. 1366 and 1280 are unchanged. `setup-layout.spec.ts` measures 1280,
+grows. (Changed in the polish pass, package 3: 400 and 460 px at 2560.) 1366 and 1280 are unchanged. `setup-layout.spec.ts` measures 1280,
 1366, 1920, 2560 and 3440 and the server pages at 2560.
 
 Restart after saving Configuration (2026-11-07, the owner's call): Foundry
@@ -952,8 +952,9 @@ code review and a security review:
    with the two local worlds each column is 92 px and the frame ends at
    the table.
 3. **Pane sizes on big screens.** From 1366 to 2560 the rail grows from
-   290 to 380 px and the details panel from 340 to 460 px (was 544 and
-   637 px at 2560), so the middle pane gains about 340 px at 2560; past
+   290 to 400 px and the details panel from 340 to 460 px (was 544 and
+   637 px at 2560), so at 2560 the middle pane gains about 320 px with a
+   module's details open (about 140 px without); past
    2560 only the middle pane grows; 1366 and 1280 unchanged; still no gap
    on the right. `setup-layout.spec.ts` updated first.
 
@@ -995,3 +996,15 @@ vertical scrollbar by itself (measured with real scrollbars: 434 px table,
 Playwright's hidden scrollbars a stable gutter stops the frame 10 px short
 of its end); a forged world list is capped at 5000 by the schema as before.
 `loadExtension` takes `{ scrollbars: true }` for desktop-style scrollbars.
+
+Package 3 done. `shell/layout.css`: from 1366 to 2560 the rail grows from
+290 to 400 px (380 was planned; at 380 a world's second line, "Dungeons &
+Dragons Fifth Edition · 29 minutes ago", was cut by 14 px, and 400 fits it)
+and the details panel from 340 to 460 px; past 2560 only the middle pane
+grows; 1366 and 1280 unchanged. At 2560 the Library's cards go from four
+columns to five with a module's details open. Live:
+`setup-layout.spec.ts` measures 1280, 1366, 1920, 2560 and 3440 (every box
+as computed); the full live suite passes. Reviews: code and security, no
+critical or high. Fixed: the "Wide screens filled" paragraph above points
+here; the gain is stated with and without the details panel; the CSS
+comment reads cleanly.
