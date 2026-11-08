@@ -48,10 +48,13 @@ Android SDK in `~/Android/Sdk` (or `ML_ANDROID_JAVA_HOME` and
 ```bash
 pnpm android:build    # pnpm build, then the debug and the signed release APK
 pnpm android:test     # Kotlin unit tests, with the 80% coverage gate
-node scripts/dev/android-run.ts   # the app end to end on the emulator
+pnpm test:android     # the app end to end on a device (the emulator by default)
 ```
 
-The APKs land in `packages/android/app/build/outputs/apk/`. The release
+`pnpm test:android` needs the emulator (or a phone) on Windows' adb and
+the local Foundry on Setup; for a phone, set `ML_ANDROID_SERIAL` and
+`ML_APP_SERVER` (the server as the phone reaches it). The APKs land in
+`packages/android/app/build/outputs/apk/`. The release
 is signed with the key in `~/.config/module-library/` (outside git; built
 unsigned without it). `node scripts/android/contract-vectors.ts` rewrites
 the native rules' answers the Kotlin tests check, after a change to
@@ -102,5 +105,6 @@ packages/module      companion module: session, apply flow, dialog
 packages/android     Android app: WebViews, native bridge (Kotlin, Gradle)
 scripts/foundry      local Foundry helpers (admin API, world setup, linking)
 tests/foundry        Playwright end-to-end suites (Setup UI, in-world apply)
+tests/android        the on-device suite for the Android app
 docs                 PRD, M0 findings, M1 status
 ```

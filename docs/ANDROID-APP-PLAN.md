@@ -841,7 +841,7 @@ Kotlin tests, a check on the emulator, a code review and a security review:
    (the rule's price); a picker's provider that never answers holds a
    read.
 5. **On the device** (done 2026-11-08). `scripts/dev/android-run.ts`
-   runs the debug app end to end on the emulator (Playwright's Android
+   (replaced by `pnpm test:android` in phase 5) ran the debug app end to end on the emulator (Playwright's Android
    support for the WebViews, adb and uiautomator for native UI,
    `scripts/dev/android-ui.ts`): installed with no data, the server added
    on home, admin login, the test world launched from our Setup page,
@@ -930,6 +930,34 @@ emulator, a code review and a security review:
 test:android`, no traces). First spec, `start.spec.ts`: a fresh install
    opens on home, answered by the background. Passes on the emulator.
    Small enough to be reviewed together with package 2.
+2. **The smoke specs** (done 2026-11-09). `smoke.spec.ts` (steps in
+   `steps.ts`), one serial run from a fresh install: a server added on
+   home and our Setup page; a world opened and left with Android's Back;
+   the Library (its tab, a filter, its menu, which Back closes and only
+   it); export through Save and import of that file through Open, the
+   app's dialog naming the server, OK, "Library imported." (the device's
+   own exports are left alone, the new file told apart by name); the first
+   launch from our page with Foundry's Join button clear and the
+   companion's report; Fixture A queued, applied through the review,
+   active in the world, Setup showing 3 on after the companion's report
+   from the reloaded page; Release history allowed on home and read from
+   foundryvtt.com through native (Foundry's update check answered with
+   its real notes as a newer build, read beforehand from WSL since
+   `route.fetch` doesn't finish on a WebView); Setup, a world and the
+   Library in Foundry's three themes, the theme put back. 9 tests pass on
+   the emulator in about 6 minutes. Found by the suite: **Back left the
+   page when Setup answered late** (over 0.8 s on the emulator, the app
+   went home with a menu open); the app now waits 1.5 s and stays when
+   there's no answer. Reviews (code: four high, all in the suite; security:
+   one medium), fixed: cleanup that could overwrite the theme with a guess
+   or stop at its first failure; a page used after its connection closed;
+   fixed sleeps where a condition can be waited on; a page that never
+   answers Back could keep the user in (the "again soon" window counted
+   from the press, and presses during the wait were dropped; now it counts
+   from the claim, and a press during the wait goes on); a timeout told by
+   its message's words (now `PageTimeout`); other failures of Back's
+   question escaped; the suite deleted the device's own exports; a second
+   companion session that could pass on the first one's record.
 
 ## Native rules (for phase 4)
 

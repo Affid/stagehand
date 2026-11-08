@@ -24,6 +24,7 @@ import dev.modulelibrary.app.core.KeyValueStore
 import dev.modulelibrary.app.core.NativeFetch
 import dev.modulelibrary.app.core.NativeHandlers
 import dev.modulelibrary.app.core.NativeState
+import dev.modulelibrary.app.core.PageTimeout
 import dev.modulelibrary.app.core.Relay
 import dev.modulelibrary.app.core.Screen
 import dev.modulelibrary.app.core.TapRule
@@ -53,7 +54,7 @@ import java.io.File
 
 private const val TAG = "ModuleLibrary"
 /** How long Setup has to say whether it used Android's Back. */
-private const val BACK_ANSWER_MS = 800L
+private const val BACK_ANSWER_MS = 1_500L
 /** An outside link opens only this soon after a tap on the server page. */
 private const val TAP_WINDOW_MS = 1_000L
 /** A second Back within this goes on even if the page claimed the first. */
@@ -96,6 +97,8 @@ class MainActivity : ComponentActivity(), AppHost {
     /** Home opened over a server (Module Library settings): Back returns there. */
     private var homeOverServer = false
     private var lastBackClaimedAt = Long.MIN_VALUE / 2
+    /** Back pressed again while Setup was being asked: it goes on once asked. */
+    private var backAgain = false
     private var recreating = false
     private var certDialog: AlertDialog? = null
     private var activeOrigins: Set<String> = emptySet()
@@ -269,7 +272,10 @@ class MainActivity : ComponentActivity(), AppHost {
 
     private val backCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
-            if (backBusy) return
+            if (backBusy) {
+                backAgain = true
+                return
+            }
             backBusy = true
             lifecycleScope.launch {
                 try {
@@ -282,8 +288,13 @@ class MainActivity : ComponentActivity(), AppHost {
     }
 
     private suspend fun back() {
-        val now = SystemClock.elapsedRealtime()
+        val pressedAt = SystemClock.elapsedRealtime()
+        backAgain = false
         val handled = showing == Screen.SERVER && setupUsedBack()
+        // A press while Setup was asked, or soon after the last claimed one
+        // (counted from when that claim came, not from its press), goes on:
+        // a page that claims or ignores every Back can't keep the user in.
+        val again = backAgain || pressedAt - lastBackClaimedAt < BACK_AGAIN_MS
         // The history as it is after Setup's answer (review).
         val list = server.copyBackForwardList()
         val previous = list.getItemAtIndex(list.currentIndex - 1)?.url
@@ -292,10 +303,10 @@ class MainActivity : ComponentActivity(), AppHost {
             pageHandled = handled,
             canGoBack = historyBackAllowed(previous, activeServers()),
             homeOverServer = homeOverServer,
-            pressedAgainSoon = now - lastBackClaimedAt < BACK_AGAIN_MS,
+            pressedAgainSoon = again,
         )
-        lastBackClaimedAt = if (action == BackAction.NONE) now else Long.MIN_VALUE / 2
-        debugLog("Back on $showing: Setup used it $handled, previous $previous, so $action")
+        lastBackClaimedAt = if (action == BackAction.NONE) SystemClock.elapsedRealtime() else Long.MIN_VALUE / 2
+        debugLog("Back on $showing: Setup used it $handled, again $again, previous $previous, so $action")
         when (action) {
             BackAction.NONE -> Unit
             BackAction.HISTORY -> server.goBack()
@@ -305,20 +316,29 @@ class MainActivity : ComponentActivity(), AppHost {
         }
     }
 
-    /** Asks our Setup page whether it used Back (only on a saved server's Setup). */
+    /**
+     * Asks our Setup page whether it used Back (only on a saved server's
+     * Setup that has written to native). A page that doesn't answer in time
+     * counts as having used it: going home would lose the user's place
+     * (seen on the emulator, a busy page answered late), and a second Back
+     * soon after goes on anyway.
+     */
     private suspend fun setupUsedBack(): Boolean {
         val url = serverPage.committed ?: return false
         val servers = activeServers()
         if (!mayAskAsServer(url, servers) || servers.none { isServerPage(url, it, "/setup") }) return false
+        if (!serverPage.canPost()) return false
         return try {
-            val post = { text: String ->
-                if (!serverPage.postToCurrent(text)) debugLog("Setup hasn't written to native yet")
-            }
-            val answer = relay.ask(Caller.SERVER, post, BACK, JsonObject(emptyMap()), BACK_ANSWER_MS)
+            val answer = relay.ask(Caller.SERVER, { serverPage.postToCurrent(it) }, BACK, JsonObject(emptyMap()), BACK_ANSWER_MS)
             debugLog("Setup answered Back with $answer")
             answer?.jsonObject?.get("handled")?.jsonPrimitive?.booleanOrNull == true
-        } catch (e: Exception) {
+        } catch (e: PageTimeout) {
             debugLog("Setup didn't answer Back", e)
+            true
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            debugLog("Setup's answer to Back failed", e)
             false
         }
     }

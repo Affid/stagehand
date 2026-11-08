@@ -7,7 +7,7 @@
 import { copyFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 import { _android, type AndroidDevice, type Page } from "@playwright/test";
-import { adb, adbWithInput, deviceSerial } from "./native-ui.ts";
+import { adb, adbWithInput, deviceSerial, sleep } from "./native-ui.ts";
 
 const ROOT = join(import.meta.dirname, "..", "..");
 export const PKG = "dev.modulelibrary.app.debug";
@@ -25,11 +25,6 @@ const APK_WIN =
 export const SERVER = process.env.ML_APP_SERVER ?? "http://10.0.2.2:30000";
 export const HOME = "https://appassets.androidplatform.net/home.html";
 export const SCREENS = join(ROOT, "test-results/screens/android");
-
-const sleep = (ms: number) =>
-  new Promise<void>((r) => {
-    setTimeout(r, ms);
-  });
 
 /** The debug app with no data, past the WebView notice, started. */
 export function installFresh(): void {
@@ -81,7 +76,7 @@ export class App {
     const wanted = deviceSerial();
     const found = all.find((d) => d.serial() === wanted);
     if (!found) throw new Error(`Playwright doesn't see ${wanted}`);
-    all.filter((d) => d !== found).forEach((d) => void d.close());
+    await Promise.all(all.filter((d) => d !== found).map((d) => d.close()));
     this.device = found;
     return found;
   }
@@ -90,18 +85,33 @@ export class App {
   async pageAt(start: string, timeoutMs = 30_000): Promise<Page> {
     const end = Date.now() + timeoutMs;
     while (Date.now() < end) {
-      const device = await this.connect();
-      const view = await device.webView({ pkg: PKG }, { timeout: timeoutMs });
-      const first = await view.page();
-      const found = first
-        .context()
-        .pages()
-        .find((p) => p.url().startsWith(start));
+      const found = await this.findPage(start, end - Date.now());
       if (found) return found;
       await this.close();
       await sleep(1_000);
     }
     throw new Error(`No app page at ${start}`);
+  }
+
+  /** The page on this connection, if there; none if the app's WebView isn't up yet. */
+  private async findPage(
+    start: string,
+    timeoutMs: number,
+  ): Promise<Page | undefined> {
+    const device = await this.connect();
+    try {
+      const view = await device.webView(
+        { pkg: PKG },
+        { timeout: Math.max(1_000, timeoutMs) },
+      );
+      const first = await view.page();
+      return first
+        .context()
+        .pages()
+        .find((p) => p.url().startsWith(start));
+    } catch {
+      return undefined;
+    }
   }
 
   /** A screenshot of the whole screen, by device and theme. */

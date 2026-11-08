@@ -11,15 +11,11 @@ import {
 } from "../../scripts/foundry/admin.ts";
 import { loadFoundryEnv } from "../../scripts/foundry/env.ts";
 import { TEST_WORLD } from "../../scripts/foundry/world.ts";
+import { sleep } from "./native-ui.ts";
 
 export const env = loadFoundryEnv();
 export const THEMES = ["dark", "fantasy", "scifi"] as const;
 export type Theme = (typeof THEMES)[number];
-
-const sleep = (ms: number) =>
-  new Promise<void>((r) => {
-    setTimeout(r, ms);
-  });
 
 /** Admin login in the app's server WebView, then our Setup page on it. */
 export async function adminLogin(page: Page, server: string): Promise<void> {
@@ -57,6 +53,14 @@ export async function waitClosed(): Promise<void> {
   throw new Error("The world didn't close");
 }
 
+/** The Foundry version the server runs ("14.370"). */
+export async function installedVersion(): Promise<string> {
+  const r = await fetch(`${env.url}/api/status`);
+  const s = (await r.json()) as { version?: unknown };
+  if (typeof s.version !== "string") throw new Error("No Foundry version");
+  return s.version;
+}
+
 /** Closes the running world (the admin password works while one runs). */
 export async function closeWorld(): Promise<void> {
   const api = await createAdminClient(env.url);
@@ -78,6 +82,17 @@ export async function recordCompanion(page: Page): Promise<void> {
       if (d?.ns === "module-library" && d.type) seen.push(d.type);
     });
   });
+}
+
+/** The page's document start, to tell a reloaded page from the old one. */
+export const documentStart = (page: Page): Promise<number> =>
+  page.evaluate(() => performance.timeOrigin);
+
+/** Until the page has been loaded again since `before`. */
+export async function reloadedSince(page: Page, before: number): Promise<void> {
+  await expect
+    .poll(() => documentStart(page).catch(() => before), { timeout: 90_000 })
+    .not.toBe(before);
 }
 
 /** Until the companion's session on this page has pulled its commands. */

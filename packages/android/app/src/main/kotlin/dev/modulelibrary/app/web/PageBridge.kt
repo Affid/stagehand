@@ -42,6 +42,9 @@ class PageState {
         proxyGeneration = gen
     }
 
+    /** Whether the current document has written to native (native can ask it). */
+    fun canPost(): Boolean = proxy != null && proxyGeneration == generation
+
     /** Posts to the current document, if it has written to native. */
     fun postToCurrent(text: String): Boolean {
         val p = proxy ?: return false

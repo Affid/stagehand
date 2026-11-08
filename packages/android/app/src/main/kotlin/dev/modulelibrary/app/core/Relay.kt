@@ -18,8 +18,11 @@ import kotlinx.serialization.json.put
 /** A request native turned down (the page sees the message). */
 class RequestRefused(message: String) : Exception(message)
 
-/** A page's error answer to native's request, or no answer in time. */
-class PageError(message: String) : Exception(message)
+/** A page's error answer to native's request. */
+open class PageError(message: String) : Exception(message)
+
+/** No answer from the page in time. */
+class PageTimeout(message: String) : PageError(message)
 
 /** Native's handler for a checked request: its result, or it throws. */
 typealias Handle = suspend (caller: Caller, type: String, payload: JsonObject, url: String) -> JsonElement?
@@ -129,7 +132,7 @@ class Relay(
     /** Asks a page (`post` reaches it) and returns its result, or throws. */
     suspend fun ask(target: Caller, post: (String) -> Unit, type: String, payload: JsonElement, timeoutMs: Long): JsonElement? {
         val box = withTimeoutOrNull(timeoutMs) { Box(exchange(target, post, type, payload)) }
-        return (box ?: throw PageError("The page did not answer $type in time")).value
+        return (box ?: throw PageTimeout("The page did not answer $type in time")).value
     }
 
     private suspend fun exchange(target: Caller, post: (String) -> Unit, type: String, payload: JsonElement): JsonElement? {
@@ -206,7 +209,7 @@ class Relay(
             val post = backgroundPost ?: throw PageError("No background page")
             Box(exchange(Caller.BACKGROUND, post, ROUTE, payload))
         }
-        return (box ?: throw PageError("The background did not answer in time")).value
+        return (box ?: throw PageTimeout("The background did not answer in time")).value
     }
 
     /** Until the background is ready (again, after a reload). */

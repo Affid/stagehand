@@ -42,7 +42,7 @@ export function adbWithInput(input: string, ...args: string[]): string {
   }).toString();
 }
 
-interface Node {
+interface ViewNode {
   readonly text: string;
   readonly desc: string;
   readonly id: string;
@@ -50,30 +50,38 @@ interface Node {
 }
 
 /** The screen's view tree, as uiautomator dumps it. */
-export function nodes(): Node[] {
+export function nodes(): ViewNode[] {
   try {
     adb("shell", "uiautomator", "dump", "/sdcard/ml-ui.xml");
   } catch (error: unknown) {
     // uiautomator sometimes exits 137 after writing the dump.
-    const stdout = (error as { stdout?: Buffer | string }).stdout;
-    const out = stdout === undefined ? "" : stdout.toString();
+    const stdout =
+      error instanceof Error && "stdout" in error ? error.stdout : undefined;
+    const out =
+      typeof stdout === "string" || Buffer.isBuffer(stdout)
+        ? stdout.toString()
+        : "";
     if (!out.includes("dumped")) throw error;
   }
   const xml = adb("shell", "cat", "/sdcard/ml-ui.xml");
-  return [...xml.matchAll(/<node [^>]*>/g)].map((m) => {
+  return [...xml.matchAll(/<node [^>]*>/g)].flatMap((m): ViewNode[] => {
     const attr = (name: string): string =>
       new RegExp(`${name}="([^"]*)"`).exec(m[0])?.[1] ?? "";
-    const b = /\[(\d+),(\d+)\]\[(\d+),(\d+)\]/.exec(attr("bounds")) ?? [];
-    return {
-      text: attr("text"),
-      desc: attr("content-desc"),
-      id: attr("resource-id"),
-      bounds: [Number(b[1]), Number(b[2]), Number(b[3]), Number(b[4])],
-    };
+    const b = /\[(\d+),(\d+)\]\[(\d+),(\d+)\]/.exec(attr("bounds"));
+    // A view without bounds can't be tapped: left out.
+    if (!b) return [];
+    return [
+      {
+        text: attr("text"),
+        desc: attr("content-desc"),
+        id: attr("resource-id"),
+        bounds: [Number(b[1]), Number(b[2]), Number(b[3]), Number(b[4])],
+      },
+    ];
   });
 }
 
-const sleep = (ms: number) =>
+export const sleep = (ms: number) =>
   new Promise<void>((r) => {
     setTimeout(r, ms);
   });
@@ -91,6 +99,19 @@ export async function tapNative(
       adb("shell", "input", "tap", String((l + r) >> 1), String((t + b) >> 1));
       return hit.text || hit.desc;
     }
+    await sleep(500);
+  }
+  throw new Error(`No ${String(match)} on screen`);
+}
+
+/** Until a view whose text or description matches is on screen. */
+export async function waitNative(
+  match: RegExp,
+  timeoutMs = 15_000,
+): Promise<void> {
+  const end = Date.now() + timeoutMs;
+  while (Date.now() < end) {
+    if (onScreen(match)) return;
     await sleep(500);
   }
   throw new Error(`No ${String(match)} on screen`);
