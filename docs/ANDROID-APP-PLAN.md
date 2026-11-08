@@ -1,6 +1,6 @@
 # Android app: the new Setup page on a phone
 
-Status: planned 2026-11-07; phase 0 closed the same day (answered on the emulator; the phone checks moved to phase 4); phase 1 (phone design): the owner chose the tabs layout and, after the rounds below, moved on to development on 2026-11-08; the owner settled its two open questions on 2026-11-08 (see "Phase 1" below). Phase 2 (app platform layer) done 2026-11-08: the five packages below. Next: phase 3. The owner's decisions are below. Owner's choices: an Android app that
+Status: planned 2026-11-07; phase 0 closed the same day (answered on the emulator; the phone checks moved to phase 4); phase 1 (phone design): the owner chose the tabs layout and, after the rounds below, moved on to development on 2026-11-08; the owner settled its two open questions on 2026-11-08 (see "Phase 1" below). Phase 2 (app platform layer) done 2026-11-08: the five packages below. Phase 3 (phone layout) started 2026-11-08, split into seven packages below. The owner's decisions are below. Owner's choices: an Android app that
 loads the user's Foundry server in a WebView and draws our Setup page over it
 (option 2 of three; the others were the extension in Firefox for Android, and
 a native client speaking Foundry's protocol); **Setup only** (a world, once
@@ -461,6 +461,85 @@ For phase 4 and the owner:
 5. Playwright keeps traces of failed live tests, which hold the admin
    login request; they stay in `test-results/` (git-ignored), not to be
    shared.
+
+## Phase 3: phone layout (started 2026-11-08)
+
+Shared UI, TypeScript only. Done when every page and panel works in
+portrait at 360, 412 and 768 px wide, on a phone on its side (915×412) and
+a tablet on its side (1024×768), in the three Setup themes; no By world on
+the phone; axe clean; desktop layouts unchanged (`setup-layout.spec.ts`).
+The mockup (`design/setup-page/src/_phone.*`) is the spec; it rearranges
+the desktop page's markup after each render, which is not a model for the
+extension: here the layout is chosen in Preact and each component renders
+its phone form.
+
+Which layout (one pure function, `layoutFor`):
+
+- **Touch screen** (`pointer: coarse`: the app, a tablet): portrait gets
+  the phone layout at any width; landscape gets the tablet layout (worlds
+  list on the left, sheets from the right) when 600 px tall or more, else
+  the phone layout (a phone on its side).
+- **Mouse** (the extension on a desktop): the phone layout below 700 px
+  wide, today's desktop layout from 700 px. Desktop windows from 700 px look
+  as they do today; narrower ones, where today's layout doesn't fit, get the
+  phone layout.
+
+Android's Back (phase 4) reaches Setup as an Escape key press: an open
+dialog or menu closes first (they already stop Escape), then a sheet, then
+the page goes back to its list; a press nobody handles is left unhandled
+(not `defaultPrevented`), so native knows to go back in history.
+
+Packages, each committed on its own after tests first, `pnpm verify`, live
+checks in the app harness (phone emulation) and the extension, a code review
+and a security review:
+
+1. **Layout and frame.** `layoutFor` and a `useLayout` hook; the phone
+   shell: top bar (logo, Foundry VTT, the version chip and ⏻ on Worlds; Back
+   and the page's name on a world or What's new), the worlds list as the
+   home screen, one page at a time, the bottom tab bar (Worlds, Library,
+   Backups, Configuration, with badges for worlds with queued changes and
+   new modules), the tablet layout with the worlds list on the left; a dock
+   above the tab bar that pages put their bottom bars into; Escape as Back;
+   Foundry's "window smaller than 1024×768" notice hidden on Setup; the
+   harness's portrait, landscape and tablet devices.
+2. **Sheets, menus, dialogs and touch.** The details, Tags, Presets, New
+   modules and system panels as bottom sheets (a bar with the name and
+   Close, dragged down or tapped outside to close), from the right on a
+   tablet; menus and popovers from the bottom; dialogs (launch review,
+   snapshot, saving Configuration) full width from the bottom; notices under
+   the top bar; 44-48 px touch targets; controls a desktop shows on hover
+   always shown (`hover: none`); explanations that live only in `title`
+   tooltips get a tap-to-show form.
+3. **A world's page.** The picture under the top bar, which turns solid
+   with the name once the banner scrolls away; only the tab row stays
+   pinned; the bottom bar ("N changes · See or undo" and Launch) and its
+   **Next launch** sheet (each change with undo, Discard all, Launch);
+   "11 → 14" in the tab row; About, the next session and Backups in one
+   column; the compact banner on a phone on its side.
+4. **Library.** One row (filter, View for Group by, ⋮ for Select, Install,
+   Update all, Tags, Presets, New folder, Collapse or expand all, Import
+   and export); new installs as one line; tags as coloured dots; while
+   selecting, the count, All, None, Done and the four actions in the dock;
+   no By world on the phone (a library left on By world opens on the
+   cards; the tablet layout keeps it); no "Foundry's" card layout; the Sort
+   sheet with labels above their controls.
+5. **Server pages.** Backups: the summary and New snapshot in the dock, one
+   row of tabs with counts, the note in one line, filter and Sort by in one
+   row, rows with the name on top, selecting snapshots in the dock, dates
+   without the weekday. Configuration in one column with its Save bar in
+   the dock. What's new with the update first, in one column.
+6. **A world running (the app).** The app opened while a world runs:
+   Foundry sends everyone to `/join`, so the app shows its own screen there
+   (the world's picture and name, "Running now", its system, people and
+   uptime from `/api/status`, and **Return to Setup**, which asks for the
+   admin password only without an admin session and asks first with people
+   in the game), and goes to Setup when the world closes. Right after a
+   launch from the app, `/join` stays Foundry's, so the GM can join and the
+   companion applies the changes.
+7. **Acceptance.** A walk of every page and panel at the five sizes in the
+   three themes (no sideways overflow, touch sizes, axe), the desktop
+   layout specs, screenshots, the "Phone" section of
+   `docs/SETUP-REDESIGN.md`, the results artifact.
 
 ## Native rules (for phase 4)
 
