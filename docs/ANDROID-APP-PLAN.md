@@ -1,6 +1,6 @@
 # Android app: the new Setup page on a phone
 
-Status: planned 2026-11-07; phase 0 closed the same day (answered on the emulator; the phone checks moved to phase 4); phase 1 (phone design): the owner chose the tabs layout and, after the rounds below, moved on to development on 2026-11-08; the owner settled its two open questions on 2026-11-08 (see "Phase 1" below). Phase 2 (app platform layer) done 2026-11-08: the five packages below. Phase 3 (phone layout) started 2026-11-08, split into seven packages below. The owner's decisions are below. Owner's choices: an Android app that
+Status: planned 2026-11-07; phase 0 closed the same day (answered on the emulator; the phone checks moved to phase 4); phase 1 (phone design): the owner chose the tabs layout and, after the rounds below, moved on to development on 2026-11-08; the owner settled its two open questions on 2026-11-08 (see "Phase 1" below). Phase 2 (app platform layer) done 2026-11-08: the five packages below. Phase 3 (phone layout) done 2026-11-08 in seven packages. Phase 4 (the Android app) done 2026-11-08 in five packages: the app runs the Setup page on the emulator, and a launch from it applies queued changes through the companion; the phone checks wait for the owner. The owner's decisions are below. Owner's choices: an Android app that
 loads the user's Foundry server in a WebView and draws our Setup page over it
 (option 2 of three; the others were the extension in Firefox for Android, and
 a native client speaking Foundry's protocol); **Setup only** (a world, once
@@ -840,6 +840,54 @@ Kotlin tests, a check on the emulator, a code review and a security review:
    keyboard activation send no touch, so they can't open outside links
    (the rule's price); a picker's provider that never answers holds a
    read.
+5. **On the device** (done 2026-11-08). `scripts/dev/android-run.ts`
+   runs the debug app end to end on the emulator (Playwright's Android
+   support for the WebViews, adb and uiautomator for native UI,
+   `scripts/dev/android-ui.ts`): installed with no data, the server added
+   on home, admin login, the test world launched from our Setup page,
+   Foundry's `/join` with its Join button clear, joined as the Gamemaster
+   and the companion's report (HELLO, snapshot, commands, recorded on the
+   page), Fixture A queued (its library comes along), applied through the
+   launch review, the world's active modules then Fixture A, its library
+   and the companion, and back on Setup "3 modules on". **The phase's
+   done condition holds.** Export and import, dialogs and outside links
+   were checked in package 4. The signed, minified release APK
+   (`dev.modulelibrary.app`, 0.7 MB, no source maps) installed on the
+   emulator: home answers through the background, a server added and
+   opened shows our running-world screen (a world ran then), so the
+   release runs our injected scripts too; it is in the owner's Windows
+   folder as `C:\Users\fagot\ml-apk\module-library-0.2.0.apk`. Found on
+   the way and fixed: **the companion's HELLO waited 1 s, five times**,
+   and in the app the first answer came after about 1.3 s, every run
+   (the game page and our background share one renderer, which the game
+   keeps busy while it loads); one run had every try unanswered. The
+   waits now grow, 1 to 5 s (15 s in all; only a world without the
+   extension waits longer before its one notice). And **the running-world
+   screen stayed blank** when the world closed while `/join` loaded
+   (Foundry's data never came); it now asks the status while it waits and
+   goes to Setup. Reviews: no critical or high; fixed a redirect that
+   could repeat, status questions that could pile up, a stale comment,
+   a test for an answer on a later try. Not done in phase 4: Release
+   history on the device (its switch works on home; foundryvtt.com
+   wasn't fetched from the emulator), and the phone itself (below).
+
+**For the owner after phase 4:**
+
+1. **The phone checks** left from phase 0 need you: wireless debugging
+   paired with Windows' adb, the Hyper-V firewall rule for port 30000
+   (`docs/ANDROID-SPIKE.md`, "Devices and network", admin PowerShell),
+   Android System WebView 146 or newer from the Play Store, then the APK
+   above installed and the server added as `http://192.168.178.25:30000`.
+2. **The icon** (books on a shelf) and **the home screen** (the
+   extension's settings panel with the app's words, servers that open on
+   a tap) were made without a design to follow; both are for you to
+   approve or redesign.
+3. **The release key** in `~/.config/module-library/` signs every future
+   APK: phones with this one installed take updates only from it. Keep a
+   copy somewhere safe.
+4. **Accessibility trade-off:** outside links open only after a real tap
+   (a page can't open sites by itself); TalkBack and keyboard activation
+   send no tap, so they can't open them.
 
 ## Native rules (for phase 4)
 

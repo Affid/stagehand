@@ -10,6 +10,11 @@ export function adb(...args: string[]): string {
   return execFileSync(ADB, args, { maxBuffer: 64 * 1024 * 1024 }).toString();
 }
 
+/** adb with `input` on its stdin (adb shell passes it on). */
+export function adbWithInput(input: string, ...args: string[]): string {
+  return execFileSync(ADB, args, { input, maxBuffer: 1024 * 1024 }).toString();
+}
+
 interface Node {
   readonly text: string;
   readonly desc: string;

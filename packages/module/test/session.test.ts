@@ -46,6 +46,24 @@ describe("handshake (8.7)", () => {
     expect(await handshake(d)).toBe("none");
     expect(requests).toHaveLength(HELLO_ATTEMPTS);
   });
+
+  test("a late answer still counts: ok on a later try", async () => {
+    let tries = 0;
+    const { d, requests } = deps(() => {
+      tries += 1;
+      return tries === 1 ? new ChannelTimeout("HELLO") : ok("HELLO_ACK");
+    });
+    expect(await handshake(d)).toBe("ok");
+    expect(requests).toHaveLength(2);
+  });
+
+  test("waits longer each try: a busy phone answers late (Android app)", async () => {
+    const { d, requests } = deps(() => new ChannelTimeout("HELLO"));
+    await handshake(d);
+    expect(requests.map((r) => r.timeoutMs)).toEqual([
+      1000, 2000, 3000, 4000, 5000,
+    ]);
+  });
 });
 
 describe("runSession (8.4)", () => {

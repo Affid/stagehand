@@ -210,6 +210,29 @@ describe("startRunning", () => {
     });
   });
 
+  test("a world that closes before its data comes: Setup, not a blank page (seen on the emulator)", async () => {
+    vi.useFakeTimers();
+    const { d, assign } = deps(
+      () => undefined,
+      () => response(status({ active: false })),
+    );
+    startRunning(d);
+    await vi.advanceTimersByTimeAsync(5_000);
+    expect(assign).toHaveBeenCalledTimes(1);
+    expect(assign).toHaveBeenCalledWith(`${SERVER}/setup`);
+  });
+
+  test("while the world still runs, waiting for its data goes nowhere", async () => {
+    vi.useFakeTimers();
+    const { d, assign } = deps(
+      () => undefined,
+      () => response(status()),
+    );
+    startRunning(d);
+    await vi.advanceTimersByTimeAsync(5_000);
+    expect(assign).not.toHaveBeenCalled();
+  });
+
   test("gives Foundry's page back when its data never comes", async () => {
     vi.useFakeTimers();
     const { d } = deps(

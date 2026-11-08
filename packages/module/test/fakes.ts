@@ -61,10 +61,14 @@ export function fakeGame(modules: readonly FakeModuleData[], role = 4) {
 export function fakeChannel(
   answer: (type: string, payload: unknown) => Envelope | Error,
 ) {
-  const requests: { type: string; payload: unknown }[] = [];
+  const requests: {
+    type: string;
+    payload: unknown;
+    timeoutMs: number | undefined;
+  }[] = [];
   const channel: Channel = {
-    request(type, payload) {
-      requests.push({ type, payload });
+    request(type, payload, timeoutMs) {
+      requests.push({ type, payload, timeoutMs });
       const reply = answer(type, payload);
       return reply instanceof Error
         ? Promise.reject(reply)

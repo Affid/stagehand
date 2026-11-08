@@ -8,8 +8,13 @@ import { ChannelTimeout } from "./channel.ts";
 import { MODULE_ID } from "./foundry.ts";
 import { coreVersionOf, takeSnapshot } from "./world-state.ts";
 
-export const HELLO_TIMEOUT_MS = 1000;
-export const HELLO_ATTEMPTS = 5;
+/**
+ * How long each HELLO waits: longer each try. In the Android app the
+ * game page and our background share one renderer, so while the game
+ * loads the first answer can take over a second (seen on the emulator).
+ */
+export const HELLO_TIMEOUTS_MS = [1000, 2000, 3000, 4000, 5000] as const;
+export const HELLO_ATTEMPTS = HELLO_TIMEOUTS_MS.length;
 
 export type Handshake = "ok" | "rejected" | "none";
 
@@ -36,13 +41,9 @@ export async function handshake(deps: ApplyDeps): Promise<Handshake> {
     worldId: game.world.id,
     coreVersion: coreVersionOf(game),
   };
-  for (let attempt = 0; attempt < HELLO_ATTEMPTS; attempt++) {
+  for (const timeoutMs of HELLO_TIMEOUTS_MS) {
     try {
-      const reply = await deps.channel.request(
-        "HELLO",
-        hello,
-        HELLO_TIMEOUT_MS,
-      );
+      const reply = await deps.channel.request("HELLO", hello, timeoutMs);
       return reply.type === "HELLO_ACK" ? "ok" : "rejected";
     } catch (error: unknown) {
       // No answer: the bridge may still be starting, so try again. Anything

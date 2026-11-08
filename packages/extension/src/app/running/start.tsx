@@ -26,6 +26,8 @@ const WAIT_CLASS = "ml-run-wait";
 const STYLE_ID = "ml-run-style";
 const POLL_MS = 100;
 const MAX_POLLS = 300;
+/** While waiting for Foundry's data, the status is asked every this many polls. */
+const STATUS_EVERY = 10;
 /** How often the screen asks Foundry for the world's status. */
 export const STATUS_MS = 5000;
 /** How often, once closing, it checks whether the world has closed. */
@@ -150,16 +152,43 @@ function show(deps: RunningDeps, world: RunningWorld): void {
   }
 }
 
+/**
+ * While the data hasn't come: a world that closed meanwhile (Foundry's
+ * /join then never gets its data and stays blank) sends the app to Setup.
+ */
+interface Waiting {
+  /** The screen shown, or Setup on its way: nothing more to do. */
+  done: boolean;
+  /** A status question out: one at a time (review). */
+  asking: boolean;
+}
+
+function setupIfClosed(deps: RunningDeps, w: Waiting): void {
+  if (w.asking) return;
+  w.asking = true;
+  void fetchStatus(deps.server).then((s) => {
+    w.asking = false;
+    if (!s || s.active || w.done) return;
+    // Once: the polling stops here (review).
+    w.done = true;
+    deps.win.location.assign(deps.server.route("setup"));
+  });
+}
+
 /** Waits for Foundry's join data, then shows the screen (or lifts the veil). */
 export function startRunning(deps: RunningDeps): void {
   veil(deps.doc, deps.css);
   let polls = 0;
+  const w: Waiting = { done: false, asking: false };
   const tick = (): void => {
+    if (w.done) return;
     const world = joinWorld(deps.game());
     if (world && deps.doc.querySelector("body")) {
+      w.done = true;
       show(deps, world);
       return;
     }
+    if (polls % STATUS_EVERY === STATUS_EVERY - 1) setupIfClosed(deps, w);
     polls += 1;
     if (polls >= MAX_POLLS)
       deps.doc.documentElement.classList.remove(WAIT_CLASS);

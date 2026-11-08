@@ -38,6 +38,25 @@ server's address, for example `http://localhost:30000`), then allow the
 site. The same panel opens from the Setup page's rail and as the
 extension's options.
 
+## Android app
+
+The app (`packages/android`, Kotlin; docs/ANDROID-APP-PLAN.md) shows the
+same Setup page in a WebView. It needs JDK 21 in `~/opt/jdk-21*` and the
+Android SDK in `~/Android/Sdk` (or `ML_ANDROID_JAVA_HOME` and
+`ANDROID_HOME`); see docs/ANDROID-SPIKE.md for the install.
+
+```bash
+pnpm android:build    # pnpm build, then the debug and the signed release APK
+pnpm android:test     # Kotlin unit tests, with the 80% coverage gate
+node scripts/dev/android-run.ts   # the app end to end on the emulator
+```
+
+The APKs land in `packages/android/app/build/outputs/apk/`. The release
+is signed with the key in `~/.config/module-library/` (outside git; built
+unsigned without it). `node scripts/android/contract-vectors.ts` rewrites
+the native rules' answers the Kotlin tests check, after a change to
+`packages/extension/src/app/native-api.ts` or `native-requests.ts`.
+
 ## Local Foundry
 
 Settings come from `.env.local` (copy `.env.example`): Foundry's app and data
@@ -80,6 +99,7 @@ start the usual server again.
 packages/shared      protocol, Zod schemas, version logic, resolver, library ops
 packages/extension   background, Setup adapters, Setup UI (Preact), bridge, options
 packages/module      companion module: session, apply flow, dialog
+packages/android     Android app: WebViews, native bridge (Kotlin, Gradle)
 scripts/foundry      local Foundry helpers (admin API, world setup, linking)
 tests/foundry        Playwright end-to-end suites (Setup UI, in-world apply)
 docs                 PRD, M0 findings, M1 status

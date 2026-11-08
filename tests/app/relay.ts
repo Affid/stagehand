@@ -129,7 +129,7 @@ export class Relay {
    * A message from a page's bridge object; resolves with native's reply,
    * which the fake bridge hands to the page (the binding's own answer:
    * quicker than a separate evaluate into a busy game page, where Foundry's
-   * loading held one back past the companion's 1 s HELLO wait).
+   * loading held one back past the companion's first HELLO wait (1 s)).
    */
   async fromPage(
     page: Page,
