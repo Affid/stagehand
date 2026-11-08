@@ -1,6 +1,6 @@
 # Android app: the new Setup page on a phone
 
-Status: planned 2026-11-07; phase 0 closed the same day (answered on the emulator; the phone checks moved to phase 4); phase 1 (phone design): the owner chose the tabs layout and, after the rounds below, moved on to development on 2026-11-08; two questions stay open until phase 3 (see "Phase 1" below). Phase 2 (app platform layer) done 2026-11-08: the five packages below. Next: phase 3, after the owner settles the two open questions. The owner's decisions are below. Owner's choices: an Android app that
+Status: planned 2026-11-07; phase 0 closed the same day (answered on the emulator; the phone checks moved to phase 4); phase 1 (phone design): the owner chose the tabs layout and, after the rounds below, moved on to development on 2026-11-08; the owner settled its two open questions on 2026-11-08 (see "Phase 1" below). Phase 2 (app platform layer) done 2026-11-08: the five packages below. Next: phase 3. The owner's decisions are below. Owner's choices: an Android app that
 loads the user's Foundry server in a WebView and draws our Setup page over it
 (option 2 of three; the others were the extension in Firefox for Android, and
 a native client speaking Foundry's protocol); **Setup only** (a world, once
@@ -104,14 +104,14 @@ a commit per package, results with screenshots.
 
 ## Phases
 
-| #   | Phase                                                  | Scope                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Done when                                                                                                                                        |
-| --- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 0   | **Tooling and spike**                                  | JDK 21, Android SDK command-line tools, platform tools, Gradle wrapper in WSL (with the owner's go-ahead and SDK licence acceptance); a test device; a throwaway app that loads the local server and proves the risky parts.                                                                                                                                                                                                                                                                                  | `docs/ANDROID-SPIKE.md` answers every spike question below on a real device. Done on the emulator; the phone part moved to phase 4.              |
-| 1   | **Phone design**                                       | Interactive mockups of the Setup page on a phone in Foundry's look (design kit, header switcher between variants, as for the desktop design); the owner picks; the result added to `design/setup-page/` and `docs/SETUP-REDESIGN.md` (a "Phone" section).                                                                                                                                                                                                                                                     | The owner approves the phone layout; it is the spec from then on.                                                                                |
-| 2   | **App platform layer** (TypeScript, no Android needed) | An `app` target in `build.ts` (`app-setup.js`, `app-game.js`, `app-background.js`, `app-home.js`); the platform interfaces over a `NativeBridge` port; the private setup-main/setup-ui channel; `files`, `confirm` and `openExternal` ports used by both builds (the extension keeps its behaviour); a fake bridge for tests; an **app harness**: Playwright with phone emulation that injects the app bundle into the local Foundry and plays the native side in Node.                                       | Today's Setup page runs in the harness through the app layer, desktop layout, live tests passing; the extension build unchanged.                 |
-| 3   | **Phone layout** (shared UI)                           | The approved design behind a width breakpoint: the rail becomes the home list, a world, the Library and each server page full screen with Back, details as a full-screen sheet, header actions in one menu; 48 dp touch targets; hover-only controls shown on touch screens (`hover: none`); explanations that now live only in `title` tooltips get a visible or tap-to-show form; fixed widths released under the breakpoint.                                                                               | Every page and panel works at 360, 412 and 768 px wide in the three Setup themes; axe clean; desktop layouts unchanged (`setup-layout.spec.ts`). |
-| 4   | **Android app** (Kotlin)                               | `packages/android` (Gradle, its own build, `pnpm android:build` runs it after `pnpm build`): home screen, server WebView with injection and bridge, background WebView, key-value store, NativeFetch, files, dialogs, Custom Tabs, Back (Setup's own Back first, then history, then home), cookies kept, certificate errors refused with a message, debug and signed release APKs. Starts with the phone checks left from phase 0: wireless debugging, the firewall rule, Q6 on the phone, a current WebView. | The app runs the Setup page on a device against the local server, including a launch that applies queued changes through the companion.          |
-| 5   | **On-device suite and acceptance**                     | Playwright attached to the app's WebView over adb (Playwright's Android support or CDP through `adb forward`), a smoke suite on the device: add a server, Setup takes over, a world, the Library, a queued change, launch and apply, export and import, Release history; screenshots in the three themes; results artifact; the APK copied to a Windows folder for the owner.                                                                                                                                 | The smoke suite passes on a device; the owner can install the APK.                                                                               |
+| #   | Phase                                                  | Scope                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | Done when                                                                                                                                                                                                                                                     |
+| --- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0   | **Tooling and spike**                                  | JDK 21, Android SDK command-line tools, platform tools, Gradle wrapper in WSL (with the owner's go-ahead and SDK licence acceptance); a test device; a throwaway app that loads the local server and proves the risky parts.                                                                                                                                                                                                                                                                                                                | `docs/ANDROID-SPIKE.md` answers every spike question below on a real device. Done on the emulator; the phone part moved to phase 4.                                                                                                                           |
+| 1   | **Phone design**                                       | Interactive mockups of the Setup page on a phone in Foundry's look (design kit, header switcher between variants, as for the desktop design); the owner picks; the result added to `design/setup-page/` and `docs/SETUP-REDESIGN.md` (a "Phone" section).                                                                                                                                                                                                                                                                                   | The owner approves the phone layout; it is the spec from then on.                                                                                                                                                                                             |
+| 2   | **App platform layer** (TypeScript, no Android needed) | An `app` target in `build.ts` (`app-setup.js`, `app-game.js`, `app-background.js`, `app-home.js`); the platform interfaces over a `NativeBridge` port; the private setup-main/setup-ui channel; `files`, `confirm` and `openExternal` ports used by both builds (the extension keeps its behaviour); a fake bridge for tests; an **app harness**: Playwright with phone emulation that injects the app bundle into the local Foundry and plays the native side in Node.                                                                     | Today's Setup page runs in the harness through the app layer, desktop layout, live tests passing; the extension build unchanged.                                                                                                                              |
+| 3   | **Phone layout** (shared UI)                           | The approved design, chosen by orientation and size (portrait: the phone layout at any width; landscape 600 px tall or more: the worlds list on the left): the rail becomes the home list, a world, the Library and each server page full screen with Back, details as a full-screen sheet, header actions in one menu; 48 dp touch targets; hover-only controls shown on touch screens (`hover: none`); explanations that now live only in `title` tooltips get a visible or tap-to-show form; fixed widths released under the breakpoint. | Every page and panel works in portrait at 360, 412 and 768 px wide, on a phone on its side (915×412) and a tablet on its side (1024×768), in the three Setup themes; no By world on the phone; axe clean; desktop layouts unchanged (`setup-layout.spec.ts`). |
+| 4   | **Android app** (Kotlin)                               | `packages/android` (Gradle, its own build, `pnpm android:build` runs it after `pnpm build`): home screen, server WebView with injection and bridge, background WebView, key-value store, NativeFetch, files, dialogs, Custom Tabs, Back (Setup's own Back first, then history, then home), cookies kept, certificate errors refused with a message, debug and signed release APKs. Starts with the phone checks left from phase 0: wireless debugging, the firewall rule, Q6 on the phone, a current WebView.                               | The app runs the Setup page on a device against the local server, including a launch that applies queued changes through the companion.                                                                                                                       |
+| 5   | **On-device suite and acceptance**                     | Playwright attached to the app's WebView over adb (Playwright's Android support or CDP through `adb forward`), a smoke suite on the device: add a server, Setup takes over, a world, the Library, a queued change, launch and apply, export and import, Release history; screenshots in the three themes; results artifact; the APK copied to a Windows folder for the owner.                                                                                                                                                               | The smoke suite passes on a device; the owner can install the APK.                                                                                                                                                                                            |
 
 Each phase is split into packages in this file when it starts, as in the
 build plan.
@@ -148,7 +148,8 @@ build plan.
 - **App harness (fast loop, in WSL):** the real local Foundry, phone
   emulation in Chromium, the app bundle injected as the app does, the native
   side faked in Node. Most live checks of phases 2 and 3 run here, with
-  `scripts/dev` screenshots at 360, 412 and 768 px in each theme.
+  `scripts/dev` screenshots at 360, 412 and 768 px in portrait and on a phone and a tablet on
+  their side, in each theme.
 - **On device:** the phase 5 smoke suite, not the whole live suite.
 
 ## Owner's decisions (2026-11-07)
@@ -162,10 +163,8 @@ build plan.
 4. **App name and icon:** "Module Library", with our own icon (none of
    Foundry's branding).
 
-Still open: **tablets** (the phone layout up to which width; the 1280
-layout floats the details panel and suits a landscape tablet, a portrait
-tablet at 768-1024 could take either), decided with the phone design in
-phase 1.
+**Tablets** (decided 2026-11-08, see "Phase 1"): held upright, the phone
+layout at any width; on their side, the worlds list on the left.
 
 ## What the spike changed (2026-11-07)
 
@@ -247,19 +246,25 @@ short):
 - Touch sizes 44-48 px; no hover-only controls or tooltips; a phone on its
   side gets a compact banner and an icon-only tab bar; Android's Back steps
   back through dialog, menu, sheet, page (Escape in the mockup).
-- From 700 px wide and 600 px tall (a tablet held upright) the worlds list
+- A tablet on its side (landscape, 600 px tall or more): the worlds list
   stays on the left and sheets slide in from the right.
 
-Still open, to settle before phase 3 (phase 2 doesn't depend on them):
+The owner's answers to the two open questions (2026-11-08):
 
-1. **A tablet held upright** (768 px): the worlds list on the left, as the
-   mockup shows, or the phone layout.
-2. **Anything left off the phone**, for example the By world grid or
-   Configuration. The mockup brings every page.
+1. **A tablet held upright** (768 px and wider in portrait): the phone
+   layout. The owner found both fine and chose the worlds list on the left
+   for landscape only. So orientation decides, not width: portrait gets the
+   phone layout at any width; landscape gets the worlds list on the left
+   when the screen is 600 px tall or more, and a phone on its side (412 px
+   tall) keeps the phone layout with the compact banner and icon-only tabs.
+   (The mockup's rule was 700 px wide and 600 px tall.)
+2. **Left off the phone:** the By world grid. Library's View offers Group
+   by only, and a library saved on By world opens on the cards. Configuration
+   stays: it is part of Foundry's classic settings. Read as: By world is
+   left out of the phone layout; a tablet on its side, with the worlds list
+   on the left, keeps it (to confirm in phase 3's review).
 
-Still open: the tablet-upright layout and whether anything stays off the
-phone. The approved layout goes into `docs/SETUP-REDESIGN.md` (a "Phone"
-section).
+The approved layout goes into `docs/SETUP-REDESIGN.md` (a "Phone" section).
 
 ## Phase 2: app platform layer (started 2026-11-08)
 
@@ -267,7 +272,7 @@ TypeScript only; no Android build. Done when today's Setup page runs in the
 app harness through the app layer (desktop layout), the live suites pass on
 the app and on the extension, and the extension build is unchanged. The
 phone layout (phase 3) and Kotlin (phase 4) are not part of it; the two
-open design questions above stay open.
+open design questions above stayed open during it (settled since).
 
 Packages, each committed on its own after tests first, `pnpm verify`, live
 checks, a code review and a security review:
