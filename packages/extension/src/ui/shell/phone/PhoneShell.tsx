@@ -3,14 +3,16 @@
 // (the worlds list is home on a phone; a tablet keeps it on the left), the
 // dock and the tab bar at the foot. The pages are the desktop's own; they
 // render their phone forms where they read useLayout().
-import { useEffect, useRef, useState } from "preact/hooks";
+import { useEffect, useLayoutEffect, useRef, useState } from "preact/hooks";
 import { useUi } from "../../context.ts";
 import { Announcer } from "../Announcer.tsx";
 import { MainPane, PanelColumn, useShownRoute } from "../Panes.tsx";
 import { WorldRail } from "../WorldRail.tsx";
 import { DockContext } from "./Dock.tsx";
 import type { Layout } from "./layout.ts";
-import { backPatch, navOf, synced } from "./nav.ts";
+import { backPatch, navOf, sheetShown, synced } from "./nav.ts";
+import { TipBubble, useTouchTips } from "./TouchTip.tsx";
+import { SHEET, usePopupOpen } from "./popups.ts";
 import { PhoneTop } from "./PhoneTop.tsx";
 import { TabBar } from "./TabBar.tsx";
 
@@ -73,6 +75,28 @@ function useCompactNotice(): void {
   }, [page]);
 }
 
+/** Behind an open sheet the page can't be reached (keyboard, screen reader). */
+function useInertBehind(
+  root: { readonly current: HTMLElement | null },
+  sheet: boolean,
+): void {
+  // A layout effect: cleared before the sheet's focus goes back to its
+  // opener, which can't take focus while inert (review).
+  useLayoutEffect(() => {
+    const behind = root.current?.querySelectorAll<HTMLElement>(
+      ":scope > .mlp-top, :scope > .mls > .mls-rail, :scope > .mls > .mls-main, :scope > .mlp-dock, :scope > .mlp-tabs",
+    );
+    behind?.forEach((el) => {
+      el.inert = sheet;
+    });
+    return () => {
+      behind?.forEach((el) => {
+        el.inert = false;
+      });
+    };
+  }, [root, sheet]);
+}
+
 function pageName(route: ReturnType<typeof useShownRoute>["route"]): string {
   return route.kind === "server" ? route.page : route.kind;
 }
@@ -82,13 +106,18 @@ export function PhoneShell(props: { readonly layout: Layout }) {
   const { layout } = props;
   const { route, world } = useShownRoute();
   const [dock, setDock] = useState<HTMLElement | null>(null);
+  const root = useRef<HTMLDivElement>(null);
   useTrail();
   useEscapeBack(layout);
   useCompactNotice();
+  useInertBehind(root, sheetShown(state) !== null);
+  const popup = usePopupOpen(root, SHEET);
+  const tip = useTouchTips(root);
   const home = layout === "phone" && navOf(state).home;
   return (
     <DockContext.Provider value={dock}>
       <div
+        ref={root}
         class={`mls-shell mlp${layout === "tablet" ? " mlp-wide" : ""}`}
         data-screen={home ? "home" : "page"}
         data-page={pageName(route)}
@@ -101,6 +130,8 @@ export function PhoneShell(props: { readonly layout: Layout }) {
         </div>
         <div class="mlp-dock" ref={setDock} />
         <TabBar layout={layout} />
+        {popup ? <div class="mlp-scrim pop" aria-hidden="true" /> : null}
+        <TipBubble tip={tip} />
         <Announcer />
       </div>
     </DockContext.Provider>

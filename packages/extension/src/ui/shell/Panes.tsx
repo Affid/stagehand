@@ -14,6 +14,8 @@ import { ConfigPage } from "./server/config/ConfigPage.tsx";
 import { UpdatePage } from "./server/UpdatePage.tsx";
 import { resolveRoute, type Route } from "./route.ts";
 import { WorldPage } from "./WorldPage.tsx";
+import { isCompact, useLayout } from "./phone/layout.ts";
+import { Sheet } from "./phone/Sheet.tsx";
 
 /** The Library's own panels: Tags, Presets, New modules. */
 function SideColumn() {
@@ -34,12 +36,28 @@ function SideColumn() {
   return null;
 }
 
-/** The module details column, beside the Library or a world's page. */
+/**
+ * The module details column, beside the Library or a world's page; a sheet
+ * in the phone and tablet layouts.
+ */
 export function PanelColumn(props: { readonly here: string | undefined }) {
-  const { state } = useUi();
+  const { state, store } = useUi();
+  const layout = useLayout();
   // The Library's panels show only on the Library (no world here).
-  if (!props.here && state.side && !state.panel) return <SideColumn />;
-  return <ModuleColumn here={props.here} />;
+  const side = !props.here && state.side !== null && state.panel === null;
+  const body = side ? <SideColumn /> : <ModuleColumn here={props.here} />;
+  const module =
+    state.panel !== null &&
+    state.data.setup?.modules.some((m) => m.id === state.panel) === true;
+  if (!isCompact(layout) || !(side || module)) return body;
+  return (
+    <Sheet
+      layout={layout}
+      onClose={() => store.set(side ? { side: null } : { panel: null })}
+    >
+      {body}
+    </Sheet>
+  );
 }
 
 function ModuleColumn(props: { readonly here: string | undefined }) {

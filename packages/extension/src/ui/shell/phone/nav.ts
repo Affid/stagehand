@@ -123,13 +123,24 @@ export function tabPatch(
 }
 
 /**
+ * The sheet showing, if any: a module's details beside any page but a
+ * server page's; the Library's own panels on the Library only (Panes.tsx).
+ */
+export function sheetShown(state: NavState): "panel" | "side" | null {
+  const route = state.route;
+  if (state.panel !== null) return route?.kind === "server" ? null : "panel";
+  if (state.side !== null && route?.kind === "library") return "side";
+  return null;
+}
+
+/**
  * One step back: a module's details, then the Library's panel, then the
  * trail, then from a page to its list. Null when there is nothing to go
  * back to here (Android then goes back on its own).
  */
 export function backPatch(state: NavState, layout: Layout): NavPatch | null {
-  if (state.panel !== null) return { panel: null };
-  if (state.side !== null) return { side: null };
+  const sheet = sheetShown(state);
+  if (sheet) return { [sheet]: null };
   const nav = navOf(state);
   if (layout === "phone" && nav.home) return null;
   const last = nav.trail.at(-1);

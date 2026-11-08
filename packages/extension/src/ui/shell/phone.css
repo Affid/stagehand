@@ -16,9 +16,10 @@
 }
 
 /* ---------- Top bar ---------- */
+/* No z-index on the bars: the menus they open must share the shell's
+   layer with the scrim (popups.ts). */
 .mls-shell.mlp .mlp-top {
   position: relative;
-  z-index: 20;
   flex: none;
   height: calc(var(--mlp-bar) + env(safe-area-inset-top, 0px));
   display: flex;
@@ -187,7 +188,6 @@
 /* ---------- The dock and the tab bar ---------- */
 .mls-shell.mlp .mlp-dock {
   position: relative;
-  z-index: 10;
   flex: none;
 }
 
@@ -197,7 +197,6 @@
 
 .mls-shell.mlp .mlp-tabs {
   position: relative;
-  z-index: 10;
   flex: none;
   height: calc(var(--mlp-tabs) + env(safe-area-inset-bottom, 0px));
   padding: 0 env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px)
@@ -306,4 +305,308 @@
   .mls-shell.mlp .mlp-tabs button > span:not(.ml-sr-only) {
     display: none;
   }
+}
+
+/* ---------- Sheets: details, Tags, Presets, New modules, a system ---------- */
+@keyframes mlp-up {
+  from {
+    transform: translateY(40px);
+    opacity: 0.4;
+  }
+}
+
+@keyframes mlp-in {
+  from {
+    transform: translateX(24px);
+    opacity: 0.4;
+  }
+}
+
+.mls-shell.mlp .mlp-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 115;
+  background: rgb(0 0 0 / 55%);
+}
+
+.mls-shell.mlp .mlp-sheet {
+  position: fixed;
+  z-index: 120;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 88%;
+  display: flex;
+  flex-direction: column;
+  background: var(--mlp-sheet);
+  border: 1px solid var(--color-cool-3);
+  border-bottom: 0;
+  border-radius: 14px 14px 0 0;
+  box-shadow: 0 -10px 30px rgb(0 0 0 / 60%);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  animation: mlp-up 0.18s ease-out;
+  transition: transform 0.18s ease-out;
+  outline: none;
+}
+
+.mls-shell.mlp .mlp-sheet > .mls-panel {
+  position: relative;
+  z-index: auto;
+  flex: 1;
+  min-height: 0;
+  width: auto;
+  max-width: none;
+  max-height: none;
+  height: auto;
+  margin: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* The panel's name and Close make the sheet's bar; its top drags it. */
+.mls-shell.mlp .mlp-sheet > .mls-panel > h2.divider {
+  display: block;
+  margin: 0;
+  padding: 18px 60px 10px 16px;
+  font-size: 22px;
+  text-align: left;
+  border-bottom: 1px solid var(--color-cool-4);
+  touch-action: none;
+  cursor: grab;
+}
+
+.mls-shell.mlp .mlp-sheet > .mls-panel > h2.divider::before,
+.mls-shell.mlp .mlp-sheet > .mls-panel > h2.divider::after {
+  display: none;
+}
+
+.mls-shell.mlp .mlp-sheet > .mls-panel > .mls-close {
+  top: 8px;
+  right: 8px;
+  width: var(--mlp-tap);
+  height: var(--mlp-tap);
+  font-size: 18px;
+  border-color: transparent;
+  background: transparent;
+}
+
+.mls-shell.mlp .mlp-grab {
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 18px;
+  touch-action: none;
+  cursor: grab;
+}
+
+.mls-shell.mlp .mlp-grab::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  width: 40px;
+  height: 4px;
+  margin-left: -20px;
+  border-radius: 2px;
+  background: var(--color-light-5);
+}
+
+.mls-shell.mlp .mlp-sheet .scroll {
+  padding: 12px 16px 24px;
+  font-size: 14px;
+}
+
+.mls-shell.mlp .mlp-sheet .mls-panel footer {
+  padding: 10px 12px 14px;
+}
+
+.mls-shell.mlp .mlp-sheet .mls-panel footer button {
+  min-height: var(--mlp-tap);
+}
+
+/* The sheet's own scrim, under the menus opened inside it. */
+.mls-shell.mlp .mlp-sheet > .mlp-scrim.pop {
+  position: absolute;
+  z-index: 125;
+  border-radius: inherit;
+}
+
+/* A tablet: sheets come in from the right, under the top bar. */
+.mls-shell.mlp.mlp-wide .mlp-sheet {
+  top: calc(var(--mlp-bar) + env(safe-area-inset-top, 0px));
+  left: auto;
+  width: min(440px, 60vw);
+  height: auto;
+  border-radius: 0;
+  border-bottom: 1px solid var(--color-cool-3);
+  animation-name: mlp-in;
+}
+
+.mls-shell.mlp.mlp-wide .mlp-sheet > .mls-panel > h2.divider {
+  padding-top: 12px;
+  cursor: default;
+}
+
+/* ---------- Menus and popovers: from the bottom, over a scrim ---------- */
+.mls-shell.mlp > .mlp-scrim.pop {
+  z-index: 125;
+}
+
+.mls-shell.mlp :is(.ml-pop, .mlh-menu, .mlw-addmenu) {
+  position: fixed;
+  z-index: 130;
+  left: 0;
+  right: 0;
+  top: auto;
+  bottom: 0;
+  width: auto;
+  min-width: 0;
+  max-width: none;
+  max-height: 75%;
+  overflow: auto;
+  margin: 0;
+  padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+  border-radius: 14px 14px 0 0;
+  animation: mlp-up 0.16s ease-out;
+}
+
+/* A menu inside a sticky cell (the By world grid's column menus): the cell
+   is a layer of its own, so it rises above the scrim while its menu is open
+   (review). */
+.mls-shell.mlp .mll-grid th:has(:is(.ml-pop, .mlh-menu)) {
+  z-index: 130;
+}
+
+/* Inside a panel, Library popovers are placed right-aligned: the full width
+   here (review). */
+.mls-shell.mlp .mls-panel .mls-popwrap > .ml-pop {
+  left: 0;
+  right: 0;
+}
+
+.mls-shell.mlp .ml-pop header {
+  padding: 14px 16px 10px;
+}
+
+.mls-shell.mlp :is(.ml-pop, .mlh-menu, .mlw-addmenu) :is(button, a[href]) {
+  min-height: 48px;
+  font-size: 15px;
+}
+
+.mls-shell.mlp
+  :is(.ml-pop, .mlh-menu, .mlw-addmenu)
+  :is(select, input:not([type="checkbox"], [type="radio"], [type="color"])) {
+  min-height: var(--mlp-tap);
+  font-size: 15px;
+}
+
+.mls-shell.mlp .ml-pop ul.mls-pick {
+  max-height: none;
+}
+
+/* ---------- Dialogs: full width, from the bottom ---------- */
+body:has(.mls-shell.mlp) .ml-backdrop {
+  align-items: flex-end;
+}
+
+body:has(.mls-shell.mlp) .ml-modal {
+  width: 100%;
+  max-height: 92%;
+  border-bottom: 0;
+  border-radius: 14px 14px 0 0;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  animation: mlp-up 0.18s ease-out;
+}
+
+body:has(.mls-shell.mlp.mlp-wide) .ml-modal {
+  width: min(42rem, 92vw);
+}
+
+body:has(.mls-shell.mlp) .ml-modal-footer {
+  flex-wrap: wrap;
+  padding: 10px 12px 14px;
+}
+
+body:has(.mls-shell.mlp) .ml-modal-footer button {
+  min-height: var(--mlp-tap, 44px);
+  flex: 1 1 40%;
+  font-size: 14px;
+}
+
+body:has(.mls-shell.mlp) .ml-modal-header button {
+  width: 44px;
+  height: 44px;
+}
+
+/* ---------- Notices: under the top bar, the width of the screen ---------- */
+body:has(.mls-shell.mlp) #notifications {
+  top: calc(64px + env(safe-area-inset-top, 0px));
+  left: 12px;
+  right: 12px;
+  width: auto;
+  max-width: none;
+  margin: 0;
+  transform: none;
+}
+
+/* ---------- Touch: controls a desktop shows on hover, at a finger's size ---------- */
+@media (hover: none) {
+  .mls-shell.mlp .mlw-gmenu .ml-hbtn {
+    width: var(--mlp-tap);
+    height: var(--mlp-tap);
+    font-size: 15px;
+    opacity: 1;
+  }
+
+  .mls-shell.mlp .ml-icon,
+  .mls-shell.mlp button.icon {
+    min-width: 40px;
+    min-height: 40px;
+  }
+}
+
+/* ---------- A tooltip shown by a tap or a long press (TouchTip.tsx) ---------- */
+.mls-shell.mlp .mlp-tip {
+  position: fixed;
+  z-index: 140;
+  left: 12px;
+  width: max-content;
+  max-width: min(300px, calc(100vw - 24px));
+  padding: 8px 12px;
+  border: 1px solid var(--color-cool-3);
+  border-radius: 6px;
+  background: var(--color-cool-5, #0b0a13);
+  color: var(--color-light-1);
+  font-size: 14px;
+  line-height: 1.35;
+  box-shadow: 0 4px 16px rgb(0 0 0 / 70%);
+  max-height: 40vh;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.mls-shell.mlp .mlp-tip.above {
+  transform: translateY(-100%);
+}
+
+/* ---------- Switches at a finger's size (mockup: 40 × 24) ---------- */
+.mls-shell.mlp .mls-switch {
+  width: 40px;
+  height: 24px;
+  border-radius: 12px;
+}
+
+.mls-shell.mlp .mls-switch::after {
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+}
+
+.mls-shell.mlp .mls-switch:checked::after {
+  left: 19px;
 }

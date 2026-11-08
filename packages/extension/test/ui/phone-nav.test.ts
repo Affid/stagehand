@@ -123,6 +123,18 @@ describe("hasBack: the top bar's Back", () => {
 });
 
 describe("backPatch: Android's Back", () => {
+  test("a panel the page doesn't show isn't closed by Back", () => {
+    expect(backPatch(at(w1, { side: { kind: "intake" } }), "phone")).toEqual({
+      phone: nav({ home: true, trail: [], at: w1 }),
+    });
+    // Backups goes back to Worlds (closing the hidden panel on the way).
+    expect(backPatch(at(backups, { panel: "a" }), "phone")).toEqual({
+      panel: null,
+      side: null,
+      phone: nav({ home: true, trail: [], at: backups }),
+    });
+  });
+
   test("a module's details close first, then the Library's panel", () => {
     expect(backPatch(at(lib, { panel: "a" }), "phone")).toEqual({
       panel: null,

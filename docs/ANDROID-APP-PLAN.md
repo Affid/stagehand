@@ -564,6 +564,22 @@ and a security review:
    Live: `app-phone-frame.spec.ts` in the app harness (Pixel 8, a tablet
    upright and on its side, a phone on its side); `scripts/dev/phone-shots.ts`
    takes screenshots at the five sizes.
+2. **Sheets, menus, dialogs and touch** (done 2026-11-08).
+   `phone/Sheet.tsx` (the panels as bottom sheets dragged down by their top,
+   from the right on a tablet; the page behind inert; focus in and back),
+   `phone/popups.ts` (menus from the bottom over a scrim of ours, which
+   outlives the menu by 400 ms so the closing tap's click can't land on the
+   control underneath, from the security review; a menu inside a sheet gets
+   the sheet's own scrim), `phone/TouchTip.tsx` (a tap on something that
+   only explains, or a long press on a control, shows its `title`; Chrome's
+   touch adjustment moves a finger to the nearest control, so the explained
+   icon under the finger is found by geometry), dialogs from the bottom,
+   notices under the top bar, 40 × 24 switches. Live:
+   `app-phone-sheets.spec.ts`. Left as review notes: a page script can add
+   a fake menu and leave the scrim up (no escalation: it shares the DOM);
+   the sheet repeats its panel's name; the By world grid's column menus
+   rise above the scrim by CSS but couldn't be opened live (the test worlds
+   don't run the companion).
 
 ## Native rules (for phase 4)
 
