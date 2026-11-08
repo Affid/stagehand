@@ -1,10 +1,7 @@
 // The UI's link to the Setup page's own world: Foundry's actions, dialogs,
-// editor and notifications. Messages go over window.postMessage.
-import {
-  isEnvelope,
-  makeEnvelope,
-  newRequestId,
-} from "@module-library/shared/protocol";
+// editor and notifications, over the page channel (page-channel.ts).
+import { newRequestId } from "@module-library/shared/protocol";
+import type { PageChannel } from "../page-channel.ts";
 import {
   type FoundryAction,
   type NoticeKind,
@@ -333,18 +330,13 @@ function requests(
   };
 }
 
-export function createPageBridge(win: Window): PageBridge {
+export function createPageBridge(channel: PageChannel): PageBridge {
   const listeners = new Set<(event: PageToUi) => void>();
   const send = (m: UiToPage): void => {
-    win.postMessage(
-      makeEnvelope("setup-ui", m.type, m.payload),
-      win.location.origin,
-    );
+    channel.send(m.type, m.payload);
   };
-  win.addEventListener("message", (event: MessageEvent<unknown>) => {
-    if (event.source !== win || event.origin !== win.location.origin) return;
-    if (!isEnvelope(event.data, "setup-main")) return;
-    const m = parsePageToUi(event.data.type, event.data.payload);
+  channel.listen((type, payload) => {
+    const m = parsePageToUi(type, payload);
     if (m)
       listeners.forEach((fn) => {
         fn(m);

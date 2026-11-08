@@ -111,6 +111,71 @@ describe("the toolbar", () => {
         .map((b) => b.textContent),
     ).toEqual(["Export the library", "Import a library…", "Import a preset…"]);
   });
+
+  const transfer = (r: ReturnType<typeof library>, item: string): void => {
+    fireEvent.click(r.getByRole("button", { name: "Import and export" }));
+    const pop = r.getByRole("region", { name: "Import and export" });
+    fireEvent.click(within(pop).getByRole("button", { name: item }));
+  };
+
+  test("Export saves the library through the host's files", async () => {
+    const r = renderUi("shell", {
+      state: { route: { kind: "library" } },
+      reply: (m) => (m.kind === "library-export" ? { text: '{"v":1}' } : {}),
+    });
+    transfer(r, "Export the library");
+    await waitFor(() => {
+      expect(r.ports.files.save).toHaveBeenCalledWith(
+        expect.stringMatching(/^module-library-\d{4}-\d{2}-\d{2}\.json$/),
+        '{"v":1}',
+      );
+    });
+  });
+
+  test("Import reads a file the user picks, and replaces the library only after a yes", async () => {
+    const r = library();
+    r.ports.files.open.mockResolvedValue('{"library":1}');
+    r.ports.confirm.mockResolvedValueOnce(false);
+    transfer(r, "Import a library…");
+    await waitFor(() => {
+      expect(r.ports.confirm).toHaveBeenCalledTimes(1);
+    });
+    expect(sent(r.send)).not.toContainEqual(
+      expect.objectContaining({ kind: "library-import" }),
+    );
+    transfer(r, "Import a library…");
+    await waitFor(() => {
+      expect(sent(r.send)).toContainEqual({
+        kind: "library-import",
+        text: '{"library":1}',
+      });
+    });
+  });
+
+  test("a file the host couldn't save is reported, not dropped", async () => {
+    const r = renderUi("shell", {
+      state: { route: { kind: "library" } },
+      reply: (m) => (m.kind === "library-export" ? { text: "{}" } : {}),
+    });
+    r.ports.files.save.mockRejectedValue(new Error("No space left"));
+    transfer(r, "Export the library");
+    await waitFor(() => {
+      expect(r.page.notify).toHaveBeenCalledWith(
+        "error",
+        expect.stringContaining("No space left"),
+      );
+    });
+  });
+
+  test("Import asks nothing when no file is picked", async () => {
+    const r = library();
+    transfer(r, "Import a library…");
+    await waitFor(() => {
+      expect(r.ports.files.open).toHaveBeenCalled();
+    });
+    await Promise.resolve();
+    expect(r.ports.confirm).not.toHaveBeenCalled();
+  });
 });
 
 describe("the Tags and Presets panels", () => {
@@ -124,7 +189,18 @@ describe("the Tags and Presets panels", () => {
     await opSent(r, { op: "tag.update", changes: { name: "looks" } });
     fireEvent.click(within(p).getByRole("checkbox", { name: "Title b" }));
     await opSent(r, { op: "module.setTags", moduleIds: ["b"], add: ["t1"] });
-    vi.stubGlobal("confirm", () => true);
+    r.ports.confirm.mockResolvedValueOnce(false);
+    fireEvent.click(within(p).getByRole("button", { name: "Delete tag" }));
+    await waitFor(() => {
+      expect(r.ports.confirm).toHaveBeenCalledWith(
+        expect.stringContaining("visual"),
+      );
+    });
+    expect(sent(r.send)).not.toContainEqual(
+      expect.objectContaining({
+        op: expect.objectContaining({ op: "tag.delete" }) as unknown,
+      }),
+    );
     fireEvent.click(within(p).getByRole("button", { name: "Delete tag" }));
     await opSent(r, { op: "tag.delete", id: "t1" });
     fireEvent.click(within(p).getByRole("button", { name: "New tag" }));
@@ -153,9 +229,11 @@ describe("the Tags and Presets panels", () => {
         }),
       );
     });
-    vi.stubGlobal("confirm", () => true);
     fireEvent.click(within(p).getByRole("button", { name: "Delete preset" }));
     await opSent(r, { op: "preset.delete", id: "p1" });
+    expect(r.ports.confirm).toHaveBeenCalledWith(
+      expect.stringContaining("QoL"),
+    );
   });
 
   test("a module's details replace the panel; the panels show only on the Library", async () => {
@@ -267,9 +345,11 @@ describe("a group's menu (6b3)", () => {
       within(m).getByRole<HTMLButtonElement>("button", { name: "Move up" })
         .disabled,
     ).toBe(true);
-    vi.stubGlobal("confirm", () => true);
     fireEvent.click(within(m).getByRole("button", { name: "Delete folder" }));
     await opSent(r, { op: "folder.delete", id: "f1" });
+    expect(r.ports.confirm).toHaveBeenCalledWith(
+      expect.stringContaining("Combat"),
+    );
   });
 
   test("any group: Select its modules, New preset from these, Turn on in a world…", async () => {

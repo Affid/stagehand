@@ -1,88 +1,16 @@
-// Isolated content script on Setup: receives package data from the main
-// world, reports it to the background and mounts the new Setup page over
-// Foundry's. Never breaks Setup: if the page can't start, Foundry's stays.
+// The extension's isolated content script on Setup: our half of the Setup
+// page (ui/start.ts), with window messages to Foundry's half, the
+// background through chrome.runtime, and the browser's files, confirm and
+// tabs.
 import "@module-library/shared/zod-config";
-import { logError } from "@module-library/shared/log";
-import { isEnvelope } from "@module-library/shared/protocol";
-import { parseCoreVersion } from "@module-library/shared/version";
-import { type SetupData, SetupDataSchema } from "@module-library/shared/world";
-import { type Adapter, V14_SELECTORS } from "../adapters/config.ts";
-import { type AdapterChoice, selectAdapter } from "../adapters/select.ts";
-import type { SetupState } from "../messages.ts";
+import { windowChannel } from "../page-channel.ts";
 import { send } from "../platform/runtime.ts";
-import { createActions } from "../ui/actions.ts";
-import type { UiDeps } from "../ui/context.ts";
-import { createTranslator, pickLanguage } from "../ui/i18n.ts";
-import { createPageBridge } from "../ui/page.ts";
-import { syncShell } from "../ui/shell/mount.tsx";
-import { createStore, DEFAULT_WORLD_VIEW, EMPTY_FILTER } from "../ui/store.ts";
-import { NO_UPDATES } from "../page-updates.ts";
-import { trackProgress, UNLOCKED } from "../ui/tasks.ts";
+import { browserPorts } from "../ui/ports.ts";
+import { startSetupUi } from "../ui/start.ts";
 
-let deps: UiDeps | undefined;
-let selectors: Adapter["selectors"] = V14_SELECTORS;
-const page = createPageBridge(window);
-
-/** Safe mode still reads and shows; it borrows the newest known selectors. */
-function selectorsFor(choice: AdapterChoice): Adapter["selectors"] {
-  return choice.status === "safe-mode" ? selectors : choice.adapter.selectors;
-}
-
-function ensureDeps(
-  data: SetupData,
-  state: SetupState,
-  adapter: AdapterChoice,
-): UiDeps {
-  if (deps) {
-    deps.store.set({ data: state, adapter, selectors });
-    return deps;
-  }
-  const t = createTranslator(pickLanguage(data.lang, navigator.language));
-  const store = createStore({
-    data: state,
-    adapter,
-    selectors,
-    scope: { kind: "all" },
-    filter: EMPTY_FILTER,
-    selection: [],
-    collapsedGroups: [],
-    route: null,
-    panel: null,
-    side: null,
-    worldView: DEFAULT_WORLD_VIEW,
-    tasks: [],
-    lock: UNLOCKED,
-    updates: NO_UPDATES,
-  });
-  trackProgress(store, page);
-  deps = { store, actions: createActions(store, send, t, page), t, page };
-  // The new Setup page takes over whenever the extension runs (not in safe mode).
-  const shell = syncShell(deps, document);
-  store.subscribe(shell);
-  shell();
-  return deps;
-}
-
-async function onSetupData(data: SetupData): Promise<void> {
-  const state = await send<SetupState>({ kind: "setup-seen", data });
-  const adapter = selectAdapter(
-    state.config,
-    parseCoreVersion(data.core.version),
-  );
-  selectors = selectorsFor(adapter);
-  ensureDeps(data, state, adapter);
-}
-
-window.addEventListener("message", (event: MessageEvent<unknown>) => {
-  if (event.source !== window || event.origin !== location.origin) return;
-  if (!isEnvelope(event.data, "setup-main") || event.data.type !== "SETUP_DATA")
-    return;
-  const parsed = SetupDataSchema.safeParse(event.data.payload);
-  if (!parsed.success) {
-    logError("setup data", parsed.error);
-    return;
-  }
-  onSetupData(parsed.data).catch((error: unknown) => {
-    logError("setup", error);
-  });
+startSetupUi({
+  channel: windowChannel(window, "setup-ui", "setup-main"),
+  send,
+  ports: browserPorts(),
+  doc: document,
 });

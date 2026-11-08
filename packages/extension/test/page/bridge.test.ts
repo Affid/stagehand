@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
 import { makeEnvelope } from "@module-library/shared/protocol";
 import { describe, expect, test, vi } from "vitest";
+import { windowChannel } from "../../src/page-channel.ts";
 import { createPageBridge } from "../../src/ui/page.ts";
 
 const fromPage = (type: string, payload: unknown): MessageEvent =>
@@ -13,7 +14,9 @@ const fromPage = (type: string, payload: unknown): MessageEvent =>
 describe("the UI's bridge to the page world", () => {
   test("posts checked messages to the page", () => {
     const spy = vi.spyOn(window, "postMessage");
-    const bridge = createPageBridge(window);
+    const bridge = createPageBridge(
+      windowChannel(window, "setup-ui", "setup-main"),
+    );
     bridge.notify("info", "Queued");
     bridge.setShell(true);
     expect(spy.mock.calls.map((c) => (c[0] as { type: string }).type)).toEqual([
@@ -29,7 +32,9 @@ describe("the UI's bridge to the page world", () => {
 
   test("asks for the new Setup page and for Foundry actions", () => {
     const spy = vi.spyOn(window, "postMessage");
-    const bridge = createPageBridge(window);
+    const bridge = createPageBridge(
+      windowChannel(window, "setup-ui", "setup-main"),
+    );
     bridge.setShell(true);
     bridge.foundryAction({ action: "launch", worldId: "strahd" });
     bridge.foundryAction({ action: "logout" });
@@ -47,7 +52,9 @@ describe("the UI's bridge to the page world", () => {
   });
 
   test("passes on the shell's state", () => {
-    const bridge = createPageBridge(window);
+    const bridge = createPageBridge(
+      windowChannel(window, "setup-ui", "setup-main"),
+    );
     const seen = vi.fn();
     bridge.subscribe(seen);
     window.dispatchEvent(
@@ -60,7 +67,9 @@ describe("the UI's bridge to the page world", () => {
   });
 
   test("passes on well-formed page events only", () => {
-    const bridge = createPageBridge(window);
+    const bridge = createPageBridge(
+      windowChannel(window, "setup-ui", "setup-main"),
+    );
     const seen = vi.fn();
     const stop = bridge.subscribe(seen);
     window.dispatchEvent(fromPage("LOCK", { locked: true }));
@@ -82,7 +91,9 @@ describe("the UI's bridge to the page world", () => {
 describe("saving a world through the bridge", () => {
   test("asks with a request id and settles on the matching answer", async () => {
     const spy = vi.spyOn(window, "postMessage");
-    const bridge = createPageBridge(window);
+    const bridge = createPageBridge(
+      windowChannel(window, "setup-ui", "setup-main"),
+    );
     const done = bridge.saveWorld("w", { title: "New" });
     const sentMsg = spy.mock.calls.at(-1)?.[0] as {
       type: string;
@@ -107,7 +118,9 @@ describe("saving a world through the bridge", () => {
 
   test("no answer in time is an error, not a wait forever", async () => {
     vi.useFakeTimers();
-    const bridge = createPageBridge(window);
+    const bridge = createPageBridge(
+      windowChannel(window, "setup-ui", "setup-main"),
+    );
     const done = bridge.saveWorld("w", { nextSession: null });
     vi.advanceTimersByTime(30_000);
     await expect(done).resolves.toMatch(/answer/i);
@@ -118,7 +131,9 @@ describe("saving a world through the bridge", () => {
 describe("a world's backups through the bridge", () => {
   test("asks, and settles on the matching answer with the list", async () => {
     const spy = vi.spyOn(window, "postMessage");
-    const bridge = createPageBridge(window);
+    const bridge = createPageBridge(
+      windowChannel(window, "setup-ui", "setup-main"),
+    );
     const done = bridge.backups("w", "list", []);
     const msg = spy.mock.calls.at(-1)?.[0] as {
       type: string;
@@ -144,7 +159,9 @@ describe("a world's backups through the bridge", () => {
 describe("the server's backups through the bridge", () => {
   test("asks, and settles on the matching answer with the listing", async () => {
     const spy = vi.spyOn(window, "postMessage");
-    const bridge = createPageBridge(window);
+    const bridge = createPageBridge(
+      windowChannel(window, "setup-ui", "setup-main"),
+    );
     const done = bridge.serverBackups("list", []);
     const msg = spy.mock.calls.at(-1)?.[0] as {
       type: string;
@@ -169,7 +186,9 @@ describe("the server's backups through the bridge", () => {
 describe("configuration through the bridge", () => {
   test("asks, and settles on the matching answer", async () => {
     const spy = vi.spyOn(window, "postMessage");
-    const bridge = createPageBridge(window);
+    const bridge = createPageBridge(
+      windowChannel(window, "setup-ui", "setup-main"),
+    );
     const done = bridge.config("save", { port: 30001 });
     const msg = spy.mock.calls.at(-1)?.[0] as {
       type: string;

@@ -110,12 +110,12 @@ function Fields(props: { readonly p: Preset }) {
   );
 }
 
-function PresetEdit(props: { readonly p: Preset }) {
-  const { store, actions, t, canChange } = useUi();
-  const { p } = props;
-  const update = useUpdate(p);
-  const remove = (): void => {
-    if (!window.confirm(t("presets.deleteConfirm", { name: p.name }))) return;
+/** Delete preset: after a yes, back to the list of presets. */
+function useRemove(p: Preset): () => Promise<void> {
+  const { store, actions, t, ports } = useUi();
+  return async () => {
+    if (!(await ports.confirm(t("presets.deleteConfirm", { name: p.name }))))
+      return;
     void actions.op({
       op: "preset.delete",
       id: p.id,
@@ -123,6 +123,13 @@ function PresetEdit(props: { readonly p: Preset }) {
     });
     store.set({ side: { kind: "presets" } });
   };
+}
+
+function PresetEdit(props: { readonly p: Preset }) {
+  const { actions, t, canChange } = useUi();
+  const { p } = props;
+  const update = useUpdate(p);
+  const remove = useRemove(p);
   return (
     <>
       <Fields p={p} />
@@ -137,7 +144,11 @@ function PresetEdit(props: { readonly p: Preset }) {
         <h4>
           <span>{t("presets.modules", { n: String(p.modules.length) })}</span>
           {canChange ? (
-            <button type="button" class="ml-link" onClick={remove}>
+            <button
+              type="button"
+              class="ml-link"
+              onClick={() => void actions.guard(remove)}
+            >
               {t("presets.delete")}
             </button>
           ) : null}

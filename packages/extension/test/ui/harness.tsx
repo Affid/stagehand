@@ -25,6 +25,7 @@ import type {
   PageBridge,
   ServerBackupsResult,
 } from "../../src/ui/page.ts";
+import type { UiPorts } from "../../src/ui/ports.ts";
 import {
   createStore,
   DEFAULT_WORLD_VIEW,
@@ -163,6 +164,18 @@ export function fakePage() {
   return { page, emit };
 }
 
+/** Stand-ins for files, confirm and links: confirm says yes unless told. */
+export function fakePorts() {
+  return {
+    files: {
+      save: vi.fn((_name: string, _text: string) => Promise.resolve()),
+      open: vi.fn(() => Promise.resolve<string | undefined>(undefined)),
+    },
+    confirm: vi.fn((_text: string) => Promise.resolve(true)),
+    openExternal: vi.fn((_url: string) => true),
+  } satisfies UiPorts;
+}
+
 export const SUPPORTED: AdapterChoice = {
   status: "supported",
   adapter: BUNDLED_CONFIG.adapters[0]!,
@@ -221,9 +234,10 @@ export function renderUi(
     actions: createActions(store, send as unknown as Send, t, fake.page),
     t,
     page: fake.page,
+    ports: fakePorts(),
   };
   const view = render(<ShellRoot deps={deps} />);
-  return { ...view, store, send, ...fake };
+  return { ...view, store, send, ports: deps.ports, ...fake };
 }
 
 /** The element matching `selector`, or a failing test. */

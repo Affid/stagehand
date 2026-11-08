@@ -5,6 +5,7 @@ import { allowsChanges } from "../adapters/select.ts";
 import type { Actions } from "./actions.ts";
 import type { Translate } from "./i18n.ts";
 import type { PageBridge } from "./page.ts";
+import type { UiPorts } from "./ports.ts";
 import { type Store, type UiState, useStore } from "./store.ts";
 
 export interface UiDeps {
@@ -12,6 +13,8 @@ export interface UiDeps {
   readonly actions: Actions;
   readonly t: Translate;
   readonly page: PageBridge;
+  /** Files, confirmations and links: the browser's, or the app's native ones. */
+  readonly ports: UiPorts;
 }
 
 export const UiContext = createContext<UiDeps | null>(null);

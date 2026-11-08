@@ -333,6 +333,30 @@ checks, a code review and a security review:
      a reviewed launch applied through `app-game.js`.
    - Both suites pass; screenshots and a results artifact.
 
+### Progress
+
+Package 1 done. `page-channel.ts` (`windowChannel`, `localChannelPair`;
+the pair copies with `structuredClone`, delivers later, and takes its
+globals once when made, so a page script replacing `structuredClone` or
+`setTimeout` afterwards can't forge, replay or read messages);
+`page/main.ts`, `ui/start.ts`, `bridge/game.ts` hold what the entries did;
+`ui/ports.ts` (`browserPorts`, `watchExternalLinks`: only the user's own
+clicks, `isTrusted`; a new-tab link that isn't http(s) never opens).
+Import and export, and the folder, tag and preset deletes go through the
+ports, and a port that fails shows a notice (`actions.guard`). Tests: the
+channel, the ports, both halves wired over the private pair, a failing
+background, a failing port. Live: the extension's full suite (96 passed,
+the 4 older-build checks skipped), then Library, News, Release history and
+settings again after the review fixes. Reviews: code and security, no
+critical or high. Fixed: the pair's globals (security, medium), synthetic
+clicks on our links (security, medium), port failures dropped silently
+(code, medium), a Foundry render hook that could throw. Left for the app
+packages: native's confirm one dialog at a time (a double click queues
+two), native refusing `openExternal` without a tap. Found on the way: a
+unit test with a fixed date (a queued change on 2026-11-05 01:00 UTC
+against a backup "3 days ago") started failing on 2026-11-08; it now dates
+the change a day back.
+
 ## Risks
 
 - **Old WebViews.** The two WebView features need an up-to-date Android

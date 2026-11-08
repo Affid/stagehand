@@ -2,30 +2,30 @@
 // a library file back, or a shared preset file as a new preset.
 import { parsePresetImport } from "@module-library/shared/library/transfer";
 import { newId } from "../../../actions.ts";
-import {
-  downloadText,
-  fileStamp,
-  pickTextFile,
-} from "../../../common/files.ts";
+import { fileStamp } from "../../../common/files.ts";
 import { Icon } from "../../../common/widgets.tsx";
 import { useUi } from "../../../context.ts";
 import { PopMenu } from "../common/PopMenu.tsx";
 
 function useTransfer() {
-  const { actions, t } = useUi();
+  const { actions, t, ports } = useUi();
   return {
-    async exportAll(): Promise<void> {
+    exportAll: async (): Promise<void> => {
       const text = await actions.exportLibrary();
       if (text)
-        downloadText(`module-library-${fileStamp(new Date())}.json`, text);
+        await ports.files.save(
+          `module-library-${fileStamp(new Date())}.json`,
+          text,
+        );
     },
-    async importAll(): Promise<void> {
-      const text = await pickTextFile();
-      if (text !== undefined && window.confirm(t("library.importConfirm")))
+    importAll: async (): Promise<void> => {
+      const text = await ports.files.open();
+      if (text === undefined) return;
+      if (await ports.confirm(t("library.importConfirm")))
         await actions.importLibrary(text);
     },
-    async importPreset(): Promise<void> {
-      const text = await pickTextFile();
+    importPreset: async (): Promise<void> => {
+      const text = await ports.files.open();
       if (text === undefined) return;
       const parsed = parsePresetImport(text);
       if (!parsed.ok) {
@@ -46,7 +46,7 @@ function useTransfer() {
 }
 
 export function Transfer() {
-  const { t, canChange } = useUi();
+  const { t, actions, canChange } = useUi();
   const x = useTransfer();
   return (
     <PopMenu
@@ -60,19 +60,19 @@ export function Transfer() {
           key: "export",
           label: t("library.export"),
           icon: <Icon name="file-export" />,
-          onPick: () => void x.exportAll(),
+          onPick: () => void actions.guard(x.exportAll),
         },
         {
           key: "import",
           label: t("library.import"),
           icon: <Icon name="file-import" />,
-          onPick: () => void x.importAll(),
+          onPick: () => void actions.guard(x.importAll),
         },
         {
           key: "preset",
           label: t("preset.import"),
           icon: <Icon name="layer-group" />,
-          onPick: () => void x.importPreset(),
+          onPick: () => void actions.guard(x.importPreset),
         },
       ]}
     />

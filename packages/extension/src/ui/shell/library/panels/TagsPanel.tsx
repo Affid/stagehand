@@ -114,13 +114,14 @@ function TagFields(props: { readonly tag: Tag }) {
 }
 
 function TagEdit(props: { readonly tag: Tag }) {
-  const { state, store, actions, t, canChange } = useUi();
+  const { state, store, actions, t, ports, canChange } = useUi();
   const count = useTagCount();
   const { tag } = props;
   const tagged = (id: string): boolean =>
     state.data.library.modules[id]?.tags.includes(tag.id) ?? false;
-  const remove = (): void => {
-    if (!window.confirm(t("tags.deleteConfirm", { name: tag.name }))) return;
+  const remove = async (): Promise<void> => {
+    if (!(await ports.confirm(t("tags.deleteConfirm", { name: tag.name }))))
+      return;
     void actions.op({
       op: "tag.delete",
       id: tag.id,
@@ -137,7 +138,11 @@ function TagEdit(props: { readonly tag: Tag }) {
             {t("tags.modules", { name: tag.name, n: String(count(tag.id)) })}
           </span>
           {canChange ? (
-            <button type="button" class="ml-link" onClick={remove}>
+            <button
+              type="button"
+              class="ml-link"
+              onClick={() => void actions.guard(remove)}
+            >
               {t("tags.delete")}
             </button>
           ) : null}

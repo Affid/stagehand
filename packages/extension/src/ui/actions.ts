@@ -26,6 +26,8 @@ export type OpOutcome = "ok" | "conflict" | "error";
 export interface Actions {
   /** A Foundry notification (L-1 strings already filled in). */
   notify(kind: "error" | "info", text: string): void;
+  /** Runs work; a failure is shown as a notice, never dropped. */
+  guard<T>(fn: () => Promise<T>): Promise<T | undefined>;
   op(op: LibraryOp): Promise<OpOutcome>;
   /** Reloads the state; false when it couldn't (a notice says why). */
   refresh(): Promise<boolean>;
@@ -303,6 +305,7 @@ export function createActions(
   const b = base(store, send, t, page);
   return {
     notify: b.notify,
+    guard: b.guarded,
     refresh: b.refresh,
     op: (op) => runOp(b, send, t, op),
     ...worldActions(b, send, store),

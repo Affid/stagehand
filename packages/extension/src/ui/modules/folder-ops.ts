@@ -7,7 +7,7 @@ type FolderChanges = Partial<Pick<Folder, "name" | "color" | "collapsed">>;
 
 /** Folder operations, each sent with the revision the UI last saw (D-2). */
 export function useFolderOps() {
-  const { actions, t } = useUi();
+  const { actions, t, ports } = useUi();
   return {
     update(f: Folder, changes: FolderChanges): void {
       void actions.op({
@@ -26,12 +26,14 @@ export function useFolderOps() {
       });
     },
     remove(f: Folder): void {
-      if (window.confirm(t("folder.deleteConfirm", { name: f.name })))
-        void actions.op({
-          op: "folder.delete",
-          id: f.id,
-          baseRevision: f.revision,
-        });
+      void actions.guard(async () => {
+        if (await ports.confirm(t("folder.deleteConfirm", { name: f.name })))
+          await actions.op({
+            op: "folder.delete",
+            id: f.id,
+            baseRevision: f.revision,
+          });
+      });
     },
     assign(ids: readonly string[], folderId: string | null): void {
       if (ids.length > 0)

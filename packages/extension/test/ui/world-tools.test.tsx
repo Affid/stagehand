@@ -23,13 +23,16 @@ const snap = (active: string[]): Snapshot => ({
   takenAt: "2026-11-05T00:00:00.000Z",
 });
 
+const DAY_MS = 24 * 60 * 60 * 1000;
+
 const cmd = (id: string, modules: string[]): Command => ({
   id,
   scope: "world",
   worldId: "w1",
   type: "preset.apply",
   payload: { mode: "add", presetIds: [], modules },
-  createdAt: "2026-11-05T01:00:00.000Z",
+  // A day ago: after the sample backup (3 days ago), before one taken now.
+  createdAt: new Date(Date.now() - DAY_MS).toISOString(),
   baseSnapshotAt: null,
   status: "pending",
 });

@@ -9,6 +9,7 @@ import { allowsChanges } from "../../adapters/select.ts";
 import { liftVeil } from "../../page/veil.ts";
 import { ShellRoot } from "../App.tsx";
 import type { UiDeps } from "../context.ts";
+import { watchExternalLinks } from "../ports.ts";
 
 export const SHELL_HOST = "ml-shell-root";
 
@@ -32,6 +33,7 @@ function mountShell(
   const host = doc.createElement("div");
   host.id = SHELL_HOST;
   doc.body.append(host);
+  watchExternalLinks(host, deps.ports.openExternal);
   render(<ShellRoot deps={deps} onError={onError} />, host);
 }
 
