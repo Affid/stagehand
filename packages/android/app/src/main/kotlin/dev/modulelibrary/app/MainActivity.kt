@@ -26,6 +26,7 @@ import dev.modulelibrary.app.core.NativeHandlers
 import dev.modulelibrary.app.core.NativeState
 import dev.modulelibrary.app.core.Relay
 import dev.modulelibrary.app.core.Screen
+import dev.modulelibrary.app.core.TapRule
 import dev.modulelibrary.app.core.WebUrl
 import dev.modulelibrary.app.core.backStep
 import dev.modulelibrary.app.core.historyBackAllowed
@@ -53,6 +54,8 @@ import java.io.File
 private const val TAG = "ModuleLibrary"
 /** How long Setup has to say whether it used Android's Back. */
 private const val BACK_ANSWER_MS = 800L
+/** An outside link opens only this soon after a tap on the server page. */
+private const val TAP_WINDOW_MS = 1_000L
 /** A second Back within this goes on even if the page claimed the first. */
 private const val BACK_AGAIN_MS = 2_000L
 /** After a renderer crash within this, the app starts on home. */
@@ -96,6 +99,17 @@ class MainActivity : ComponentActivity(), AppHost {
     private var recreating = false
     private var certDialog: AlertDialog? = null
     private var activeOrigins: Set<String> = emptySet()
+    /** Registered at construction, as the Activity Result API requires. */
+    private val pickers = Pickers(this)
+    /** The user's last tap on the server page: an outside link needs one, each tap opens one. */
+    private val taps by lazy {
+        val config = android.view.ViewConfiguration.get(this)
+        TapRule(
+            slopPx = config.scaledTouchSlop.toFloat(),
+            maxPressMs = android.view.ViewConfiguration.getLongPressTimeout().toLong(),
+            windowMs = TAP_WINDOW_MS,
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -114,8 +128,9 @@ class MainActivity : ComponentActivity(), AppHost {
             stateFile = File(filesDir, "native.json"),
             fetcher = NativeFetch(),
             scripts = { state -> serversChanged(state) },
-            ui = AndroidUi(this),
+            ui = AndroidUi(this, pickers),
             clock = SystemClock::elapsedRealtime,
+            tappedLately = ::touchedServerLately,
         )
         relay = Relay(
             scope = lifecycleScope,
@@ -130,7 +145,19 @@ class MainActivity : ComponentActivity(), AppHost {
             .build()
         background = webView(AssetPageClient(true, backgroundPage, this, loader))
         home = webView(AssetPageClient(false, homePage, this, loader))
-        server = webView(ServerPageClient(serverPage, this))
+        server = webView(ServerPageClient(serverPage, this)).apply {
+            webChromeClient = ServerChromeClient(pickers)
+            // Taps reach native here, never through a page's message.
+            setOnTouchListener { _, event ->
+                val now = SystemClock.elapsedRealtime()
+                when (event.actionMasked) {
+                    android.view.MotionEvent.ACTION_DOWN -> taps.down(event.x, event.y, now, event.pointerCount)
+                    android.view.MotionEvent.ACTION_POINTER_DOWN, android.view.MotionEvent.ACTION_CANCEL -> taps.morePointers()
+                    android.view.MotionEvent.ACTION_UP -> taps.up(event.x, event.y, now)
+                }
+                false
+            }
+        }
         // The background stays attached (a page hidden from the window
         // gets its timers slowed), one pixel, under the others.
         root.addView(background, FrameLayout.LayoutParams(1, 1))
@@ -206,6 +233,9 @@ class MainActivity : ComponentActivity(), AppHost {
     }
 
     override fun openOutside(url: String) = openInBrowser(this, url)
+
+    /** Main thread only (WebView callbacks and the relay's handlers). */
+    override fun touchedServerLately(): Boolean = taps.take(SystemClock.elapsedRealtime())
 
     /** One dialog however many resources fail, and none once closing. */
     override fun certificateRefused(url: String) {
@@ -300,6 +330,7 @@ class MainActivity : ComponentActivity(), AppHost {
 
     override fun onDestroy() {
         certDialog?.dismiss()
+        pickers.release()
         if (started) {
             // Replies still on their way find their documents gone (review).
             listOf(serverPage, homePage, backgroundPage).forEach { it.close() }
@@ -312,6 +343,15 @@ class MainActivity : ComponentActivity(), AppHost {
         }
         super.onDestroy()
     }
+}
+
+/** The server WebView's file inputs get the system chooser. */
+private class ServerChromeClient(private val pickers: Pickers) : android.webkit.WebChromeClient() {
+    override fun onShowFileChooser(
+        view: WebView,
+        callback: android.webkit.ValueCallback<Array<android.net.Uri>>,
+        params: FileChooserParams,
+    ): Boolean = pickers.choose(callback, params)
 }
 
 /**

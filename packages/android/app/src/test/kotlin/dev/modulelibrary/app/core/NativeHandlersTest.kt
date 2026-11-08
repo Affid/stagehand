@@ -57,6 +57,7 @@ class NativeHandlersTest {
     }
 
     private var now = 10_000L
+    private var tapped = true
     private val ui = FakeUi()
     private val host = FakeHost()
     private val fetched = mutableListOf<String>()
@@ -68,6 +69,7 @@ class NativeHandlersTest {
             scripts = host,
             ui = ui,
             clock = { now },
+            tappedLately = { tapped },
         )
     }
 
@@ -171,6 +173,15 @@ class NativeHandlersTest {
         now += 600
         call("openExternal", """{"url":"https://example.com/"}""", SETUP)
         assertEquals(listOf("https://foundryvtt.com/", "https://example.com/"), ui.links)
+    }
+
+    @Test
+    fun `outside links need a recent tap on the page`() = runTest {
+        tapped = false
+        assertTrue(runCatching { call("openExternal", """{"url":"https://example.com/"}""", SETUP) }.isFailure)
+        tapped = true
+        call("openExternal", """{"url":"https://example.com/"}""", SETUP)
+        assertEquals(listOf("https://example.com/"), ui.links)
     }
 
     @Test

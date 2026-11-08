@@ -71,7 +71,12 @@ export function watchExternalLinks(
     if (!link) return;
     const url = safeUrl(link.href);
     // Anything but http(s) never opens a new window (we render none).
-    if (url === undefined || open(url)) event.preventDefault();
+    if (url !== undefined && !open(url)) return;
+    event.preventDefault();
+    // Taken over: it goes no further. Foundry's Setup has a document-level
+    // handler that opens new-tab links itself, which in the app became a
+    // second tab (seen on the emulator).
+    event.stopPropagation();
   };
   host.addEventListener("click", onClick);
   host.addEventListener("auxclick", onClick);

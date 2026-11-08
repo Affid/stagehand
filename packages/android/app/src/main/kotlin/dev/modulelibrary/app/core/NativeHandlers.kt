@@ -29,6 +29,11 @@ class NativeHandlers(
     /** A clock that never runs back (SystemClock.elapsedRealtime on Android). */
     private val clock: () -> Long = { System.nanoTime() / 1_000_000 },
     private val io: CoroutineDispatcher = Dispatchers.IO,
+    /**
+     * Whether the user touched the server page a moment ago: a message
+     * carries no tap, native's touch listener does (plan, "Native rules").
+     */
+    private val tappedLately: () -> Boolean = { false },
 ) {
     /** Read by the WebView wiring; changed on the main thread only. */
     @Volatile
@@ -140,6 +145,7 @@ class NativeHandlers(
 
     private fun openExternal(url: String) {
         require(externalAllowed(url, state.origins)) { "Not a link the app opens outside" }
+        require(tappedLately()) { "Outside links open on a tap" }
         val now = clock()
         require(now - lastLinkAt >= LINK_GAP_MS) { "One link a second" }
         lastLinkAt = now

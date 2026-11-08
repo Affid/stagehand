@@ -27,6 +27,9 @@ interface AppHost {
 
     fun openOutside(url: String)
 
+    /** Whether the user touched the server WebView a moment ago (native's own listener). */
+    fun touchedServerLately(): Boolean
+
     fun certificateRefused(url: String)
 
     fun rendererGone()
@@ -93,7 +96,9 @@ class ServerPageClient(private val page: PageState, private val host: AppHost) :
         if (!request.isForMainFrame) return false
         val url = WebUrl.parse(request.url.toString())
         if (url != null && url.host != APP_HOST && url.origin in host.origins()) return false
-        tappedOutside(request, host)?.let(host::openOutside)
+        // WebView's gesture flag is set by input that never touched the
+        // screen too (checked on the emulator): a real touch is required.
+        if (host.touchedServerLately()) tappedOutside(request, host)?.let(host::openOutside)
         return true
     }
 

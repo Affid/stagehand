@@ -77,10 +77,29 @@ describe("links to other sites on our page", () => {
     expect(s.open).toHaveBeenCalledWith("https://foundryvtt.com/article");
   });
 
+  test("a link taken over goes no further: Foundry's own handler never opens it too", () => {
+    const s = setup(true);
+    const foundry = vi.fn();
+    document.addEventListener("click", foundry);
+    try {
+      s.click("inner");
+      expect(foundry).not.toHaveBeenCalled();
+    } finally {
+      document.removeEventListener("click", foundry);
+    }
+  });
+
   test("when openExternal declines, the browser follows the link", () => {
     const s = setup(false);
-    expect(s.click("out")).toBe(true);
-    expect(s.open).toHaveBeenCalledTimes(1);
+    const foundry = vi.fn();
+    document.addEventListener("click", foundry);
+    try {
+      expect(s.click("out")).toBe(true);
+      expect(s.open).toHaveBeenCalledTimes(1);
+      expect(foundry).toHaveBeenCalledTimes(1);
+    } finally {
+      document.removeEventListener("click", foundry);
+    }
   });
 
   test("the middle button counts too", () => {

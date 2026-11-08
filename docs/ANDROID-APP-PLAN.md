@@ -808,6 +808,38 @@ Kotlin tests, a check on the emulator, a code review and a security review:
    Chromium's own; the background keeps running while the app is in the
    background; a saved server's page can navigate to another saved server
    without a tap (both the user's).
+4. **Files, dialogs and links** (done 2026-11-08). `Pickers.kt` (the
+   system Save and Open pickers and Foundry's own file inputs, one at a
+   time and not again within 2 s; a picker counts as open until Android
+   returns its result, so a later request can't take an earlier picker's
+   file; the page's file name only a suggestion, tidied and ending in
+   `.json`; an import at most 6 M characters; only `content:` results for
+   file inputs), `AndroidUi.kt` (a native yes-or-no titled "Module Library
+   · server", the question without hidden or reordering characters and
+   long gaps), `core/UserInput.kt` (`TapRule`: a short, still,
+   one-finger press on the server WebView, seen by native's touch
+   listener; an outside link needs one within 1 s, whether the page asks
+   or the WebView navigates, and each tap opens one link). Found on the
+   emulator: Foundry's Setup page opens new-tab links itself from a
+   document-level click handler, so in the app one tap opened two tabs
+   (our `openExternal` and Foundry's `window.open`, which becomes a
+   navigation with one window); a link our page takes over now stops
+   there (`ui/ports.ts`; the extension's links stay the browser's). And
+   WebView's gesture flag is set by input that never touched the screen,
+   so native checks its own taps. Checked on the emulator: export through
+   Save (the file's JSON read back), import through Open, the dialog with
+   the server's name, Cancel and OK ("Library imported."), a click without
+   a touch opens nothing, a real tap one Custom Tab, Back returns. Not
+   checked: Foundry's own file inputs (Setup shows none in normal use).
+   Reviews (code: one high; security: two high), fixed: a cancelled
+   request freed its picker's slot while the picker was still open; the
+   dialog's text could hide or reorder words; scrolls and long presses
+   counted as taps, and one tap could open several links; the dialog
+   could be dismissed off the main thread; a page's file input could wait
+   forever after the activity closed. Left, with reasons: TalkBack and
+   keyboard activation send no touch, so they can't open outside links
+   (the rule's price); a picker's provider that never answers holds a
+   read.
 
 ## Native rules (for phase 4)
 
