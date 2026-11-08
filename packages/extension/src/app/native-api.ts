@@ -64,6 +64,84 @@ export function isServerPage(
   }
 }
 
+/** Paths native refuses before comparing (plan, "Native rules"). */
+export const ODD_PATH = /%|\\|\.\.|\/\/|\p{Cc}/u;
+
+/** The path of an http(s) URL as written (before any parser tidies it). */
+const RAW_PATH = /^https?:\/\/[^/?#\\]*([^?#]*)/i;
+
+/**
+ * Whether a page at `url` may make "server" requests: a saved server's
+ * Setup or game page, and no odd path (as written or as parsed). `servers`
+ * are the saved servers whose origins native allows.
+ */
+export function mayAskAsServer(
+  url: string,
+  servers: readonly string[],
+): boolean {
+  const raw = RAW_PATH.exec(url);
+  if (!raw || ODD_PATH.test(raw[1] ?? "")) return false;
+  let path: string;
+  try {
+    path = new URL(url).pathname;
+  } catch {
+    return false;
+  }
+  if (ODD_PATH.test(path)) return false;
+  return servers.some(
+    (s) => isServerPage(url, s, "/setup") || isServerPage(url, s, "/game"),
+  );
+}
+
+/** The longest outside link native opens. */
+export const MAX_EXTERNAL_URL = 4096;
+
+/**
+ * Whether native opens `url` outside the app (a Custom Tab): http or https
+ * written out with "//", a host, no user info, not too long, and not one of
+ * the saved servers' own origins (those stay in the app).
+ */
+export function externalAllowed(
+  url: string,
+  serverOrigins: readonly string[],
+): boolean {
+  if (url.length > MAX_EXTERNAL_URL || !/^https?:\/\//i.test(url)) return false;
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return false;
+  }
+  if (parsed.username || parsed.password || !parsed.hostname) return false;
+  return !serverOrigins.includes(parsed.origin);
+}
+
+/** Hosts never saved as a server: the app's own and Foundry's site. */
+const NEVER_SERVERS = [new URL(APP_ORIGIN).hostname, "foundryvtt.com"];
+
+/** A server's match pattern, "http://host:port/*" (native-requests.ts). */
+const SERVER_PATTERN = /^https?:\/\/[^/*?#\\@\s]+\/\*$/;
+
+/**
+ * The origin a server's match pattern allows, or undefined when native
+ * must not save it: not a pattern, the app's own origin, or foundryvtt.com
+ * and its subdomains (Release history has its own switch).
+ */
+export function savableServerOrigin(pattern: string): string | undefined {
+  if (!SERVER_PATTERN.test(pattern)) return undefined;
+  let url: URL;
+  try {
+    url = new URL(pattern.slice(0, -1));
+  } catch {
+    return undefined;
+  }
+  // A trailing dot names the same host (foundryvtt.com.): review.
+  const host = url.hostname.replace(/\.$/, "");
+  if (NEVER_SERVERS.some((h) => host === h || host.endsWith(`.${h}`)))
+    return undefined;
+  return url.origin;
+}
+
 /**
  * Requests to native and who may make them. Payloads and results:
  *

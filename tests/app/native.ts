@@ -4,9 +4,11 @@
 // registered scripts live in memory; files, dialogs and links are recorded
 // for the tests to read and answer.
 import {
+  externalAllowed,
   FETCH_MAX_CHARS,
   FETCH_TIMEOUT_MS,
   fetchAllowed,
+  savableServerOrigin,
 } from "../../packages/extension/src/app/native-api.ts";
 import { FOUNDRY_ORIGIN } from "../../packages/extension/src/background/releases.ts";
 
@@ -141,7 +143,8 @@ export class NativeSim {
       this.releaseHistory = true;
       return true;
     }
-    const origin = patternOrigin(pattern);
+    const origin = savableServerOrigin(pattern);
+    if (origin === undefined) throw new Error("Not a server the app saves");
     this.origins.add(origin);
     await this.events.originAllowed(origin);
     return true;
@@ -166,11 +169,8 @@ export class NativeSim {
   }
 
   private openExternal(url: string): null {
-    const parsed = new URL(url);
-    if (parsed.protocol !== "https:" && parsed.protocol !== "http:")
-      throw new Error("Only http(s) links open");
-    if (this.origins.has(parsed.origin))
-      throw new Error("The server's own pages stay in the app");
+    if (!externalAllowed(url, [...this.origins]))
+      throw new Error("Not a link the app opens outside");
     this.external.push(url);
     return null;
   }

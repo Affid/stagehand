@@ -734,6 +734,39 @@ Kotlin tests, a check on the emulator, a code review and a security review:
    message, the Play Store link for the phone's own WebView package,
    signing settings named when missing, the runner's errors and JDK
    lookup, key files git-ignored.
+2. **Native core** (done 2026-11-08). `core/` in plain Kotlin (no Android
+   classes, all JUnit): `Contract` (names, limits, who may ask what),
+   `WebUrl` (java.net.URI over WebView's canonical URLs; what it can't
+   read is refused), `Rules` (NativeFetch's rule, Setup and game pages,
+   `mayAskAsServer`, `externalAllowed`, `savableServerOrigin`,
+   `wrapForServer` with JSON.stringify's escaping), `Payloads`, `Wire`,
+   `KeyValueStore` (a file per key named by its SHA-256, written to a
+   temporary file, synced, then moved over the old), `NativeState`,
+   `MessageRules` (main frame and committed origin, Back's order, the
+   server's name for dialogs), `NativeFetch` and `Relay`. The three server
+   rules moved into `native-api.ts` so the harness and the app share them.
+   **Contract vectors**: `packages/extension/test/app/contract-vectors.ts`
+   writes the TypeScript's answers (`node scripts/android/contract-vectors.ts`)
+   to `packages/android/app/src/test/resources/contract-vectors.json`;
+   Kotlin's `ContractVectorsTest` checks them and a Vitest test fails when
+   the file is stale. They caught JavaScript's `\s` (no U+0085, but
+   U+FEFF), zod 4 wanting an `unknown` field present, and Java's port
+   range. `pnpm android:test` fails below 80% lines or branches in `core`
+   and `web` (now 98.7% and 86.4%). Reviews (Kotlin: two high; security:
+   one high), all fixed with tests: a request that timed out inside native
+   never answered its page; NativeFetch's limit couldn't stop a trickling
+   body (a watchdog now closes the connection at the deadline); no cap on
+   requests waiting (16 per page, 16 M characters in all, the background
+   exempt, large messages read off the main thread); trailing-dot hosts
+   (`foundryvtt.com.`) could be saved as servers (TypeScript too); a server
+   page without rights could answer native's questions; native's own error
+   text reached pages (now only native's refusals; the rest is "Native
+   failed" and the log); a corrupt state file crashed every start; ports
+   past 65535. Left, with reasons: a late message from a background page
+   that has just reloaded can't be told from the new one's (native never
+   reloads it but after a crash); outside links need a recent tap on the
+   server WebView (package 4: native sees taps, a message doesn't); no
+   storage quota per key-value store.
 
 ## Native rules (for phase 4)
 

@@ -1,0 +1,2904 @@
+{
+ "maxMessageChars": 8000000,
+ "fetchAllowed": [
+  {
+   "url": "https://foundryvtt.com/releases/14.370",
+   "purpose": "release",
+   "releaseHistory": true,
+   "allowed": true
+  },
+  {
+   "url": "https://foundryvtt.com/releases/14.370",
+   "purpose": "release",
+   "releaseHistory": false,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com/releases/14.370",
+   "purpose": "config",
+   "releaseHistory": true,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com/releases/14.370",
+   "purpose": "config",
+   "releaseHistory": false,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com/releases/14.370-beta.2",
+   "purpose": "release",
+   "releaseHistory": true,
+   "allowed": true
+  },
+  {
+   "url": "https://foundryvtt.com/releases/14.370-beta.2",
+   "purpose": "release",
+   "releaseHistory": false,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com/releases/14.370-beta.2",
+   "purpose": "config",
+   "releaseHistory": true,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com/releases/14.370-beta.2",
+   "purpose": "config",
+   "releaseHistory": false,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com/releases/",
+   "purpose": "release",
+   "releaseHistory": true,
+   "allowed": true
+  },
+  {
+   "url": "https://foundryvtt.com/releases/",
+   "purpose": "release",
+   "releaseHistory": false,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com/releases/",
+   "purpose": "config",
+   "releaseHistory": true,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com/releases/",
+   "purpose": "config",
+   "releaseHistory": false,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com/releases/14.370?x=1",
+   "purpose": "release",
+   "releaseHistory": true,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com/releases/14.370?x=1",
+   "purpose": "release",
+   "releaseHistory": false,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com/releases/14.370?x=1",
+   "purpose": "config",
+   "releaseHistory": true,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com/releases/14.370?x=1",
+   "purpose": "config",
+   "releaseHistory": false,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com/releases/14.370#notes",
+   "purpose": "release",
+   "releaseHistory": true,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com/releases/14.370#notes",
+   "purpose": "release",
+   "releaseHistory": false,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com/releases/14.370#notes",
+   "purpose": "config",
+   "releaseHistory": true,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com/releases/14.370#notes",
+   "purpose": "config",
+   "releaseHistory": false,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com/releases/../x",
+   "purpose": "release",
+   "releaseHistory": true,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com/releases/../x",
+   "purpose": "release",
+   "releaseHistory": false,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com/releases/../x",
+   "purpose": "config",
+   "releaseHistory": true,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com/releases/../x",
+   "purpose": "config",
+   "releaseHistory": false,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com/releases/..",
+   "purpose": "release",
+   "releaseHistory": true,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com/releases/..",
+   "purpose": "release",
+   "releaseHistory": false,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com/releases/..",
+   "purpose": "config",
+   "releaseHistory": true,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com/releases/..",
+   "purpose": "config",
+   "releaseHistory": false,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com/releases/a/b",
+   "purpose": "release",
+   "releaseHistory": true,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com/releases/a/b",
+   "purpose": "release",
+   "releaseHistory": false,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com/releases/a/b",
+   "purpose": "config",
+   "releaseHistory": true,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com/releases/a/b",
+   "purpose": "config",
+   "releaseHistory": false,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com/releases/14.370\n",
+   "purpose": "release",
+   "releaseHistory": true,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com/releases/14.370\n",
+   "purpose": "release",
+   "releaseHistory": false,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com/releases/14.370\n",
+   "purpose": "config",
+   "releaseHistory": true,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com/releases/14.370\n",
+   "purpose": "config",
+   "releaseHistory": false,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com/releases/14%2e370",
+   "purpose": "release",
+   "releaseHistory": true,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com/releases/14%2e370",
+   "purpose": "release",
+   "releaseHistory": false,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com/releases/14%2e370",
+   "purpose": "config",
+   "releaseHistory": true,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com/releases/14%2e370",
+   "purpose": "config",
+   "releaseHistory": false,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com/releases",
+   "purpose": "release",
+   "releaseHistory": true,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com/releases",
+   "purpose": "release",
+   "releaseHistory": false,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com/releases",
+   "purpose": "config",
+   "releaseHistory": true,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com/releases",
+   "purpose": "config",
+   "releaseHistory": false,
+   "allowed": false
+  },
+  {
+   "url": "http://foundryvtt.com/releases/14.370",
+   "purpose": "release",
+   "releaseHistory": true,
+   "allowed": false
+  },
+  {
+   "url": "http://foundryvtt.com/releases/14.370",
+   "purpose": "release",
+   "releaseHistory": false,
+   "allowed": false
+  },
+  {
+   "url": "http://foundryvtt.com/releases/14.370",
+   "purpose": "config",
+   "releaseHistory": true,
+   "allowed": false
+  },
+  {
+   "url": "http://foundryvtt.com/releases/14.370",
+   "purpose": "config",
+   "releaseHistory": false,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com.evil.com/releases/1",
+   "purpose": "release",
+   "releaseHistory": true,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com.evil.com/releases/1",
+   "purpose": "release",
+   "releaseHistory": false,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com.evil.com/releases/1",
+   "purpose": "config",
+   "releaseHistory": true,
+   "allowed": false
+  },
+  {
+   "url": "https://foundryvtt.com.evil.com/releases/1",
+   "purpose": "config",
+   "releaseHistory": false,
+   "allowed": false
+  },
+  {
+   "url": "https://raw.githubusercontent.com/Affid/module-library/main/config/setup-config.json",
+   "purpose": "release",
+   "releaseHistory": true,
+   "allowed": false
+  },
+  {
+   "url": "https://raw.githubusercontent.com/Affid/module-library/main/config/setup-config.json",
+   "purpose": "release",
+   "releaseHistory": false,
+   "allowed": false
+  },
+  {
+   "url": "https://raw.githubusercontent.com/Affid/module-library/main/config/setup-config.json",
+   "purpose": "config",
+   "releaseHistory": true,
+   "allowed": true
+  },
+  {
+   "url": "https://raw.githubusercontent.com/Affid/module-library/main/config/setup-config.json",
+   "purpose": "config",
+   "releaseHistory": false,
+   "allowed": true
+  },
+  {
+   "url": "https://raw.githubusercontent.com/Affid/module-library/main/config/setup-config.json?x",
+   "purpose": "release",
+   "releaseHistory": true,
+   "allowed": false
+  },
+  {
+   "url": "https://raw.githubusercontent.com/Affid/module-library/main/config/setup-config.json?x",
+   "purpose": "release",
+   "releaseHistory": false,
+   "allowed": false
+  },
+  {
+   "url": "https://raw.githubusercontent.com/Affid/module-library/main/config/setup-config.json?x",
+   "purpose": "config",
+   "releaseHistory": true,
+   "allowed": false
+  },
+  {
+   "url": "https://raw.githubusercontent.com/Affid/module-library/main/config/setup-config.json?x",
+   "purpose": "config",
+   "releaseHistory": false,
+   "allowed": false
+  },
+  {
+   "url": "https://raw.githubusercontent.com/Affid/module-library/main/config/setup-config.json\n",
+   "purpose": "release",
+   "releaseHistory": true,
+   "allowed": false
+  },
+  {
+   "url": "https://raw.githubusercontent.com/Affid/module-library/main/config/setup-config.json\n",
+   "purpose": "release",
+   "releaseHistory": false,
+   "allowed": false
+  },
+  {
+   "url": "https://raw.githubusercontent.com/Affid/module-library/main/config/setup-config.json\n",
+   "purpose": "config",
+   "releaseHistory": true,
+   "allowed": false
+  },
+  {
+   "url": "https://raw.githubusercontent.com/Affid/module-library/main/config/setup-config.json\n",
+   "purpose": "config",
+   "releaseHistory": false,
+   "allowed": false
+  },
+  {
+   "url": "HTTPS://RAW.GITHUBUSERCONTENT.COM/AFFID/MODULE-LIBRARY/MAIN/CONFIG/SETUP-CONFIG.JSON",
+   "purpose": "release",
+   "releaseHistory": true,
+   "allowed": false
+  },
+  {
+   "url": "HTTPS://RAW.GITHUBUSERCONTENT.COM/AFFID/MODULE-LIBRARY/MAIN/CONFIG/SETUP-CONFIG.JSON",
+   "purpose": "release",
+   "releaseHistory": false,
+   "allowed": false
+  },
+  {
+   "url": "HTTPS://RAW.GITHUBUSERCONTENT.COM/AFFID/MODULE-LIBRARY/MAIN/CONFIG/SETUP-CONFIG.JSON",
+   "purpose": "config",
+   "releaseHistory": true,
+   "allowed": false
+  },
+  {
+   "url": "HTTPS://RAW.GITHUBUSERCONTENT.COM/AFFID/MODULE-LIBRARY/MAIN/CONFIG/SETUP-CONFIG.JSON",
+   "purpose": "config",
+   "releaseHistory": false,
+   "allowed": false
+  },
+  {
+   "url": "https://evil.example/",
+   "purpose": "release",
+   "releaseHistory": true,
+   "allowed": false
+  },
+  {
+   "url": "https://evil.example/",
+   "purpose": "release",
+   "releaseHistory": false,
+   "allowed": false
+  },
+  {
+   "url": "https://evil.example/",
+   "purpose": "config",
+   "releaseHistory": true,
+   "allowed": false
+  },
+  {
+   "url": "https://evil.example/",
+   "purpose": "config",
+   "releaseHistory": false,
+   "allowed": false
+  }
+ ],
+ "isServerPage": [
+  {
+   "href": "http://localhost:30000/setup",
+   "server": "http://localhost:30000",
+   "page": "/setup",
+   "result": true
+  },
+  {
+   "href": "http://localhost:30000/setup",
+   "server": "http://localhost:30000",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30000/setup",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/setup",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30000/setup",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30000/setup?x=1#y",
+   "server": "http://localhost:30000",
+   "page": "/setup",
+   "result": true
+  },
+  {
+   "href": "http://localhost:30000/setup?x=1#y",
+   "server": "http://localhost:30000",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30000/setup?x=1#y",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/setup",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30000/setup?x=1#y",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30000/setup/",
+   "server": "http://localhost:30000",
+   "page": "/setup",
+   "result": true
+  },
+  {
+   "href": "http://localhost:30000/setup/",
+   "server": "http://localhost:30000",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30000/setup/",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/setup",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30000/setup/",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30000/setup/more",
+   "server": "http://localhost:30000",
+   "page": "/setup",
+   "result": true
+  },
+  {
+   "href": "http://localhost:30000/setup/more",
+   "server": "http://localhost:30000",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30000/setup/more",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/setup",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30000/setup/more",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30000/setupx",
+   "server": "http://localhost:30000",
+   "page": "/setup",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30000/setupx",
+   "server": "http://localhost:30000",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30000/setupx",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/setup",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30000/setupx",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30000/game",
+   "server": "http://localhost:30000",
+   "page": "/setup",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30000/game",
+   "server": "http://localhost:30000",
+   "page": "/game",
+   "result": true
+  },
+  {
+   "href": "http://localhost:30000/game",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/setup",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30000/game",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30000/game?x",
+   "server": "http://localhost:30000",
+   "page": "/setup",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30000/game?x",
+   "server": "http://localhost:30000",
+   "page": "/game",
+   "result": true
+  },
+  {
+   "href": "http://localhost:30000/game?x",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/setup",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30000/game?x",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30000/join",
+   "server": "http://localhost:30000",
+   "page": "/setup",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30000/join",
+   "server": "http://localhost:30000",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30000/join",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/setup",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30000/join",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30000/auth",
+   "server": "http://localhost:30000",
+   "page": "/setup",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30000/auth",
+   "server": "http://localhost:30000",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30000/auth",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/setup",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30000/auth",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30000/",
+   "server": "http://localhost:30000",
+   "page": "/setup",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30000/",
+   "server": "http://localhost:30000",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30000/",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/setup",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30000/",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30000/foundry/setup",
+   "server": "http://localhost:30000",
+   "page": "/setup",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30000/foundry/setup",
+   "server": "http://localhost:30000",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30000/foundry/setup",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/setup",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30000/foundry/setup",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30001/setup",
+   "server": "http://localhost:30000",
+   "page": "/setup",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30001/setup",
+   "server": "http://localhost:30000",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30001/setup",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/setup",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30001/setup",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "https://localhost:30000/setup",
+   "server": "http://localhost:30000",
+   "page": "/setup",
+   "result": false
+  },
+  {
+   "href": "https://localhost:30000/setup",
+   "server": "http://localhost:30000",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "https://localhost:30000/setup",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/setup",
+   "result": false
+  },
+  {
+   "href": "https://localhost:30000/setup",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "https://vtt.example.com/foundry/setup",
+   "server": "http://localhost:30000",
+   "page": "/setup",
+   "result": false
+  },
+  {
+   "href": "https://vtt.example.com/foundry/setup",
+   "server": "http://localhost:30000",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "https://vtt.example.com/foundry/setup",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/setup",
+   "result": true
+  },
+  {
+   "href": "https://vtt.example.com/foundry/setup",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "https://vtt.example.com/foundry/game",
+   "server": "http://localhost:30000",
+   "page": "/setup",
+   "result": false
+  },
+  {
+   "href": "https://vtt.example.com/foundry/game",
+   "server": "http://localhost:30000",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "https://vtt.example.com/foundry/game",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/setup",
+   "result": false
+  },
+  {
+   "href": "https://vtt.example.com/foundry/game",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/game",
+   "result": true
+  },
+  {
+   "href": "https://vtt.example.com/foundry/join",
+   "server": "http://localhost:30000",
+   "page": "/setup",
+   "result": false
+  },
+  {
+   "href": "https://vtt.example.com/foundry/join",
+   "server": "http://localhost:30000",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "https://vtt.example.com/foundry/join",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/setup",
+   "result": false
+  },
+  {
+   "href": "https://vtt.example.com/foundry/join",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "https://vtt.example.com/setup",
+   "server": "http://localhost:30000",
+   "page": "/setup",
+   "result": false
+  },
+  {
+   "href": "https://vtt.example.com/setup",
+   "server": "http://localhost:30000",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "https://vtt.example.com/setup",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/setup",
+   "result": false
+  },
+  {
+   "href": "https://vtt.example.com/setup",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "https://vtt.example.com/foundryx/setup",
+   "server": "http://localhost:30000",
+   "page": "/setup",
+   "result": false
+  },
+  {
+   "href": "https://vtt.example.com/foundryx/setup",
+   "server": "http://localhost:30000",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "https://vtt.example.com/foundryx/setup",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/setup",
+   "result": false
+  },
+  {
+   "href": "https://vtt.example.com/foundryx/setup",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "http://192.168.178.25:30000/setup",
+   "server": "http://localhost:30000",
+   "page": "/setup",
+   "result": false
+  },
+  {
+   "href": "http://192.168.178.25:30000/setup",
+   "server": "http://localhost:30000",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "http://192.168.178.25:30000/setup",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/setup",
+   "result": false
+  },
+  {
+   "href": "http://192.168.178.25:30000/setup",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30000/setup//x",
+   "server": "http://localhost:30000",
+   "page": "/setup",
+   "result": true
+  },
+  {
+   "href": "http://localhost:30000/setup//x",
+   "server": "http://localhost:30000",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30000/setup//x",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/setup",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30000/setup//x",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30000/setup/a%20b",
+   "server": "http://localhost:30000",
+   "page": "/setup",
+   "result": true
+  },
+  {
+   "href": "http://localhost:30000/setup/a%20b",
+   "server": "http://localhost:30000",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30000/setup/a%20b",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/setup",
+   "result": false
+  },
+  {
+   "href": "http://localhost:30000/setup/a%20b",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "about:blank",
+   "server": "http://localhost:30000",
+   "page": "/setup",
+   "result": false
+  },
+  {
+   "href": "about:blank",
+   "server": "http://localhost:30000",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "about:blank",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/setup",
+   "result": false
+  },
+  {
+   "href": "about:blank",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "https://appassets.androidplatform.net/home.html",
+   "server": "http://localhost:30000",
+   "page": "/setup",
+   "result": false
+  },
+  {
+   "href": "https://appassets.androidplatform.net/home.html",
+   "server": "http://localhost:30000",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "https://appassets.androidplatform.net/home.html",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/setup",
+   "result": false
+  },
+  {
+   "href": "https://appassets.androidplatform.net/home.html",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "data:text/html,x",
+   "server": "http://localhost:30000",
+   "page": "/setup",
+   "result": false
+  },
+  {
+   "href": "data:text/html,x",
+   "server": "http://localhost:30000",
+   "page": "/game",
+   "result": false
+  },
+  {
+   "href": "data:text/html,x",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/setup",
+   "result": false
+  },
+  {
+   "href": "data:text/html,x",
+   "server": "https://vtt.example.com/foundry",
+   "page": "/game",
+   "result": false
+  }
+ ],
+ "mayAskAsServer": [
+  {
+   "url": "http://localhost:30000/setup",
+   "servers": [],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/setup",
+   "servers": [
+    "http://localhost:30000"
+   ],
+   "result": true
+  },
+  {
+   "url": "http://localhost:30000/setup",
+   "servers": [
+    "https://vtt.example.com/foundry"
+   ],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/setup",
+   "servers": [
+    "http://localhost:30000",
+    "https://vtt.example.com/foundry",
+    "http://192.168.178.25:30000"
+   ],
+   "result": true
+  },
+  {
+   "url": "http://localhost:30000/setup?x=1#y",
+   "servers": [],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/setup?x=1#y",
+   "servers": [
+    "http://localhost:30000"
+   ],
+   "result": true
+  },
+  {
+   "url": "http://localhost:30000/setup?x=1#y",
+   "servers": [
+    "https://vtt.example.com/foundry"
+   ],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/setup?x=1#y",
+   "servers": [
+    "http://localhost:30000",
+    "https://vtt.example.com/foundry",
+    "http://192.168.178.25:30000"
+   ],
+   "result": true
+  },
+  {
+   "url": "http://localhost:30000/setup/",
+   "servers": [],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/setup/",
+   "servers": [
+    "http://localhost:30000"
+   ],
+   "result": true
+  },
+  {
+   "url": "http://localhost:30000/setup/",
+   "servers": [
+    "https://vtt.example.com/foundry"
+   ],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/setup/",
+   "servers": [
+    "http://localhost:30000",
+    "https://vtt.example.com/foundry",
+    "http://192.168.178.25:30000"
+   ],
+   "result": true
+  },
+  {
+   "url": "http://localhost:30000/setup/more",
+   "servers": [],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/setup/more",
+   "servers": [
+    "http://localhost:30000"
+   ],
+   "result": true
+  },
+  {
+   "url": "http://localhost:30000/setup/more",
+   "servers": [
+    "https://vtt.example.com/foundry"
+   ],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/setup/more",
+   "servers": [
+    "http://localhost:30000",
+    "https://vtt.example.com/foundry",
+    "http://192.168.178.25:30000"
+   ],
+   "result": true
+  },
+  {
+   "url": "http://localhost:30000/setupx",
+   "servers": [],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/setupx",
+   "servers": [
+    "http://localhost:30000"
+   ],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/setupx",
+   "servers": [
+    "https://vtt.example.com/foundry"
+   ],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/setupx",
+   "servers": [
+    "http://localhost:30000",
+    "https://vtt.example.com/foundry",
+    "http://192.168.178.25:30000"
+   ],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/game",
+   "servers": [],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/game",
+   "servers": [
+    "http://localhost:30000"
+   ],
+   "result": true
+  },
+  {
+   "url": "http://localhost:30000/game",
+   "servers": [
+    "https://vtt.example.com/foundry"
+   ],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/game",
+   "servers": [
+    "http://localhost:30000",
+    "https://vtt.example.com/foundry",
+    "http://192.168.178.25:30000"
+   ],
+   "result": true
+  },
+  {
+   "url": "http://localhost:30000/game?x",
+   "servers": [],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/game?x",
+   "servers": [
+    "http://localhost:30000"
+   ],
+   "result": true
+  },
+  {
+   "url": "http://localhost:30000/game?x",
+   "servers": [
+    "https://vtt.example.com/foundry"
+   ],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/game?x",
+   "servers": [
+    "http://localhost:30000",
+    "https://vtt.example.com/foundry",
+    "http://192.168.178.25:30000"
+   ],
+   "result": true
+  },
+  {
+   "url": "http://localhost:30000/join",
+   "servers": [],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/join",
+   "servers": [
+    "http://localhost:30000"
+   ],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/join",
+   "servers": [
+    "https://vtt.example.com/foundry"
+   ],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/join",
+   "servers": [
+    "http://localhost:30000",
+    "https://vtt.example.com/foundry",
+    "http://192.168.178.25:30000"
+   ],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/auth",
+   "servers": [],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/auth",
+   "servers": [
+    "http://localhost:30000"
+   ],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/auth",
+   "servers": [
+    "https://vtt.example.com/foundry"
+   ],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/auth",
+   "servers": [
+    "http://localhost:30000",
+    "https://vtt.example.com/foundry",
+    "http://192.168.178.25:30000"
+   ],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/",
+   "servers": [],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/",
+   "servers": [
+    "http://localhost:30000"
+   ],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/",
+   "servers": [
+    "https://vtt.example.com/foundry"
+   ],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/",
+   "servers": [
+    "http://localhost:30000",
+    "https://vtt.example.com/foundry",
+    "http://192.168.178.25:30000"
+   ],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/foundry/setup",
+   "servers": [],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/foundry/setup",
+   "servers": [
+    "http://localhost:30000"
+   ],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/foundry/setup",
+   "servers": [
+    "https://vtt.example.com/foundry"
+   ],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/foundry/setup",
+   "servers": [
+    "http://localhost:30000",
+    "https://vtt.example.com/foundry",
+    "http://192.168.178.25:30000"
+   ],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30001/setup",
+   "servers": [],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30001/setup",
+   "servers": [
+    "http://localhost:30000"
+   ],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30001/setup",
+   "servers": [
+    "https://vtt.example.com/foundry"
+   ],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30001/setup",
+   "servers": [
+    "http://localhost:30000",
+    "https://vtt.example.com/foundry",
+    "http://192.168.178.25:30000"
+   ],
+   "result": false
+  },
+  {
+   "url": "https://localhost:30000/setup",
+   "servers": [],
+   "result": false
+  },
+  {
+   "url": "https://localhost:30000/setup",
+   "servers": [
+    "http://localhost:30000"
+   ],
+   "result": false
+  },
+  {
+   "url": "https://localhost:30000/setup",
+   "servers": [
+    "https://vtt.example.com/foundry"
+   ],
+   "result": false
+  },
+  {
+   "url": "https://localhost:30000/setup",
+   "servers": [
+    "http://localhost:30000",
+    "https://vtt.example.com/foundry",
+    "http://192.168.178.25:30000"
+   ],
+   "result": false
+  },
+  {
+   "url": "https://vtt.example.com/foundry/setup",
+   "servers": [],
+   "result": false
+  },
+  {
+   "url": "https://vtt.example.com/foundry/setup",
+   "servers": [
+    "http://localhost:30000"
+   ],
+   "result": false
+  },
+  {
+   "url": "https://vtt.example.com/foundry/setup",
+   "servers": [
+    "https://vtt.example.com/foundry"
+   ],
+   "result": true
+  },
+  {
+   "url": "https://vtt.example.com/foundry/setup",
+   "servers": [
+    "http://localhost:30000",
+    "https://vtt.example.com/foundry",
+    "http://192.168.178.25:30000"
+   ],
+   "result": true
+  },
+  {
+   "url": "https://vtt.example.com/foundry/game",
+   "servers": [],
+   "result": false
+  },
+  {
+   "url": "https://vtt.example.com/foundry/game",
+   "servers": [
+    "http://localhost:30000"
+   ],
+   "result": false
+  },
+  {
+   "url": "https://vtt.example.com/foundry/game",
+   "servers": [
+    "https://vtt.example.com/foundry"
+   ],
+   "result": true
+  },
+  {
+   "url": "https://vtt.example.com/foundry/game",
+   "servers": [
+    "http://localhost:30000",
+    "https://vtt.example.com/foundry",
+    "http://192.168.178.25:30000"
+   ],
+   "result": true
+  },
+  {
+   "url": "https://vtt.example.com/foundry/join",
+   "servers": [],
+   "result": false
+  },
+  {
+   "url": "https://vtt.example.com/foundry/join",
+   "servers": [
+    "http://localhost:30000"
+   ],
+   "result": false
+  },
+  {
+   "url": "https://vtt.example.com/foundry/join",
+   "servers": [
+    "https://vtt.example.com/foundry"
+   ],
+   "result": false
+  },
+  {
+   "url": "https://vtt.example.com/foundry/join",
+   "servers": [
+    "http://localhost:30000",
+    "https://vtt.example.com/foundry",
+    "http://192.168.178.25:30000"
+   ],
+   "result": false
+  },
+  {
+   "url": "https://vtt.example.com/setup",
+   "servers": [],
+   "result": false
+  },
+  {
+   "url": "https://vtt.example.com/setup",
+   "servers": [
+    "http://localhost:30000"
+   ],
+   "result": false
+  },
+  {
+   "url": "https://vtt.example.com/setup",
+   "servers": [
+    "https://vtt.example.com/foundry"
+   ],
+   "result": false
+  },
+  {
+   "url": "https://vtt.example.com/setup",
+   "servers": [
+    "http://localhost:30000",
+    "https://vtt.example.com/foundry",
+    "http://192.168.178.25:30000"
+   ],
+   "result": false
+  },
+  {
+   "url": "https://vtt.example.com/foundryx/setup",
+   "servers": [],
+   "result": false
+  },
+  {
+   "url": "https://vtt.example.com/foundryx/setup",
+   "servers": [
+    "http://localhost:30000"
+   ],
+   "result": false
+  },
+  {
+   "url": "https://vtt.example.com/foundryx/setup",
+   "servers": [
+    "https://vtt.example.com/foundry"
+   ],
+   "result": false
+  },
+  {
+   "url": "https://vtt.example.com/foundryx/setup",
+   "servers": [
+    "http://localhost:30000",
+    "https://vtt.example.com/foundry",
+    "http://192.168.178.25:30000"
+   ],
+   "result": false
+  },
+  {
+   "url": "http://192.168.178.25:30000/setup",
+   "servers": [],
+   "result": false
+  },
+  {
+   "url": "http://192.168.178.25:30000/setup",
+   "servers": [
+    "http://localhost:30000"
+   ],
+   "result": false
+  },
+  {
+   "url": "http://192.168.178.25:30000/setup",
+   "servers": [
+    "https://vtt.example.com/foundry"
+   ],
+   "result": false
+  },
+  {
+   "url": "http://192.168.178.25:30000/setup",
+   "servers": [
+    "http://localhost:30000",
+    "https://vtt.example.com/foundry",
+    "http://192.168.178.25:30000"
+   ],
+   "result": true
+  },
+  {
+   "url": "http://localhost:30000/setup/%2e%2e/game",
+   "servers": [],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/setup/%2e%2e/game",
+   "servers": [
+    "http://localhost:30000"
+   ],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/setup/%2e%2e/game",
+   "servers": [
+    "https://vtt.example.com/foundry"
+   ],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/setup/%2e%2e/game",
+   "servers": [
+    "http://localhost:30000",
+    "https://vtt.example.com/foundry",
+    "http://192.168.178.25:30000"
+   ],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/setup/..",
+   "servers": [],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/setup/..",
+   "servers": [
+    "http://localhost:30000"
+   ],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/setup/..",
+   "servers": [
+    "https://vtt.example.com/foundry"
+   ],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/setup/..",
+   "servers": [
+    "http://localhost:30000",
+    "https://vtt.example.com/foundry",
+    "http://192.168.178.25:30000"
+   ],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/setup//x",
+   "servers": [],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/setup//x",
+   "servers": [
+    "http://localhost:30000"
+   ],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/setup//x",
+   "servers": [
+    "https://vtt.example.com/foundry"
+   ],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/setup//x",
+   "servers": [
+    "http://localhost:30000",
+    "https://vtt.example.com/foundry",
+    "http://192.168.178.25:30000"
+   ],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/setup/a%20b",
+   "servers": [],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/setup/a%20b",
+   "servers": [
+    "http://localhost:30000"
+   ],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/setup/a%20b",
+   "servers": [
+    "https://vtt.example.com/foundry"
+   ],
+   "result": false
+  },
+  {
+   "url": "http://localhost:30000/setup/a%20b",
+   "servers": [
+    "http://localhost:30000",
+    "https://vtt.example.com/foundry",
+    "http://192.168.178.25:30000"
+   ],
+   "result": false
+  },
+  {
+   "url": "about:blank",
+   "servers": [],
+   "result": false
+  },
+  {
+   "url": "about:blank",
+   "servers": [
+    "http://localhost:30000"
+   ],
+   "result": false
+  },
+  {
+   "url": "about:blank",
+   "servers": [
+    "https://vtt.example.com/foundry"
+   ],
+   "result": false
+  },
+  {
+   "url": "about:blank",
+   "servers": [
+    "http://localhost:30000",
+    "https://vtt.example.com/foundry",
+    "http://192.168.178.25:30000"
+   ],
+   "result": false
+  },
+  {
+   "url": "https://appassets.androidplatform.net/home.html",
+   "servers": [],
+   "result": false
+  },
+  {
+   "url": "https://appassets.androidplatform.net/home.html",
+   "servers": [
+    "http://localhost:30000"
+   ],
+   "result": false
+  },
+  {
+   "url": "https://appassets.androidplatform.net/home.html",
+   "servers": [
+    "https://vtt.example.com/foundry"
+   ],
+   "result": false
+  },
+  {
+   "url": "https://appassets.androidplatform.net/home.html",
+   "servers": [
+    "http://localhost:30000",
+    "https://vtt.example.com/foundry",
+    "http://192.168.178.25:30000"
+   ],
+   "result": false
+  },
+  {
+   "url": "data:text/html,x",
+   "servers": [],
+   "result": false
+  },
+  {
+   "url": "data:text/html,x",
+   "servers": [
+    "http://localhost:30000"
+   ],
+   "result": false
+  },
+  {
+   "url": "data:text/html,x",
+   "servers": [
+    "https://vtt.example.com/foundry"
+   ],
+   "result": false
+  },
+  {
+   "url": "data:text/html,x",
+   "servers": [
+    "http://localhost:30000",
+    "https://vtt.example.com/foundry",
+    "http://192.168.178.25:30000"
+   ],
+   "result": false
+  }
+ ],
+ "externalAllowed": [
+  {
+   "url": "https://foundryvtt.com/releases/14.370",
+   "origins": [],
+   "allowed": true
+  },
+  {
+   "url": "https://foundryvtt.com/releases/14.370",
+   "origins": [
+    "http://localhost:30000",
+    "https://vtt.example.com",
+    "http://192.168.178.25:30000"
+   ],
+   "allowed": true
+  },
+  {
+   "url": "https://foundryvtt.com/packages/dnd5e",
+   "origins": [],
+   "allowed": true
+  },
+  {
+   "url": "https://foundryvtt.com/packages/dnd5e",
+   "origins": [
+    "http://localhost:30000",
+    "https://vtt.example.com",
+    "http://192.168.178.25:30000"
+   ],
+   "allowed": true
+  },
+  {
+   "url": "http://example.com/x?y=1#z",
+   "origins": [],
+   "allowed": true
+  },
+  {
+   "url": "http://example.com/x?y=1#z",
+   "origins": [
+    "http://localhost:30000",
+    "https://vtt.example.com",
+    "http://192.168.178.25:30000"
+   ],
+   "allowed": true
+  },
+  {
+   "url": "HTTPS://Example.COM/x",
+   "origins": [],
+   "allowed": true
+  },
+  {
+   "url": "HTTPS://Example.COM/x",
+   "origins": [
+    "http://localhost:30000",
+    "https://vtt.example.com",
+    "http://192.168.178.25:30000"
+   ],
+   "allowed": true
+  },
+  {
+   "url": "https://example.com:8443/",
+   "origins": [],
+   "allowed": true
+  },
+  {
+   "url": "https://example.com:8443/",
+   "origins": [
+    "http://localhost:30000",
+    "https://vtt.example.com",
+    "http://192.168.178.25:30000"
+   ],
+   "allowed": true
+  },
+  {
+   "url": "http://localhost:30000/setup",
+   "origins": [],
+   "allowed": true
+  },
+  {
+   "url": "http://localhost:30000/setup",
+   "origins": [
+    "http://localhost:30000",
+    "https://vtt.example.com",
+    "http://192.168.178.25:30000"
+   ],
+   "allowed": false
+  },
+  {
+   "url": "http://localhost:30000/other",
+   "origins": [],
+   "allowed": true
+  },
+  {
+   "url": "http://localhost:30000/other",
+   "origins": [
+    "http://localhost:30000",
+    "https://vtt.example.com",
+    "http://192.168.178.25:30000"
+   ],
+   "allowed": false
+  },
+  {
+   "url": "HTTP://LOCALHOST:30000/x",
+   "origins": [],
+   "allowed": true
+  },
+  {
+   "url": "HTTP://LOCALHOST:30000/x",
+   "origins": [
+    "http://localhost:30000",
+    "https://vtt.example.com",
+    "http://192.168.178.25:30000"
+   ],
+   "allowed": false
+  },
+  {
+   "url": "http://localhost:30001/",
+   "origins": [],
+   "allowed": true
+  },
+  {
+   "url": "http://localhost:30001/",
+   "origins": [
+    "http://localhost:30000",
+    "https://vtt.example.com",
+    "http://192.168.178.25:30000"
+   ],
+   "allowed": true
+  },
+  {
+   "url": "http://192.168.178.25:30000/x",
+   "origins": [],
+   "allowed": true
+  },
+  {
+   "url": "http://192.168.178.25:30000/x",
+   "origins": [
+    "http://localhost:30000",
+    "https://vtt.example.com",
+    "http://192.168.178.25:30000"
+   ],
+   "allowed": false
+  },
+  {
+   "url": "https://vtt.example.com/foundry/setup",
+   "origins": [],
+   "allowed": true
+  },
+  {
+   "url": "https://vtt.example.com/foundry/setup",
+   "origins": [
+    "http://localhost:30000",
+    "https://vtt.example.com",
+    "http://192.168.178.25:30000"
+   ],
+   "allowed": false
+  },
+  {
+   "url": "javascript:alert(1)",
+   "origins": [],
+   "allowed": false
+  },
+  {
+   "url": "javascript:alert(1)",
+   "origins": [
+    "http://localhost:30000",
+    "https://vtt.example.com",
+    "http://192.168.178.25:30000"
+   ],
+   "allowed": false
+  },
+  {
+   "url": "file:///etc/passwd",
+   "origins": [],
+   "allowed": false
+  },
+  {
+   "url": "file:///etc/passwd",
+   "origins": [
+    "http://localhost:30000",
+    "https://vtt.example.com",
+    "http://192.168.178.25:30000"
+   ],
+   "allowed": false
+  },
+  {
+   "url": "intent://x#Intent;end",
+   "origins": [],
+   "allowed": false
+  },
+  {
+   "url": "intent://x#Intent;end",
+   "origins": [
+    "http://localhost:30000",
+    "https://vtt.example.com",
+    "http://192.168.178.25:30000"
+   ],
+   "allowed": false
+  },
+  {
+   "url": "mailto:a@example.com",
+   "origins": [],
+   "allowed": false
+  },
+  {
+   "url": "mailto:a@example.com",
+   "origins": [
+    "http://localhost:30000",
+    "https://vtt.example.com",
+    "http://192.168.178.25:30000"
+   ],
+   "allowed": false
+  },
+  {
+   "url": "https://user:pw@example.com/",
+   "origins": [],
+   "allowed": false
+  },
+  {
+   "url": "https://user:pw@example.com/",
+   "origins": [
+    "http://localhost:30000",
+    "https://vtt.example.com",
+    "http://192.168.178.25:30000"
+   ],
+   "allowed": false
+  },
+  {
+   "url": "https://user@example.com/",
+   "origins": [],
+   "allowed": false
+  },
+  {
+   "url": "https://user@example.com/",
+   "origins": [
+    "http://localhost:30000",
+    "https://vtt.example.com",
+    "http://192.168.178.25:30000"
+   ],
+   "allowed": false
+  },
+  {
+   "url": "https:example.com",
+   "origins": [],
+   "allowed": false
+  },
+  {
+   "url": "https:example.com",
+   "origins": [
+    "http://localhost:30000",
+    "https://vtt.example.com",
+    "http://192.168.178.25:30000"
+   ],
+   "allowed": false
+  },
+  {
+   "url": "https:/example.com",
+   "origins": [],
+   "allowed": false
+  },
+  {
+   "url": "https:/example.com",
+   "origins": [
+    "http://localhost:30000",
+    "https://vtt.example.com",
+    "http://192.168.178.25:30000"
+   ],
+   "allowed": false
+  },
+  {
+   "url": "//example.com/x",
+   "origins": [],
+   "allowed": false
+  },
+  {
+   "url": "//example.com/x",
+   "origins": [
+    "http://localhost:30000",
+    "https://vtt.example.com",
+    "http://192.168.178.25:30000"
+   ],
+   "allowed": false
+  },
+  {
+   "url": "https://",
+   "origins": [],
+   "allowed": false
+  },
+  {
+   "url": "https://",
+   "origins": [
+    "http://localhost:30000",
+    "https://vtt.example.com",
+    "http://192.168.178.25:30000"
+   ],
+   "allowed": false
+  },
+  {
+   "url": "",
+   "origins": [],
+   "allowed": false
+  },
+  {
+   "url": "",
+   "origins": [
+    "http://localhost:30000",
+    "https://vtt.example.com",
+    "http://192.168.178.25:30000"
+   ],
+   "allowed": false
+  },
+  {
+   "url": "https://example.com/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "origins": [],
+   "allowed": true
+  },
+  {
+   "url": "https://example.com/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "origins": [
+    "http://localhost:30000",
+    "https://vtt.example.com",
+    "http://192.168.178.25:30000"
+   ],
+   "allowed": true
+  },
+  {
+   "url": "https://example.com/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "origins": [],
+   "allowed": false
+  },
+  {
+   "url": "https://example.com/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "origins": [
+    "http://localhost:30000",
+    "https://vtt.example.com",
+    "http://192.168.178.25:30000"
+   ],
+   "allowed": false
+  }
+ ],
+ "savableServerOrigin": [
+  {
+   "pattern": "http://localhost:30000/*",
+   "origin": "http://localhost:30000"
+  },
+  {
+   "pattern": "https://vtt.example.com/*",
+   "origin": "https://vtt.example.com"
+  },
+  {
+   "pattern": "https://VTT.Example.com/*",
+   "origin": "https://vtt.example.com"
+  },
+  {
+   "pattern": "https://vtt.example.com:443/*",
+   "origin": "https://vtt.example.com"
+  },
+  {
+   "pattern": "http://vtt.example.com:80/*",
+   "origin": "http://vtt.example.com"
+  },
+  {
+   "pattern": "http://192.168.178.25:30000/*",
+   "origin": "http://192.168.178.25:30000"
+  },
+  {
+   "pattern": "http://[::1]:30000/*",
+   "origin": "http://[::1]:30000"
+  },
+  {
+   "pattern": "https://appassets.androidplatform.net/*",
+   "origin": null
+  },
+  {
+   "pattern": "https://foundryvtt.com/*",
+   "origin": null
+  },
+  {
+   "pattern": "https://api.foundryvtt.com/*",
+   "origin": null
+  },
+  {
+   "pattern": "https://notfoundryvtt.com/*",
+   "origin": "https://notfoundryvtt.com"
+  },
+  {
+   "pattern": "https://foundryvtt.com./*",
+   "origin": null
+  },
+  {
+   "pattern": "https://www.foundryvtt.com./*",
+   "origin": null
+  },
+  {
+   "pattern": "https://appassets.androidplatform.net./*",
+   "origin": null
+  },
+  {
+   "pattern": "http://localhost:65535/*",
+   "origin": "http://localhost:65535"
+  },
+  {
+   "pattern": "http://localhost:65536/*",
+   "origin": null
+  },
+  {
+   "pattern": "http://localhost:99999/*",
+   "origin": null
+  },
+  {
+   "pattern": "http://localhost:30000/x/*",
+   "origin": null
+  },
+  {
+   "pattern": "http://localhost:30000/",
+   "origin": null
+  },
+  {
+   "pattern": "http://localhost:30000/*\n",
+   "origin": null
+  },
+  {
+   "pattern": "ftp://localhost/*",
+   "origin": null
+  },
+  {
+   "pattern": "http://u@localhost/*",
+   "origin": null
+  },
+  {
+   "pattern": "http://local host/*",
+   "origin": null
+  },
+  {
+   "pattern": "http://local host/*",
+   "origin": null
+  },
+  {
+   "pattern": "",
+   "origin": null
+  }
+ ],
+ "payloads": [
+  {
+   "type": "runtime.send",
+   "payload": {
+    "message": {
+     "kind": "x"
+    }
+   },
+   "valid": true
+  },
+  {
+   "type": "runtime.send",
+   "payload": {},
+   "valid": false
+  },
+  {
+   "type": "runtime.send",
+   "payload": {
+    "message": null,
+    "extra": 1
+   },
+   "valid": true
+  },
+  {
+   "type": "runtime.send",
+   "payload": null,
+   "valid": false
+  },
+  {
+   "type": "runtime.send",
+   "payload": [],
+   "valid": false
+  },
+  {
+   "type": "runtime.send",
+   "payload": "x",
+   "valid": false
+  },
+  {
+   "type": "files.save",
+   "payload": {
+    "fileName": "library.json",
+    "text": "{}"
+   },
+   "valid": true
+  },
+  {
+   "type": "files.save",
+   "payload": {
+    "fileName": "",
+    "text": ""
+   },
+   "valid": false
+  },
+  {
+   "type": "files.save",
+   "payload": {
+    "fileName": "a/b.json",
+    "text": ""
+   },
+   "valid": false
+  },
+  {
+   "type": "files.save",
+   "payload": {
+    "fileName": "a\\b.json",
+    "text": ""
+   },
+   "valid": false
+  },
+  {
+   "type": "files.save",
+   "payload": {
+    "fileName": "a\u0000b",
+    "text": ""
+   },
+   "valid": false
+  },
+  {
+   "type": "files.save",
+   "payload": {
+    "fileName": "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk",
+    "text": ""
+   },
+   "valid": true
+  },
+  {
+   "type": "files.save",
+   "payload": {
+    "fileName": "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk",
+    "text": ""
+   },
+   "valid": false
+  },
+  {
+   "type": "files.save",
+   "payload": {
+    "fileName": "x.json"
+   },
+   "valid": false
+  },
+  {
+   "type": "files.save",
+   "payload": {
+    "fileName": "x.json",
+    "text": 5
+   },
+   "valid": false
+  },
+  {
+   "type": "files.open",
+   "payload": {},
+   "valid": true
+  },
+  {
+   "type": "files.open",
+   "payload": {
+    "any": true
+   },
+   "valid": true
+  },
+  {
+   "type": "files.open",
+   "payload": null,
+   "valid": false
+  },
+  {
+   "type": "confirm",
+   "payload": {
+    "text": "Delete the folder?"
+   },
+   "valid": true
+  },
+  {
+   "type": "confirm",
+   "payload": {
+    "text": ""
+   },
+   "valid": false
+  },
+  {
+   "type": "confirm",
+   "payload": {
+    "text": "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk"
+   },
+   "valid": true
+  },
+  {
+   "type": "confirm",
+   "payload": {
+    "text": "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk"
+   },
+   "valid": false
+  },
+  {
+   "type": "confirm",
+   "payload": {
+    "text": 1
+   },
+   "valid": false
+  },
+  {
+   "type": "openExternal",
+   "payload": {
+    "url": "https://example.com/"
+   },
+   "valid": true
+  },
+  {
+   "type": "openExternal",
+   "payload": {
+    "url": "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk"
+   },
+   "valid": true
+  },
+  {
+   "type": "openExternal",
+   "payload": {
+    "url": "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk"
+   },
+   "valid": false
+  },
+  {
+   "type": "openExternal",
+   "payload": {},
+   "valid": false
+  },
+  {
+   "type": "kv.get",
+   "payload": {
+    "key": "servers"
+   },
+   "valid": true
+  },
+  {
+   "type": "kv.get",
+   "payload": {
+    "key": ""
+   },
+   "valid": false
+  },
+  {
+   "type": "kv.get",
+   "payload": {
+    "key": "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk"
+   },
+   "valid": true
+  },
+  {
+   "type": "kv.get",
+   "payload": {
+    "key": "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk"
+   },
+   "valid": false
+  },
+  {
+   "type": "kv.get",
+   "payload": {
+    "key": 3
+   },
+   "valid": false
+  },
+  {
+   "type": "kv.set",
+   "payload": {
+    "key": "servers",
+    "value": [
+     1,
+     "a",
+     {
+      "b": null
+     }
+    ]
+   },
+   "valid": true
+  },
+  {
+   "type": "kv.set",
+   "payload": {
+    "key": "servers"
+   },
+   "valid": false
+  },
+  {
+   "type": "kv.set",
+   "payload": {
+    "key": "servers",
+    "value": null
+   },
+   "valid": true
+  },
+  {
+   "type": "kv.set",
+   "payload": {
+    "value": 1
+   },
+   "valid": false
+  },
+  {
+   "type": "scripts.registered",
+   "payload": {
+    "ids": []
+   },
+   "valid": true
+  },
+  {
+   "type": "scripts.registered",
+   "payload": {
+    "ids": [
+     "ml-a"
+    ]
+   },
+   "valid": true
+  },
+  {
+   "type": "scripts.registered",
+   "payload": {
+    "ids": [
+     ""
+    ]
+   },
+   "valid": false
+  },
+  {
+   "type": "scripts.registered",
+   "payload": {
+    "ids": [
+     "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk"
+    ]
+   },
+   "valid": true
+  },
+  {
+   "type": "scripts.registered",
+   "payload": {
+    "ids": [
+     "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk"
+    ]
+   },
+   "valid": false
+  },
+  {
+   "type": "scripts.registered",
+   "payload": {
+    "ids": [
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a"
+    ]
+   },
+   "valid": true
+  },
+  {
+   "type": "scripts.registered",
+   "payload": {
+    "ids": [
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a"
+    ]
+   },
+   "valid": false
+  },
+  {
+   "type": "scripts.registered",
+   "payload": {
+    "ids": [
+     1
+    ]
+   },
+   "valid": false
+  },
+  {
+   "type": "scripts.registered",
+   "payload": {
+    "ids": "a"
+   },
+   "valid": false
+  },
+  {
+   "type": "scripts.register",
+   "payload": {
+    "server": "http://localhost:30000",
+    "ids": [
+     "a"
+    ]
+   },
+   "valid": true
+  },
+  {
+   "type": "scripts.register",
+   "payload": {
+    "server": "https://vtt.example.com/foundry",
+    "ids": [
+     "a"
+    ]
+   },
+   "valid": true
+  },
+  {
+   "type": "scripts.register",
+   "payload": {
+    "server": "http://localhost:30000/",
+    "ids": [
+     "a"
+    ]
+   },
+   "valid": false
+  },
+  {
+   "type": "scripts.register",
+   "payload": {
+    "server": "http://localhost:30000/a/b",
+    "ids": [
+     "a"
+    ]
+   },
+   "valid": true
+  },
+  {
+   "type": "scripts.register",
+   "payload": {
+    "server": "http://localhost:30000/a%20b",
+    "ids": [
+     "a"
+    ]
+   },
+   "valid": false
+  },
+  {
+   "type": "scripts.register",
+   "payload": {
+    "server": "http://localhost:30000/a*",
+    "ids": [
+     "a"
+    ]
+   },
+   "valid": false
+  },
+  {
+   "type": "scripts.register",
+   "payload": {
+    "server": "http://localhost:30000/a b",
+    "ids": [
+     "a"
+    ]
+   },
+   "valid": false
+  },
+  {
+   "type": "scripts.register",
+   "payload": {
+    "server": "ftp://localhost",
+    "ids": [
+     "a"
+    ]
+   },
+   "valid": false
+  },
+  {
+   "type": "scripts.register",
+   "payload": {
+    "server": "http://u@localhost",
+    "ids": [
+     "a"
+    ]
+   },
+   "valid": false
+  },
+  {
+   "type": "scripts.register",
+   "payload": {
+    "server": "http://localhost:30000\n",
+    "ids": [
+     "a"
+    ]
+   },
+   "valid": false
+  },
+  {
+   "type": "scripts.register",
+   "payload": {
+    "server": "http://localhost:30000"
+   },
+   "valid": false
+  },
+  {
+   "type": "scripts.unregister",
+   "payload": {
+    "ids": [
+     "a",
+     "b"
+    ]
+   },
+   "valid": true
+  },
+  {
+   "type": "scripts.unregister",
+   "payload": {},
+   "valid": false
+  },
+  {
+   "type": "permissions.contains",
+   "payload": {
+    "origin": "http://localhost:30000/*"
+   },
+   "valid": true
+  },
+  {
+   "type": "permissions.contains",
+   "payload": {
+    "origin": "https://foundryvtt.com/*"
+   },
+   "valid": true
+  },
+  {
+   "type": "permissions.contains",
+   "payload": {
+    "origin": "http://localhost:30000/x/*"
+   },
+   "valid": false
+  },
+  {
+   "type": "permissions.contains",
+   "payload": {
+    "origin": "http://localhost:30000/*\n"
+   },
+   "valid": false
+  },
+  {
+   "type": "permissions.contains",
+   "payload": {
+    "origin": "http://local host/*"
+   },
+   "valid": false
+  },
+  {
+   "type": "permissions.contains",
+   "payload": {
+    "origin": "http://local﻿host/*"
+   },
+   "valid": false
+  },
+  {
+   "type": "permissions.contains",
+   "payload": {
+    "origin": "http://localhost/*"
+   },
+   "valid": true
+  },
+  {
+   "type": "permissions.contains",
+   "payload": {
+    "origin": "http://local host/*"
+   },
+   "valid": false
+  },
+  {
+   "type": "permissions.request",
+   "payload": {
+    "origin": "http://192.168.178.25:30000/*"
+   },
+   "valid": true
+  },
+  {
+   "type": "permissions.request",
+   "payload": {
+    "origin": "localhost:30000/*"
+   },
+   "valid": false
+  },
+  {
+   "type": "permissions.remove",
+   "payload": {
+    "origin": "http://localhost:30000/*"
+   },
+   "valid": true
+  },
+  {
+   "type": "permissions.remove",
+   "payload": {
+    "origin": 1
+   },
+   "valid": false
+  },
+  {
+   "type": "fetch",
+   "payload": {
+    "url": "https://raw.githubusercontent.com/Affid/module-library/main/config/setup-config.json",
+    "purpose": "config"
+   },
+   "valid": true
+  },
+  {
+   "type": "fetch",
+   "payload": {
+    "url": "https://foundryvtt.com/releases/",
+    "purpose": "release"
+   },
+   "valid": true
+  },
+  {
+   "type": "fetch",
+   "payload": {
+    "url": "https://foundryvtt.com/releases/",
+    "purpose": "other"
+   },
+   "valid": false
+  },
+  {
+   "type": "fetch",
+   "payload": {
+    "url": "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk",
+    "purpose": "release"
+   },
+   "valid": false
+  },
+  {
+   "type": "fetch",
+   "payload": {
+    "purpose": "release"
+   },
+   "valid": false
+  },
+  {
+   "type": "home.open",
+   "payload": {},
+   "valid": true
+  },
+  {
+   "type": "background.ready",
+   "payload": {},
+   "valid": true
+  },
+  {
+   "type": "background.ready",
+   "payload": {
+    "x": 1
+   },
+   "valid": true
+  }
+ ],
+ "wrapForServer": [
+  {
+   "script": "console.log(ML_APP_SERVER);",
+   "server": "http://localhost:30000",
+   "out": "(function (ML_APP_SERVER) {\nconsole.log(ML_APP_SERVER);\n})(\"http://localhost:30000\");\n"
+  },
+  {
+   "script": "x",
+   "server": "https://vtt.example.com/foundry",
+   "out": "(function (ML_APP_SERVER) {\nx\n})(\"https://vtt.example.com/foundry\");\n"
+  },
+  {
+   "script": "a\nb",
+   "server": "http://h:1/p\"q\\r",
+   "out": "(function (ML_APP_SERVER) {\na\nb\n})(\"http://h:1/p\\\"q\\\\r\");\n"
+  },
+  {
+   "script": "",
+   "server": "http://h/ é\u0001",
+   "out": "(function (ML_APP_SERVER) {\n\n})(\"http://h/ é\\u0001\");\n"
+  }
+ ]
+}

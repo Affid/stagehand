@@ -13,3 +13,4 @@ packages/android/app/build/
 
 # The phase 3 preview bundle (built)
 spikes/android/app/src/main/assets/preview.js
+packages/android/app/src/test/resources/contract-vectors.json

@@ -11,7 +11,7 @@ import { MAX_MESSAGE_CHARS } from "../../packages/extension/src/app/bridge.ts";
 import {
   type Caller,
   CALLER_REQUESTS,
-  isServerPage,
+  mayAskAsServer,
   READY,
   ROUTE,
   ROUTE_TIMEOUT_MS,
@@ -42,9 +42,6 @@ interface Pending {
 }
 
 const READY_TIMEOUT_MS = 15_000;
-
-/** Paths native refuses before comparing (plan, "Native rules"). */
-const ODD_PATH = /%|\\|\.\.|\/\/|\p{Cc}/u;
 
 /** Native's request to the background, through its fake bridge object. */
 async function deliver(page: Page, message: object): Promise<void> {
@@ -122,16 +119,10 @@ export class Relay {
   private callerOf(page: Page, url: string): Caller | undefined {
     if (page === this.background) return "background";
     if (page === this.home) return "home";
-    if (!url.startsWith("http")) return undefined;
-    const path = new URL(url).pathname;
-    if (ODD_PATH.test(path)) return undefined;
     const saved = [...new Set(this.native.scripts.values())].filter((s) =>
       this.native.origins.has(new URL(s).origin),
     );
-    const onSetupOrGame = saved.some(
-      (s) => isServerPage(url, s, "/setup") || isServerPage(url, s, "/game"),
-    );
-    return onSetupOrGame ? "server" : undefined;
+    return mayAskAsServer(url, saved) ? "server" : undefined;
   }
 
   /**
