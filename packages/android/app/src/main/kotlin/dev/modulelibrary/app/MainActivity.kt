@@ -242,6 +242,8 @@ class MainActivity : ComponentActivity(), AppHost {
 
     override fun openOutside(url: String) = openInBrowser(this, url)
 
+    override fun openHome() = showHome()
+
     /** Main thread only (WebView callbacks and the relay's handlers). */
     override fun touchedServerLately(): Boolean = taps.take(SystemClock.elapsedRealtime())
 

@@ -11,10 +11,11 @@ import { startSetupMain } from "../page/main.ts";
 import { startGameBridge } from "../bridge/game.ts";
 import { startSetupUi } from "../ui/start.ts";
 import { createNativeBridge, type NativePort } from "./bridge.ts";
-import { BACK, BRIDGE_NAME, isServerPage } from "./native-api.ts";
+import { BACK, BRIDGE_NAME, HOME_PAGE, isServerPage } from "./native-api.ts";
 import { pressBack } from "../ui/shell/phone/back.ts";
 import { hideResolutionNotice } from "../page/resolution.ts";
 import { allowTextMenus, hintPasswords } from "../page/text-fields.ts";
+import { addLoginBar } from "./login-bar.ts";
 import { nativePorts, nativeSend } from "./platform.ts";
 import { showsRunning, startRunning } from "./running/start.tsx";
 
@@ -78,6 +79,21 @@ export function whenRoot(doc: Document, fn: (root: HTMLElement) => void): void {
   observer.observe(doc, { childList: true });
 }
 
+/** Runs `fn` once the document has its body (at document start it may not). */
+function whenBody(doc: Document, fn: () => void): void {
+  const body = (): HTMLElement | null => doc.querySelector("body");
+  if (body()) {
+    fn();
+    return;
+  }
+  const observer = new MutationObserver(() => {
+    if (!body()) return;
+    observer.disconnect();
+    fn();
+  });
+  observer.observe(doc, { childList: true, subtree: true });
+}
+
 /** Our styles before Foundry's first paint: the veil keeps Setup hidden. */
 function addStyles(root: HTMLElement, css: string): void {
   const style = root.ownerDocument.createElement("style");
@@ -123,8 +139,6 @@ export interface AppGameDeps {
   readonly win: Window;
   readonly href: string;
   readonly server: string;
-  /** The page it came from (the running-world screen skips a launch's /join). */
-  readonly referrer?: string;
   /** running.css, for the running-world screen. */
   readonly runningCss?: string;
   /** Clears Foundry's window-size notice on /join and /auth (clearSizeNotice). */
@@ -161,7 +175,7 @@ export function startAppGame(deps: AppGameDeps): boolean {
   if (
     port &&
     deps.runningCss !== undefined &&
-    showsRunning(deps.href, deps.referrer ?? "", deps.server)
+    showsRunning(deps.href, deps.server)
   ) {
     const doc = deps.win.document;
     const css = deps.runningCss;
@@ -175,6 +189,8 @@ export function startAppGame(deps: AppGameDeps): boolean {
           fetch: deps.win.fetch.bind(deps.win),
           route: routeOf(deps.server),
         },
+        serversHref: HOME_PAGE,
+        notes: deps.win.sessionStorage,
       });
     });
     return false;
@@ -185,6 +201,10 @@ export function startAppGame(deps: AppGameDeps): boolean {
   if (port && onLoginPage) {
     (deps.clearNotice ?? clearSizeNotice)(deps.win);
     hintPasswords(deps.win.document);
+    if (isServerPage(deps.href, deps.server, "/auth"))
+      whenBody(deps.win.document, () => {
+        addLoginBar(deps.win.document, deps.server, HOME_PAGE);
+      });
     return false;
   }
   if (!port || !isServerPage(deps.href, deps.server, "/game")) return false;

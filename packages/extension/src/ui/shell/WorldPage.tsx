@@ -4,6 +4,7 @@
 import type { WorldInfo } from "@module-library/shared/world";
 import { useRef, useState } from "preact/hooks";
 import { Icon } from "../common/widgets.tsx";
+import { writeLaunchNote } from "../../app/launch-note.ts";
 import { useUi } from "../context.ts";
 import { systemTitle } from "../model/system.ts";
 import { plural } from "../i18n.ts";
@@ -174,6 +175,8 @@ function useLaunch(world: WorldInfo, model: WorldModules) {
   const [review, setReview] = useState(false);
   const [busy, setBusy] = useState(false);
   const running = useRef(false);
+  /** The changes counted when Launch was pressed, for the launch note. */
+  const counted = useRef(0);
   // A change still saving must be reviewed too, not launched past (Phase 6):
   // wait for it, read the queue as it now is, and never twice at once.
   const start = async (): Promise<void> => {
@@ -190,8 +193,12 @@ function useLaunch(world: WorldInfo, model: WorldModules) {
       const queued = await actions.queuedFor(world.id);
       // Unreadable: the notice says why, and nothing launches past it.
       if (queued === undefined) return;
+      counted.current = queued;
       if (queued > 0) setReview(true);
-      else page.foundryAction({ action: "launch", worldId: world.id });
+      else {
+        writeLaunchNote(globalThis.sessionStorage, world.id, 0);
+        page.foundryAction({ action: "launch", worldId: world.id });
+      }
     } finally {
       running.current = false;
       setBusy(false);
@@ -206,6 +213,9 @@ function useLaunch(world: WorldInfo, model: WorldModules) {
       const reviewed = plain ? undefined : model.next;
       if (!(await actions.setLaunchHold(world.id, plain, reviewed))) return;
     }
+    // For the app's running screen on /join (counted when Launch was pressed).
+    const changes = choice.kind === "plain" ? 0 : counted.current;
+    writeLaunchNote(globalThis.sessionStorage, world.id, changes);
     if (choice.kind === "apply" && choice.backup)
       page.foundryAction({
         action: "backupLaunch",

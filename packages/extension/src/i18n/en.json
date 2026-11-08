@@ -1087,5 +1087,21 @@
   "run.pwLead": "Foundry asks for the administrator password to close the world.",
   "run.pwWrong": "Foundry didn't accept the password.",
   "run.failed": "Foundry didn't close the world. Try again.",
-  "run.version": "Foundry {version}"
+  "run.version": "Foundry {version}",
+  "run.servers": "Servers",
+  "run.join": "Join as Gamemaster",
+  "run.joinApplies.one": "applies {n} change",
+  "run.joinApplies.other": "applies {n} changes",
+  "run.leadLaunched.one": "You launched it from here with {n} change waiting. It applies when the Gamemaster joins from this app.",
+  "run.leadLaunched.other": "You launched it from here with {n} changes waiting. They apply when the Gamemaster joins from this app.",
+  "run.hintLaunched": "Return to Setup closes the world; the changes stay queued for the next launch.",
+  "run.joinTitle": "Join {world}",
+  "run.joinAs": "As",
+  "run.joinPassword": "Password",
+  "run.joinPasswordHint": "Leave empty if it has none",
+  "run.joinNote.one": "The queued change applies as the world opens; it reloads once.",
+  "run.joinNote.other": "The {n} queued changes apply as the world opens; it reloads once.",
+  "run.joinNoteNone": "Foundry's game screen opens; Back returns here.",
+  "run.joinGo": "Join",
+  "run.joinFailed": "Foundry didn't answer. Try again."
 }

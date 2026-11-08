@@ -110,22 +110,6 @@ export async function companionDone(page: Page): Promise<string[]> {
   );
 }
 
-/** Whether Foundry's Join button can be pressed: nothing lies over it. */
-export function joinButtonClear(page: Page): Promise<boolean> {
-  return page.evaluate(() => {
-    const b = document.querySelector<HTMLElement>(
-      '#join-game-form button[name="join"]',
-    );
-    if (!b) return false;
-    const r = b.getBoundingClientRect();
-    const top = document.elementFromPoint(
-      r.x + r.width / 2,
-      r.y + r.height / 2,
-    );
-    return b.contains(top);
-  });
-}
-
 export const activeModules = (page: Page): Promise<string[]> =>
   page.evaluate(() => {
     const g = globalThis as unknown as {

@@ -58,6 +58,8 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 .card { background: var(--app-panel); border: 1px solid var(--app-line); border-radius: 10px; }
 .server { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 12px; cursor: pointer; text-align: left; width: 100%; font: inherit; color: inherit; }
 .server:hover { border-color: #4a4358; }
+.server { box-sizing: border-box; padding-right: 4px; }
+.server > span:nth-child(2) { min-width: 0; }
 .server .ico { width: 44px; height: 44px; border-radius: 9px; display: grid; place-items: center; background: linear-gradient(160deg, #3b2a52, #1e1a2c); color: var(--app-warm-2); font: 700 18px/1 var(--title); }
 .server .nm { font-weight: 600; font-size: 15.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .server .sub { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 12.5px; color: var(--app-dim); margin-top: 3px; }

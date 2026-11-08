@@ -197,15 +197,13 @@ describe("app-game on a server's game page", () => {
     });
   });
 
-  test("on /join after a launch, and on /auth, it clears Foundry's size notice", () => {
+  test("on Foundry's /join (no running screen) and on /auth, it clears Foundry's size notice", () => {
     const clearNotice = vi.fn();
     Object.assign(window, { mlApp: fakeNative().port });
     startAppGame({
       win: window,
       href: `${SERVER}/join`,
       server: SERVER,
-      referrer: `${SERVER}/setup`,
-      runningCss: "",
       clearNotice: clearNotice,
     });
     expect(clearNotice).toHaveBeenCalledWith(window);
@@ -237,27 +235,13 @@ describe("app-game on a server's game page", () => {
     expect(native.sent).toEqual([]);
   });
 
-  test("on /join it starts the running-world screen, unless a launch led there", () => {
+  test("on /join it starts the running-world screen, after a launch too", () => {
     const native = fakeNative();
     Object.assign(window, { mlApp: native.port });
-    expect(
-      startAppGame({
-        win: window,
-        href: `${SERVER}/join`,
-        server: SERVER,
-        referrer: `${SERVER}/setup`,
-        runningCss: "",
-      }),
-    ).toBe(false);
-    expect(document.documentElement.classList.contains("ml-run-wait")).toBe(
-      false,
-    );
-    Object.assign(window, { mlApp: fakeNative().port });
     startAppGame({
       win: window,
       href: `${SERVER}/join`,
       server: SERVER,
-      referrer: "",
       runningCss: "#ml-run-root{}",
     });
     expect(document.documentElement.classList.contains("ml-run-wait")).toBe(

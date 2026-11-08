@@ -11,7 +11,6 @@ import {
   activeModules,
   adminLogin,
   companionDone,
-  joinButtonClear,
   env,
   installedVersion,
   recordCompanion,
@@ -186,21 +185,30 @@ export async function launch(page: Page, changes?: string): Promise<void> {
 
 /**
  * After a launch, on the same page (a new connection would drop the
- * recorder): Foundry's /join with its Join button clear and joined as the
- * GM, or straight to /game when already signed in; the game ready and the
- * companion's session done.
+ * recorder): the app's running screen on /join, whose Join as Gamemaster
+ * says how many changes it applies, joined as the GM; or straight to /game
+ * when already signed in. Then the game ready and the companion's session
+ * done.
  */
-export async function joinAsGm(app: App, page: Page): Promise<string[]> {
+export async function joinAsGm(
+  app: App,
+  page: Page,
+  changes = 0,
+): Promise<string[]> {
   await page.waitForURL(/\/(join|game)$/, { timeout: 60_000 });
   if (page.url().endsWith("/join")) {
-    await expect.poll(() => joinButtonClear(page)).toBe(true);
-    await app.shot("join");
-    await page
-      .locator('#join-game-form select[name="userId"]')
-      .selectOption({ label: "Gamemaster" });
-    await page
-      .locator('#join-game-form button[name="join"]')
-      .click({ noWaitAfter: true });
+    const join = page.locator("#ml-run-root .mlr-join");
+    await expect(join).toBeVisible({ timeout: 60_000 });
+    if (changes)
+      await expect(join).toContainText(
+        `applies ${String(changes)} change${changes === 1 ? "" : "s"}`,
+      );
+    await app.shot(changes ? "running-launched" : "running");
+    await join.click();
+    const sheet = page.locator("#ml-run-root .mlr-sheet");
+    await sheet.locator("select").selectOption({ label: "Gamemaster" });
+    await app.shot("join-sheet");
+    await sheet.getByRole("button", { name: "Join", exact: true }).click();
     await page.waitForURL(/\/game$/, { timeout: 60_000 });
   }
   await page.waitForFunction(

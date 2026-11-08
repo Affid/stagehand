@@ -2,10 +2,20 @@
 // The app's screen while a world runs (Android plan, phase 3, package 6):
 // when it shows, what it says, and Return to Setup with its question and
 // the password Foundry wants.
-import { cleanup, fireEvent, render, waitFor } from "@testing-library/preact";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  waitFor,
+  within,
+} from "@testing-library/preact";
 import { afterEach, describe, expect, test, vi } from "vitest";
 import { RunningScreen } from "../../src/app/running/RunningScreen.tsx";
-import type { CloseResult, Status } from "../../src/app/running/server.ts";
+import type {
+  CloseResult,
+  JoinResult,
+  Status,
+} from "../../src/app/running/server.ts";
 import { showsRunning, startRunning } from "../../src/app/running/start.tsx";
 import { createTranslator } from "../../src/ui/i18n.ts";
 
@@ -30,23 +40,28 @@ const status = (over: Partial<Status> = {}): Status => ({
 });
 
 describe("showsRunning", () => {
-  test("on the server's /join", () => {
-    expect(showsRunning(`${SERVER}/join`, "", SERVER)).toBe(true);
-    expect(showsRunning(`${SERVER}/join`, `${SERVER}/game`, SERVER)).toBe(true);
+  test("on the server's /join, after a launch from Setup too", () => {
+    expect(showsRunning(`${SERVER}/join`, SERVER)).toBe(true);
   });
 
-  test("not right after a launch from Setup, nor on other pages", () => {
-    expect(showsRunning(`${SERVER}/join`, `${SERVER}/setup`, SERVER)).toBe(
-      false,
-    );
-    expect(showsRunning(`${SERVER}/game`, "", SERVER)).toBe(false);
-    expect(showsRunning("http://other:30000/join", "", SERVER)).toBe(false);
+  test("not on other pages or servers", () => {
+    expect(showsRunning(`${SERVER}/game`, SERVER)).toBe(false);
+    expect(showsRunning("http://other:30000/join", SERVER)).toBe(false);
   });
 });
+
+const USERS = [
+  { id: "g1", name: "Gamemaster", gm: true },
+  { id: "p1", name: "Player1", gm: false },
+];
 
 function screen(
   s: Status | undefined,
   close: (pw?: string) => Promise<CloseResult>,
+  more: {
+    readonly launched?: number;
+    readonly join?: (u: string, p: string) => Promise<JoinResult>;
+  } = {},
 ) {
   return render(
     <RunningScreen
@@ -55,9 +70,84 @@ function screen(
       status={s}
       origin={SERVER}
       close={close}
+      users={USERS}
+      launched={more.launched}
+      join={
+        more.join ?? vi.fn(() => Promise.resolve({ kind: "failed" } as const))
+      }
+      serversHref="https://appassets.androidplatform.net/home.html"
     />,
   );
 }
+
+describe("Join as Gamemaster", () => {
+  test("after a launch with changes: the main button, saying what it applies", () => {
+    const r = screen(status({ users: 0 }), vi.fn(), { launched: 2 });
+    const buttons = r.container.querySelectorAll(".mlr-body button");
+    expect(buttons[0]?.textContent).toContain("Join as Gamemaster");
+    expect(buttons[0]?.textContent).toContain("applies 2 changes");
+    expect(buttons[0]?.className).toContain("bright");
+    expect(buttons[1]?.textContent).toContain("Return to Setup");
+    expect(r.container.textContent).toContain(
+      "They apply when the Gamemaster joins",
+    );
+  });
+
+  test("opened later: Return to Setup first, Join second", () => {
+    const r = screen(status(), vi.fn());
+    const buttons = r.container.querySelectorAll(".mlr-body button");
+    expect(buttons[0]?.textContent).toContain("Return to Setup");
+    expect(buttons[1]?.textContent).toContain("Join as Gamemaster");
+    expect(buttons[1]?.textContent).not.toContain("applies");
+  });
+
+  test("the sheet joins as the user picked, with the password; Foundry's refusal is shown", async () => {
+    const join = vi.fn((_u: string, _p: string) =>
+      Promise.resolve({
+        kind: "refused",
+        message: "Incorrect password",
+      } as const),
+    );
+    const r = screen(status(), vi.fn(), { launched: 1, join });
+    fireEvent.click(r.getByRole("button", { name: /Join as Gamemaster/ }));
+    const sheet = r.getByRole("dialog", { name: "Join Curse of Strahd" });
+    expect(within(sheet).getByRole("combobox")).toBeTruthy();
+    fireEvent.input(within(sheet).getByPlaceholderText(/Leave empty/), {
+      target: { value: "pw" },
+    });
+    fireEvent.click(within(sheet).getByRole("button", { name: "Join" }));
+    await waitFor(() => {
+      expect(within(sheet).getByRole("alert").textContent).toBe(
+        "Incorrect password",
+      );
+    });
+    expect(join).toHaveBeenCalledWith("g1", "pw");
+  });
+
+  test("a world without a Gamemaster user offers no Join", () => {
+    const r = render(
+      <RunningScreen
+        t={t}
+        world={WORLD}
+        status={status()}
+        origin={SERVER}
+        close={vi.fn()}
+        users={[{ id: "p1", name: "Player1", gm: false }]}
+        launched={2}
+        join={vi.fn()}
+        serversHref="x"
+      />,
+    );
+    expect(r.queryByRole("button", { name: /Join as Gamemaster/ })).toBeNull();
+  });
+
+  test("the top bar goes back to the app's servers", () => {
+    const r = screen(status(), vi.fn());
+    expect(r.getByRole("link", { name: "Servers" }).getAttribute("href")).toBe(
+      "https://appassets.androidplatform.net/home.html",
+    );
+  });
+});
 
 describe("RunningScreen", () => {
   test("which world runs, who is in it and for how long", () => {
@@ -170,6 +260,7 @@ describe("startRunning", () => {
         css: "#ml-run-root{}",
         game,
         server: { fetch, route: (p: string) => `${SERVER}/${p}` },
+        serversHref: "https://appassets.androidplatform.net/home.html",
       },
     };
   }
@@ -262,6 +353,7 @@ describe("review fixes", () => {
         clearTimeout: window.clearTimeout.bind(window),
       }),
       doc: document,
+      serversHref: "x",
       css: "",
       game: () => game,
       server: {
@@ -296,6 +388,7 @@ describe("review fixes", () => {
       css: "",
       game: () => ({ view: "join", world: WORLD }),
       server: { fetch: vi.fn(), route: (p: string) => p },
+      serversHref: "x",
     });
     expect(document.documentElement.classList.contains("ml-run-wait")).toBe(
       false,

@@ -1,8 +1,9 @@
 // The app opened while a world runs (Android plan, phase 3, package 6), in
 // the app harness on the local Foundry: Foundry sends everyone to /join, so
 // the app shows its own screen there; Return to Setup asks for the admin
-// password Foundry wants and lands on our Setup; right after a launch from
-// our Setup, /join stays Foundry's. Ends with no world running.
+// password Foundry wants and lands on our Setup; after a launch from our
+// Setup, /join is ours too, and its Join as Gamemaster goes into the game
+// (owner, 2026-11-09). Ends with no world running.
 import {
   type APIRequestContext,
   expect,
@@ -22,7 +23,7 @@ import {
   launchApp,
   openAppSetupAsAdmin,
 } from "../app/harness.ts";
-import { exitTour, SCREENS } from "./extension.ts";
+import { exitTour, joinFromRunningScreen, SCREENS } from "./extension.ts";
 
 const env = loadFoundryEnv();
 let app: AppHarness;
@@ -106,7 +107,7 @@ test("with the admin's session, Return to Setup closes the world and lands on ou
   });
 });
 
-test("right after a launch from our Setup, /join stays Foundry's", async () => {
+test("after a launch from our Setup, our screen; Join as Gamemaster goes into the game", async () => {
   await exitTour(page);
   await page
     .locator(`#ml-shell-root .mls-world[data-world="${TEST_WORLD.id}"]`)
@@ -117,7 +118,13 @@ test("right after a launch from our Setup, /join stays Foundry's", async () => {
     .click();
   await page.waitForURL(/\/(join|game)$/, { timeout: 60_000 });
   if (page.url().endsWith("/join")) {
-    await page.waitForTimeout(1500);
-    await expect(run()).toHaveCount(0);
+    await expect(run().locator(".mlr-join")).toBeVisible();
+    await expect(run().getByRole("link", { name: "Servers" })).toHaveAttribute(
+      "href",
+      "https://appassets.androidplatform.net/home.html",
+    );
+    await page.screenshot({ path: `${SCREENS}/app-running-launched.png` });
+    await joinFromRunningScreen(page, "Gamemaster");
+    await page.waitForURL(/\/game$/, { timeout: 60_000 });
   }
 });

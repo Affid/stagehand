@@ -110,7 +110,7 @@ test("export and import through the system pickers and the app's dialog", async 
   await tab(page, /^Worlds/).click();
 });
 
-test("the first launch from our page: Join clear, the companion reports", async () => {
+test("the first launch from our page: our running screen, Join, the companion reports", async () => {
   await openWorld(page);
   await launch(page);
   const seen = await joinAsGm(app, page);
@@ -127,7 +127,7 @@ test("a queued change, launched through the review, applied by the companion", a
   await expect(shell(page).locator(".mlp-dock")).toContainText("2 changes");
   await app.shot("queued");
   await launch(page, "2 changes");
-  await joinAsGm(app, page);
+  await joinAsGm(app, page, 2);
   const firstLoad = await documentStart(page);
   await waitActive(page, ["ml-fixture-a", "ml-fixture-lib", COMPANION_ID]);
   // The companion reloads the world once it has applied, and reports again

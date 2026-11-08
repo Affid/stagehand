@@ -10,6 +10,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.webkit.WebViewAssetLoader
 import dev.modulelibrary.app.core.APP_HOST
+import dev.modulelibrary.app.core.HOME_PAGE
 import dev.modulelibrary.app.core.WebUrl
 import dev.modulelibrary.app.core.externalAllowed
 import dev.modulelibrary.app.core.mayAskAsServer
@@ -24,6 +25,9 @@ interface AppHost {
     fun activeServers(): Set<String>
 
     fun openServer(url: String)
+
+    /** The server list, asked for by a tapped link to the app's home page. */
+    fun openHome()
 
     fun openOutside(url: String)
 
@@ -96,6 +100,13 @@ class ServerPageClient(private val page: PageState, private val host: AppHost) :
         if (!request.isForMainFrame) return false
         val url = WebUrl.parse(request.url.toString())
         if (url != null && url.host != APP_HOST && url.origin in host.origins()) return false
+        // Our login bar and running screen link to the server list (owner,
+        // 2026-11-09): a tap there shows home; it gives the page nothing.
+        if (request.url.toString() == HOME_PAGE) {
+            // A real tap only, as for outside links (review).
+            if (request.hasGesture() && host.touchedServerLately()) host.openHome()
+            return true
+        }
         // WebView's gesture flag is set by input that never touched the
         // screen too (checked on the emulator): a real touch is required.
         if (host.touchedServerLately()) tappedOutside(request, host)?.let(host::openOutside)

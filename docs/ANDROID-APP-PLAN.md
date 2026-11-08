@@ -1039,6 +1039,33 @@ Packages:
    this server… which asks first); leaving Foundry's login by the bar on
    top (A).
 
+3. **Building** (in progress 2026-11-09).
+   - **The login bar and the running screen** (done 2026-11-09; the
+     extension's apply specs 6, the app's world and running specs 9, the
+     on-device suite 9 pass; review: no critical or high, fixed: the join
+     redirect now only a plain same-server path, no backslash or blank a
+     parser could turn into another host; the launch note cleared once
+     joined; Join only when the world has a Gamemaster user; the link to
+     the server list needs a real tap like outside links; the change count
+     read once when Launch is pressed):
+     `app/login-bar.ts` adds "‹ Servers" and the server (with "Not
+     encrypted" on http) over Foundry's `/auth`; a tapped link to the
+     app's home page makes native show the server list
+     (`ServerPageClient`, `AppHost.openHome`; checked on the emulator).
+     The running screen now shows on `/join` always (`showsRunning` has no
+     referrer rule), with a ‹ to the servers, **Join as Gamemaster** (main
+     after a launch with changes: "applies N changes", from a launch note
+     our Setup page writes to session storage, `app/launch-note.ts`), and a
+     join sheet (user, password; `joinGame` posts `/join` as Foundry's form
+     does, only a same-server redirect followed; `joinUsers` lists GMs
+     first). Tests joining after a launch now use our screen
+     (`tests/foundry/extension.ts` `joinWorld`/`joinFromRunningScreen`,
+     `tests/android/steps.ts` `joinAsGm`). App apply spec passes (6).
+   - **Next:** home A with the server sheet (rename, re-address keeping
+     the library, remove), adding a server with the http/https toggle and
+     a native check of `/api/status`; the mockup's card overflow fixed
+     there (`min-width: 0`); then reviews, the suite, commit.
+
 ## Native rules (for phase 4)
 
 The contract is `packages/extension/src/app/native-api.ts` (who may ask

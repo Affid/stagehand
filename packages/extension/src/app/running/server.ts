@@ -118,3 +118,77 @@ export async function closeWorld(
     return "failed";
   }
 }
+
+/** A user who can join, as the join page knows them (`game.users`). */
+export interface JoinUser {
+  readonly id: string;
+  readonly name: string;
+  /** Assistant GM or Gamemaster (Foundry's roles 3 and 4). */
+  readonly gm: boolean;
+}
+
+const GM_ROLE = 3;
+
+/** The join page's users, Gamemasters first. */
+export function joinUsers(game: unknown): JoinUser[] {
+  const users = (
+    game as { users?: { values?: () => Iterable<unknown> } } | undefined
+  )?.users;
+  if (typeof users?.values !== "function") return [];
+  const list: { readonly user: JoinUser; readonly role: number }[] = [];
+  for (const raw of users.values()) {
+    const u = raw as { id?: unknown; name?: unknown; role?: unknown };
+    const id = text(u.id, 200);
+    const name = text(u.name, 200);
+    if (!id || !name) continue;
+    const role = typeof u.role === "number" ? u.role : 0;
+    list.push({ user: { id, name, gm: role >= GM_ROLE }, role });
+  }
+  // Highest role first; Foundry's order otherwise (the sort is stable).
+  return list.sort((a, b) => b.role - a.role).map((x) => x.user);
+}
+
+const SAME_SERVER_PATH = /^\/(?![/\\])[^\s\\]*$/;
+
+export type JoinResult =
+  | { readonly kind: "joined"; readonly redirect: string }
+  | { readonly kind: "refused"; readonly message: string }
+  | { readonly kind: "failed" };
+
+/**
+ * Joins the world as Foundry's join form does (POST /join with action
+ * "join"): where Foundry sends the user on success (a path on this
+ * server), its message when it refuses.
+ */
+export async function joinGame(
+  deps: ServerDeps,
+  userId: string,
+  password: string,
+): Promise<JoinResult> {
+  try {
+    const res = await deps.fetch(deps.route("join"), {
+      method: "POST",
+      credentials: "same-origin",
+      signal: AbortSignal.timeout(REQUEST_MS),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId, password, action: "join" }),
+    });
+    const body = (await res.json().catch(() => ({}))) as {
+      redirect?: unknown;
+      error?: unknown;
+      message?: unknown;
+    };
+    if (!res.ok) {
+      const message = text(body.error, 500) ?? text(body.message, 500);
+      return message ? { kind: "refused", message } : { kind: "failed" };
+    }
+    // Only a plain path on this server: no "//", no backslash or blank a
+    // URL parser would turn into another host (review).
+    const redirect = text(body.redirect, 2000);
+    if (!redirect || !SAME_SERVER_PATH.test(redirect))
+      return { kind: "failed" };
+    return { kind: "joined", redirect };
+  } catch {
+    return { kind: "failed" };
+  }
+}

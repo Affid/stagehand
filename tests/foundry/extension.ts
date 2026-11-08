@@ -73,15 +73,34 @@ export async function joinWorld(
   url: string,
   user: string,
 ): Promise<void> {
-  // As after a launch from Setup: the app's own screen for a running world
-  // (app/running) leaves Foundry's join form alone then.
   await page.goto(`${url}/join`, { referer: `${url}/setup` });
-  await page
-    .locator('#join-game-form select[name="userId"]')
-    .selectOption({ label: user });
-  await page.locator('#join-game-form button[name="join"]').click();
+  // The app shows its own running screen on /join (owner, 2026-11-09): its
+  // Join as Gamemaster joins as Foundry's form does. The extension leaves
+  // Foundry's form.
+  // The app's script adds its screen's style at document start.
+  const isApp = await page.evaluate(
+    () => document.getElementById("ml-run-style") !== null,
+  );
+  if (isApp) await joinFromRunningScreen(page, user);
+  else {
+    await page
+      .locator('#join-game-form select[name="userId"]')
+      .selectOption({ label: user });
+    await page.locator('#join-game-form button[name="join"]').click();
+  }
   await page.waitForURL(/\/game$/);
   await waitReady(page);
+}
+
+/** The app's running screen: Join as Gamemaster, the user, Join. */
+export async function joinFromRunningScreen(
+  page: Page,
+  user: string,
+): Promise<void> {
+  await page.locator("#ml-run-root .mlr-join").click();
+  const sheet = page.locator("#ml-run-root .mlr-sheet");
+  await sheet.locator("select").selectOption({ label: user });
+  await sheet.getByRole("button", { name: "Join", exact: true }).click();
 }
 
 /** Ends Foundry's first-run tour, whose overlay blocks clicks in a fresh profile. */

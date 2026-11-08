@@ -13,6 +13,5 @@ if (typeof ML_APP_SERVER === "string")
     win: window,
     href: location.href,
     server: ML_APP_SERVER,
-    referrer: document.referrer,
     runningCss: __ML_RUNNING_CSS__,
   });

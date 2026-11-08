@@ -4,6 +4,8 @@ import { describe, expect, test, vi } from "vitest";
 import {
   closeWorld,
   fetchStatus,
+  joinGame,
+  joinUsers,
   joinWorld,
   parseStatus,
   uptimeParts,
@@ -124,5 +126,82 @@ describe("closeWorld", () => {
     ).toBe("failed");
     const down = vi.fn(() => Promise.reject(new Error("offline")));
     expect(await closeWorld({ fetch: down, route })).toBe("failed");
+  });
+});
+
+describe("joinUsers", () => {
+  test("the join page's users, Gamemasters first", () => {
+    const users = new Map([
+      ["p1", { id: "p1", name: "Player1", role: 1 }],
+      ["a1", { id: "a1", name: "Assistant", role: 3 }],
+      ["g1", { id: "g1", name: "Gamemaster", role: 4 }],
+    ]);
+    expect(joinUsers({ users })).toEqual([
+      { id: "g1", name: "Gamemaster", gm: true },
+      { id: "a1", name: "Assistant", gm: true },
+      { id: "p1", name: "Player1", gm: false },
+    ]);
+  });
+
+  test("nothing readable, no users", () => {
+    expect(joinUsers(undefined)).toEqual([]);
+    expect(joinUsers({ users: new Map([["x", { id: 3 }]]) })).toEqual([]);
+  });
+});
+
+describe("joinGame", () => {
+  const reply = (status: number, body: unknown) =>
+    vi.fn((_url: RequestInfo | URL, _init?: RequestInit) =>
+      Promise.resolve(new Response(JSON.stringify(body), { status })),
+    );
+
+  test("Foundry lets the user in: where it sends them", async () => {
+    const fetch = reply(200, { message: "ok", redirect: "/game" });
+    expect(await joinGame({ fetch, route }, "g1", "pw")).toEqual({
+      kind: "joined",
+      redirect: "/game",
+    });
+    expect(fetch).toHaveBeenCalledWith("/join", {
+      method: "POST",
+      credentials: "same-origin",
+      signal: expect.any(AbortSignal) as unknown,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId: "g1", password: "pw", action: "join" }),
+    });
+  });
+
+  test("Foundry refuses: its own message", async () => {
+    const fetch = reply(401, { error: "Incorrect password for Gamemaster" });
+    expect(await joinGame({ fetch, route }, "g1", "x")).toEqual({
+      kind: "refused",
+      message: "Incorrect password for Gamemaster",
+    });
+  });
+
+  test("a redirect elsewhere, or no answer, failed", async () => {
+    expect(
+      await joinGame(
+        { fetch: reply(200, { redirect: "https://evil.example/" }), route },
+        "g1",
+        "",
+      ),
+    ).toEqual({ kind: "failed" });
+    for (const sneaky of [
+      "/\\evil.example",
+      "/\tevil.example",
+      "//evil.example",
+      "/ok\\x",
+    ])
+      expect(
+        await joinGame(
+          { fetch: reply(200, { redirect: sneaky }), route },
+          "g1",
+          "",
+        ),
+      ).toEqual({ kind: "failed" });
+    const broken = vi.fn(() => Promise.reject(new Error("offline")));
+    expect(await joinGame({ fetch: broken, route }, "g1", "")).toEqual({
+      kind: "failed",
+    });
   });
 });
