@@ -426,9 +426,9 @@ native, no bridge on an unsaved site, the rail opens the home screen) and
 first, a delete waits for native's dialog, an outside link goes to native
 and opens no window). The veil (`setup-veil.spec.ts`, every frame of a
 Setup load) and a reviewed launch applied through `app-game.js`
-(`apply.spec.ts`) pass on the app too. Full runs on 14.370: extension 109
-passed, 4 skipped (the older-build checks); app 102 passed, 11 skipped
-(those 4, the toolbar panel's 6, companion-http).
+(`apply.spec.ts`) pass on the app too. Full runs on 14.370 (after the review fixes): extension 111 passed, 4
+skipped (the older-build checks); app 104 passed, 11 skipped (those 4,
+the toolbar panel's 6, companion-http).
 
 Found on the way: in the harness the companion's HELLO timed out (1 s,
 five tries) because answering into the busy game page with a separate
