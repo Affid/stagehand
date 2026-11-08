@@ -69,6 +69,24 @@ for (const width of [360, 412]) {
   await click(p, ".mlp-back"); await expect(p, "home/world", `${tag} Back from What's new`);
   await p.close();
 }
+// A world is running: the app shows which one and Return to Setup; with people in the game it asks first.
+for (const [people, width] of [[2, 360], [0, 412]]) {
+  const p = await b.newPage({ viewport: { width, height: width === 360 ? 736 : 871 } });
+  p.on("pageerror", (e) => errs.push(`running ${width}: ${e.message}`));
+  await p.goto(`file://${dir}out/setup-shell.html?calm=1&phone=1&running=strahd&people=${people}`); await p.evaluate(() => document.fonts.ready); await p.waitForTimeout(500);
+  const tag = `running@${width}`;
+  const shown = await p.evaluate(() => ({ title: document.querySelector(".mlp-runhero h2")?.textContent, tabs: !!document.querySelector(".mlp-tabs")?.offsetParent }));
+  if (shown.title !== "Curse of Strahd" || shown.tabs) bad.push(`${tag}: expected the running world and no tabs, got ${JSON.stringify(shown)}`);
+  await check(p, `${tag} screen`);
+  await click(p, "[data-act=runreturn]");
+  const asked = !!(await p.$(".mls-dialog [data-act=runclose]"));
+  if (asked !== people > 0) bad.push(`${tag}: confirm ${asked ? "shown" : "missing"} with ${people} people in the game`);
+  if (asked) { await check(p, `${tag} confirm`); await click(p, ".mls-dialog [data-act=runclose]"); }
+  await p.waitForTimeout(1900);
+  const back = await p.evaluate(() => ({ run: !!document.querySelector(".mlp-run"), page: document.body.dataset.page, tabs: !!document.querySelector(".mlp-tabs")?.offsetParent }));
+  if (back.run || back.page !== "world" || !back.tabs) bad.push(`${tag}: Return to Setup didn't land on Setup: ${JSON.stringify(back)}`);
+  await p.close();
+}
 console.log(bad.length ? bad : "no layout problems");
 console.log(errs.length ? errs : "no errors");
 await b.close();

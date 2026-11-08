@@ -66,6 +66,7 @@ iframe { display: block; border: 0; background: #000; }
   <div class="tools">
     <span class="seg" role="group" aria-label="Show"><span class="lbl">Show</span><button type="button" data-v="new" aria-pressed="true">New page</button><button type="button" data-v="today" aria-pressed="false">Foundry today</button></span>
     <span class="seg" role="group" aria-label="Device"><span class="lbl">Device</span><button type="button" data-d="360" aria-pressed="false">Small phone</button><button type="button" data-d="412" aria-pressed="true">Phone</button><button type="button" data-d="768" aria-pressed="false">Tablet</button></span>
+    <span class="seg" role="group" aria-label="A world running"><span class="lbl">Running</span><button type="button" data-r="" aria-pressed="true">None</button><button type="button" data-r="2" aria-pressed="false">2 people</button><button type="button" data-r="0" aria-pressed="false">Nobody</button></span>
     <span class="seg" role="group" aria-label="Worlds on the server"><span class="lbl">Worlds</span><button type="button" data-w="6" aria-pressed="true">6</button><button type="button" data-w="12" aria-pressed="false">12</button></span>
     <button type="button" id="reset">Reset</button>
   </div>
@@ -91,7 +92,7 @@ iframe { display: block; border: 0; background: #000; }
 <script>
 // Sizes of the WebView area: the screen minus Android's status bar (24) and gesture bar (20).
 const DEVICES = { 360: [360, 736], 412: [412, 871], 768: [768, 980] };
-const S = { v: "new", d: "412", w: "6" };
+const S = { v: "new", d: "412", w: "6", r: "" };
 const view = document.getElementById("view"), today = document.getElementById("today");
 const device = document.getElementById("device"), stage = document.getElementById("stage");
 
@@ -103,6 +104,7 @@ const NOTES = {
     <li><b>Library</b>: one row on top: filter, <b>View</b> (group by) and <b>⋮</b> (Select, Install, Update all, Tags, Presets, folders, import and export). Try Select: the actions sit above the tabs.</li>
     <li><b>By world</b>: three worlds fit across; scroll sideways for more; View chooses which worlds.</li>
     <li><b>Backups</b>: <b>New snapshot</b> sits above the tabs with the summary; try Select: Delete and Done move into that bar.</li>
+    <li><b>Running</b> (top): the app opened while a world runs. It shows which world, who's in it and for how long; <b>Return to Setup</b> closes it (asking first if people are in the game) and lands on Setup.</li>
     <li><b>Configuration</b>: change a setting; the Save bar sits above the tabs.</li>
     <li>The <b>version chip</b> (14 · 370 ↑) for the update; <b>⏻</b> for Log out and Shut down.</li></ul></div>
     <div><h3>Changed since the first version</h3><ul>
@@ -112,6 +114,7 @@ const NOTES = {
     <li>The banner's "5 changes wait … Review · Discard" moved into the bottom bar, which opens a <b>Next launch</b> sheet with undo per change.</li>
     <li>Library, decluttered: one control row instead of four; "3 new modules to sort" in one line; tags as coloured dots; Select's actions in a bar above the tabs; By world with a narrower module column and its options in View.</li>
     <li>Backups, calmer: the summary and New snapshot moved to a bar above the tabs; one row of tabs (names and counts, sizes in the bar); the explanation in one line; the filter and Sort by in one row; selecting snapshots works from the bottom bar.</li>
+    <li>New: a screen for when a world is running, with Return to Setup.</li>
     <li>What's new: the update button comes first, before the release notes.</li>
     <li>Configuration's Save bar stays above the tabs instead of at the foot of the page.</li>
     <li>A world without the companion: one Launch, in the bottom bar.</li>
@@ -133,7 +136,7 @@ function load() {
   device.classList.toggle("tablet", S.d === "768");
   const isToday = S.v === "today";
   view.hidden = isToday; today.hidden = !isToday;
-  if (!isToday) view.src = `setup-shell.html?calm=1&phone=1${S.w === "12" ? "&worlds=12" : ""}`;
+  if (!isToday) view.src = `setup-shell.html?calm=1&phone=1${S.w === "12" ? "&worlds=12" : ""}${S.r ? `&running=strahd&people=${S.r}` : ""}`;
   document.getElementById("notes").innerHTML = NOTES[S.v] + (isToday ? "" : COMMON);
   scale();
 }
@@ -151,7 +154,7 @@ function pick(attr, key) {
     S[key] = b.dataset[attr]; load();
   }));
 }
-pick("v", "v"); pick("d", "d"); pick("w", "w");
+pick("v", "v"); pick("d", "d"); pick("w", "w"); pick("r", "r");
 document.getElementById("reset").addEventListener("click", load);
 addEventListener("resize", scale);
 load();

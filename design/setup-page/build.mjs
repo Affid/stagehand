@@ -10,8 +10,8 @@ if (!existsSync(`${dir}fvtt/css/foundry2.css`)) {
 }
 
 const data = read("src/_data.js").replace("/*MODULES_JSON*/[]", () => read("dom/modules.json"));
-const SHELL_CSS = ["_shell", "_ideas", "_calm", "_sched", "_server", "_config", "_update", "_phone"].map((f) => read(`src/${f}.css`)).join("\n");
-const SHELL_JS = ["_shell", "_ideas", "_calm", "_sched", "_server", "_config", "_update", "_tips", "_news", "_phone", "_boot"].map((f) => read(`src/${f}.js`)).join("\n");
+const SHELL_CSS = ["_shell", "_ideas", "_calm", "_sched", "_server", "_config", "_update", "_phone", "_running"].map((f) => read(`src/${f}.css`)).join("\n");
+const SHELL_JS = ["_shell", "_ideas", "_calm", "_sched", "_server", "_config", "_update", "_tips", "_news", "_phone", "_running", "_boot"].map((f) => read(`src/${f}.js`)).join("\n");
 const HEAD = `<link href="fvtt/css/foundry2.css" rel="stylesheet"><style>@import "fvtt/fonts/fontawesome/css/all.min.css" layer(variables);</style>`;
 
 const page = read("src/setup-shell.html")

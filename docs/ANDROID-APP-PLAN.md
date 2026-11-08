@@ -226,6 +226,20 @@ stands, for the owner to approve:
   explanation shortened to one line beside Select; the filter and Sort by in
   one row; while selecting snapshots, the count, Delete and Done take over
   the bottom bar; dates without the weekday.
+- A world running (asked for by the owner): Foundry has no Setup then and
+  sends everyone to `/join`, so the app shows its own screen instead: the
+  world's picture and name, "Running now", its system, how many people are
+  in the game and for how long (all from Foundry's `/api/status`, seen live
+  on 14.370: `active`, `world`, `system`, `systemVersion`, `users`,
+  `uptime`), **Return to Setup**, and **Join the game** (Foundry's `/join`).
+  Return to Setup posts `worldShutdown` to `/setup`; with an admin session
+  Foundry needs no password (checked live), without one the sheet asks for
+  the admin password as Foundry's `/join` does. With people in the game it
+  asks first ("Disconnect and return"); then it waits for the world to close
+  and lands on Setup with the world selected. If the world closes elsewhere
+  (the GM returns to Setup from inside the game), the app notices by polling
+  `/api/status` and shows Setup. No tab bar on this screen: none of the tabs
+  work until the world is closed.
 - What's new puts the update first; Configuration's Save bar sits above the
   tabs; a world without the companion has one Launch, in the bottom bar.
 - Touch sizes 44-48 px; no hover-only controls or tooltips; a phone on its

@@ -1,0 +1,18 @@
+/* ---------- A world is running (?phone=1&running=<world>): which world, and Return to Setup ---------- */
+body.mlp.mlp-running > :not(.mlp-run, #notifications, .mls-backdrop, .mls-dialog, .mlp-scrim, #context-menu, .ml-pop) { display: none !important; }
+body.mlp .mlp-run { flex: 1; align-self: stretch; width: 100%; min-height: 0; display: flex; flex-direction: column; overflow: auto; background: var(--mlp-solid); }
+body.mlp .mlp-run .mlp-top { position: absolute; top: 0; left: 0; right: 0; background: linear-gradient(180deg, rgb(0 0 0 / 55%), transparent); border-bottom-color: transparent; backdrop-filter: none; }
+body.mlp .mlp-runhero { position: relative; flex: none; display: grid; align-content: end; gap: 8px; min-height: 300px; padding: calc(var(--mlp-bar) + 24px) 16px 18px;
+  background: linear-gradient(180deg, rgb(11 10 19 / 5%), rgb(11 10 19 / 70%) 60%, var(--mlp-solid)), var(--img) var(--pos, center) / cover; }
+body.mlp .mlp-runhero h2 { margin: 0; font-family: "Modesto Condensed", serif; font-size: 40px; line-height: 1; color: var(--color-light-1); border: 0; text-shadow: 0 0 8px #000; text-wrap: balance; }
+body.mlp .mlp-runhero .live { justify-self: start; display: inline-flex; align-items: center; gap: 7px; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #bdf0c6; background: rgb(20 60 32 / 75%); border: 1px solid rgb(120 220 140 / 35%); }
+body.mlp .mlp-runhero .live i { width: 8px; height: 8px; border-radius: 50%; background: #6fdc8c; box-shadow: 0 0 0 0 rgb(111 220 140 / 60%); animation: mlp-live 2s ease-out infinite; }
+@keyframes mlp-live { 70% { box-shadow: 0 0 0 7px rgb(111 220 140 / 0%); } 100% { box-shadow: 0 0 0 0 rgb(111 220 140 / 0%); } }
+@media (prefers-reduced-motion: reduce) { body.mlp .mlp-runhero .live i { animation: none; } }
+body.mlp .mlp-runhero .meta { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13.5px; color: var(--color-light-2); text-shadow: 0 0 6px #000; }
+body.mlp .mlp-runhero .meta i { margin-right: 6px; color: var(--color-warm-1); }
+body.mlp .mlp-runbody { display: grid; gap: 12px; padding: 8px 16px 24px; max-width: 520px; width: 100%; margin: 0 auto; }
+body.mlp .mlp-runbody p { margin: 0; font-size: 14.5px; line-height: 1.45; color: var(--color-light-2); }
+body.mlp .mlp-runbody p.hint { font-size: 13px; color: var(--color-text-subtle); }
+body.mlp .mlp-runbtn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; height: 52px; width: 100%; font-size: 16px; font-weight: 700; }
+body.mlp .mlp-runjoin { height: var(--mlp-tap); width: 100%; font-size: 15px; margin-top: 8px; }
