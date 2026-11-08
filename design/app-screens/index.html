@@ -1,0 +1,342 @@
+<title>App Screens</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Signika:wght@400;600;700&family=Amiri:wght@700&family=Roboto+Condensed:wght@700&display=swap">
+<style>
+/* A control bar, a phone on a stage, notes beside it (as the phone playground). Inside the phone:
+   the app's own screens in the look of our Setup page (Foundry's dark Setup), one dark look on purpose. */
+:root {
+  --bg: #0b0a13; --bar: #17151f; --line: #2c2836; --fg: #e9e4f2; --muted: #a59eb4;
+  --accent: #ee9b3a; --accent-ink: #1a1206; --bezel: #1d1b24; --bezel-edge: #3a3646;
+  /* Inside the app: Foundry's dark Setup palette. */
+  --app-bg: #100e18; --app-panel: #1a1724; --app-panel-2: #221e2e; --app-line: #353042; --app-fg: #efe9dd;
+  --app-dim: #b5aec2; --app-warm: #ee9b3a; --app-warm-2: #ffbf6b; --app-ok: #6fdc8c; --app-plain: #e88a6a;
+  --display: "Amiri", Georgia, serif; --title: "Roboto Condensed", "Arial Narrow", sans-serif; --body: "Signika", "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 14px/1.45 var(--body); display: flex; flex-direction: column; }
+.bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding-block: 10px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); background: var(--bar); border-bottom: 1px solid var(--line); }
+.bar h1 { margin: 0; font: 700 1.35rem/1 var(--display); }
+.bar .tag { font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line); padding: 2px 8px; border-radius: 999px; }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; margin-left: auto; }
+.seg { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.seg .lbl { padding: 0 10px; color: var(--muted); font-size: .86rem; }
+.seg button { font: inherit; color: var(--muted); background: transparent; border: 0; border-left: 1px solid var(--line); padding: 6px 12px; cursor: pointer; }
+.seg button:hover { background: rgb(255 255 255 / 5%); }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+.seg[hidden] { display: none; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.main { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) 360px; }
+.stage { min-height: 0; overflow: auto; display: grid; place-items: start center; padding-block: 18px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: 16px; }
+.device { background: var(--bezel); border: 1px solid var(--bezel-edge); border-radius: 34px; padding: 10px; box-shadow: 0 20px 60px rgb(0 0 0 / 60%); }
+.screen { position: relative; width: 360px; height: 760px; overflow: hidden; border-radius: 24px; background: var(--app-bg); display: flex; flex-direction: column; }
+.status { flex: none; height: 24px; display: flex; align-items: center; justify-content: space-between; padding: 0 18px; color: #f2eef8; font: 600 12px/1 var(--body); background: #0b0a13; }
+.gesture { flex: none; height: 18px; display: grid; place-items: center; background: #0d0c16; }
+.gesture span { width: 108px; height: 4px; border-radius: 2px; background: #cfc8dc; opacity: .8; }
+.notes { min-height: 0; overflow: auto; border-left: 1px solid var(--line); background: var(--bar); padding-block: 16px 24px; padding-left: 18px; padding-right: max(18px, env(safe-area-inset-right, 0px)); display: grid; gap: 16px; align-content: start; }
+.notes h2 { margin: 0; font: 700 1.25rem/1.15 var(--display); text-wrap: balance; }
+.notes h3 { margin: 0 0 6px; font-size: .74rem; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.notes p, .notes li { margin: 0; color: #d6d0e2; max-width: 62ch; }
+.notes ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
+.notes b { color: var(--fg); }
+@media (max-width: 980px) { body { height: auto; } .main { grid-template-columns: minmax(0, 1fr); } .notes { border-left: 0; border-top: 1px solid var(--line); } .tools { margin-left: 0; } }
+
+/* ---------- Inside the phone: the app ---------- */
+.app { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; color: var(--app-fg); background: radial-gradient(120% 60% at 50% 0%, #1d1830 0%, var(--app-bg) 60%); }
+.app svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.top { flex: none; height: 56px; display: flex; align-items: center; gap: 10px; padding: 0 8px 0 14px; background: rgb(11 10 19 / 88%); border-bottom: 1px solid var(--app-line); }
+.top h1 { margin: 0; font: 700 25px/1 var(--title); letter-spacing: .01em; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.top .mark { width: 30px; height: 30px; border-radius: 7px; background: #2a2340; display: grid; place-items: center; flex: none; }
+.top .mark i { display: flex; gap: 2px; align-items: end; height: 18px; }
+.top .mark i b { width: 4px; border-radius: 1px; }
+.top .sp { flex: 1; }
+.ibtn { width: 44px; height: 44px; display: grid; place-items: center; border: 0; background: transparent; color: var(--app-fg); border-radius: 8px; cursor: pointer; }
+.ibtn:hover { background: rgb(255 255 255 / 6%); }
+.body { flex: 1; min-height: 0; overflow: auto; padding: 14px 12px 16px; display: grid; gap: 14px; align-content: start; }
+.eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--app-dim); padding: 0 4px; }
+.card { background: var(--app-panel); border: 1px solid var(--app-line); border-radius: 10px; }
+.server { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 12px; cursor: pointer; text-align: left; width: 100%; font: inherit; color: inherit; }
+.server:hover { border-color: #4a4358; }
+.server .ico { width: 44px; height: 44px; border-radius: 9px; display: grid; place-items: center; background: linear-gradient(160deg, #3b2a52, #1e1a2c); color: var(--app-warm-2); font: 700 18px/1 var(--title); }
+.server .nm { font-weight: 600; font-size: 15.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.server .sub { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 12.5px; color: var(--app-dim); margin-top: 3px; }
+.chip { display: inline-flex; align-items: center; gap: 5px; height: 20px; padding: 0 8px; border-radius: 999px; font-size: 11.5px; font-weight: 600; border: 1px solid; }
+.chip.plain { color: var(--app-plain); border-color: rgb(232 138 106 / 45%); }
+.chip.ok { color: var(--app-ok); border-color: rgb(111 220 140 / 40%); }
+.chip svg { width: 12px; height: 12px; }
+.chev { color: var(--app-dim); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 9px; height: 48px; padding: 0 18px; border-radius: 6px; border: 1px solid var(--app-line); background: var(--app-panel-2); color: var(--app-fg); font: 600 15px/1 var(--body); cursor: pointer; }
+.btn.bright { background: linear-gradient(180deg, #f4a845, #d9832a); border-color: #b06a1e; color: #1a1206; font-weight: 700; }
+.btn.wide { width: 100%; }
+.btn.ghost { background: transparent; }
+.dock { flex: none; padding: 10px 12px 12px; border-top: 1px solid var(--app-line); background: rgb(14 12 22 / 96%); display: grid; gap: 8px; }
+.row { display: flex; align-items: center; gap: 12px; padding: 13px 14px; min-height: 52px; }
+.row + .row { border-top: 1px solid var(--app-line); }
+.row .tx { flex: 1; min-width: 0; }
+.row .tx b { display: block; font-weight: 600; }
+.row .tx span { display: block; font-size: 12.5px; color: var(--app-dim); margin-top: 2px; }
+.switch { width: 44px; height: 26px; border-radius: 999px; background: #3a3446; position: relative; flex: none; border: 0; cursor: pointer; }
+.switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #cfc8dc; transition: left .15s; }
+.switch[aria-checked="true"] { background: #3f8a52; }
+.switch[aria-checked="true"]::after { left: 21px; background: #fff; }
+.foot { text-align: center; font-size: 11.5px; color: #7d768b; padding: 4px 0 2px; }
+.empty { text-align: center; padding: 26px 18px; display: grid; gap: 10px; justify-items: center; }
+.empty h2 { margin: 0; font: 700 22px/1.15 var(--display); }
+.empty p { margin: 0; color: var(--app-dim); font-size: 13.5px; }
+
+/* Sheet */
+.scrim { position: absolute; inset: 0; background: rgb(0 0 0 / 55%); z-index: 30; }
+.sheet { position: absolute; left: 0; right: 0; bottom: 0; z-index: 31; background: var(--app-panel); border-top: 1px solid var(--app-line); border-radius: 16px 16px 0 0; padding: 8px 16px 16px; display: grid; gap: 14px; box-shadow: 0 -10px 40px rgb(0 0 0 / 50%); }
+.sheet .grab { justify-self: center; width: 40px; height: 4px; border-radius: 2px; background: #5a5268; margin: 2px 0 2px; }
+.sheet h2 { margin: 0; font: 700 21px/1.15 var(--display); }
+.sheet p { margin: 0; color: var(--app-dim); font-size: 13px; }
+.field { display: grid; gap: 6px; }
+.field label { font-size: 12.5px; font-weight: 600; color: var(--app-dim); }
+.addr { display: flex; align-items: stretch; border: 1px solid #4a4358; border-radius: 7px; overflow: hidden; background: #0f0d16; height: 48px; }
+.addr:focus-within { border-color: var(--app-warm); box-shadow: 0 0 0 3px rgb(238 155 58 / 20%); }
+.addr .scheme { display: flex; border-right: 1px solid #4a4358; }
+.addr .scheme button { font: 600 13px/1 var(--body); border: 0; padding: 0 10px; background: transparent; color: var(--app-dim); cursor: pointer; }
+.addr .scheme button[aria-pressed="true"] { background: #2b2538; color: var(--app-fg); }
+.addr input { flex: 1; min-width: 0; border: 0; background: transparent; color: var(--app-fg); font: 15px/1 var(--body); padding: 0 12px; }
+.addr input::placeholder { color: #6d6679; }
+.check { display: flex; align-items: center; gap: 8px; font-size: 13px; padding: 10px 12px; border-radius: 7px; background: #13261a; color: #c4f0cf; border: 1px solid rgb(111 220 140 / 30%); }
+.check.warn { background: #2c1d16; color: #f3c7b5; border-color: rgb(232 138 106 / 35%); }
+.input { height: 48px; border: 1px solid #4a4358; border-radius: 7px; background: #0f0d16; color: var(--app-fg); font: 15px/1 var(--body); padding: 0 12px; }
+select.input { appearance: none; }
+
+/* Foundry's login, as Foundry draws it (simplified) */
+.fvtt { flex: 1; min-height: 0; overflow: auto; background: radial-gradient(90% 50% at 50% 10%, #4a2a18, #120c10 70%); display: grid; align-content: start; justify-items: center; gap: 18px; padding: 34px 18px 20px; position: relative; }
+.fvtt .logo { font: 700 54px/0.9 var(--title); text-transform: uppercase; text-align: center; color: #f3ead8; text-shadow: 0 3px 0 #000; letter-spacing: .02em; }
+.fvtt .panel { width: 100%; background: rgb(12 10 16 / 92%); border: 1px solid #3a2f2a; border-radius: 8px; padding: 18px; display: grid; gap: 12px; }
+.fvtt .panel h2 { margin: 0; text-align: center; font: 700 26px/1.1 var(--display); color: #f3ead8; }
+.fvtt .panel p { margin: 0; font-size: 13px; color: #c9bfae; }
+.fvtt .login { height: 46px; border-radius: 4px; border: 0; background: #e8963a; color: #1a1206; font: 700 15px/1 var(--body); text-transform: uppercase; letter-spacing: .03em; }
+.fvtt .ver { font: 700 22px/1 var(--display); color: #d8ccb6; margin-top: 8px; }
+.leavebar { flex: none; height: 48px; display: flex; align-items: center; gap: 6px; padding: 0 10px 0 4px; background: rgb(11 10 19 / 94%); border-bottom: 1px solid var(--app-line); }
+.leavebar .host { font-size: 13px; color: var(--app-dim); margin-left: auto; display: flex; align-items: center; gap: 6px; }
+.leavebar .ibtn { width: auto; padding: 0 10px; gap: 6px; display: inline-flex; align-items: center; font: 600 14px/1 var(--body); }
+.fab { position: absolute; left: 14px; bottom: 16px; z-index: 5; display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 16px 0 12px; border-radius: 999px; background: rgb(26 23 36 / 94%); border: 1px solid #4a4358; color: var(--app-fg); font: 600 14px/1 var(--body); box-shadow: 0 6px 20px rgb(0 0 0 / 50%); cursor: pointer; }
+
+/* Running screen */
+.hero { position: relative; min-height: 270px; display: grid; align-content: end; gap: 8px; padding: 70px 16px 18px; background: linear-gradient(180deg, rgb(0 0 0 / 30%), rgb(16 14 24 / 96%)), linear-gradient(135deg, #6b2d1a, #2a1530 55%, #141020); }
+.hero .live { justify-self: start; display: inline-flex; align-items: center; gap: 7px; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #bdf0c6; background: rgb(20 60 32 / 75%); border: 1px solid rgb(120 220 140 / 35%); }
+.hero .live i { width: 8px; height: 8px; border-radius: 50%; background: var(--app-ok); }
+.hero h2 { margin: 0; font: 700 38px/1 var(--title); text-transform: uppercase; text-shadow: 0 0 8px #000; }
+.hero .meta { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; color: #ddd5e6; }
+.runbody { padding: 16px 14px 18px; display: grid; gap: 12px; }
+.runbody p { margin: 0; font-size: 13.5px; color: var(--app-dim); }
+.runbody .hint { font-size: 12.5px; color: #8e869c; }
+.btn .sub { font-weight: 600; font-size: 12.5px; opacity: .8; }
+.topover { position: absolute; top: 0; left: 0; right: 0; z-index: 3; background: linear-gradient(180deg, rgb(0 0 0 / 55%), transparent); border-bottom-color: transparent; }
+.toast { position: absolute; left: 12px; right: 12px; top: 64px; z-index: 40; padding: 10px 12px; border-radius: 8px; background: #1f3a28; border: 1px solid rgb(111 220 140 / 35%); color: #d8f5df; font-size: 13px; }
+</style>
+
+<header class="bar">
+  <h1>App Screens</h1>
+  <span class="tag">Mockup · for your choice</span>
+  <div class="tools">
+    <span class="seg" role="group" aria-label="Screen"><span class="lbl">Screen</span>
+      <button type="button" data-s="home" aria-pressed="true">Home</button>
+      <button type="button" data-s="add" aria-pressed="false">Add a server</button>
+      <button type="button" data-s="login" aria-pressed="false">Foundry's login</button>
+      <button type="button" data-s="launched" aria-pressed="false">After a launch</button>
+      <button type="button" data-s="running" aria-pressed="false">Opened while running</button>
+    </span>
+    <span class="seg" role="group" aria-label="Home variant" id="homeVar"><span class="lbl">Home</span>
+      <button type="button" data-hv="a" aria-pressed="true">A · Servers first</button>
+      <button type="button" data-hv="b" aria-pressed="false">B · Settings list</button>
+      <button type="button" data-hv="empty" aria-pressed="false">No servers yet</button>
+    </span>
+    <span class="seg" role="group" aria-label="Leave variant" id="leaveVar" hidden><span class="lbl">Leave</span>
+      <button type="button" data-lv="a" aria-pressed="true">A · Bar on top</button>
+      <button type="button" data-lv="b" aria-pressed="false">B · Floating button</button>
+    </span>
+  </div>
+</header>
+<div class="main">
+  <main class="stage">
+    <div class="device"><div class="screen">
+      <div class="status" aria-hidden="true"><span>19:35</span><span>▮▮▮ ◔</span></div>
+      <div class="app" id="app"></div>
+      <div class="gesture" aria-hidden="true"><span></span></div>
+    </div></div>
+  </main>
+  <aside class="notes" id="notes" aria-live="polite"></aside>
+</div>
+
+<script>
+const ICON = {
+  back: '<svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>',
+  chev: '<svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>',
+  plus: '<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>',
+  dots: '<svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="12" cy="19" r="1.4"/></svg>',
+  open: '<svg viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>',
+  unlock: '<svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.5-2"/></svg>',
+  lock: '<svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',
+  door: '<svg viewBox="0 0 24 24"><path d="M14 4H6v16h8M14 4l5 2v12l-5 2zM11 12h.01"/></svg>',
+  play: '<svg viewBox="0 0 24 24"><path d="M7 5l12 7-12 7z"/></svg>',
+  servers: '<svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="6" rx="1.5"/><rect x="4" y="14" width="16" height="6" rx="1.5"/><path d="M8 7h.01M8 17h.01"/></svg>',
+  check: '<svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg>',
+  warn: '<svg viewBox="0 0 24 24"><path d="M12 4l9 16H3zM12 10v4M12 17h.01"/></svg>',
+  history: '<svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 3-6.2M4 4v4h4M12 8v4l3 2"/></svg>',
+  info: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 11v5M12 8h.01"/></svg>',
+};
+const MARK = '<span class="mark" aria-hidden="true"><i><b style="height:11px;background:#d9a441"></b><b style="height:16px;background:#efe3c8"></b><b style="height:12px;background:#5fa8a0"></b><b style="height:13px;background:#c0584a;transform:rotate(14deg)"></b></i></span>';
+const SERVERS = [
+  { name: "Home server", addr: "http://192.168.178.25:30000", last: "Opened today", plain: true, letter: "H" },
+  { name: "Friday group", addr: "https://vtt.example.com/foundry", last: "Opened 5 days ago", plain: false, letter: "F" },
+];
+const S = { s: "home", hv: "a", lv: "a", sheet: null, scheme: "http", typed: "192.168.178.25:30000", history: false, join: false, toast: "" };
+const app = document.getElementById("app"), notes = document.getElementById("notes");
+const host = (a) => a.replace(/^https?:\/\//, "");
+
+function serverCard(s) {
+  return `<button type="button" class="card server" data-go="login">
+    <span class="ico">${s.letter}</span>
+    <span><span class="nm" style="display:block">${s.name}</span><span class="sub"><span>${host(s.addr)}</span>${s.plain ? `<span class="chip plain">${ICON.unlock}Not encrypted</span>` : ""}<span>${s.last}</span></span></span>
+    <span class="chev">${ICON.chev}</span></button>`;
+}
+
+function homeA() {
+  const list = S.hv === "empty"
+    ? `<div class="card empty"><h2>Your Foundry servers</h2><p>Add the address you open Foundry at, for example 192.168.1.20:30000. Module Library then shows its own Setup page there.</p></div>`
+    : `<div class="eyebrow">Servers</div>${SERVERS.map(serverCard).join("")}`;
+  return `<header class="top">${MARK}<h1>Module Library</h1><span class="sp"></span><button class="ibtn" aria-label="More">${ICON.dots}</button></header>
+  <div class="body">${list}
+    <div class="eyebrow" style="margin-top:6px">Settings</div>
+    <div class="card"><div class="row"><span class="chev" style="color:var(--app-warm-2)">${ICON.history}</span><span class="tx"><b>Release history</b><span>The Update page reads Foundry's public release notes at foundryvtt.com.</span></span><button class="switch" role="switch" aria-checked="${S.history}" data-act="history" aria-label="Release history"></button></div></div>
+    <div class="foot">Module Library 0.2.0 · build 61457e0</div>
+  </div>
+  <div class="dock"><button class="btn bright wide" data-act="add">${ICON.plus}Add a server</button></div>`;
+}
+
+function homeB() {
+  const rows = S.hv === "empty" ? `<div class="row"><span class="tx"><b>No servers yet</b><span>Add the address you open Foundry at.</span></span></div>` :
+    SERVERS.map((s) => `<button class="row" style="width:100%;background:transparent;border:0;color:inherit;font:inherit;text-align:left;cursor:pointer" data-go="login"><span class="tx"><b>${s.name}</b><span>${host(s.addr)} · ${s.last}</span></span>${s.plain ? `<span class="chip plain">${ICON.unlock}http</span>` : `<span class="chip ok">${ICON.lock}https</span>`}<span class="chev">${ICON.chev}</span></button>`).join("");
+  return `<header class="top">${MARK}<h1>Module Library</h1></header>
+  <div class="body">
+    <div class="eyebrow">Servers</div>
+    <div class="card">${rows}<button class="row" style="width:100%;background:transparent;border:0;border-top:1px solid var(--app-line);color:var(--app-warm-2);font:inherit;font-weight:600;cursor:pointer" data-act="add">${ICON.plus}<span class="tx">Add a server</span></button></div>
+    <div class="eyebrow">Foundry</div>
+    <div class="card"><div class="row"><span class="tx"><b>Release history</b><span>Read release notes from foundryvtt.com</span></span><button class="switch" role="switch" aria-checked="${S.history}" data-act="history" aria-label="Release history"></button></div>
+      <div class="row"><span class="tx"><b>About Module Library</b><span>Version 0.2.0 · build 61457e0</span></span><span class="chev">${ICON.chev}</span></div></div>
+  </div>`;
+}
+
+function addSheet() {
+  const raw = S.typed.trim();
+  const full = /^https?:\/\//.test(raw) ? raw : `${S.scheme}://${raw}`;
+  const check = !raw ? "" : S.scheme === "https" && /^\d+\.\d+/.test(raw)
+    ? `<div class="check warn">${ICON.warn}No answer over https. Home servers usually use http: try http.</div>`
+    : `<div class="check">${ICON.check}Foundry 14.370 answers at ${full}</div>`;
+  return `<div class="scrim" data-act="close"></div><div class="sheet" role="dialog" aria-label="Add a server">
+    <span class="grab"></span><h2>Add a server</h2>
+    <div class="field"><label for="addr">Address</label>
+      <div class="addr"><span class="scheme" role="group" aria-label="Protocol"><button type="button" data-scheme="http" aria-pressed="${S.scheme === "http"}">http</button><button type="button" data-scheme="https" aria-pressed="${S.scheme === "https"}">https</button></span>
+      <input id="addr" value="${S.typed}" placeholder="192.168.1.20:30000" autocomplete="off" inputmode="url"></div>
+      <p>Type it as Foundry shows it, without http. Home servers on your network use <b>http</b>; one on the internet with a name, <b>https</b>. Pasting a whole address with http:// or https:// picks it for you.</p>
+    </div>
+    ${check}
+    <button class="btn bright wide" data-act="added">Add and open</button>
+  </div>`;
+}
+
+function login() {
+  const bar = S.lv === "a" ? `<div class="leavebar"><button class="ibtn" data-act="home">${ICON.back}Servers</button><span class="host">${ICON.unlock}192.168.178.25:30000</span></div>` : "";
+  const fab = S.lv === "b" ? `<button class="fab" data-act="home">${ICON.servers}Other server</button>` : "";
+  return `${bar}<div class="fvtt"><div class="logo">Foundry<br>Virtual<br>Tabletop</div>
+    <div class="panel"><h2>Administrator Access Required</h2><input class="input" type="password" placeholder="Administrator password" style="background:#2a2530"><p>There is not currently an active game on this server. In order to access the setup menu you must provide the server administrator password.</p><button class="login">Log in</button></div>
+    <div class="ver">Version 14 Build 370</div>${fab}</div>`;
+}
+
+function running(launched) {
+  const changes = launched ? 2 : 0;
+  const join = changes
+    ? `<button class="btn bright wide" style="height:58px;flex-direction:column;gap:3px" data-act="join"><span style="display:inline-flex;gap:9px;align-items:center">${ICON.play}Join as Gamemaster</span><span class="sub">applies 2 changes</span></button>
+       <button class="btn wide" data-act="return">${ICON.door}Return to Setup</button>`
+    : `<button class="btn bright wide" data-act="return">${ICON.door}Return to Setup</button>
+       <button class="btn wide" data-act="join">${ICON.play}Join as Gamemaster</button>`;
+  const lead = changes
+    ? "You launched it from here with 2 changes waiting. They apply when the Gamemaster joins from this app."
+    : "Setup, the Library and backups come back once the world is closed.";
+  return `<header class="top topover"><button class="ibtn" data-act="home" aria-label="Servers">${ICON.back}</button><h1 style="font-size:20px">Foundry VTT</h1><span class="sp"></span><span class="chip" style="color:var(--app-dim);border-color:var(--app-line)">14 · 370</span></header>
+  <div style="flex:1;min-height:0;overflow:auto">
+    <div class="hero"><span class="live"><i></i>Running now</span><h2>Curse of Strahd</h2><div class="meta"><span>dnd5e 5.1.4</span><span>${launched ? "Nobody in the game" : "2 people in the game"}</span><span>For ${launched ? "1 min" : "1 h 40 min"}</span></div></div>
+    <div class="runbody"><p>${lead}</p>${join}<p class="hint">${changes ? "Return to Setup closes the world; the changes stay queued for the next launch." : "Foundry saves the world and closes it; the 2 people in the game are disconnected."}</p></div>
+  </div>
+  ${S.join ? joinSheet(changes) : ""}`;
+}
+
+function joinSheet(changes) {
+  return `<div class="scrim" data-act="close"></div><div class="sheet" role="dialog" aria-label="Join as Gamemaster">
+    <span class="grab"></span><h2>Join Curse of Strahd</h2>
+    <div class="field"><label for="u">As</label><select id="u" class="input"><option>Gamemaster</option><option>Assistant GM</option></select></div>
+    <div class="field"><label for="p">Password</label><input id="p" class="input" type="password" placeholder="Leave empty if it has none"></div>
+    <p>${changes ? "The 2 queued changes apply as the world opens; it reloads once." : "Foundry's game screen opens; Back returns here."}</p>
+    <button class="btn bright wide" data-act="joined">${ICON.play}Join</button>
+  </div>`;
+}
+
+const NOTES = {
+  home: () => `<div><h2>Home: your servers</h2><p>The screen the app opens on when no server was open last. Same dark Setup look and type as our Setup page.</p></div>
+    <div><h3>A · Servers first</h3><ul><li>Each server as a card, like a world in the Worlds list: a name (you can rename it), the address, <b>Not encrypted</b> on http, when you last opened it. Tap opens it.</li><li><b>Add a server</b> by your thumb at the bottom.</li><li>Release history as one switch under Settings.</li><li>⋮ holds Rename and Remove for a long-pressed card, and About.</li></ul></div>
+    <div><h3>B · Settings list</h3><ul><li>Android-settings style: grouped rows, http or https as a small chip, Add a server as the list's last row.</li><li>Quieter, closer to a settings page than to Setup.</li></ul></div>
+    <div><h3>Try</h3><ul><li>Tap a server: Foundry's login opens (Screen: Foundry's login).</li><li>Tap Add a server.</li><li><b>No servers yet</b> shows the first start.</li></ul></div>`,
+  add: () => `<div><h2>Adding a server</h2><p>No protocol to type: <b>http</b> or <b>https</b> is a toggle in front of the address, http first (home servers). A whole address pasted with http:// or https:// sets it.</p></div>
+    <div><h3>New</h3><ul><li>The app checks the address before saving: it asks the server for Foundry's status and says what answered ("Foundry 14.370 answers"), or suggests the other protocol.</li><li><b>Add and open</b> saves it and opens its login.</li></ul></div>
+    <div><h3>Try</h3><ul><li>Switch to https with the 192.168… address: the hint suggests http.</li><li>Type your own address.</li></ul></div>`,
+  login: () => `<div><h2>Leaving a server without its password</h2><p>Foundry's admin login is Foundry's page; the app adds one way back to your servers.</p></div>
+    <div><h3>A · Bar on top</h3><ul><li>A slim bar of ours above Foundry's page: <b>‹ Servers</b> and which server this is (with the lock if it's http).</li><li>Always visible, takes 48 px.</li></ul></div>
+    <div><h3>B · Floating button</h3><ul><li><b>Other server</b> floats at the bottom left over Foundry's page.</li><li>No space taken; can sit over Foundry's own text.</li></ul></div>
+    <p>Android's Back already goes to the servers from here; this makes it visible. The same way out goes on the running screen and its password question.</p>`,
+  launched: () => `<div><h2>After a launch from the app</h2><p>Our screen instead of Foundry's join page, as you asked. With changes waiting, <b>Join as Gamemaster · applies 2 changes</b> is the main button.</p></div>
+    <div><h3>Try</h3><ul><li><b>Join as Gamemaster</b>: a sheet picks the user (Gamemasters first) and takes a password if the user has one; then Foundry's game screen opens and the companion applies the changes.</li><li><b>Return to Setup</b> closes the world; the changes stay for the next launch.</li><li>‹ goes to your servers.</li></ul></div>`,
+  running: () => `<div><h2>Opened while a world runs</h2><p>As today, with <b>Join as Gamemaster</b> as the second button and ‹ to your servers.</p></div>`,
+};
+
+function render() {
+  document.querySelectorAll("[data-s]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.s === S.s)));
+  document.querySelectorAll("[data-hv]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.hv === S.hv)));
+  document.querySelectorAll("[data-lv]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.lv === S.lv)));
+  document.getElementById("homeVar").hidden = !(S.s === "home" || S.s === "add");
+  document.getElementById("leaveVar").hidden = S.s !== "login";
+  let html = "";
+  if (S.s === "home" || S.s === "add") html = (S.hv === "b" ? homeB() : homeA()) + (S.s === "add" ? addSheet() : "");
+  if (S.s === "login") html = login();
+  if (S.s === "launched") html = running(true);
+  if (S.s === "running") html = running(false);
+  if (S.toast) html += `<div class="toast">${S.toast}</div>`;
+  app.innerHTML = html;
+  notes.innerHTML = NOTES[S.s === "add" ? "add" : S.s]();
+  const input = document.getElementById("addr");
+  if (input) input.addEventListener("input", (e) => {
+    const v = e.target.value;
+    const m = /^(https?):\/\/(.*)$/i.exec(v);
+    if (m) { S.scheme = m[1].toLowerCase(); S.typed = m[2]; render(); document.getElementById("addr").focus(); return; }
+    S.typed = v; const pos = e.target.selectionStart; render(); const again = document.getElementById("addr"); again.focus(); again.setSelectionRange(pos, pos);
+  });
+}
+
+function flash(text) { S.toast = text; render(); setTimeout(() => { S.toast = ""; render(); }, 1800); }
+
+document.addEventListener("click", (e) => {
+  const t = e.target.closest("button, [data-act], [data-go]");
+  if (!t) return;
+  if (t.dataset.s) { S.s = t.dataset.s; S.sheet = null; S.join = false; return render(); }
+  if (t.dataset.hv) { S.hv = t.dataset.hv; return render(); }
+  if (t.dataset.lv) { S.lv = t.dataset.lv; return render(); }
+  if (t.dataset.scheme) { S.scheme = t.dataset.scheme; return render(); }
+  if (t.dataset.go === "login") { S.s = "login"; return render(); }
+  const a = t.dataset.act;
+  if (a === "add") { S.s = "add"; return render(); }
+  if (a === "close") { if (S.s === "add") S.s = "home"; S.join = false; return render(); }
+  if (a === "added") { S.s = "login"; return render(); }
+  if (a === "history") { S.history = !S.history; return render(); }
+  if (a === "home") { S.s = "home"; S.join = false; return render(); }
+  if (a === "join") { S.join = true; return render(); }
+  if (a === "joined") { S.join = false; return flash("Foundry's game screen opens here; the companion applies the changes."); }
+  if (a === "return") { return flash("Closing the world… then Setup."); }
+});
+render();
+</script>

@@ -967,6 +967,73 @@ test:android`, no traces). First spec, `start.spec.ts`: a fresh install
    WebView 146 and wireless debugging first, phase 4 "For the owner");
    then `ML_ANDROID_SERIAL=<phone> ML_APP_SERVER=http://192.168.178.25:30000 pnpm test:android`.
 
+## Phase 6: the owner's first use (started 2026-11-09)
+
+The owner tried the app and asked for (2026-11-09):
+
+1. **Our running-world screen always**: after a launch from the app too,
+   not Foundry's `/join`. Decided: the screen gets **Join as Gamemaster**
+   beside Return to Setup; right after a launch with queued changes it is
+   the main button and says how many changes it applies (changes queued on
+   the phone apply only when the GM joins from the app: the desktop
+   extension has its own library).
+2. **Leaving a server without its password**: from Foundry's admin login
+   (and the running screen's password question) back to the server list,
+   e.g. to open another server.
+3. **A better home screen**, consistent with our Setup page, and adding a
+   server without typing `http://`.
+4. **Paste and password managers on Foundry's login**: a long press showed
+   no Paste; a password manager offered the site but didn't fill.
+5. **Foundry's window-size notice** showed before our page loaded.
+6. **The app icon**: improve it, last, once the app works well.
+
+Items 2 and 3, and the running screen's join (item 1), are designed first
+as clickable mockups for the owner; items 4 and 5 are fixes.
+
+Packages:
+
+1. **Fixes** (items 4 and 5).
+2. **Mockups** for the home screen, leaving a server, and the running
+   screen with Join; the owner chooses.
+3. **Building** what the owner chose, with the on-device suite extended.
+4. **The icon.**
+
+### Phase 6 progress
+
+1. **Fixes** (done 2026-11-09). Foundry's `game.mjs` blocks the context
+   menu on the whole document (`contextmenu` → `preventDefault`), which in
+   a WebView is also the long-press menu with Paste: in a text field the
+   event now stops at the window first (`page/text-fields.ts`,
+   `allowTextMenus`, on every server page), and Paste and Select all show
+   (checked on the emulator in Foundry's admin password field). Foundry's
+   admin and join password fields now carry `autocomplete="current-password"`
+   (`hintPasswords`), and only the WebView in front is offered to
+   password managers (`importantForAutofill`; the hidden home and
+   background WebViews were in the autofill structure too). The owner's
+   case (offered, not filled) couldn't be reproduced on the emulator,
+   where the server WebView started no autofill request at all; to check
+   on the phone with the owner's password manager. Foundry's window-size
+   notice now goes from document start on a touch screen (Setup) and on
+   `/auth` and `/join` (it no longer waits for the page to load): on the
+   emulator the notice is added and removed in the same moment, before a
+   frame is drawn. Found on the way: a phase 5 run before its review fixes
+   had left Foundry on the sci-fi theme (its cleanup stopped at its first
+   failure, and the next run took sci-fi as the owner's); dark is back,
+   and the themes test now puts the theme back as soon as it ends. Review
+   (one high, fixed: observers attached to a document root that may not
+   exist yet at document start now observe the document; the password
+   hints stop a moment after load; `plaintext-only` fields count as text).
+   The on-device suite passes (9 of 9).
+2. **Mockups** (published 2026-11-09, waiting for the owner):
+   `design/app-screens/index.html`,
+   https://claude.ai/artifact/M1rAQfU44fu4FbhFDVpzvi. Home A (servers
+   first, cards, Add a server at the bottom) or B (a settings-style list);
+   adding a server with an http/https toggle, no protocol typed, and a
+   check that Foundry answers; leaving Foundry's login by a bar on top (A)
+   or a floating button (B); the running screen after a launch (Join as
+   Gamemaster with the changes it applies, a sheet for the user and
+   password) and when opened later.
+
 ## Native rules (for phase 4)
 
 The contract is `packages/extension/src/app/native-api.ts` (who may ask

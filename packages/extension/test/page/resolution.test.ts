@@ -97,6 +97,25 @@ describe("hideResolutionNotice", () => {
     stop();
   });
 
+  test("at document start, before the root element exists, it waits instead of failing", async () => {
+    const html = document.documentElement;
+    html.remove();
+    const p = page();
+    let stop: () => void = () => undefined;
+    try {
+      expect(() => {
+        stop = hideResolutionNotice(p.globals, document);
+      }).not.toThrow();
+    } finally {
+      document.append(html);
+    }
+    notices(document, [[11, TEXT]]);
+    await vi.waitFor(() => {
+      expect(p.remove).toHaveBeenCalledWith(11);
+    });
+    stop();
+  });
+
   test("stopped before the area comes, it never acts", async () => {
     const p = page();
     hideResolutionNotice(p.globals, document)();

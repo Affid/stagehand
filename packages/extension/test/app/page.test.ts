@@ -97,6 +97,39 @@ describe("app-setup on a server's Setup page", () => {
     });
   });
 
+  test("on a touch screen Foundry's size notice goes from the start", () => {
+    const clearNotice = vi.fn();
+    const coarse = vi
+      .spyOn(window, "matchMedia")
+      .mockImplementation(
+        (q: string) =>
+          ({ matches: q === "(pointer: coarse)" }) as MediaQueryList,
+      );
+    Object.assign(window, { mlApp: fakeNative().port });
+    startAppSetup({
+      win: window,
+      doc: document,
+      href: `${SERVER}/setup`,
+      server: SERVER,
+      css: "",
+      clearNotice,
+    });
+    expect(clearNotice).toHaveBeenCalledWith(window);
+    coarse.mockImplementation(() => ({ matches: false }) as MediaQueryList);
+    clearNotice.mockClear();
+    Object.assign(window, { mlApp: fakeNative().port });
+    startAppSetup({
+      win: window,
+      doc: document,
+      href: `${SERVER}/setup`,
+      server: SERVER,
+      css: "",
+      clearNotice,
+    });
+    expect(clearNotice).not.toHaveBeenCalled();
+    coarse.mockRestore();
+  });
+
   test("does nothing on another page, or without the bridge", () => {
     Object.assign(window, { mlApp: fakeNative().port });
     expect(

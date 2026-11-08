@@ -151,18 +151,23 @@ test("Release history: allowed on home, read from foundryvtt.com", async () => {
 });
 
 test("the key screens in Foundry's three Setup themes", async () => {
-  for (const theme of THEMES) {
-    await setTheme(theme);
-    await page.reload();
-    await shell(page).locator(".mlp-top").waitFor({ timeout: 60_000 });
-    await expect(page.locator("body")).toHaveClass(
-      new RegExp(`theme-${theme}`),
-    );
-    await app.shot("setup", theme);
-    await openWorld(page);
-    await app.shot("world", theme);
-    await tab(page, /^Library/).click();
-    await app.shot("library", theme);
-    await tab(page, /^Worlds/).click();
+  try {
+    for (const theme of THEMES) {
+      await setTheme(theme);
+      await page.reload();
+      await shell(page).locator(".mlp-top").waitFor({ timeout: 60_000 });
+      await expect(page.locator("body")).toHaveClass(
+        new RegExp(`theme-${theme}`),
+      );
+      await app.shot("setup", theme);
+      await openWorld(page);
+      await app.shot("world", theme);
+      await tab(page, /^Library/).click();
+      await app.shot("library", theme);
+      await tab(page, /^Worlds/).click();
+    }
+  } finally {
+    // Put back at once, not only at the end of the run.
+    if (themeBefore) await setTheme(themeBefore);
   }
 });

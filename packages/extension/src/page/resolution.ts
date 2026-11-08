@@ -72,7 +72,8 @@ export function hideResolutionNotice(
     removeNotice(page, doc);
     stopArea = watchArea(page, found, doc);
   });
-  wait.observe(doc.documentElement, { childList: true, subtree: true });
+  // The document itself: at document start it may have no root yet (review).
+  wait.observe(doc, { childList: true, subtree: true });
   return () => {
     wait.disconnect();
     stopArea();

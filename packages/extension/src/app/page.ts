@@ -14,6 +14,7 @@ import { createNativeBridge, type NativePort } from "./bridge.ts";
 import { BACK, BRIDGE_NAME, isServerPage } from "./native-api.ts";
 import { pressBack } from "../ui/shell/phone/back.ts";
 import { hideResolutionNotice } from "../page/resolution.ts";
+import { allowTextMenus, hintPasswords } from "../page/text-fields.ts";
 import { nativePorts, nativeSend } from "./platform.ts";
 import { showsRunning, startRunning } from "./running/start.tsx";
 
@@ -49,7 +50,13 @@ export interface AppSetupDeps {
   readonly server: string;
   /** The Setup page's styles, veil included (setup-ui.css). */
   readonly css: string;
+  /** Clears Foundry's window-size notice (clearSizeNotice); a touch screen only. */
+  readonly clearNotice?: (win: Window) => void;
 }
+
+/** A touch screen: the app always shows its phone or tablet layout there. */
+const touchScreen = (win: Window): boolean =>
+  win.matchMedia("(pointer: coarse)").matches;
 
 /**
  * Runs `fn` once the document has its root element: at document start it
@@ -86,6 +93,10 @@ export function startAppSetup(deps: AppSetupDeps): boolean {
   const port = takeBridge(deps.win);
   if (!port) return false;
   const { doc } = deps;
+  allowTextMenus(deps.win);
+  // The phone and tablet layouts are made for the small window: Foundry's
+  // notice goes from the start, not once our page is up (owner, 2026-11-09).
+  if (touchScreen(deps.win)) (deps.clearNotice ?? clearSizeNotice)(deps.win);
   whenRoot(doc, (root) => {
     addStyles(root, deps.css);
     startVeil(doc);
@@ -127,11 +138,8 @@ export interface AppGameDeps {
  * Taken away as on Setup.
  */
 export function clearSizeNotice(win: Window): void {
-  const start = (): void => {
-    hideResolutionNotice(pageGlobals(), win.document);
-  };
-  if (win.document.readyState === "complete") start();
-  else win.addEventListener("load", start, { once: true });
+  // From document start: the notice goes as soon as Foundry adds it.
+  hideResolutionNotice(pageGlobals(), win.document);
 }
 
 /** The server's own URL for a route under it. */
@@ -148,6 +156,8 @@ const routeOf =
  */
 export function startAppGame(deps: AppGameDeps): boolean {
   const port = takeBridge(deps.win);
+  // Every page of the server but Setup (app-setup took the bridge there).
+  if (port) allowTextMenus(deps.win);
   if (
     port &&
     deps.runningCss !== undefined &&
@@ -174,6 +184,7 @@ export function startAppGame(deps: AppGameDeps): boolean {
   );
   if (port && onLoginPage) {
     (deps.clearNotice ?? clearSizeNotice)(deps.win);
+    hintPasswords(deps.win.document);
     return false;
   }
   if (!port || !isServerPage(deps.href, deps.server, "/game")) return false;

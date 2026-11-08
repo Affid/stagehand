@@ -164,6 +164,7 @@ class MainActivity : ComponentActivity(), AppHost {
         // The background stays attached (a page hidden from the window
         // gets its timers slowed), one pixel, under the others.
         root.addView(background, FrameLayout.LayoutParams(1, 1))
+        background.importantForAutofill = View.IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS
         root.addView(server, FrameLayout.LayoutParams(-1, -1))
         root.addView(home, FrameLayout.LayoutParams(-1, -1))
         listen(background, setOf(APP_ORIGIN), Caller.BACKGROUND, backgroundPage, relay)
@@ -205,6 +206,10 @@ class MainActivity : ComponentActivity(), AppHost {
         if (screen == Screen.SERVER) homeOverServer = false
         home.visibility = if (screen == Screen.HOME) View.VISIBLE else View.INVISIBLE
         server.visibility = if (screen == Screen.SERVER) View.VISIBLE else View.INVISIBLE
+        // Password managers fill the WebView in front, never the hidden ones
+        // (owner, 2026-11-09: autofill didn't reach Foundry's login field).
+        home.importantForAutofill = autofillFor(screen == Screen.HOME)
+        server.importantForAutofill = autofillFor(screen == Screen.SERVER)
     }
 
     /** Home as Module Library settings, from a server's Setup (home.open). */
@@ -364,6 +369,9 @@ class MainActivity : ComponentActivity(), AppHost {
         super.onDestroy()
     }
 }
+
+private fun autofillFor(shown: Boolean): Int =
+    if (shown) View.IMPORTANT_FOR_AUTOFILL_YES else View.IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS
 
 /** The server WebView's file inputs get the system chooser. */
 private class ServerChromeClient(private val pickers: Pickers) : android.webkit.WebChromeClient() {
