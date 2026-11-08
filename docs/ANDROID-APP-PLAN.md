@@ -1032,7 +1032,12 @@ Packages:
    check that Foundry answers; leaving Foundry's login by a bar on top (A)
    or a floating button (B); the running screen after a launch (Join as
    Gamemaster with the changes it applies, a sheet for the user and
-   password) and when opened later.
+   password) and when opened later. **The owner's choices (2026-11-09):**
+   home A ("looks much nicer"), with a clear way to edit and remove a
+   server, now in the mockup (a ⋮ on each card opens the server's sheet:
+   name, address with the http/https toggle and its library kept, Remove
+   this server… which asks first); leaving Foundry's login by the bar on
+   top (A).
 
 ## Native rules (for phase 4)
 

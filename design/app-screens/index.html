@@ -187,21 +187,42 @@ const SERVERS = [
   { name: "Home server", addr: "http://192.168.178.25:30000", last: "Opened today", plain: true, letter: "H" },
   { name: "Friday group", addr: "https://vtt.example.com/foundry", last: "Opened 5 days ago", plain: false, letter: "F" },
 ];
-const S = { s: "home", hv: "a", lv: "a", sheet: null, scheme: "http", typed: "192.168.178.25:30000", history: false, join: false, toast: "" };
+const S = { s: "home", hv: "a", lv: "a", sheet: null, edit: null, removing: false, scheme: "http", typed: "192.168.178.25:30000", history: false, join: false, toast: "" };
 const app = document.getElementById("app"), notes = document.getElementById("notes");
 const host = (a) => a.replace(/^https?:\/\//, "");
 
-function serverCard(s) {
-  return `<button type="button" class="card server" data-go="login">
+function serverCard(s, i) {
+  return `<div class="card server" data-go="login">
     <span class="ico">${s.letter}</span>
     <span><span class="nm" style="display:block">${s.name}</span><span class="sub"><span>${host(s.addr)}</span>${s.plain ? `<span class="chip plain">${ICON.unlock}Not encrypted</span>` : ""}<span>${s.last}</span></span></span>
-    <span class="chev">${ICON.chev}</span></button>`;
+    <button type="button" class="ibtn" data-edit="${i}" aria-label="Edit or remove ${s.name}">${ICON.dots}</button></div>`;
+}
+
+/** A server's own sheet: rename, change the address, remove. */
+function editSheet() {
+  const s = SERVERS[S.edit];
+  if (S.removing) return `<div class="scrim" data-act="close"></div><div class="sheet" role="dialog" aria-label="Remove ${s.name}">
+    <span class="grab"></span><h2>Remove ${s.name}?</h2>
+    <p>Module Library stops opening ${host(s.addr)}. Its library (folders, tags, presets) stays in this app, for when you add the server again; nothing on the server changes.</p>
+    <button class="btn wide" style="border-color:#8a3a2a;color:#ffb39e" data-act="removed">Remove</button>
+    <button class="btn ghost wide" data-act="close">Cancel</button></div>`;
+  const scheme = s.addr.startsWith("https") ? "https" : "http";
+  return `<div class="scrim" data-act="close"></div><div class="sheet" role="dialog" aria-label="${s.name}">
+    <span class="grab"></span><h2>${s.name}</h2>
+    <div class="field"><label for="nm">Name</label><input id="nm" class="input" value="${s.name}"></div>
+    <div class="field"><label for="ea">Address</label>
+      <div class="addr"><span class="scheme" role="group" aria-label="Protocol"><button type="button" aria-pressed="${scheme === "http"}">http</button><button type="button" aria-pressed="${scheme === "https"}">https</button></span>
+      <input id="ea" value="${host(s.addr)}" inputmode="url"></div>
+      <p>A new address keeps this server's library: use it when the server moved (a new IP or name).</p></div>
+    <button class="btn bright wide" data-act="saved">Save</button>
+    <button class="btn ghost wide" style="color:#ffb39e" data-act="remove">Remove this server…</button>
+  </div>`;
 }
 
 function homeA() {
   const list = S.hv === "empty"
     ? `<div class="card empty"><h2>Your Foundry servers</h2><p>Add the address you open Foundry at, for example 192.168.1.20:30000. Module Library then shows its own Setup page there.</p></div>`
-    : `<div class="eyebrow">Servers</div>${SERVERS.map(serverCard).join("")}`;
+    : `<div class="eyebrow">Servers</div>${SERVERS.map(serverCard).join("")}<p style="margin:0 4px;font-size:12px;color:#8e869c">Tap a server to open it; ⋮ to rename it, change its address or remove it.</p>`;
   return `<header class="top">${MARK}<h1>Module Library</h1><span class="sp"></span><button class="ibtn" aria-label="More">${ICON.dots}</button></header>
   <div class="body">${list}
     <div class="eyebrow" style="margin-top:6px">Settings</div>
@@ -280,9 +301,9 @@ function joinSheet(changes) {
 
 const NOTES = {
   home: () => `<div><h2>Home: your servers</h2><p>The screen the app opens on when no server was open last. Same dark Setup look and type as our Setup page.</p></div>
-    <div><h3>A · Servers first</h3><ul><li>Each server as a card, like a world in the Worlds list: a name (you can rename it), the address, <b>Not encrypted</b> on http, when you last opened it. Tap opens it.</li><li><b>Add a server</b> by your thumb at the bottom.</li><li>Release history as one switch under Settings.</li><li>⋮ holds Rename and Remove for a long-pressed card, and About.</li></ul></div>
+    <div><h3>A · Servers first</h3><ul><li>Each server as a card, like a world in the Worlds list: a name (you can rename it), the address, <b>Not encrypted</b> on http, when you last opened it. Tap opens it.</li><li><b>Add a server</b> by your thumb at the bottom.</li><li>Release history as one switch under Settings.</li><li><b>⋮ on each card</b> opens the server's sheet: rename it, change its address (http/https toggle; its library stays with it), or <b>Remove this server…</b>, which asks first and keeps the library in the app.</li><li>⋮ in the top bar: About.</li></ul></div>
     <div><h3>B · Settings list</h3><ul><li>Android-settings style: grouped rows, http or https as a small chip, Add a server as the list's last row.</li><li>Quieter, closer to a settings page than to Setup.</li></ul></div>
-    <div><h3>Try</h3><ul><li>Tap a server: Foundry's login opens (Screen: Foundry's login).</li><li>Tap Add a server.</li><li><b>No servers yet</b> shows the first start.</li></ul></div>`,
+    <div><h3>Try</h3><ul><li>Tap a server: Foundry's login opens (Screen: Foundry's login).</li><li>Tap ⋮ on a card: rename, change the address, remove.</li><li>Tap Add a server.</li><li><b>No servers yet</b> shows the first start.</li></ul></div>`,
   add: () => `<div><h2>Adding a server</h2><p>No protocol to type: <b>http</b> or <b>https</b> is a toggle in front of the address, http first (home servers). A whole address pasted with http:// or https:// sets it.</p></div>
     <div><h3>New</h3><ul><li>The app checks the address before saving: it asks the server for Foundry's status and says what answered ("Foundry 14.370 answers"), or suggests the other protocol.</li><li><b>Add and open</b> saves it and opens its login.</li></ul></div>
     <div><h3>Try</h3><ul><li>Switch to https with the 192.168… address: the hint suggests http.</li><li>Type your own address.</li></ul></div>`,
@@ -302,7 +323,7 @@ function render() {
   document.getElementById("homeVar").hidden = !(S.s === "home" || S.s === "add");
   document.getElementById("leaveVar").hidden = S.s !== "login";
   let html = "";
-  if (S.s === "home" || S.s === "add") html = (S.hv === "b" ? homeB() : homeA()) + (S.s === "add" ? addSheet() : "");
+  if (S.s === "home" || S.s === "add") html = (S.hv === "b" ? homeB() : homeA()) + (S.s === "add" ? addSheet() : "") + (S.s === "home" && S.edit !== null ? editSheet() : "");
   if (S.s === "login") html = login();
   if (S.s === "launched") html = running(true);
   if (S.s === "running") html = running(false);
@@ -327,10 +348,14 @@ document.addEventListener("click", (e) => {
   if (t.dataset.hv) { S.hv = t.dataset.hv; return render(); }
   if (t.dataset.lv) { S.lv = t.dataset.lv; return render(); }
   if (t.dataset.scheme) { S.scheme = t.dataset.scheme; return render(); }
+  if (t.dataset.edit !== undefined) { e.stopPropagation(); S.edit = Number(t.dataset.edit); S.removing = false; return render(); }
   if (t.dataset.go === "login") { S.s = "login"; return render(); }
   const a = t.dataset.act;
   if (a === "add") { S.s = "add"; return render(); }
-  if (a === "close") { if (S.s === "add") S.s = "home"; S.join = false; return render(); }
+  if (a === "close") { if (S.s === "add") S.s = "home"; S.join = false; S.edit = null; S.removing = false; return render(); }
+  if (a === "remove") { S.removing = true; return render(); }
+  if (a === "removed") { const n = SERVERS[S.edit].name; S.edit = null; S.removing = false; return flash(`${n} removed. Its library stays in this app.`); }
+  if (a === "saved") { S.edit = null; return flash("Saved."); }
   if (a === "added") { S.s = "login"; return render(); }
   if (a === "history") { S.history = !S.history; return render(); }
   if (a === "home") { S.s = "home"; S.join = false; return render(); }
