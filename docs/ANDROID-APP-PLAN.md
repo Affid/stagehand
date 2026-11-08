@@ -456,7 +456,7 @@ For phase 4 and the owner:
    browser and click Use Module Library here" is the extension's; the app
    needs its own words (the home screen is designed in phase 4).
 3. **The one-time token** for destructive operations ("Native rules",
-   accepted risk): decide in phase 4.
+   accepted risk): skipped for v1, by the owner on 2026-11-08.
 4. **Release APK without source maps.**
 5. Playwright keeps traces of failed live tests, which hold the admin
    login request; they stay in `test-results/` (git-ignored), not to be
@@ -693,8 +693,13 @@ format). Besides those, native must (package 2 security review):
   JavaScript built-ins and forge what our closure sends or reads, a
   confirm's yes included. That reaches only that server's library in the
   app, as in the extension. A native one-time token for destructive
-  operations (delete, import), checked by the background, would close it;
-  decided in phase 4.
+  operations (delete, import), checked by the background, would close it.
+  The owner accepted the risk and skipped the token for v1 (2026-11-08): a
+  script that can run on Setup already has Foundry's admin powers there,
+  so the token would guard only the app's own notes about that server
+  (presets, tags, world module lists, settings), which can be rebuilt.
+  Revisit if the app keeps something that can't be rebuilt or is
+  sensitive, or if it is used over plain http on untrusted networks.
 
 ## Risks
 
