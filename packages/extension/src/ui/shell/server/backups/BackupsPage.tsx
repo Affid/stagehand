@@ -19,6 +19,8 @@ import { SnapshotDialog } from "./SnapshotDialog.tsx";
 import { SnapshotJob, snapshotTask } from "./SnapshotJob.tsx";
 import { SnapshotsTab } from "./SnapshotsTab.tsx";
 import { type ServerBackups, useServerBackups } from "./useServerBackups.ts";
+import { Docked } from "../../phone/Dock.tsx";
+import { isCompact, useLayout } from "../../phone/layout.ts";
 
 type Tab = "snapshots" | PackageType;
 const TABS: readonly Tab[] = ["snapshots", "world", "module", "system"];
@@ -47,18 +49,69 @@ function summary(listing: ServerListing, t: Translate): string {
   ].join(" · ");
 }
 
-function count(listing: ServerListing, tab: Tab): string {
-  if (tab === "snapshots") return String(listing.snapshots.length);
-  const n = listing.packages
+const backupCount = (listing: ServerListing, tab: PackageType): number =>
+  listing.packages
     .filter((p) => p.type === tab)
     .reduce((s, p) => s + p.backups.length, 0);
-  return `${String(n)} · ${formatSize(bytes(listing, tab))}`;
+
+/** "3 · 441 MB"; just "3" in a phone's one row of tabs. */
+function count(listing: ServerListing, tab: Tab, short: boolean): string {
+  if (tab === "snapshots") return String(listing.snapshots.length);
+  const n = String(backupCount(listing, tab));
+  return short ? n : `${n} · ${formatSize(bytes(listing, tab))}`;
+}
+
+/**
+ * The phone's bar above the tabs (mockup: phBackupsBar): what the tab holds
+ * and the disk space free, and New snapshot.
+ */
+function SummaryBar(props: {
+  readonly listing: ServerListing;
+  readonly tab: Tab;
+  readonly off: string | null;
+  readonly onCreate: () => void;
+}) {
+  const { t, state } = useUi();
+  const { listing, tab } = props;
+  const free =
+    listing.free === undefined
+      ? undefined
+      : t("sb.free", { size: formatSize(listing.free) });
+  const [top, sub] =
+    tab === "snapshots"
+      ? [plural(t, "sb.snapCount", listing.snapshots.length), free]
+      : [
+          plural(t, "bk.count", backupCount(listing, tab)),
+          [formatSize(bytes(listing, tab)), free].filter(Boolean).join(" · "),
+        ];
+  // A snapshot under way shows above the tabs; the button says why it waits.
+  const why = props.off ?? (snapshotTask(state.tasks) ? t("bk.busy") : null);
+  return (
+    <div class="mlp-actbar mlp-bkbar">
+      <span class="mlp-what">
+        <strong>{top}</strong>
+        {sub ? <span>{sub}</span> : null}
+      </span>
+      <span class="nodel" title={tip(why)}>
+        <button
+          type="button"
+          class="bright mlp-launch"
+          disabled={why !== null}
+          onClick={props.onCreate}
+        >
+          <Icon name="camera-retro" />
+          {t("mlp.newSnapshot")}
+        </button>
+      </span>
+    </div>
+  );
 }
 
 function Tabs(props: {
   readonly listing: ServerListing;
   readonly tab: Tab;
   readonly onTab: (tab: Tab) => void;
+  readonly short: boolean;
 }) {
   const { t } = useUi();
   return (
@@ -73,7 +126,7 @@ function Tabs(props: {
           <>
             <Icon name={ICONS[k]} />
             {t(k === "snapshots" ? "sb.snapshots" : `sb.${k}`)}{" "}
-            <span class="c">{count(props.listing, k)}</span>
+            <span class="c">{count(props.listing, k, props.short)}</span>
           </>
         )}
       />
@@ -103,16 +156,34 @@ function Create(props: {
   );
 }
 
+function PhoneJob() {
+  const { state } = useUi();
+  const job = snapshotTask(state.tasks);
+  return job ? <SnapshotJob task={job} /> : null;
+}
+
 function Body(props: {
   readonly listing: ServerListing;
   readonly off: string | null;
   readonly data: ServerBackups;
+  readonly onCreate: () => void;
 }) {
   const [tab, setTab] = useState<Tab>("snapshots");
+  const compact = isCompact(useLayout());
   const { listing, off, data } = props;
   return (
     <>
-      <Tabs listing={listing} tab={tab} onTab={setTab} />
+      {compact ? (
+        <Docked>
+          <SummaryBar
+            listing={listing}
+            tab={tab}
+            off={off}
+            onCreate={props.onCreate}
+          />
+        </Docked>
+      ) : null}
+      <Tabs listing={listing} tab={tab} onTab={setTab} short={compact} />
       <TabPanel id={BACKUP_TABS} tab={tab}>
         {tab === "snapshots" ? (
           <SnapshotsTab
@@ -136,6 +207,7 @@ function Body(props: {
 
 export function ServerBackupsPage() {
   const { t, state, canChange } = useUi();
+  const compact = isCompact(useLayout());
   const data = useServerBackups();
   const [asking, setAsking] = useState(false);
   const { view } = data;
@@ -143,12 +215,18 @@ export function ServerBackupsPage() {
     lockReason(t, state) ?? (data.busy ? t("bk.busy") : canChange ? null : "");
   return (
     <div class="mlb-page ml-app">
-      <PageHead
-        title={t("sb.title")}
-        summary={view.listing ? summary(view.listing, t) : undefined}
-      >
-        <Create off={off} onCreate={() => setAsking(true)} />
-      </PageHead>
+      {compact ? (
+        // The top bar names the page and the bar above the tabs holds the
+        // summary and New snapshot; a snapshot under way shows here.
+        <PhoneJob />
+      ) : (
+        <PageHead
+          title={t("sb.title")}
+          summary={view.listing ? summary(view.listing, t) : undefined}
+        >
+          <Create off={off} onCreate={() => setAsking(true)} />
+        </PageHead>
+      )}
       {view.error ? <p class="ml-banner ml-warn">{view.error}</p> : null}
       {asking ? (
         <SnapshotDialog
@@ -162,7 +240,12 @@ export function ServerBackupsPage() {
         />
       ) : null}
       {view.listing ? (
-        <Body listing={view.listing} off={off} data={data} />
+        <Body
+          listing={view.listing}
+          off={off}
+          data={data}
+          onCreate={() => setAsking(true)}
+        />
       ) : view.error ? null : (
         <p class="ml-empty">{t("sb.loading")}</p>
       )}

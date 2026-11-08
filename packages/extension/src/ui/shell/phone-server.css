@@ -1,0 +1,251 @@
+/* The server pages in the phone and tablet layouts (Android plan, phase 3,
+   package 5; mockup: _phone.css "Backups, calmer", "Server pages", "About,
+   Configuration, What's new: one column"). */
+
+/* The top bar names the page on a phone; the summary and buttons stay. */
+.mls-shell.mlp:not(.mlp-wide) .mls-main .mlb-head h2 {
+  display: none;
+}
+
+.mls-shell.mlp .mls-main .mlb-head {
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-height: 0;
+  padding-top: 12px;
+}
+
+.mls-shell.mlp .mls-main .mlb-head > div {
+  flex: 1 1 100%;
+}
+
+.mls-shell.mlp .mls-main .mlb-head button {
+  flex: 1 1 auto;
+  min-height: var(--mlp-tap);
+}
+
+/* ---------- Backups: one row of tabs; the summary and New snapshot in the dock ---------- */
+.mls-shell.mlp[data-page="backups"] .mls-main .mls-subtabs .mls-tablist {
+  width: 100%;
+}
+
+.mls-shell.mlp[data-page="backups"] .mls-main .mls-subtabs button[role="tab"] {
+  flex: 1 1 auto;
+  justify-content: center;
+  padding-inline: 6px;
+}
+
+.mls-shell.mlp[data-page="backups"]
+  .mls-main
+  .mls-subtabs
+  button[role="tab"]
+  > i {
+  display: none;
+}
+
+.mls-shell.mlp .mlb-page > .mls-body-main > .mlb-job,
+.mls-shell.mlp .mlb-page > .mlb-job {
+  margin-top: 12px;
+}
+
+.mls-shell.mlp .mlp-bkbar .mlp-launch {
+  padding: 0 16px;
+  font-size: 15px;
+}
+
+.mls-shell.mlp .mlp-bkbar .nodel {
+  flex: none;
+}
+
+.mls-shell.mlp .mlp-bksel > button,
+.mls-shell.mlp .mlp-bksel .nodel > button {
+  width: auto;
+  height: 48px;
+  padding: 0 14px;
+}
+
+/* While selecting snapshots, their bar takes over the dock. */
+.mls-shell.mlp .mlp-dock:has(.mlp-bksel) > .mlp-bkbar:not(.mlp-bksel) {
+  display: none;
+}
+
+/* The explanation in one line beside Select; the filter and Sort by in one row. */
+.mls-shell.mlp .mlb-page .mlw-bhead:not(.sel) {
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 10px;
+  padding-block: 10px;
+  font-size: 13px;
+  color: var(--color-text-subtle);
+}
+
+.mls-shell.mlp .mlb-page .mlw-bhead:not(.sel) > span:first-child {
+  flex: 1;
+  min-width: 0;
+  font-weight: 400;
+}
+
+.mls-shell.mlp .mlb-page .mlw-bhead:not(.sel) > .ml-spacer {
+  display: none;
+}
+
+.mls-shell.mlp .mlb-page .mlw-bhead button {
+  flex: none;
+  width: auto;
+  min-height: 40px;
+  padding: 0 12px;
+}
+
+.mls-shell.mlp .mlb-tools {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  padding-block: 10px;
+}
+
+.mls-shell.mlp .mlb-tools > :is(.ml-label, .ml-muted, .ml-spacer) {
+  display: none;
+}
+
+.mls-shell.mlp .mlb-tools :is(input[type="search"], select) {
+  width: 100%;
+  min-width: 0;
+  height: var(--mlp-tap);
+  font-size: 15px;
+}
+
+.mls-shell.mlp .mlb-tools select {
+  width: auto;
+}
+
+.mls-shell.mlp .mlb-scroll,
+.mls-shell.mlp .mlb-pkgs {
+  overflow: visible;
+  max-height: none;
+}
+
+/* Rows: the name on top; version, size and buttons below. */
+.mls-shell.mlp .mlb-inner {
+  margin-left: 0;
+  padding-left: 0;
+}
+
+.mls-shell.mlp :is(.mlb-inner li, .mlb-pkg .row) {
+  grid-template-columns: 26px minmax(0, 1fr) auto auto auto;
+  gap: 6px 10px;
+  padding: 10px 8px;
+}
+
+.mls-shell.mlp :is(.mlb-inner li, .mlb-pkg .row) > :first-child {
+  grid-row: span 2;
+  align-self: start;
+  margin-top: 2px;
+}
+
+.mls-shell.mlp :is(.mlb-inner li, .mlb-pkg .row) > .nm {
+  grid-column: 2 / -1;
+}
+
+.mls-shell.mlp .mlb-pkg .row .nm :is(strong, span) {
+  white-space: normal;
+}
+
+.mls-shell.mlp :is(.mlb-inner li, .mlb-pkg .row) button {
+  min-height: 40px;
+}
+
+.mls-shell.mlp .mlb-pkg .row button.tog {
+  width: var(--mlp-tap);
+  min-height: var(--mlp-tap);
+}
+
+/* ---------- Configuration: one column; its bar in the dock ---------- */
+.mls-shell.mlp .mls-main .mlc-cols {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  overflow: visible;
+}
+
+.mls-shell.mlp .mls-main .mlc-set {
+  grid-template-columns: minmax(0, 1fr);
+  padding: 12px 0;
+}
+
+.mls-shell.mlp .mls-main .mlc-set .c {
+  justify-content: flex-start;
+}
+
+.mls-shell.mlp
+  .mls-main
+  .mlc-set
+  :is(select, input:not([type="checkbox"], [type="radio"])) {
+  width: 100%;
+  height: var(--mlp-tap);
+  font-size: 15px;
+}
+
+.mls-shell.mlp .mlp-dock > .mlc-bar {
+  position: static;
+  padding: 8px max(12px, env(safe-area-inset-right, 0px)) 10px
+    max(12px, env(safe-area-inset-left, 0px));
+  background: var(--mlp-bar-bg);
+  border-top: 1px solid var(--color-cool-4);
+}
+
+.mls-shell.mlp .mlp-dock > .mlc-bar > div {
+  flex-wrap: wrap;
+  box-shadow: none;
+  backdrop-filter: none;
+  animation: none;
+}
+
+.mls-shell.mlp .mlp-dock > .mlc-bar > div > span:first-of-type {
+  flex: 1 1 calc(100% - 40px);
+  font-size: 14px;
+}
+
+.mls-shell.mlp .mlp-dock > .mlc-bar button {
+  flex: 1 1 40%;
+  min-height: var(--mlp-tap);
+  font-size: 14px;
+}
+
+.mls-shell.mlp .mlp-dock > .mlc-bar .nodel {
+  display: contents;
+}
+
+.mls-shell.mlp .mls-main .mlc-diff li {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2px;
+}
+
+/* ---------- What's new: the update first, one column ---------- */
+.mls-shell.mlp .mls-main :is(.mlu-cols, .mlu-hcols) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  overflow: visible;
+  min-height: auto;
+}
+
+.mls-shell.mlp .mls-main .mlu-side {
+  order: -1;
+}
+
+.mls-shell.mlp .mls-main .mlu-tools {
+  flex-wrap: wrap;
+  row-gap: 8px;
+}
+
+.mls-shell.mlp .mls-main .mlu-tools input[type="search"] {
+  flex: 1 1 100%;
+  height: var(--mlp-tap);
+  font-size: 15px;
+}
+
+.mls-shell.mlp .mls-main .mlu-clist li {
+  grid-template-columns: 22px minmax(0, 1fr);
+}
+
+.mls-shell.mlp .mls-main .mlu-clist li > :nth-child(n + 3) {
+  grid-column: 2;
+}

@@ -14,6 +14,7 @@ import { problemsOf } from "./model.ts";
 import { Network } from "./Network.tsx";
 import { Other, Startup, Storage } from "./Sections.tsx";
 import { type ChangeKey, type Config, useConfig } from "./useConfig.ts";
+import { Docked } from "../../phone/Dock.tsx";
 
 type Dialog = "save" | "stop" | "generate" | "release" | null;
 
@@ -155,7 +156,10 @@ export function ConfigPage() {
       ) : c.error ? null : (
         <p class="ml-empty">{t("cfg.loading")}</p>
       )}
-      <Bar c={c} problems={problems.size} onDialog={setDialog} />
+      {/* On a phone the bar sits above the tabs, where Save stays in reach. */}
+      <Docked>
+        <Bar c={c} problems={problems.size} onDialog={setDialog} />
+      </Docked>
       {dialog === "save" ? <SaveDialog c={c} onClose={close} /> : null}
       {dialog === "stop" ? (
         <StopDialog electron={saved?.electron === true} onClose={close} />

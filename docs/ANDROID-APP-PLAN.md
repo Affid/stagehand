@@ -602,6 +602,13 @@ and a security review:
    keeps it), tag dots and the Sort sheet's labels above their controls in
    `phone-library.css`. Live: `app-phone-library.spec.ts`. Reviews: no
    finding above low.
+5. **Server pages** (done 2026-11-08). Backups without its head on a
+   phone (a snapshot under way shows there instead), the summary and New
+   snapshot in a bar in the dock, one row of tabs with counts only, the note
+   in one line, dates without the weekday, selecting snapshots in the dock;
+   Configuration's unsaved bar in the dock; What's new with the update first
+   (`phone-server.css`). Live: `app-phone-server.spec.ts`. Reviews: no
+   finding above medium (a misspelt class, fixed).
 
 ## Native rules (for phase 4)
 

@@ -12,12 +12,15 @@ import { plural } from "../../../i18n.ts";
 import { agoMs, backupTime, tip } from "../../world/backups/text.ts";
 import { DeleteSome } from "../../world/backups/Head.tsx";
 import { versionTag } from "./version.ts";
+import { Docked } from "../../phone/Dock.tsx";
+import { isCompact, useLayout } from "../../phone/layout.ts";
 
 type Run = (op: ServerBackupOp, ids: readonly string[]) => void;
 
-const longDate = (ms: number): string =>
+/** "Sunday, 8 November 2026"; without the weekday on a phone. */
+const longDate = (ms: number, short = false): string =>
   new Date(ms).toLocaleDateString(undefined, {
-    weekday: "long",
+    ...(short ? {} : { weekday: "long" as const }),
     day: "numeric",
     month: "long",
     year: "numeric",
@@ -83,7 +86,7 @@ function SnapRow(props: {
   const { s, pick } = props;
   const build = `${String(s.generation)}.${String(s.build)}`;
   const tag = versionTag(t, build, "taken", state.data.setup?.core.generation);
-  const date = longDate(s.createdAt);
+  const date = longDate(s.createdAt, isCompact(useLayout()));
   return (
     <li data-snapshot={s.id} class={pick?.on ? "picked" : ""}>
       {pick ? (
@@ -123,6 +126,36 @@ function SnapRow(props: {
   );
 }
 
+/** Selecting on a phone: the count, Delete and Done take over the dock. */
+function PhoneSelect(props: {
+  readonly ids: readonly string[];
+  readonly picked: ReadonlySet<string>;
+  readonly off: string | null;
+  readonly onSelect: () => void;
+  readonly onDelete: () => void;
+}) {
+  const { t } = useUi();
+  const n = props.ids.filter((id) => props.picked.has(id)).length;
+  return (
+    <Docked>
+      <div class="mlp-actbar mlp-bkbar mlp-bksel">
+        <span class="mlp-what" role="status">
+          <strong>
+            {n
+              ? t("bk.selected", { count: plural(t, "sb.snapCount", n) })
+              : t("sb.selectHint")}
+          </strong>
+          <span>{t("mlp.toDelete")}</span>
+        </span>
+        <DeleteSome n={n} off={props.off} onDelete={props.onDelete} />
+        <button type="button" onClick={props.onSelect}>
+          {t("bk.done")}
+        </button>
+      </div>
+    </Docked>
+  );
+}
+
 function Bar(props: {
   readonly ids: readonly string[];
   readonly picked: ReadonlySet<string> | null;
@@ -131,11 +164,13 @@ function Bar(props: {
   readonly onDelete: () => void;
 }) {
   const { t } = useUi();
+  const compact = isCompact(useLayout());
   const { picked } = props;
+  if (picked && compact) return <PhoneSelect {...props} picked={picked} />;
   if (!picked)
     return (
       <div class="mlw-bhead">
-        <span>{t("sb.lead")}</span>
+        <span>{t(compact ? "mlp.snapLead" : "sb.lead")}</span>
         <span class="ml-spacer" />
         {props.ids.length > 1 && props.off === null ? (
           <button type="button" onClick={props.onSelect}>

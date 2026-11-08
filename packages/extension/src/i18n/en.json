@@ -1057,5 +1057,8 @@
   "mlp.presets": "Presets…",
   "mlp.toSort.one": "{n} new module to sort",
   "mlp.toSort.other": "{n} new modules to sort",
-  "mlp.sortLater": "Later: leave them in Unfiled"
+  "mlp.sortLater": "Later: leave them in Unfiled",
+  "mlp.newSnapshot": "New snapshot",
+  "mlp.snapLead": "Restoring one rolls the whole server back.",
+  "mlp.toDelete": "to delete"
 }
