@@ -595,6 +595,13 @@ and a security review:
    phone's 2.625 couldn't answer the companion's hello in time). For the
    owner: Discard all sits beside Launch with no confirmation, as in the
    mockup and on the desktop.
+4. **Library** (done 2026-11-08). `library/head/PhoneHead.tsx` (one row:
+   the filter, View for Group by, ⋮ for the rest; Systems: the filter,
+   Install and Update all as icons), the one-line notice for new installs,
+   the selection in the dock, no By world on a phone (`shownTab`; a tablet
+   keeps it), tag dots and the Sort sheet's labels above their controls in
+   `phone-library.css`. Live: `app-phone-library.spec.ts`. Reviews: no
+   finding above low.
 
 ## Native rules (for phase 4)
 

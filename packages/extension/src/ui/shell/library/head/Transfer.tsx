@@ -7,7 +7,8 @@ import { Icon } from "../../../common/widgets.tsx";
 import { useUi } from "../../../context.ts";
 import { PopMenu } from "../common/PopMenu.tsx";
 
-function useTransfer() {
+/** Export, import and import a preset; the phone's ⋮ menu lists them too. */
+export function useTransfer() {
   const { actions, t, ports } = useUi();
   return {
     exportAll: async (): Promise<void> => {

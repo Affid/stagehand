@@ -1,0 +1,188 @@
+/* The Library in the phone and tablet layouts (Android plan, phase 3,
+   package 4; mockup: _phone.css "Library, decluttered"): one control row,
+   a one-line notice for new installs, tags as coloured dots, the
+   selection's count and actions in the dock, the Sort sheet's labels above
+   their controls. */
+
+/* One scroll for the whole page: the lists don't scroll on their own. */
+.mls-shell.mlp .mls-library .mls-body-main,
+.mls-shell.mlp .mll-sections,
+.mls-shell.mlp .mll-systems {
+  display: block;
+  overflow: visible;
+  min-height: auto;
+  max-height: none;
+}
+
+.mls-shell.mlp .mll-page {
+  flex: none;
+  min-height: auto;
+}
+
+/* ---------- One row: the filter, View, ⋮ ---------- */
+.mls-shell.mlp .mll-controls.mlp-libhead {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 8px;
+  align-items: center;
+  margin: 0;
+  padding: 10px 0 4px;
+}
+
+.mls-shell.mlp .mlp-libhead .filter {
+  margin: 0;
+  min-width: 0;
+}
+
+.mls-shell.mlp .mlp-libhead input[type="search"] {
+  width: 100%;
+  height: var(--mlp-tap);
+  font-size: 15px;
+}
+
+.mls-shell.mlp .mlp-libhead button.icon {
+  width: var(--mlp-tap);
+  height: var(--mlp-tap);
+  padding: 0;
+  font-size: 16px;
+}
+
+/* ---------- New installs: one line ---------- */
+.mls-shell.mlp .mls-intake-band.mlp-intake {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 0;
+  padding: 4px 4px 4px 12px;
+  font-size: 14px;
+}
+
+.mls-shell.mlp .mlp-intake > span {
+  flex: 1;
+  min-width: 0;
+}
+
+.mls-shell.mlp .mlp-intake > button {
+  flex: none;
+  height: 36px;
+  padding: 0 16px;
+}
+
+.mls-shell.mlp .mlp-intake > button.icon {
+  width: var(--mlp-tap);
+  height: var(--mlp-tap);
+  padding: 0;
+  border-color: transparent;
+  background: transparent;
+}
+
+/* ---------- Cards: one column, tags as coloured dots ---------- */
+.mls-shell.mlp .mll-card {
+  min-height: 60px;
+}
+
+.mls-shell.mlp .mll-card .t {
+  font-size: 15px;
+}
+
+.mls-shell.mlp .mll-card .l3 {
+  font-size: 12.5px;
+}
+
+.mls-shell.mlp .mll-card .l3 .tg {
+  display: inline-flex;
+  gap: 3px;
+}
+
+.mls-shell.mlp .mll-card .mll-tag {
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 0;
+}
+
+.mls-shell.mlp .mll-card .mll-tag .ml-dot {
+  margin: 0;
+}
+
+/* "+2" has no colour to show: it stays as text. */
+.mls-shell.mlp .mll-card .mll-tag:not(:has(.ml-dot)) {
+  font-size: 11.5px;
+  color: var(--color-text-subtle);
+}
+
+.mls-shell.mlp .mlw-headrow .ml-hbtn,
+.mls-shell.mlp .mls-gcheck {
+  min-width: var(--mlp-tap);
+  min-height: var(--mlp-tap);
+}
+
+/* ---------- Selecting: the count, All, None, Done and the actions, above the tabs ---------- */
+.mls-shell.mlp .mlp-dock > .mls-selbar {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 8px max(12px, env(safe-area-inset-right, 0px)) 10px
+    max(12px, env(safe-area-inset-left, 0px));
+  border: 0;
+  border-top: 1px solid var(--color-cool-4);
+  border-radius: 0;
+  background: var(--mlp-bar-bg);
+}
+
+.mls-shell.mlp .mlp-dock > .mls-selbar > i,
+.mls-shell.mlp .mlp-dock > .mls-selbar > .mls-sep,
+.mls-shell.mlp .mlp-dock > .mls-selbar > .ml-spacer {
+  display: none;
+}
+
+.mls-shell.mlp .mlp-dock > .mls-selbar > .mls-selcount {
+  grid-column: 1;
+  grid-row: 1;
+  font-size: 14.5px;
+}
+
+.mls-shell.mlp .mlp-dock > .mls-selbar > button.bright {
+  grid-column: 4;
+  grid-row: 1;
+}
+
+.mls-shell.mlp .mlp-dock > .mls-selbar button {
+  width: 100%;
+  height: 40px;
+  padding: 0 4px;
+  gap: 4px;
+  font-size: 12.5px;
+}
+
+.mls-shell.mlp .mlp-dock > .mls-selbar .mls-popwrap {
+  display: block;
+  min-width: 0;
+}
+
+.mls-shell.mlp .mlp-dock > .mls-selbar .mls-popwrap > button {
+  flex-direction: column;
+  height: 52px;
+  font-size: 11.5px;
+  line-height: 1.1;
+  white-space: normal;
+}
+
+/* ---------- The Sort sheet: labels above their controls ---------- */
+.mls-shell.mlp .mls-intake-item .mls-kv {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 4px;
+}
+
+.mls-shell.mlp .mls-intake-item .mls-kv > :nth-child(odd) {
+  margin-top: 6px;
+}
+
+.mls-shell.mlp .mls-panel .mls-kv :is(select, input[type="text"]) {
+  height: var(--mlp-tap);
+  font-size: 15px;
+}

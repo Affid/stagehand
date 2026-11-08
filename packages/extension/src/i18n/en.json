@@ -1047,5 +1047,15 @@
   "mlp.queueNone": "Nothing queued for {world}.",
   "mlp.discardAll": "Discard all",
   "mlp.countArrow": "{from} → {to}",
-  "mlp.countSr": "{from} now, {to} after launch"
+  "mlp.countSr": "{from} now, {to} after launch",
+  "mlp.libView": "Group by: {by}",
+  "mlp.libMore": "Select, install, update, tags, presets, folders",
+  "mlp.selectModules": "Select modules",
+  "mlp.installModule": "Install a module…",
+  "mlp.updateAll": "Update all · {n}",
+  "mlp.tags": "Tags…",
+  "mlp.presets": "Presets…",
+  "mlp.toSort.one": "{n} new module to sort",
+  "mlp.toSort.other": "{n} new modules to sort",
+  "mlp.sortLater": "Later: leave them in Unfiled"
 }

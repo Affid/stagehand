@@ -70,6 +70,7 @@ const SHELL_SHEETS = [
   "phone.css",
   "phone-sheets.css",
   "phone-world.css",
+  "phone-library.css",
   "veil.css",
 ];
 

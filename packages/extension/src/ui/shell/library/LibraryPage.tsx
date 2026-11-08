@@ -8,7 +8,10 @@ import { Banners } from "../../modules/banners.tsx";
 import { type ModulesModel, useModulesModel } from "../../modules/derived.ts";
 import { FilterRow } from "./head/FilterRow.tsx";
 import { IntakeBand } from "./head/IntakeBand.tsx";
-import { LIBRARY_TABS, LibraryTabs } from "./head/LibraryTabs.tsx";
+import { LIBRARY_TABS, LibraryTabs, shownTab } from "./head/LibraryTabs.tsx";
+import { PhoneModulesHead, PhoneSystemsHead } from "./head/PhoneHead.tsx";
+import { Docked } from "../phone/Dock.tsx";
+import { isCompact, useLayout } from "../phone/layout.ts";
 import { TabPanel } from "../../common/tabs.tsx";
 import { SelectBar } from "./head/SelectBar.tsx";
 import { Toolbar } from "./head/Toolbar.tsx";
@@ -17,32 +20,48 @@ import { SystemsTab } from "./SystemsTab.tsx";
 import { type PageState, usePageState } from "./usePageState.ts";
 import { WorldGrid } from "./grid/WorldGrid.tsx";
 
+/** What the toolbar, or the phone's head, needs from the page. */
+function headProps(page: PageState, groups: readonly LibGroup[]) {
+  const keys = groups.map((g) => g.key);
+  return {
+    by: page.by,
+    onBy: page.setBy,
+    onSelect: () => page.onSelecting(true),
+    allClosed: keys.length > 0 && keys.every((k) => page.closed.has(k)),
+    onCollapseAll: () => page.collapseAll(keys),
+    onNewFolder: page.newFolder,
+  };
+}
+
 function ModulesTab(props: {
   readonly model: ModulesModel;
   readonly page: PageState;
   readonly groups: readonly LibGroup[];
 }) {
   const { model, page, groups } = props;
-  const keys = groups.map((g) => g.key);
+  const compact = isCompact(useLayout());
+  const head = headProps(page, groups);
+  const select = page.selecting ? (
+    <SelectBar
+      shown={model.visible.map((m) => m.id)}
+      onDone={() => page.onSelecting(false)}
+    />
+  ) : null;
+  if (compact)
+    return (
+      <>
+        <PhoneModulesHead {...head} />
+        <IntakeBand />
+        {/* While selecting: the count and the actions above the tabs. */}
+        {select ? <Docked>{select}</Docked> : null}
+        <Sections groups={groups} model={model} page={page} />
+      </>
+    );
   return (
     <>
       <FilterRow kind="module" count={model.all.length} />
       <IntakeBand />
-      {page.selecting ? (
-        <SelectBar
-          shown={model.visible.map((m) => m.id)}
-          onDone={() => page.onSelecting(false)}
-        />
-      ) : (
-        <Toolbar
-          by={page.by}
-          onBy={page.setBy}
-          onSelect={() => page.onSelecting(true)}
-          allClosed={keys.length > 0 && keys.every((k) => page.closed.has(k))}
-          onCollapseAll={() => page.collapseAll(keys)}
-          onNewFolder={page.newFolder}
-        />
-      )}
+      {page.selecting ? select : <Toolbar {...head} />}
       <Sections groups={groups} model={model} page={page} />
     </>
   );
@@ -50,6 +69,7 @@ function ModulesTab(props: {
 
 export function LibraryPage() {
   const { state } = useUi();
+  const layout = useLayout();
   const model = useModulesModel(state);
   const page = usePageState();
   const context = {
@@ -68,8 +88,8 @@ export function LibraryPage() {
     <div class="mll-page ml-app">
       <Banners />
       <LibraryTabs tab={page.tab} onTab={page.setTab} />
-      <TabPanel id={LIBRARY_TABS} tab={page.tab}>
-        {page.tab === "grid" ? (
+      <TabPanel id={LIBRARY_TABS} tab={shownTab(page.tab, layout)}>
+        {shownTab(page.tab, layout) === "grid" ? (
           <WorldGrid
             groups={groups}
             folding={{ closed: page.closed, onToggle: page.toggle }}
@@ -78,7 +98,11 @@ export function LibraryPage() {
           />
         ) : page.tab === "systems" ? (
           <>
-            <FilterRow kind="system" count={setup?.systems.length ?? 0} />
+            {isCompact(layout) ? (
+              <PhoneSystemsHead />
+            ) : (
+              <FilterRow kind="system" count={setup?.systems.length ?? 0} />
+            )}
             <SystemsTab />
           </>
         ) : (
