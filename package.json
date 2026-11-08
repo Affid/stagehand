@@ -20,7 +20,9 @@
     "foundry:start": "scripts/foundry/start.sh",
     "foundry:link": "node scripts/foundry/link-modules.ts",
     "foundry:setup": "node scripts/foundry/setup-world.ts",
-    "verify": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test:coverage && pnpm build"
+    "verify": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test:coverage && pnpm build",
+    "android:build": "pnpm build && node scripts/android/gradle.ts assembleDebug assembleRelease",
+    "android:test": "node scripts/android/gradle.ts testDebugUnitTest createDebugUnitTestCoverageReport"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",

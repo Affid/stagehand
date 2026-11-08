@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Module Library</string>
+    <string name="webview_missing_title">Android System WebView needs an update</string>
+    <string name="webview_missing_body">Module Library draws its Setup page with Android System WebView, and this version (%1$s) lacks what it needs. Update Android System WebView from the Play Store, then open Module Library again.</string>
+    <string name="webview_old_title">Android System WebView is out of date</string>
+    <string name="webview_old_body">Foundry VTT 14 needs Android System WebView %1$d or newer; this phone has %2$s. Foundry may warn about it or misbehave until you update it from the Play Store.</string>
+    <string name="webview_update">Update</string>
+    <string name="webview_continue">Continue anyway</string>
+    <string name="webview_unknown">unknown</string>
+</resources>

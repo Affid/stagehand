@@ -15,6 +15,7 @@ export default tseslint.config(
       "playwright-report/**",
       "design/**",
       "spikes/**",
+      "packages/android/**/build/**",
     ],
   },
   js.configs.recommended,

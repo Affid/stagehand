@@ -650,6 +650,91 @@ and a security review:
    sends each in its own socket message, and the real snapshot in the
    emulator showed them all.
 
+## Phase 4: the Android app (started 2026-11-08)
+
+Kotlin in `packages/android`, its own Gradle build (AGP 9.4.1 with its
+built-in Kotlin, as the spike). Done when the app runs the Setup page on a
+device against the local server, including a launch that applies queued
+changes through the companion. The contract is phase 2's
+(`native-api.ts`, `native-requests.ts`, `bridge.ts`) and "Native rules"
+below; the app harness's `tests/app/native.ts` and `relay.ts` are the
+reference native it mirrors.
+
+The phone checks left from phase 0 (wireless debugging, the Hyper-V
+firewall rule, Q6 on the phone, a current WebView) need the owner's phone
+and an admin PowerShell; they wait for the owner, and the work below runs
+on the emulator meanwhile (`MLPixel37`, WebView 145).
+
+Packages, each committed on its own after tests first, `pnpm verify`, the
+Kotlin tests, a check on the emulator, a code review and a security review:
+
+1. **Project and build.** `packages/android` (Gradle wrapper, AGP,
+   androidx.webkit, coroutines, kotlinx-serialization's JSON, Custom Tabs,
+   JUnit with coverage); `pnpm android:build` (after `pnpm build`) and
+   `pnpm android:test`; `dist-app/` copied into the APK's assets without the
+   source maps; the version from the extension's manifest; the manifest
+   (one exported activity, no backup, `dataExtractionRules` leaving
+   everything out, cleartext allowed, no URL taken from an intent); our
+   icon; debug and release builds, the release signed with a key kept out
+   of git; the WebView check (the two features, and version 146 for
+   Foundry 14) with its message.
+2. **Native core** (plain Kotlin, JUnit). The wire format; the rules
+   (who may ask what, sender paths, Setup and game pages of a saved
+   server, payload limits, NativeFetch's rule, outside links) checked
+   against vectors that the TypeScript writes from its own functions, so
+   the two can't drift; the key-value store in app-private files; native's
+   own state (saved origins, registered scripts, Release history, the last
+   server); NativeFetch; the relay (`route` held until
+   `background.ready`, replies only from the background, the sender built
+   with a JSON library).
+3. **The three WebViews.** The background (hidden, on the asset origin),
+   home and the server WebView: document-start scripts and the bridge for
+   saved origins only, the sender from the last committed navigation,
+   hardening, cookies kept, certificate errors refused with a message,
+   system bars and the keyboard kept clear, the server's own pages in the
+   WebView and others in a Custom Tab, Back (Setup's own Back through the
+   bridge, then history, then home). Shared UI: the home screen's app
+   words, servers that open on a tap, "Not encrypted" on plain http;
+   Foundry's `/join` Join button at phone width after a launch.
+4. **Files, dialogs and links.** `files.save` and `files.open` through the
+   system picker, `confirm` as a native dialog (one at a time, the server's
+   name in the title), `openExternal` (the rule, at most one a second),
+   Foundry's own file inputs.
+5. **On the device.** A live run on the emulator through Playwright's
+   Android support: add the server, Setup takes over, a queued change,
+   launch and apply through the companion, export and import, Release
+   history; the signed release APK installed and checked; screenshots;
+   the results artifact.
+
+### Phase 4 progress
+
+1. **Project and build** (done 2026-11-08). `packages/android`: AGP 9.4.1,
+   androidx.webkit 1.18.0, activity 1.13.0, browser 1.9.0, coroutines
+   1.10.2, kotlinx-serialization-json 1.9.0 (its JSON tree only, no
+   compiler plugin), JUnit 4.13.2 with JaCoCo. `pnpm android:build` runs
+   `pnpm build`, then `assembleDebug assembleRelease` through
+   `scripts/android/gradle.ts` (JDK 21 from `~/opt`, the SDK in
+   `~/Android/Sdk`); `pnpm android:test` runs the Kotlin tests with a
+   coverage report. The APK's assets are `dist-app/` without source maps
+   (a missing build says to run `pnpm build`); the version is the
+   extension's (0.2.0, version code 200). Debug builds are
+   `dev.modulelibrary.app.debug` beside the release's
+   `dev.modulelibrary.app`. The release is minified and signed with a key
+   in `~/.config/module-library/` (`android-release.jks` and
+   `android-signing.properties`, outside git; without it the release is
+   built unsigned, with a warning). Manifest: the launcher activity only
+   (no data filter, `taskAffinity` empty), no backup or device transfer of
+   anything, cleartext allowed, the system's certificates only. Our icon:
+   books on a shelf (adaptive, with a monochrome layer), **for the owner
+   to approve**. The WebView check (`web/WebViewSupport.kt`): without
+   document-start scripts or the message listener, a stop with Update;
+   below 146, a warning once per WebView version; the emulator's 145
+   shows it. Checked on the emulator: debug and release start, the
+   warning shows. Reviews: no critical or high; fixed the missing-build
+   message, the Play Store link for the phone's own WebView package,
+   signing settings named when missing, the runner's errors and JDK
+   lookup, key files git-ignored.
+
 ## Native rules (for phase 4)
 
 The contract is `packages/extension/src/app/native-api.ts` (who may ask

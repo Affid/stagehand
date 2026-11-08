@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Behind the pages while they load: Setup's dark ground. -->
+    <color name="ground">#FF14121C</color>
+    <color name="ink">#FFEDE6D6</color>
+    <color name="icon_ground">#FF2A2340</color>
+</resources>

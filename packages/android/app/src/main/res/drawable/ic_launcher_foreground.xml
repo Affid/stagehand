@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Module Library's own mark: books on a shelf (no Foundry branding). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- shelf -->
+    <path android:fillColor="#FF8A6A3A" android:pathData="M29,73h50v4h-50z" />
+    <!-- gold book -->
+    <path android:fillColor="#FFD9A441" android:pathData="M32,41h10v32h-10z" />
+    <path android:fillColor="#FF9C7024" android:pathData="M32,46h10v2h-10zM32,66h10v2h-10z" />
+    <!-- parchment book -->
+    <path android:fillColor="#FFEFE3C8" android:pathData="M44,34h12v39h-12z" />
+    <path android:fillColor="#FFB9A986" android:pathData="M44,40h12v2h-12zM44,65h12v2h-12z" />
+    <!-- teal book -->
+    <path android:fillColor="#FF5FA8A0" android:pathData="M58,43h9v30h-9z" />
+    <path android:fillColor="#FF3D7670" android:pathData="M58,48h9v2h-9z" />
+    <!-- leaning book -->
+    <path android:fillColor="#FFC0584A" android:pathData="M69,73l8.5,0l6,-28l-8.3,-1.8z" />
+</vector>

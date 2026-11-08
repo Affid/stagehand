@@ -7,6 +7,8 @@ design/
 # Android build output
 spikes/android/build/
 spikes/android/app/build/
+packages/android/build/
+packages/android/app/build/
 .gradle/
 
 # The phase 3 preview bundle (built)

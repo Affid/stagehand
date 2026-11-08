@@ -13,12 +13,20 @@ playwright-report/
 .env.*
 !.env.example
 
-# Android (spikes/android, later packages/android): Gradle caches, build
+# Android (spikes/android, packages/android): Gradle caches, build
 # output and the machine's SDK path
 .gradle/
 local.properties
 spikes/android/build/
 spikes/android/app/build/
+packages/android/build/
+packages/android/app/build/
+# Signing keys never enter the repository (kept in ~/.config/module-library)
+*.jks
+*.keystore
+*.p12
+android-signing.properties
+keystore.properties
 
 # The phase 3 preview bundle (built by spikes/android/preview/build.mjs)
 spikes/android/app/src/main/assets/preview.js

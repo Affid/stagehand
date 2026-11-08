@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Foundry on a home network is usually plain http (spike question 6), so
+  cleartext is allowed; the server list marks such servers "Not encrypted".
+  Only the system's certificate authorities: no user-added ones, so a
+  self-signed https server is refused (owner, v1).
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>
