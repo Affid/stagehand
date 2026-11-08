@@ -48,6 +48,28 @@
   margin-top: 12px;
 }
 
+/* A snapshot under way, in one column: what and where it is, the bar across
+   the band, then the steps. The title carries the percent. */
+.mls-shell.mlp .mlb-job {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+  min-width: 0;
+}
+
+.mls-shell.mlp .mlb-job .bar {
+  order: 1;
+}
+
+.mls-shell.mlp .mlb-job ol {
+  order: 2;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+}
+
+.mls-shell.mlp .mlb-job .pct {
+  display: none;
+}
+
 .mls-shell.mlp .mlp-bkbar .mlp-launch {
   padding: 0 16px;
   font-size: 15px;
@@ -70,7 +92,7 @@
 }
 
 /* The explanation in one line beside Select; the filter and Sort by in one row. */
-.mls-shell.mlp .mlb-page .mlw-bhead:not(.sel) {
+.mls-shell.mlp .mlw-bhead:not(.sel) {
   flex-wrap: nowrap;
   align-items: center;
   gap: 10px;
@@ -79,17 +101,17 @@
   color: var(--color-text-subtle);
 }
 
-.mls-shell.mlp .mlb-page .mlw-bhead:not(.sel) > span:first-child {
+.mls-shell.mlp .mlw-bhead:not(.sel) > span:first-child {
   flex: 1;
   min-width: 0;
   font-weight: 400;
 }
 
-.mls-shell.mlp .mlb-page .mlw-bhead:not(.sel) > .ml-spacer {
+.mls-shell.mlp .mlw-bhead:not(.sel) > .ml-spacer {
   display: none;
 }
 
-.mls-shell.mlp .mlb-page .mlw-bhead button {
+.mls-shell.mlp .mlw-bhead button {
   flex: none;
   width: auto;
   min-height: 40px;

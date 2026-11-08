@@ -78,12 +78,32 @@
   margin-left: 0;
 }
 
+/* The button is a finger's height; the pill inside it keeps the
+   mockup's 32 px look. */
 .mls-shell.mlp .mlh-ver {
-  gap: 6px;
-  padding: 0 10px;
+  height: var(--mlp-tap);
+  gap: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
 }
 
-.mls-shell.mlp .mlh-ver > i {
+.mls-shell.mlp .mlh-ver > .v {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid rgb(255 255 255 / 16%);
+  border-radius: 16px;
+  background: rgb(0 0 0 / 40%);
+}
+
+.mls-shell.mlp .mlh-ver:is(:hover, .ml-on) > .v {
+  border-color: var(--color-warm-1);
+}
+
+.mls-shell.mlp .mlh-ver > .v > i {
   color: #6fcf7f;
   font-size: 12px;
 }
@@ -192,6 +212,11 @@
 }
 
 .mls-shell.mlp .mlp-dock:empty {
+  display: none;
+}
+
+/* At home the page behind the list is hidden, and so are its bars. */
+.mls-shell.mlp[data-screen="home"] .mlp-dock {
   display: none;
 }
 

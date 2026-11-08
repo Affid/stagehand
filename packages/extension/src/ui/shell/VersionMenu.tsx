@@ -117,10 +117,10 @@ function ChipText(props: {
   const label = versionLabel(props.version);
   if (props.compact)
     return (
-      <>
-        <span class="v">{label}</span>
+      <span class="v">
+        {label}
         {props.hasUpdate ? <Icon name="arrow-up" /> : null}
-      </>
+      </span>
     );
   return (
     <>

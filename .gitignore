@@ -19,3 +19,6 @@ playwright-report/
 local.properties
 spikes/android/build/
 spikes/android/app/build/
+
+# The phase 3 preview bundle (built by spikes/android/preview/build.mjs)
+spikes/android/app/src/main/assets/preview.js

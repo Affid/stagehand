@@ -73,7 +73,9 @@ export async function joinWorld(
   url: string,
   user: string,
 ): Promise<void> {
-  await page.goto(`${url}/join`);
+  // As after a launch from Setup: the app's own screen for a running world
+  // (app/running) leaves Foundry's join form alone then.
+  await page.goto(`${url}/join`, { referer: `${url}/setup` });
   await page
     .locator('#join-game-form select[name="userId"]')
     .selectOption({ label: user });

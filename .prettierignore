@@ -8,3 +8,6 @@ design/
 spikes/android/build/
 spikes/android/app/build/
 .gradle/
+
+# The phase 3 preview bundle (built)
+spikes/android/app/src/main/assets/preview.js

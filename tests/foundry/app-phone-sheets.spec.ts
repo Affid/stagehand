@@ -150,7 +150,7 @@ test.describe("on a phone", () => {
   test("a dialog comes up from the bottom, the width of the screen", async () => {
     await tab(page, "Backups").click();
     await shell(page)
-      .getByRole("button", { name: /Create a snapshot/i })
+      .getByRole("button", { name: /New snapshot|Create a snapshot/i })
       .first()
       .click();
     const dialog = page.getByRole("dialog", { name: "Create a snapshot" });

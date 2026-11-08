@@ -65,6 +65,8 @@ test.describe("on a phone", () => {
     ).toBeVisible();
     await expect(shell(page).locator(".mls-world").first()).toBeVisible();
     await expect(tab(page, "Worlds")).toHaveAttribute("aria-current", "page");
+    // The world behind the list keeps its bar to itself (seen in the emulator).
+    await expect(shell(page).locator(".mlp-dock")).toBeHidden();
     // Foundry raised it at load; the phone layout took it away.
     await expect(
       page.locator("#notifications li.permanent", { hasText: "1024px" }),

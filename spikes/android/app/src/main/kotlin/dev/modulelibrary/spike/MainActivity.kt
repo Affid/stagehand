@@ -41,11 +41,16 @@ class MainActivity : ComponentActivity() {
         val docStart = WebViewFeature.isFeatureSupported(WebViewFeature.DOCUMENT_START_SCRIPT)
         val listener = WebViewFeature.isFeatureSupported(WebViewFeature.WEB_MESSAGE_LISTENER)
         report("features docStart=$docStart listener=$listener origin=$origin")
-        if (listener) addListener(origin)
+        // Phase 3 preview (spikes/android/preview): the new Setup page with
+        // native played inside the page; else the phase 0 probe.
+        val preview = assets.list("")?.contains("preview.js") == true
+        if (listener && !preview) addListener(origin)
         if (docStart) {
-            val probe = assets.open("probe.js").bufferedReader().use { it.readText() }
-            WebViewCompat.addDocumentStartJavaScript(web, probe, setOf(origin))
+            val script = if (preview) "preview.js" else "probe.js"
+            val code = assets.open(script).bufferedReader().use { it.readText() }
+            WebViewCompat.addDocumentStartJavaScript(web, code, setOf(origin))
         }
+        if (preview) status.visibility = android.view.View.GONE
         onBackPressedDispatcher.addCallback(
             this,
             object : OnBackPressedCallback(true) {
@@ -67,6 +72,8 @@ class MainActivity : ComponentActivity() {
             allowContentAccess = false
         }
         CookieManager.getInstance().setAcceptCookie(true)
+        // The page's confirm and alert dialogs (the preview's stand-ins).
+        view.webChromeClient = android.webkit.WebChromeClient()
         view.webViewClient = object : WebViewClient() {
             override fun onPageFinished(v: WebView, u: String) = report("finished $u")
         }

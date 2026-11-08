@@ -625,6 +625,30 @@ and a security review:
    ("dnd5e 6.0.6": the join page has no system title). A GM who leaves the
    game for `/join` also sees this screen rather than Foundry's join form
    (the app is for Setup).
+7. **The walk, and the owner in the emulator** (done 2026-11-08).
+   `tests/foundry/app-phone-walk.spec.ts` visits every page and panel at
+   360, 412 and 768 px upright and on a phone and a tablet on their side,
+   in Foundry's three Setup themes: nothing goes sideways, the bars'
+   controls are 44 px, axe finds nothing (`settle.ts` waits for the page to
+   stop moving first). It found the About folder path overflowing at 360 px,
+   the version chip's 32 px target, a world's Take a backup running off
+   the screen (the calmer Backups row now covers a world's tab, as in the
+   mockup) and Launch at 40 px on a phone on its side (44 px now, in the
+   mockup too: a change for the owner to confirm). The full run's two
+   failures that passed alone were the tests: a button renamed in package
+   5, and a GM joining from a blank page, which the running-world screen
+   (package 6) now covers; joins come from Setup, as after a launch. The owner tried the page in the
+   Android emulator through a preview of the spike app
+   (`spikes/android/preview/`: the app bundle with native played inside
+   the page; dev only, the built `preview.js` is git-ignored) and found
+   two more: the world's Launch bar showing on the home screen (the dock
+   is hidden there now) and a snapshot under way running off the screen,
+   in the mockup too (one column on a phone now, in both;
+   `app-phone-server.spec.ts` plays Foundry's progress through its own
+   handler at 360 and 412 px). Unexplained, left as a note: two progress
+   ticks sent in one task in the live page lose the later one; Foundry
+   sends each in its own socket message, and the real snapshot in the
+   emulator showed them all.
 
 ## Native rules (for phase 4)
 
@@ -655,6 +679,10 @@ format). Besides those, native must (package 2 security review):
   info, at most 4096 characters, not the server's own origin; at most one
   a second. A message carries no tap, so a page script on Setup could
   still ask: native shows the host before opening, or keeps the limit.
+- **Not from the spike** (phase 3 package 7 security review): the spike's
+  activity is exported, loads any `url` extra and turns on WebView
+  debugging always. The app ties debugging to `BuildConfig.DEBUG`, takes
+  no URL from an intent, and never looks for the preview's `preview.js`.
 - **Dialogs and pickers:** one at a time (a second confirm while one is
   open is a no), plain text, the app's and the server's name in the title.
 - **NativeFetch:** `fetchAllowed` with native's own Release history state

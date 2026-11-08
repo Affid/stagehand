@@ -25,6 +25,7 @@ import {
   openAppSetupAsAdmin,
 } from "../app/harness.ts";
 import { exitTour, joinWorld, SCREENS } from "./extension.ts";
+import { settled } from "./settle.ts";
 
 const env = loadFoundryEnv();
 const PHONE = { width: 412, height: 915 };
@@ -126,6 +127,7 @@ test("Next launch lists the changes; Discard all empties it", async () => {
   await expect(sheet).toBeVisible();
   await expect(sheet).toContainText("These 2 changes apply when");
   await expect(sheet.getByRole("button", { name: /^Drop / })).toHaveCount(2);
+  await settled(page);
   await page.screenshot({ path: `${SCREENS}/phone-next-launch.png` });
   await sheet.getByRole("button", { name: "Discard all" }).click();
   await expect(sheet).toHaveCount(0);
@@ -157,6 +159,7 @@ test("Launch goes through the review, which comes up from the bottom", async () 
     name: `Launch ${TEST_WORLD.title}`,
   });
   await expect(review).toBeVisible();
+  await settled(page);
   await page.screenshot({ path: `${SCREENS}/phone-launch-review.png` });
   await review.getByRole("button", { name: "Cancel" }).click();
   await expect(review).toHaveCount(0);

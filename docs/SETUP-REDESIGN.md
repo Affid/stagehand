@@ -122,6 +122,34 @@ and a screen for a running world with Return to Setup. The full list is the plan
 `src/_running.*`) and the playground `phone.html`, published privately at
 https://claude.ai/artifact/R12jn3MMQiXuKMuFnmYCuK.
 
+Built in phase 3 of the Android plan (2026-11-08), in the shared UI, so the extension in
+a narrow desktop window shows it too:
+
+- **Which layout.** A touch screen goes by orientation: upright, the phone layout at any
+  width (a tablet held upright included, owner 2026-11-08); on its side, the tablet layout
+  (worlds list on the left, sheets from the right) when 600 px tall or more, else the
+  phone layout. A mouse gets the phone layout below 700 px wide and today's desktop layout
+  from 700 px. The layout holds while a text field has focus (Android's keyboard).
+- **Frame.** Top bar (Foundry's name, the version chip and ⏻ at home; a tab's name on
+  its page; Back and the page's name elsewhere), the worlds list as home, the dock above
+  the tab bar for each page's bottom bar, and the tab bar with badges. Escape is Back, as
+  Android's Back will be; Foundry's "window smaller than 1024×768" notice is removed.
+- **Pages.** A world: the picture under the top bar, only the tab row pinned, a bottom bar
+  with what the next launch changes and Launch, and a Next launch sheet with undo, Discard
+  all and Launch. The Library: one row (filter, View, ⋮), no By world on a phone (owner
+  2026-11-08; a tablet keeps it). Backups: the summary and New snapshot above the tabs.
+  Configuration (kept on the phone, owner 2026-11-08): its unsaved bar above the tabs.
+  What's new: the update first.
+- **Touch.** Panels are sheets; menus and dialogs come up from the bottom over a scrim
+  that outlives the menu, so the closing tap can't press what lies under it; a tap or a
+  long press shows what a `title` tooltip says; bar controls are at least 44 px.
+- **A world running** (the app only): its own screen on `/join` with Return to Setup.
+  Not built from the mockup: the ⏻ menu there (no Setup actions while a world runs).
+- **Checked** by `tests/foundry/app-phone-walk.spec.ts`: every page and panel at 360,
+  412 and 768 px upright and on a phone and a tablet on their side, in the three Setup
+  themes: nothing past the screen's edges, the bars' controls at least 44 px, axe clean.
+  The running-world screen has its own spec (`app-phone-running.spec.ts`).
+
 ## Open
 
 1. **Not tested live:** writing `flags` with `editWorld`, and the companion calling

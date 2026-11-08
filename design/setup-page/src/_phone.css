@@ -223,7 +223,7 @@ body.mlp .mls-panel .mls-subtabs { position: static; margin: 0; background: tran
   body.mlp:not(.mlp-wide) .mls-banner { min-height: 0; padding-top: calc(var(--mlp-bar) + 8px); padding-bottom: 10px; }
   body.mlp .mls-banner h2 { font-size: 28px; }
   body.mlp .mlp-actbar { padding: 6px 12px; }
-  body.mlp .mlp-launch { height: 40px; }
+  body.mlp .mlp-launch { height: var(--mlp-tap); } /* still a finger's size */
   body.mlp .mls-panel { height: 94% !important; max-height: 94%; }
 }
 body.mlp .mls-panel .mls-wlist li { min-height: 44px; font-size: 14.5px; }
@@ -279,6 +279,12 @@ body.mlp[data-page="backups"] .mls-subtabs { flex-wrap: nowrap; }
 body.mlp[data-page="backups"] .mls-subtabs a { flex: 1 1 auto; justify-content: center; white-space: nowrap; padding-inline: 6px; }
 body.mlp[data-page="backups"] .mls-subtabs a > i { display: none; }
 body.mlp .mlb-page > .mls-body-main > .mlb-job { margin-top: 12px; }
+/* A snapshot under way, in one column: what and where it is, the bar across the band, then the steps; the title carries the percent. */
+body.mlp .mlb-job { grid-template-columns: minmax(0, 1fr); gap: 8px; min-width: 0; }
+body.mlp .mlb-job .t span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+body.mlp .mlb-job .bar { order: 1; }
+body.mlp .mlb-job ol { order: 2; flex-wrap: wrap; gap: 4px 14px; }
+body.mlp .mlb-job .pct { display: none; }
 body.mlp .mlw-bhead:not(.sel) { flex-wrap: nowrap; align-items: center; gap: 10px; padding-block: 10px; font-size: 13px; color: var(--color-text-subtle); }
 body.mlp .mlw-bhead:not(.sel) > span:first-child { flex: 1; min-width: 0; font-weight: 400; }
 body.mlp .mlw-bhead:not(.sel) button { flex: none; width: auto; padding: 0 12px; }

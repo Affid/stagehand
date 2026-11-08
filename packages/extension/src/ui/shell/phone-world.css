@@ -357,7 +357,18 @@
     padding-block: 6px;
   }
 
+  /* Still a finger's size (the walk's 44 px). */
   .mls-shell.mlp .mlp-launch {
-    height: 40px;
+    height: var(--mlp-tap);
   }
+}
+
+/* A long folder path wraps instead of pushing its copy button off screen. */
+.mls-shell.mlp .mls-main .mlw-details dd {
+  flex-wrap: wrap;
+}
+
+.mls-shell.mlp .mls-main .mlw-details dd code {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
