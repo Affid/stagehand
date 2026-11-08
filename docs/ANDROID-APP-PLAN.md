@@ -1,6 +1,6 @@
 # Android app: the new Setup page on a phone
 
-Status: planned 2026-11-07; phase 0 closed the same day (answered on the emulator; the phone checks moved to phase 4); phase 1 (phone design): the owner chose the tabs layout and, after the rounds below, moved on to development on 2026-11-08; two questions stay open until phase 3 (see "Phase 1" below). Next: phase 2. The owner's decisions are below. Owner's choices: an Android app that
+Status: planned 2026-11-07; phase 0 closed the same day (answered on the emulator; the phone checks moved to phase 4); phase 1 (phone design): the owner chose the tabs layout and, after the rounds below, moved on to development on 2026-11-08; two questions stay open until phase 3 (see "Phase 1" below). Phase 2 started 2026-11-08, split into packages below. The owner's decisions are below. Owner's choices: an Android app that
 loads the user's Foundry server in a WebView and draws our Setup page over it
 (option 2 of three; the others were the extension in Firefox for Android, and
 a native client speaking Foundry's protocol); **Setup only** (a world, once
@@ -260,6 +260,78 @@ Still open, to settle before phase 3 (phase 2 doesn't depend on them):
 Still open: the tablet-upright layout and whether anything stays off the
 phone. The approved layout goes into `docs/SETUP-REDESIGN.md` (a "Phone"
 section).
+
+## Phase 2: app platform layer (started 2026-11-08)
+
+TypeScript only; no Android build. Done when today's Setup page runs in the
+app harness through the app layer (desktop layout), the live suites pass on
+the app and on the extension, and the extension build is unchanged. The
+phone layout (phase 3) and Kotlin (phase 4) are not part of it; the two
+open design questions above stay open.
+
+Packages, each committed on its own after tests first, `pnpm verify`, live
+checks, a code review and a security review:
+
+1. **Ports and the private channel** (shared code; the extension behaves as
+   today).
+   - A `PageChannel` between `setup-main` and `setup-ui`: the window-message
+     channel the extension uses today (envelope, source and origin checks)
+     and an in-closure pair for the app (copies, delivered asynchronously,
+     unreachable from page scripts). `createPageBridge` and `setup-main`
+     take a channel; the bodies of `setup-main`, `setup-ui` and
+     `game-bridge` move out of `entries/` so both builds start them.
+   - `UiPorts` in the UI's context: `files` (save, open), `confirm`
+     (asynchronous) and `openExternal` (one delegated handler for our
+     `target="_blank"` links). The extension's ports are today's behaviour:
+     Blob download, file input, `window.confirm`, the browser opens links.
+   - Tests: the channel pair, the ports in import and export, the folder,
+     tag and preset deletes, link handling; live: the extension's suite.
+2. **NativeBridge and the app platform** (fake bridge).
+   - `app/bridge.ts`: the wire format (Zod), requests both ways with ids,
+     replies, timeouts, a size cap, unknown requests answered with an
+     error. The port is WebView's injected object (`postMessage(string)`,
+     `onmessage`).
+   - `app/native-api.ts`: the contract phase 4 implements: every request,
+     its payload and reply (runtime, key-value, scripts, permissions,
+     fetch, files, confirm, external links, home; `route` into the
+     background with the sender native attached).
+   - Over the bridge: `KeyValue`, `ScriptingPlatform`, `ReleasesPlatform`,
+     `RouterDeps` (the app's id, URL and version; settings open the home
+     screen), `SettingsPlatform` (no "This site" in the app), runtime
+     `send`, the three ports, and the background serving `route`.
+   - A fake native side for unit tests; 80% coverage.
+3. **The app build target.**
+   - `build.ts` builds the app into `dist-app/` (`pnpm build` builds both):
+     `app-setup.js` (veil and Setup CSS added as a `<style>` at document
+     start, `setup-main` and `setup-ui` in one closure over the private
+     channel, the bridge kept and its global name removed, only on the
+     server's `/setup`), `app-game.js` (only on `/game`),
+     `app-background.js` with `background.html`, `app-home.js` with
+     `home.html`. The native side wraps each page script with its server
+     (`wrapForServer`), so the scripts know the route prefix.
+   - A check in `pnpm verify` that no `chrome.*` or `browser.*` reaches
+     `dist-app/`; the extension's `dist/` keeps its files.
+4. **The app harness.**
+   - `tests/app/`: Chromium with an Android WebView user agent, phone
+     emulation (412 px, touch) or a desktop viewport; the asset origin
+     served from `dist-app/`; the native side played in Node: key-value
+     store, saved origins and scripts, the relay with the sender taken
+     from the page's real URL and frame, NativeFetch's rules, files,
+     confirm, external links, the home screen. The page scripts and the
+     fake bridge are injected at document start for saved origins only, as
+     WebView does.
+   - Smoke: Setup through the app layer; page scripts can't see the bridge
+     or `chrome`.
+5. **The live suites on the app.**
+   - `tests/foundry/target.ts`: one way for the specs to open Setup as
+     admin and to read or seed storage, on the extension or the app
+     (`pnpm test:foundry:app`). Extension-only checks (the toolbar panel,
+     Chrome's script registration) stay so; the app gets its own for the
+     home screen (add and remove a server, Release history).
+   - App-only checks: export and import through the files port, deletes
+     through confirm, links through openExternal, the veil frame by frame,
+     a reviewed launch applied through `app-game.js`.
+   - Both suites pass; screenshots and a results artifact.
 
 ## Risks
 
