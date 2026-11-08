@@ -1,6 +1,6 @@
 # Android app: the new Setup page on a phone
 
-Status: planned 2026-11-07; phase 0 closed the same day (answered on the emulator; the phone checks moved to phase 4); phase 1 (phone design): the owner chose the tabs layout and, after the rounds below, moved on to development on 2026-11-08; the owner settled its two open questions on 2026-11-08 (see "Phase 1" below). Phase 2 (app platform layer) done 2026-11-08: the five packages below. Phase 3 (phone layout) done 2026-11-08 in seven packages. Phase 4 (the Android app) done 2026-11-08 in five packages: the app runs the Setup page on the emulator, and a launch from it applies queued changes through the companion; the phone checks wait for the owner. The owner's decisions are below. Owner's choices: an Android app that
+Status: planned 2026-11-07; phase 0 closed the same day (answered on the emulator; the phone checks moved to phase 4); phase 1 (phone design): the owner chose the tabs layout and, after the rounds below, moved on to development on 2026-11-08; the owner settled its two open questions on 2026-11-08 (see "Phase 1" below). Phase 2 (app platform layer) done 2026-11-08: the five packages below. Phase 3 (phone layout) done 2026-11-08 in seven packages. Phase 4 (the Android app) done 2026-11-08 in five packages: the app runs the Setup page on the emulator, and a launch from it applies queued changes through the companion. Phase 5 (on-device suite) done 2026-11-09: `pnpm test:android` passes on the emulator and the release APK is in the owner's folder; the run on the owner's phone waits for its checks. The owner's decisions are below. Owner's choices: an Android app that
 loads the user's Foundry server in a WebView and draws our Setup page over it
 (option 2 of three; the others were the extension in Firefox for Android, and
 a native client speaking Foundry's protocol); **Setup only** (a world, once
@@ -958,6 +958,14 @@ test:android`, no traces). First spec, `start.spec.ts`: a fresh install
    its message's words (now `PageTimeout`); other failures of Back's
    question escaped; the suite deleted the device's own exports; a second
    companion session that could pass on the first one's record.
+3. **Acceptance** (done 2026-11-09). The full suite on the emulator: 9 of
+   9 pass. The signed release APK of `61457e0` installs and opens on home;
+   it is in the owner's Windows folder as
+   `C:\Users\fagot\ml-apk\module-library-0.2.0.apk`. Results:
+   https://claude.ai/artifact/Pj5rVD16GKovBGud9n8Zgx. **The phone run
+   waits for the owner**: no phone was on adb (the firewall rule,
+   WebView 146 and wireless debugging first, phase 4 "For the owner");
+   then `ML_ANDROID_SERIAL=<phone> ML_APP_SERVER=http://192.168.178.25:30000 pnpm test:android`.
 
 ## Native rules (for phase 4)
 
