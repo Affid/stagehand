@@ -24,6 +24,13 @@ export interface SettingsPlatform {
   /** Whether the tab shows a Foundry page: its own stylesheet or script. */
   readonly isFoundry: (tabId: number) => Promise<boolean>;
   readonly build: string;
+  /** In the Android app: servers open in the app (the home screen). */
+  readonly app?: AppHome;
+}
+
+export interface AppHome {
+  /** The address that opens a saved server in the app. */
+  readonly serverHref: (server: string) => string;
 }
 
 /** Runs in the tab (activeTab, or a server already allowed). */

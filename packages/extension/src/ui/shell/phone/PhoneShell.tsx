@@ -10,6 +10,7 @@ import { MainPane, PanelColumn, useShownRoute } from "../Panes.tsx";
 import { WorldRail } from "../WorldRail.tsx";
 import { DockContext, SheetHostContext } from "./Dock.tsx";
 import type { Layout } from "./layout.ts";
+import { isNativeBack } from "./back.ts";
 import { backPatch, navOf, sheetShown, synced } from "./nav.ts";
 import { TipBubble, useTouchTips } from "./TouchTip.tsx";
 import { SHEET, usePopupOpen } from "./popups.ts";
@@ -40,9 +41,10 @@ function useTrail(): void {
 }
 
 /**
- * Escape is Back (Android's Back reaches the page as one, phase 4): open
+ * Escape is Back (Android's Back reaches the page as one: back.ts): open
  * dialogs and menus stop it first; a press with nothing to go back to is
- * left unhandled. A real key in a text field stays the field's.
+ * left unhandled. In a text field only native's Back counts: a real key
+ * there stays the field's, and a page script's look-alike is ignored.
  */
 function useEscapeBack(layout: Layout): void {
   const { store } = useUi();
@@ -50,7 +52,7 @@ function useEscapeBack(layout: Layout): void {
     const onKey = (e: KeyboardEvent): void => {
       if (e.key !== "Escape" || e.defaultPrevented) return;
       const target = e.target instanceof Element ? e.target : null;
-      if (e.isTrusted && target?.closest(EDITABLE)) return;
+      if (target?.closest(EDITABLE) && !isNativeBack(e)) return;
       const patch = backPatch(store.get(), layout);
       if (!patch) return;
       e.preventDefault();

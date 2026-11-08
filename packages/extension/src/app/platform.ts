@@ -170,5 +170,7 @@ export function nativeSettingsPlatform(
     reload: () => Promise.resolve(),
     isFoundry: () => Promise.resolve(false),
     build,
+    // A tap opens the server's Setup in the app (native takes the link).
+    app: { serverHref: (server) => `${server}/setup` },
   };
 }

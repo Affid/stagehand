@@ -211,6 +211,13 @@ export const CALLER_REQUESTS: Readonly<Record<Caller, readonly string[]>> = {
   ],
 };
 
+/**
+ * Native's one request to a server's Setup page: Android's Back. Answered
+ * {handled}: true when the page used it (a dialog, menu or sheet closed, or
+ * a page went back), false to let native go back in history or home.
+ */
+export const BACK = "back";
+
 /** The background's first request: it serves `route` from now on. */
 export const READY = "background.ready";
 

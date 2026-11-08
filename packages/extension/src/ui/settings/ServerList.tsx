@@ -3,6 +3,7 @@
 import { useState } from "preact/hooks";
 import { normalizeServerUrl } from "../../background/servers.ts";
 import type { Translate } from "../i18n.ts";
+import type { AppHome } from "./platform.ts";
 import { type Servers, serverLabel } from "./useServers.ts";
 
 const messageOf = (e: unknown): string =>
@@ -75,12 +76,38 @@ function Off(props: {
   );
 }
 
+/** The server's address: in the app, a link that opens it there. */
+function Address(props: {
+  readonly t: Translate;
+  readonly id: string;
+  readonly app: AppHome | undefined;
+}) {
+  const { t, id, app } = props;
+  const label = serverLabel(id);
+  if (!app) return <span class="mlp-addr">{label}</span>;
+  return (
+    <>
+      <a
+        class="mlp-addr mlp-open"
+        href={app.serverHref(id)}
+        aria-label={t("set.openAria", { server: label })}
+      >
+        {label}
+      </a>
+      {id.startsWith("http:") ? (
+        <span class="mlp-tag mlp-plain">{t("set.plain")}</span>
+      ) : null}
+    </>
+  );
+}
+
 /** One server, with Remove and what went wrong removing it. */
 function ServerRow(props: {
   readonly t: Translate;
   readonly id: string;
   readonly active: boolean;
   readonly s: Servers;
+  readonly app: AppHome | undefined;
 }) {
   const { t, id, s } = props;
   const [busy, setBusy] = useState(false);
@@ -95,7 +122,7 @@ function ServerRow(props: {
   };
   return (
     <li>
-      <span class="mlp-addr">{serverLabel(id)}</span>
+      <Address t={t} id={id} app={props.app} />
       {props.active ? null : <Off t={t} id={id} s={s} />}
       <button
         type="button"
@@ -118,20 +145,32 @@ function ServerRow(props: {
 export function ServerList(props: {
   readonly t: Translate;
   readonly s: Servers;
+  readonly app?: AppHome | undefined;
 }) {
-  const { t, s } = props;
+  const { t, s, app } = props;
   return (
     <section aria-labelledby="mlp-servers-h">
       <h2 id="mlp-servers-h">{t("set.servers")}</h2>
-      {s.list?.length === 0 ? <p class="mlp-muted">{t("set.none")}</p> : null}
+      {s.list?.length === 0 ? (
+        <p class="mlp-muted">{t(app ? "set.noneApp" : "set.none")}</p>
+      ) : null}
       <ul class="mlp-servers">
         {(s.list ?? []).map((r) => (
-          <ServerRow key={r.id} t={t} id={r.id} active={r.active} s={s} />
+          <ServerRow
+            key={r.id}
+            t={t}
+            id={r.id}
+            active={r.active}
+            s={s}
+            app={app}
+          />
         ))}
       </ul>
       <AddServer t={t} s={s} />
       {s.list?.length ? (
-        <p class="mlp-muted mlp-small">{t("set.removeNote")}</p>
+        <p class="mlp-muted mlp-small">
+          {t(app ? "set.removeNoteApp" : "set.removeNote")}
+        </p>
       ) : null}
     </section>
   );

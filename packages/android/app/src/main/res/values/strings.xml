@@ -8,4 +8,6 @@
     <string name="webview_update">Update</string>
     <string name="webview_continue">Continue anyway</string>
     <string name="webview_unknown">unknown</string>
+    <string name="cert_title">Certificate not trusted</string>
+    <string name="cert_body">The server at %1$s uses a certificate this phone doesn\'t trust, often a self-signed one. Module Library doesn\'t open such servers yet: use the server\'s plain http address on your home network, or give it a certificate from a public authority.</string>
 </resources>

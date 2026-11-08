@@ -6,7 +6,7 @@ import {
   takeBridge,
   whenRoot,
 } from "../../src/app/page.ts";
-import { isServerPage, wrapForServer } from "../../src/app/native-api.ts";
+import { BACK, isServerPage, wrapForServer } from "../../src/app/native-api.ts";
 import { fakeNative } from "./fake-native.ts";
 
 const SERVER = "http://localhost:30000/vtt";
@@ -81,6 +81,22 @@ describe("app-setup on a server's Setup page", () => {
     expect((window as { mlApp?: unknown }).mlApp).toBeUndefined();
   });
 
+  test("answers native's Back: nothing to go back to on a bare page", async () => {
+    const native = fakeNative();
+    native.on("runtime.send", () => ({}));
+    Object.assign(window, { mlApp: native.port });
+    startAppSetup({
+      win: window,
+      doc: document,
+      href: `${SERVER}/setup`,
+      server: SERVER,
+      css: "",
+    });
+    await expect(native.request(BACK, {})).resolves.toEqual({
+      handled: false,
+    });
+  });
+
   test("does nothing on another page, or without the bridge", () => {
     Object.assign(window, { mlApp: fakeNative().port });
     expect(
@@ -146,6 +162,36 @@ describe("app-game on a server's game page", () => {
         window.location.origin,
       );
     });
+  });
+
+  test("on /join after a launch, and on /auth, it clears Foundry's size notice", () => {
+    const clearNotice = vi.fn();
+    Object.assign(window, { mlApp: fakeNative().port });
+    startAppGame({
+      win: window,
+      href: `${SERVER}/join`,
+      server: SERVER,
+      referrer: `${SERVER}/setup`,
+      runningCss: "",
+      clearNotice: clearNotice,
+    });
+    expect(clearNotice).toHaveBeenCalledWith(window);
+    Object.assign(window, { mlApp: fakeNative().port });
+    startAppGame({
+      win: window,
+      href: `${SERVER}/auth`,
+      server: SERVER,
+      clearNotice: clearNotice,
+    });
+    expect(clearNotice).toHaveBeenCalledTimes(2);
+    Object.assign(window, { mlApp: fakeNative().port });
+    startAppGame({
+      win: window,
+      href: `${SERVER}/game`,
+      server: SERVER,
+      clearNotice: clearNotice,
+    });
+    expect(clearNotice).toHaveBeenCalledTimes(2);
   });
 
   test("on any other page of the server it takes the bridge away, unused", () => {

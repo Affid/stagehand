@@ -13,7 +13,16 @@ const REPORT = join(
 );
 const GATED = ["dev/modulelibrary/app/core", "dev/modulelibrary/app/web"];
 /** Android glue in a gated package, left to the device checks. */
-const GLUE = new Set(["dev/modulelibrary/app/web/SupportNotice.kt"]);
+const GLUE = new Set(
+  [
+    "SupportNotice.kt",
+    "Hardening.kt",
+    "PageBridge.kt",
+    "Injection.kt",
+    "Links.kt",
+    "Clients.kt",
+  ].map((f) => `dev/modulelibrary/app/web/${f}`),
+);
 const MIN = 80;
 
 interface Count {

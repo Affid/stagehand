@@ -17,6 +17,8 @@ const val BRIDGE_NAME = "mlApp"
 const val WIRE_VERSION = 1
 const val MAX_MESSAGE_CHARS = 8_000_000
 
+/** Native's request to a server's Setup page: Android's Back, answered {handled}. */
+const val BACK = "back"
 const val READY = "background.ready"
 const val ROUTE = "route"
 /** How long native waits for the background's answer to `route`. */

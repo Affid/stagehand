@@ -767,6 +767,47 @@ Kotlin tests, a check on the emulator, a code review and a security review:
    reloads it but after a crash); outside links need a recent tap on the
    server WebView (package 4: native sees taps, a message doesn't); no
    storage quota per key-value store.
+3. **The three WebViews** (done 2026-11-08). `MainActivity` holds the
+   background (one pixel, under the others, so its timers aren't slowed),
+   home and the server WebView; `web/Clients.kt` (home and background:
+   only the asset loader's pages, no navigation; home opens a saved
+   server on a tap, outside links in a Custom Tab; the server WebView: its
+   saved servers' pages only, main-frame loads elsewhere blocked even for a
+   form's POST, a tapped outside link in a Custom Tab, certificate errors
+   cancelled with one dialog naming the saved server), `web/PageBridge.kt`
+   (the committed page from `onPageStarted`, which on the emulator gives
+   the address after a redirect; replies only to the document that asked),
+   `web/Injection.kt` (all app-setup scripts before all app-game scripts),
+   `web/Hardening.kt`, `web/Links.kt`. The app opens the last server's
+   Setup, else home; after a renderer crash, home. **Back** asks our Setup
+   page (`back` over the bridge, answered `{handled}`); Setup plays an
+   Escape only it can make (`ui/shell/phone/back.ts`, a private WeakSet; no
+   key code, since Foundry's keybindings claimed every press with one, and
+   stopped at the document), then the history (not to `/auth`), then home;
+   Back on home leaves the app, or returns to the server when home was
+   opened as Module Library settings; a second Back within 2 s goes on even
+   if the page claimed the first. Shared UI: the home screen's servers open
+   on a tap, plain http says "Not encrypted", the app's own words;
+   Foundry's window-size notice is cleared on `/join` (it covered the Join
+   button) and `/auth` (it covered the password), waiting for Foundry's
+   notification area there. Checked on the emulator
+   (`scripts/dev/android-app.ts` drives the debug app with Playwright's
+   Android support): add a server, open it, admin login, our Setup page,
+   Back through a world, Setup, home and out, settings and back, the notice
+   gone on `/auth`, a form POST to another site blocked. Reviews (code: two
+   high; security: two medium), fixed: Back read the history before Setup
+   answered; certificate dialogs could stack or come after closing, and
+   named any site; a renderer crash recreated the activity up to three
+   times and could loop on the last server; the activity could start after
+   it was destroyed; replies could reach destroyed WebViews; the bridge
+   was on saved origins without scripts; release logs carried addresses;
+   an origin rule WebView refuses would crash every start. One claim
+   checked and not so: `onPageStarted` reports the address after a
+   redirect. Left: pages already open keep the scripts and bridge they
+   started with until reloaded; Foundry's unreachable-server page is
+   Chromium's own; the background keeps running while the app is in the
+   background; a saved server's page can navigate to another saved server
+   without a tap (both the user's).
 
 ## Native rules (for phase 4)
 

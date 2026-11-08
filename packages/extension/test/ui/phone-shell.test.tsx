@@ -12,6 +12,7 @@ import {
 } from "@testing-library/preact";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { useDismiss } from "../../src/ui/common/popover.ts";
+import { pressBack } from "../../src/ui/shell/phone/back.ts";
 import { DockContext, Docked } from "../../src/ui/shell/phone/Dock.tsx";
 import { el, renderUi, setupState } from "./harness.tsx";
 
@@ -249,12 +250,52 @@ describe("Escape as Android's Back", () => {
     expect(root(container).dataset.screen).toBe("home");
   });
 
-  test("Android's Back, sent from a text field, still goes back", () => {
+  test("Android's Back, from native, goes back even from a text field", () => {
     const { container } = phone();
     fireEvent.click(tab(container, /^Library/));
     const field = document.createElement("input");
     el(container, ".mls-main").append(field);
-    // Not a trusted key press: the native Back's goes back.
+    field.focus();
+    let handled = false;
+    void act(() => {
+      handled = pressBack(document);
+    });
+    expect(handled).toBe(true);
+    expect(root(container).dataset.screen).toBe("home");
+    void act(() => {
+      handled = pressBack(document);
+    });
+    expect(handled).toBe(false);
+  });
+
+  test("native Back never reaches Foundry's own key handling", () => {
+    const { container } = phone();
+    fireEvent.click(tab(container, /^Library/));
+    const foundry = vi.fn((e: KeyboardEvent) => {
+      e.preventDefault();
+    });
+    window.addEventListener("keydown", foundry);
+    try {
+      let handled = false;
+      void act(() => {
+        handled = pressBack(document);
+      });
+      expect(handled).toBe(true);
+      void act(() => {
+        handled = pressBack(document);
+      });
+      expect(handled).toBe(false);
+      expect(foundry).not.toHaveBeenCalled();
+    } finally {
+      window.removeEventListener("keydown", foundry);
+    }
+  });
+
+  test("a page script's Escape in a text field stays the field's", () => {
+    const { container } = phone();
+    fireEvent.click(tab(container, /^Library/));
+    const field = document.createElement("input");
+    el(container, ".mls-main").append(field);
     void act(() => {
       field.dispatchEvent(
         new KeyboardEvent("keydown", {
@@ -264,6 +305,19 @@ describe("Escape as Android's Back", () => {
         }),
       );
     });
+    expect(root(container).dataset.screen).toBe("page");
+  });
+
+  test("native Back closes an open menu first", () => {
+    const { container, getByRole } = phone();
+    fireEvent.click(el(container, '.mls-world[data-world="w1"]'));
+    fireEvent.click(tab(container, /^Worlds/));
+    const menuButton = getByRole("button", { name: "Log out or shut down" });
+    fireEvent.click(menuButton);
+    void act(() => {
+      pressBack(document);
+    });
+    expect(container.querySelector(".mlh-menu")).toBeNull();
     expect(root(container).dataset.screen).toBe("home");
   });
 

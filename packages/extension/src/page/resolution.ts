@@ -34,14 +34,8 @@ function removeNotice(page: PageGlobals, doc: Document): void {
   }
 }
 
-/** Removes the notice now and whenever it comes back; returns the stop. */
-export function hideResolutionNotice(
-  page: PageGlobals,
-  doc: Document,
-): () => void {
-  removeNotice(page, doc);
-  const area = doc.getElementById(AREA);
-  if (!area) return () => undefined;
+/** Watches the notification area: the notice goes whenever it comes back. */
+function watchArea(page: PageGlobals, area: HTMLElement, doc: Document) {
   // One check per burst of changes, whatever the page does to the list.
   let queued = false;
   const watch = new MutationObserver(() => {
@@ -55,5 +49,32 @@ export function hideResolutionNotice(
   watch.observe(area, { childList: true });
   return () => {
     watch.disconnect();
+  };
+}
+
+/**
+ * Removes the notice now and whenever it comes back; returns the stop.
+ * Where Foundry adds its notification area later (its login page), it
+ * waits for the area first.
+ */
+export function hideResolutionNotice(
+  page: PageGlobals,
+  doc: Document,
+): () => void {
+  removeNotice(page, doc);
+  const area = doc.getElementById(AREA);
+  if (area) return watchArea(page, area, doc);
+  let stopArea = (): void => undefined;
+  const wait = new MutationObserver(() => {
+    const found = doc.getElementById(AREA);
+    if (!found) return;
+    wait.disconnect();
+    removeNotice(page, doc);
+    stopArea = watchArea(page, found, doc);
+  });
+  wait.observe(doc.documentElement, { childList: true, subtree: true });
+  return () => {
+    wait.disconnect();
+    stopArea();
   };
 }

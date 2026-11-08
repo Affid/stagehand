@@ -50,7 +50,7 @@ export function SettingsPanel(props: { readonly platform: SettingsPlatform }) {
           reload={platform.reload}
         />
       ) : null}
-      <ServerList t={t} s={servers} />
+      <ServerList t={t} s={servers} app={platform.app} />
       <ReleaseAccess t={t} platform={platform} />
       <footer class="mlp-muted mlp-small">
         {t("set.build", { build: platform.build })}

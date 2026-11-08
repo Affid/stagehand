@@ -21,11 +21,39 @@ class MessageRulesTest {
     }
 
     @Test
-    fun `Back - the page first, then history, then home, then out`() {
-        assertEquals(BackAction.NONE, backStep(Screen.SERVER, pageHandled = true, canGoBack = true))
-        assertEquals(BackAction.HISTORY, backStep(Screen.SERVER, pageHandled = false, canGoBack = true))
-        assertEquals(BackAction.HOME, backStep(Screen.SERVER, pageHandled = false, canGoBack = false))
-        assertEquals(BackAction.EXIT, backStep(Screen.HOME, pageHandled = false, canGoBack = true))
+    fun `Back - the page first, then history, then home`() {
+        assertEquals(BackAction.NONE, backStep(Screen.SERVER, pageHandled = true, canGoBack = true, homeOverServer = true))
+        assertEquals(BackAction.HISTORY, backStep(Screen.SERVER, pageHandled = false, canGoBack = true, homeOverServer = true))
+        assertEquals(BackAction.HOME, backStep(Screen.SERVER, pageHandled = false, canGoBack = false, homeOverServer = true))
+    }
+
+    @Test
+    fun `a second Back soon after goes on even if the page claims it`() {
+        assertEquals(
+            BackAction.HOME,
+            backStep(Screen.SERVER, pageHandled = true, canGoBack = false, homeOverServer = false, pressedAgainSoon = true),
+        )
+        assertEquals(
+            BackAction.HISTORY,
+            backStep(Screen.SERVER, pageHandled = true, canGoBack = true, homeOverServer = false, pressedAgainSoon = true),
+        )
+    }
+
+    @Test
+    fun `Back on home returns to the server it was opened over, else leaves`() {
+        assertEquals(BackAction.SERVER, backStep(Screen.HOME, pageHandled = false, canGoBack = true, homeOverServer = true))
+        assertEquals(BackAction.EXIT, backStep(Screen.HOME, pageHandled = false, canGoBack = false, homeOverServer = false))
+    }
+
+    @Test
+    fun `history goes back only to the same server's own pages, never its login`() {
+        val s = listOf("http://localhost:30000")
+        assertTrue(historyBackAllowed("http://localhost:30000/setup", s))
+        assertTrue(historyBackAllowed("http://localhost:30000/join", s))
+        assertFalse(historyBackAllowed("http://localhost:30000/auth", s))
+        assertFalse(historyBackAllowed("http://localhost:30000/auth?x=1", s))
+        assertFalse(historyBackAllowed("http://other:1/setup", s))
+        assertFalse(historyBackAllowed(null, s))
     }
 
     @Test

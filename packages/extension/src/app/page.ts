@@ -11,7 +11,9 @@ import { startSetupMain } from "../page/main.ts";
 import { startGameBridge } from "../bridge/game.ts";
 import { startSetupUi } from "../ui/start.ts";
 import { createNativeBridge, type NativePort } from "./bridge.ts";
-import { BRIDGE_NAME, isServerPage } from "./native-api.ts";
+import { BACK, BRIDGE_NAME, isServerPage } from "./native-api.ts";
+import { pressBack } from "../ui/shell/phone/back.ts";
+import { hideResolutionNotice } from "../page/resolution.ts";
 import { nativePorts, nativeSend } from "./platform.ts";
 import { showsRunning, startRunning } from "./running/start.tsx";
 
@@ -90,6 +92,7 @@ export function startAppSetup(deps: AppSetupDeps): boolean {
   });
   try {
     const bridge = createNativeBridge(port);
+    bridge.handle(BACK, () => ({ handled: pressBack(doc) }));
     const [main, ui] = localChannelPair();
     startSetupMain({ channel: main, page: pageGlobals(), doc });
     startSetupUi({
@@ -113,6 +116,22 @@ export interface AppGameDeps {
   readonly referrer?: string;
   /** running.css, for the running-world screen. */
   readonly runningCss?: string;
+  /** Clears Foundry's window-size notice on /join and /auth (clearSizeNotice). */
+  readonly clearNotice?: (win: Window) => void;
+}
+
+/**
+ * Foundry's /join and /auth at phone width: its "window smaller than
+ * 1024×768" notice lies over the Join button and the password field, and
+ * a launch from the app passes through /join (Android spike, finding 3).
+ * Taken away as on Setup.
+ */
+export function clearSizeNotice(win: Window): void {
+  const start = (): void => {
+    hideResolutionNotice(pageGlobals(), win.document);
+  };
+  if (win.document.readyState === "complete") start();
+  else win.addEventListener("load", start, { once: true });
 }
 
 /** The server's own URL for a route under it. */
@@ -148,6 +167,13 @@ export function startAppGame(deps: AppGameDeps): boolean {
         },
       });
     });
+    return false;
+  }
+  const onLoginPage = ["/join", "/auth"].some((p) =>
+    isServerPage(deps.href, deps.server, p),
+  );
+  if (port && onLoginPage) {
+    (deps.clearNotice ?? clearSizeNotice)(deps.win);
     return false;
   }
   if (!port || !isServerPage(deps.href, deps.server, "/game")) return false;

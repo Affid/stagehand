@@ -36,6 +36,8 @@ function fake(
     readonly failRemove?: boolean;
     /** Saved servers whose scripts the browser dropped. */
     readonly off?: readonly string[];
+    /** The app's home screen rather than the extension's panel. */
+    readonly app?: boolean;
   } = {},
 ): Fake {
   const sent: ExtensionMessage[] = [];
@@ -82,6 +84,7 @@ function fake(
     reload: vi.fn(() => Promise.resolve()),
     isFoundry: vi.fn(() => Promise.resolve(opts.foundry ?? true)),
     build: "0.2.0 · abc1234 · 2026-11-07 12:00",
+    ...(opts.app ? { app: { serverHref: (id: string) => `${id}/setup` } } : {}),
   };
   return { platform, sent, granted };
 }
@@ -252,5 +255,39 @@ describe("Release history's permission, and the build", () => {
   test("the build line", async () => {
     show(fake());
     expect(await screen.findByText(/abc1234/)).toBeTruthy();
+  });
+});
+
+describe("the app's home screen", () => {
+  test("each server opens in the app with a tap", async () => {
+    show(fake({ app: true, servers: [S, "https://vtt.example.com/foundry"] }));
+    const link = await screen.findByRole("link", {
+      name: "Open localhost:30000",
+    });
+    expect(link.getAttribute("href")).toBe(`${S}/setup`);
+    expect(
+      screen
+        .getByRole("link", { name: "Open vtt.example.com/foundry" })
+        .getAttribute("href"),
+    ).toBe("https://vtt.example.com/foundry/setup");
+  });
+
+  test("a plain-http server is marked Not encrypted", async () => {
+    show(fake({ app: true, servers: [S, "https://vtt.example.com"] }));
+    await screen.findByRole("link", { name: "Open localhost:30000" });
+    expect(screen.getAllByText("Not encrypted")).toHaveLength(1);
+  });
+
+  test("the app's own words: no browser, no This site", async () => {
+    show(fake({ app: true, servers: [] }));
+    expect(await screen.findByText(/Add your Foundry server/)).toBeTruthy();
+    expect(screen.queryByText(/in this browser/)).toBeNull();
+  });
+
+  test("the extension's panel keeps plain addresses", async () => {
+    show(fake({ servers: [S] }));
+    await screen.findByText("localhost:30000");
+    expect(screen.queryByRole("link")).toBeNull();
+    expect(screen.queryByText("Not encrypted")).toBeNull();
   });
 });

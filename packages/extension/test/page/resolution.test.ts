@@ -82,6 +82,29 @@ describe("hideResolutionNotice", () => {
     expect(p.remove).toHaveBeenCalledTimes(1);
   });
 
+  test("waits for the notification area when Foundry adds it later (/auth)", async () => {
+    const p = page();
+    const stop = hideResolutionNotice(p.globals, document);
+    notices(document, [[7, TEXT]]);
+    await vi.waitFor(() => {
+      expect(p.remove.mock.calls).toEqual([[7]]);
+    });
+    add(document, 8, TEXT);
+    // The fake leaves 7 in place, so it is seen again with 8.
+    await vi.waitFor(() => {
+      expect(p.remove).toHaveBeenLastCalledWith(8);
+    });
+    stop();
+  });
+
+  test("stopped before the area comes, it never acts", async () => {
+    const p = page();
+    hideResolutionNotice(p.globals, document)();
+    notices(document, [[7, TEXT]]);
+    await new Promise((r) => setTimeout(r, 0));
+    expect(p.remove).not.toHaveBeenCalled();
+  });
+
   test("leaves a notice that only looks alike, or isn't permanent", () => {
     notices(document, [[5, "Something else entirely"]]);
     add(document, 6, TEXT, false);
