@@ -161,6 +161,9 @@ async function buildApp(): Promise<void> {
   const define = {
     __ML_VERSION__: JSON.stringify(VERSION),
     __ML_SETUP_CSS__: JSON.stringify(setupCss()),
+    __ML_RUNNING_CSS__: JSON.stringify(
+      readFileSync(join(root, "src", "app", "running", "running.css"), "utf8"),
+    ),
   };
   for (const name of ["app-setup", "app-game", "app-background", "app-home"])
     await buildEntry(name, outDir, define);

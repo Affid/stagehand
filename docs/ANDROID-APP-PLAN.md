@@ -609,6 +609,22 @@ and a security review:
    Configuration's unsaved bar in the dock; What's new with the update first
    (`phone-server.css`). Live: `app-phone-server.spec.ts`. Reviews: no
    finding above medium (a misspelt class, fixed).
+6. **A world running** (done 2026-11-08). `app/running/`: on the server's
+   `/join`, unless it came from our `/setup` (a launch), the app shows its
+   screen over Foundry's join page (inert under it): the world's picture
+   and name, Running now, the system, people and uptime from `/api/status`,
+   and Return to Setup, which asks first with people in the game. Checked
+   live on 14.370: an admin session made on Setup before the launch closes
+   the world with no password; without one, Foundry wants the admin
+   password (it answers with `/join` again), so the screen asks for it then.
+   Polls the status, goes to Setup once the world has closed (or 30 s after
+   Foundry confirmed the close). Live: `app-phone-running.spec.ts`.
+   Differences from the mockup, for the owner: no ⏻ menu on this screen
+   (Log out and Shut down need Setup's actions, which don't exist while a
+   world runs), the version chip has no menu, and the system shows by its id
+   ("dnd5e 6.0.6": the join page has no system title). A GM who leaves the
+   game for `/join` also sees this screen rather than Foundry's join form
+   (the app is for Setup).
 
 ## Native rules (for phase 4)
 

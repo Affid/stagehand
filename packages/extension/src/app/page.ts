@@ -13,6 +13,7 @@ import { startSetupUi } from "../ui/start.ts";
 import { createNativeBridge, type NativePort } from "./bridge.ts";
 import { BRIDGE_NAME, isServerPage } from "./native-api.ts";
 import { nativePorts, nativeSend } from "./platform.ts";
+import { showsRunning, startRunning } from "./running/start.tsx";
 
 const isPort = (value: unknown): value is NativePort =>
   typeof value === "object" &&
@@ -108,7 +109,17 @@ export interface AppGameDeps {
   readonly win: Window;
   readonly href: string;
   readonly server: string;
+  /** The page it came from (the running-world screen skips a launch's /join). */
+  readonly referrer?: string;
+  /** running.css, for the running-world screen. */
+  readonly runningCss?: string;
 }
+
+/** The server's own URL for a route under it. */
+const routeOf =
+  (server: string) =>
+  (path: string): string =>
+    `${server.replace(/\/$/, "")}/${path}`;
 
 /**
  * Relays the companion on the server's game page; false when it doesn't.
@@ -118,6 +129,27 @@ export interface AppGameDeps {
  */
 export function startAppGame(deps: AppGameDeps): boolean {
   const port = takeBridge(deps.win);
+  if (
+    port &&
+    deps.runningCss !== undefined &&
+    showsRunning(deps.href, deps.referrer ?? "", deps.server)
+  ) {
+    const doc = deps.win.document;
+    const css = deps.runningCss;
+    whenRoot(doc, () => {
+      startRunning({
+        win: deps.win,
+        doc,
+        css,
+        game: () => (deps.win as { game?: unknown }).game,
+        server: {
+          fetch: deps.win.fetch.bind(deps.win),
+          route: routeOf(deps.server),
+        },
+      });
+    });
+    return false;
+  }
   if (!port || !isServerPage(deps.href, deps.server, "/game")) return false;
   startGameBridge({
     send: nativeSend(createNativeBridge(port)),

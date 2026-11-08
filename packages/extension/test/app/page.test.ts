@@ -157,6 +157,35 @@ describe("app-game on a server's game page", () => {
     expect((window as { mlApp?: unknown }).mlApp).toBeUndefined();
     expect(native.sent).toEqual([]);
   });
+
+  test("on /join it starts the running-world screen, unless a launch led there", () => {
+    const native = fakeNative();
+    Object.assign(window, { mlApp: native.port });
+    expect(
+      startAppGame({
+        win: window,
+        href: `${SERVER}/join`,
+        server: SERVER,
+        referrer: `${SERVER}/setup`,
+        runningCss: "",
+      }),
+    ).toBe(false);
+    expect(document.documentElement.classList.contains("ml-run-wait")).toBe(
+      false,
+    );
+    Object.assign(window, { mlApp: fakeNative().port });
+    startAppGame({
+      win: window,
+      href: `${SERVER}/join`,
+      server: SERVER,
+      referrer: "",
+      runningCss: "#ml-run-root{}",
+    });
+    expect(document.documentElement.classList.contains("ml-run-wait")).toBe(
+      true,
+    );
+    expect(native.sent).toEqual([]);
+  });
 });
 
 describe("native's wrapper around a page script (odd servers)", () => {
