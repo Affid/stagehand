@@ -357,6 +357,67 @@ unit test with a fixed date (a queued change on 2026-11-05 01:00 UTC
 against a backup "3 days ago") started failing on 2026-11-08; it now dates
 the change a day back.
 
+Package 2 done. `app/bridge.ts` (wire format, requests both ways, timeouts,
+an answer for every request even when the result can't be sent, a reply
+that doesn't check out ends its request), `app/native-api.ts` and
+`app/native-requests.ts` (the contract and its payload limits),
+`app/platform.ts` (every platform interface over native),
+`app/background.ts` (router deps, `route`, `background.ready`, the home
+screen at most once in 2 s), `app/page.ts` (app-setup and app-game: the
+bridge taken before anything else; app-game takes it away on the server's
+other pages; a bridge whose name can't be removed is refused). The fake
+native checks every payload against the contract. No live check yet: the
+app has no build until package 3 and no harness until package 4. Reviews:
+code (three high: a malformed reply hung its request, an unsendable result
+got no answer, native had no way to know the background was ready; all
+fixed with tests, and runtime messages no longer time out in the page) and
+security (three high: the bridge left on `/join` and other pages, fixed;
+scripts registered by the extension's file names, now `{server, ids}`;
+hooking of shared built-ins, documented with the rest under "Native rules"
+for phase 4).
+
+## Native rules (for phase 4)
+
+The contract is `packages/extension/src/app/native-api.ts` (who may ask
+what), `native-requests.ts` (payloads and limits) and `bridge.ts` (wire
+format). Besides those, native must (package 2 security review):
+
+- **Know the caller by WebView**, never by message: three WebView
+  instances (server, home, background), each with its own request list.
+  Home and background load only the app's own pages, block navigation and
+  have a CSP (`script-src 'self'`).
+- **Attach the sender** from the server WebView's last committed
+  navigation (`onPageStarted`), not `getUrl()` at arrival: a page can
+  `history.replaceState` from `/game` to `/setup` without navigating.
+  Accept only `isMainFrame` messages whose `sourceOrigin` equals that URL's
+  origin. Turn off multiple windows. Build the `route` payload with a JSON
+  library (`{message, sender}`), never by splicing the page's text.
+- **Server requests only from a saved server's `/setup*` or `/game*`**,
+  compared after normalising; refuse sender paths with `%`, `\`, `..`,
+  control characters or `//`. Never save the app's own origin or
+  foundryvtt.com as a server.
+- **Scripts:** `scripts.register` carries `{server, ids}`; inject only the
+  app's own `app-setup.js` then `app-game.js` (that order: app-game takes
+  the bridge away on the server's other pages), wrapped with
+  `wrapForServer` using a JSON encoder and the stored server, and only for
+  a saved origin.
+- **openExternal:** parse with `Uri`; http or https, a host, no user
+  info, at most 4096 characters, not the server's own origin; at most one
+  a second. A message carries no tap, so a page script on Setup could
+  still ask: native shows the host before opening, or keeps the limit.
+- **Dialogs and pickers:** one at a time (a second confirm while one is
+  open is a no), plain text, the app's and the server's name in the title.
+- **NativeFetch:** `fetchAllowed` with native's own Release history state
+  (Java: match the whole string, `\z`, not `$`), no redirects, no cookies
+  or Referer, 2xx only, stop reading past the cap.
+- **Accepted risk, for the owner:** our scripts share Foundry's page world,
+  so a hostile server (or anyone on a plain-http path to it) can hook
+  JavaScript built-ins and forge what our closure sends or reads, a
+  confirm's yes included. That reaches only that server's library in the
+  app, as in the extension. A native one-time token for destructive
+  operations (delete, import), checked by the background, would close it;
+  decided in phase 4.
+
 ## Risks
 
 - **Old WebViews.** The two WebView features need an up-to-date Android
