@@ -1,25 +1,52 @@
-// Dev aid for the Android app (phase 4): native UI on the emulator, found
-// with uiautomator and tapped with adb (system pickers and dialogs aren't
-// in a WebView). Used by scripts/dev/android-app.ts.
+// Native UI on an Android device, for the on-device suite (Android plan,
+// phase 5): adb (Windows' adb.exe, reached from WSL) and uiautomator, for
+// what isn't in a WebView: system pickers, the app's dialogs, taps that
+// must be real (outside links). Every adb call names the device.
 import { execFileSync } from "node:child_process";
 
 const ADB =
   process.env.ML_ADB ?? "/mnt/c/Users/fagot/Android/Sdk/platform-tools/adb.exe";
 
+/** The device every call goes to: ML_ANDROID_SERIAL, else the only one. */
+function serial(): string {
+  if (process.env.ML_ANDROID_SERIAL) return process.env.ML_ANDROID_SERIAL;
+  const lines = execFileSync(ADB, ["devices"])
+    .toString()
+    .split(/\r?\n/)
+    .slice(1)
+    .map((l) => l.trim().split(/\s+/))
+    .filter(([, state]) => state === "device")
+    .map(([id]) => id ?? "");
+  if (lines.length !== 1)
+    throw new Error(
+      `Set ML_ANDROID_SERIAL: adb sees ${String(lines.length)} devices (${lines.join(", ")})`,
+    );
+  const [only = ""] = lines;
+  process.env.ML_ANDROID_SERIAL = only;
+  return only;
+}
+
+export const deviceSerial = serial;
+
 export function adb(...args: string[]): string {
-  return execFileSync(ADB, args, { maxBuffer: 64 * 1024 * 1024 }).toString();
+  return execFileSync(ADB, ["-s", serial(), ...args], {
+    maxBuffer: 64 * 1024 * 1024,
+  }).toString();
 }
 
 /** adb with `input` on its stdin (adb shell passes it on). */
 export function adbWithInput(input: string, ...args: string[]): string {
-  return execFileSync(ADB, args, { input, maxBuffer: 1024 * 1024 }).toString();
+  return execFileSync(ADB, ["-s", serial(), ...args], {
+    input,
+    maxBuffer: 1024 * 1024,
+  }).toString();
 }
 
 interface Node {
   readonly text: string;
   readonly desc: string;
   readonly id: string;
-  readonly bounds: [number, number, number, number];
+  readonly bounds: readonly [number, number, number, number];
 }
 
 /** The screen's view tree, as uiautomator dumps it. */
@@ -46,6 +73,11 @@ export function nodes(): Node[] {
   });
 }
 
+const sleep = (ms: number) =>
+  new Promise<void>((r) => {
+    setTimeout(r, ms);
+  });
+
 /** Waits for a view whose text or description matches, then taps it. */
 export async function tapNative(
   match: RegExp,
@@ -59,21 +91,30 @@ export async function tapNative(
       adb("shell", "input", "tap", String((l + r) >> 1), String((t + b) >> 1));
       return hit.text || hit.desc;
     }
-    await new Promise((res) => setTimeout(res, 500));
+    await sleep(500);
   }
   throw new Error(`No ${String(match)} on screen`);
 }
 
-/** Whether a view with this text is on screen now. */
+/** Whether a view with this text or description is on screen now. */
 export function onScreen(match: RegExp): boolean {
   return nodes().some((n) => match.test(n.text) || match.test(n.desc));
 }
 
-/** The server WebView's top-left on screen, in device pixels. */
-export function webViewOrigin(): [number, number] {
-  const views = nodes().filter(
+/** The app's visible WebView's top-left on screen, in device pixels. */
+export function webViewOrigin(): readonly [number, number] {
+  const tall = nodes().filter(
     (n) => n.id === "" && n.bounds[3] - n.bounds[1] > 500,
   );
-  const web = views.find((n) => n.bounds[1] > 0) ?? views[0];
+  const web = tall.find((n) => n.bounds[1] > 0) ?? tall[0];
   return web ? [web.bounds[0], web.bounds[1]] : [0, 0];
+}
+
+/** The app in front: its package's activity has the focus. */
+export function focused(): string {
+  return (
+    /mCurrentFocus=Window\{\S+ \S+ ([^/}\s]+)/.exec(
+      adb("shell", "dumpsys", "window"),
+    )?.[1] ?? ""
+  );
 }

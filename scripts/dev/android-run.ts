@@ -17,7 +17,7 @@ import { createAdminClient, shutdownWorld } from "../foundry/admin.ts";
 import { loadFoundryEnv } from "../foundry/env.ts";
 import { resetWorldModules } from "../foundry/reset-world.ts";
 import { COMPANION_ID, TEST_WORLD } from "../foundry/world.ts";
-import { adb, adbWithInput } from "./android-ui.ts";
+import { adb, adbWithInput } from "../../tests/android/native-ui.ts";
 
 const PKG = "dev.modulelibrary.app.debug";
 const APK = "packages/android/app/build/outputs/apk/debug/app-debug.apk";

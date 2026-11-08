@@ -889,6 +889,48 @@ Kotlin tests, a check on the emulator, a code review and a security review:
    (a page can't open sites by itself); TalkBack and keyboard activation
    send no tap, so they can't open them.
 
+## Phase 5: on-device suite and acceptance (started 2026-11-09)
+
+Done when the smoke suite passes on a device and the owner can install the
+APK. The suite runs on any device Windows' adb sees: the emulator now, the
+owner's phone once its checks are done (phase 4, "For the owner"; no phone
+was connected when phase 5 started).
+
+Packages, each committed on its own after `pnpm verify`, a run on the
+emulator, a code review and a security review:
+
+1. **The suite and its fixtures.** `tests/android/` with
+   `playwright.android.config.ts` (`pnpm test:android`): the device by
+   `ML_ANDROID_SERIAL` (else the only one), the server as that device
+   reaches it (`ML_APP_SERVER`, else the emulator's `10.0.2.2`), the debug
+   APK installed with no data, the WebView notice answered once per
+   version, pages found again after the app's WebViews change, native UI
+   through uiautomator, screenshots per device and theme; no traces (they
+   would hold the admin login). The dev script's helpers move here.
+2. **The smoke specs.** Add a server, Setup takes over; a world (open it,
+   Back steps out); the Library (the tab, a filter, its menu); a queued
+   change, launch and apply through the companion; export and import
+   through the system pickers and the native dialog; Release history
+   (allowed on home, the Update page reads foundryvtt.com); the key
+   screens in Foundry's three Setup themes, the theme put back after.
+3. **Acceptance.** A full run on the emulator (and on the phone when it
+   is connected), the APK in the owner's Windows folder, the results
+   artifact.
+
+### Phase 5 progress
+
+1. **The suite and its fixtures** (done 2026-11-09). `tests/android/`:
+   `native-ui.ts` (adb with the device's serial, uiautomator; moved from
+   `scripts/dev/android-ui.ts`), `app.ts` (the debug APK installed with no
+   data and the WebView notice answered through `run-as`, pages looked
+   for again on a new connection, screenshots in
+   `test-results/screens/android/<device>/<theme>/`), `foundry.ts` (admin
+   login in the server WebView, the companion's talk recorded on the page,
+   worlds closed, themes set), `playwright.android.config.ts` (`pnpm
+test:android`, no traces). First spec, `start.spec.ts`: a fresh install
+   opens on home, answered by the background. Passes on the emulator.
+   Small enough to be reviewed together with package 2.
+
 ## Native rules (for phase 4)
 
 The contract is `packages/extension/src/app/native-api.ts` (who may ask
