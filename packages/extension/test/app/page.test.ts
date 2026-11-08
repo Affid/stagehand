@@ -1,12 +1,12 @@
 // @vitest-environment happy-dom
 import { afterEach, describe, expect, test, vi } from "vitest";
 import {
-  isServerPage,
   startAppGame,
   startAppSetup,
   takeBridge,
+  whenRoot,
 } from "../../src/app/page.ts";
-import { wrapForServer } from "../../src/app/native-api.ts";
+import { isServerPage, wrapForServer } from "../../src/app/native-api.ts";
 import { fakeNative } from "./fake-native.ts";
 
 const SERVER = "http://localhost:30000/vtt";
@@ -105,6 +105,25 @@ describe("app-setup on a server's Setup page", () => {
     ).toBe(false);
     expect(document.querySelector("style[data-ml]")).toBe(null);
     expect(document.documentElement.className).toBe("");
+  });
+});
+
+describe("waiting for the document's root element", () => {
+  test("runs at once when there is one, else as soon as it comes", async () => {
+    const seen: string[] = [];
+    whenRoot(document, (root) => seen.push(root.tagName));
+    expect(seen).toEqual(["HTML"]);
+    const html = document.documentElement;
+    html.remove();
+    try {
+      whenRoot(document, (root) => seen.push(root.tagName));
+      expect(seen).toHaveLength(1);
+    } finally {
+      document.append(html);
+    }
+    await vi.waitFor(() => {
+      expect(seen).toEqual(["HTML", "HTML"]);
+    });
   });
 });
 

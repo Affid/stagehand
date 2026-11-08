@@ -8,27 +8,11 @@ import { liftVeil, startVeil } from "../page/veil.ts";
 import { localChannelPair } from "../page-channel.ts";
 import { pageGlobals } from "../page/globals.ts";
 import { startSetupMain } from "../page/main.ts";
-import { pathWithinServer, serverIdOfPage } from "../background/servers.ts";
 import { startGameBridge } from "../bridge/game.ts";
 import { startSetupUi } from "../ui/start.ts";
 import { createNativeBridge, type NativePort } from "./bridge.ts";
-import { BRIDGE_NAME } from "./native-api.ts";
+import { BRIDGE_NAME, isServerPage } from "./native-api.ts";
 import { nativePorts, nativeSend } from "./platform.ts";
-
-/** True for `page` ("/setup") or below it on `server`, route prefix included. */
-export function isServerPage(
-  href: string,
-  server: string,
-  page: string,
-): boolean {
-  try {
-    if (serverIdOfPage(href, [server]) !== server) return false;
-    const path = pathWithinServer(href, server);
-    return path === page || path.startsWith(`${page}/`);
-  } catch {
-    return false;
-  }
-}
 
 const isPort = (value: unknown): value is NativePort =>
   typeof value === "object" &&
@@ -64,12 +48,32 @@ export interface AppSetupDeps {
   readonly css: string;
 }
 
+/**
+ * Runs `fn` once the document has its root element: at document start it
+ * may not yet (Chromium), and a mutation callback still runs before the
+ * first paint.
+ */
+export function whenRoot(doc: Document, fn: (root: HTMLElement) => void): void {
+  const root = doc.documentElement as HTMLElement | null;
+  if (root) {
+    fn(root);
+    return;
+  }
+  const observer = new MutationObserver(() => {
+    const found = doc.documentElement as HTMLElement | null;
+    if (!found) return;
+    observer.disconnect();
+    fn(found);
+  });
+  observer.observe(doc, { childList: true });
+}
+
 /** Our styles before Foundry's first paint: the veil keeps Setup hidden. */
-function addStyles(doc: Document, css: string): void {
-  const style = doc.createElement("style");
+function addStyles(root: HTMLElement, css: string): void {
+  const style = root.ownerDocument.createElement("style");
   style.dataset.ml = "setup";
   style.textContent = css;
-  doc.documentElement.append(style);
+  root.append(style);
 }
 
 /** Runs our Setup page on the server's Setup page; false when it doesn't. */
@@ -79,8 +83,10 @@ export function startAppSetup(deps: AppSetupDeps): boolean {
   const port = takeBridge(deps.win);
   if (!port) return false;
   const { doc } = deps;
-  addStyles(doc, deps.css);
-  startVeil(doc);
+  whenRoot(doc, (root) => {
+    addStyles(root, deps.css);
+    startVeil(doc);
+  });
   try {
     const bridge = createNativeBridge(port);
     const [main, ui] = localChannelPair();

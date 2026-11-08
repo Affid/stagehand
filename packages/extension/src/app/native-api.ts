@@ -19,6 +19,7 @@
 import { z } from "zod";
 import { REMOTE_CONFIG_URL } from "../adapters/config.ts";
 import { RELEASES_URL } from "../background/releases.ts";
+import { pathWithinServer, serverIdOfPage } from "../background/servers.ts";
 
 /** The app's own pages, served by WebViewAssetLoader. */
 export const APP_ORIGIN = "https://appassets.androidplatform.net";
@@ -47,6 +48,21 @@ export function wrapForServer(script: string, server: string): string {
  * pages (/join, /auth) the bridge object stays unused.
  */
 export type Caller = "server" | "home" | "background";
+
+/** True for `page` ("/setup") or below it on `server`, route prefix included. */
+export function isServerPage(
+  href: string,
+  server: string,
+  page: string,
+): boolean {
+  try {
+    if (serverIdOfPage(href, [server]) !== server) return false;
+    const path = pathWithinServer(href, server);
+    return path === page || path.startsWith(`${page}/`);
+  } catch {
+    return false;
+  }
+}
 
 /**
  * Requests to native and who may make them. Payloads and results:
