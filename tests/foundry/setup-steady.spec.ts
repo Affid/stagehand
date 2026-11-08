@@ -6,13 +6,14 @@ import { expect, type Locator, type Page, test } from "@playwright/test";
 import { loadFoundryEnv } from "../../scripts/foundry/env.ts";
 import { TEST_WORLD } from "../../scripts/foundry/world.ts";
 import {
-  type LoadedExtension,
-  loadExtension,
+  loadTarget,
   openSetupAsAdmin,
-} from "./extension.ts";
+  type Target,
+  updateStored,
+} from "./target.ts";
 
 const env = loadFoundryEnv();
-let ext: LoadedExtension;
+let ext: Target;
 let page: Page;
 
 const shell = (p: Page) => p.locator("#ml-shell-root");
@@ -21,14 +22,14 @@ const main = (p: Page) => shell(p).locator(".mls-main");
 test.describe.configure({ mode: "serial" });
 
 test.beforeAll(async () => {
-  ext = await loadExtension();
+  ext = await loadTarget();
   page = await ext.context.newPage();
   await page.setViewportSize({ width: 1366, height: 768 });
   await openSetupAsAdmin(ext, page, env.url, env.adminPassword);
 });
 
 test.afterAll(async () => {
-  await ext.context.close();
+  await ext.close();
 });
 
 const topOf = async (l: Locator): Promise<number> =>
@@ -43,30 +44,23 @@ async function stays(still: Locator, act: () => Promise<void>): Promise<void> {
 }
 
 async function seedSnapshot(): Promise<void> {
-  await ext.worker.evaluate(
-    async ([k, id, title, now]) => {
-      const all = (await chrome.storage.local.get(k))[k] ?? {};
-      const active = ["module-library", "ml-fixture-lib"].map((m) => ({
-        id: m,
-        version: "1.0.0",
-      }));
-      const snap = {
-        worldId: id,
-        title,
-        system: { id: "dnd5e", version: "1" },
-        coreVersion: "14.370",
-        active,
-        companionVersion: "0.1.0",
-        takenAt: now,
-      };
-      await chrome.storage.local.set({ [k]: { ...all, [id]: snap } });
-    },
-    [
-      `snapshots:${env.url}`,
-      TEST_WORLD.id,
-      TEST_WORLD.title,
-      new Date().toISOString(),
-    ] as const,
+  const active = ["module-library", "ml-fixture-lib"].map((m) => ({
+    id: m,
+    version: "1.0.0",
+  }));
+  const snap = {
+    worldId: TEST_WORLD.id,
+    title: TEST_WORLD.title,
+    system: { id: "dnd5e", version: "1" },
+    coreVersion: "14.370",
+    active,
+    companionVersion: "0.1.0",
+    takenAt: new Date().toISOString(),
+  };
+  await updateStored<Record<string, unknown>>(
+    ext,
+    `snapshots:${env.url}`,
+    (all) => ({ ...all, [TEST_WORLD.id]: snap }),
   );
 }
 

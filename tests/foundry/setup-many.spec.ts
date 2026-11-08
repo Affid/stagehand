@@ -4,15 +4,16 @@
 import { expect, type Page, test } from "@playwright/test";
 import { loadFoundryEnv } from "../../scripts/foundry/env.ts";
 import { addMany, removeMany } from "../../scripts/foundry/many.ts";
+import { SCREENS } from "./extension.ts";
 import {
-  type LoadedExtension,
-  loadExtension,
+  loadTarget,
   openSetupAsAdmin,
-  SCREENS,
-} from "./extension.ts";
+  type Target,
+  updateStored,
+} from "./target.ts";
 
 const env = loadFoundryEnv();
-let ext: LoadedExtension;
+let ext: Target;
 let page: Page;
 
 const shell = (p: Page) => p.locator("#ml-shell-root");
@@ -25,7 +26,7 @@ test.beforeAll(async () => {
   // A clean start: leftovers of an earlier run go first (review).
   await removeMany();
   await addMany(30, 120);
-  ext = await loadExtension();
+  ext = await loadTarget();
   page = await ext.context.newPage();
   await page.setViewportSize({ width: 1366, height: 768 });
   await openSetupAsAdmin(ext, page, env.url, env.adminPassword);
@@ -34,7 +35,7 @@ test.beforeAll(async () => {
 test.afterAll(async () => {
   // The test data goes even if the browser never started (review).
   try {
-    await (ext as LoadedExtension | undefined)?.context.close();
+    await (ext as Target | undefined)?.close();
   } finally {
     await removeMany();
   }
@@ -123,31 +124,27 @@ test("a module's details list every world and scroll", async () => {
 
 test("intake: a new module offers only its worlds at first, the rest one click away", async () => {
   // Every test world reports its modules; one stub counts as newly installed.
-  await ext.worker.evaluate(
-    async ([url, now]) => {
-      const keyS = `snapshots:${url}`;
-      const keyO = `sorted:${url}`;
-      const all = await chrome.storage.local.get([keyS, keyO]);
-      const snaps: Record<string, unknown> = {};
-      for (let i = 1; i <= 30; i++) {
-        const id = `ml-many-${String(i).padStart(3, "0")}`;
-        snaps[id] = {
-          worldId: id,
-          title: id,
-          system: { id: "dnd5e", version: "1" },
-          coreVersion: "14.370",
-          active: [{ id: "module-library", version: "1.0.0" }],
-          companionVersion: "0.1.0",
-          takenAt: now,
-        };
-      }
-      const sorted = (all[keyO] as string[]).filter((m) => m !== "ml-stub-001");
-      await chrome.storage.local.set({
-        [keyS]: { ...(all[keyS] as object | undefined), ...snaps },
-        [keyO]: sorted,
-      });
-    },
-    [env.url, new Date().toISOString()] as const,
+  const now = new Date().toISOString();
+  const snaps: Record<string, unknown> = {};
+  for (let i = 1; i <= 30; i++) {
+    const id = `ml-many-${String(i).padStart(3, "0")}`;
+    snaps[id] = {
+      worldId: id,
+      title: id,
+      system: { id: "dnd5e", version: "1" },
+      coreVersion: "14.370",
+      active: [{ id: "module-library", version: "1.0.0" }],
+      companionVersion: "0.1.0",
+      takenAt: now,
+    };
+  }
+  await updateStored<Record<string, unknown>>(
+    ext,
+    `snapshots:${env.url}`,
+    (all) => ({ ...all, ...snaps }),
+  );
+  await updateStored<string[]>(ext, `sorted:${env.url}`, (all) =>
+    (all ?? []).filter((m) => m !== "ml-stub-001"),
   );
   await page.reload();
   await shell(page).locator(".mls-lib").click();

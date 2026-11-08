@@ -14,6 +14,7 @@ import { NO_UPDATES } from "../page-updates.ts";
 import { createActions, type Send } from "./actions.ts";
 import type { UiDeps } from "./context.ts";
 import { createTranslator, pickLanguage } from "./i18n.ts";
+import { liftVeil } from "../page/veil.ts";
 import { createPageBridge } from "./page.ts";
 import type { UiPorts } from "./ports.ts";
 import { syncShell } from "./shell/mount.tsx";
@@ -98,10 +99,14 @@ export function startSetupUi(deps: SetupUiDeps): void {
     const parsed = SetupDataSchema.safeParse(payload);
     if (!parsed.success) {
       logError("setup data", parsed.error);
+      if (!ui) liftVeil(deps.doc);
       return;
     }
     onSetupData(parsed.data).catch((error: unknown) => {
       logError("setup", error);
+      // Not started: Foundry's page comes back now, not after the veil's
+      // timeout (the background refused, or isn't there).
+      if (!ui) liftVeil(deps.doc);
     });
   });
 }

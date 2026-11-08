@@ -6,13 +6,14 @@ import { loadFoundryEnv } from "../../scripts/foundry/env.ts";
 import { TEST_WORLD } from "../../scripts/foundry/world.ts";
 import { audit as auditPage } from "./axe.ts";
 import {
-  type LoadedExtension,
-  loadExtension,
+  loadTarget,
   openSetupAsAdmin,
-} from "./extension.ts";
+  type Target,
+  updateStored,
+} from "./target.ts";
 
 const env = loadFoundryEnv();
-let ext: LoadedExtension;
+let ext: Target;
 let page: Page;
 
 const shell = (p: Page) => p.locator("#ml-shell-root");
@@ -20,14 +21,14 @@ const shell = (p: Page) => p.locator("#ml-shell-root");
 test.describe.configure({ mode: "serial" });
 
 test.beforeAll(async () => {
-  ext = await loadExtension();
+  ext = await loadTarget();
   page = await ext.context.newPage();
   await page.setViewportSize({ width: 1366, height: 768 });
   await openSetupAsAdmin(ext, page, env.url, env.adminPassword);
 });
 
 test.afterAll(async () => {
-  await ext.context.close();
+  await ext.close();
 });
 
 /** Arrow keys walk a tab row; the panel follows and is named by its tab. */
@@ -106,12 +107,10 @@ async function seedSnapshot(active: readonly string[]): Promise<void> {
     companionVersion: "0.1.0",
     takenAt: new Date().toISOString(),
   };
-  await ext.worker.evaluate(
-    async ([k, s]) => {
-      const all = (await chrome.storage.local.get(k))[k] ?? {};
-      await chrome.storage.local.set({ [k]: { ...all, [s.worldId]: s } });
-    },
-    [`snapshots:${env.url}`, snapshot] as const,
+  await updateStored<Record<string, unknown>>(
+    ext,
+    `snapshots:${env.url}`,
+    (all) => ({ ...all, [snapshot.worldId]: snapshot }),
   );
 }
 

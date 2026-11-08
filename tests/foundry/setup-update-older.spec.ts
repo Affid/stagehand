@@ -11,15 +11,11 @@ import {
 } from "../../scripts/foundry/admin.ts";
 import { loadFoundryEnv } from "../../scripts/foundry/env.ts";
 import { audit } from "./axe.ts";
-import {
-  type LoadedExtension,
-  loadExtension,
-  openSetupAsAdmin,
-  SCREENS,
-} from "./extension.ts";
+import { SCREENS } from "./extension.ts";
+import { loadTarget, openSetupAsAdmin, type Target } from "./target.ts";
 
 const env = loadFoundryEnv();
-let ext: LoadedExtension;
+let ext: Target;
 let page: Page;
 /** The newer release Foundry's real check found, if any. */
 let newer: string | undefined;
@@ -34,14 +30,14 @@ test.beforeAll(async () => {
   const admin = await createAdminClient(env.url);
   await shutdownWorld(admin, env.adminPassword);
   await admin.dispose();
-  ext = await loadExtension();
+  ext = await loadTarget();
   page = await ext.context.newPage();
   await page.setViewportSize({ width: 1366, height: 900 });
   await openSetupAsAdmin(ext, page, env.url, env.adminPassword);
 });
 
 test.afterAll(async () => {
-  await ext.context.close();
+  await ext.close();
 });
 
 test("the Version chip names the newer release from Foundry's real check", async () => {

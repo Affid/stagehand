@@ -18,6 +18,10 @@ import { loadFoundryEnv } from "../../scripts/foundry/env.ts";
 import { resetWorldModules } from "../../scripts/foundry/reset-world.ts";
 import { TEST_WORLD } from "../../scripts/foundry/world.ts";
 import { joinWorld } from "./extension.ts";
+import { ON_APP } from "./target.ts";
+
+// Neither build is involved: run once, with the extension's suite.
+test.skip(ON_APP, "same check as the extension's run");
 
 const env = loadFoundryEnv();
 

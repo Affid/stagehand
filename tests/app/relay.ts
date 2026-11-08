@@ -46,7 +46,7 @@ const READY_TIMEOUT_MS = 15_000;
 /** Paths native refuses before comparing (plan, "Native rules"). */
 const ODD_PATH = /%|\\|\.\.|\/\/|\p{Cc}/u;
 
-/** Native's message to a page, through its fake bridge object. */
+/** Native's request to the background, through its fake bridge object. */
 async function deliver(page: Page, message: object): Promise<void> {
   await page.evaluate((m) => {
     (
@@ -122,6 +122,7 @@ export class Relay {
   private callerOf(page: Page, url: string): Caller | undefined {
     if (page === this.background) return "background";
     if (page === this.home) return "home";
+    if (!url.startsWith("http")) return undefined;
     const path = new URL(url).pathname;
     if (ODD_PATH.test(path)) return undefined;
     const saved = [...new Set(this.native.scripts.values())].filter((s) =>
@@ -133,24 +134,40 @@ export class Relay {
     return onSetupOrGame ? "server" : undefined;
   }
 
-  /** A message from a page's bridge object. */
-  fromPage(page: Page, frame: Frame, text: string): void {
-    if (frame !== page.mainFrame() || text.length > MAX_MESSAGE_CHARS) return;
+  /**
+   * A message from a page's bridge object; resolves with native's reply,
+   * which the fake bridge hands to the page (the binding's own answer:
+   * quicker than a separate evaluate into a busy game page, where Foundry's
+   * loading held one back past the companion's 1 s HELLO wait).
+   */
+  async fromPage(
+    page: Page,
+    frame: Frame,
+    text: string,
+  ): Promise<string | undefined> {
+    if (frame !== page.mainFrame() || text.length > MAX_MESSAGE_CHARS)
+      return undefined;
     let m: Wire;
     try {
       m = JSON.parse(text) as Wire;
     } catch {
-      return;
+      return undefined;
     }
-    if (m.v !== 1) return;
+    if (m.v !== 1) return undefined;
     if (typeof m.re === "string") {
       if (page === this.background) this.settle(m.re, m);
-      return;
+      return undefined;
     }
-    if (typeof m.id !== "string" || typeof m.type !== "string") return;
-    const url = this.committed.get(page) ?? frame.url();
+    if (typeof m.id !== "string" || typeof m.type !== "string")
+      return undefined;
+    // No committed navigation seen: no server rights (fail closed).
+    const url = this.committed.get(page) ?? "about:blank";
     const caller = this.callerOf(page, url);
-    void this.answer(page, url, caller, m.id, m.type, m.payload);
+    const reply = await this.answer(caller, url, m.id, m.type, m.payload);
+    // Only to the document that asked: after a navigation nobody is there
+    // to answer, as on Android.
+    const same = !this.committed.has(page) || this.committed.get(page) === url;
+    return same ? JSON.stringify(reply) : undefined;
   }
 
   private settle(id: string, reply: Wire): void {
@@ -162,14 +179,12 @@ export class Relay {
   }
 
   private async answer(
-    page: Page,
-    url: string,
     caller: Caller | undefined,
+    url: string,
     id: string,
     type: string,
     payload: unknown,
-  ): Promise<void> {
-    let reply: object;
+  ): Promise<object> {
     try {
       if (!caller || !CALLER_REQUESTS[caller].includes(type))
         throw new Error(`${type} isn't allowed from this page`);
@@ -179,15 +194,11 @@ export class Relay {
       if (!schema?.safeParse(payload).success)
         throw new Error(`Bad payload for ${type}`);
       const result = await this.run(caller, url, type, payload);
-      reply = { v: 1, re: id, ok: true, result: result ?? null };
+      return { v: 1, re: id, ok: true, result: result ?? null };
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : String(error);
-      reply = { v: 1, re: id, ok: false, error: message };
+      return { v: 1, re: id, ok: false, error: message };
     }
-    // Only to the document that asked: after a navigation nobody is there
-    // to answer, as on Android.
-    if (this.committed.get(page) === url || !this.committed.has(page))
-      await deliver(page, reply).catch(() => undefined);
   }
 
   private run(

@@ -13,15 +13,16 @@ import {
   shutdownWorld,
 } from "../../scripts/foundry/admin.ts";
 import { loadFoundryEnv } from "../../scripts/foundry/env.ts";
+import { SCREENS } from "./extension.ts";
 import {
-  type LoadedExtension,
-  loadExtension,
+  loadTarget,
   openSetupAsAdmin,
-  SCREENS,
-} from "./extension.ts";
+  type Target,
+  updateStored,
+} from "./target.ts";
 
 const env = loadFoundryEnv();
-let ext: LoadedExtension;
+let ext: Target;
 let admin: APIRequestContext;
 let page: Page;
 
@@ -35,7 +36,7 @@ test.describe.configure({ mode: "serial" });
 test.beforeAll(async () => {
   admin = await createAdminClient(env.url);
   await shutdownWorld(admin, env.adminPassword);
-  ext = await loadExtension();
+  ext = await loadTarget();
   page = await ext.context.newPage();
   await openSetupAsAdmin(ext, page, env.url, env.adminPassword);
   await page
@@ -45,7 +46,7 @@ test.beforeAll(async () => {
 });
 
 test.afterAll(async () => {
-  await ext.context.close();
+  await ext.close();
   await admin.dispose();
 });
 
@@ -211,12 +212,9 @@ test("By world shows every module in every world", async () => {
 test("a module installed since the last sort is offered for intake", async () => {
   // As if ml-fixture-a was installed after the last visit.
   const key = `sorted:${env.url}`;
-  await ext.worker.evaluate(async (k) => {
-    const all = ((await chrome.storage.local.get(k))[k] ?? []) as string[];
-    await chrome.storage.local.set({
-      [k]: all.filter((id) => id !== "ml-fixture-a"),
-    });
-  }, key);
+  await updateStored<string[]>(ext, key, (all) =>
+    (all ?? []).filter((id) => id !== "ml-fixture-a"),
+  );
   await page.reload();
   await page
     .locator("#ml-shell-root")

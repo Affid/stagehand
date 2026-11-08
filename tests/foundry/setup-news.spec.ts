@@ -3,16 +3,16 @@
 // server, filled by its update check). Needs news on the local server.
 import { expect, type Page, test } from "@playwright/test";
 import { loadFoundryEnv } from "../../scripts/foundry/env.ts";
+import { SCREENS } from "./extension.ts";
 import {
-  type LoadedExtension,
-  loadExtension,
+  loadTarget,
   openSetupAsAdmin,
-  SCREENS,
-  storage,
-} from "./extension.ts";
+  type Target,
+  openedExternally,
+} from "./target.ts";
 
 const env = loadFoundryEnv();
-let ext: LoadedExtension;
+let ext: Target;
 let page: Page;
 
 const rail = (p: Page) => p.locator("#ml-shell-root .mls-rail");
@@ -21,14 +21,14 @@ const news = (p: Page) => rail(p).locator(".mlr-news");
 test.describe.configure({ mode: "serial" });
 
 test.beforeAll(async () => {
-  ext = await loadExtension();
+  ext = await loadTarget();
   page = await ext.context.newPage();
   await page.setViewportSize({ width: 1366, height: 768 });
   await openSetupAsAdmin(ext, page, env.url, env.adminPassword);
 });
 
 test.afterAll(async () => {
-  await ext.context.close();
+  await ext.close();
 });
 
 /** Foundry's own news, as Setup has it. */
@@ -58,13 +58,10 @@ test("a first visit: nothing is new, News is folded to its latest headline", asy
 
 test("an article Foundry adds later is New, and News opens on it", async () => {
   // Forget the latest article, as if Foundry had just published it.
-  await ext.worker.evaluate(async () => {
-    const all = await chrome.storage.local.get(null);
-    const k = Object.keys(all).find((x) => x.startsWith("news-seen:"));
-    if (!k) throw new Error("no news read state");
-    const seen = all[k] as string[];
-    await chrome.storage.local.set({ [k]: seen.slice(1) });
-  });
+  const stored = await ext.storage.all();
+  const k = Object.keys(stored).find((x) => x.startsWith("news-seen:"));
+  if (!k) throw new Error("no news read state");
+  await ext.storage.set({ [k]: (stored[k] as string[]).slice(1) });
   await page.reload();
   await expect(news(page)).not.toHaveClass(/folded/);
   await expect(news(page).locator("header .new")).toHaveText("New");
@@ -106,16 +103,12 @@ test("the arrows step through the articles; only the one shown is reachable", as
 test("opening an article opens Foundry's page in a new tab and marks News read", async () => {
   const banner = news(page).locator("a.banner:not([inert])");
   const href = await banner.getAttribute("href");
-  const [tab] = await Promise.all([
-    ext.context.waitForEvent("page"),
-    banner.click(),
-  ]);
-  expect(tab.url()).toContain(new URL(href ?? "").host);
-  await tab.close();
+  const opened = await openedExternally(ext, () => banner.click());
+  expect(opened).toContain(new URL(href ?? "").host);
   // Read now, but left open until the next load, so focus isn't lost.
   await expect(news(page).locator("header .new")).toHaveCount(0);
   await expect(news(page)).not.toHaveClass(/folded/);
-  const stored = await storage(ext.worker);
+  const stored = await ext.storage.all();
   const k = Object.keys(stored).find((x) => x.startsWith("news-seen:"));
   expect((stored[k ?? ""] as string[]).length).toBeGreaterThan(0);
   // Still read after a reload.

@@ -58,6 +58,10 @@ describe("setup-ui: our half of the Setup page", () => {
     await flush();
     await flush();
     expect(s.send).not.toHaveBeenCalled();
+    // Not started: Foundry's page comes back at once.
+    expect(document.documentElement.classList.contains("ml-shell-off")).toBe(
+      true,
+    );
   });
 
   test("a second report updates the page it already started", async () => {
@@ -132,5 +136,9 @@ describe("both halves in one closure over the private channel (the app)", () => 
       expect(logged).toHaveBeenCalled();
     });
     expect(document.getElementById("ml-shell-root")).toBe(null);
+    // Foundry's page comes back at once, not after the veil's 15 s.
+    expect(document.documentElement.classList.contains("ml-shell-off")).toBe(
+      true,
+    );
   });
 });

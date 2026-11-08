@@ -19,19 +19,11 @@ import {
 import { loadFoundryEnv } from "../../scripts/foundry/env.ts";
 import { resetWorldModules } from "../../scripts/foundry/reset-world.ts";
 import { COMPANION_ID, TEST_WORLD } from "../../scripts/foundry/world.ts";
-import {
-  exitTour,
-  joinWorld,
-  type LoadedExtension,
-  loadExtension,
-  openSetupAsAdmin,
-  SCREENS,
-  storage,
-  waitReady,
-} from "./extension.ts";
+import { exitTour, joinWorld, SCREENS, waitReady } from "./extension.ts";
+import { loadTarget, openSetupAsAdmin, type Target } from "./target.ts";
 
 const env = loadFoundryEnv();
-let ext: LoadedExtension;
+let ext: Target;
 let admin: APIRequestContext;
 let page: Page;
 
@@ -41,7 +33,7 @@ interface StoredCommand {
 }
 
 const commands = async (): Promise<readonly StoredCommand[]> =>
-  ((await storage(ext.worker))[`commands:${env.url}`] ?? []) as StoredCommand[];
+  ((await ext.storage.all())[`commands:${env.url}`] ?? []) as StoredCommand[];
 
 const activeModules = (p: Page): Promise<string[]> =>
   p.evaluate(() => {
@@ -114,13 +106,13 @@ test.beforeAll(async () => {
   await resetWorldModules(env);
   admin = await createAdminClient(env.url);
   await loginAsAdmin(admin, env.adminPassword, `${env.dataDir}/Config`);
-  ext = await loadExtension();
+  ext = await loadTarget();
   page = await ext.context.newPage();
   await openSetupAsAdmin(ext, page, env.url, env.adminPassword);
 });
 
 test.afterAll(async () => {
-  await ext.context.close();
+  await ext.close();
   await admin.dispose();
   await resetWorldModules(env);
 });
@@ -214,5 +206,5 @@ test("Launch without changes holds the queue for that launch", async () => {
   const list = await commands();
   expect(list).toHaveLength(before + 1);
   expect(list.at(-1)?.status).toBe("pending");
-  expect((await storage(ext.worker))[`launchHolds:${env.url}`]).toEqual([]);
+  expect((await ext.storage.all())[`launchHolds:${env.url}`]).toEqual([]);
 });

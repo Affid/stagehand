@@ -13,16 +13,11 @@ import {
 } from "../../scripts/foundry/admin.ts";
 import { loadFoundryEnv } from "../../scripts/foundry/env.ts";
 import { TEST_WORLD } from "../../scripts/foundry/world.ts";
-import {
-  exitTour,
-  type LoadedExtension,
-  loadExtension,
-  openSetupAsAdmin,
-  SCREENS,
-} from "./extension.ts";
+import { exitTour, SCREENS } from "./extension.ts";
+import { loadTarget, openSetupAsAdmin, type Target } from "./target.ts";
 
 const env = loadFoundryEnv();
-let ext: LoadedExtension;
+let ext: Target;
 let admin: APIRequestContext;
 let page: Page;
 
@@ -33,14 +28,14 @@ test.describe.configure({ mode: "serial" });
 test.beforeAll(async () => {
   admin = await createAdminClient(env.url);
   await shutdownWorld(admin, env.adminPassword);
-  ext = await loadExtension();
+  ext = await loadTarget();
   page = await ext.context.newPage();
   await page.setViewportSize({ width: 1600, height: 1000 });
   await openSetupAsAdmin(ext, page, env.url, env.adminPassword);
 });
 
 test.afterAll(async () => {
-  await ext.context.close();
+  await ext.close();
   await admin.dispose();
 });
 

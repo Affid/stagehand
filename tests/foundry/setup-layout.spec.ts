@@ -6,15 +6,11 @@
 // 1280 narrows the rail and floats the details panel over the page.
 import { expect, type Locator, type Page, test } from "@playwright/test";
 import { loadFoundryEnv } from "../../scripts/foundry/env.ts";
-import {
-  type LoadedExtension,
-  loadExtension,
-  openSetupAsAdmin,
-  SCREENS,
-} from "./extension.ts";
+import { SCREENS } from "./extension.ts";
+import { loadTarget, openSetupAsAdmin, type Target } from "./target.ts";
 
 const env = loadFoundryEnv();
-let ext: LoadedExtension;
+let ext: Target;
 let page: Page;
 
 const shell = (p: Page) => p.locator("#ml-shell-root");
@@ -22,13 +18,13 @@ const shell = (p: Page) => p.locator("#ml-shell-root");
 test.describe.configure({ mode: "serial" });
 
 test.beforeAll(async () => {
-  ext = await loadExtension();
+  ext = await loadTarget();
   page = await ext.context.newPage();
   await openSetupAsAdmin(ext, page, env.url, env.adminPassword);
 });
 
 test.afterAll(async () => {
-  await ext.context.close();
+  await ext.close();
 });
 
 interface Box {
@@ -159,7 +155,7 @@ test("2560: By world columns keep their width; the frame ends at the table (poli
 
 test("1366×768: a long grid scrolls down without cutting the last world (review)", async () => {
   // Its own browser with scrollbars that take room, as a desktop Chrome.
-  const own = await loadExtension([], { scrollbars: true });
+  const own = await loadTarget([], { scrollbars: true });
   try {
     const p = await own.context.newPage();
     await p.setViewportSize({ width: 1366, height: 768 });

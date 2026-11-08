@@ -1,6 +1,6 @@
 # Android app: the new Setup page on a phone
 
-Status: planned 2026-11-07; phase 0 closed the same day (answered on the emulator; the phone checks moved to phase 4); phase 1 (phone design): the owner chose the tabs layout and, after the rounds below, moved on to development on 2026-11-08; two questions stay open until phase 3 (see "Phase 1" below). Phase 2 started 2026-11-08, split into packages below. The owner's decisions are below. Owner's choices: an Android app that
+Status: planned 2026-11-07; phase 0 closed the same day (answered on the emulator; the phone checks moved to phase 4); phase 1 (phone design): the owner chose the tabs layout and, after the rounds below, moved on to development on 2026-11-08; two questions stay open until phase 3 (see "Phase 1" below). Phase 2 (app platform layer) done 2026-11-08: the five packages below. Next: phase 3, after the owner settles the two open questions. The owner's decisions are below. Owner's choices: an Android app that
 loads the user's Foundry server in a WebView and draws our Setup page over it
 (option 2 of three; the others were the extension in Firefox for Android, and
 a native client speaking Foundry's protocol); **Setup only** (a world, once
@@ -411,6 +411,51 @@ injection on every origin, replies and roles by URL, the binding left
 visible); all fixed as above. Known limits: scripts and origins can be
 added but not taken away while running, and Node's answers reach the page
 through a global the harness leaves in place.
+
+Package 5 done. `tests/foundry/target.ts`: the live specs open Setup,
+read and seed storage, see the settings open and follow outside links
+through one `Target`, the extension (default) or the app
+(`pnpm test:foundry:app`, `ML_TARGET=app`); every Setup spec and
+`apply.spec.ts` moved to it with the same seeded data. Extension-only:
+the toolbar panel (`setup-settings.spec.ts`) and `companion-http.spec.ts`
+(neither build is involved, run once). App-only: `app-home.spec.ts` (list,
+Remove gives Setup back to Foundry, add back, a background that refuses
+Setup gives Foundry's page back at once, Release history on and off in
+native, no bridge on an unsaved site, the rail opens the home screen) and
+`app-ports.spec.ts` (export through native's file picker, import asks
+first, a delete waits for native's dialog, an outside link goes to native
+and opens no window). The veil (`setup-veil.spec.ts`, every frame of a
+Setup load) and a reviewed launch applied through `app-game.js`
+(`apply.spec.ts`) pass on the app too. Full runs on 14.370: extension 109
+passed, 4 skipped (the older-build checks); app 102 passed, 11 skipped
+(those 4, the toolbar panel's 6, companion-http).
+
+Found on the way: in the harness the companion's HELLO timed out (1 s,
+five tries) because answering into the busy game page with a separate
+`page.evaluate` took 1.2 s while Foundry loaded; the harness now answers
+through the binding's own reply. The app itself was fine, but the same
+1 s window is worth watching on a slow phone (phase 4). Also: when the
+background refuses Setup's data, or the data doesn't check out, Foundry's
+page now comes back at once instead of after the veil's 15 s (both
+builds). Reviews: code and security, no critical or high; fixed a
+negative check that could pass too early, a home-screen counter without a
+baseline, missing reasons in the rule checks, the sender's fallback to
+the live URL (now no rights without a committed navigation), and a host
+the app can't grant now fails the suite instead of being ignored.
+
+For phase 4 and the owner:
+
+1. **HELLO window on a phone**: the companion waits 1 s, five times; watch
+   it on a slow device.
+2. **Home screen text**: "No servers yet. Open your Foundry server in this
+   browser and click Use Module Library here" is the extension's; the app
+   needs its own words (the home screen is designed in phase 4).
+3. **The one-time token** for destructive operations ("Native rules",
+   accepted risk): decide in phase 4.
+4. **Release APK without source maps.**
+5. Playwright keeps traces of failed live tests, which hold the admin
+   login request; they stay in `test-results/` (git-ignored), not to be
+   shared.
 
 ## Native rules (for phase 4)
 

@@ -10,11 +10,7 @@ import {
   shutdownWorld,
 } from "../../scripts/foundry/admin.ts";
 import { loadFoundryEnv } from "../../scripts/foundry/env.ts";
-import {
-  type LoadedExtension,
-  loadExtension,
-  openSetupAsAdmin,
-} from "./extension.ts";
+import { loadTarget, openSetupAsAdmin, type Target } from "./target.ts";
 
 const env = loadFoundryEnv();
 const CSS = join(
@@ -31,7 +27,7 @@ const FOUNDRY = ["#setup", "#setup-menu", "#main-header", "#watermark"];
 /** The CSS failsafe: Foundry's page shows by itself after this long. */
 const FAILSAFE_MS = 4000;
 
-let ext: LoadedExtension;
+let ext: Target;
 let page: Page;
 
 test.describe.configure({ mode: "serial" });
@@ -40,13 +36,13 @@ test.beforeAll(async () => {
   const admin = await createAdminClient(env.url);
   await shutdownWorld(admin, env.adminPassword);
   await admin.dispose();
-  ext = await loadExtension();
+  ext = await loadTarget();
   page = await ext.context.newPage();
   await openSetupAsAdmin(ext, page, env.url, env.adminPassword);
 });
 
 test.afterAll(async () => {
-  await ext.context.close();
+  await ext.close();
 });
 
 interface Watch {

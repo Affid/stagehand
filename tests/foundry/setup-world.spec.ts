@@ -16,16 +16,16 @@ import {
 } from "../../scripts/foundry/admin.ts";
 import { loadFoundryEnv } from "../../scripts/foundry/env.ts";
 import { TEST_WORLD } from "../../scripts/foundry/world.ts";
+import { exitTour, SCREENS } from "./extension.ts";
 import {
-  exitTour,
-  type LoadedExtension,
-  loadExtension,
+  loadTarget,
   openSetupAsAdmin,
-  SCREENS,
-} from "./extension.ts";
+  type Target,
+  updateStored,
+} from "./target.ts";
 
 const env = loadFoundryEnv();
-let ext: LoadedExtension;
+let ext: Target;
 let admin: APIRequestContext;
 let page: Page;
 
@@ -45,15 +45,10 @@ async function seedSnapshot(active: readonly string[]): Promise<void> {
     takenAt: new Date().toISOString(),
   };
   const key = `snapshots:${env.url}`;
-  await ext.worker.evaluate(
-    async ([k, s]) => {
-      const all = (await chrome.storage.local.get(k))[k] ?? {};
-      await chrome.storage.local.set({
-        [k]: { ...all, [s.worldId]: s },
-      });
-    },
-    [key, snapshot] as const,
-  );
+  await updateStored<Record<string, unknown>>(ext, key, (all) => ({
+    ...all,
+    [snapshot.worldId]: snapshot,
+  }));
 }
 
 test.describe.configure({ mode: "serial" });
@@ -61,14 +56,14 @@ test.describe.configure({ mode: "serial" });
 test.beforeAll(async () => {
   admin = await createAdminClient(env.url);
   await shutdownWorld(admin, env.adminPassword);
-  ext = await loadExtension();
+  ext = await loadTarget();
   page = await ext.context.newPage();
   await openSetupAsAdmin(ext, page, env.url, env.adminPassword);
   await expect(shell().locator(".mls-top")).toBeVisible();
 });
 
 test.afterAll(async () => {
-  await ext.context.close();
+  await ext.close();
   await admin.dispose();
 });
 

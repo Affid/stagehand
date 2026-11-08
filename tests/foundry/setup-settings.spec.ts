@@ -18,6 +18,7 @@ import {
   settingsUrl,
   waitForSettingsPanel,
 } from "./extension.ts";
+import { ON_APP } from "./target.ts";
 
 const env = loadFoundryEnv();
 const HOST = new URL(env.url).host;
@@ -25,6 +26,8 @@ let ext: LoadedExtension;
 let page: Page;
 let panel: Page;
 
+// The extension's toolbar panel; the app's home screen: app-home.spec.ts.
+test.skip(ON_APP, "extension only");
 test.describe.configure({ mode: "serial" });
 
 test.beforeAll(async () => {

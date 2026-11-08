@@ -23,12 +23,8 @@ import {
 import { loadFoundryEnv } from "../../scripts/foundry/env.ts";
 import { bareVersion } from "../../packages/shared/src/version.ts";
 import { audit } from "./axe.ts";
-import {
-  type LoadedExtension,
-  loadExtension,
-  openSetupAsAdmin,
-  SCREENS,
-} from "./extension.ts";
+import { SCREENS } from "./extension.ts";
+import { loadTarget, openSetupAsAdmin, type Target } from "./target.ts";
 
 const env = loadFoundryEnv();
 const ID = "socketlib";
@@ -38,7 +34,7 @@ const OLD_MANIFEST = `https://github.com/farling42/foundryvtt-socketlib/releases
 const folder = join(env.dataDir, "Data", "modules", ID);
 const manifestFile = join(folder, "module.json");
 
-let ext: LoadedExtension | undefined;
+let ext: Target | undefined;
 let admin: APIRequestContext | undefined;
 let page: Page;
 /** The version Foundry's package list offers. */
@@ -83,7 +79,7 @@ test.beforeAll(async () => {
   await waitFor(`${ID} ${OLD} to install`, 2 * 60_000, () =>
     Promise.resolve(installedVersion() === OLD),
   );
-  const loaded = await loadExtension();
+  const loaded = await loadTarget();
   ext = loaded;
   page = await loaded.context.newPage();
   await page.setViewportSize({ width: 1366, height: 900 });
@@ -93,7 +89,7 @@ test.beforeAll(async () => {
 test.afterAll(async () => {
   // Each step runs even when the one before fails (code review).
   try {
-    await ext?.context.close();
+    await ext?.close();
   } finally {
     if (admin) {
       try {

@@ -67,27 +67,12 @@ test.describe("native's rules, as a page script would try them", () => {
 
   /** What native answers a message from `page` (played into the relay). */
   async function answerTo(page: Page, message: object): Promise<unknown> {
-    await page.evaluate(() => {
-      const g = globalThis as {
-        __mlHarnessDeliver?: (m: string) => void;
-        __mlAnswers?: string[];
-      };
-      g.__mlAnswers = [];
-      g.__mlHarnessDeliver = (m) => g.__mlAnswers?.push(m);
-    });
-    app.relay.fromPage(page, page.mainFrame(), JSON.stringify(message));
-    await expect
-      .poll(() =>
-        page.evaluate(
-          () => (globalThis as { __mlAnswers?: string[] }).__mlAnswers?.length,
-        ),
-      )
-      .toBe(1);
-    return JSON.parse(
-      await page.evaluate(
-        () => (globalThis as { __mlAnswers?: string[] }).__mlAnswers?.[0] ?? "",
-      ),
-    ) as unknown;
+    const reply = await app.relay.fromPage(
+      page,
+      page.mainFrame(),
+      JSON.stringify(message),
+    );
+    return reply === undefined ? undefined : (JSON.parse(reply) as unknown);
   }
 
   const save = {
@@ -116,6 +101,7 @@ test.describe("native's rules, as a page script would try them", () => {
     });
     expect(await answerTo(page, { ...save, id: "x2" })).toMatchObject({
       ok: false,
+      error: expect.stringContaining("isn't allowed"),
     });
     expect(app.native.saved).toEqual([]);
     await page.close();
@@ -126,11 +112,9 @@ test.describe("native's rules, as a page script would try them", () => {
     await page.goto(`${env.url}/setup`);
     await page.locator("#ml-shell-root .mls-top").waitFor();
     // A forged reply for the next route id: dropped (not the background).
-    app.relay.fromPage(
-      page,
-      page.mainFrame(),
-      JSON.stringify({ v: 1, re: "native-999", ok: true, result: "forged" }),
-    );
+    expect(
+      await answerTo(page, { v: 1, re: "native-999", ok: true, result: "x" }),
+    ).toBeUndefined();
     expect(
       await answerTo(page, {
         v: 1,
@@ -138,27 +122,19 @@ test.describe("native's rules, as a page script would try them", () => {
         type: "kv.get",
         payload: { key: "servers" },
       }),
-    ).toMatchObject({ ok: false });
-    // Another wire version gets no answer at all.
-    await page.evaluate(() => {
-      (globalThis as { __mlAnswers?: string[] }).__mlAnswers = [];
+    ).toMatchObject({
+      ok: false,
+      error: expect.stringContaining("isn't allowed"),
     });
-    app.relay.fromPage(
-      page,
-      page.mainFrame(),
-      JSON.stringify({
+    // Another wire version gets no answer at all.
+    expect(
+      await answerTo(page, {
         v: 2,
         id: "x4",
         type: "confirm",
         payload: { text: "?" },
       }),
-    );
-    await page.waitForTimeout(500);
-    expect(
-      await page.evaluate(
-        () => (globalThis as { __mlAnswers?: string[] }).__mlAnswers?.length,
-      ),
-    ).toBe(0);
+    ).toBeUndefined();
     expect(app.native.confirms).toEqual([]);
     await page.close();
   });

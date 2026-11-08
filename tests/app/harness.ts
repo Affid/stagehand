@@ -7,9 +7,12 @@
 // sender taken from the sending page's real URL and frame.
 //
 // Differences from WebView, test-only: the bridge reaches Node through an
-// exposed binding (`__mlNativeSend`) and Node answers through
-// `__mlHarnessDeliver`; both names stay visible to page scripts. Scripts
-// and origins can be added while running but not taken away.
+// exposed binding (`__mlNativeSend`; on saved origins its name is taken
+// away at document start, elsewhere it stays, and native refuses what
+// comes through it) and gets its replies as the binding's answer; native's
+// requests to the background page arrive through `__mlHarnessDeliver`,
+// there only. Scripts and origins can be added while running but not taken
+// away.
 import { readFileSync } from "node:fs";
 import { extname, join, resolve } from "node:path";
 import {
@@ -70,14 +73,23 @@ const TYPES: Readonly<Record<string, string>> = {
   ".map": "application/json",
 };
 
-/** The fake bridge object, for one origin, as WebView's listener gives it. */
-const bridgeScript = (origin: string): string => `(() => {
+/**
+ * The fake bridge object, for one origin, as WebView's listener gives it.
+ * Native's replies come back as the binding's answer; only the background
+ * page also gets native's requests, through a global.
+ */
+const bridgeScript = (origin: string, asksAt?: string): string => `(() => {
   if (location.origin !== ${JSON.stringify(origin)}) return;
   const send = window.__mlNativeSend;
+  if (typeof send !== "function") return;
   delete window.__mlNativeSend;
-  const port = { onmessage: null, postMessage(m) { send(String(m)); } };
+  const hand = (m) => { if (typeof m === "string") port.onmessage?.({ data: m }); };
+  const port = {
+    onmessage: null,
+    postMessage(m) { send(String(m)).then(hand, () => undefined); },
+  };
   window.mlApp = port;
-  window.__mlHarnessDeliver = (m) => { port.onmessage?.({ data: m }); };
+  ${asksAt ? `if (location.pathname === ${JSON.stringify(asksAt)}) window.__mlHarnessDeliver = hand;` : ""}
 })();`;
 
 /** A page script for one server, run only on that server's origin. */
@@ -160,10 +172,12 @@ async function startApp(
   context.on("page", (page) => {
     r.watch(page);
   });
-  await context.exposeBinding("__mlNativeSend", (source, message: unknown) => {
-    r.fromPage(source.page, source.frame, String(message));
-  });
-  await context.addInitScript(bridgeScript(APP_ORIGIN));
+  await context.exposeBinding("__mlNativeSend", (source, message: unknown) =>
+    r.fromPage(source.page, source.frame, String(message)),
+  );
+  await context.addInitScript(
+    bridgeScript(APP_ORIGIN, new URL(BACKGROUND_PAGE).pathname),
+  );
   await serveAppOrigin(context);
   const background = await context.newPage();
   r.setBackground(background);

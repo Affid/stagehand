@@ -14,17 +14,17 @@ import {
   shutdownWorld,
 } from "../../scripts/foundry/admin.ts";
 import { loadFoundryEnv } from "../../scripts/foundry/env.ts";
+import { SCREENS } from "./extension.ts";
 import {
-  type LoadedExtension,
-  loadExtension,
+  loadTarget,
   openSetupAsAdmin,
-  SCREENS,
-  waitForSettingsPanel,
-} from "./extension.ts";
+  settingsOpened,
+  type Target,
+} from "./target.ts";
 import { audit } from "./axe.ts";
 
 const env = loadFoundryEnv();
-let ext: LoadedExtension;
+let ext: Target;
 let admin: APIRequestContext;
 let page: Page;
 
@@ -35,13 +35,13 @@ test.describe.configure({ mode: "serial" });
 test.beforeAll(async () => {
   admin = await createAdminClient(env.url);
   await shutdownWorld(admin, env.adminPassword);
-  ext = await loadExtension();
+  ext = await loadTarget();
   page = await ext.context.newPage();
   await openSetupAsAdmin(ext, page, env.url, env.adminPassword);
 });
 
 test.afterAll(async () => {
-  await ext.context.close();
+  await ext.close();
   await admin.dispose();
 });
 
@@ -270,9 +270,8 @@ test("Release history without the permission: why, and the settings panel to all
   await expect(ask).toBeVisible();
   await audit(page, "update: release history, not allowed");
   await expect(ask).toContainText("one extra permission for foundryvtt.com");
-  await ask
-    .getByRole("button", { name: "Allow reading foundryvtt.com…" })
-    .click();
-  await waitForSettingsPanel(ext, page);
+  await settingsOpened(ext, page, () =>
+    ask.getByRole("button", { name: "Allow reading foundryvtt.com…" }).click(),
+  );
   await page.unroute(`${env.url}/update`);
 });

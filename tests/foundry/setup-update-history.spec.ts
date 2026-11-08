@@ -4,28 +4,24 @@
 // the background. Reads foundryvtt.com (two public pages); installs nothing.
 import { expect, type Locator, type Page, test } from "@playwright/test";
 import { loadFoundryEnv } from "../../scripts/foundry/env.ts";
-import {
-  type LoadedExtension,
-  loadExtension,
-  openSetupAsAdmin,
-  SCREENS,
-} from "./extension.ts";
+import { SCREENS } from "./extension.ts";
+import { loadTarget, openSetupAsAdmin, type Target } from "./target.ts";
 import { audit } from "./axe.ts";
 
 const env = loadFoundryEnv();
-let ext: LoadedExtension;
+let ext: Target;
 let page: Page;
 
 const shell = (): Locator => page.locator("#ml-shell-root");
 
 test.beforeAll(async () => {
-  ext = await loadExtension(["https://foundryvtt.com/*"]);
+  ext = await loadTarget(["https://foundryvtt.com/*"]);
   page = await ext.context.newPage();
   await openSetupAsAdmin(ext, page, env.url, env.adminPassword);
 });
 
 test.afterAll(async () => {
-  await ext.context.close();
+  await ext.close();
 });
 
 test("Release history reads Foundry's list and the release's notes from foundryvtt.com", async () => {

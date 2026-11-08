@@ -19,16 +19,12 @@ import {
 } from "../../scripts/foundry/admin.ts";
 import { loadFoundryEnv } from "../../scripts/foundry/env.ts";
 import { contrasts } from "./contrast.ts";
-import {
-  type LoadedExtension,
-  loadExtension,
-  openSetupAsAdmin,
-  SCREENS,
-} from "./extension.ts";
+import { SCREENS } from "./extension.ts";
+import { loadTarget, openSetupAsAdmin, type Target } from "./target.ts";
 
 const env = loadFoundryEnv();
 const THEMES = ["dark", "fantasy", "scifi"] as const;
-let ext: LoadedExtension | undefined;
+let ext: Target | undefined;
 let admin: APIRequestContext | undefined;
 let page: Page;
 let before = "";
@@ -40,7 +36,7 @@ test.describe.configure({ mode: "serial" });
 test.beforeAll(async () => {
   admin = await createAdminClient(env.url);
   await loginAsAdmin(admin, env.adminPassword, join(env.dataDir, "Config"));
-  ext = await loadExtension();
+  ext = await loadTarget();
   page = await ext.context.newPage();
   await page.setViewportSize({ width: 1920, height: 1080 });
   await openSetupAsAdmin(ext, page, env.url, env.adminPassword);
@@ -69,7 +65,7 @@ test.afterAll(async () => {
         config: { cssTheme: before },
       });
   } finally {
-    await Promise.allSettled([ext?.context.close(), admin?.dispose()]);
+    await Promise.allSettled([ext?.close(), admin?.dispose()]);
   }
 });
 

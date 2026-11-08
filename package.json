@@ -16,6 +16,7 @@
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:foundry": "playwright test -c playwright.foundry.config.ts",
+    "test:foundry:app": "ML_TARGET=app playwright test -c playwright.foundry.config.ts",
     "foundry:start": "scripts/foundry/start.sh",
     "foundry:link": "node scripts/foundry/link-modules.ts",
     "foundry:setup": "node scripts/foundry/setup-world.ts",
