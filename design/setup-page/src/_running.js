@@ -27,7 +27,6 @@ function runScreen() {
       <p>Setup, the Library and backups come back once the world is closed.</p>
       ${button}
       <p class="hint">Foundry saves the world and closes it${n ? `; ${n === 1 ? "the person" : `the ${n} people`} in the game are disconnected` : ""}.</p>
-      <button type="button" class="mlp-runjoin" data-act="foundry" data-what="Open Foundry's join page for ${esc(w.title)}, to join the game">Join the game</button>
     </div>
   </div>`;
 }

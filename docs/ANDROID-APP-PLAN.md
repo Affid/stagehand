@@ -1,6 +1,6 @@
 # Android app: the new Setup page on a phone
 
-Status: planned 2026-11-07; phase 0 closed the same day (answered on the emulator; the phone checks moved to phase 4); phase 1 (phone design): the owner chose the tabs layout; iterating on it in the mockup. The owner's decisions are below. Owner's choices: an Android app that
+Status: planned 2026-11-07; phase 0 closed the same day (answered on the emulator; the phone checks moved to phase 4); phase 1 (phone design): the owner chose the tabs layout and, after the rounds below, moved on to development on 2026-11-08; two questions stay open until phase 3 (see "Phase 1" below). Next: phase 2. The owner's decisions are below. Owner's choices: an Android app that
 loads the user's Foundry server in a WebView and draws our Setup page over it
 (option 2 of three; the others were the extension in Firefox for Android, and
 a native client speaking Foundry's protocol); **Setup only** (a world, once
@@ -198,7 +198,8 @@ launch review). Foundry's own page at phone width is the "Foundry today" view
 
 **The owner chose "tabs"** over "stack" (a worlds list as home with Back and a
 ⋮ menu) and asked for it to be improved in the mockup. The layout as it
-stands, for the owner to approve:
+stands (the spec for phase 3; the mockup is the reference where this list is
+short):
 
 - A bottom tab bar: Worlds, Library, Backups, Configuration (badges: worlds
   with queued changes, newly installed modules). The version chip and ⏻ sit
@@ -231,7 +232,8 @@ stands, for the owner to approve:
   world's picture and name, "Running now", its system, how many people are
   in the game and for how long (all from Foundry's `/api/status`, seen live
   on 14.370: `active`, `world`, `system`, `systemVersion`, `users`,
-  `uptime`), **Return to Setup**, and **Join the game** (Foundry's `/join`).
+  `uptime`), and one button, **Return to Setup** (the owner dropped a
+  "Join the game" button: the app is for Setup, not the game).
   Return to Setup posts `worldShutdown` to `/setup`; with an admin session
   Foundry needs no password (checked live), without one the sheet asks for
   the admin password as Foundry's `/join` does. With people in the game it
@@ -247,6 +249,13 @@ stands, for the owner to approve:
   back through dialog, menu, sheet, page (Escape in the mockup).
 - From 700 px wide and 600 px tall (a tablet held upright) the worlds list
   stays on the left and sheets slide in from the right.
+
+Still open, to settle before phase 3 (phase 2 doesn't depend on them):
+
+1. **A tablet held upright** (768 px): the worlds list on the left, as the
+   mockup shows, or the phone layout.
+2. **Anything left off the phone**, for example the By world grid or
+   Configuration. The mockup brings every page.
 
 Still open: the tablet-upright layout and whether anything stays off the
 phone. The approved layout goes into `docs/SETUP-REDESIGN.md` (a "Phone"

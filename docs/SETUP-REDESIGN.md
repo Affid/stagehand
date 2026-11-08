@@ -112,6 +112,16 @@ necessarily its card markup.
   flagged in the worlds list.
 - Works at 1366×768 and 1280×800 (the About tab may scroll a little at 1280×800).
 
+## Phone
+
+The Android app (`docs/ANDROID-APP-PLAN.md`) shows this page on a phone in the "tabs"
+layout the owner chose (2026-11-07/08): a bottom tab bar (Worlds, Library, Backups,
+Configuration), a world full screen with Back and Launch in a bottom bar, bottom sheets,
+and a screen for a running world with Return to Setup. The full list is the plan's
+"Phase 1" section; the mockup is `design/setup-page/` with `?phone=1` (`src/_phone.*`,
+`src/_running.*`) and the playground `phone.html`, published privately at
+https://claude.ai/artifact/R12jn3MMQiXuKMuFnmYCuK.
+
 ## Open
 
 1. **Not tested live:** writing `flags` with `editWorld`, and the companion calling
@@ -131,7 +141,7 @@ necessarily its card markup.
 cd design/setup-page
 ./assets.sh            # copies Foundry's CSS, fonts and images from ~/foundry/vtt (not in git)
 node build.mjs         # writes out/index.html (playground) and out/setup-shell.html
-node checks/run.mjs    # 39 Playwright checks of the mockup's flows
+node checks/run.mjs    # 40 Playwright checks of the mockup's flows (phone.mjs for the phone)
 ```
 
 `fvtt/` and `out/` are git-ignored: they hold Foundry's and Font Awesome Pro's licensed

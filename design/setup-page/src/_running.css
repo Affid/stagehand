@@ -15,4 +15,3 @@ body.mlp .mlp-runbody { display: grid; gap: 12px; padding: 8px 16px 24px; max-wi
 body.mlp .mlp-runbody p { margin: 0; font-size: 14.5px; line-height: 1.45; color: var(--color-light-2); }
 body.mlp .mlp-runbody p.hint { font-size: 13px; color: var(--color-text-subtle); }
 body.mlp .mlp-runbtn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; height: 52px; width: 100%; font-size: 16px; font-weight: 700; }
-body.mlp .mlp-runjoin { height: var(--mlp-tap); width: 100%; font-size: 15px; margin-top: 8px; }
