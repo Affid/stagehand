@@ -35,6 +35,7 @@ export interface NavState {
   readonly panel: string | null;
   readonly side: SidePanel | null;
   readonly phone: PhoneNav;
+  readonly nextLaunch: string | null;
 }
 
 export interface NavPatch {
@@ -42,6 +43,7 @@ export interface NavPatch {
   readonly panel?: null;
   readonly side?: null;
   readonly phone?: PhoneNav;
+  readonly nextLaunch?: null;
 }
 
 const key = (r: Route | null): string =>
@@ -108,7 +110,7 @@ export function tabPatch(
   layout: Layout,
   state: NavState,
 ): NavPatch {
-  const closed = { panel: null, side: null } as const;
+  const closed = { panel: null, side: null, nextLaunch: null } as const;
   if (tab === "worlds" && layout === "phone")
     return { ...closed, phone: { home: true, trail: [], at: state.route } };
   const route: Route | null =
@@ -123,11 +125,20 @@ export function tabPatch(
 }
 
 /**
- * The sheet showing, if any: a module's details beside any page but a
- * server page's; the Library's own panels on the Library only (Panes.tsx).
+ * The sheet showing, if any: a world's Next launch on a world's page; a
+ * module's details beside any page but a server page's; the Library's own
+ * panels on the Library only (Panes.tsx).
  */
-export function sheetShown(state: NavState): "panel" | "side" | null {
+export function sheetShown(
+  state: NavState,
+): "panel" | "side" | "nextLaunch" | null {
   const route = state.route;
+  // A world's Next launch sheet, on that world's own page (WorldPage.tsx);
+  // a null route shows the first world, which PhoneShell checks (review).
+  const own =
+    route === null ||
+    (route.kind === "world" && route.worldId === state.nextLaunch);
+  if (state.nextLaunch !== null && own) return "nextLaunch";
   if (state.panel !== null) return route?.kind === "server" ? null : "panel";
   if (state.side !== null && route?.kind === "library") return "side";
   return null;

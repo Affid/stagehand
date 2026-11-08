@@ -1033,5 +1033,19 @@
   "mlp.queuedWorlds.other": "{n} worlds with changes",
   "mlp.newModules.one": "{n} new module",
   "mlp.newModules.other": "{n} new modules",
-  "mlp.chipUpdate": "Foundry {version}, an update is available: update and help"
+  "mlp.chipUpdate": "Foundry {version}, an update is available: update and help",
+  "mlp.noChanges": "No changes",
+  "mlp.changes.one": "{n} change",
+  "mlp.changes.other": "{n} changes",
+  "mlp.seeOrUndo": "See or undo",
+  "mlp.setUpFirst": "Set up on the first launch",
+  "mlp.modulesOn.one": "{n} module on",
+  "mlp.modulesOn.other": "{n} modules on",
+  "mlp.nextLaunch": "Next launch",
+  "mlp.queueLead.one": "This change applies when {world} next launches. Launch shows it once more before anything changes.",
+  "mlp.queueLead.other": "These {n} changes apply when {world} next launches. Launch shows them once more before anything changes.",
+  "mlp.queueNone": "Nothing queued for {world}.",
+  "mlp.discardAll": "Discard all",
+  "mlp.countArrow": "{from} → {to}",
+  "mlp.countSr": "{from} now, {to} after launch"
 }

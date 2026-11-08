@@ -12,9 +12,13 @@ import { cssImage } from "./route.ts";
 import { type LaunchChoice, LaunchReview } from "./world/LaunchReview.tsx";
 import { useWhy } from "./world/useWhy.ts";
 import { useBackups } from "./world/useBackups.ts";
-import { lockReason } from "../tasks.ts";
+import { launchOff } from "../tasks.ts";
 import { WorldBody, type WorldTab } from "./world/WorldBody.tsx";
 import { useLastPlayed } from "./WorldRail.tsx";
+import { Docked, InSheetHost } from "./phone/Dock.tsx";
+import { isCompact, useLayout } from "./phone/layout.ts";
+import { LaunchBar } from "./world/LaunchBar.tsx";
+import { NextLaunch } from "./world/NextLaunch.tsx";
 
 function BannerMeta(props: {
   readonly world: WorldInfo;
@@ -124,10 +128,7 @@ function BannerActions(props: {
 }) {
   const { t, state } = useUi();
   const { changes } = props;
-  // Locked worlds can't launch; nor can any while Foundry backs up or restores.
-  const off = props.world.locked
-    ? t("shell.launchLocked")
-    : lockReason(t, state);
+  const off = launchOff(t, state, props.world);
   return (
     <div class="acts">
       <button
@@ -169,7 +170,7 @@ function BannerActions(props: {
 
 /** Launching, with the review when changes are queued. */
 function useLaunch(world: WorldInfo, model: WorldModules) {
-  const { page, actions, t, canChange } = useUi();
+  const { page, actions, t, canChange, store } = useUi();
   const [review, setReview] = useState(false);
   const [busy, setBusy] = useState(false);
   const running = useRef(false);
@@ -177,6 +178,12 @@ function useLaunch(world: WorldInfo, model: WorldModules) {
   // wait for it, read the queue as it now is, and never twice at once.
   const start = async (): Promise<void> => {
     if (running.current) return;
+    // Whichever Launch called: a locked world or a busy Foundry stays put.
+    const off = launchOff(t, store.get(), world);
+    if (off !== null) {
+      actions.notify("info", off);
+      return;
+    }
     running.current = true;
     setBusy(true);
     try {
@@ -238,8 +245,52 @@ function Banner(props: {
   );
 }
 
+/** The phone and tablet layouts: Launch in the dock, the Next launch sheet. */
+function PhoneLaunch(props: {
+  readonly world: WorldInfo;
+  readonly model: WorldModules;
+  readonly why: ReturnType<typeof useWhy>;
+  readonly launch: ReturnType<typeof useLaunch>;
+}) {
+  const { state, store } = useUi();
+  const layout = useLayout();
+  const { world, model, launch } = props;
+  const close = (): void => {
+    store.set({ nextLaunch: null });
+  };
+  return (
+    <>
+      <Docked>
+        <LaunchBar
+          world={world}
+          model={model}
+          busy={launch.busy}
+          onLaunch={() => void launch.start()}
+          onQueue={() => store.set({ nextLaunch: world.id })}
+        />
+      </Docked>
+      {state.nextLaunch === world.id ? (
+        <InSheetHost>
+          <NextLaunch
+            layout={layout}
+            world={world}
+            model={model}
+            why={props.why}
+            onClose={close}
+            onLaunch={() => {
+              close();
+              void launch.start();
+            }}
+          />
+        </InSheetHost>
+      ) : null}
+    </>
+  );
+}
+
 export function WorldPage(props: { readonly world: WorldInfo }) {
   const { state, canChange } = useUi();
+  const compact = isCompact(useLayout());
   const { world } = props;
   const route = state.route;
   const opening = route?.kind === "world" ? route.tab : undefined;
@@ -268,6 +319,9 @@ export function WorldPage(props: { readonly world: WorldInfo }) {
           onTab={setTab}
         />
       </div>
+      {compact ? (
+        <PhoneLaunch world={world} model={model} why={why} launch={launch} />
+      ) : null}
       {launch.review ? (
         <LaunchReview
           world={world}

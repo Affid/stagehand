@@ -68,6 +68,8 @@ const SHELL_SHEETS = [
   "themes.css",
   "layout.css",
   "phone.css",
+  "phone-sheets.css",
+  "phone-world.css",
   "veil.css",
 ];
 

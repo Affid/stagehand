@@ -194,6 +194,7 @@ export const uiState = (over: Partial<UiState> = {}): UiState => ({
   collapsedGroups: [],
   route: null,
   phone: START_NAV,
+  nextLaunch: null,
   panel: null,
   side: null,
   worldView: DEFAULT_WORLD_VIEW,

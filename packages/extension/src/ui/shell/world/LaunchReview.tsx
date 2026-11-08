@@ -21,7 +21,7 @@ export type LaunchChoice =
   | { readonly kind: "apply"; readonly backup: boolean }
   | { readonly kind: "plain" };
 
-function Changes(props: {
+export function Changes(props: {
   readonly model: WorldModules;
   readonly worldId: string;
 }) {
@@ -69,7 +69,7 @@ function Changes(props: {
   );
 }
 
-function Check(props: {
+export function Check(props: {
   readonly model: WorldModules;
   readonly why: WhyContext;
 }) {

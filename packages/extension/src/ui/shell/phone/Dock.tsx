@@ -20,9 +20,24 @@ export function useDocked(): boolean {
   return useContext(DockContext) !== undefined;
 }
 
-export function Docked(props: { readonly children: ComponentChildren }) {
-  const host = useContext(DockContext);
-  if (host === undefined) return <>{props.children}</>;
+type Host = HTMLElement | null | undefined;
+
+function into(host: Host, children: ComponentChildren) {
+  if (host === undefined) return <>{children}</>;
   if (host === null) return null;
-  return createPortal(<>{props.children}</>, host);
+  return createPortal(<>{children}</>, host);
+}
+
+export function Docked(props: { readonly children: ComponentChildren }) {
+  return into(useContext(DockContext), props.children);
+}
+
+/**
+ * Where a page's own sheet goes (a world's Next launch): beside the pages,
+ * not in them, since the page behind an open sheet is inert.
+ */
+export const SheetHostContext = createContext<Host>(undefined);
+
+export function InSheetHost(props: { readonly children: ComponentChildren }) {
+  return into(useContext(SheetHostContext), props.children);
 }

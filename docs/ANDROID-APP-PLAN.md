@@ -580,6 +580,21 @@ and a security review:
    the sheet repeats its panel's name; the By world grid's column menus
    rise above the scrim by CSS but couldn't be opened live (the test worlds
    don't run the companion).
+3. **A world's page** (done 2026-11-08). `world/LaunchBar.tsx` (the
+   bottom bar in the dock), `world/NextLaunch.tsx` (the sheet, through a
+   sheet host beside the pages, since the page behind a sheet is inert;
+   each change's undo reuses the launch review's list), the banner under a
+   top bar that turns solid once it scrolls away, the tools out of the
+   pinned tab row, "11 → 14" (said as "11 now, 14 after launch"), one
+   column, a compact banner on a phone on its side; `phone.css` split in
+   three (frame, sheets, world). From the reviews: one launch rule
+   (`launchOff`) for the banner, the bar and the sheet, and checked again
+   inside the launch itself; a Next launch sheet closes when its world isn't
+   the one shown. Live: `app-phone-world.spec.ts` on the test world after a
+   GM launch (joined at pixel ratio 1: the game drawn without a GPU at the
+   phone's 2.625 couldn't answer the companion's hello in time). For the
+   owner: Discard all sits beside Launch with no confirmation, as in the
+   mockup and on the desktop.
 
 ## Native rules (for phase 4)
 

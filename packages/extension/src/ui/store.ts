@@ -38,6 +38,8 @@ export interface UiState {
   readonly updates: Updates;
   /** The phone and tablet layouts' place: home, and the trail Back retraces. */
   readonly phone: PhoneNav;
+  /** The world whose Next launch sheet is open (phone and tablet layouts). */
+  readonly nextLaunch: string | null;
 }
 
 /** The Library's side panels; tags and presets remember the one chosen. */

@@ -81,3 +81,17 @@ export function lockReason(
     : undefined;
   return t(key ?? "lock.busy");
 }
+
+/**
+ * Why this world can't launch now, or null: a locked world can't, nor can
+ * any while Foundry backs up, restores or updates. One rule for every
+ * Launch: the banner's, the phone's bar and Next launch sheet, and the
+ * launch itself (review).
+ */
+export function launchOff(
+  t: (key: string) => string,
+  state: Pick<UiState, "lock" | "tasks">,
+  world: { readonly locked?: boolean | undefined },
+): string | null {
+  return world.locked === true ? t("shell.launchLocked") : lockReason(t, state);
+}

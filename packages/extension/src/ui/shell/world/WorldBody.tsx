@@ -15,6 +15,7 @@ import { ModulesTab, useFilters } from "./ModulesTab.tsx";
 import { ModulesTools } from "./ModulesTools.tsx";
 import { NotSetUp } from "./NotSetUp.tsx";
 import type { WorldBackups } from "./useBackups.ts";
+import { isCompact, useLayout } from "../phone/layout.ts";
 
 export type WorldTab = "modules" | "about" | "backups";
 type Tab = WorldTab;
@@ -26,28 +27,44 @@ const ICONS: Record<Tab, string> = {
   backups: "floppy-disks",
 };
 
-/** "12 on", or "14 after launch" while changes wait; Foundry's backups. */
+/**
+ * "12 on", or "14 after launch" while changes wait ("11 → 14" in a phone's
+ * short tab row); Foundry's backups.
+ */
 function useCounts(model: WorldModules, backups: WorldBackups) {
   const { t } = useUi();
+  const compact = isCompact(useLayout());
   const list = backups.view.list;
+  const after = compact
+    ? t("mlp.countArrow", { from: model.nowCount, to: model.nextCount })
+    : t("wt.afterLaunch", { n: model.nextCount });
+  // The arrow, said in words (screen readers read "→" unevenly).
+  const spoken =
+    compact && model.tracked && model.changes
+      ? t("mlp.countSr", { from: model.nowCount, to: model.nextCount })
+      : undefined;
   return {
     modules: model.tracked
       ? model.changes
-        ? t("wt.afterLaunch", { n: model.nextCount })
+        ? after
         : t("wt.on", { n: model.nextCount })
       : "",
     about: "",
     backups: list ? String(list.length) : "",
-  } satisfies Record<Tab, string>;
+    spoken,
+  } satisfies Record<Tab, string> & { readonly spoken?: string | undefined };
 }
 
 function TabRow(props: {
   readonly tab: Tab;
   readonly onTab: (tab: Tab) => void;
-  readonly counts: Record<Tab, string>;
+  readonly counts: Record<Tab, string> & {
+    readonly spoken?: string | undefined;
+  };
   readonly children?: ComponentChildren;
 }) {
   const { t } = useUi();
+  const spoken = props.counts.spoken;
   return (
     <nav class="mls-subtabs">
       <TabList
@@ -63,7 +80,15 @@ function TabRow(props: {
             {props.counts[k] ? (
               <>
                 {" "}
-                <span class="c">{props.counts[k]}</span>
+                <span
+                  class="c"
+                  aria-hidden={k === "modules" && spoken ? true : undefined}
+                >
+                  {props.counts[k]}
+                </span>
+                {k === "modules" && spoken ? (
+                  <span class="ml-sr-only">{spoken}</span>
+                ) : null}
               </>
             ) : null}
           </>
@@ -83,6 +108,19 @@ function useOpened(tab: Tab): boolean {
   return opened;
 }
 
+/** The world's recent changes, under its modules. */
+function Recent(props: { readonly world: WorldInfo }) {
+  const { state, t } = useUi();
+  const recent = worldRow(state.data, props.world).recent;
+  if (!recent.length) return null;
+  return (
+    <details class="mlw-history">
+      <summary>{t("wp.history")}</summary>
+      <HistoryList commands={recent} />
+    </details>
+  );
+}
+
 export function WorldBody(props: {
   readonly world: WorldInfo;
   readonly model: WorldModules;
@@ -90,19 +128,23 @@ export function WorldBody(props: {
   readonly tab: Tab;
   readonly onTab: (tab: Tab) => void;
 }) {
-  const { state, t } = useUi();
   const { world, model, tab, onTab } = props;
   const filters = useFilters();
   const counts = useCounts(model, props.backups);
   const opened = useOpened(tab);
-  const recent = worldRow(state.data, world).recent;
+  const tools =
+    tab === "modules" && model.tracked ? (
+      <ModulesTools world={world} model={model} filters={filters} />
+    ) : null;
+  // On a phone only the tab row stays pinned; the tools scroll away under
+  // it (and their menus stay out of the pinned row's layer).
+  const compact = isCompact(useLayout());
   return (
     <>
       <TabRow tab={tab} onTab={onTab} counts={counts}>
-        {tab === "modules" && model.tracked ? (
-          <ModulesTools world={world} model={model} filters={filters} />
-        ) : null}
+        {compact ? null : tools}
       </TabRow>
+      {compact ? tools : null}
       <TabPanel id={WORLD_TABS} tab={tab}>
         {tab === "about" ? (
           <AboutTab world={world} backups={props.backups.view.list} />
@@ -121,12 +163,7 @@ export function WorldBody(props: {
             />
           </div>
         ) : null}
-        {tab === "modules" && recent.length ? (
-          <details class="mlw-history">
-            <summary>{t("wp.history")}</summary>
-            <HistoryList commands={recent} />
-          </details>
-        ) : null}
+        {tab === "modules" ? <Recent world={world} /> : null}
       </TabPanel>
     </>
   );

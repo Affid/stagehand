@@ -26,9 +26,13 @@ const nav = (over: Partial<PhoneNav> = {}): PhoneNav => ({
 
 const at = (
   route: Route | null,
-  over: Partial<{ panel: string | null; side: { kind: "intake" } | null }> = {},
+  over: Partial<{
+    panel: string | null;
+    side: { kind: "intake" } | null;
+    nextLaunch: string | null;
+  }> = {},
   phone: PhoneNav = nav({ home: false, at: route }),
-) => ({ route, panel: null, side: null, phone, ...over });
+) => ({ route, panel: null, side: null, nextLaunch: null, phone, ...over });
 
 describe("synced: following route changes", () => {
   test("an unchanged route needs nothing", () => {
@@ -131,7 +135,20 @@ describe("backPatch: Android's Back", () => {
     expect(backPatch(at(backups, { panel: "a" }), "phone")).toEqual({
       panel: null,
       side: null,
+      nextLaunch: null,
       phone: nav({ home: true, trail: [], at: backups }),
+    });
+  });
+
+  test("a world's Next launch sheet closes first, on that world's page", () => {
+    expect(
+      backPatch(at(w1, { nextLaunch: "w1", panel: "a" }), "phone"),
+    ).toEqual({ nextLaunch: null });
+    expect(backPatch(at(lib, { nextLaunch: "w1" }), "phone")).toEqual({
+      panel: null,
+      side: null,
+      nextLaunch: null,
+      phone: nav({ home: true, trail: [], at: lib }),
     });
   });
 
@@ -162,6 +179,7 @@ describe("backPatch: Android's Back", () => {
     expect(backPatch(at(lib), "phone")).toEqual({
       panel: null,
       side: null,
+      nextLaunch: null,
       phone: nav({ home: true, trail: [], at: lib }),
     });
   });
@@ -176,6 +194,7 @@ describe("backPatch: Android's Back", () => {
       route: null,
       panel: null,
       side: null,
+      nextLaunch: null,
       phone: nav({ home: false, trail: [], at: null }),
     });
   });
@@ -186,6 +205,7 @@ describe("tabPatch: the tab bar", () => {
     expect(tabPatch("worlds", "phone", at(lib))).toEqual({
       panel: null,
       side: null,
+      nextLaunch: null,
       phone: nav({ home: true, trail: [], at: lib }),
     });
   });

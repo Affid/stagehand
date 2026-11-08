@@ -42,6 +42,7 @@ const initial: UiState = {
   collapsedGroups: [],
   route: null,
   phone: START_NAV,
+  nextLaunch: null,
   panel: null,
   worldView: { by: "folder", layout: "cards" },
   tasks: [],

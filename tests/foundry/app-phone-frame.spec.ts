@@ -125,7 +125,10 @@ test("a phone on its side has short bars and icon-only tabs", async () => {
   const [app, page] = await open("phone-side");
   try {
     await expect(shell(page)).not.toHaveClass(/mlp-wide/);
-    await expect(tab(page, "Library").locator("span").first()).toBeHidden();
+    // The labels go from sight but stay the tabs' names.
+    const label = tab(page, "Library").locator("span").first();
+    await expect(label).toHaveText("Library");
+    expect((await label.boundingBox())?.width).toBeLessThanOrEqual(1);
     const bar = await tabBar(page).boundingBox();
     expect(bar?.height).toBeLessThanOrEqual(50);
     await noSidewaysScroll(page);
