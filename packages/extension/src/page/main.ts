@@ -28,6 +28,7 @@ import { collect } from "./collect.ts";
 import { watchProgress } from "./progress.ts";
 import { checkUpdates } from "./updates.ts";
 import type { PageGlobals } from "./globals.ts";
+import { hideResolutionNotice } from "./resolution.ts";
 import { setShell } from "./shell.ts";
 
 export interface SetupMainDeps {
@@ -47,6 +48,8 @@ interface Ctx extends SetupMainDeps {
   readonly notify: (kind: "info" | "warning" | "error", text: string) => void;
   /** Foundry's package list, asked once per Setup load however often (review). */
   updates?: Promise<Updates | undefined>;
+  /** Stops taking Foundry's window-size notice away (phone layout off). */
+  showNotice?: (() => void) | undefined;
 }
 
 const clipError = (error: string): string => error.slice(0, MAX_ERROR);
@@ -214,6 +217,14 @@ function handleRequest(ctx: Ctx, m: UiToPage): void {
   }
 }
 
+function setCompact(ctx: Ctx, on: boolean): void {
+  if (on) ctx.showNotice ??= hideResolutionNotice(ctx.page, ctx.doc);
+  else {
+    ctx.showNotice?.();
+    ctx.showNotice = undefined;
+  }
+}
+
 function handle(ctx: Ctx, m: UiToPage): void {
   if (WRITES.has(m.type) && ctx.page.game?.data?.isAdmin !== true) {
     ctx.notify(
@@ -231,6 +242,9 @@ function handle(ctx: Ctx, m: UiToPage): void {
         type: "SHELL_STATE",
         payload: setShell(ctx.doc, m.payload.on),
       });
+      break;
+    case "COMPACT":
+      setCompact(ctx, m.payload.on);
       break;
     case "FOUNDRY_ACTION":
       void runFoundryAction(ctx.doc, ctx.page, m.payload).then((error) => {

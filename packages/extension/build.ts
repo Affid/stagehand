@@ -67,6 +67,7 @@ const SHELL_SHEETS = [
   "news.css",
   "themes.css",
   "layout.css",
+  "phone.css",
   "veil.css",
 ];
 

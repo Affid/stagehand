@@ -9,6 +9,7 @@ import type { Adapter } from "../adapters/config.ts";
 import type { AdapterChoice } from "../adapters/select.ts";
 import type { GroupBy } from "./model/library-groups.ts";
 import type { Scope } from "./model/modules.ts";
+import type { PhoneNav } from "./shell/phone/nav.ts";
 import type { Route } from "./shell/route.ts";
 
 export interface UiState {
@@ -35,6 +36,8 @@ export interface UiState {
   readonly lock: Lock;
   /** Newer versions Foundry would install, by package id. */
   readonly updates: Updates;
+  /** The phone and tablet layouts' place: home, and the trail Back retraces. */
+  readonly phone: PhoneNav;
 }
 
 /** The Library's side panels; tags and presets remember the one chosen. */

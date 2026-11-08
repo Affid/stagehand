@@ -90,6 +90,45 @@ describe("setup-main: Foundry's half of the Setup page", () => {
     ]);
   });
 
+  test("COMPACT takes Foundry's window-size notice away until it is off", async () => {
+    vi.useFakeTimers();
+    const f = foundry(true);
+    const remove = vi.fn();
+    const page = {
+      ...f.page,
+      game: {
+        ...f.page.game,
+        issues: {
+          usabilityIssues: { resolutionTooLow: { message: "K", params: {} } },
+        },
+        i18n: { format: () => "Too small" },
+      },
+      ui: { ...f.page.ui, notifications: { ...f.notifications, remove } },
+    } satisfies PageGlobals;
+    const ol = document.createElement("ol");
+    ol.id = "notifications";
+    document.body.append(ol);
+    const notice = (id: number): void => {
+      const li = document.createElement("li");
+      li.className = "notification error permanent";
+      li.dataset.id = String(id);
+      li.textContent = "Too small";
+      ol.append(li);
+    };
+    notice(2);
+    const s = start(page);
+    await vi.advanceTimersByTimeAsync(1);
+    s.ui.send("COMPACT", { on: true });
+    s.ui.send("COMPACT", { on: true });
+    await vi.advanceTimersByTimeAsync(1);
+    expect(remove.mock.calls).toEqual([[2]]);
+    s.ui.send("COMPACT", { on: false });
+    await vi.advanceTimersByTimeAsync(1);
+    notice(3);
+    await vi.advanceTimersByTimeAsync(1);
+    expect(remove.mock.calls).toEqual([[2]]);
+  });
+
   test("shows the UI's notices through Foundry's, escaped", async () => {
     vi.useFakeTimers();
     const f = foundry(true);

@@ -34,19 +34,42 @@ import { Relay } from "./relay.ts";
 const ROOT = join(import.meta.dirname, "..", "..");
 export const DIST_APP = join(ROOT, "packages", "extension", "dist-app");
 
-/** A Pixel 8 in WebView: 412 CSS px wide at 2.625 (Android spike). */
-const PHONE = {
-  viewport: { width: 412, height: 915 },
-  deviceScaleFactor: 2.625,
-  isMobile: true,
-  hasTouch: true,
-  userAgent:
-    "Mozilla/5.0 (Linux; Android 16; Pixel 8 Build/BP2A.250605.031; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/146.0.0.0 Mobile Safari/537.36",
+const WEBVIEW_UA =
+  "Mozilla/5.0 (Linux; Android 16; Pixel 8 Build/BP2A.250605.031; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/146.0.0.0 Mobile Safari/537.36";
+
+/** A touch screen in WebView at this size (CSS px). */
+const touch = (width: number, height: number, deviceScaleFactor: number) =>
+  ({
+    viewport: { width, height },
+    deviceScaleFactor,
+    isMobile: true,
+    hasTouch: true,
+    userAgent: WEBVIEW_UA,
+  }) as const;
+
+/**
+ * The sizes phase 3 checks (Android plan): a Pixel 8 in WebView (412 CSS px
+ * wide at 2.625, Android spike), a small phone, a tablet held upright, and
+ * a phone and a tablet on their side.
+ */
+const DEVICES = {
+  desktop: { viewport: { width: 1600, height: 1000 } },
+  phone: touch(412, 915, 2.625),
+  "phone-small": touch(360, 800, 3),
+  tablet: touch(768, 1024, 2),
+  "phone-side": touch(915, 412, 2.625),
+  "tablet-side": touch(1024, 768, 2),
 } as const;
 
-const DESKTOP = { viewport: { width: 1600, height: 1000 } } as const;
+export type Device = keyof typeof DEVICES;
 
-export type Device = "desktop" | "phone";
+export const PHONE_SIZES: readonly Device[] = [
+  "phone-small",
+  "phone",
+  "tablet",
+  "phone-side",
+  "tablet-side",
+];
 
 export interface LaunchOptions {
   readonly device?: Device;
@@ -138,7 +161,7 @@ async function startApp(
   options: LaunchOptions,
 ): Promise<AppHarness> {
   const context = await browser.newContext(
-    options.device === "phone" ? PHONE : DESKTOP,
+    DEVICES[options.device ?? "desktop"],
   );
   const injected = new Set<string>();
   /** Set once the relay exists; the home screen may open before. */

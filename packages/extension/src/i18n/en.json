@@ -1020,5 +1020,18 @@
   "set.allow": "Allow foundryvtt.com",
   "set.removePerm": "Remove the permission",
   "set.allowed": "Allowed.",
-  "set.build": "Build {build}"
+  "set.build": "Build {build}",
+  "mlp.title": "Foundry VTT",
+  "mlp.back": "Back",
+  "mlp.tabs": "Sections",
+  "mlp.tab.worlds": "Worlds",
+  "mlp.tab.library": "Library",
+  "mlp.tab.backups": "Backups",
+  "mlp.tab.config": "Configuration",
+  "mlp.update": "What's new",
+  "mlp.queuedWorlds.one": "{n} world with changes",
+  "mlp.queuedWorlds.other": "{n} worlds with changes",
+  "mlp.newModules.one": "{n} new module",
+  "mlp.newModules.other": "{n} new modules",
+  "mlp.chipUpdate": "Foundry {version}, an update is available: update and help"
 }

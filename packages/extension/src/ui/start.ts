@@ -20,6 +20,7 @@ import type { UiPorts } from "./ports.ts";
 import { syncShell } from "./shell/mount.tsx";
 import { createStore, DEFAULT_WORLD_VIEW, EMPTY_FILTER } from "./store.ts";
 import { trackProgress, UNLOCKED } from "./tasks.ts";
+import { START_NAV } from "./shell/phone/nav.ts";
 
 export interface SetupUiDeps {
   readonly channel: PageChannel;
@@ -57,6 +58,7 @@ function createUi(
     selection: [],
     collapsedGroups: [],
     route: null,
+    phone: START_NAV,
     panel: null,
     side: null,
     worldView: DEFAULT_WORLD_VIEW,

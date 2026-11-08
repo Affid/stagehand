@@ -71,7 +71,10 @@ export function InlineInput(props: {
       }}
       onKeyDown={(e) => {
         if (e.key === "Enter") commit();
-        if (e.key === "Escape") finish(props.onCancel);
+        if (e.key !== "Escape") return;
+        // Handled: Back in the phone layout leaves the page alone.
+        e.preventDefault();
+        finish(props.onCancel);
       }}
       onBlur={commit}
     />

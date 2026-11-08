@@ -36,6 +36,7 @@ export function useModalFocus(
     box.current?.focus();
     const onKey = (e: KeyboardEvent): void => {
       if (e.key === "Escape") {
+        e.preventDefault();
         e.stopPropagation();
         close.current();
       } else if (e.key === "Tab" && box.current) trapTab(e, box.current);

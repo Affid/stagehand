@@ -17,6 +17,7 @@ import {
 } from "../../src/ui/i18n.ts";
 import { createStore, EMPTY_FILTER, type UiState } from "../../src/ui/store.ts";
 import { fakePage } from "./harness.tsx";
+import { START_NAV } from "../../src/ui/shell/phone/nav.ts";
 
 const data: SetupState = {
   server: "s",
@@ -40,6 +41,7 @@ const initial: UiState = {
   selectors: V14_SELECTORS,
   collapsedGroups: [],
   route: null,
+  phone: START_NAV,
   panel: null,
   worldView: { by: "folder", layout: "cards" },
   tasks: [],

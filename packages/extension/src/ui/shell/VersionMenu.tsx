@@ -107,7 +107,38 @@ function Menu(props: MenuProps) {
   );
 }
 
-export function VersionMenu() {
+/** The chip's text: "Version 14 · 370", or "14 · 370" in the phone's top bar. */
+function ChipText(props: {
+  readonly version: string;
+  readonly hasUpdate: boolean;
+  readonly compact: boolean;
+}) {
+  const { t } = useUi();
+  const label = versionLabel(props.version);
+  if (props.compact)
+    return (
+      <>
+        <span class="v">{label}</span>
+        {props.hasUpdate ? <Icon name="arrow-up" /> : null}
+      </>
+    );
+  return (
+    <>
+      <span class="v">{t("shell.version", { version: label })}</span>
+      {/* A space for the name read from the text (axe joins spans as is). */}
+      {props.hasUpdate ? " " : null}
+      {props.hasUpdate ? (
+        <span class="upd">
+          <Icon name="arrow-up" />
+          {t("up.chip")}
+        </span>
+      ) : null}
+      <Icon name="caret-down" />
+    </>
+  );
+}
+
+export function VersionMenu(props: { readonly compact?: boolean }) {
   const { state, t } = useUi();
   const [open, setOpen] = useState(false);
   const hasUpdate = state.data.setup?.coreUpdate?.hasUpdate === true;
@@ -131,21 +162,19 @@ export function VersionMenu() {
         ref={trigger}
         class={`mlh-ver${open ? " ml-on" : ""}`}
         aria-expanded={open}
-        aria-label={t("vm.chip", { version: versionLabel(version) })}
+        aria-label={t(
+          hasUpdate && props.compact ? "mlp.chipUpdate" : "vm.chip",
+          {
+            version: versionLabel(version),
+          },
+        )}
         onClick={() => setOpen(!open)}
       >
-        <span class="v">
-          {t("shell.version", { version: versionLabel(version) })}
-        </span>
-        {/* A space for the name read from the text (axe joins spans as is). */}
-        {hasUpdate ? " " : null}
-        {hasUpdate ? (
-          <span class="upd">
-            <Icon name="arrow-up" />
-            {t("up.chip")}
-          </span>
-        ) : null}
-        <Icon name="caret-down" />
+        <ChipText
+          version={version}
+          hasUpdate={hasUpdate}
+          compact={props.compact === true}
+        />
       </button>
       {open ? <Menu first={first} close={() => close(true)} /> : null}
     </span>

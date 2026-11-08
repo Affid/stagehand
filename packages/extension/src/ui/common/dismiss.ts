@@ -4,7 +4,8 @@ import { useEffect } from "preact/hooks";
 
 /**
  * Closes a popup on Escape (focus back on its button) or on a press outside
- * `wrap`. Escape stops here, so Foundry doesn't also act on it.
+ * `wrap`. Escape stops here, so Foundry doesn't also act on it, and is
+ * marked handled (the phone layout's Back leaves it alone).
  */
 export function useDismiss(
   open: boolean,
@@ -15,6 +16,7 @@ export function useDismiss(
     if (!open) return undefined;
     const onKey = (e: KeyboardEvent): void => {
       if (e.key !== "Escape") return;
+      e.preventDefault();
       e.stopPropagation();
       close(true);
     };

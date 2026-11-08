@@ -12,16 +12,20 @@ export function useDismiss(): RefObject<HTMLDetailsElement | null> {
   useEffect(() => {
     const onKey = (e: KeyboardEvent): void => {
       if (e.key !== "Escape" || !ref.current?.open) return;
+      // Handled here first (capture), and stopped: the phone layout's Back
+      // and Foundry leave it alone.
+      e.preventDefault();
+      e.stopPropagation();
       closePopover(ref.current);
       ref.current.querySelector("summary")?.focus();
     };
     const onDown = (e: PointerEvent): void => {
       if (!ref.current?.contains(e.target as Node)) closePopover(ref.current);
     };
-    document.addEventListener("keydown", onKey);
+    document.addEventListener("keydown", onKey, true);
     document.addEventListener("pointerdown", onDown);
     return () => {
-      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("keydown", onKey, true);
       document.removeEventListener("pointerdown", onDown);
     };
   }, []);

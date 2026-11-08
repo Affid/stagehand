@@ -70,6 +70,8 @@ export interface PageBridge {
   notify(kind: NoticeKind, text: string): void;
   /** Take over Foundry's Setup layout, or give it back; the answer arrives as SHELL_STATE. */
   setShell(on: boolean): void;
+  /** The phone or tablet layout is on: Foundry's window-size notice goes. */
+  setCompact(on: boolean): void;
   foundryAction(action: FoundryAction): void;
   /** Ask for the updates Foundry would install; they arrive as UPDATES. */
   checkUpdates(): void;
@@ -348,6 +350,9 @@ export function createPageBridge(channel: PageChannel): PageBridge {
     },
     setShell: (on) => {
       send({ type: "SHELL", payload: { on } });
+    },
+    setCompact: (on) => {
+      send({ type: "COMPACT", payload: { on } });
     },
     editorOpen: (hostId, value) => {
       send({ type: "EDITOR_OPEN", payload: { hostId, value } });

@@ -8,7 +8,7 @@ import { useUi } from "../context.ts";
 import { VersionMenu } from "./VersionMenu.tsx";
 
 /** Log out and Shut down: a disclosure of two plain buttons. */
-function PowerMenu() {
+export function PowerMenu() {
   const { page, t } = useUi();
   const [open, setOpen] = useState(false);
   const wrap = useRef<HTMLDivElement>(null);

@@ -36,6 +36,11 @@ export interface SetupGame {
   readonly i18n?: {
     readonly lang?: string;
     readonly localize?: (key: string) => string;
+    readonly format?: (key: string, data: object) => string;
+  };
+  /** Foundry's usability checks (window size, browser version). */
+  readonly issues?: {
+    readonly usabilityIssues?: Readonly<Record<string, unknown>>;
   };
   readonly modules?: Collection;
   readonly worlds?: Collection;
@@ -65,7 +70,7 @@ export interface PageGlobals {
         "info" | "warn" | "error",
         (message: string, o?: object) => unknown
       >
-    >;
+    > & { readonly remove?: (id: number) => void };
   };
   readonly foundry?: {
     readonly applications?: {

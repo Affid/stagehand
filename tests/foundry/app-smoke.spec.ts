@@ -31,10 +31,11 @@ for (const device of ["desktop", "phone"] as const satisfies Device[]) {
       const page = await app.context.newPage();
       await openAppSetupAsAdmin(app, page, env.url, env.adminPassword);
       await exitTour(page);
-      // Our page took over: Foundry's layout hidden, our header and rail on.
+      // Our page took over: Foundry's layout hidden, our header and rail on
+      // (the phone's short version chip: "14 · 370").
       await expect(page.locator("#setup")).toBeHidden();
       await expect(page.locator("#ml-shell-root .mlh-ver")).toContainText(
-        "Version 14",
+        device === "phone" ? /^14 · \d+/ : "Version 14",
       );
       // The background saw this Setup through native: an admin-verified server.
       const servers = app.native.get("servers") as

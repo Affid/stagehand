@@ -32,6 +32,7 @@ import {
   EMPTY_FILTER,
   type UiState,
 } from "../../src/ui/store.ts";
+import { START_NAV } from "../../src/ui/shell/phone/nav.ts";
 
 export const pkg = (
   id: string,
@@ -134,6 +135,7 @@ export function fakePage() {
   const page = {
     notify: vi.fn(),
     setShell: vi.fn(),
+    setCompact: vi.fn(),
     foundryAction: vi.fn(),
     checkUpdates: vi.fn(),
     saveWorld: vi.fn(() => Promise.resolve<string | undefined>(undefined)),
@@ -191,6 +193,7 @@ export const uiState = (over: Partial<UiState> = {}): UiState => ({
   selection: [],
   collapsedGroups: [],
   route: null,
+  phone: START_NAV,
   panel: null,
   side: null,
   worldView: DEFAULT_WORLD_VIEW,

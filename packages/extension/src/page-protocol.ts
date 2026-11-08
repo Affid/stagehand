@@ -110,6 +110,8 @@ export type UiToPage =
     }
   /** Take over Foundry's Setup layout (on) or give it back (off). */
   | { readonly type: "SHELL"; readonly payload: { readonly on: boolean } }
+  /** The page is in its phone or tablet layout: Foundry's window-size notice goes. */
+  | { readonly type: "COMPACT"; readonly payload: { readonly on: boolean } }
   | { readonly type: "FOUNDRY_ACTION"; readonly payload: FoundryAction }
   /** Save a world's details through Foundry (answered by SAVE_DONE). */
   | { readonly type: "SAVE_WORLD"; readonly payload: SaveWorld }
@@ -249,6 +251,7 @@ export function parseUiToPage(type: string, p: unknown): UiToPage | undefined {
         ? { type, payload: { kind: p.kind as NoticeKind, text: p.text } }
         : undefined;
     case "SHELL":
+    case "COMPACT":
       return typeof p.on === "boolean"
         ? { type, payload: { on: p.on } }
         : undefined;

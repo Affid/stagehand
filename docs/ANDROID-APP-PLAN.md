@@ -487,7 +487,13 @@ Which layout (one pure function, `layoutFor`):
 Android's Back (phase 4) reaches Setup as an Escape key press: an open
 dialog or menu closes first (they already stop Escape), then a sheet, then
 the page goes back to its list; a press nobody handles is left unhandled
-(not `defaultPrevented`), so native knows to go back in history.
+(not `defaultPrevented`), so native knows to go back in history. A page
+script can dispatch the same key press, so a synthetic Escape also acts in
+a text field (a real key press there stays the field's); the reach is a
+step back in our own page, nothing a page script can't already click. For
+phase 4, the security review suggests native Back call a function inside
+the injected closure instead of dispatching a key press, so synthetic
+Escapes in text fields can be ignored.
 
 Packages, each committed on its own after tests first, `pnpm verify`, live
 checks in the app harness (phone emulation) and the extension, a code review
@@ -540,6 +546,24 @@ and a security review:
    three themes (no sideways overflow, touch sizes, axe), the desktop
    layout specs, screenshots, the "Phone" section of
    `docs/SETUP-REDESIGN.md`, the results artifact.
+
+### Phase 3 progress
+
+1. **Layout and frame** (done 2026-11-08). `ui/shell/phone/`: `layout.ts`
+   (`layoutFor`, the hook; the layout holds while a text field has focus,
+   so Android's keyboard can't turn a tablet into a phone), `nav.ts` (home,
+   the trail Back retraces, the tabs; pure), `PhoneShell.tsx`,
+   `PhoneTop.tsx`, `TabBar.tsx`, `Dock.tsx` (Preact core's `createPortal`:
+   importing `preact/compat` turned every `onBlur` in the page into
+   `focusout` and broke the session editor's time fields), `phone.css`.
+   Foundry's window-size notice: the UI sends `COMPACT`, the page world
+   removes the notification whose text is Foundry's formatted
+   `resolutionTooLow` issue, now and after each resize
+   (`page/resolution.ts`). Popups mark Escape handled, and the details
+   popover now takes it in the capture phase (review: it ran after Back).
+   Live: `app-phone-frame.spec.ts` in the app harness (Pixel 8, a tablet
+   upright and on its side, a phone on its side); `scripts/dev/phone-shots.ts`
+   takes screenshots at the five sizes.
 
 ## Native rules (for phase 4)
 
