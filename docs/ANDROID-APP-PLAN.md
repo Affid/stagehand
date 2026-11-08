@@ -376,6 +376,42 @@ scripts registered by the extension's file names, now `{server, ids}`;
 hooking of shared built-ins, documented with the rest under "Native rules"
 for phase 4).
 
+Package 3 done. `build.ts` builds the extension into `dist/` (the same
+entries, order, defines and styles as before; its files unchanged) and the
+app into `dist-app/` (`--extension` or `--app` builds one): `app-setup.js`
+(the Setup styles put in by a define and added as a `<style>` at document
+start; it waits for the root element, which Chromium may not have yet at
+document start), `app-game.js`, `app-background.js` with
+`background.html`, `app-home.js` with `home.html` (both with a CSP:
+own scripts and styles only, no connections, no base or form targets).
+`app/bundle-check.ts` fails the build on any `chrome.*` or `browser.*` API
+in `dist-app/` (a guard against importing extension code, not against
+code written to hide). Reviews: no critical or high for the build.
+Left for phase 4: the release APK leaves out the source maps.
+
+Package 4 done. `tests/app/`: `harness.ts` (Chromium with phone emulation,
+Pixel 8 in WebView, or a 1600 px desktop; `dist-app/` served on the app's
+origin; the bridge object and the page scripts added at document start
+only on saved origins, app-setup before app-game; the binding name taken
+away after use), `native.ts` (native in Node: storage, saved origins and
+scripts, NativeFetch's rule, files, confirm, links, home) and `relay.ts`
+(the plan's native rules: the role by page, the sender from the last
+committed navigation, the size cap and wire version, payloads checked,
+server requests only from a saved server's Setup or game page, replies
+only from the background, `route` held until `background.ready` and
+again after the background reloads). Live (`app-smoke.spec.ts`): today's
+Setup page through the app layer on desktop and phone, an admin-verified
+server in native's storage, no bridge for page scripts; on `/join` no
+bridge and no server rights, also after `replaceState` to `/setup`; a
+forged `route` answer from a Setup page is dropped; another wire version
+gets no answer. Reviews: code (three high, all native rules the harness
+didn't yet play: the live URL as sender, replies from any page, the size
+cap, wire version, odd paths and saved origins) and security (no high;
+injection on every origin, replies and roles by URL, the binding left
+visible); all fixed as above. Known limits: scripts and origins can be
+added but not taken away while running, and Node's answers reach the page
+through a global the harness leaves in place.
+
 ## Native rules (for phase 4)
 
 The contract is `packages/extension/src/app/native-api.ts` (who may ask
