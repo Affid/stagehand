@@ -1109,7 +1109,10 @@ Packages:
        in `tests/android`.
 4. **Next: the icon**, the owner's last item, "after the app works
    great". Waiting on the owner as well: the phone checks (phase 5) and
-   autofill with their password manager on Foundry's login.
+   autofill with their password manager (Bitwarden) on Foundry's login.
+   The owner suggested a new name before the icon: "Modern Server
+   Manager", MSM on the launcher; to settle first, since the icon follows
+   the name.
 
 ## Native rules (for phase 4)
 
