@@ -49,14 +49,26 @@ export const History = () => (
   </Icon>
 );
 
-/** Stagehand's mark: four books on a shelf. */
+/**
+ * Stagehand's mark, Fly rope (design/app-icon), in its drawing for 32 px
+ * and below: an open pulley, a thick rope and a big sandbag.
+ */
 export const Mark = () => (
   <span class="mlh-mark" aria-hidden="true">
-    <i>
-      <b />
-      <b />
-      <b />
-      <b />
-    </i>
+    <svg viewBox="22 21 64 64" focusable="false">
+      <rect x="33" y="26" width="42" height="4.5" fill="#6a5b8c" />
+      <circle cx="54" cy="41" r="11" fill="#d9a441" />
+      <circle cx="54" cy="41" r="4.5" fill="#2a2340" />
+      <path
+        d="M43,77 V41 A11,11 0 0 1 65,41 V60"
+        fill="none"
+        stroke="#efe3c8"
+        stroke-width="4.6"
+      />
+      <path
+        fill="#c0584a"
+        d="M65,58 C58.5,62.5 56.5,71 57.5,76 Q65,82.5 72.5,76 C73.5,71 71.5,62.5 65,58 Z"
+      />
+    </svg>
   </span>
 );

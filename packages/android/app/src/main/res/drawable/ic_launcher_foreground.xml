@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Stagehand's own mark: books on a shelf (no Foundry branding). -->
+<!-- Stagehand's mark, Fly rope: a rope over a pulley with a sandbag, as
+     stagehands fly scenery (design/app-icon, the owner's pick 2026-11-09).
+     The 108 dp adaptive canvas; everything inside the 66 dp safe zone. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- shelf -->
-    <path android:fillColor="#FF8A6A3A" android:pathData="M29,73h50v4h-50z" />
-    <!-- gold book -->
-    <path android:fillColor="#FFD9A441" android:pathData="M32,41h10v32h-10z" />
-    <path android:fillColor="#FF9C7024" android:pathData="M32,46h10v2h-10zM32,66h10v2h-10z" />
-    <!-- parchment book -->
-    <path android:fillColor="#FFEFE3C8" android:pathData="M44,34h12v39h-12z" />
-    <path android:fillColor="#FFB9A986" android:pathData="M44,40h12v2h-12zM44,65h12v2h-12z" />
-    <!-- teal book -->
-    <path android:fillColor="#FF5FA8A0" android:pathData="M58,43h9v30h-9z" />
-    <path android:fillColor="#FF3D7670" android:pathData="M58,48h9v2h-9z" />
-    <!-- leaning book -->
-    <path android:fillColor="#FFC0584A" android:pathData="M69,73l8.5,0l6,-28l-8.3,-1.8z" />
+    <!-- batten and the block's strap -->
+    <path android:fillColor="#FF5A4D78" android:pathData="M35,27.5h38v3.6h-38z" />
+    <path android:fillColor="#FF8F86A0" android:pathData="M52.4,30.6h3.2v4.4h-3.2z" />
+    <!-- pulley: wheel, groove, hub -->
+    <path android:fillColor="#FFD9A441" android:pathData="M44.4,43a9.6,9.6 0,1 0,19.2,0a9.6,9.6 0,1 0,-19.2,0z" />
+    <path android:fillColor="#FF9C7024" android:pathData="M47.4,43a6.6,6.6 0,1 0,13.2,0a6.6,6.6 0,1 0,-13.2,0z" />
+    <path android:fillColor="#FFEFE3C8" android:pathData="M51.4,43a2.6,2.6 0,1 0,5.2,0a2.6,2.6 0,1 0,-5.2,0z" />
+    <!-- rope over the wheel, with a loop at the hauling end -->
+    <path android:strokeColor="#FFEFE3C8" android:strokeWidth="3.2" android:pathData="M44.4,76V43A9.6,9.6 0,0 1,63.6,43V61" />
+    <path android:strokeColor="#FFEFE3C8" android:strokeWidth="2.2" android:pathData="M41.6,79a2.8,2.8 0,1 0,5.6,0a2.8,2.8 0,1 0,-5.6,0z" />
+    <!-- sandbag and its tie -->
+    <path android:fillColor="#FFC0584A" android:pathData="M63.6,60C58,64 56,72 57,76.5Q63.6,82 70.2,76.5C71.2,72 69.2,64 63.6,60z" />
+    <path android:fillColor="#FF8E3329" android:pathData="M60,63.2h7.2v2.2h-7.2z" />
 </vector>

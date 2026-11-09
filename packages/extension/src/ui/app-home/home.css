@@ -103,43 +103,15 @@ body {
   width: 30px;
   height: 30px;
   flex: none;
-  display: grid;
-  place-items: center;
+  overflow: hidden;
   border-radius: 7px;
   background: #2a2340;
 }
 
-.mlh-mark i {
-  display: flex;
-  align-items: end;
-  gap: 2px;
-  height: 18px;
-}
-
-.mlh-mark b {
-  width: 4px;
-  border-radius: 1px;
-}
-
-.mlh-mark b:nth-child(1) {
-  height: 11px;
-  background: #d9a441;
-}
-
-.mlh-mark b:nth-child(2) {
-  height: 16px;
-  background: #efe3c8;
-}
-
-.mlh-mark b:nth-child(3) {
-  height: 12px;
-  background: #5fa8a0;
-}
-
-.mlh-mark b:nth-child(4) {
-  height: 13px;
-  background: #c0584a;
-  transform: rotate(14deg);
+.mlh-mark svg {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 /* Body */
