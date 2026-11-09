@@ -1,9 +1,10 @@
-// The app's screen while a world runs (Android plan, phase 3, package 6;
-// mockup: design/setup-page/src/_running.js). Foundry has no Setup then and
-// sends everyone to /join; the app is for Setup, so it shows which world
-// runs, who is in it and for how long, and one way out: Return to Setup. With
-// people in the game it asks first; Foundry wants the administrator password
-// to close a world, so the app asks for it when Foundry does.
+// The app's screen while a world runs (Android plan, phases 3 and 7; mockup:
+// design/app-screens, Running). Foundry has no Setup then and sends everyone
+// to /join; the app never opens the game (owner, 2026-11-09), so this says
+// which world runs, who is in it and for how long, and offers two ways on:
+// Back to Setup (closes the world; with people in the game it asks first,
+// and Foundry wants the administrator password) and Server list (leaves it
+// running).
 import type { ComponentChildren } from "preact";
 import { useRef, useState } from "preact/hooks";
 import { useModalFocus } from "../../ui/common/modal-focus.ts";
@@ -12,8 +13,6 @@ import { plural, type Translate } from "../../ui/i18n.ts";
 import { cssImage } from "../../ui/shell/route.ts";
 import {
   type CloseResult,
-  type JoinResult,
-  type JoinUser,
   type RunningWorld,
   type Status,
   uptimeParts,
@@ -26,12 +25,8 @@ export interface RunningProps {
   readonly origin: string;
   /** Asks Foundry to close the world (a password when it wants one). */
   readonly close: (password?: string) => Promise<CloseResult>;
-  /** Who can join (the join page's users, Gamemasters first). */
-  readonly users: readonly JoinUser[];
   /** Changes launched with this world from our Setup, if it just was. */
   readonly launched: number | undefined;
-  /** Joins as a user; on success the page goes into the game. */
-  readonly join: (userId: string, password: string) => Promise<JoinResult>;
   /** The app's server list (native opens it on a tap). */
   readonly serversHref: string;
 }
@@ -178,91 +173,6 @@ function Password(props: {
   );
 }
 
-function JoinFields(props: {
-  readonly t: Translate;
-  readonly users: readonly JoinUser[];
-  readonly user: string;
-  readonly setUser: (id: string) => void;
-  readonly pw: string;
-  readonly setPw: (pw: string) => void;
-}) {
-  const { t } = props;
-  return (
-    <>
-      <label class="mlr-field">
-        <span>{t("run.joinAs")}</span>
-        <select
-          value={props.user}
-          onChange={(e) => props.setUser(e.currentTarget.value)}
-        >
-          {props.users.map((u) => (
-            <option key={u.id} value={u.id}>
-              {u.name}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label class="mlr-field">
-        <span>{t("run.joinPassword")}</span>
-        <input
-          type="password"
-          autoComplete="current-password"
-          placeholder={t("run.joinPasswordHint")}
-          value={props.pw}
-          onInput={(e) => props.setPw(e.currentTarget.value)}
-        />
-      </label>
-    </>
-  );
-}
-
-function JoinSheet(props: RunningProps & { readonly cancel: () => void }) {
-  const { t, users } = props;
-  const [user, setUser] = useState(
-    (users.find((u) => u.gm) ?? users[0])?.id ?? "",
-  );
-  const [pw, setPw] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState("");
-  const submit = async (e: Event): Promise<void> => {
-    e.preventDefault();
-    setBusy(true);
-    setError("");
-    const result = await props.join(user, pw);
-    if (result.kind === "joined") return;
-    setBusy(false);
-    setError(result.kind === "refused" ? result.message : t("run.joinFailed"));
-  };
-  const n = props.launched ?? 0;
-  return (
-    <Sheet
-      title={t("run.joinTitle", { world: props.world.title })}
-      onCancel={props.cancel}
-    >
-      <form class="mlr-form" onSubmit={(e) => void submit(e)}>
-        <JoinFields
-          t={t}
-          users={users}
-          user={user}
-          setUser={setUser}
-          pw={pw}
-          setPw={setPw}
-        />
-        <p>{n ? plural(t, "run.joinNote", n) : t("run.joinNoteNone")}</p>
-        {error ? (
-          <p class="err" role="alert">
-            {error}
-          </p>
-        ) : null}
-        <button type="submit" class="bright mlr-go" disabled={busy || !user}>
-          <Icon name={busy ? "spinner fa-spin-pulse" : "play"} />
-          {t("run.joinGo")}
-        </button>
-      </form>
-    </Sheet>
-  );
-}
-
 /** Return to Setup: ask first with people in, then the password if wanted. */
 function useReturn(props: RunningProps) {
   const [step, setStep] = useState<Step>({ kind: "idle" });
@@ -279,30 +189,6 @@ function useReturn(props: RunningProps) {
     else void attempt();
   };
   return { step, start, attempt, cancel: () => setStep({ kind: "idle" }) };
-}
-
-function JoinButton(props: {
-  readonly t: Translate;
-  readonly changes: number;
-  readonly main: boolean;
-  readonly onClick: () => void;
-}) {
-  const { t, changes } = props;
-  return (
-    <button
-      type="button"
-      class={props.main ? "bright mlr-go mlr-join" : "mlr-go mlr-join"}
-      onClick={props.onClick}
-    >
-      <span>
-        <Icon name="play" />
-        {t("run.join")}
-      </span>
-      {changes ? (
-        <span class="sub">{plural(t, "run.joinApplies", changes)}</span>
-      ) : null}
-    </button>
-  );
 }
 
 function ReturnButton(props: {
@@ -326,59 +212,37 @@ function ReturnButton(props: {
   );
 }
 
-/** What Return to Setup does, for the line under the buttons. */
-function hint(t: Translate, changes: number, people: number): string {
-  if (changes) return t("run.hintLaunched");
+/** What the two buttons do, for the line under them. */
+function hint(t: Translate, people: number): string {
   return people ? plural(t, "run.hintPeople", people) : t("run.hint");
 }
 
 function Body(
-  props: RunningProps & {
-    readonly r: ReturnType<typeof useReturn>;
-    readonly openJoin: () => void;
-  },
+  props: RunningProps & { readonly r: ReturnType<typeof useReturn> },
 ) {
   const { t, r } = props;
   const n = props.status?.users ?? 0;
   const changes = props.launched ?? 0;
-  const ret = (
-    <ReturnButton
-      t={t}
-      world={props.world.title}
-      closing={r.step.kind === "closing"}
-      main={!changes}
-      onClick={r.start}
-    />
-  );
-  // Only when the world has a Gamemaster to join as (review).
-  const join = props.users.some((u) => u.gm) ? (
-    <JoinButton
-      t={t}
-      changes={changes}
-      main={changes > 0}
-      onClick={props.openJoin}
-    />
-  ) : null;
   return (
     <div class="mlr-body">
       <p>{changes ? plural(t, "run.leadLaunched", changes) : t("run.lead")}</p>
-      {changes ? (
-        <>
-          {join}
-          {ret}
-        </>
-      ) : (
-        <>
-          {ret}
-          {join}
-        </>
-      )}
+      <ReturnButton
+        t={t}
+        world={props.world.title}
+        closing={r.step.kind === "closing"}
+        main
+        onClick={r.start}
+      />
+      <a class="mlr-go mlr-servers" href={props.serversHref}>
+        <Icon name="server" />
+        {t("run.serverList")}
+      </a>
       {r.step.kind === "failed" ? (
         <p class="err" role="alert">
           {t("run.failed")}
         </p>
       ) : null}
-      <p class="hint">{hint(t, changes, n)}</p>
+      <p class="hint">{hint(t, n)}</p>
     </div>
   );
 }
@@ -386,10 +250,8 @@ function Body(
 export function RunningScreen(props: RunningProps) {
   const { t, status } = props;
   const r = useReturn(props);
-  const [joining, setJoining] = useState(false);
   // Behind an open question the screen can't be reached.
-  const asking =
-    joining || r.step.kind === "asking" || r.step.kind === "password";
+  const asking = r.step.kind === "asking" || r.step.kind === "password";
   return (
     <>
       <header class="mlr-top" inert={asking}>
@@ -413,11 +275,8 @@ export function RunningScreen(props: RunningProps) {
       </header>
       <main class="mlr-scroll" inert={asking}>
         <Hero {...props} />
-        <Body {...props} r={r} openJoin={() => setJoining(true)} />
+        <Body {...props} r={r} />
       </main>
-      {joining ? (
-        <JoinSheet {...props} cancel={() => setJoining(false)} />
-      ) : null}
       {r.step.kind === "asking" ? (
         <Ask {...props} go={() => void r.attempt()} cancel={r.cancel} />
       ) : null}

@@ -74,14 +74,15 @@ export async function joinWorld(
   user: string,
 ): Promise<void> {
   await page.goto(`${url}/join`, { referer: `${url}/setup` });
-  // The app shows its own running screen on /join (owner, 2026-11-09): its
-  // Join as Gamemaster joins as Foundry's form does. The extension leaves
+  // The app shows its own running screen on /join and never offers the game
+  // (owner, phase 7): the harness joins as Foundry's form would, by its
+  // request, as the app's out-of-sight join does. The extension leaves
   // Foundry's form.
   // The app's script adds its screen's style at document start.
   const isApp = await page.evaluate(
     () => document.getElementById("ml-run-style") !== null,
   );
-  if (isApp) await joinFromRunningScreen(page, user);
+  if (isApp) await joinByRequest(page, url, user);
   else {
     await page
       .locator('#join-game-form select[name="userId"]')
@@ -92,15 +93,30 @@ export async function joinWorld(
   await waitReady(page);
 }
 
-/** The app's running screen: Join as Gamemaster, the user, Join. */
-export async function joinFromRunningScreen(
+/** Joins as `user` (no password) by Foundry's own join request, then opens the game. */
+async function joinByRequest(
   page: Page,
+  url: string,
   user: string,
 ): Promise<void> {
-  await page.locator("#ml-run-root .mlr-join").click();
-  const sheet = page.locator("#ml-run-root .mlr-sheet");
-  await sheet.locator("select").selectOption({ label: user });
-  await sheet.getByRole("button", { name: "Join", exact: true }).click();
+  const redirect = await page.evaluate(
+    async ({ base, name }) => {
+      const g = globalThis as unknown as {
+        game: { users: { id: string; name: string }[] };
+      };
+      const userId = g.game.users.find((u) => u.name === name)?.id;
+      const res = await fetch(`${base}/join`, {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, password: "", action: "join" }),
+      });
+      return ((await res.json()) as { redirect?: string }).redirect;
+    },
+    { base: url, name: user },
+  );
+  if (!redirect) throw new Error(`Foundry didn't let ${user} join`);
+  await page.goto(new URL(redirect, url).href);
 }
 
 /** Ends Foundry's first-run tour, whose overlay blocks clicks in a fresh profile. */

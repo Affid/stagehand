@@ -139,6 +139,20 @@ html.ml-run-wait body > :not(#ml-run-root) {
   opacity: 0.6;
 }
 
+/* Server list: a link to the app's home, drawn as the button above it. */
+a.mlr-servers {
+  border: 1px solid var(--color-cool-3, #4b4a44);
+  border-radius: 6px;
+  background: rgb(255 255 255 / 4%);
+  color: inherit;
+  text-decoration: none;
+}
+
+a.mlr-servers:focus-visible {
+  outline: 2px solid #ee9b3a;
+  outline-offset: 2px;
+}
+
 /* The question, and the password: a sheet from the bottom. */
 .mlr-scrim {
   position: fixed;

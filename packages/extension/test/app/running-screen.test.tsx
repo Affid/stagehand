@@ -2,20 +2,10 @@
 // The app's screen while a world runs (Android plan, phase 3, package 6):
 // when it shows, what it says, and Return to Setup with its question and
 // the password Foundry wants.
-import {
-  cleanup,
-  fireEvent,
-  render,
-  waitFor,
-  within,
-} from "@testing-library/preact";
+import { cleanup, fireEvent, render, waitFor } from "@testing-library/preact";
 import { afterEach, describe, expect, test, vi } from "vitest";
 import { RunningScreen } from "../../src/app/running/RunningScreen.tsx";
-import type {
-  CloseResult,
-  JoinResult,
-  Status,
-} from "../../src/app/running/server.ts";
+import type { CloseResult, Status } from "../../src/app/running/server.ts";
 import { showsRunning, startRunning } from "../../src/app/running/start.tsx";
 import { createTranslator } from "../../src/ui/i18n.ts";
 
@@ -50,18 +40,10 @@ describe("showsRunning", () => {
   });
 });
 
-const USERS = [
-  { id: "g1", name: "Gamemaster", gm: true },
-  { id: "p1", name: "Player1", gm: false },
-];
-
 function screen(
   s: Status | undefined,
   close: (pw?: string) => Promise<CloseResult>,
-  more: {
-    readonly launched?: number;
-    readonly join?: (u: string, p: string) => Promise<JoinResult>;
-  } = {},
+  more: { readonly launched?: number } = {},
 ) {
   return render(
     <RunningScreen
@@ -70,75 +52,34 @@ function screen(
       status={s}
       origin={SERVER}
       close={close}
-      users={USERS}
       launched={more.launched}
-      join={
-        more.join ?? vi.fn(() => Promise.resolve({ kind: "failed" } as const))
-      }
       serversHref="https://appassets.androidplatform.net/home.html"
     />,
   );
 }
 
-describe("Join as Gamemaster", () => {
-  test("after a launch with changes: the main button, saying what it applies", () => {
-    const r = screen(status({ users: 0 }), vi.fn(), { launched: 2 });
-    const buttons = r.container.querySelectorAll(".mlr-body button");
-    expect(buttons[0]?.textContent).toContain("Join as Gamemaster");
-    expect(buttons[0]?.textContent).toContain("applies 2 changes");
-    expect(buttons[0]?.className).toContain("bright");
-    expect(buttons[1]?.textContent).toContain("Return to Setup");
-    expect(r.container.textContent).toContain(
-      "They apply when the Gamemaster joins",
-    );
-  });
-
-  test("opened later: Return to Setup first, Join second", () => {
+describe("the two ways on (owner, phase 7)", () => {
+  test("Back to Setup first, Server list second; the game is never offered", () => {
     const r = screen(status(), vi.fn());
-    const buttons = r.container.querySelectorAll(".mlr-body button");
-    expect(buttons[0]?.textContent).toContain("Return to Setup");
-    expect(buttons[1]?.textContent).toContain("Join as Gamemaster");
-    expect(buttons[1]?.textContent).not.toContain("applies");
+    const body = r.container.querySelector(".mlr-body");
+    const ways = body?.querySelectorAll("button, a") ?? [];
+    expect(ways[0]?.textContent).toContain("Back to Setup");
+    expect(ways[0]?.className).toContain("bright");
+    expect(ways[1]?.textContent).toContain("Server list");
+    expect(ways[1]?.getAttribute("href")).toBe(
+      "https://appassets.androidplatform.net/home.html",
+    );
+    expect(r.container.textContent).not.toMatch(/Join|Gamemaster/);
+    expect(r.container.textContent).toContain(
+      "Back to Setup closes the world and disconnects the 2 people in it. Server list leaves it running.",
+    );
   });
 
-  test("the sheet joins as the user picked, with the password; Foundry's refusal is shown", async () => {
-    const join = vi.fn((_u: string, _p: string) =>
-      Promise.resolve({
-        kind: "refused",
-        message: "Incorrect password",
-      } as const),
+  test("after a launch with changes, it says they went with it", () => {
+    const r = screen(status({ users: 0 }), vi.fn(), { launched: 2 });
+    expect(r.container.textContent).toContain(
+      "Launched from here with 2 changes queued.",
     );
-    const r = screen(status(), vi.fn(), { launched: 1, join });
-    fireEvent.click(r.getByRole("button", { name: /Join as Gamemaster/ }));
-    const sheet = r.getByRole("dialog", { name: "Join Curse of Strahd" });
-    expect(within(sheet).getByRole("combobox")).toBeTruthy();
-    fireEvent.input(within(sheet).getByPlaceholderText(/Leave empty/), {
-      target: { value: "pw" },
-    });
-    fireEvent.click(within(sheet).getByRole("button", { name: "Join" }));
-    await waitFor(() => {
-      expect(within(sheet).getByRole("alert").textContent).toBe(
-        "Incorrect password",
-      );
-    });
-    expect(join).toHaveBeenCalledWith("g1", "pw");
-  });
-
-  test("a world without a Gamemaster user offers no Join", () => {
-    const r = render(
-      <RunningScreen
-        t={t}
-        world={WORLD}
-        status={status()}
-        origin={SERVER}
-        close={vi.fn()}
-        users={[{ id: "p1", name: "Player1", gm: false }]}
-        launched={2}
-        join={vi.fn()}
-        serversHref="x"
-      />,
-    );
-    expect(r.queryByRole("button", { name: /Join as Gamemaster/ })).toBeNull();
   });
 
   test("the top bar goes back to the app's servers", () => {
@@ -159,17 +100,17 @@ describe("RunningScreen", () => {
     expect(text).toContain("2 people in the game");
     expect(text).toContain("For 1 h 40 min");
     expect(text).toContain("14 · 370");
-    expect(text).toContain("the 2 people in the game are disconnected");
+    expect(text).toContain("disconnects the 2 people in it");
   });
 
-  test("with people in the game, Return to Setup asks first", async () => {
+  test("with people in the game, Back to Setup asks first", async () => {
     const close = vi.fn(() => Promise.resolve<CloseResult>("closing"));
     const r = screen(status(), close);
-    fireEvent.click(r.getByRole("button", { name: "Return to Setup" }));
-    const ask = r.getByRole("dialog", { name: "Return to Setup?" });
+    fireEvent.click(r.getByRole("button", { name: "Back to Setup" }));
+    const ask = r.getByRole("dialog", { name: "Back to Setup?" });
     expect(ask.textContent).toContain("2 people are in Curse of Strahd");
     expect(close).not.toHaveBeenCalled();
-    fireEvent.click(r.getByRole("button", { name: "Disconnect and return" }));
+    fireEvent.click(r.getByRole("button", { name: "Disconnect and close" }));
     await waitFor(() => {
       expect(close).toHaveBeenCalledWith(undefined);
     });
@@ -182,7 +123,7 @@ describe("RunningScreen", () => {
     const close = vi.fn(() => Promise.resolve<CloseResult>("closing"));
     const r = screen(status({ users: 0 }), close);
     expect(r.container.textContent).toContain("Nobody in the game");
-    fireEvent.click(r.getByRole("button", { name: "Return to Setup" }));
+    fireEvent.click(r.getByRole("button", { name: "Back to Setup" }));
     await waitFor(() => {
       expect(close).toHaveBeenCalledTimes(1);
     });
@@ -207,7 +148,7 @@ describe("RunningScreen", () => {
       const form = field().closest("form");
       if (form) fireEvent.submit(form);
     };
-    fireEvent.click(r.getByRole("button", { name: "Return to Setup" }));
+    fireEvent.click(r.getByRole("button", { name: "Back to Setup" }));
     await waitFor(() => {
       expect(r.getByRole("dialog", { name: "Administrator password" }));
     });
@@ -223,18 +164,18 @@ describe("RunningScreen", () => {
     });
   });
 
-  test("a failure says so and leaves Return to Setup", async () => {
+  test("a failure says so and leaves Back to Setup", async () => {
     const r = screen(status({ users: 0 }), () => Promise.resolve("failed"));
-    fireEvent.click(r.getByRole("button", { name: "Return to Setup" }));
+    fireEvent.click(r.getByRole("button", { name: "Back to Setup" }));
     await waitFor(() => {
       expect(r.getByRole("alert").textContent).toContain("didn't close");
     });
-    expect(r.getByRole("button", { name: "Return to Setup" })).toBeTruthy();
+    expect(r.getByRole("button", { name: "Back to Setup" })).toBeTruthy();
   });
 
   test("Escape on the question cancels it", () => {
     const r = screen(status(), vi.fn());
-    fireEvent.click(r.getByRole("button", { name: "Return to Setup" }));
+    fireEvent.click(r.getByRole("button", { name: "Back to Setup" }));
     fireEvent.keyDown(document, { key: "Escape" });
     expect(r.queryByRole("dialog")).toBeNull();
   });
@@ -399,7 +340,7 @@ describe("review fixes", () => {
 
   test("while the question is open the screen behind it is inert", async () => {
     const r = screen(status(), vi.fn());
-    fireEvent.click(r.getByRole("button", { name: "Return to Setup" }));
+    fireEvent.click(r.getByRole("button", { name: "Back to Setup" }));
     // happy-dom has no inert property: Preact sets the attribute instead.
     const main = r.container.querySelector<HTMLElement>(".mlr-scroll");
     await waitFor(() => {

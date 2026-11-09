@@ -14,6 +14,7 @@ import dev.modulelibrary.app.core.HOME_PAGE
 import dev.modulelibrary.app.core.WebUrl
 import dev.modulelibrary.app.core.externalAllowed
 import dev.modulelibrary.app.core.mayAskAsServer
+import dev.modulelibrary.app.core.runningInsteadOf
 import java.io.ByteArrayInputStream
 
 /** What the WebView clients ask of the app. */
@@ -96,8 +97,16 @@ class AssetPageClient(
  * error is refused (v1: no self-signed servers).
  */
 class ServerPageClient(private val page: PageState, private val host: AppHost) : WebViewClient() {
+    /** Foundry's game never shows (owner, phase 7): the server's /join, our running page. */
+    private fun runningInstead(view: WebView, url: String): Boolean {
+        val instead = runningInsteadOf(url, host.activeServers()) ?: return false
+        view.loadUrl(instead)
+        return true
+    }
+
     override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
         if (!request.isForMainFrame) return false
+        if (runningInstead(view, request.url.toString())) return true
         val url = WebUrl.parse(request.url.toString())
         if (url != null && url.host != APP_HOST && url.origin in host.origins()) return false
         // Our login bar and running screen link to the server list (owner,
@@ -125,6 +134,12 @@ class ServerPageClient(private val page: PageState, private val host: AppHost) :
     }
 
     override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
+        // A redirect after a form's POST isn't asked about above: caught here.
+        if (runningInsteadOf(url, host.activeServers()) != null) {
+            view.stopLoading()
+            runningInstead(view, url)
+            return
+        }
         // The committed address, after redirects (checked on the emulator).
         page.commit(url)
     }

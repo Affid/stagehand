@@ -1,7 +1,6 @@
 // Starts the app's screen for a running world on the server's /join page
-// (Android plan, phase 3, package 6): always, after a launch from our Setup
-// too (owner, 2026-11-09); its Join as Gamemaster joins as Foundry's form
-// would, and the companion then applies the queued changes. Foundry's page
+// (Android plan, phases 3 and 7): always, after a launch from our Setup too
+// (owner, 2026-11-09); the app never opens the game. Foundry's page
 // waits behind a veil until the world's data is there (or gives up and
 // shows Foundry's page).
 import { logError } from "@module-library/shared/log";
@@ -11,13 +10,11 @@ import type { PageGlobals } from "../../page/globals.ts";
 import { hideResolutionNotice } from "../../page/resolution.ts";
 import { isServerPage } from "../native-api.ts";
 import { createTranslator } from "../../ui/i18n.ts";
-import { clearLaunchNote, readLaunchNote } from "../launch-note.ts";
+import { readLaunchNote } from "../launch-note.ts";
 import { RunningScreen } from "./RunningScreen.tsx";
 import {
   closeWorld,
   fetchStatus,
-  joinGame,
-  joinUsers,
   joinWorld,
   type RunningWorld,
   type ServerDeps,
@@ -114,21 +111,11 @@ function Root(props: {
         if (result === "closing") setClosing(true);
         return result;
       }}
-      users={joinUsers(deps.game())}
       launched={
         deps.notes
           ? readLaunchNote(deps.notes, props.world.id)?.changes
           : undefined
       }
-      join={async (userId, password) => {
-        const result = await joinGame(deps.server, userId, password);
-        if (result.kind === "joined") {
-          // Used up: leaving the game to /join later isn't this launch (review).
-          if (deps.notes) clearLaunchNote(deps.notes);
-          deps.win.location.assign(result.redirect);
-        }
-        return result;
-      }}
       serversHref={deps.serversHref}
     />
   );
