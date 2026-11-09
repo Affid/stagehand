@@ -5,7 +5,7 @@ import type { WorldInfo } from "@module-library/shared/world";
 import { useRef, useState } from "preact/hooks";
 import { Icon } from "../common/widgets.tsx";
 import { logError } from "@module-library/shared/log";
-import { writeLaunchNote } from "../../app/launch-note.ts";
+import { type LaunchWritten, writeLaunchNote } from "../../app/launch-note.ts";
 import { startLaunch } from "../launching.ts";
 import { useUi } from "../context.ts";
 import { systemTitle } from "../model/system.ts";
@@ -180,8 +180,15 @@ function launchNow(
   world: WorldInfo,
   changes: number,
   backup: boolean,
+  written?: LaunchWritten,
 ): void {
-  writeLaunchNote(globalThis.sessionStorage, world.id, changes);
+  writeLaunchNote(
+    globalThis.sessionStorage,
+    world.id,
+    changes,
+    Date.now(),
+    written,
+  );
   // The app applies them out of sight only for a launch native has on record.
   if (changes > 0)
     ui.ports.markLaunch?.(world.id, changes).catch((error: unknown) => {
@@ -223,7 +230,13 @@ function useLaunch(world: WorldInfo, model: WorldModules) {
       if (queued === undefined) return;
       counted.current = queued;
       if (queued > 0) setReview(true);
-      else launchNow({ page, store, t, ports }, world, 0, false);
+      else {
+        // The world's queue as we have it, and no intent: whatever anyone
+        // left there never rides along with a launch of ours (reviews).
+        if (canChange && !(await actions.setLaunchHold(world.id, false)))
+          return;
+        launchNow({ page, store, t, ports }, world, 0, false);
+      }
     } finally {
       running.current = false;
       setBusy(false);
@@ -231,17 +244,20 @@ function useLaunch(world: WorldInfo, model: WorldModules) {
   };
   const run = async (choice: LaunchChoice): Promise<void> => {
     setReview(false);
-    // A hold left from an earlier "without changes" must not skip these.
-    // A read-only browser can't hold, and its bridge is off anyway.
+    // The queue and this launch's intent go into the world's flags first;
+    // a read-only browser can't write them.
+    let written: LaunchWritten | undefined;
     if (canChange) {
       const plain = choice.kind === "plain";
       const reviewed = plain ? undefined : model.next;
-      if (!(await actions.setLaunchHold(world.id, plain, reviewed))) return;
+      const r = await actions.setLaunchHold(world.id, plain, reviewed);
+      if (!r) return;
+      if (!plain && r.launchId) written = { launchId: r.launchId, ids: r.ids };
     }
     // For the app's running screen (counted when Launch was pressed).
     const changes = choice.kind === "plain" ? 0 : counted.current;
     const backup = choice.kind === "apply" && choice.backup;
-    launchNow({ page, store, t, ports }, world, changes, backup);
+    launchNow({ page, store, t, ports }, world, changes, backup, written);
   };
   return { review, busy, start, run, close: () => setReview(false) };
 }

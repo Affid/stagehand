@@ -33,9 +33,9 @@ const STALE_MARGIN_MS = 10 * 60 * 1000;
 export function worldStatus(
   world: WorldInfo,
   snapshot: Snapshot | undefined,
-  state: SetupState,
 ): WorldStatus {
-  if (state.hellos[world.id]?.protocol === null) return "outdated";
+  // Left by a newer Stagehand: this one leaves the world's queue alone.
+  if (world.stagehand?.newer === true) return "outdated";
   if (!snapshot) return "no-companion";
   const played = Date.parse(world.lastPlayed ?? "");
   const taken = Date.parse(snapshot.takenAt);
@@ -68,7 +68,7 @@ export function worldRow(state: SetupState, world: WorldInfo): WorldRow {
   const recent = state.commands
     .filter((c) => c.worldId === world.id && RECENT.has(c.status))
     .slice(-RECENT_LIMIT);
-  const status = worldStatus(world, snapshot, state);
+  const status = worldStatus(world, snapshot);
   return {
     world,
     snapshot,

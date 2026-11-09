@@ -165,7 +165,6 @@ const state = (over: Partial<SetupState> = {}): SetupState => ({
   },
   snapshots: { w1: snapshot() },
   commands: [],
-  hellos: {},
   config: BUNDLED_CONFIG,
   fresh: [],
   newsUnread: [],
@@ -190,14 +189,13 @@ describe("worldRows (W-1, W-2)", () => {
     expect(rows[0]?.status).toBe("stale");
   });
 
-  test("a rejected handshake marks the companion outdated", () => {
-    const rows = worldRows(
-      state({
-        hellos: {
-          w1: { worldId: "w1", moduleVersion: "0", protocol: null, at: "t" },
-        },
-      }),
+  test("flags left by a newer Stagehand mark the world outdated", () => {
+    const base = state();
+    const setup = base.setup!;
+    const worlds = setup.worlds.map((w) =>
+      w.id === "w1" ? { ...w, stagehand: { newer: true, queue: [] } } : w,
     );
+    const rows = worldRows({ ...base, setup: { ...setup, worlds } });
     expect(rows[0]?.status).toBe("outdated");
   });
 

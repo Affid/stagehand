@@ -51,7 +51,7 @@ describe("server state", () => {
     expect(imported).toMatchObject({ serverId: S, revision: 2, tags: [] });
   });
 
-  test("snapshots and hellos are stored per world", async () => {
+  test("snapshots are stored per world", async () => {
     const state = fresh();
     const snap = {
       worldId: "w",
@@ -63,14 +63,7 @@ describe("server state", () => {
       takenAt: "2026-11-05T00:00:00.000Z",
     };
     await state.putSnapshot(S, snap);
-    await state.putHello(S, {
-      worldId: "w",
-      moduleVersion: "0.1.0",
-      protocol: 1,
-      at: "t",
-    });
     expect((await state.snapshots(S)).w).toEqual(snap);
-    expect((await state.hellos(S)).w?.protocol).toBe(1);
   });
 });
 

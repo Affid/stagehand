@@ -14,6 +14,7 @@ import {
 } from "../page-protocol.ts";
 import type { BackupsRequest } from "../page-backups.ts";
 import type { SaveWorld } from "../page-save.ts";
+import type { SaveQueue } from "../page-queue.ts";
 import type { ConfigRequest } from "../page-config.ts";
 import type { UpdateRequest } from "../page-update.ts";
 import type { ServerBackupsRequest } from "../page-server-backups.ts";
@@ -25,6 +26,7 @@ import { runConfig } from "./config.ts";
 import { runUpdate } from "./update.ts";
 import { closeEditor, openEditor, saveFromEditor } from "./editor.ts";
 import { saveWorld } from "./save-world.ts";
+import { saveQueue } from "./save-queue.ts";
 import { collect } from "./collect.ts";
 import { watchProgress } from "./progress.ts";
 import { checkUpdates } from "./updates.ts";
@@ -157,6 +159,24 @@ function answerSave(ctx: Ctx, req: SaveWorld): void {
   );
 }
 
+/** Saves a world's queue and launch's intent, and answers with its id. */
+function answerQueue(ctx: Ctx, req: SaveQueue): void {
+  const deps = {
+    page: ctx.page,
+    fetch: (i: RequestInfo | URL, init?: RequestInit) => fetch(i, init),
+  };
+  void saveQueue(deps, req).then((r) => {
+    ctx.postToUi({
+      type: "QUEUE_DONE",
+      payload: {
+        requestId: req.requestId,
+        ...(r.error === undefined ? {} : { error: clipError(r.error) }),
+        ...(r.written === undefined ? {} : { written: r.written }),
+      },
+    });
+  });
+}
+
 /** Foundry's description editor in one of our hosts. */
 function handleEditor(
   ctx: Ctx,
@@ -188,6 +208,7 @@ function answerUpdates(ctx: Ctx): void {
 /** Messages that change Foundry: only on an admin's Setup (defence in depth). */
 const WRITES: ReadonlySet<string> = new Set([
   "SAVE_WORLD",
+  "SAVE_QUEUE",
   "EDITOR_SAVE",
   "FOUNDRY_ACTION",
   "BACKUPS",
@@ -213,6 +234,9 @@ function handleRequest(ctx: Ctx, m: UiToPage): void {
       break;
     case "SAVE_WORLD":
       answerSave(ctx, m.payload);
+      break;
+    case "SAVE_QUEUE":
+      answerQueue(ctx, m.payload);
       break;
     default:
   }

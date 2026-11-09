@@ -1,21 +1,14 @@
-// Queued world commands (P-3, P-5, P-6) and their two-phase acknowledgement
-// (PRD 8.4). Pure functions over the command list.
+// Queued world commands (P-3, P-5, P-6), and how they meet the world's own
+// queue and the companion's report (docs/COMPANION-WORLD-PROTOCOL.md).
+// Pure functions over the command list.
 import type { Library } from "@module-library/shared/library/schema";
 import type { ApplyMode } from "@module-library/shared/resolver";
-import {
-  type Command,
-  changeModules,
-  type WorldCommand,
-} from "@module-library/shared/world";
-
-export interface CommandAck {
-  readonly id: string;
-  /** The world the acknowledging companion runs in. */
-  readonly worldId: string;
-  readonly status: "applying" | "failed" | "declined";
-  readonly target?: readonly string[] | undefined;
-  readonly error?: string | undefined;
-}
+import { type Command, changeModules } from "@module-library/shared/world";
+import type {
+  QueueEntry,
+  Result,
+  StagehandFlags,
+} from "@module-library/shared/world-flags";
 
 export interface NewCommand {
   readonly id: string;
@@ -26,10 +19,6 @@ export interface NewCommand {
   readonly createdAt: string;
   readonly baseSnapshotAt: string | null;
 }
-
-/** A comparable key for a set of module ids. */
-export const activeIdsKey = (ids: readonly string[]): string =>
-  [...ids].sort().join("\n");
 
 export const queue = (list: readonly Command[], c: NewCommand): Command[] => [
   ...list,
@@ -62,38 +51,40 @@ export const pendingFor = (
 ): Command[] =>
   list.filter((c) => c.worldId === worldId && c.status === "pending");
 
+const isoOr = (time: string, fallback: string): string => {
+  const ms = Date.parse(time);
+  return Number.isFinite(ms) ? new Date(ms).toISOString() : fallback;
+};
+
 /**
- * What the module receives: presets resolved against the current library,
- * plus modules picked one by one.
+ * The world's queue: presets resolved against the current library, plus
+ * modules picked one by one. A change queued on another device keeps the
+ * preset names it came with.
  */
-export function expandForWorld(
+export function toQueue(
   commands: readonly Command[],
   library: Library,
-): WorldCommand[] {
+  now: string,
+): QueueEntry[] {
   return commands.map((c) => {
     const presets = c.payload.presetIds.flatMap((id) => {
       const p = library.presets.find((x) => x.id === id);
       return p ? [p] : [];
     });
+    const names = presets.length
+      ? presets.map((p) => ({ id: p.id, name: p.name.slice(0, 100) }))
+      : (c.payload.presets ?? []);
     return {
       id: c.id,
       mode: c.payload.mode,
-      presets: presets.map((p) => ({ id: p.id, name: p.name })),
+      presets: names.slice(0, 20),
       modules: changeModules(presets, c.payload),
+      queuedAt: isoOr(c.createdAt, now),
     };
   });
 }
 
-const OPEN = new Set(["pending", "applying"]);
-
-/** An ack counts only for an open command of the acknowledging world. */
-export const isAcceptable = (
-  list: readonly Command[],
-  ack: CommandAck,
-): boolean =>
-  list.some(
-    (c) => c.id === ack.id && c.worldId === ack.worldId && OPEN.has(c.status),
-  );
+const OPEN: ReadonlySet<string> = new Set(["pending", "applying"]);
 
 /**
  * Pending commands of this world whose presets were deleted fail, rather
@@ -118,39 +109,129 @@ export function failOrphans(
   );
 }
 
-export function acknowledge(
-  list: readonly Command[],
-  ack: CommandAck,
-): Command[] {
-  if (!isAcceptable(list, ack)) return [...list];
-  return list.map((c) => {
-    if (c.id !== ack.id) return c;
-    const target = ack.target ? { targetKey: activeIdsKey(ack.target) } : {};
-    const error = ack.error === undefined ? {} : { error: ack.error };
-    return { ...c, ...target, ...error, status: ack.status };
-  });
+/** A change as the companion's report says it went. */
+function fromResult(c: Command, r: Result): Command {
+  const error = r.error === undefined ? {} : { error: r.error };
+  if (r.status === "applying")
+    return {
+      ...c,
+      status: "applying",
+      ...(r.targetKey === undefined ? {} : { targetKey: r.targetKey }),
+    };
+  return { ...c, ...error, status: r.status };
 }
 
-export interface ActiveState {
-  readonly worldId: string;
-  readonly active: readonly string[];
+/** Control and direction characters go from names read from the world. */
+const isShown = (ch: string): boolean => {
+  const code = ch.codePointAt(0) ?? 0;
+  const control = code < 0x20 || code === 0x7f;
+  const direction =
+    (code >= 0x202a && code <= 0x202e) || (code >= 0x2066 && code <= 0x2069);
+  return !control && !direction;
+};
+const cleanName = (name: string): string =>
+  Array.from(name).filter(isShown).join("");
+
+/**
+ * A change another device queued for this world, as ours: dated when it
+ * was imported (a forged early date must not untick "Back up first").
+ */
+const imported = (worldId: string, e: QueueEntry, now: string): Command => ({
+  id: e.id,
+  scope: "world",
+  worldId,
+  type: "preset.apply",
+  payload: {
+    mode: e.mode,
+    presetIds: [],
+    modules: [...e.modules],
+    ...(e.presets.length
+      ? {
+          presets: e.presets.map((p) => ({
+            id: p.id,
+            name: cleanName(p.name),
+          })),
+        }
+      : {}),
+  },
+  createdAt: now,
+  baseSnapshotAt: null,
+  status: "pending",
+  inWorld: true,
+});
+
+const LOST =
+  "The world no longer says how this change went. Check the world's modules.";
+
+/**
+ * Our change, written into the world, isn't in its queue and has no result:
+ * removed by a later write (another device: cancelled), gone by our own last
+ * write's time (the companion took it; its result wasn't kept), or read
+ * from before our write (nothing to say).
+ */
+function leftQueue(c: Command, written: string | undefined): Command {
+  const theirs = Date.parse(written ?? "");
+  const ours = Date.parse(c.inWorldAt ?? "");
+  if (!Number.isFinite(theirs) || !Number.isFinite(ours)) return c;
+  if (theirs > ours) return { ...c, status: "cancelled" };
+  if (theirs === ours) return { ...c, status: "failed", error: LOST };
+  return c;
 }
 
-/** Applying commands of this world end as applied or failed by the snapshot. */
-export function reconcile(
-  list: readonly Command[],
-  state: ActiveState,
-): Command[] {
-  const key = activeIdsKey(state.active);
-  return list.map((c) => {
-    if (c.worldId !== state.worldId || c.status !== "applying") return c;
-    return c.targetKey === key
-      ? { ...c, status: "applied" as const }
-      : {
-          ...c,
-          status: "failed" as const,
-          error:
-            "After the reload, the world's modules differ from the target.",
-        };
-  });
+/** Changes of a world past this many, closed ones go, oldest first. */
+export const MAX_CLOSED_PER_WORLD = 50;
+
+function capClosed(list: readonly Command[], worldId: string): Command[] {
+  const closed = list.filter(
+    (c) => c.worldId === worldId && !OPEN.has(c.status),
+  );
+  const drop = new Set(
+    closed.slice(0, Math.max(0, closed.length - MAX_CLOSED_PER_WORLD)),
+  );
+  return list.filter((c) => !drop.has(c));
 }
+
+/**
+ * This world's changes as its flags tell them. Only changes written into
+ * the world take its word (a result for anything else is ignored); changes
+ * queued elsewhere join; the world's closed history stays bounded.
+ */
+export function syncFromWorld(
+  list: readonly Command[],
+  worldId: string,
+  flags: StagehandFlags,
+  now: string,
+): Command[] {
+  if (flags.newer) return [...list];
+  const results = new Map((flags.report?.results ?? []).map((r) => [r.id, r]));
+  const queued = new Set(flags.queue.map((e) => e.id));
+  // An unreadable queue says nothing about what left it.
+  const trustQueue = flags.unreadable !== true;
+  const updated = list.map((c) => {
+    if (c.worldId !== worldId || !OPEN.has(c.status) || !c.inWorld) return c;
+    const r = results.get(c.id);
+    if (r) return fromResult(c, r);
+    if (trustQueue && c.status === "pending" && !queued.has(c.id))
+      return leftQueue(c, flags.written);
+    return c;
+  });
+  const known = new Set(list.map((c) => c.id));
+  const added = trustQueue
+    ? flags.queue.filter((e) => !known.has(e.id) && !results.has(e.id))
+    : [];
+  const all = [...updated, ...added.map((e) => imported(worldId, e, now))];
+  return capClosed(all, worldId);
+}
+
+/** These pending changes are now in the world's queue, written at `at`. */
+export const markInWorld = (
+  list: readonly Command[],
+  worldId: string,
+  ids: readonly string[],
+  at?: string,
+): Command[] =>
+  list.map((c) =>
+    c.worldId === worldId && c.status === "pending" && ids.includes(c.id)
+      ? { ...c, inWorld: true, ...(at === undefined ? {} : { inWorldAt: at }) }
+      : c,
+  );

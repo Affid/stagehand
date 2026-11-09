@@ -8,6 +8,10 @@ import {
 } from "../../src/app/page.ts";
 import { BACK, isServerPage, wrapForServer } from "../../src/app/native-api.ts";
 import { fakeNative } from "./fake-native.ts";
+import {
+  updateLaunchNote,
+  writeLaunchNote,
+} from "../../src/app/launch-note.ts";
 
 const SERVER = "http://localhost:30000/vtt";
 
@@ -177,24 +181,41 @@ describe("waiting for the document's root element", () => {
 });
 
 describe("app-game on a server's game page", () => {
-  test("relays the companion through native", async () => {
+  test("watches its changes apply out of sight, and tells native", async () => {
+    writeLaunchNote(sessionStorage, "w", 1, Date.now(), {
+      launchId: "l1",
+      ids: ["c1"],
+    });
+    updateLaunchNote(sessionStorage, { applyingAt: Date.now() });
+    const report = {
+      at: "2026-11-09T20:00:00.000Z",
+      companion: "0.2.0",
+      core: "14.370",
+      system: { id: "dnd5e", version: "6" },
+      active: [],
+      versions: true,
+      partial: false,
+      launchId: "l1",
+      results: [{ id: "c1", status: "applied" }],
+    };
+    Object.assign(window, {
+      game: { world: { flags: { stagehand: { v: 1, report } } } },
+    });
     const native = fakeNative();
-    native.on("runtime.send", (p) =>
-      (p as { message: { kind: string } }).message.kind === "bridge-init"
-        ? { enabled: true, extensionVersion: "0.2.0" }
-        : {},
-    );
+    const done = vi.fn(() => ({}));
+    native.on("apply.done", done);
     Object.assign(window, { mlApp: native.port });
-    const posted = vi.spyOn(window, "postMessage");
     expect(
       startAppGame({ win: window, href: `${SERVER}/game`, server: SERVER }),
     ).toBe(true);
-    await vi.waitFor(() => {
-      expect(posted).toHaveBeenCalledWith(
-        expect.objectContaining({ type: "BRIDGE_READY" }),
-        window.location.origin,
-      );
-    });
+    await vi.waitFor(
+      () => {
+        expect(done).toHaveBeenCalledWith({ ok: true });
+      },
+      { timeout: 3000 },
+    );
+    Reflect.deleteProperty(window, "game");
+    sessionStorage.clear();
   });
 
   test("on Foundry's /join (no running screen) and on /auth, it clears Foundry's size notice", () => {

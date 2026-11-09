@@ -14,7 +14,14 @@ import {
   ExtensionMessageSchema,
   type SetupState,
 } from "../messages.ts";
-import { cancel, queue } from "./commands.ts";
+import {
+  cancel,
+  failOrphans,
+  markInWorld,
+  pendingFor,
+  queue,
+  toQueue,
+} from "./commands.ts";
 import {
   isActive,
   registerServer,
@@ -27,7 +34,6 @@ import {
   removeServer,
   renameServer,
 } from "./server-list.ts";
-import { handleRelay } from "./relay.ts";
 import {
   normalizeServerUrl,
   pathWithinServer,
@@ -36,6 +42,7 @@ import {
   serverIdOfPage,
 } from "./servers.ts";
 import type { ServerState } from "./state.ts";
+import { syncWorlds } from "./world-sync.ts";
 
 export interface SenderInfo {
   readonly id?: string | undefined;
@@ -119,7 +126,6 @@ async function state(deps: RouterDeps, server: ServerId): Promise<SetupState> {
     setup: await s.setup(server),
     snapshots: await s.snapshots(server),
     commands: await s.commands(server),
-    hellos: await s.hellos(server),
     config: await deps.loadConfig(),
     fresh: await freshModules(deps, server),
     newsUnread: await unreadNews(deps, server),
@@ -205,6 +211,26 @@ async function queueApply(
   return { queued: id };
 }
 
+/**
+ * The world's queue as Setup writes it into the world's flags: this
+ * world's pending changes, expanded; any whose preset was deleted fails
+ * rather than reaching the world as an empty (for Replace: destructive) one.
+ */
+async function worldQueue(
+  deps: RouterDeps,
+  server: ServerId,
+  m: Msg<"world-queue">,
+) {
+  await assertKnownWorld(deps, server, m.worldId);
+  const library = await deps.state.library(server);
+  const list = await deps.state.updateCommands(server, (all) =>
+    failOrphans(all, library, m.worldId),
+  );
+  return {
+    queue: toQueue(pendingFor(list, m.worldId), library, deps.now()),
+  };
+}
+
 async function libraryImport(
   deps: RouterDeps,
   server: ServerId,
@@ -225,6 +251,8 @@ async function setupSeen(
 ) {
   await deps.state.putSetup(server, m.data, deps.now());
   await deps.state.markOpened(server, deps.now());
+  // Only an admin's Setup lists the worlds' flags we act on.
+  if (m.data.isAdmin) await syncWorlds(deps.state, server, m.data, deps.now());
   // Only a real admin visit seeds what counts as sorted.
   if (m.data.isAdmin)
     await deps.state.seedSorted(
@@ -245,7 +273,8 @@ const SETUP_WRITES: ReadonlySet<string> = new Set([
   "library-export",
   "queue-apply",
   "cancel-command",
-  "launch-hold",
+  "world-queue",
+  "queue-written",
   "modules-sorted",
 ]);
 
@@ -283,32 +312,15 @@ async function fromSetup(
       return deps.state.updateCommands(server, (list) => cancel(list, m.id));
     case "modules-sorted":
       return markSorted(deps, server, m.ids);
-    case "launch-hold":
-      await assertKnownWorld(deps, server, m.worldId);
-      return deps.state.setLaunchHold(
-        server,
-        m.worldId,
-        m.hold,
-        deps.now(),
-        m.reviewed && (await installedOnly(deps, server, m.reviewed)),
+    case "world-queue":
+      return worldQueue(deps, server, m);
+    case "queue-written":
+      return deps.state.updateCommands(server, (list) =>
+        markInWorld(list, m.worldId, m.ids, m.at),
       );
     default:
       throw new Error(`Unexpected ${m.kind} from Setup`);
   }
-}
-
-async function fromGame(
-  deps: RouterDeps,
-  server: ServerId,
-  m: ExtensionMessage,
-): Promise<unknown> {
-  // PR-7 and 8.6: the bridge stays off unless this browser verified the admin.
-  const enabled = await isVerified(deps, server);
-  if (m.kind === "bridge-init")
-    return { enabled, extensionVersion: deps.extensionVersion };
-  if (m.kind === "relay" && enabled && m.msg.from === "module")
-    return handleRelay({ state: deps.state, now: deps.now }, server, m.msg);
-  throw new Error(`Unexpected ${m.kind} from the game page`);
 }
 
 async function fromExtension(
@@ -424,6 +436,5 @@ export async function route(
   if (!server) throw new Error("Message from an unregistered page");
   const path = pathWithinServer(sender.url, server);
   if (isPage(path, "/setup")) return fromSetup(deps, server, m);
-  if (isPage(path, "/game")) return fromGame(deps, server, m);
   throw new Error(`Message from an unexpected page: ${path}`);
 }

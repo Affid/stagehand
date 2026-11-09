@@ -45,6 +45,12 @@ import {
   type SaveDone,
   type SaveWorld,
 } from "./page-save.ts";
+import {
+  parseQueueDone,
+  parseSaveQueue,
+  type QueueDone,
+  type SaveQueue,
+} from "./page-queue.ts";
 
 export type NoticeKind = "info" | "warning" | "error";
 
@@ -115,6 +121,8 @@ export type UiToPage =
   | { readonly type: "FOUNDRY_ACTION"; readonly payload: FoundryAction }
   /** Save a world's details through Foundry (answered by SAVE_DONE). */
   | { readonly type: "SAVE_WORLD"; readonly payload: SaveWorld }
+  /** Save a world's queue and launch's intent in its flags (QUEUE_DONE). */
+  | { readonly type: "SAVE_QUEUE"; readonly payload: SaveQueue }
   /** Foundry's prose-mirror editor in one of our hosts (page-editor.ts). */
   | { readonly type: "EDITOR_OPEN"; readonly payload: EditorOpen }
   | {
@@ -147,6 +155,7 @@ export type PageToUi =
       readonly payload: { readonly on: boolean; readonly error?: string };
     }
   | { readonly type: "SAVE_DONE"; readonly payload: SaveDone }
+  | { readonly type: "QUEUE_DONE"; readonly payload: QueueDone }
   | { readonly type: "BACKUPS_DONE"; readonly payload: BackupsReply }
   | {
       readonly type: "SERVER_BACKUPS_DONE";
@@ -263,6 +272,10 @@ export function parseUiToPage(type: string, p: unknown): UiToPage | undefined {
       const payload = parseSaveWorld(p);
       return payload ? { type, payload } : undefined;
     }
+    case "SAVE_QUEUE": {
+      const payload = parseSaveQueue(p);
+      return payload ? { type, payload } : undefined;
+    }
     case "BACKUPS": {
       const payload = parseBackupsRequest(p);
       return payload ? { type, payload } : undefined;
@@ -308,6 +321,10 @@ export function parsePageToUi(type: string, p: unknown): PageToUi | undefined {
         : undefined;
     case "SAVE_DONE": {
       const payload = parseSaveDone(p);
+      return payload ? { type, payload } : undefined;
+    }
+    case "QUEUE_DONE": {
+      const payload = parseQueueDone(p);
       return payload ? { type, payload } : undefined;
     }
     case "BACKUPS_DONE": {

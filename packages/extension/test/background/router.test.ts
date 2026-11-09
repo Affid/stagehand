@@ -1,5 +1,4 @@
 import { describe, expect, test, vi } from "vitest";
-import { makeEnvelope } from "@module-library/shared/protocol";
 import type { SetupData } from "@module-library/shared/world";
 import { BUNDLED_CONFIG } from "../../src/adapters/config.ts";
 import { memoryKeyValue, serialized } from "../../src/background/kv.ts";
@@ -97,6 +96,14 @@ describe("router: registration (R-1)", () => {
     ).resolves.toEqual({ server: S });
     expect(d.scripting.unregister).toHaveBeenCalledWith(["old"]);
     expect(Object.keys(await d.state.servers())).toEqual([S]);
+  });
+
+  test("the game page's bridge an earlier version registered is asked for, to be taken off", async () => {
+    const d = deps();
+    await route(d, { kind: "register-server", server: `${S}/` }, fromOptions);
+    expect(d.scripting.registeredIds).toHaveBeenCalledWith(
+      expect.arrayContaining(["ml-bridge-http___localhost_30000"]),
+    );
   });
 
   test("refuses without the host permission", async () => {
@@ -200,27 +207,7 @@ describe("router: admin verification (PR-1, PR-2, PR-3)", () => {
     expect((await d.state.commands(S))[0]?.status).toBe("cancelled");
   });
 
-  test("a launch hold is set and cleared from Setup once verified", async () => {
-    const d = deps();
-    await registered(d);
-    await route(d, { kind: "setup-seen", data: setupData(true) }, fromSetup);
-    await route(
-      d,
-      { kind: "launch-hold", worldId: "w", hold: true },
-      fromSetup,
-    );
-    expect(await d.state.launchHolds(S)).toEqual([
-      { worldId: "w", at: "2026-11-05T00:00:00.000Z" },
-    ]);
-    await route(
-      d,
-      { kind: "launch-hold", worldId: "w", hold: false },
-      fromSetup,
-    );
-    expect(await d.state.launchHolds(S)).toEqual([]);
-  });
-
-  test("Apply and launch records the reviewed result, installed modules only", async () => {
+  test("the world's queue comes expanded, and what was written is marked", async () => {
     const d = deps();
     await registered(d);
     await route(
@@ -234,27 +221,137 @@ describe("router: admin verification (PR-1, PR-2, PR-3)", () => {
     await route(
       d,
       {
-        kind: "launch-hold",
+        kind: "queue-apply",
         worldId: "w",
-        hold: false,
-        reviewed: ["a", "ghost"],
+        mode: "add",
+        presetIds: [],
+        modules: ["a"],
       },
       fromSetup,
     );
-    expect(await d.state.launchHolds(S)).toEqual([
-      { worldId: "w", at: "2026-11-05T00:00:00.000Z", reviewed: ["a"] },
+    const { queue } = (await route(
+      d,
+      { kind: "world-queue", worldId: "w" },
+      fromSetup,
+    )) as { queue: { id: string; modules: string[] }[] };
+    expect(queue).toEqual([
+      {
+        id: "id1",
+        mode: "add",
+        presets: [],
+        modules: ["a"],
+        queuedAt: "2026-11-05T00:00:00.000Z",
+      },
     ]);
+    await route(
+      d,
+      { kind: "queue-written", worldId: "w", ids: ["id1"] },
+      fromSetup,
+    );
+    expect((await d.state.commands(S))[0]?.inWorld).toBe(true);
   });
 
-  test("a launch hold needs the verified admin, and only Setup may ask", async () => {
+  test("Setup's view of the worlds: results, changes from elsewhere, and the report as the snapshot", async () => {
+    const d = deps();
+    await registered(d);
+    await route(d, { kind: "setup-seen", data: setupData(true) }, fromSetup);
+    await route(
+      d,
+      {
+        kind: "queue-apply",
+        worldId: "w",
+        mode: "add",
+        presetIds: [],
+        modules: ["a"],
+      },
+      fromSetup,
+    );
+    await route(
+      d,
+      { kind: "queue-written", worldId: "w", ids: ["id1"] },
+      fromSetup,
+    );
+    const world = {
+      ...setupData(true).worlds[0]!,
+      stagehand: {
+        newer: false,
+        queue: [
+          {
+            id: "far",
+            mode: "remove" as const,
+            presets: [],
+            modules: ["b"],
+            queuedAt: "2026-11-05T00:00:00.000Z",
+          },
+        ],
+        report: {
+          at: "2026-11-05T01:00:00.000Z",
+          companion: "0.2.0",
+          core: "14.370",
+          system: { id: "dnd5e", version: "6" },
+          active: ["stagehand@0.2.0", "a@1"],
+          versions: true,
+          partial: false,
+          launchId: null,
+          results: [{ id: "id1", status: "applied" as const }],
+        },
+      },
+    };
+    await route(
+      d,
+      { kind: "setup-seen", data: { ...setupData(true), worlds: [world] } },
+      fromSetup,
+    );
+    const commands = await d.state.commands(S);
+    expect(commands.map((c) => [c.id, c.status])).toEqual([
+      ["id1", "applied"],
+      ["far", "pending"],
+    ]);
+    expect((await d.state.snapshots(S)).w).toMatchObject({
+      active: [
+        { id: "stagehand", version: "0.2.0" },
+        { id: "a", version: "1" },
+      ],
+      takenAt: "2026-11-05T01:00:00.000Z",
+      companionVersion: "0.2.0",
+    });
+  });
+
+  test("a Setup that isn't an admin's changes nothing from the worlds' flags", async () => {
+    const d = deps();
+    await registered(d);
+    const world = {
+      ...setupData(false).worlds[0]!,
+      stagehand: {
+        newer: false,
+        queue: [
+          {
+            id: "far",
+            mode: "add" as const,
+            presets: [],
+            modules: ["b"],
+            queuedAt: "2026-11-05T00:00:00.000Z",
+          },
+        ],
+      },
+    };
+    await route(
+      d,
+      { kind: "setup-seen", data: { ...setupData(false), worlds: [world] } },
+      fromSetup,
+    );
+    expect(await d.state.commands(S)).toEqual([]);
+  });
+
+  test("the world's queue needs the verified admin, and only Setup may ask", async () => {
     const d = deps();
     await registered(d);
     await route(d, { kind: "setup-seen", data: setupData(false) }, fromSetup);
     await expect(
-      route(d, { kind: "launch-hold", worldId: "w", hold: true }, fromSetup),
+      route(d, { kind: "world-queue", worldId: "w" }, fromSetup),
     ).rejects.toThrow();
     await expect(
-      route(d, { kind: "launch-hold", worldId: "w", hold: true }, fromGame),
+      route(d, { kind: "world-queue", worldId: "w" }, fromGame),
     ).rejects.toThrow();
   });
 
@@ -279,45 +376,17 @@ describe("router: admin verification (PR-1, PR-2, PR-3)", () => {
   });
 });
 
-describe("router: game page bridge (PR-7)", () => {
-  const hello = makeEnvelope(
-    "module",
-    "HELLO",
-    { moduleVersion: "1", protocol: [1], worldId: "w", coreVersion: "14" },
-    "r",
-  );
-
-  test("the bridge is off and relays nothing until the admin is verified", async () => {
-    const d = deps();
-    await registered(d);
-    expect(await route(d, { kind: "bridge-init" }, fromGame)).toMatchObject({
-      enabled: false,
-    });
-    await expect(
-      route(d, { kind: "relay", msg: hello }, fromGame),
-    ).rejects.toThrow();
-  });
-
-  test("relays once verified, and only module messages", async () => {
+describe("router: the game page (no bridge any more)", () => {
+  test("a world's page can't reach the background", async () => {
     const d = deps();
     await registered(d);
     await route(d, { kind: "setup-seen", data: setupData(true) }, fromSetup);
-    expect(
-      await route(d, { kind: "relay", msg: hello }, fromGame),
-    ).toMatchObject({ type: "HELLO_ACK" });
-    const forged = { ...hello, from: "bridge" };
-    await expect(
-      route(d, { kind: "relay", msg: forged }, fromGame),
-    ).rejects.toThrow();
-  });
-
-  test("setup actions are refused from the game page", async () => {
-    const d = deps();
-    await registered(d);
-    await route(d, { kind: "setup-seen", data: setupData(true) }, fromSetup);
+    await expect(route(d, { kind: "get-state" }, fromGame)).rejects.toThrow(
+      /unexpected page/,
+    );
     await expect(
       route(d, { kind: "library-export" }, fromGame),
-    ).rejects.toThrow(/game page/);
+    ).rejects.toThrow(/unexpected page/);
   });
 });
 
@@ -327,8 +396,8 @@ describe("router: review fixes", () => {
     await registered(d);
     await route(d, { kind: "setup-seen", data: setupData(true) }, fromSetup);
     await route(d, { kind: "setup-seen", data: setupData(false) }, fromSetup);
-    expect(await route(d, { kind: "bridge-init" }, fromGame)).toMatchObject({
-      enabled: false,
+    expect(await route(d, { kind: "get-state" }, fromSetup)).toMatchObject({
+      adminVerified: false,
     });
   });
 
@@ -337,9 +406,9 @@ describe("router: review fixes", () => {
     await registered(d);
     await route(d, { kind: "setup-seen", data: setupData(true) }, fromSetup);
     const later = { ...d, now: () => "2099-01-01T00:00:00.000Z" };
-    expect(await route(later, { kind: "bridge-init" }, fromGame)).toMatchObject(
-      { enabled: false },
-    );
+    expect(await route(later, { kind: "get-state" }, fromSetup)).toMatchObject({
+      adminVerified: false,
+    });
   });
 
   test("modules to turn on are kept only if installed (security review)", async () => {
@@ -416,7 +485,7 @@ describe("router: review fixes", () => {
       route(d, { kind: "get-state" }, { ...fromSetup, url: `${S}/setupx` }),
     ).rejects.toThrow(/unexpected page/);
     await expect(
-      route(d, { kind: "bridge-init" }, { ...fromGame, url: `${S}/gamex` }),
+      route(d, { kind: "get-state" }, { ...fromGame, url: `${S}/gamex` }),
     ).rejects.toThrow(/unexpected page/);
   });
 });
@@ -547,7 +616,7 @@ describe("router: review fixes (Phase 3)", () => {
       ),
     ).rejects.toThrow(/world/i);
     await expect(
-      route(d, { kind: "launch-hold", worldId: "nope", hold: true }, fromSetup),
+      route(d, { kind: "world-queue", worldId: "nope" }, fromSetup),
     ).rejects.toThrow(/world/i);
   });
 });

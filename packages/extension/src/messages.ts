@@ -3,7 +3,6 @@
 import { LibraryOpSchema } from "@module-library/shared/library/ops";
 import type { Library } from "@module-library/shared/library/schema";
 import { MAX_NEWS, MAX_NEWS_URL } from "@module-library/shared/news";
-import { NS } from "@module-library/shared/protocol";
 import {
   ApplyModeSchema,
   type Command,
@@ -11,20 +10,12 @@ import {
   SetupDataSchema,
   type Snapshot,
 } from "@module-library/shared/world";
+import { MAX_QUEUE } from "@module-library/shared/world-flags";
 import { z } from "zod";
 import type { SetupConfig } from "./adapters/config.ts";
-import type { HelloRecord, StoredSetup } from "./background/state.ts";
+import type { StoredSetup } from "./background/state.ts";
 
 export const MAX_IMPORT_BYTES = 5_000_000;
-
-export const EnvelopeSchema = z.object({
-  ns: z.literal(NS),
-  v: z.number(),
-  from: z.enum(["module", "bridge", "setup-main"]),
-  type: z.string().min(1).max(64),
-  requestId: z.string().max(100).optional(),
-  payload: z.unknown(),
-});
 
 const Id = z.string().min(1).max(200);
 /** More installed modules than this is not a real server. */
@@ -82,13 +73,15 @@ export const ExtensionMessageSchema = z.discriminatedUnion("kind", [
     kind: z.literal("news-seen"),
     urls: z.array(z.string().max(MAX_NEWS_URL)).max(MAX_NEWS + 5),
   }),
-  /** "Launch without changes": the world's next pull gets none, once. */
+  /** The world's queue as Setup writes it into the world's flags. */
+  z.object({ kind: z.literal("world-queue"), worldId: Id }),
+  /** These changes are now in the world's queue. */
   z.object({
-    kind: z.literal("launch-hold"),
+    kind: z.literal("queue-written"),
     worldId: Id,
-    hold: z.boolean(),
-    /** Apply and launch: the modules on after it, as reviewed (one confirmation). */
-    reviewed: z.array(Id).max(5000).optional(),
+    ids: z.array(Id).max(MAX_QUEUE),
+    /** When, by the server's clock (none when Foundry didn't say). */
+    at: z.iso.datetime().optional(),
   }),
   /** Foundry's public release list, or one release's page (Release history). */
   z.object({
@@ -100,8 +93,6 @@ export const ExtensionMessageSchema = z.discriminatedUnion("kind", [
   }),
   /** Setup opens the settings panel (servers, foundryvtt.com). */
   z.object({ kind: z.literal("open-settings") }),
-  z.object({ kind: z.literal("bridge-init") }),
-  z.object({ kind: z.literal("relay"), msg: EnvelopeSchema }),
 ]);
 
 export type ExtensionMessage = z.infer<typeof ExtensionMessageSchema>;
@@ -114,7 +105,6 @@ export interface SetupState {
   readonly setup: StoredSetup | undefined;
   readonly snapshots: Readonly<Record<string, Snapshot>>;
   readonly commands: readonly Command[];
-  readonly hellos: Readonly<Record<string, HelloRecord>>;
   readonly config: SetupConfig;
   /** Installed modules not sorted yet (installed since the first visit). */
   readonly fresh: readonly string[];

@@ -10,6 +10,8 @@ import { watchProblems } from "./broken.ts";
 import { pendingFor } from "./model/preview.ts";
 import { flipModule } from "./model/world-modules.ts";
 import type { PageBridge } from "./page.ts";
+import type { LaunchAsk } from "../page-queue.ts";
+import type { QueueEntry } from "@module-library/shared/world-flags";
 import type { Store } from "./store.ts";
 
 export type Send = <T>(message: ExtensionMessage) => Promise<T>;
@@ -48,14 +50,17 @@ export interface Actions {
   /** Cancels every change queued for the world. */
   discard(worldId: string): Promise<void>;
   /**
-   * `hold`: "Launch without changes", the next launch gets none, once.
+   * Before a launch: the world's queue and this launch's intent written into
+   * its flags. `hold`: "Launch without changes", the queue waits, once.
    * `reviewed`: Apply and launch, the modules on after it as reviewed.
+   * Neither: any earlier intent goes. The intent's id, or undefined when
+   * it couldn't be written (a notice says why).
    */
   setLaunchHold(
     worldId: string,
     hold: boolean,
     reviewed?: readonly string[],
-  ): Promise<boolean>;
+  ): Promise<LaunchPrepared | undefined>;
   exportLibrary(): Promise<string | undefined>;
   importLibrary(text: string): Promise<void>;
   /** Intake: these modules are sorted and no longer "new". */
@@ -66,6 +71,12 @@ export interface Actions {
   releases(version?: string): Promise<ReleasesAnswer>;
   /** Opens the settings panel (servers, foundryvtt.com). */
   openSettings(): Promise<void>;
+}
+
+/** A launch's intent written into the world, with the changes written then. */
+export interface LaunchPrepared {
+  readonly launchId: string | null;
+  readonly ids: readonly string[];
 }
 
 type Imported =
@@ -151,11 +162,10 @@ async function runImport(
 }
 
 async function runFlip(
-  b: Base,
-  send: Send,
-  store: Store,
+  w: WorldDeps,
   f: { worldId: string; moduleId: string; on: boolean },
 ): Promise<void> {
+  const { b, send, store } = w;
   const plan = flipModule(store.get().data, f.worldId, f.moduleId, f.on);
   await b.guarded(async () => {
     for (const id of plan.cancel) await send({ kind: "cancel-command", id });
@@ -167,6 +177,7 @@ async function runFlip(
         presetIds: [...plan.queue.presetIds],
         modules: [...(plan.queue.modules ?? [])],
       });
+    await writeQueue(w, f.worldId);
   });
   await b.refresh();
 }
@@ -227,49 +238,111 @@ async function onceAtATime(
   }
 }
 
-/** Changes queued for worlds, and how their next launch goes. */
-async function sendLaunchHold(
-  b: Base,
-  send: Send,
-  h: {
-    worldId: string;
-    hold: boolean;
-    reviewed: readonly string[] | undefined;
-  },
-): Promise<boolean> {
-  const done = await b.guarded(async () => {
-    await send({
-      kind: "launch-hold",
-      worldId: h.worldId,
-      hold: h.hold,
-      ...(h.reviewed ? { reviewed: [...h.reviewed] } : {}),
-    });
-    return true;
+/**
+ * The world's queue written into its flags (docs/COMPANION-WORLD-PROTOCOL.md),
+ * with this launch's intent when given; the ids written. A change that
+ * couldn't be written stays here and goes with the next write.
+ */
+async function pushQueue(
+  w: WorldDeps,
+  worldId: string,
+  launch?: LaunchAsk | null,
+): Promise<readonly string[] | undefined> {
+  const { queue } = await w.send<{ queue: QueueEntry[] }>({
+    kind: "world-queue",
+    worldId,
   });
-  return done === true;
+  const saved = await w.page.saveQueue(worldId, queue, launch);
+  if (saved.error !== undefined) {
+    w.b.notify("error", w.t("notice.queueUnsaved", { error: saved.error }));
+    return undefined;
+  }
+  const ids = queue.map((e) => e.id);
+  await w.send({
+    kind: "queue-written",
+    worldId,
+    ids,
+    ...(saved.written === undefined ? {} : { at: saved.written }),
+  });
+  return ids;
 }
 
+/** Writes of a world's whole queue, one at a time (a later one reads after). */
+const writing = new Map<string, Promise<unknown>>();
+
+function oneWriteAtATime<T>(
+  worldId: string,
+  work: () => Promise<T>,
+): Promise<T> {
+  const run = (writing.get(worldId) ?? Promise.resolve()).then(work, work);
+  const settled = run.catch(() => undefined);
+  writing.set(worldId, settled);
+  void settled.then(() => {
+    if (writing.get(worldId) === settled) writing.delete(worldId);
+  });
+  return run;
+}
+
+/** The world's queue written, after the last write of it has finished. */
+const writeQueue = (
+  w: WorldDeps,
+  worldId: string,
+  launch?: LaunchAsk | null,
+): Promise<readonly string[] | undefined> =>
+  oneWriteAtATime(worldId, () => pushQueue(w, worldId, launch));
+
+function launchAsk(
+  hold: boolean,
+  reviewed: readonly string[] | undefined,
+): LaunchAsk | null {
+  const id = newRequestId();
+  if (hold) return { kind: "hold", id };
+  return reviewed ? { kind: "reviewed", id, target: [...reviewed] } : null;
+}
+
+async function prepareLaunch(
+  w: WorldDeps,
+  worldId: string,
+  ask: LaunchAsk | null,
+): Promise<LaunchPrepared | undefined> {
+  const ids = await w.b.guarded(() => writeQueue(w, worldId, ask));
+  await w.b.refresh();
+  return ids ? { launchId: ask?.id ?? null, ids } : undefined;
+}
+
+interface WorldDeps {
+  readonly b: Base;
+  readonly send: Send;
+  readonly store: Store;
+  readonly page: PageBridge;
+  readonly t: Translate;
+}
+
+const worldOf = (store: Store, commandId: string): string | undefined =>
+  store.get().data.commands.find((c) => c.id === commandId)?.worldId;
+
 function worldActions(
-  b: Base,
-  send: Send,
-  store: Store,
+  w: WorldDeps,
 ): Pick<
   Actions,
   "queueApply" | "cancelCommand" | "flip" | "discard" | "setLaunchHold"
 > {
+  const { b, send, store } = w;
   return {
     queueApply: (worldId, mode, presetIds, modules) =>
       tracked(
         b.watch(worldId, async () => {
-          const queued = await b.guarded(() =>
-            send({
+          const queued = await b.guarded(async () => {
+            await send({
               kind: "queue-apply",
               worldId,
               mode,
               presetIds: [...presetIds],
               ...(modules?.length ? { modules: [...modules] } : {}),
-            }),
-          );
+            });
+            await writeQueue(w, worldId);
+            return true;
+          });
           if (queued) await b.refresh();
           return queued !== undefined;
         }),
@@ -277,21 +350,22 @@ function worldActions(
     flip: (worldId, moduleId, on) =>
       tracked(
         onceAtATime(`${worldId}\u0000${moduleId}`, () =>
-          b.watch(worldId, () =>
-            runFlip(b, send, store, { worldId, moduleId, on }),
-          ),
+          b.watch(worldId, () => runFlip(w, { worldId, moduleId, on })),
         ),
       ),
     discard: (worldId) =>
       queueWrite(b, async () => {
         const ids = pendingFor(store.get().data, worldId).map((c) => c.id);
         for (const id of ids) await send({ kind: "cancel-command", id });
+        await writeQueue(w, worldId);
       }),
     setLaunchHold: (worldId, hold, reviewed) =>
-      sendLaunchHold(b, send, { worldId, hold, reviewed }),
+      prepareLaunch(w, worldId, launchAsk(hold, reviewed)),
     cancelCommand: (id) =>
       queueWrite(b, async () => {
+        const worldId = worldOf(store, id);
         await send({ kind: "cancel-command", id });
+        if (worldId) await writeQueue(w, worldId);
       }),
   };
 }
@@ -308,7 +382,7 @@ export function createActions(
     guard: b.guarded,
     refresh: b.refresh,
     op: (op) => runOp(b, send, t, op),
-    ...worldActions(b, send, store),
+    ...worldActions({ b, send, store, page, t }),
     async queuedFor(worldId) {
       await settled();
       if (!(await b.refresh())) return undefined;

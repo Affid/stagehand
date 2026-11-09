@@ -34,7 +34,7 @@ export interface ContentScript {
   readonly runAt: "document_start" | "document_idle";
 }
 
-const scriptId = (kind: string, server: ServerId): string =>
+export const scriptId = (kind: string, server: ServerId): string =>
   `ml-${kind}-${server.replace(/[^a-z0-9]/gi, "_")}`;
 
 export function contentScriptsFor(server: ServerId): readonly ContentScript[] {
@@ -61,14 +61,6 @@ export function contentScriptsFor(server: ServerId): readonly ContentScript[] {
       css: ["setup-ui.css"],
       world: "ISOLATED",
       runAt: "document_idle",
-    },
-    {
-      id: scriptId("bridge", server),
-      matches: [`${server}/game*`],
-      js: ["game-bridge.js"],
-      world: "ISOLATED",
-      // Listening before the companion module's `ready` hook runs.
-      runAt: "document_start",
     },
   ];
 }

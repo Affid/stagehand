@@ -19,6 +19,8 @@ import type {
   Settings,
 } from "../page-config.ts";
 import type { WorldChanges } from "../page-save.ts";
+import type { LaunchAsk, QueueDone, QueueSaved } from "../page-queue.ts";
+import type { QueueEntry } from "@module-library/shared/world-flags";
 import type {
   ServerBackupOp,
   ServerListing,
@@ -80,6 +82,16 @@ export interface PageBridge {
     worldId: string,
     changes: WorldChanges,
   ): Promise<string | undefined>;
+  /**
+   * Writes a world's queue and launch's intent into its flags (undefined
+   * leaves either as it is; a null launch removes it): the server's time of
+   * the write, or an error.
+   */
+  saveQueue(
+    worldId: string,
+    queue: readonly QueueEntry[] | undefined,
+    launch?: LaunchAsk | null,
+  ): Promise<QueueSaved>;
   /** Foundry's prose-mirror editor in our host element (a page-world element). */
   editorOpen(hostId: string, value: string): void;
   editorClose(hostId: string): void;
@@ -285,14 +297,17 @@ function updateRequest(
   );
 }
 
-/** The bridge's request and answer pairs: saving a world, backups. */
-function requests(
+/** A queue save's answer, without the request id. */
+const queueSaved = (p: QueueDone): QueueSaved => ({
+  ...(p.error === undefined ? {} : { error: p.error }),
+  ...(p.written === undefined ? {} : { written: p.written }),
+});
+
+/** The saves: a world's details and description (SAVE_DONE), its queue. */
+function saves(
   send: (m: UiToPage) => void,
   listeners: Set<(event: PageToUi) => void>,
-): Pick<
-  PageBridge,
-  "saveWorld" | "editorSave" | "backups" | "serverBackups" | "config" | "update"
-> {
+): Pick<PageBridge, "saveWorld" | "saveQueue" | "editorSave"> {
   const saved = (message: (requestId: string) => UiToPage) =>
     savedRequest(send, listeners, message);
   return {
@@ -301,11 +316,50 @@ function requests(
         type: "SAVE_WORLD",
         payload: { requestId, worldId, changes },
       })),
+    saveQueue: (worldId, queue, launch) =>
+      request<QueueSaved>(
+        send,
+        listeners,
+        (requestId) => ({
+          type: "SAVE_QUEUE",
+          payload: {
+            requestId,
+            worldId,
+            ...(queue ? { queue: [...queue] } : {}),
+            ...(launch === undefined ? {} : { launch }),
+          },
+        }),
+        (e, id) =>
+          e.type === "QUEUE_DONE" && e.payload.requestId === id
+            ? queueSaved(e.payload)
+            : undefined,
+        SAVE_TIMEOUT_MS,
+        { error: "Foundry did not answer in time." },
+      ),
     editorSave: (worldId, hostId) =>
       saved((requestId) => ({
         type: "EDITOR_SAVE",
         payload: { requestId, worldId, hostId },
       })),
+  };
+}
+
+/** The bridge's request and answer pairs: saves, backups, config, update. */
+function requests(
+  send: (m: UiToPage) => void,
+  listeners: Set<(event: PageToUi) => void>,
+): Pick<
+  PageBridge,
+  | "saveWorld"
+  | "saveQueue"
+  | "editorSave"
+  | "backups"
+  | "serverBackups"
+  | "config"
+  | "update"
+> {
+  return {
+    ...saves(send, listeners),
     config: (op, changes = {}, password) =>
       request<ConfigResult>(
         send,

@@ -57,6 +57,8 @@ export const CommandSchema = z.object({
   error: z.string().optional(),
   /** Written into the world's queue (docs/COMPANION-WORLD-PROTOCOL.md). */
   inWorld: z.boolean().optional(),
+  /** When it was last written there, by the server's clock. */
+  inWorldAt: z.string().optional(),
 });
 
 export type Command = z.infer<typeof CommandSchema>;

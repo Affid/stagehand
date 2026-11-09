@@ -29,14 +29,6 @@ export interface ServerRecord {
   readonly openedAt?: string;
 }
 
-/** The last handshake per world: shows "companion outdated" (8.7). */
-export interface HelloRecord {
-  readonly worldId: string;
-  readonly moduleVersion: string;
-  readonly protocol: number | null;
-  readonly at: string;
-}
-
 export interface StoredSetup extends SetupData {
   readonly seenAt: string;
 }
@@ -63,14 +55,13 @@ const reader =
     (await kv.get<T>(k)) ?? fallback;
 
 /**
- * A server's data that goes along to its new address (launch holds don't),
+ * A server's data that goes along to its new address,
  * and what the new address holds when the server had none: data a removed
  * server left there never comes back to life (security review).
  */
 const MOVED_KINDS: Readonly<Record<string, (to: ServerId) => unknown>> = {
   library: (to) => emptyLibrary(to),
   commands: () => [],
-  hello: () => ({}),
   "news-seen": () => null,
   setup: () => null,
   snapshots: () => ({}),
@@ -201,7 +192,7 @@ function libraryStore(kv: SerializedKeyValue) {
   };
 }
 
-/** What the worlds report: Setup data, snapshots, handshakes. */
+/** What the worlds report: Setup data and the companions' snapshots. */
 function worldStore(kv: SerializedKeyValue) {
   const read = reader(kv);
   return {
@@ -221,18 +212,6 @@ function worldStore(kv: SerializedKeyValue) {
         key("snapshots", id),
         {},
         (all) => keepNewest({ ...all, [snap.worldId]: snap }),
-      );
-    },
-    hellos: (id: ServerId) =>
-      read<Record<string, HelloRecord>>(key("hello", id), {}),
-    async putHello(id: ServerId, hello: HelloRecord): Promise<void> {
-      await kv.update<Record<string, HelloRecord>>(
-        key("hello", id),
-        {},
-        (all) => ({
-          ...all,
-          [hello.worldId]: hello,
-        }),
       );
     },
   };
@@ -278,73 +257,9 @@ function newsStore(kv: SerializedKeyValue) {
   };
 }
 
-/** Worlds whose next launch skips the queue; more is a bug, not a use. */
-const MAX_HOLDS = 200;
-/** A hold is for the launch that follows it, not one much later. */
-export const HOLD_TTL_MS = 10 * 60 * 1000;
-
-export interface LaunchHold {
-  readonly worldId: string;
-  /** When the launch was chosen on Setup (ISO time). */
-  readonly at: string;
-  /**
-   * Apply and launch: the modules on after it, as reviewed. Absent for
-   * "Launch without changes", which holds the queue instead.
-   */
-  readonly reviewed?: readonly string[];
-}
-
-/** What Setup chose for a world's next launch. */
-export type LaunchIntent =
-  | { readonly kind: "hold" }
-  | { readonly kind: "reviewed"; readonly target: readonly string[] };
-
-const fresh = (h: LaunchHold, now: string): boolean =>
-  Date.parse(now) - Date.parse(h.at) < HOLD_TTL_MS;
-
-/** The command queue (P-5), and launches that skip it once. */
+/** The command queue (P-5): this browser's view and history of changes. */
 function commandStore(kv: SerializedKeyValue) {
-  const holdKey = (id: ServerId): string => key("launchHolds", id);
   return {
-    launchHolds: (id: ServerId) => reader(kv)<LaunchHold[]>(holdKey(id), []),
-    async setLaunchHold(
-      id: ServerId,
-      worldId: string,
-      hold: boolean,
-      at: string,
-      reviewed?: readonly string[],
-    ): Promise<void> {
-      await kv.update<LaunchHold[]>(holdKey(id), [], (list) => {
-        // A hold wins: "without changes" never carries a reviewed result.
-        const others = list.filter((h) => h.worldId !== worldId);
-        const entry: LaunchHold | undefined = hold
-          ? { worldId, at }
-          : reviewed
-            ? { worldId, at, reviewed: [...reviewed] }
-            : undefined;
-        return entry ? [...others, entry].slice(-MAX_HOLDS) : others;
-      });
-    },
-    /** What Setup chose for this launch, once, if recent; it is used up. */
-    takeLaunchIntent(
-      id: ServerId,
-      worldId: string,
-      now: string,
-    ): Promise<LaunchIntent | undefined> {
-      return kv.update<LaunchHold[], LaunchIntent | undefined>(
-        holdKey(id),
-        [],
-        (list) => {
-          const mine = list.find((h) => h.worldId === worldId);
-          const rest = list.filter((h) => h.worldId !== worldId);
-          if (!mine || !fresh(mine, now)) return withResult(rest, undefined);
-          const intent: LaunchIntent = mine.reviewed
-            ? { kind: "reviewed", target: mine.reviewed }
-            : { kind: "hold" };
-          return withResult(rest, intent);
-        },
-      );
-    },
     commands: (id: ServerId) => reader(kv)<Command[]>(key("commands", id), []),
     updateCommands<R = Command[]>(
       id: ServerId,

@@ -26,7 +26,6 @@ const data: SetupState = {
   setup: undefined,
   snapshots: {},
   commands: [],
-  hellos: {},
   config: BUNDLED_CONFIG,
   fresh: [],
   newsUnread: [],
@@ -53,19 +52,43 @@ const initial: UiState = {
 };
 
 const t = createTranslator("en");
+const QUEUED = {
+  id: "c1",
+  mode: "add" as const,
+  presets: [],
+  modules: ["a"],
+  queuedAt: "2026-11-09T12:00:00.000Z",
+};
+
+const COMMAND = {
+  id: "c1",
+  scope: "world" as const,
+  worldId: "w",
+  type: "preset.apply" as const,
+  payload: { mode: "add" as const, presetIds: [], modules: ["a"] },
+  createdAt: "2026-11-09T12:00:00.000Z",
+  baseSnapshotAt: null,
+  status: "pending" as const,
+};
+
 const tagOp = {
   op: "tag.create",
   tag: { id: "t", name: "x", color: "#000000" },
 } as const;
+
+/** What the background answers when a test doesn't say. */
+const defaults = (m: { kind: string }): unknown => {
+  if (m.kind === "get-state") return initial.data;
+  if (m.kind === "world-queue") return { queue: [] };
+  return undefined;
+};
 
 function setup(reply: (m: { kind: string }) => unknown) {
   const store = createStore(initial);
   // get-state answers a state unless the test says otherwise, as the
   // background always does.
   const send = vi.fn((m: { kind: string }) =>
-    Promise.resolve(
-      reply(m) ?? (m.kind === "get-state" ? initial.data : undefined),
-    ),
+    Promise.resolve(reply(m) ?? defaults(m)),
   ) as unknown as Send;
   const { page } = fakePage();
   return { store, actions: createActions(store, send, t, page), send, page };
@@ -118,11 +141,52 @@ describe("actions", () => {
   });
 
   test("queueing refreshes the state", async () => {
-    const { actions, send } = setup((m) =>
-      m.kind === "get-state" ? data : { queued: "c1" },
+    const { actions, send, page } = setup((m) =>
+      m.kind === "get-state"
+        ? data
+        : m.kind === "world-queue"
+          ? { queue: [QUEUED] }
+          : { queued: "c1" },
     );
     expect(await actions.queueApply("w", "add", ["p"])).toBe(true);
+    // Written into the world, marked, then the state reloaded.
+    expect(page.saveQueue).toHaveBeenCalledWith("w", [QUEUED], undefined);
+    expect(send).toHaveBeenCalledWith({
+      kind: "queue-written",
+      worldId: "w",
+      ids: ["c1"],
+      at: "2026-11-09T20:00:00.000Z",
+    });
     expect(send).toHaveBeenLastCalledWith({ kind: "get-state" });
+  });
+
+  test("a change the world refused stays here, said, and isn't marked written", async () => {
+    const { actions, send, page } = setup((m) =>
+      m.kind === "world-queue" ? { queue: [QUEUED] } : undefined,
+    );
+    vi.mocked(page.saveQueue).mockResolvedValueOnce({
+      error: "Foundry said no",
+    });
+    await actions.queueApply("w", "add", ["p"]);
+    expect(page.notify).toHaveBeenCalledWith(
+      "error",
+      expect.stringContaining("Foundry said no"),
+    );
+    expect(send).not.toHaveBeenCalledWith(
+      expect.objectContaining({ kind: "queue-written" }),
+    );
+  });
+
+  test("cancelling writes that world's queue again", async () => {
+    const { actions, store, page } = setup(() => undefined);
+    store.set((st) => ({
+      data: {
+        ...st.data,
+        commands: [{ ...COMMAND, id: "c7", worldId: "w9" }],
+      },
+    }));
+    await actions.cancelCommand("c7");
+    expect(page.saveQueue).toHaveBeenCalledWith("w9", [], undefined);
   });
 
   test("modules picked one by one go with the change", async () => {
@@ -148,22 +212,78 @@ describe("actions", () => {
     const kinds = vi
       .mocked(ok.send)
       .mock.calls.map((c) => (c[0] as { kind: string }).kind);
-    expect(kinds.filter((k) => k !== "get-state")).toHaveLength(1);
+    const changes = kinds.filter(
+      (k) => k === "queue-apply" || k === "cancel-command",
+    );
+    expect(changes).toHaveLength(1);
   });
 
-  test("a launch hold is sent, and a failure says so", async () => {
-    const ok = setup(() => undefined);
-    expect(await ok.actions.setLaunchHold("w", true)).toBe(true);
-    expect(ok.send).toHaveBeenCalledWith({
-      kind: "launch-hold",
-      worldId: "w",
-      hold: true,
+  test("two changes to one world write its queue one after the other", async () => {
+    const order: string[] = [];
+    let release: () => void = () => undefined;
+    const { actions, page } = setup(() => undefined);
+    vi.mocked(page.saveQueue)
+      .mockImplementationOnce(
+        () =>
+          new Promise((r) => {
+            order.push("first starts");
+            release = () => {
+              order.push("first ends");
+              r({});
+            };
+          }),
+      )
+      .mockImplementationOnce(() => {
+        order.push("second starts");
+        return Promise.resolve({});
+      });
+    const a = actions.queueApply("w", "add", ["p"]);
+    const b = actions.queueApply("w", "add", ["q"]);
+    await vi.waitFor(() => {
+      expect(order).toEqual(["first starts"]);
     });
+    release();
+    await Promise.all([a, b]);
+    expect(order).toEqual(["first starts", "first ends", "second starts"]);
+  });
+
+  test("before a launch the queue and the intent go into the world", async () => {
+    const ok = setup((m) =>
+      m.kind === "world-queue" ? { queue: [QUEUED] } : undefined,
+    );
+    const held = await ok.actions.setLaunchHold("w", true);
+    expect(held).toEqual({
+      launchId: expect.any(String) as unknown,
+      ids: ["c1"],
+    });
+    expect(ok.page.saveQueue).toHaveBeenCalledWith("w", [QUEUED], {
+      kind: "hold",
+      id: held?.launchId,
+    });
+    const reviewed = await ok.actions.setLaunchHold("w", false, ["a"]);
+    expect(ok.page.saveQueue).toHaveBeenLastCalledWith("w", [QUEUED], {
+      kind: "reviewed",
+      id: reviewed?.launchId,
+      target: ["a"],
+    });
+    expect(await ok.actions.setLaunchHold("w", false)).toEqual({
+      launchId: null,
+      ids: ["c1"],
+    });
+    expect(ok.page.saveQueue).toHaveBeenLastCalledWith("w", [QUEUED], null);
+  });
+
+  test("a launch whose intent couldn't be written says so, and doesn't go", async () => {
     const bad = setup(() => {
       throw new Error("no");
     });
-    expect(await bad.actions.setLaunchHold("w", true)).toBe(false);
+    expect(await bad.actions.setLaunchHold("w", true)).toBeUndefined();
     expect(bad.page.notify).toHaveBeenCalled();
+    const refused = setup(() => undefined);
+    vi.mocked(refused.page.saveQueue).mockResolvedValueOnce({
+      error: "Too large",
+    });
+    expect(await refused.actions.setLaunchHold("w", true)).toBeUndefined();
   });
 });
 

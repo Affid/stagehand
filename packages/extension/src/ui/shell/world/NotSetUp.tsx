@@ -6,7 +6,14 @@ import { useUi } from "../../context.ts";
 import { startLaunch } from "../../launching.ts";
 
 export function NotSetUp(props: { readonly world: WorldInfo }) {
-  const { page, t, store } = useUi();
+  const { page, t, store, actions, canChange } = useUi();
+  // Like every launch of ours: an intent in the world (anyone's) goes first.
+  const launch = async (): Promise<void> => {
+    if (canChange && !(await actions.setLaunchHold(props.world.id, false)))
+      return;
+    startLaunch(store, props.world, false);
+    page.foundryAction({ action: "launch", worldId: props.world.id });
+  };
   const world = props.world.title;
   return (
     <div class="mlw-empty">
@@ -22,8 +29,7 @@ export function NotSetUp(props: { readonly world: WorldInfo }) {
         type="button"
         class="bright"
         onClick={() => {
-          startLaunch(store, props.world, false);
-          page.foundryAction({ action: "launch", worldId: props.world.id });
+          void launch();
         }}
       >
         <Icon name="play" />

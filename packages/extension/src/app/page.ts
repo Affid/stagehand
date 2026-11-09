@@ -1,14 +1,14 @@
 // The app's scripts in the user's Foundry pages, added by native at document
 // start for each saved server (wrapForServer). On the server's Setup page,
 // app-setup runs both halves of our Setup page in one closure over the
-// private channel; on its game page, app-game relays the companion. Both
+// private channel; on its game page, app-game watches the companion apply
+// a launch's changes out of sight. Both
 // keep WebView's bridge object and take its global name away first, so
 // Foundry's later scripts can't reach it (Android spike, Q5).
 import { liftVeil, startVeil } from "../page/veil.ts";
 import { localChannelPair } from "../page-channel.ts";
 import { pageGlobals } from "../page/globals.ts";
 import { startSetupMain } from "../page/main.ts";
-import { startGameBridge } from "../bridge/game.ts";
 import { startSetupUi } from "../ui/start.ts";
 import {
   createNativeBridge,
@@ -20,7 +20,8 @@ import { pressBack } from "../ui/shell/phone/back.ts";
 import { hideResolutionNotice } from "../page/resolution.ts";
 import { allowTextMenus, hintPasswords } from "../page/text-fields.ts";
 import { addLoginBar } from "./login-bar.ts";
-import { applyWatcher } from "./apply-game.ts";
+import { startApplyWatch } from "./apply-game.ts";
+import { FLAGS_KEY } from "@module-library/shared/world";
 import { nativePassword, nativePorts, nativeSend } from "./platform.ts";
 import { showsRunning, startRunning } from "./running/start.tsx";
 
@@ -167,21 +168,27 @@ const routeOf =
   (path: string): string =>
     `${server.replace(/\/$/, "")}/${path}`;
 
-/** The game page: the companion's relay, watched while applying out of sight (phase 7). */
+/** The game page, watched while applying out of sight (phase 7). */
 function startGamePage(port: NativePort, win: Window): void {
   const bridge = createNativeBridge(port);
-  const watch = applyWatcher({
+  startApplyWatch({
     store: win.sessionStorage,
+    flags: () => ourFlags(win),
     done: async (ok) => {
       await bridge.request("apply.done", { ok });
     },
   });
-  startGameBridge({
-    send: nativeSend(bridge),
-    win,
-    ...(watch ? { watch } : {}),
-  });
 }
+
+type GameWindow = Window & {
+  readonly game?: {
+    readonly world?: { readonly flags?: Record<string, unknown> };
+  };
+};
+
+/** Our flags as the game page has them, once Foundry has its world. */
+const ourFlags = (win: Window): unknown =>
+  (win as GameWindow).game?.world?.flags?.[FLAGS_KEY];
 
 /** What our running page asks of native: a password, applying out of sight. */
 function runningNative(bridge: NativeBridge) {

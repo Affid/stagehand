@@ -98,12 +98,16 @@ function presetNames(
   state: ReturnType<typeof useUi>["state"],
   worldId: string,
 ): string[] {
-  const ids = new Set(
-    pendingFor(state.data, worldId).flatMap((c) => c.payload.presetIds),
-  );
-  return state.data.library.presets
+  const pending = pendingFor(state.data, worldId);
+  const ids = new Set(pending.flatMap((c) => c.payload.presetIds));
+  const ours = state.data.library.presets
     .filter((p) => ids.has(p.id))
     .map((p) => p.name);
+  // Changes queued on another device bring their presets' names along.
+  const far = pending.flatMap((c) =>
+    (c.payload.presets ?? []).map((p) => p.name),
+  );
+  return [...new Set([...ours, ...far])];
 }
 
 function Footer(props: {

@@ -164,6 +164,37 @@ describe("reading Setup's package data (V-1)", () => {
     expect(SetupDataSchema.safeParse(data).success).toBe(true);
   });
 
+  test("the world's queue and report come along, read; a world without them has none", () => {
+    const queue = [
+      {
+        id: "c1",
+        mode: "add",
+        presets: [],
+        modules: ["a"],
+        queuedAt: "2026-11-09T19:00:00.000Z",
+      },
+    ];
+    const data = collect({
+      worlds: {
+        values: () =>
+          [
+            { id: "w", flags: { stagehand: { v: 1, queue } } },
+            { id: "v", flags: { stagehand: { schedule: {} } } },
+            { id: "u", flags: { stagehand: { v: 99 } } },
+            { id: "t", flags: { stagehand: { queue: [{ id: "" }] } } },
+          ].values(),
+      },
+    });
+    expect(data.worlds[0]?.stagehand).toEqual({ newer: false, queue });
+    expect(data.worlds[1]).not.toHaveProperty("stagehand");
+    expect(data.worlds[2]?.stagehand).toEqual({ newer: true, queue: [] });
+    expect(data.worlds[3]?.stagehand).toEqual({
+      newer: false,
+      queue: [],
+      unreadable: true,
+    });
+  });
+
   test("our schedule comes from the world's flags, only when it is sound", () => {
     const schedule = {
       start: "2026-11-10",

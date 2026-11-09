@@ -39,13 +39,12 @@ describe("permissionOrigin", () => {
 });
 
 describe("contentScriptsFor", () => {
-  test("registers the Setup scripts in both worlds and the bridge on /game", () => {
+  test("registers the Setup scripts in both worlds, nothing on /game", () => {
     const scripts = contentScriptsFor("http://localhost:30000");
     expect(scripts.map((s) => [s.js, s.world, s.matches])).toEqual([
       [["setup-veil.js"], "ISOLATED", ["http://localhost:30000/setup*"]],
       [["setup-main.js"], "MAIN", ["http://localhost:30000/setup*"]],
       [["setup-ui.js"], "ISOLATED", ["http://localhost:30000/setup*"]],
-      [["game-bridge.js"], "ISOLATED", ["http://localhost:30000/game*"]],
     ]);
   });
 

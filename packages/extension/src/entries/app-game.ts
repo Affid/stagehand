@@ -1,6 +1,6 @@
 // The app's script on a server's pages, added at document start by native
-// inside wrapForServer. On the server's game page it relays the companion
-// module to the background (app/page.ts); on /join, while a world runs,
+// inside wrapForServer. On the server's game page it watches the companion
+// apply a launch's changes out of sight (app/page.ts); on /join, while a world runs,
 // it shows the app's own screen (app/running/); elsewhere it does nothing.
 import { startAppGame } from "../app/page.ts";
 

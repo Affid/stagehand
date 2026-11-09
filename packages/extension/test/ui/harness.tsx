@@ -1,4 +1,5 @@
 // Renders the Setup UI roots against a fake background for component tests.
+import type { QueueSaved } from "../../src/page-queue.ts";
 import { render } from "@testing-library/preact";
 import {
   emptyLibrary,
@@ -116,7 +117,6 @@ export function setupState(over: Partial<SetupState> = {}): SetupState {
     },
     snapshots: {},
     commands: [],
-    hellos: {},
     config: BUNDLED_CONFIG,
     fresh: [],
     newsUnread: [],
@@ -139,6 +139,9 @@ export function fakePage() {
     foundryAction: vi.fn(),
     checkUpdates: vi.fn(),
     saveWorld: vi.fn(() => Promise.resolve<string | undefined>(undefined)),
+    saveQueue: vi.fn(() =>
+      Promise.resolve<QueueSaved>({ written: "2026-11-09T20:00:00.000Z" }),
+    ),
     editorOpen: vi.fn(),
     editorClose: vi.fn(),
     editorSave: vi.fn(() => Promise.resolve<string | undefined>(undefined)),
@@ -226,7 +229,11 @@ export function renderUi(
   const reply =
     options.reply ??
     ((m: ExtensionMessage) =>
-      m.kind === "get-state" ? data : { ok: true, library: data.library });
+      m.kind === "get-state"
+        ? data
+        : m.kind === "world-queue"
+          ? { queue: [] }
+          : { ok: true, library: data.library });
   const send = vi.fn((m: ExtensionMessage) => Promise.resolve(reply(m)));
   const t = createTranslator("en");
   const fake = fakePage();

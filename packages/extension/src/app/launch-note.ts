@@ -1,10 +1,12 @@
 // The note our Setup page leaves at a launch, for the app's running screen
 // on /join (owner, 2026-11-09): which world was launched and how many queued
 // changes go with it. Applying them out of sight (phase 7) adds when it
-// started, whether the companion acknowledged them (the game page reloads
-// in between) and the result. In the server page's session storage: a page
-// script could change the text shown, nothing else (the changes themselves
-// stay with the background, and no password is ever kept here).
+// started, whether the companion took them up (the game page reloads in
+// between) and the result; the launch's intent and the changes written with
+// it say which of the companion's reports answers this launch. In the server
+// page's session storage: a page script could change the text shown,
+// nothing else (the changes live in the world's flags, and no password is
+// ever kept here).
 import { z } from "zod";
 
 const KEY = "ml-launch";
@@ -22,9 +24,13 @@ const NoteSchema = z.object({
   at: z.number(),
   /** When the running page handed over to native to apply out of sight. */
   applyingAt: z.number().optional(),
-  /** The companion acknowledged the changes as applying. */
+  /** The companion took the changes up (applying). */
   acked: z.boolean().optional(),
   result: ResultSchema.optional(),
+  /** The launch's intent written into the world's flags, by its id. */
+  launchId: z.string().min(1).max(200).optional(),
+  /** The queued changes written with it, by id. */
+  ids: z.array(z.string().min(1).max(200)).max(50).optional(),
 });
 
 type Note = z.infer<typeof NoteSchema>;
@@ -46,6 +52,8 @@ function progressOf<B extends object>(
     ...(note.applyingAt === undefined ? {} : { applyingAt: note.applyingAt }),
     ...(note.acked === undefined ? {} : { acked: note.acked }),
     ...(note.result === undefined ? {} : { result: note.result }),
+    ...(note.launchId === undefined ? {} : { launchId: note.launchId }),
+    ...(note.ids === undefined ? {} : { ids: note.ids }),
   };
 }
 
@@ -74,14 +82,24 @@ export function updateLaunchNote(store: Storage, change: ApplyProgress): void {
   }
 }
 
+/** The launch's intent and the changes written with it. */
+export interface LaunchWritten {
+  readonly launchId: string;
+  readonly ids: readonly string[];
+}
+
 export function writeLaunchNote(
   store: Storage,
   world: string,
   changes: number,
   now: number = Date.now(),
+  written?: LaunchWritten,
 ): void {
+  const launch = written
+    ? { launchId: written.launchId, ids: written.ids.slice(0, 50) }
+    : {};
   try {
-    store.setItem(KEY, JSON.stringify({ world, changes, at: now }));
+    store.setItem(KEY, JSON.stringify({ world, changes, at: now, ...launch }));
   } catch {
     // Storage blocked: the screen just won't count the changes.
   }

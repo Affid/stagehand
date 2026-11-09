@@ -5,6 +5,7 @@ import {
   contentScriptsFor,
   normalizeServerUrl,
   permissionOrigin,
+  scriptId as retiredScriptId,
   type ServerId,
 } from "./servers.ts";
 
@@ -17,6 +18,15 @@ export interface ScriptingPlatform {
   removePermission(origin: string): Promise<void>;
 }
 
+/**
+ * Scripts an earlier version registered and this one no longer has: the
+ * game page's bridge (docs/COMPANION-WORLD-PROTOCOL.md). Taken off whenever
+ * a server's scripts are.
+ */
+const retiredIds = (server: ServerId): string[] => [
+  retiredScriptId("bridge", server),
+];
+
 export async function registerServer(
   input: string,
   platform: ScriptingPlatform,
@@ -25,7 +35,10 @@ export async function registerServer(
   if (!(await platform.hasPermission(permissionOrigin(server))))
     throw new Error(`No host permission for ${server}`);
   const scripts = contentScriptsFor(server);
-  const existing = await platform.registeredIds(scripts.map((s) => s.id));
+  const existing = await platform.registeredIds([
+    ...scripts.map((s) => s.id),
+    ...retiredIds(server),
+  ]);
   if (existing.length > 0) await platform.unregister(existing);
   await platform.register(scripts);
   return server;
@@ -41,7 +54,10 @@ export async function unregisterServer(
   platform: ScriptingPlatform,
 ): Promise<void> {
   const scripts = contentScriptsFor(server).map((s) => s.id);
-  const existing = await platform.registeredIds(scripts);
+  const existing = await platform.registeredIds([
+    ...scripts,
+    ...retiredIds(server),
+  ]);
   if (existing.length > 0) await platform.unregister(existing);
   const origin = permissionOrigin(server);
   if (!others.some((o) => permissionOrigin(o) === origin))

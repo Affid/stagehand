@@ -131,7 +131,6 @@ async function buildExtension(): Promise<void> {
     "setup-veil",
     "setup-main",
     "setup-ui",
-    "game-bridge",
     "popup",
   ])
     await buildEntry(name, outDir, {});

@@ -21,7 +21,11 @@ const snap = (worldId: string, active: string[]): Snapshot => ({
 const cmd = (
   id: string,
   mode: "add" | "remove" | "replace",
-  over: { presetIds?: string[]; modules?: string[] },
+  over: {
+    presetIds?: string[];
+    modules?: string[];
+    presets?: { id: string; name: string }[];
+  },
 ): Command => ({
   id,
   scope: "world",
@@ -31,6 +35,7 @@ const cmd = (
     mode,
     presetIds: over.presetIds ?? [],
     ...(over.modules ? { modules: over.modules } : {}),
+    ...(over.presets ? { presets: over.presets } : {}),
   },
   createdAt: "2026-11-05T01:00:00.000Z",
   baseSnapshotAt: null,
@@ -64,7 +69,9 @@ function page(over: Partial<SetupState> = {}) {
       ? full
       : m.kind === "queue-apply"
         ? { queued: "n" }
-        : undefined;
+        : m.kind === "world-queue"
+          ? { queue: [] }
+          : undefined;
   return renderUi("shell", {
     data,
     reply,
@@ -306,7 +313,11 @@ describe("the banner and launching", () => {
       data,
       state: { route: { kind: "world", worldId: "w1" } },
       reply: (m) =>
-        m.kind === "get-state" ? later.then(() => data) : undefined,
+        m.kind === "get-state"
+          ? later.then(() => data)
+          : m.kind === "world-queue"
+            ? { queue: [] }
+            : undefined,
     });
     const launch = r.getByRole("button", { name: /^Launch/ });
     fireEvent.click(launch);
@@ -370,11 +381,7 @@ describe("the banner and launching", () => {
   });
 
   test("with changes, Launch opens the review; apply backs up first, then launches", async () => {
-    const {
-      getByRole,
-      send,
-      page: p,
-    } = page({
+    const { getByRole, page: p } = page({
       commands: [cmd("c1", "add", { modules: ["b"] })],
     });
     fireEvent.click(getByRole("button", { name: /^Launch/ }));
@@ -395,12 +402,12 @@ describe("the banner and launching", () => {
         note: "Before queued changes (Stagehand)",
       });
     });
-    // The review is the confirmation: the result goes with the launch.
-    expect(sent(send)).toContainEqual({
-      kind: "launch-hold",
-      worldId: "w1",
-      hold: false,
-      reviewed: expect.arrayContaining(["b"]) as unknown,
+    // The review is the confirmation: the result goes into the world with
+    // the launch's intent.
+    expect(p.saveQueue).toHaveBeenCalledWith("w1", [], {
+      kind: "reviewed",
+      id: expect.any(String) as unknown,
+      target: expect.arrayContaining(["b"]) as unknown,
     });
   });
 
@@ -424,6 +431,61 @@ describe("the banner and launching", () => {
     });
   });
 
+  test("a change queued on another device shows its presets by name in the review", async () => {
+    const { getByRole } = page({
+      commands: [
+        cmd("far", "add", {
+          modules: ["b"],
+          presets: [{ id: "px", name: "Far preset" }],
+        }),
+      ],
+    });
+    fireEvent.click(getByRole("button", { name: /^Launch/ }));
+    const dialog = await screen.findByRole("dialog");
+    expect(dialog.textContent).toContain("Far preset");
+  });
+
+  test("a plain launch takes away an intent left in the world", async () => {
+    const stale = {
+      ...worlds[0]!,
+      stagehand: {
+        newer: false,
+        queue: [],
+        launch: {
+          kind: "hold" as const,
+          id: "old",
+          at: "2026-11-01T00:00:00.000Z",
+        },
+      },
+    };
+    const { getByRole, page: p } = page({
+      setup: base.setup
+        ? { ...base.setup, worlds: [stale, ...worlds.slice(1)] }
+        : undefined,
+    });
+    fireEvent.click(getByRole("button", { name: /^Launch/ }));
+    await waitFor(() => {
+      expect(p.foundryAction).toHaveBeenCalledWith({
+        action: "launch",
+        worldId: "w1",
+      });
+    });
+    expect(p.saveQueue).toHaveBeenCalledWith("w1", [], null);
+  });
+
+  test("when the world can't take the queue, Launch says so and doesn't launch", async () => {
+    const { getByRole, page: p } = page();
+    p.saveQueue.mockResolvedValueOnce({ error: "Foundry said no" });
+    fireEvent.click(getByRole("button", { name: /^Launch/ }));
+    await waitFor(() => {
+      expect(p.notify).toHaveBeenCalledWith(
+        "error",
+        expect.stringContaining("Foundry said no"),
+      );
+    });
+    expect(p.foundryAction).not.toHaveBeenCalled();
+  });
+
   test("Launch without changes holds the queue for this launch", async () => {
     const {
       getByRole,
@@ -441,10 +503,10 @@ describe("the banner and launching", () => {
         worldId: "w1",
       });
     });
-    expect(sent(send)).toContainEqual({
-      kind: "launch-hold",
-      worldId: "w1",
-      hold: true,
+    expect(sent(send)).toContainEqual({ kind: "world-queue", worldId: "w1" });
+    expect(p.saveQueue).toHaveBeenCalledWith("w1", [], {
+      kind: "hold",
+      id: expect.any(String) as unknown,
     });
   });
 
@@ -465,17 +527,21 @@ describe("the banner and launching", () => {
 });
 
 describe("a world without the companion", () => {
-  test("explains the one-time setup instead of showing switches", () => {
+  test("explains the one-time setup instead of showing switches", async () => {
     const { container, getByRole, page: p } = page({ snapshots: {} });
     expect(container.querySelector(".mlw-card")).toBe(null);
     expect(container.textContent).toContain(
       "Stagehand isn't set up in Strahd yet",
     );
     fireEvent.click(getByRole("button", { name: "Launch to set it up" }));
-    expect(p.foundryAction).toHaveBeenCalledWith({
-      action: "launch",
-      worldId: "w1",
+    await waitFor(() => {
+      expect(p.foundryAction).toHaveBeenCalledWith({
+        action: "launch",
+        worldId: "w1",
+      });
     });
+    // Like every launch of ours: the queue written, any intent taken away.
+    expect(p.saveQueue).toHaveBeenCalledWith("w1", [], null);
   });
 });
 
@@ -484,7 +550,6 @@ describe("review findings", () => {
     const {
       getByRole,
       queryByRole,
-      send,
       page: p,
     } = page({
       adminVerified: false,
@@ -503,9 +568,7 @@ describe("review findings", () => {
         worldId: "w1",
       });
     });
-    expect(sent(send)).not.toContainEqual(
-      expect.objectContaining({ kind: "launch-hold" }),
-    );
+    expect(p.saveQueue).not.toHaveBeenCalled();
   });
 
   test("a queued change that changes nothing still shows, can be discarded and is reviewed", async () => {

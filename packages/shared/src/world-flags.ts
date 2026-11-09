@@ -87,16 +87,22 @@ export interface StagehandFlags {
   /** Written by a newer Stagehand: nothing else was read. */
   readonly newer: boolean;
   readonly queue: readonly QueueEntry[];
+  /** When Setup last wrote the queue (the server's clock). */
+  readonly written?: string | undefined;
   /** A queue was there but didn't pass: it is never applied (said). */
-  readonly unreadable?: true;
-  readonly launch?: Launch;
-  readonly report?: Report;
+  readonly unreadable?: true | undefined;
+  readonly launch?: Launch | undefined;
+  readonly report?: Report | undefined;
 }
 
 /** Our flags as Setup passes them on, already read (readStagehand). */
 export const StagehandFlagsSchema = z.object({
   newer: z.boolean(),
-  queue: z.array(QueueEntrySchema).max(MAX_QUEUE),
+  queue: z
+    .array(QueueEntrySchema)
+    .max(MAX_QUEUE)
+    .refine((q) => byteSize(q) <= MAX_QUEUE_BYTES),
+  written: Time.optional(),
   unreadable: z.literal(true).optional(),
   launch: LaunchSchema.optional(),
   report: ReportSchema.optional(),
@@ -119,12 +125,14 @@ export function readStagehand(raw: unknown): StagehandFlags {
     .safeParse(raw.queue);
   const launch = LaunchSchema.safeParse(raw.launch);
   const report = ReportSchema.safeParse(raw.report);
+  const written = Time.safeParse(raw.written);
   return {
     newer: false,
     queue: queue.success ? queue.data : [],
     ...(raw.queue !== undefined && !queue.success
       ? { unreadable: true as const }
       : {}),
+    ...(written.success ? { written: written.data } : {}),
     ...(launch.success ? { launch: launch.data } : {}),
     ...(report.success ? { report: report.data } : {}),
   };

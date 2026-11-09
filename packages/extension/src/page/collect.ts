@@ -15,6 +15,7 @@ import {
   FLAGS_KEY,
   LEGACY_FLAGS_KEY,
 } from "@module-library/shared/world";
+import { readStagehand } from "@module-library/shared/world-flags";
 import type { Collection, SetupGame } from "./globals.ts";
 
 type Loose = Record<string, unknown>;
@@ -51,7 +52,22 @@ function scheduleOf(w: Loose): Partial<WorldInfo> {
   const ours = flags?.[FLAGS_KEY] as Loose | undefined;
   const legacy = flags?.[LEGACY_FLAGS_KEY] as Loose | undefined;
   const parsed = ScheduleSchema.safeParse(ours?.schedule ?? legacy?.schedule);
-  return parsed.success ? { schedule: parsed.data } : {};
+  return {
+    ...(parsed.success ? { schedule: parsed.data } : {}),
+    ...stagehandOf(ours),
+  };
+}
+
+/** The queue and the companion's report, when the world has any. */
+function stagehandOf(ours: Loose | undefined): Partial<WorldInfo> {
+  const read = readStagehand(ours);
+  const any =
+    read.newer ||
+    read.unreadable === true ||
+    read.queue.length > 0 ||
+    read.launch !== undefined ||
+    read.report !== undefined;
+  return any ? { stagehand: { ...read, queue: [...read.queue] } } : {};
 }
 
 const toWorld = (w: Loose): WorldInfo => {

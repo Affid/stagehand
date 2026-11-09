@@ -92,7 +92,11 @@ function launchPage(app = false) {
   const data = { snapshots: { w1: snap("w1", ["stagehand", "a"]) } };
   const full = setupState(data);
   const reply = (m: ExtensionMessage): unknown =>
-    m.kind === "get-state" ? full : undefined;
+    m.kind === "get-state"
+      ? full
+      : m.kind === "world-queue"
+        ? { queue: [] }
+        : undefined;
   const r = renderUi("shell", {
     data,
     reply,
