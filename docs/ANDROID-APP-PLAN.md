@@ -1039,7 +1039,7 @@ Packages:
    this server… which asks first); leaving Foundry's login by the bar on
    top (A).
 
-3. **Building** (in progress 2026-11-09).
+3. **Building** (done 2026-11-09).
    - **The login bar and the running screen** (done 2026-11-09; the
      extension's apply specs 6, the app's world and running specs 9, the
      on-device suite 9 pass; review: no critical or high, fixed: the join
@@ -1061,9 +1061,27 @@ Packages:
      first). Tests joining after a launch now use our screen
      (`tests/foundry/extension.ts` `joinWorld`/`joinFromRunningScreen`,
      `tests/android/steps.ts` `joinAsGm`). App apply spec passes (6).
-   - **Next: home A** (mockup `design/app-screens`, the owner approved the
-     server sheet; the card's middle column needs `min-width: 0`, the
-     mockup's overflow). Design for the build:
+   - **Home A** (done 2026-11-09; `pnpm verify` 1134, Kotlin tests and
+     coverage, the on-device suite 10 pass, with a new last test: a server
+     renamed, Back closing its sheet in the app, a new address and back,
+     opened, removed. Reviews: no critical or high. Fixed: a move that
+     fails takes the new address's scripts back and the home shows what is
+     left; a move onto an address a removed server left data at clears
+     every kind the moved server lacks (old queued commands never come
+     back); behind a sheet the page is inert and focus returns to the
+     button that opened it; a malformed check answer reads "Not a Foundry
+     server". Accepted: server.check can probe any address the phone
+     reaches, only from the app's own home page (CSP `script-src 'self'`,
+     no HTML sinks), answering a version string only; home's Back claims
+     aren't capped as the server page's are, home being the app's own
+     code). Built: `ui/app-home/` (cards with `min-width: 0`, the server
+     sheet, the add sheet, Release history's switch, `home.css`), the
+     background's `rename-server`/`move-server` (`background/server-list.ts`)
+     and `openedAt`, native `server.check` (TS and Kotlin rules, contract
+     vectors `statusUrl`/`foundryVersion`, the Node harness), native asking
+     home about Back (`homeUsedBack`; `backStep` lets home's claim stand).
+     The ⋮ in the mockup's top bar did nothing there and is left out.
+     Design as built:
      - Background: `ServerRecord` gains `name?` and `openedAt?`; messages
        `rename-server {server, name}` and `move-server {from, to}`
        (copies the per-server keys `library` (with its `serverId` set to
@@ -1089,6 +1107,9 @@ Packages:
        entries, Kotlin rules with contract vectors, tests, review.
      - Suite: home steps (add with the toggle, rename, re-address, remove)
        in `tests/android`.
+4. **Next: the icon**, the owner's last item, "after the app works
+   great". Waiting on the owner as well: the phone checks (phase 5) and
+   autofill with their password manager on Foundry's login.
 
 ## Native rules (for phase 4)
 
