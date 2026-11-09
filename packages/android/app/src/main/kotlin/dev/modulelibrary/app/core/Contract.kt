@@ -44,9 +44,10 @@ enum class Caller { SERVER, RUNNING, HOME, BACKGROUND }
 
 /** Requests to native and who may make them (CALLER_REQUESTS). */
 val CALLER_REQUESTS: Map<Caller, Set<String>> = mapOf(
-    Caller.SERVER to setOf("runtime.send", "files.save", "files.open", "confirm", "openExternal", "password.ask"),
-    // Our running page on a server's /join (phase 7): a password, nothing else.
-    Caller.RUNNING to setOf("password.ask"),
+    Caller.SERVER to setOf("runtime.send", "files.save", "files.open", "confirm", "openExternal", "apply.done"),
+    // Our running page on a saved server's /join (phase 7), where no module
+    // runs: a password, and applying the launch's changes out of sight.
+    Caller.RUNNING to setOf("password.ask", "apply.start"),
     Caller.HOME to setOf(
         "runtime.send", "permissions.contains", "permissions.request", "permissions.remove", "server.check",
     ),

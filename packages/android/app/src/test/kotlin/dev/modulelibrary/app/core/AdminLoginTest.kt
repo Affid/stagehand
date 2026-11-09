@@ -104,6 +104,8 @@ class AdminLoginTest {
         assertEquals(LoginResult.Failed("Foundry didn't answer as expected"), outcome(302, "https://evil.example/setup", base))
         assertEquals(LoginResult.Failed("Foundry didn't answer as expected"), outcome(500, null, base))
         assertEquals(LoginResult.Setup, outcome(302, "/setup", base))
+        // Back to the login itself would loop: a failure (review).
+        assertEquals(LoginResult.Failed("Foundry didn't answer as expected"), outcome(302, "/auth/", base))
         assertEquals(LoginResult.Setup, outcome(303, "$base/setup", base))
     }
 }

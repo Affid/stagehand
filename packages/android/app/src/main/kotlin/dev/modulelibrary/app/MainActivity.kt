@@ -82,7 +82,7 @@ private object Crash {
  * Foundry with our scripts on its Setup and game pages. Native's work is in
  * core/ (plain Kotlin); this class wires it to the WebViews.
  */
-class MainActivity : ComponentActivity(), AppHost, LoginHost {
+class MainActivity : ComponentActivity(), AppHost, LoginHost, ApplyHost {
     private lateinit var root: FrameLayout
     private lateinit var handlers: NativeHandlers
     private lateinit var relay: Relay
@@ -105,6 +105,9 @@ class MainActivity : ComponentActivity(), AppHost, LoginHost {
     private var recreating = false
     private var certDialog: AlertDialog? = null
     private lateinit var login: LoginController
+    private lateinit var apply: ApplyController
+    /** A server page reached Foundry's login while home was in front: ours shows when the server does. */
+    private var pendingLogin: String? = null
     private var activeOrigins: Set<String> = emptySet()
     /** Registered at construction, as the Activity Result API requires. */
     private val pickers = Pickers(this)
@@ -176,6 +179,7 @@ class MainActivity : ComponentActivity(), AppHost, LoginHost {
         listen(background, setOf(APP_ORIGIN), Caller.BACKGROUND, backgroundPage, relay)
         listen(home, setOf(APP_ORIGIN), Caller.HOME, homePage, relay)
         login = LoginController(this, root, lifecycleScope, this)
+        apply = ApplyController(this, root, lifecycleScope, this)
         injection = Injection(server, assets)
         serversChanged(handlers.state)
         onBackPressedDispatcher.addCallback(this, backCallback)
@@ -211,6 +215,7 @@ class MainActivity : ComponentActivity(), AppHost, LoginHost {
     private fun show(screen: Screen) {
         showing = screen
         if (screen == Screen.SERVER) homeOverServer = false
+        if (screen == Screen.SERVER) pendingLogin?.let { pendingLogin = null; login.show(it) }
         home.visibility = if (screen == Screen.HOME) View.VISIBLE else View.INVISIBLE
         server.visibility = if (screen == Screen.SERVER) View.VISIBLE else View.INVISIBLE
         // Password managers fill the WebView in front, never the hidden ones
@@ -220,8 +225,24 @@ class MainActivity : ComponentActivity(), AppHost, LoginHost {
     }
 
     override fun showLogin(server: String) {
-        show(Screen.SERVER)
+        // Not over home: the server page may be out of sight (review).
+        if (showing != Screen.SERVER) {
+            pendingLogin = server
+            return
+        }
         login.show(server)
+    }
+
+    override fun gameAllowed(url: String): Boolean = apply.allowsGame(url)
+
+    override fun serverOf(origin: String): String? = activeServers().firstOrNull { WebUrl.parse(it)?.origin == origin }
+
+    fun applyStarted(origin: String, world: String, changes: Int) {
+        if (started) apply.start(origin, world, changes)
+    }
+
+    fun applyDone(origin: String) {
+        if (started) apply.done(origin)
     }
 
     override fun loadInServer(url: String) {
@@ -248,6 +269,7 @@ class MainActivity : ComponentActivity(), AppHost, LoginHost {
     fun showHome() {
         if (!started) return
         login.hide()
+        pendingLogin = null
         homeOverServer = false
         // Loaded again each time: the list is read when the page starts.
         home.loadUrl(HOME_PAGE)
@@ -323,9 +345,13 @@ class MainActivity : ComponentActivity(), AppHost, LoginHost {
     }
 
     private suspend fun back() {
-        // Our login: Back is its ‹, to the servers.
+        // Our login: Back is its ‹, to the servers; applying: our running page.
         if (showing == Screen.SERVER && login.showing) {
             login.back()
+            return
+        }
+        if (showing == Screen.SERVER && apply.showing) {
+            apply.back()
             return
         }
         val pressedAt = SystemClock.elapsedRealtime()

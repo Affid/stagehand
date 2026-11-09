@@ -42,4 +42,16 @@
     <string name="pw_join_wrong">Foundry didn\'t accept that password for %1$s.</string>
     <string name="pw_cancel">Cancel</string>
     <string name="pw_show">Show the password</string>
+    <!-- Applying a launch's changes out of sight (phase 7; mockup design/app-screens, Launch). -->
+    <string name="apply_chip">Launching</string>
+    <string name="apply_step_ask">Asking Foundry to launch</string>
+    <string name="apply_step_load">Loading the world</string>
+    <string name="apply_step_join">Joining as Gamemaster, out of sight</string>
+    <plurals name="apply_step_apply">
+        <item quantity="one">Applying %d change</item>
+        <item quantity="other">Applying %d changes</item>
+    </plurals>
+    <string name="apply_sub">The world reloads once. The game never shows on this phone.</string>
+    <string name="apply_servers">Server list</string>
+    <string name="pw_join_user">Gamemaster</string>
 </resources>

@@ -10,7 +10,6 @@ import {
 import {
   activeModules,
   adminLogin,
-  companionDone,
   env,
   installedVersion,
   recordCompanion,
@@ -176,39 +175,34 @@ export async function launch(page: Page, changes?: string): Promise<void> {
 }
 
 /**
- * After a launch, on the same page (a new connection would drop the
- * recorder): the app's running screen on /join, whose Join as Gamemaster
- * says how many changes it applies, joined as the GM; or straight to /game
- * when already signed in. Then the game ready and the companion's session
- * done.
+ * After a launch (phase 7): our launching screen, then our running page on
+ * /join, never the game. With changes, the app applies them out of sight
+ * (native's cover over the game loading behind it) and comes back to the
+ * running page, which says they applied.
  */
-export async function joinAsGm(
+export async function waitRunning(
   app: App,
   page: Page,
   changes = 0,
-): Promise<string[]> {
-  await page.waitForURL(/\/(join|game)$/, { timeout: 60_000 });
-  if (page.url().endsWith("/join")) {
-    const join = page.locator("#ml-run-root .mlr-join");
-    await expect(join).toBeVisible({ timeout: 60_000 });
-    if (changes)
-      await expect(join).toContainText(
-        `applies ${String(changes)} change${changes === 1 ? "" : "s"}`,
-      );
-    await app.shot(changes ? "running-launched" : "running");
-    await join.click();
-    const sheet = page.locator("#ml-run-root .mlr-sheet");
-    await sheet.locator("select").selectOption({ label: "Gamemaster" });
-    await app.shot("join-sheet");
-    await sheet.getByRole("button", { name: "Join", exact: true }).click();
-    await page.waitForURL(/\/game$/, { timeout: 60_000 });
+): Promise<void> {
+  await expect(page.getByRole("dialog", { name: /^Launching / })).toBeVisible();
+  await app.shot("launching");
+  if (changes) {
+    await page.waitForURL(/\/game$/, { timeout: 120_000 });
+    await app.shot("applying");
   }
-  await page.waitForFunction(
-    () => (globalThis as { game?: { ready?: boolean } }).game?.ready === true,
-    null,
-    { timeout: 180_000 },
-  );
-  return companionDone(page);
+  await page.waitForURL(/\/join$/, { timeout: 240_000 });
+  const run = page.locator("#ml-run-root");
+  await expect(run.getByRole("button", { name: "Back to Setup" })).toBeVisible({
+    timeout: 60_000,
+  });
+  if (changes)
+    await expect(run).toContainText(
+      `${String(changes)} changes applied as it opened.`,
+      { timeout: 240_000 },
+    );
+  await expect(run).not.toContainText("Join as Gamemaster");
+  await app.shot(changes ? "running-applied" : "running");
 }
 
 /** The world's active modules once the companion has applied. */

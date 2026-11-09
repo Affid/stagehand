@@ -35,6 +35,13 @@ class NativeHandlersTest {
         var homes = 0
         val asks = mutableListOf<Pair<PasswordAsk, String>>()
         var password = CompletableDeferred<String?>("pw")
+        val applies = mutableListOf<String>()
+        override fun applyStarted(origin: String, world: String, changes: Int) {
+            applies += "start $origin $world $changes"
+        }
+        override fun applyDone(origin: String, ok: Boolean) {
+            applies += "done $origin $ok"
+        }
         override suspend fun askPassword(ask: PasswordAsk, origin: String): String? {
             asks += ask to origin
             return password.await()
@@ -214,25 +221,45 @@ class NativeHandlersTest {
     }
 
     @Test
+    fun `applying out of sight starts and ends on the screen, for the asking server`() = runTest {
+        call("apply.start", """{"world":"Strahd","changes":2}""", "$SERVER/join")
+        call("apply.done", """{"ok":true}""", "$SERVER/game")
+        assertEquals(listOf("start $SERVER Strahd 2", "done $SERVER true"), ui.applies)
+    }
+
+    @Test
     fun `a cancelled password answers nothing`() = runTest {
         ui.password = CompletableDeferred<String?>().apply { complete(null) }
         val payload = """{"purpose":"join","world":"Strahd","user":"Gamemaster","people":0,"wrong":false}"""
-        assertEquals(obj("{}"), call("password.ask", payload, SETUP))
+        assertEquals(obj("{}"), call("password.ask", payload, "$SERVER/join"))
         assertEquals("Gamemaster", ui.asks.single().first.user)
     }
 
     @Test
-    fun `a password is asked on a tap, or as a retry just after an answer`() = runTest {
+    fun `a password is asked on a tap, or as one retry just after a typed answer (security review)`() = runTest {
         val payload = """{"purpose":"close","world":"Strahd","people":0,"wrong":false}"""
+        val retry = """{"purpose":"close","world":"Strahd","people":0,"wrong":true}"""
         tapped = false
         assertTrue(runCatching { call("password.ask", payload, "$SERVER/join") }.isFailure)
         tapped = true
         call("password.ask", payload, "$SERVER/join")
         tapped = false
         now += 5_000
-        val retry = """{"purpose":"close","world":"Strahd","people":0,"wrong":true}"""
         assertEquals(obj("""{"password":"pw"}"""), call("password.ask", retry, "$SERVER/join"))
-        now += 20_000
+        // A cancelled sheet gives no retry.
+        ui.password = CompletableDeferred<String?>().apply { complete(null) }
+        now += 1_000
+        assertEquals(obj("{}"), call("password.ask", retry, "$SERVER/join"))
+        assertTrue(runCatching { call("password.ask", retry, "$SERVER/join") }.isFailure)
+    }
+
+    @Test
+    fun `a retry is good for a moment only`() = runTest {
+        val payload = """{"purpose":"close","world":"Strahd","people":0,"wrong":false}"""
+        val retry = """{"purpose":"close","world":"Strahd","people":0,"wrong":true}"""
+        call("password.ask", payload, "$SERVER/join")
+        tapped = false
+        now += 11_000
         assertTrue(runCatching { call("password.ask", retry, "$SERVER/join") }.isFailure)
     }
 

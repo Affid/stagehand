@@ -46,6 +46,9 @@ interface AppHost {
 
     /** A saved server's Foundry login was reached: ours shows instead (phase 7). */
     fun showLogin(server: String)
+
+    /** The game page the app is applying a launch's changes on, out of sight: it may load. */
+    fun gameAllowed(url: String): Boolean
 }
 
 private fun blocked() = WebResourceResponse("text/plain", "utf-8", 403, "Blocked", emptyMap(), ByteArrayInputStream(ByteArray(0)))
@@ -112,6 +115,7 @@ class ServerPageClient(private val page: PageState, private val host: AppHost) :
             return true
         }
         val instead = runningInsteadOf(url, servers) ?: return false
+        if (host.gameAllowed(url)) return false
         view.loadUrl(instead)
         return true
     }
@@ -148,7 +152,8 @@ class ServerPageClient(private val page: PageState, private val host: AppHost) :
     override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
         // A redirect (after a form's POST too) isn't always asked about above.
         val servers = host.activeServers()
-        if (loginServerOf(url, servers) != null || runningInsteadOf(url, servers) != null) {
+        val game = runningInsteadOf(url, servers) != null && !host.gameAllowed(url)
+        if (loginServerOf(url, servers) != null || game) {
             view.stopLoading()
             ourInstead(view, url)
             return

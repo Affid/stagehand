@@ -5,6 +5,7 @@
 import { cleanup, fireEvent, render, waitFor } from "@testing-library/preact";
 import { afterEach, describe, expect, test, vi } from "vitest";
 import { RunningScreen } from "../../src/app/running/RunningScreen.tsx";
+import type { ApplyView } from "../../src/app/running/apply-flow.ts";
 import type { CloseResult, Status } from "../../src/app/running/server.ts";
 import { showsRunning, startRunning } from "../../src/app/running/start.tsx";
 import { createTranslator } from "../../src/ui/i18n.ts";
@@ -44,7 +45,8 @@ function screen(
   s: Status | undefined,
   close: (pw?: string) => Promise<CloseResult>,
   more: {
-    readonly launched?: number;
+    readonly apply?: ApplyView;
+    readonly onApplyPassword?: () => void;
     readonly askPassword?: (wrong: boolean) => Promise<string | undefined>;
   } = {},
 ) {
@@ -55,7 +57,10 @@ function screen(
       status={s}
       origin={SERVER}
       close={close}
-      launched={more.launched}
+      apply={more.apply}
+      {...(more.onApplyPassword
+        ? { onApplyPassword: more.onApplyPassword }
+        : {})}
       serversHref="https://appassets.androidplatform.net/home.html"
       {...(more.askPassword ? { askPassword: more.askPassword } : {})}
     />,
@@ -126,11 +131,55 @@ describe("the two ways on (owner, phase 7)", () => {
     );
   });
 
-  test("after a launch with changes, it says they went with it", () => {
-    const r = screen(status({ users: 0 }), vi.fn(), { launched: 2 });
+  test("after a launch with changes: applying, then applied, or why not (phase 7)", () => {
+    const r = screen(status({ users: 0 }), vi.fn(), {
+      apply: { kind: "applying", n: 2 },
+    });
     expect(r.container.textContent).toContain(
-      "Launched from here with 2 changes queued.",
+      "Applying 2 changes out of sight",
     );
+    r.rerender(
+      <RunningScreen
+        t={t}
+        world={WORLD}
+        status={status({ users: 0 })}
+        origin={SERVER}
+        close={vi.fn()}
+        apply={{ kind: "applied", n: 2 }}
+        serversHref="x"
+      />,
+    );
+    expect(r.container.textContent).toContain(
+      "2 changes applied as it opened.",
+    );
+    r.rerender(
+      <RunningScreen
+        t={t}
+        world={WORLD}
+        status={status({ users: 0 })}
+        origin={SERVER}
+        close={vi.fn()}
+        apply={{ kind: "failed", n: 2, reason: "They stay queued." }}
+        serversHref="x"
+      />,
+    );
+    expect(r.getByRole("alert").textContent).toContain("They stay queued.");
+  });
+
+  test("Foundry wants the Gamemaster's password: asked on a tap", () => {
+    const onApplyPassword = vi.fn();
+    const r = screen(status({ users: 0 }), vi.fn(), {
+      apply: { kind: "password", n: 2, user: "Gamemaster", wrong: false },
+      onApplyPassword,
+    });
+    expect(r.container.textContent).toContain(
+      "Foundry wants Gamemaster's password to apply the 2 changes.",
+    );
+    fireEvent.click(
+      r.getByRole("button", { name: "Enter Gamemaster's password" }),
+    );
+    expect(onApplyPassword).toHaveBeenCalled();
+    expect(r.getByRole("button", { name: "Not now" })).toBeTruthy();
   });
 
   test("the top bar goes back to the app's servers", () => {

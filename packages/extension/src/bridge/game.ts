@@ -14,6 +14,11 @@ import type { Send } from "../ui/actions.ts";
 export interface GameBridgeDeps {
   readonly send: Send;
   readonly win: Window;
+  /**
+   * Sees each companion message with the background's reply: the app
+   * watching its changes apply out of sight (phase 7). Never changes them.
+   */
+  readonly watch?: (msg: Envelope, reply: Envelope) => void;
 }
 
 const worldOf = (msg: Envelope): string | undefined => {
@@ -21,8 +26,33 @@ const worldOf = (msg: Envelope): string | undefined => {
   return typeof p?.worldId === "string" ? p.worldId : undefined;
 };
 
+/** BRIDGE_READY once the background allows the bridge. */
+function announceReady(
+  init: Promise<{ enabled: boolean; extensionVersion: string }>,
+  post: (msg: Envelope) => void,
+): void {
+  init.then(
+    ({ enabled, extensionVersion }) => {
+      if (!enabled) return;
+      post(
+        makeEnvelope("bridge", "BRIDGE_READY", {
+          extensionVersion,
+          protocol: PROTOCOL_VERSIONS,
+        }),
+      );
+    },
+    (error: unknown) => {
+      logError("bridge", error);
+    },
+  );
+}
+
 /** Starts relaying; returns a function that stops listening (tests). */
-export function startGameBridge({ send, win }: GameBridgeDeps): () => void {
+export function startGameBridge({
+  send,
+  win,
+  watch,
+}: GameBridgeDeps): () => void {
   const init = send<{ enabled: boolean; extensionVersion: string }>({
     kind: "bridge-init",
   });
@@ -47,7 +77,9 @@ export function startGameBridge({ send, win }: GameBridgeDeps): () => void {
   ): Promise<void> => {
     const { enabled } = await init;
     if (!enabled) return;
-    post(await send<Envelope>({ kind: "relay", msg }));
+    const reply = await send<Envelope>({ kind: "relay", msg });
+    post(reply);
+    watch?.(msg, reply);
   };
 
   // Listening at once: the module may say HELLO before the background answers.
@@ -60,20 +92,7 @@ export function startGameBridge({ send, win }: GameBridgeDeps): () => void {
   };
   win.addEventListener("message", onMessage);
 
-  init.then(
-    ({ enabled, extensionVersion }) => {
-      if (!enabled) return;
-      post(
-        makeEnvelope("bridge", "BRIDGE_READY", {
-          extensionVersion,
-          protocol: PROTOCOL_VERSIONS,
-        }),
-      );
-    },
-    (error: unknown) => {
-      logError("bridge", error);
-    },
-  );
+  announceReady(init, post);
   return () => {
     win.removeEventListener("message", onMessage);
   };

@@ -1089,8 +1089,6 @@
   "run.failed": "Foundry didn't close the world. Try again.",
   "run.version": "Foundry {version}",
   "run.servers": "Servers",
-  "run.leadLaunched.one": "Launched from here with {n} change queued.",
-  "run.leadLaunched.other": "Launched from here with {n} changes queued.",
   "home.servers": "Servers",
   "home.settings": "Settings",
   "home.hint": "Tap a server to open it; ⋮ to rename it, change its address or remove it.",
@@ -1145,5 +1143,13 @@
   "launch.back": "Back to the world",
   "launch.servers": "Server list",
   "launch.stalledLate": "Foundry has gone quiet. The launch may still finish; if nothing changes, go back and check the world.",
-  "run.serverList": "Server list"
+  "run.serverList": "Server list",
+  "run.applying.one": "Applying {n} change out of sight…",
+  "run.applying.other": "Applying {n} changes out of sight…",
+  "run.applied.one": "{n} change applied as it opened.",
+  "run.applied.other": "{n} changes applied as it opened.",
+  "run.applyPassword.one": "Foundry wants {user}'s password to apply the change.",
+  "run.applyPassword.other": "Foundry wants {user}'s password to apply the {n} changes.",
+  "run.applyEnter": "Enter {user}'s password",
+  "run.applyNotNow": "Not now"
 }

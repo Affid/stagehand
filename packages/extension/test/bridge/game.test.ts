@@ -23,7 +23,10 @@ const fromModule = (type: string, payload: unknown): void => {
   );
 };
 
-function start(enabled: boolean) {
+function start(
+  enabled: boolean,
+  watch?: (msg: unknown, reply: unknown) => void,
+) {
   const send = vi.fn((m: ExtensionMessage) =>
     Promise.resolve(
       m.kind === "bridge-init"
@@ -32,7 +35,13 @@ function start(enabled: boolean) {
     ),
   );
   const posted = vi.spyOn(window, "postMessage");
-  stops.push(startGameBridge({ send: send as unknown as Send, win: window }));
+  stops.push(
+    startGameBridge({
+      send: send as unknown as Send,
+      win: window,
+      ...(watch ? { watch } : {}),
+    }),
+  );
   const kinds = (): string[] => send.mock.calls.map((c) => c[0].kind);
   const types = (): string[] =>
     posted.mock.calls.map((c) => (c[0] as { type: string }).type);
@@ -56,6 +65,20 @@ describe("the game page's bridge between the companion and the background", () =
     });
     await vi.waitFor(() => {
       expect(s.types().filter((t) => t === "ACK")).toHaveLength(2);
+    });
+  });
+
+  test("the app watches each message with its reply (phase 7)", async () => {
+    const seen: [string, string][] = [];
+    start(true, (msg, reply) => {
+      seen.push([
+        (msg as { type: string }).type,
+        (reply as { type: string }).type,
+      ]);
+    });
+    fromModule("HELLO", { worldId: "w1" });
+    await vi.waitFor(() => {
+      expect(seen).toEqual([["HELLO", "ACK"]]);
     });
   });
 

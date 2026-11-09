@@ -1,21 +1,18 @@
 // The app on a device, end to end (Android plan, phase 5): from a fresh
 // install, a server added and Setup taken over; a world and Android's
 // Back; the Library; export and import through the system pickers; a
-// queued change applied at launch by the companion; Release history read
+// queued change applied at launch, out of sight (phase 7); Release history read
 // from foundryvtt.com; the key screens in Foundry's three Setup themes;
 // last, home: a server renamed, given a new address and removed.
 // One run, in order: each test starts where the last one left the app.
 import { expect, test, type Page } from "@playwright/test";
 import { resetWorldModules } from "../../scripts/foundry/reset-world.ts";
-import { COMPANION_ID } from "../../scripts/foundry/world.ts";
 import { App, HOME, installFresh, SERVER } from "./app.ts";
 import {
   adminLogin,
   closeWorld,
   currentTheme,
-  documentStart,
   env,
-  reloadedSince,
   setTheme,
   THEMES,
   waitClosed,
@@ -28,14 +25,13 @@ import {
   backHome,
   exportImport,
   expectHome,
-  joinAsGm,
+  waitRunning,
   launch,
   library,
   openWorld,
   releaseHistory,
   shell,
   tab,
-  waitActive,
 } from "./steps.ts";
 
 test.describe.configure({ mode: "serial" });
@@ -112,11 +108,10 @@ test("export and import through the system pickers and the app's dialog", async 
   await tab(page, /^Worlds/).click();
 });
 
-test("the first launch from our page: our running screen, Join, the companion reports", async () => {
+test("the first launch from our page: our launching screen, then our running page, no game", async () => {
   await openWorld(page);
   await launch(page);
-  const seen = await joinAsGm(app, page);
-  expect(seen).toContain("SNAPSHOT_PUSH");
+  await waitRunning(app, page);
   await setupAgain();
 });
 
@@ -129,14 +124,8 @@ test("a queued change, launched through the review, applied by the companion", a
   await expect(shell(page).locator(".mlp-dock")).toContainText("2 changes");
   await app.shot("queued");
   await launch(page, "2 changes");
-  await joinAsGm(app, page, 2);
-  const firstLoad = await documentStart(page);
-  await waitActive(page, ["ml-fixture-a", "ml-fixture-lib", COMPANION_ID]);
-  // The companion reloads the world once it has applied, and reports again
-  // from the reloaded page: the fresh snapshot.
-  await reloadedSince(page, firstLoad);
-  await joinAsGm(app, page);
-  await app.shot("applied");
+  // Applied out of sight: the companion, the reload, back to our page.
+  await waitRunning(app, page, 2);
   await setupAgain();
   await openWorld(page);
   await expect(shell(page).locator(".mls-banner")).toContainText(

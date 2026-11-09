@@ -3013,6 +3013,63 @@
    "valid": false
   },
   {
+   "type": "apply.start",
+   "payload": {
+    "world": "Strahd",
+    "changes": 2
+   },
+   "valid": true
+  },
+  {
+   "type": "apply.start",
+   "payload": {
+    "world": "Strahd",
+    "changes": 0
+   },
+   "valid": false
+  },
+  {
+   "type": "apply.start",
+   "payload": {
+    "world": "",
+    "changes": 1
+   },
+   "valid": false
+  },
+  {
+   "type": "apply.start",
+   "payload": {
+    "world": "Strahd"
+   },
+   "valid": false
+  },
+  {
+   "type": "apply.done",
+   "payload": {
+    "ok": true
+   },
+   "valid": true
+  },
+  {
+   "type": "apply.done",
+   "payload": {
+    "ok": false
+   },
+   "valid": true
+  },
+  {
+   "type": "apply.done",
+   "payload": {
+    "ok": "yes"
+   },
+   "valid": false
+  },
+  {
+   "type": "apply.done",
+   "payload": {},
+   "valid": false
+  },
+  {
    "type": "home.open",
    "payload": {},
    "valid": true

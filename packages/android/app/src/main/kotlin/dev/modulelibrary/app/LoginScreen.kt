@@ -38,6 +38,7 @@ class LoginScreen(
     private val origin = url?.origin ?: target.server
     private val username = ServerField(context, origin, password = false).apply {
         hint = context.getString(R.string.login_user)
+        contentDescription = context.getString(R.string.login_user)
         visibility = View.GONE
     }
     private val password = ServerField(context, origin, password = true).apply {
@@ -122,7 +123,11 @@ class LoginScreen(
         setPadding(pad, Look.dp(context, 22f), pad, Look.dp(context, 18f))
         val letter = (target.name ?: host).trim().firstOrNull()?.uppercaseChar()?.toString() ?: "?"
         addView(Look.letterTile(context, letter, 56f), LinearLayout.LayoutParams(Look.dp(context, 56f), Look.dp(context, 56f)))
-        addView(Look.heading(context, 25f).apply { text = context.getString(R.string.login_title) }, spaced(WRAP_CONTENT, top = 14f))
+        val title = Look.heading(context, 25f).apply {
+            text = context.getString(R.string.login_title)
+            isAccessibilityHeading = true
+        }
+        addView(title, spaced(WRAP_CONTENT, top = 14f))
         addView(where(), spaced(WRAP_CONTENT, top = 6f))
         addView(username, spaced(MATCH_PARENT, top = 16f))
         addView(label(), spaced(MATCH_PARENT, top = 14f))

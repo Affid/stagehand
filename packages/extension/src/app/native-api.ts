@@ -159,8 +159,15 @@ export function savableServerOrigin(pattern: string): string | undefined {
  *   when cancelled: a native sheet whose field password managers fill for
  *   the asking page's server (phase 7). Native writes the words from the
  *   purpose ("close" a world, "join" as `user` to apply changes); the page
- *   passes no text of its own. One at a time; only on a tap on the page,
- *   or as a retry (`wrong`) within PASSWORD_RETRY_MS of the last answer.
+ *   passes no text of its own. Our running page only (no module runs on
+ *   /join; security review). One at a time; only on a tap on the page, or
+ *   as one retry (`wrong`) within PASSWORD_RETRY_MS of a typed answer.
+ * - apply.start {world, changes} → null (our running page only): the app
+ *   applies the launch's changes out of sight (phase 7). Native covers
+ *   the server WebView with its Applying screen and lets this server's
+ *   /game load behind it, for APPLY_MAX_MS at most.
+ * - apply.done {ok} → null (the game page, while applying): the cover
+ *   goes and the server WebView goes back to /join, our running page.
  * - openExternal {url} → null: a Custom Tab; http(s) only, never the
  *   server's own origin, only within a moment of the user's tap, and at
  *   most one a second.
@@ -204,10 +211,11 @@ export const CALLER_REQUESTS: Readonly<Record<Caller, readonly string[]>> = {
     "files.open",
     "confirm",
     "openExternal",
-    "password.ask",
+    "apply.done",
   ],
-  // Our running page on a saved server's /join: a password, nothing else.
-  running: ["password.ask"],
+  // Our running page on a saved server's /join: a password, and applying
+  // the launch's changes out of sight.
+  running: ["password.ask", "apply.start"],
   home: [
     "runtime.send",
     "permissions.contains",
@@ -273,6 +281,8 @@ export const PasswordResultSchema = z.object({
 });
 /** A wrong password's retry may follow the last answer by this much (native's rule). */
 export const PASSWORD_RETRY_MS = 10_000;
+/** The longest the app applies out of sight before giving up (native's cover). */
+export const APPLY_MAX_MS = 4 * 60_000;
 export const FetchResultSchema = z.object({ text: z.string() });
 /** Longer than any Foundry version ("14.370", "13.351-beta.2"). */
 export const MAX_VERSION = 40;

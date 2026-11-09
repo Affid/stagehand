@@ -139,9 +139,9 @@ describe("joinUsers", () => {
       ["g1", { id: "g1", name: "Gamemaster", role: 4 }],
     ]);
     expect(joinUsers({ users })).toEqual([
-      { id: "g1", name: "Gamemaster", gm: true },
-      { id: "a1", name: "Assistant", gm: true },
-      { id: "p1", name: "Player1", gm: false },
+      { id: "g1", name: "Gamemaster", gm: true, full: true },
+      { id: "a1", name: "Assistant", gm: true, full: false },
+      { id: "p1", name: "Player1", gm: false, full: false },
     ]);
   });
 

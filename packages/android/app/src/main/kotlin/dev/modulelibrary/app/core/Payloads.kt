@@ -40,10 +40,10 @@ private val ids: Field = { value ->
 
 private fun oneOf(vararg options: String): Field = { stringOf(it) in options }
 
-private fun int(max: Int): Field = { value ->
+private fun int(max: Int, min: Int = 0): Field = { value ->
     val p = value as? JsonPrimitive
     val n = p?.takeIf { !it.isString }?.content?.toIntOrNull()
-    n != null && n in 0..max
+    n != null && n in min..max
 }
 
 private val bool: Field = { value -> (value as? JsonPrimitive)?.takeIf { !it.isString }?.content in setOf("true", "false") }
@@ -80,6 +80,8 @@ private val SCHEMAS: Map<String, Map<String, Field>> = mapOf(
         "people" to int(MAX_PEOPLE),
         "wrong" to bool,
     ),
+    "apply.start" to mapOf("world" to text(1, MAX_WORLD), "changes" to int(MAX_PEOPLE, min = 1)),
+    "apply.done" to mapOf("ok" to bool),
     READY to emptyMap(),
 )
 

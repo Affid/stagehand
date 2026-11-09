@@ -139,6 +139,47 @@ html.ml-run-wait body > :not(#ml-run-root) {
   opacity: 0.6;
 }
 
+/* The launch's changes (phase 7): applying or applied, why not, the password Foundry wants. */
+.mlr-ok,
+.mlr-bad {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 7px;
+  font-size: 14px;
+}
+
+.mlr-ok {
+  border: 1px solid rgb(111 220 140 / 30%);
+  background: #13261a;
+  color: #c4f0cf;
+}
+
+.mlr-bad {
+  border: 1px solid rgb(232 138 106 / 35%);
+  background: #2c1d16;
+  color: #f3c7b5;
+}
+
+.mlr-ask {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--color-cool-3, #4b4a44);
+  border-radius: 8px;
+  background: rgb(255 255 255 / 3%);
+}
+
+.mlr-ask p {
+  margin: 0;
+}
+
+.mlr-quiet {
+  background: transparent;
+  font-weight: 600;
+}
+
 /* Server list: a link to the app's home, drawn as the button above it. */
 a.mlr-servers {
   border: 1px solid var(--color-cool-3, #4b4a44);

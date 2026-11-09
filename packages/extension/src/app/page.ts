@@ -10,12 +10,17 @@ import { pageGlobals } from "../page/globals.ts";
 import { startSetupMain } from "../page/main.ts";
 import { startGameBridge } from "../bridge/game.ts";
 import { startSetupUi } from "../ui/start.ts";
-import { createNativeBridge, type NativePort } from "./bridge.ts";
+import {
+  createNativeBridge,
+  type NativeBridge,
+  type NativePort,
+} from "./bridge.ts";
 import { BACK, BRIDGE_NAME, HOME_PAGE, isServerPage } from "./native-api.ts";
 import { pressBack } from "../ui/shell/phone/back.ts";
 import { hideResolutionNotice } from "../page/resolution.ts";
 import { allowTextMenus, hintPasswords } from "../page/text-fields.ts";
 import { addLoginBar } from "./login-bar.ts";
+import { applyWatcher } from "./apply-game.ts";
 import { nativePassword, nativePorts, nativeSend } from "./platform.ts";
 import { showsRunning, startRunning } from "./running/start.tsx";
 
@@ -162,6 +167,32 @@ const routeOf =
   (path: string): string =>
     `${server.replace(/\/$/, "")}/${path}`;
 
+/** The game page: the companion's relay, watched while applying out of sight (phase 7). */
+function startGamePage(port: NativePort, win: Window): void {
+  const bridge = createNativeBridge(port);
+  const watch = applyWatcher({
+    store: win.sessionStorage,
+    done: async (ok) => {
+      await bridge.request("apply.done", { ok });
+    },
+  });
+  startGameBridge({
+    send: nativeSend(bridge),
+    win,
+    ...(watch ? { watch } : {}),
+  });
+}
+
+/** What our running page asks of native: a password, applying out of sight. */
+function runningNative(bridge: NativeBridge) {
+  return {
+    askPassword: nativePassword(bridge),
+    startApply: async (world: string, changes: number): Promise<void> => {
+      await bridge.request("apply.start", { world, changes });
+    },
+  };
+}
+
 /**
  * Relays the companion on the server's game page; false when it doesn't.
  * Native adds app-game after app-setup, so on every other page of the
@@ -191,8 +222,9 @@ export function startAppGame(deps: AppGameDeps): boolean {
         },
         serversHref: HOME_PAGE,
         notes: deps.win.sessionStorage,
-        // The bridge stays ours: a password from native's sheet, nothing else.
-        askPassword: nativePassword(createNativeBridge(port)),
+        // The bridge stays ours: a password from native's sheet, and the
+        // hand-over to native for applying the changes out of sight.
+        ...runningNative(createNativeBridge(port)),
       });
     });
     return false;
@@ -210,9 +242,6 @@ export function startAppGame(deps: AppGameDeps): boolean {
     return false;
   }
   if (!port || !isServerPage(deps.href, deps.server, "/game")) return false;
-  startGameBridge({
-    send: nativeSend(createNativeBridge(port)),
-    win: deps.win,
-  });
+  startGamePage(port, deps.win);
   return true;
 }

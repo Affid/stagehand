@@ -11,6 +11,7 @@ import { useModalFocus } from "../../ui/common/modal-focus.ts";
 import { Icon } from "../../ui/common/widgets.tsx";
 import { plural, type Translate } from "../../ui/i18n.ts";
 import { cssImage } from "../../ui/shell/route.ts";
+import type { ApplyView } from "./apply-flow.ts";
 import {
   type CloseResult,
   type RunningWorld,
@@ -25,8 +26,12 @@ export interface RunningProps {
   readonly origin: string;
   /** Asks Foundry to close the world (a password when it wants one). */
   readonly close: (password?: string) => Promise<CloseResult>;
-  /** Changes launched with this world from our Setup, if it just was. */
-  readonly launched: number | undefined;
+  /** The launch's changes, applying out of sight or applied (phase 7). */
+  readonly apply?: ApplyView | undefined;
+  /** Foundry wants the Gamemaster's password: ask for it (a tap). */
+  readonly onApplyPassword?: () => void;
+  /** Leave the changes queued. */
+  readonly onApplyNotNow?: () => void;
   /** The app's server list (native opens it on a tap). */
   readonly serversHref: string;
   /**
@@ -233,6 +238,52 @@ function ReturnButton(props: {
   );
 }
 
+/** The launch's changes: applying, the password Foundry wants, or how it went. */
+function ApplyLine(props: RunningProps & { readonly apply: ApplyView }) {
+  const { t, apply } = props;
+  if (apply.kind === "applied")
+    return (
+      <p class="mlr-ok">
+        <Icon name="check" />
+        {plural(t, "run.applied", apply.n)}
+      </p>
+    );
+  if (apply.kind === "failed")
+    return (
+      <p class="mlr-bad" role="alert">
+        <Icon name="triangle-exclamation" />
+        {apply.reason}
+      </p>
+    );
+  if (apply.kind === "password")
+    return (
+      <div class="mlr-ask">
+        <p>{plural(t, "run.applyPassword", apply.n, { user: apply.user })}</p>
+        <button
+          type="button"
+          class="bright mlr-go"
+          onClick={props.onApplyPassword}
+        >
+          <Icon name="key" />
+          {t("run.applyEnter", { user: apply.user })}
+        </button>
+        <button
+          type="button"
+          class="mlr-go mlr-quiet"
+          onClick={props.onApplyNotNow}
+        >
+          {t("run.applyNotNow")}
+        </button>
+      </div>
+    );
+  return (
+    <p class="mlr-ok" aria-live="polite">
+      <Icon name="spinner fa-spin-pulse" />
+      {plural(t, "run.applying", apply.n)}
+    </p>
+  );
+}
+
 /** What the two buttons do, for the line under them. */
 function hint(t: Translate, people: number): string {
   return people ? plural(t, "run.hintPeople", people) : t("run.hint");
@@ -243,10 +294,13 @@ function Body(
 ) {
   const { t, r } = props;
   const n = props.status?.users ?? 0;
-  const changes = props.launched ?? 0;
   return (
     <div class="mlr-body">
-      <p>{changes ? plural(t, "run.leadLaunched", changes) : t("run.lead")}</p>
+      {props.apply ? (
+        <ApplyLine {...props} apply={props.apply} />
+      ) : (
+        <p>{t("run.lead")}</p>
+      )}
       <ReturnButton
         t={t}
         world={props.world.title}

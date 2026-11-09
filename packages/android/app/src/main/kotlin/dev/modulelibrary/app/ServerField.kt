@@ -27,7 +27,8 @@ class ServerField(
         importantForAutofill = View.IMPORTANT_FOR_AUTOFILL_YES
         isSingleLine = true
         setTextColor(Look.INK)
-        setHintTextColor(0xFF6D6679.toInt())
+        // 5:1 on the field's ground (review: the dimmer grey was 3.4:1).
+        setHintTextColor(0xFF8A8398.toInt())
         setTextSize(TypedValue.COMPLEX_UNIT_SP, 17f)
         background = Look.rounded(context, Look.FIELD, 7f, Look.FIELD_LINE)
         val padX = Look.dp(context, 12f)
@@ -38,6 +39,10 @@ class ServerField(
         }
     }
 
+    /**
+     * The framework keeps the address's scheme and host (not its port): a
+     * password manager matches as it would the same server in a browser.
+     */
     override fun onProvideAutofillStructure(structure: ViewStructure, flags: Int) {
         super.onProvideAutofillStructure(structure, flags)
         structure.setWebDomain(webDomain)

@@ -49,7 +49,8 @@ class NativeHandlers(
         private set
     private var confirming = false
     private var askingPassword = false
-    private var passwordAnsweredAt = Long.MIN_VALUE / 2
+    /** When a typed password was last handed to a page: one retry may follow it (security review). */
+    private var retryUntil = Long.MIN_VALUE / 2
     private var lastLinkAt = Long.MIN_VALUE / 2
 
     private suspend fun change(next: NativeState, scriptsChanged: Boolean) {
@@ -100,6 +101,14 @@ class NativeHandlers(
         "confirm" -> buildJsonObject { put("yes", confirm(payload.text("text"), url)) }
         "password.ask" -> askPassword(passwordAsk(payload), url)
             ?.let { pw -> buildJsonObject { put("password", pw) } } ?: JsonObject(emptyMap())
+        "apply.start" -> {
+            ui.applyStarted(originOf(url), payload.text("world"), payload.text("changes").toInt())
+            null
+        }
+        "apply.done" -> {
+            ui.applyDone(originOf(url), payload.text("ok").toBoolean())
+            null
+        }
         "openExternal" -> {
             openExternal(payload.text("url"))
             null
@@ -176,14 +185,18 @@ class NativeHandlers(
      */
     private suspend fun askPassword(ask: PasswordAsk, url: String): String? {
         if (askingPassword) return null
-        val retry = ask.wrong && clock() - passwordAnsweredAt < PASSWORD_RETRY_MS
+        // A retry only right after a password was typed and handed over, once;
+        // a cancel gives none, so a page can't keep the sheet coming back.
+        val retry = ask.wrong && clock() < retryUntil
+        retryUntil = Long.MIN_VALUE / 2
         require(tappedLately() || retry) { "A password is asked on a tap" }
         askingPassword = true
         try {
-            return ui.askPassword(ask, requireNotNull(WebUrl.parse(url)?.origin) { "No server" })
+            val answer = ui.askPassword(ask, originOf(url))
+            if (answer != null) retryUntil = clock() + PASSWORD_RETRY_MS
+            return answer
         } finally {
             askingPassword = false
-            passwordAnsweredAt = clock()
         }
     }
 
@@ -208,3 +221,5 @@ private fun passwordAsk(payload: JsonObject) = PasswordAsk(
     people = payload.getValue("people").jsonPrimitive.content.toInt(),
     wrong = payload.getValue("wrong").jsonPrimitive.content.toBoolean(),
 )
+
+private fun originOf(url: String): String = requireNotNull(WebUrl.parse(url)?.origin) { "No server" }

@@ -128,9 +128,12 @@ export interface JoinUser {
   readonly name: string;
   /** Assistant GM or Gamemaster (Foundry's roles 3 and 4). */
   readonly gm: boolean;
+  /** The full Gamemaster (role 4): the only one the companion applies for. */
+  readonly full: boolean;
 }
 
 const GM_ROLE = 3;
+const FULL_GM_ROLE = 4;
 
 /** The join page's users, Gamemasters first. */
 export function joinUsers(game: unknown): JoinUser[] {
@@ -145,7 +148,10 @@ export function joinUsers(game: unknown): JoinUser[] {
     const name = text(u.name, 200);
     if (!id || !name) continue;
     const role = typeof u.role === "number" ? u.role : 0;
-    list.push({ user: { id, name, gm: role >= GM_ROLE }, role });
+    list.push({
+      user: { id, name, gm: role >= GM_ROLE, full: role >= FULL_GM_ROLE },
+      role,
+    });
   }
   // Highest role first; Foundry's order otherwise (the sort is stable).
   return list.sort((a, b) => b.role - a.role).map((x) => x.user);

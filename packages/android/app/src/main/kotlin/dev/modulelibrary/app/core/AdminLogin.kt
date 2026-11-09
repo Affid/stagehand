@@ -1,5 +1,6 @@
 package dev.modulelibrary.app.core
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -37,7 +38,10 @@ private val USERNAME_FIELD = Regex("""name\s*=\s*["']adminUsername["']""")
 private const val ODD_ANSWER = "Foundry didn't answer as expected"
 private const val NO_ANSWER = "Foundry didn't answer"
 
-/** A redirect's target on this server only, as a full URL; null for anywhere else. */
+/**
+ * A redirect's target on this server only, as a full URL; null for anywhere
+ * else, and for its login page itself, which would loop (review).
+ */
 private fun onServer(location: String?, server: String): String? {
     val origin = WebUrl.parse(server)?.origin ?: return null
     val target = try {
@@ -45,7 +49,8 @@ private fun onServer(location: String?, server: String): String? {
     } catch (_: IllegalArgumentException) {
         return null
     }
-    return target.takeIf { it == server || it.startsWith("$server/") }
+    if (target != server && !target.startsWith("$server/")) return null
+    return target.takeIf { loginServerOf(it, listOf(server)) == null }
 }
 
 /** Foundry's answer to a login POST: Setup, a wrong password, another page, or a failure. */
@@ -78,8 +83,7 @@ class AdminLogin(
                 val target = onServer(conn.getHeaderField("Location"), server) ?: throw IOException(ODD_ANSWER)
                 return@withContext LoginPage.Elsewhere(target)
             }
-            val html = conn.inputStream.bufferedReader().use { it.readText().take(MAX_PAGE_CHARS) }
-            LoginPage.Form(usernameRequired = USERNAME_FIELD.containsMatchIn(html))
+            LoginPage.Form(usernameRequired = USERNAME_FIELD.containsMatchIn(readCapped(conn)))
         } finally {
             conn.disconnect()
         }
@@ -89,7 +93,10 @@ class AdminLogin(
         withContext(io) {
             try {
                 post(server, cookie, form(password, username))
-            } catch (_: IOException) {
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Exception) {
+                // A broken address or answer as much as no answer (review).
                 LoginAnswer(LoginResult.Failed(NO_ANSWER), emptyList())
             }
         }
@@ -130,3 +137,15 @@ private fun encode(value: String): String = URLEncoder.encode(value, Charsets.UT
 /** The form Foundry's login posts: the username only when its options want one. */
 private fun form(password: String, username: String?): String =
     "adminPassword=${encode(password)}" + (username?.let { "&adminUsername=${encode(it)}" } ?: "")
+
+/** At most MAX_PAGE_CHARS of the page, without reading the rest (review). */
+private fun readCapped(conn: HttpURLConnection): String = conn.inputStream.bufferedReader().use { reader ->
+    val out = StringBuilder()
+    val buf = CharArray(8192)
+    while (out.length < MAX_PAGE_CHARS) {
+        val n = reader.read(buf)
+        if (n < 0) break
+        out.appendRange(buf, 0, n)
+    }
+    out.toString()
+}

@@ -17,6 +17,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 private const val SETUP = "http://localhost:30000/setup"
+private const val JOIN = "http://localhost:30000/join"
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class RelayTest {
@@ -32,6 +33,7 @@ class RelayTest {
                 JsonPrimitive("done")
             },
             routeTimeoutMs = 5_000,
+            runningAllowed = { it == JOIN },
         )
 
         fun page(source: Caller, text: String, url: String = SETUP) =
@@ -65,6 +67,21 @@ class RelayTest {
         assertTrue(h.handled.isEmpty())
         assertEquals(3, h.replies.size)
         h.replies.forEach { assertTrue(it, it.contains("\"ok\":false") && it.contains("isn't allowed")) }
+    }
+
+    @Test
+    fun `our running page on join asks for a password and applying, nothing else, and Setup never asks for one`() = runTest {
+        val h = Harness(this)
+        val ask = """{"purpose":"close","world":"Strahd","people":0,"wrong":false}"""
+        h.page(Caller.SERVER, req("r1", "password.ask", ask), url = JOIN)
+        h.page(Caller.SERVER, req("r2", "apply.start", """{"world":"Strahd","changes":2}"""), url = JOIN)
+        runCurrent()
+        assertEquals(listOf(Caller.RUNNING to "password.ask", Caller.RUNNING to "apply.start"), h.handled.map { it.first to it.second })
+        h.page(Caller.SERVER, req("r3", "runtime.send", """{"message":{}}"""), url = JOIN)
+        h.page(Caller.SERVER, req("s1", "password.ask", ask))
+        runCurrent()
+        assertEquals(2, h.handled.size)
+        assertTrue(h.replies.takeLast(2).all { it.contains("isn't allowed") })
     }
 
     @Test

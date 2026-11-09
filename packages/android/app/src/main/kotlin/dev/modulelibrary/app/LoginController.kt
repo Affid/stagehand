@@ -1,16 +1,17 @@
 package dev.modulelibrary.app
 
 import android.app.Activity
+import android.view.WindowManager
 import android.view.autofill.AutofillManager
 import android.webkit.CookieManager
 import android.widget.FrameLayout
 import dev.modulelibrary.app.core.AdminLogin
 import dev.modulelibrary.app.core.LoginPage
 import dev.modulelibrary.app.core.LoginResult
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import java.io.IOException
 
 /** What our login needs from the activity. */
 interface LoginHost {
@@ -31,7 +32,8 @@ interface LoginHost {
  * Our login in place of Foundry's /auth (Android plan, phase 7): shows the
  * native screen over the server WebView, reads Foundry's form, posts the
  * password natively (AdminLogin), hands Foundry's session cookie to the
- * WebView, and opens Setup. Main thread only.
+ * WebView, and opens Setup. Main thread only. The form's read and the
+ * login are separate jobs, and Log in waits for the form (review).
  */
 class LoginController(
     private val activity: Activity,
@@ -43,32 +45,44 @@ class LoginController(
     private var screen: LoginScreen? = null
     private var server: String? = null
     private var usernameRequired = false
-    private var work: Job? = null
+    private var reading: Job? = null
+    private var submitting: Job? = null
 
-    val showing: Boolean get() = screen != null
+    /** From the moment our login is asked for, so Back is ours meanwhile (review). */
+    val showing: Boolean get() = server != null
 
     fun show(server: String) {
-        if (this.server == server && screen != null) return
+        if (this.server == server) return
         hide()
         this.server = server
-        work = scope.launch {
+        usernameRequired = false
+        reading = scope.launch {
             val name = host.serverName(server)
             if (this@LoginController.server != server) return@launch
             val shown = LoginScreen(activity, LoginTarget(server, name), onBack = ::back, onSubmit = ::submit)
             screen = shown
             root.addView(shown.view, FrameLayout.LayoutParams(-1, -1))
+            // The typed password stays out of screenshots and the recents view.
+            activity.window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
             host.serverAutofill(false)
+            shown.busy(true)
             readForm(server, shown)
         }
     }
 
     fun hide() {
-        work?.cancel()
-        work = null
+        val wasShowing = showing
+        reading?.cancel()
+        submitting?.cancel()
+        reading = null
+        submitting = null
         screen?.let { root.removeView(it.view) }
         screen = null
         server = null
-        host.serverAutofill(true)
+        if (wasShowing) {
+            activity.window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+            host.serverAutofill(true)
+        }
     }
 
     /** ‹ or Android's Back: the server list. */
@@ -80,7 +94,10 @@ class LoginController(
     private suspend fun readForm(server: String, shown: LoginScreen) {
         val page = try {
             login.page(server, CookieManager.getInstance().getCookie(server))
-        } catch (_: IOException) {
+        } catch (e: CancellationException) {
+            throw e
+        } catch (_: Exception) {
+            shown.busy(false)
             shown.form(usernameRequired = false)
             shown.error(activity.getString(R.string.login_failed))
             return
@@ -88,6 +105,7 @@ class LoginController(
         when (page) {
             is LoginPage.Form -> {
                 usernameRequired = page.usernameRequired
+                shown.busy(false)
                 shown.form(page.usernameRequired)
             }
             is LoginPage.Elsewhere -> leaveFor(page.url)
@@ -97,26 +115,32 @@ class LoginController(
     private fun submit(password: String, username: String?) {
         val server = server ?: return
         val shown = screen ?: return
+        if (password.isEmpty() || submitting?.isActive == true) return
         shown.busy(true)
         shown.error(null)
-        work = scope.launch {
+        submitting = scope.launch {
             val cookies = CookieManager.getInstance()
             val answer = login.logIn(server, cookies.getCookie(server), password, username)
-            answer.cookies.forEach { cookies.setCookie(server, it) }
+            // As the server's own /auth answer would set them (route prefix: review).
+            answer.cookies.forEach { cookies.setCookie("$server/auth", it) }
             cookies.flush()
             shown.busy(false)
-            when (val result = answer.result) {
-                LoginResult.Setup -> {
-                    // Password managers offer to save what was typed.
-                    activity.getSystemService(AutofillManager::class.java)?.commit()
-                    leaveFor("$server/setup")
-                }
-                LoginResult.Wrong -> shown.error(
-                    activity.getString(if (usernameRequired) R.string.login_wrong_user else R.string.login_wrong),
-                )
-                is LoginResult.Elsewhere -> leaveFor(result.url)
-                is LoginResult.Failed -> shown.error(activity.getString(R.string.login_failed))
+            settle(server, shown, answer.result)
+        }
+    }
+
+    private fun settle(server: String, shown: LoginScreen, result: LoginResult) {
+        when (result) {
+            LoginResult.Setup -> {
+                // Password managers offer to save what was typed.
+                activity.getSystemService(AutofillManager::class.java)?.commit()
+                leaveFor("$server/setup")
             }
+            LoginResult.Wrong -> shown.error(
+                activity.getString(if (usernameRequired) R.string.login_wrong_user else R.string.login_wrong),
+            )
+            is LoginResult.Elsewhere -> leaveFor(result.url)
+            is LoginResult.Failed -> shown.error(activity.getString(R.string.login_failed))
         }
     }
 

@@ -10,12 +10,14 @@ import type { PageGlobals } from "../../page/globals.ts";
 import { hideResolutionNotice } from "../../page/resolution.ts";
 import { isServerPage } from "../native-api.ts";
 import { createTranslator } from "../../ui/i18n.ts";
-import { readLaunchNote } from "../launch-note.ts";
+import { type ApplyFlowDeps } from "./apply-flow.ts";
+import { useApply } from "./useApply.ts";
 import type { PasswordQuestion } from "../platform.ts";
 import { RunningScreen } from "./RunningScreen.tsx";
 import {
   closeWorld,
   fetchStatus,
+  joinGame,
   joinWorld,
   type RunningWorld,
   type ServerDeps,
@@ -52,6 +54,27 @@ export interface RunningDeps {
   readonly notes?: Storage;
   /** The app's native password sheet (password.ask), when the page has the bridge. */
   readonly askPassword?: (q: PasswordQuestion) => Promise<string | undefined>;
+  /** Native covers the WebView and lets /game load to apply the changes (apply.start). */
+  readonly startApply?: (world: string, changes: number) => Promise<void>;
+}
+
+/** The apply flow's needs from these deps; none without a launch note or native. */
+function flowOf(
+  deps: RunningDeps,
+  world: RunningWorld,
+): ApplyFlowDeps | undefined {
+  const { notes, startApply } = deps;
+  if (!notes || !startApply) return undefined;
+  return {
+    store: notes,
+    world,
+    game: deps.game,
+    join: (userId, password) => joinGame(deps.server, userId, password),
+    start: startApply,
+    go: (path) => {
+      deps.win.location.assign(path);
+    },
+  };
 }
 
 /** Foundry confirmed the close; Setup is opened anyway after this long. */
@@ -104,6 +127,8 @@ function Root(props: {
   const [closing, setClosing] = useState(false);
   const status = useStatus(deps, closing);
   const ask = deps.askPassword;
+  const [flow] = useState(() => flowOf(deps, props.world));
+  const apply = useApply(flow, ask, status?.users ?? 0);
   return (
     <RunningScreen
       t={createTranslator("en")}
@@ -115,11 +140,9 @@ function Root(props: {
         if (result === "closing") setClosing(true);
         return result;
       }}
-      launched={
-        deps.notes
-          ? readLaunchNote(deps.notes, props.world.id)?.changes
-          : undefined
-      }
+      apply={apply.view}
+      onApplyPassword={apply.password}
+      onApplyNotNow={apply.notNow}
       serversHref={deps.serversHref}
       {...(ask
         ? {

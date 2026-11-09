@@ -34,7 +34,7 @@ private fun words(activity: Activity, ask: PasswordAsk): SheetWords = when (ask.
         hint = null,
     )
     PasswordPurpose.JOIN -> {
-        val user = ask.user ?: "Gamemaster"
+        val user = ask.user ?: activity.getString(R.string.pw_join_user)
         SheetWords(
             title = activity.getString(R.string.pw_join_title, user),
             text = activity.getString(R.string.pw_join_text, user, ask.world),
@@ -67,7 +67,11 @@ class PasswordSheet(private val activity: Activity, private val origin: String, 
         }
         val dialog = Dialog(activity)
         val field = ServerField(activity, origin, password = true)
-        dialog.setContentView(content(words(activity, ask), ask.wrong, field, dialog, answer))
+        val w = words(activity, ask)
+        dialog.setTitle(w.title)
+        val view = content(w, ask, field, dialog, answer)
+        clearOfBars(view)
+        dialog.setContentView(view)
         dialog.setOnDismissListener { answer(null) }
         place(dialog)
         dialog.show()
@@ -75,8 +79,21 @@ class PasswordSheet(private val activity: Activity, private val origin: String, 
         cont.invokeOnCancellation { activity.runOnUiThread { dialog.dismiss() } }
     }
 
+    /** The sheet's foot stays above the navigation bar and the keyboard (review). */
+    private fun clearOfBars(view: View) {
+        val base = view.paddingBottom
+        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+            val types = androidx.core.view.WindowInsetsCompat.Type.systemBars() or
+                androidx.core.view.WindowInsetsCompat.Type.ime()
+            v.setPadding(v.paddingLeft, v.paddingTop, v.paddingRight, base + insets.getInsets(types).bottom)
+            insets
+        }
+    }
+
     private fun place(dialog: Dialog) {
         dialog.window?.apply {
+            // The typed password stays out of screenshots and the recents view.
+            addFlags(WindowManager.LayoutParams.FLAG_SECURE)
             setBackgroundDrawable(ColorDrawable(0))
             setGravity(Gravity.BOTTOM)
             setLayout(MATCH_PARENT, WRAP_CONTENT)
@@ -86,7 +103,7 @@ class PasswordSheet(private val activity: Activity, private val origin: String, 
 
     private fun content(
         w: SheetWords,
-        wrong: Boolean,
+        ask: PasswordAsk,
         field: ServerField,
         dialog: Dialog,
         answer: (String?) -> Unit,
@@ -100,16 +117,20 @@ class PasswordSheet(private val activity: Activity, private val origin: String, 
         }
         val pad = Look.dp(activity, 16f)
         setPadding(pad, Look.dp(activity, 18f), pad, pad)
-        val submit = { answer(field.text.toString()).also { dialog.dismiss() } }
+        // An administrator password is never empty; a user's may be ("join").
+        val submit = {
+            val typed = field.text.toString()
+            if (typed.isNotEmpty() || ask.purpose == PasswordPurpose.JOIN) answer(typed).also { dialog.dismiss() }
+        }
         addView(Look.text(activity, 12f, Look.QUIET).apply { text = serverLabel })
-        addView(Look.heading(activity, 21f).apply { text = w.title }, spaced(top = 4f))
+        addView(Look.heading(activity, 21f).apply { text = w.title; isAccessibilityHeading = true }, spaced(top = 4f))
         addView(Look.text(activity, 13.5f, Look.DIM).apply { text = w.text }, spaced(top = 10f))
         addView(label(w.label, field), spaced(top = 14f))
         field.hint = w.hint ?: w.label
         field.imeOptions = EditorInfo.IME_ACTION_DONE
         field.setOnEditorActionListener { _, action, _ -> (action == EditorInfo.IME_ACTION_DONE).also { if (it) submit() } }
         addView(field, spaced(top = 6f))
-        if (wrong) addView(Look.error(activity).apply { text = w.wrong; visibility = View.VISIBLE }, spaced(top = 10f))
+        if (ask.wrong) addView(Look.error(activity).apply { text = w.wrong; visibility = View.VISIBLE }, spaced(top = 10f))
         addView(Look.bright(activity, w.go).apply { setOnClickListener { submit() } }, spaced(top = 14f))
         val cancel = Look.plain(activity, activity.getString(R.string.pw_cancel)).apply {
             background = null

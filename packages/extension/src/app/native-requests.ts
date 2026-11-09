@@ -63,6 +63,11 @@ export const REQUEST_SCHEMAS = {
     people: z.number().int().min(0).max(MAX_PEOPLE),
     wrong: z.boolean(),
   }),
+  "apply.start": z.object({
+    world: z.string().min(1).max(MAX_WORLD),
+    changes: z.number().int().min(1).max(MAX_PEOPLE),
+  }),
+  "apply.done": z.object({ ok: z.boolean() }),
   "home.open": z.object({}),
   "background.ready": z.object({}),
 } as const;
