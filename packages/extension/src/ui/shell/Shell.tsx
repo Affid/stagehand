@@ -24,8 +24,9 @@ function useUpdateCheck(): void {
 
 function DesktopShell() {
   const { route, world } = useShownRoute();
+  const { state } = useUi();
   return (
-    <div class="mls-shell">
+    <div class="mls-shell" inert={state.launching !== null}>
       <Header />
       <div class="mls">
         <WorldRail route={route} />

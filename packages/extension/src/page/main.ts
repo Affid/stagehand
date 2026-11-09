@@ -7,6 +7,7 @@
 import { logError } from "@module-library/shared/log";
 import type { PageChannel } from "../page-channel.ts";
 import {
+  type FoundryAction,
   type PageToUi,
   parseUiToPage,
   type UiToPage,
@@ -225,6 +226,27 @@ function setCompact(ctx: Ctx, on: boolean): void {
   }
 }
 
+/** Foundry's launchWorld error tick carries at most this much of the reason. */
+const MAX_LAUNCH_ERROR = 500;
+
+/**
+ * An action that failed on our side: the notice, and for a launch also the
+ * launching screen, as Foundry's own failed launch would tell it (review).
+ */
+function failed(ctx: Ctx, action: FoundryAction, error: string): void {
+  ctx.notify("error", error);
+  if (action.action !== "launch" && action.action !== "backupLaunch") return;
+  ctx.postToUi({
+    type: "PROGRESS",
+    payload: {
+      action: "launchWorld",
+      id: action.worldId,
+      step: "error",
+      error: error.slice(0, MAX_LAUNCH_ERROR),
+    },
+  });
+}
+
 function handle(ctx: Ctx, m: UiToPage): void {
   if (WRITES.has(m.type) && ctx.page.game?.data?.isAdmin !== true) {
     ctx.notify(
@@ -248,7 +270,7 @@ function handle(ctx: Ctx, m: UiToPage): void {
       break;
     case "FOUNDRY_ACTION":
       void runFoundryAction(ctx.doc, ctx.page, m.payload).then((error) => {
-        if (error) ctx.notify("error", error);
+        if (error) failed(ctx, m.payload, error);
       });
       break;
     case "EDITOR_OPEN":

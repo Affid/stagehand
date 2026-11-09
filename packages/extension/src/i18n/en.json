@@ -1156,5 +1156,6 @@
   "launch.noReason": "it gave no reason.",
   "launch.stalled": "Foundry hasn't started the launch yet. If it asks something in its own window, answer it there; otherwise go back and try again.",
   "launch.back": "Back to the world",
-  "launch.servers": "Server list"
+  "launch.servers": "Server list",
+  "launch.stalledLate": "Foundry has gone quiet. The launch may still finish; if nothing changes, go back and check the world."
 }

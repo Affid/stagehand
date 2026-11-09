@@ -38,6 +38,19 @@ describe("Foundry's launch ticks", () => {
     ).toMatchObject({ step: "error", error: "The world is locked" });
   });
 
+  test("a tick keeps what it doesn't say (review)", () => {
+    const moved = withLaunchTick(
+      START,
+      tick({ step: "connectWorld", pct: 40 }),
+    );
+    expect(withLaunchTick(moved, tick({ step: "connectWorld" }))).toMatchObject(
+      {
+        step: "connectWorld",
+        pct: 40,
+      },
+    );
+  });
+
   test("move the launch on; another world's ticks don't", () => {
     const moved = withLaunchTick(
       START,
@@ -137,6 +150,55 @@ describe("the launching screen", () => {
     expect(
       screen.getByRole("button", { name: "Back to the world" }),
     ).toBeTruthy();
+  });
+
+  test("a launch that goes quiet after a tick still offers the way back (review)", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    const r = launchPage();
+    await screen.findByRole("dialog", { name: "Launching Strahd" });
+    r.emit({
+      type: "PROGRESS",
+      payload: tick({ step: "connectWorld", pct: 10 }),
+    });
+    vi.advanceTimersByTime(60_000);
+    // Still within the loading limit: no note yet.
+    expect(
+      screen.queryByRole("button", { name: "Back to the world" }),
+    ).toBeNull();
+    r.emit({
+      type: "PROGRESS",
+      payload: tick({ step: "connectWorld", pct: 20 }),
+    });
+    vi.advanceTimersByTime(60_000);
+    expect(
+      screen.queryByRole("button", { name: "Back to the world" }),
+    ).toBeNull();
+    vi.advanceTimersByTime(31_000);
+    expect(await screen.findByText(/gone quiet/)).toBeTruthy();
+    expect(
+      screen.getByRole("button", { name: "Back to the world" }),
+    ).toBeTruthy();
+  });
+
+  test("the page behind is out of reach; Escape goes back once Back is offered", async () => {
+    const r = launchPage();
+    const dialog = await screen.findByRole("dialog", {
+      name: "Launching Strahd",
+    });
+    expect(r.container.querySelector(".mls-shell")?.hasAttribute("inert")).toBe(
+      true,
+    );
+    fireEvent.keyDown(dialog, { key: "Escape" });
+    expect(r.store.get().launching).not.toBeNull();
+    r.emit({ type: "PROGRESS", payload: tick({ step: "error", error: "No" }) });
+    await screen.findByRole("alert");
+    fireEvent.keyDown(dialog, { key: "Escape" });
+    await waitFor(() => {
+      expect(r.store.get().launching).toBeNull();
+    });
+    expect(r.container.querySelector(".mls-shell")?.hasAttribute("inert")).toBe(
+      false,
+    );
   });
 
   test("in the app, Server list opens the servers; the extension has none", async () => {

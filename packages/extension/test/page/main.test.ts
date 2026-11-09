@@ -154,6 +154,25 @@ describe("setup-main: Foundry's half of the Setup page", () => {
     );
   });
 
+  test("a launch that fails on our side tells the launching screen why (review)", async () => {
+    vi.useFakeTimers();
+    const f = foundry(true);
+    const s = start(f.page);
+    await vi.advanceTimersByTimeAsync(1);
+    // No world tile on this page: Foundry's launch control is missing.
+    s.ui.send("FOUNDRY_ACTION", { action: "launch", worldId: "strahd" });
+    await vi.advanceTimersByTimeAsync(1);
+    expect(s.heard).toContainEqual([
+      "PROGRESS",
+      expect.objectContaining({
+        action: "launchWorld",
+        id: "strahd",
+        step: "error",
+        error: expect.stringContaining("strahd") as unknown,
+      }),
+    ]);
+  });
+
   test("ignores messages it doesn't know or that don't check out", async () => {
     vi.useFakeTimers();
     const f = foundry(true);

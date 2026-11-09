@@ -174,6 +174,7 @@ export function PhoneShell(props: { readonly layout: Layout }) {
           class={`mls-shell mlp${layout === "tablet" ? " mlp-wide" : ""}${bannerGone ? " mlp-scrolled" : ""}`}
           data-screen={home ? "home" : "page"}
           data-page={pageName(route)}
+          inert={state.launching !== null}
         >
           <PhoneTop layout={layout} route={route} world={world} />
           <div class="mls">

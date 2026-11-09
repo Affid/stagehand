@@ -58,10 +58,17 @@ export function withLaunchTick(
 ): Launching | null {
   if (!launching || tick.action !== "launchWorld") return launching;
   if (tick.id !== launching.worldId) return launching;
+  // What a tick doesn't say stays, except a percent from an earlier step.
+  const newStep = tick.step !== undefined && tick.step !== launching.step;
+  const kept: Launching = newStep
+    ? {
+        worldId: launching.worldId,
+        title: launching.title,
+        backup: launching.backup,
+      }
+    : launching;
   return {
-    worldId: launching.worldId,
-    title: launching.title,
-    backup: launching.backup,
+    ...kept,
     ...(tick.step === undefined ? {} : { step: tick.step }),
     ...(tick.pct === undefined ? {} : { pct: tick.pct }),
     ...(tick.error === undefined ? {} : { error: tick.error }),

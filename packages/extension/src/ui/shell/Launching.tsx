@@ -13,8 +13,19 @@ import {
   stopLaunch,
 } from "../launching.ts";
 
-/** No tick from Foundry for this long: it may be asking something, or refused. */
-export const STALL_MS = 20_000;
+/**
+ * How long Foundry may stay silent in each stage before we say so and offer
+ * the way back: before its first tick it may be asking something or have
+ * refused; a big world's backup takes minutes; between loading ticks, and
+ * after "complete" while it should be leaving Setup (review).
+ */
+export const STALL_MS: Readonly<Record<LaunchStage, number>> = {
+  ask: 20_000,
+  backup: 5 * 60_000,
+  load: 90_000,
+  open: 30_000,
+  failed: 0,
+};
 
 const STEP_ORDER: readonly LaunchStage[] = ["backup", "ask", "load", "open"];
 
@@ -26,20 +37,20 @@ const DETAIL_KEYS: Readonly<Record<string, string>> = {
   migratePackage: "launch.subPacks",
 };
 
-/** True once Foundry has sent nothing for STALL_MS since the tap. */
+/** True once Foundry has sent nothing for its stage's STALL_MS; any tick restarts it. */
 function useStalled(l: Launching): boolean {
   const [stalled, setStalled] = useState(false);
-  const waiting = l.step === undefined;
+  const stage = launchView(l).stage;
   useEffect(() => {
     setStalled(false);
-    if (!waiting) return undefined;
+    if (stage === "failed") return undefined;
     const timer = setTimeout(() => {
       setStalled(true);
-    }, STALL_MS);
+    }, STALL_MS[stage]);
     return () => {
       clearTimeout(timer);
     };
-  }, [waiting, l.worldId]);
+  }, [stage, l.step, l.pct, l.worldId]);
   return stalled;
 }
 
@@ -61,7 +72,7 @@ function Steps(props: { readonly l: Launching; readonly app: boolean }) {
   const order = STEP_ORDER.filter((s) => s !== "backup" || props.l.backup);
   const at = order.indexOf(view.stage);
   return (
-    <ol class="mll-steps">
+    <ol class="mll-steps" aria-live="polite">
       {order.map((stage, i) => {
         const state = i < at ? "done" : i === at ? "now" : "";
         return (
@@ -104,11 +115,10 @@ function Dock(props: { readonly way: boolean; readonly app: boolean }) {
   );
 }
 
-function Body(props: { readonly l: Launching }) {
+function Body(props: { readonly l: Launching; readonly stalled: boolean }) {
   const { t, ports } = useUi();
-  const { l } = props;
+  const { l, stalled } = props;
   const view = launchView(l);
-  const stalled = useStalled(l);
   const failed = view.stage === "failed";
   const app = ports.app === true;
   return (
@@ -134,22 +144,24 @@ function Body(props: { readonly l: Launching }) {
         <Steps l={l} app={app} />
       )}
       {stalled && !failed ? (
-        <p class="mll-note">{t("launch.stalled")}</p>
+        <p class="mll-note">
+          {t(view.stage === "ask" ? "launch.stalled" : "launch.stalledLate")}
+        </p>
       ) : null}
       <Dock way={failed || stalled} app={app} />
     </>
   );
 }
 
-export function LaunchingScreen() {
-  const { state, t } = useUi();
-  const l = state.launching;
+function Screen(props: { readonly l: Launching }) {
+  const { t, store } = useUi();
+  const { l } = props;
   const box = useRef<HTMLDivElement>(null);
-  const shown = l !== null;
+  const stalled = useStalled(l);
+  const way = stalled || launchView(l).stage === "failed";
   useEffect(() => {
-    if (shown) box.current?.focus();
-  }, [shown]);
-  if (!l) return null;
+    box.current?.focus();
+  }, []);
   return (
     <div class="mll-launch">
       <div
@@ -159,9 +171,19 @@ export function LaunchingScreen() {
         aria-label={t("launch.title", { world: l.title })}
         tabIndex={-1}
         ref={box}
+        onKeyDown={(e) => {
+          // Escape is Back, once Back is offered.
+          if (e.key === "Escape" && way) stopLaunch(store);
+        }}
       >
-        <Body l={l} />
+        <Body l={l} stalled={stalled} />
       </div>
     </div>
   );
+}
+
+/** The page behind is out of reach while it shows (Shell.tsx sets inert). */
+export function LaunchingScreen() {
+  const { state } = useUi();
+  return state.launching ? <Screen l={state.launching} /> : null;
 }
