@@ -11,13 +11,52 @@ import {
 } from "../../scripts/foundry/admin.ts";
 import { loadFoundryEnv } from "../../scripts/foundry/env.ts";
 import { TEST_WORLD } from "../../scripts/foundry/world.ts";
-import { sleep, tapNative, typeNative, waitNative } from "./native-ui.ts";
+import { adb, sleep, tapNative, typeNative, waitNative } from "./native-ui.ts";
 
 export const env = loadFoundryEnv();
 export const THEMES = ["dark", "fantasy", "scifi"] as const;
 export type Theme = (typeof THEMES)[number];
 
 /** Admin login in the app's server WebView, then our Setup page on it. */
+/** Clears the focused native field and types `text` one key at a time. */
+async function typeSlowly(text: string): Promise<void> {
+  adb("shell", "input", "keyevent", "KEYCODE_MOVE_END");
+  for (let i = 0; i < text.length + 5; i++)
+    adb("shell", "input", "keyevent", "KEYCODE_DEL");
+  for (const ch of text) {
+    typeNative(ch);
+    await sleep(120);
+  }
+}
+
+/**
+ * Types the password and logs in, judged by Foundry's answer: adb's typing
+ * while the keyboard is up can change a key (seen on the emulator), so a
+ * refusal is typed again, up to three times.
+ */
+async function typeAndLogIn(password: string): Promise<void> {
+  for (let attempt = 0; attempt < 3; attempt++) {
+    await sleep(1_500);
+    await typeSlowly(password);
+    await tapNative(/^Log in$/);
+    const refused = await waitNative(
+      /isn't this server's administrator password/,
+      8_000,
+    )
+      .then(() => true)
+      .catch(() => false);
+    if (!refused) return;
+  }
+  throw new Error("Foundry refused the typed password three times");
+}
+
+/** Our login on screen within a while, or none (Setup opened as logged in). */
+async function needsLogin(): Promise<boolean> {
+  return waitNative(/Log in to Setup/, 20_000)
+    .then(() => true)
+    .catch(() => false);
+}
+
 /**
  * Our native login (phase 7): Foundry's /auth never shows in the app; the
  * password goes into our field, as the user types it. Then Setup.
@@ -26,10 +65,11 @@ export async function adminLogin(
   app: { pageAt(start: string, timeoutMs?: number): Promise<Page> },
   server: string,
 ): Promise<Page> {
-  await waitNative(/Log in to Setup/, 60_000);
-  await sleep(500);
-  typeNative(env.adminPassword);
-  await tapNative(/^Log in$/);
+  // Still logged in (the WebView keeps Foundry's session): Setup, no login.
+  if (await needsLogin()) {
+    await waitNative(/^Log in$/, 30_000);
+    await typeAndLogIn(env.adminPassword);
+  }
   const page = await app.pageAt(`${server}/setup`, 60_000);
   await page.locator("#ml-shell-root .mlp-top").waitFor({ timeout: 60_000 });
   // Foundry's first-run tour covers the page in a fresh WebView.

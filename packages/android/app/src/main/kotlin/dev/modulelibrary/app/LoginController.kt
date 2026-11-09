@@ -3,6 +3,7 @@ package dev.modulelibrary.app
 import android.app.Activity
 import android.view.WindowManager
 import android.view.autofill.AutofillManager
+import android.view.inputmethod.InputMethodManager
 import android.webkit.CookieManager
 import android.widget.FrameLayout
 import dev.modulelibrary.app.core.AdminLogin
@@ -77,6 +78,9 @@ class LoginController(
         submitting?.cancel()
         reading = null
         submitting = null
+        // The password's keyboard goes with the screen: left open, it would
+        // take the next Back for itself (seen on the emulator).
+        screen?.let { closeKeyboard(it.view) }
         screen?.let { root.removeView(it.view) }
         screen = null
         server = null
@@ -143,6 +147,10 @@ class LoginController(
             is LoginResult.Elsewhere -> leaveFor(result.url)
             is LoginResult.Failed -> shown.error(activity.getString(R.string.login_failed))
         }
+    }
+
+    private fun closeKeyboard(view: android.view.View) {
+        activity.getSystemService(InputMethodManager::class.java)?.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
     private fun leaveFor(url: String) {
