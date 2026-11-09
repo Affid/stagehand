@@ -6,7 +6,7 @@ the owner asked for it to feel native to Foundry rather than added on.
 
 ## What it is
 
-Foundry's world list stays the only list. Module Library adds:
+Foundry's world list stays the only list. Stagehand adds:
 
 | Piece                             | Where                        | Built from Foundry's own                                                                    |
 | --------------------------------- | ---------------------------- | ------------------------------------------------------------------------------------------- |

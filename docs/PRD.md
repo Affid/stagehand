@@ -1,4 +1,4 @@
-# PRD: Module Library for Foundry VTT (working name)
+# PRD: Stagehand for Foundry VTT (working name)
 
 | | |
 |---|---|
@@ -14,7 +14,7 @@
 
 Admins can't organise the modules they already have. The Add-on Modules tab on the Setup screen is one flat list. Every existing management tool (Big Bad Module Manager, Module Profiles, Sephral's Module Loadouts, Module Management+) runs inside a single world and only sees that world's active list.
 
-Module Library adds a structured, cross-world layer to the Setup screen. It offers folders, tags, smart groups, notes, author views, a per-world view of active modules, and presets that can **replace, add to, or remove from** a world's module set.
+Stagehand adds a structured, cross-world layer to the Setup screen. It offers folders, tags, smart groups, notes, author views, a per-world view of active modules, and presets that can **replace, add to, or remove from** a world's module set.
 
 Modules can't run on the Setup screen, so the product has two parts:
 
@@ -242,7 +242,7 @@ Foundry has no flag that tells a page "this user is the server admin". It only s
 ### 8.2 Envelope
 ```json
 {
-  "ns": "module-library",
+  "ns": "stagehand",
   "v": 1,
   "type": "COMMANDS_PULL",
   "requestId": "b6f1…",

@@ -70,7 +70,7 @@ a commit per package, results with screenshots.
 | `chrome.runtime.sendMessage` and `sender.url` / `sender.id`                      | The bridge object from `addWebMessageListener`, allowed only for saved server origins; the native side attaches the sender (the server WebView's current URL and main-frame flag), never trusting the message                                         |
 | `chrome.storage.local`                                                           | Native key-value store in app-private storage, behind `KeyValue`; per-server keys unchanged                                                                                                                                                           |
 | Background fetches with host permission (remote config, foundryvtt.com releases) | `NativeFetch`: only `https://foundryvtt.com/releases/...` (when Release history is allowed in the app) and the remote config URL; no redirects, final URL checked, 2 MB cap, 15 s timeout, no cookies, as `releases.ts` today                         |
-| Toolbar popup and options page (`SettingsPanel`)                                 | The app's home screen: the same Preact panel on the asset origin, with a `SettingsPlatform` over the bridge (add a server by address, remove, Release history on or off); "Module Library settings" on the rail opens it                              |
+| Toolbar popup and options page (`SettingsPanel`)                                 | The app's home screen: the same Preact panel on the asset origin, with a `SettingsPlatform` over the bridge (add a server by address, remove, Release history on or off); "Stagehand settings" on the rail opens it                                   |
 | `optional_host_permissions` per server                                           | Adding a server in the app is the consent; only saved origins get scripts and the bridge                                                                                                                                                              |
 | Blob download and `<input type=file>` (library export and import)                | A `files` port: the app sends the JSON to native, which saves through the system file picker; import opens the picker (`onShowFileChooser`)                                                                                                           |
 | `window.confirm` (folder, tag and preset deletes, import)                        | `WebChromeClient.onJsConfirm` shows a native dialog; the calls stay as they are                                                                                                                                                                       |
@@ -100,7 +100,7 @@ a commit per package, results with screenshots.
   out of git.
 - **Branding.** The app ships none of Foundry's files: its pages, fonts and
   icons come from the user's server, as with the extension. The app's own
-  name and icon are ours ("Module Library"), not Foundry's.
+  name and icon are ours ("Stagehand"), not Foundry's.
 
 ## Phases
 
@@ -160,7 +160,7 @@ build plan.
 2. **Tooling:** JDK 21 and the Android SDK go into WSL; the owner accepted
    Google's Android SDK licence for the install.
 3. **Self-signed https servers:** refused with a message in v1.
-4. **App name and icon:** "Module Library", with our own icon (none of
+4. **App name and icon:** "Stagehand", with our own icon (none of
    Foundry's branding).
 
 **Tablets** (decided 2026-11-08, see "Phase 1"): held upright, the phone
@@ -453,7 +453,7 @@ For phase 4 and the owner:
 1. **HELLO window on a phone**: the companion waits 1 s, five times; watch
    it on a slow device.
 2. **Home screen text**: "No servers yet. Open your Foundry server in this
-   browser and click Use Module Library here" is the extension's; the app
+   browser and click Use Stagehand here" is the extension's; the app
    needs its own words (the home screen is designed in phase 4).
 3. **The one-time token** for destructive operations ("Native rules",
    accepted risk): skipped for v1, by the owner on 2026-11-08.
@@ -785,7 +785,7 @@ Kotlin tests, a check on the emulator, a code review and a security review:
    key code, since Foundry's keybindings claimed every press with one, and
    stopped at the document), then the history (not to `/auth`), then home;
    Back on home leaves the app, or returns to the server when home was
-   opened as Module Library settings; a second Back within 2 s goes on even
+   opened as Stagehand settings; a second Back within 2 s goes on even
    if the page claimed the first. Shared UI: the home screen's servers open
    on a tap, plain http says "Not encrypted", the app's own words;
    Foundry's window-size notice is cleared on `/join` (it covered the Join
@@ -814,7 +814,7 @@ Kotlin tests, a check on the emulator, a code review and a security review:
    returns its result, so a later request can't take an earlier picker's
    file; the page's file name only a suggestion, tidied and ending in
    `.json`; an import at most 6 M characters; only `content:` results for
-   file inputs), `AndroidUi.kt` (a native yes-or-no titled "Module Library
+   file inputs), `AndroidUi.kt` (a native yes-or-no titled "Stagehand
    · server", the question without hidden or reordering characters and
    long gaps), `core/UserInput.kt` (`TapRule`: a short, still,
    one-finger press on the server WebView, seen by native's touch
@@ -1110,9 +1110,22 @@ Packages:
 4. **Next: the icon**, the owner's last item, "after the app works
    great". Waiting on the owner as well: the phone checks (phase 5) and
    autofill with their password manager (Bitwarden) on Foundry's login.
-   The owner suggested a new name before the icon: "Modern Server
-   Manager", MSM on the launcher; to settle first, since the icon follows
-   the name.
+   **Renamed Stagehand** (2026-11-09, the owner's choice from a short
+   list; one name for the extension, "Stagehand for Foundry VTT", the
+   app, "Stagehand" under its icon, and the companion, id `stagehand`):
+   the visible names, the companion's id, the page channel and the
+   export format. Worlds' schedules saved under `flags["module-library"]`
+   are read until the next save moves them; library exports from before
+   still import. Code names, the Android package and the test world keep
+   the old name. The icon follows the name: a stage curtain or a rope on
+   a pulley.
+   Open after the rename: a live check, with Foundry free, that `editWorld`
+   drops `flags["module-library"]` on a schedule save (read in Foundry's
+   code: the same `updateSource` merge as the `-=schedule` already checked
+   live), the suites against Foundry (`pnpm foundry:setup` first, so the
+   test world turns on `stagehand`), and on any server that ran the old
+   companion: install `stagehand` and turn it on in each world in place of
+   `module-library`.
 
 ## Native rules (for phase 4)
 

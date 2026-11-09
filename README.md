@@ -1,4 +1,9 @@
-# Module Library for Foundry VTT (working name)
+# Stagehand for Foundry VTT
+
+Named Stagehand on 2026-11-09 (before: Module Library, a working name). Code
+names keep the old one: the `@module-library/*` workspace packages, the
+Android package `dev.modulelibrary.app` and the test world
+`module-library-test`.
 
 Organise installed Foundry VTT modules on the Setup screen (folders, tags,
 notes, smart groups, authors), see which modules each world uses, and apply
@@ -9,7 +14,7 @@ Two parts, as the PRD describes:
 
 - **Browser extension** (`packages/extension`): enhances the Setup page and
   holds the library, world snapshots and the command queue.
-- **Companion module** (`packages/module`, id `module-library`): runs inside
+- **Companion module** (`packages/module`, id `stagehand`): runs inside
   each world for the full Gamemaster, reports the world's modules and applies
   queued changes after confirmation.
 - **Shared logic** (`packages/shared`): protocol, schemas, the library model
@@ -33,7 +38,7 @@ pnpm verify           # all of the above
 
 Load the extension unpacked from `packages/extension/dist` (Chrome:
 `chrome://extensions`, developer mode). Open your Foundry server, click the
-extension's toolbar button and choose Use Module Library here (or add the
+extension's toolbar button and choose Use Stagehand here (or add the
 server's address, for example `http://localhost:30000`), then allow the
 site. The same panel opens from the Setup page's rail and as the
 extension's options.

@@ -28,14 +28,14 @@ Mockup to match: `design/setup-page/` (playground: https://claude.ai/artifact/YK
 
 ## Phases
 
-| #   | Phase               | Scope                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | Done when                                                                                                                      |
-| --- | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| 1   | **Shell**           | Opt-in setting; take over and restore Foundry's layout; header bar (logo, version chip, Backups and Configuration opening Foundry's own windows for now, ⏻ menu for Log out and Shut down); worlds rail in Foundry's order with favourites, filter and status flags; Library entry; routing between a world and the Library; the Library shows today's Module Library UI; a world shows a banner (title, system, last played, Launch) and today's world sheet content. | The new page runs on Foundry 14 with every current feature reachable; switching back restores Foundry's page; live tests pass. |
-| 2   | **World page**      | Modules tab: calm cards with switch and "why" line, groups, All/On/Changes, Add ▾ (preset, copy from world); queued changes as per-module commands; banner pending line; review-at-launch dialog with Back up first; empty state without the companion.                                                                                                                                                                                                                | Changing modules on a world needs no window; the launch review shows and applies the queue.                                    |
-| 3   | **Library**         | New cards, calm group headers, module details panel (Library and Package tabs), selection band, intake for new installs, By world grid with Show filter.                                                                                                                                                                                                                                                                                                               | Library parity with the mockup, existing organisation features intact.                                                         |
-| 4   | **World details**   | About tab edited in place (`editWorld` behind remote config, fallback to World Configuration), next-session picker and schedule (stored in the world's `flags`, moved forward when Setup opens), Favourite and Lock, Backups tab (public backup calls, progress from Foundry's socket, locking).                                                                                                                                                                       | About and Backups work without Foundry's windows.                                                                              |
-| 5   | **Server pages**    | Backups (snapshots and package backups), Configuration (`adminConfigure`, restart notice, Shut down now), Update (release notes reader, history from foundryvtt.com with optional host permission, compatibility preview).                                                                                                                                                                                                                                             | Foundry's Backup Manager, Configuration and Update screens are no longer needed.                                               |
-| 6   | **News and finish** | News and Featured Content at the foot of the rail, read state; accessibility pass; 1280 and 1366 layouts and wide screens; many worlds; make the new page the default.                                                                                                                                                                                                                                                                                                 | Acceptance: every requirement in SETUP-REDESIGN.md checked on Foundry 14.                                                      |
+| #   | Phase               | Scope                                                                                                                                                                                                                                                                                                                                                                                                                                                             | Done when                                                                                                                      |
+| --- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| 1   | **Shell**           | Opt-in setting; take over and restore Foundry's layout; header bar (logo, version chip, Backups and Configuration opening Foundry's own windows for now, ⏻ menu for Log out and Shut down); worlds rail in Foundry's order with favourites, filter and status flags; Library entry; routing between a world and the Library; the Library shows today's Stagehand UI; a world shows a banner (title, system, last played, Launch) and today's world sheet content. | The new page runs on Foundry 14 with every current feature reachable; switching back restores Foundry's page; live tests pass. |
+| 2   | **World page**      | Modules tab: calm cards with switch and "why" line, groups, All/On/Changes, Add ▾ (preset, copy from world); queued changes as per-module commands; banner pending line; review-at-launch dialog with Back up first; empty state without the companion.                                                                                                                                                                                                           | Changing modules on a world needs no window; the launch review shows and applies the queue.                                    |
+| 3   | **Library**         | New cards, calm group headers, module details panel (Library and Package tabs), selection band, intake for new installs, By world grid with Show filter.                                                                                                                                                                                                                                                                                                          | Library parity with the mockup, existing organisation features intact.                                                         |
+| 4   | **World details**   | About tab edited in place (`editWorld` behind remote config, fallback to World Configuration), next-session picker and schedule (stored in the world's `flags`, moved forward when Setup opens), Favourite and Lock, Backups tab (public backup calls, progress from Foundry's socket, locking).                                                                                                                                                                  | About and Backups work without Foundry's windows.                                                                              |
+| 5   | **Server pages**    | Backups (snapshots and package backups), Configuration (`adminConfigure`, restart notice, Shut down now), Update (release notes reader, history from foundryvtt.com with optional host permission, compatibility preview).                                                                                                                                                                                                                                        | Foundry's Backup Manager, Configuration and Update screens are no longer needed.                                               |
+| 6   | **News and finish** | News and Featured Content at the foot of the rail, read state; accessibility pass; 1280 and 1366 layouts and wide screens; many worlds; make the new page the default.                                                                                                                                                                                                                                                                                            | Acceptance: every requirement in SETUP-REDESIGN.md checked on Foundry 14.                                                      |
 
 ## Phase 1 detail
 
@@ -77,7 +77,7 @@ Also done (`25fed37`, live test `18c7b06`):
 - Per-server preference `newSetupPage` (`Prefs` in `messages.ts`, `state.prefs` /
   `setPref`, `set-pref` accepted from the Setup page without admin verification, since it
   only changes this browser's view). `actions.setPref` in the UI.
-- "Try the new Setup page" in the Module Library toolbar (not offered in safe mode).
+- "Try the new Setup page" in the Stagehand toolbar (not offered in safe mode).
   "Foundry's Setup page" in our header switches back.
 - `ui/shell/`: `Shell`, `Header` (logo, version chip opening Foundry's update screen,
   Backups, Configuration, power menu with Log out and Shut down), `WorldRail` (Library
@@ -94,7 +94,7 @@ Also done (`25fed37`, live test `18c7b06`):
   above our page, Library, Configuration window, reload keeps it, switch back.
 
 Deferred: the switch on the options page. The options page has no per-server list yet;
-the switch lives in the Module Library toolbar and our header instead.
+the switch lives in the Stagehand toolbar and our header instead.
 
 Open item: our power menu is always shown, but Foundry only offers Log out and Shut down
 when an admin password is set (SETUP-SPIKE.md); without one the action reports a missing
@@ -241,7 +241,7 @@ recorded as "deliberate". The owner's rulings (2026-11-06):
   Items deferred in Phases 2 to 5 are done now, not carried.
 - **No way back inside the extension.** "Foundry's Setup page" goes; the new page is the
   page whenever the extension runs (turning the extension off gives Foundry's page). Safe
-  mode and a failed mount still leave Foundry's page alone. The old Module Library UI on
+  mode and a failed mount still leave Foundry's page alone. The old Stagehand UI on
   Foundry's tabs goes with it.
 - **No Foundry fallbacks on our pages:** "Foundry's Backup Manager", "Foundry's Application
   Configuration", "Edit in Foundry", "Change in Foundry", "Update in Foundry…" go; the
@@ -825,7 +825,7 @@ asked for a modal reachable from any page, Foundry's included, and chose
   URL (`/setup`, `/join`, `/game`, `/auth`, `/players`, `/license`).
 - S.2 The panel: the toolbar button's popup, also the options entry
   (`open_in_tab: false`), in Preact with our strings. This site (only on a
-  Foundry page): Use Module Library here, then the page reloads. Servers:
+  Foundry page): Use Stagehand here, then the page reloads. Servers:
   each with Remove; add by address. Release history: allow or remove
   foundryvtt.com. The build line. `options.html` goes.
 - S.3 Setup: a settings entry at the foot of the rail; Release history's
@@ -869,7 +869,7 @@ until a server was re-added (every store update would have done the same).
 Now the background re-registers the scripts of every saved server whose site
 is still allowed whenever it starts, installs or updates
 (`restoreServers`), and the panel shows a server as on only when its scripts
-are really registered: otherwise Off with Turn on, and "Turn Module Library
+are really registered: otherwise Off with Turn on, and "Turn Stagehand
 back on here" on that server's page. Live: scripts dropped as Chrome does,
 then Turn on; and scripts dropped, then the service worker stopped and woken,
 and they come back by themselves (fails with the restore switched off).
