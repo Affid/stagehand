@@ -15,13 +15,11 @@ test("a fresh install opens on home, answered by the background", async () => {
   installFresh();
   const home = await app.pageAt(HOME);
   expect(focused()).toBe(PKG);
-  // The list comes from the background: "No servers yet" means it answered.
+  // The list comes from the background: the empty card means it answered.
+  await expect(home.getByText("Your Foundry servers")).toBeVisible();
   await expect(
-    home.getByText(/No servers yet\. Add your Foundry server/),
-  ).toBeVisible();
-  await expect(
-    home.getByRole("button", { name: "Allow foundryvtt.com" }),
-  ).toBeVisible();
+    home.getByRole("switch", { name: "Release history" }),
+  ).toHaveAttribute("aria-checked", "false");
   const background = await app.pageAt(
     "https://appassets.androidplatform.net/background.html",
   );

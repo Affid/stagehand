@@ -57,6 +57,7 @@ private val SCHEMAS: Map<String, Map<String, Field>> = mapOf(
     "permissions.request" to mapOf("origin" to pattern),
     "permissions.remove" to mapOf("origin" to pattern),
     "fetch" to mapOf("url" to text(max = MAX_URL), "purpose" to oneOf("release", "config")),
+    "server.check" to mapOf("server" to text(max = MAX_URL, pattern = SERVER_ID)),
     "home.open" to emptyMap(),
     READY to emptyMap(),
 )

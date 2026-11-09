@@ -31,6 +31,8 @@ export interface SettingsPlatform {
 export interface AppHome {
   /** The address that opens a saved server in the app. */
   readonly serverHref: (server: string) => string;
+  /** Foundry's version at a server id, saved or not; throws when none answers. */
+  readonly check: (server: string) => Promise<string>;
 }
 
 /** Runs in the tab (activeTab, or a server already allowed). */

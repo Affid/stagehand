@@ -8,7 +8,11 @@ import {
   FETCH_MAX_CHARS,
   FETCH_TIMEOUT_MS,
   fetchAllowed,
+  foundryVersion,
   savableServerOrigin,
+  STATUS_MAX_CHARS,
+  STATUS_TIMEOUT_MS,
+  statusUrl,
 } from "../../packages/extension/src/app/native-api.ts";
 import { FOUNDRY_ORIGIN } from "../../packages/extension/src/background/releases.ts";
 
@@ -107,6 +111,7 @@ export class NativeSim {
       "permissions.request": (p) => this.request(text(p, "origin")),
       "permissions.remove": (p) => this.remove(text(p, "origin")),
       fetch: (p) => this.fetch(text(p, "url"), text(p, "purpose")),
+      "server.check": (p) => this.check(text(p, "server")),
       "files.save": (p) => {
         this.saved.push({
           fileName: text(p, "fileName"),
@@ -190,5 +195,22 @@ export class NativeSim {
     const body = await response.text();
     if (body.length > FETCH_MAX_CHARS) throw new Error("Too large");
     return { text: body };
+  }
+
+  /** server.check: Foundry's version at a typed address, nothing else. */
+  private async check(server: string): Promise<{ version: string }> {
+    const url = statusUrl(server);
+    if (url === undefined) throw new Error("Not a server the app saves");
+    const response = await fetch(url, {
+      redirect: "error",
+      credentials: "omit",
+      signal: AbortSignal.timeout(STATUS_TIMEOUT_MS),
+    });
+    if (!response.ok) throw new Error(`HTTP ${String(response.status)}`);
+    const body = await response.text();
+    if (body.length > STATUS_MAX_CHARS) throw new Error("Too large");
+    const version = foundryVersion(body);
+    if (version === undefined) throw new Error("Not a Foundry server");
+    return { version };
   }
 }

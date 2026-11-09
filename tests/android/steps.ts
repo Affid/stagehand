@@ -16,6 +16,7 @@ import {
   recordCompanion,
   TEST_WORLD,
 } from "./foundry.ts";
+import { addFromHome } from "./home-steps.ts";
 import { adb, sleep, tapNative, waitNative } from "./native-ui.ts";
 
 export const shell = (page: Page): Locator => page.locator("#ml-shell-root");
@@ -41,18 +42,9 @@ export function back(): void {
   adb("shell", "input", "keyevent", "4");
 }
 
-/** On home: the server added by its address, then opened with a tap; logged in. */
+/** On home: the server added by its address and opened; logged in. */
 export async function addServer(app: App): Promise<Page> {
-  const home = await app.pageAt(HOME);
-  await home.getByLabel("Server address").fill(SERVER);
-  await home.getByRole("button", { name: "Add", exact: true }).click();
-  const link = home.getByRole("link", { name: `Open ${new URL(SERVER).host}` });
-  await expect(link).toBeVisible();
-  if (SERVER.startsWith("http:"))
-    await expect(home.getByText("Not encrypted")).toBeVisible();
-  await app.shot("home");
-  // The app takes the navigation over: no navigation for Playwright to wait on.
-  await link.click({ noWaitAfter: true });
+  await addFromHome(app);
   const page = await app.pageAt(SERVER);
   await adminLogin(page, SERVER);
   return page;
@@ -301,8 +293,10 @@ export async function allowReleaseHistory(app: App, page: Page): Promise<Page> {
     .getByRole("button", { name: /Module Library settings/ })
     .click();
   const home = await app.pageAt(HOME);
-  await home.getByRole("button", { name: "Allow foundryvtt.com" }).click();
-  await expect(home.getByText("Allowed.")).toBeVisible();
+  const release = home.getByRole("switch", { name: "Release history" });
+  await expect(release).toHaveAttribute("aria-checked", "false");
+  await release.click();
+  await expect(release).toHaveAttribute("aria-checked", "true");
   back();
   const server = await app.pageAt(SERVER);
   await expect(shell(server).locator(".mlp-top")).toBeVisible();

@@ -52,6 +52,7 @@ export const REQUEST_SCHEMAS = {
     url: z.string().max(MAX_URL),
     purpose: z.enum(["release", "config"]),
   }),
+  "server.check": z.object({ server }),
   "home.open": z.object({}),
   "background.ready": z.object({}),
 } as const;

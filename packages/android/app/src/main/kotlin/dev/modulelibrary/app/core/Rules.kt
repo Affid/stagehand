@@ -1,5 +1,10 @@
 package dev.modulelibrary.app.core
 
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+
 // The native rules (docs/ANDROID-APP-PLAN.md, "Native rules"), mirroring
 // native-api.ts; ContractVectorsTest checks them against its answers.
 
@@ -69,6 +74,29 @@ fun savableServerOrigin(pattern: String): String? {
     val host = url.host.removeSuffix(".")
     if (NEVER_SERVERS.any { host == it || host.endsWith(".$it") }) return null
     return url.origin
+}
+
+/** The address server.check reads: a server's /api/status, if native could save it. */
+fun statusUrl(server: String): String? {
+    val origin = WebUrl.parse(server)?.origin ?: return null
+    return if (savableServerOrigin("$origin/*") != null) "$server/api/status" else null
+}
+
+private val VERSION = Regex("[0-9A-Za-z.-]+")
+
+/** Foundry's version from its /api/status answer, or null: not Foundry. */
+fun foundryVersion(body: String): String? {
+    val parsed = try {
+        Json.parseToJsonElement(body)
+    } catch (_: SerializationException) {
+        return null
+    } catch (_: IllegalArgumentException) {
+        return null
+    }
+    val version = (parsed as? JsonObject)?.get("version") as? JsonPrimitive ?: return null
+    if (!version.isString) return null
+    val text = version.content
+    return text.takeIf { it.length <= MAX_VERSION && VERSION.matches(it) }
 }
 
 /** A page script as native adds it for one server (wrapForServer). */

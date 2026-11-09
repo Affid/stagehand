@@ -84,7 +84,14 @@ function fake(
     reload: vi.fn(() => Promise.resolve()),
     isFoundry: vi.fn(() => Promise.resolve(opts.foundry ?? true)),
     build: "0.2.0 · abc1234 · 2026-11-07 12:00",
-    ...(opts.app ? { app: { serverHref: (id: string) => `${id}/setup` } } : {}),
+    ...(opts.app
+      ? {
+          app: {
+            serverHref: (id: string) => `${id}/setup`,
+            check: () => Promise.resolve("14.370"),
+          },
+        }
+      : {}),
   };
   return { platform, sent, granted };
 }

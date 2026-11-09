@@ -19,9 +19,14 @@ import {
   isActive,
   registerServer,
   type ScriptingPlatform,
-  unregisterServer,
 } from "./registration.ts";
 import { type ReleasesPlatform, readReleases } from "./releases.ts";
+import {
+  listServers,
+  moveServer,
+  removeServer,
+  renameServer,
+} from "./server-list.ts";
 import { handleRelay } from "./relay.ts";
 import {
   normalizeServerUrl,
@@ -219,6 +224,7 @@ async function setupSeen(
   m: Msg<"setup-seen">,
 ) {
   await deps.state.putSetup(server, m.data, deps.now());
+  await deps.state.markOpened(server, deps.now());
   // Only a real admin visit seeds what counts as sorted.
   if (m.data.isAdmin)
     await deps.state.seedSorted(
@@ -316,6 +322,10 @@ async function fromExtension(
   }
   if (m.kind === "remove-server")
     return oneAtATime(deps, () => removeServer(deps, m.server));
+  if (m.kind === "rename-server")
+    return oneAtATime(deps, () => renameServer(deps, m.server, m.name));
+  if (m.kind === "move-server")
+    return oneAtATime(deps, () => moveServer(deps, m.from, m.to));
   if (m.kind !== "register-server")
     throw new Error(`Unexpected ${m.kind} from the extension`);
   return oneAtATime(deps, async () => {
@@ -370,21 +380,6 @@ export async function grantedOrigins(
   return ready;
 }
 
-/** The registered servers, oldest first, and whether each is really on. */
-async function listServers(deps: RouterDeps): Promise<unknown> {
-  const records = Object.values(await deps.state.servers());
-  const sorted = [...records].sort((a, b) =>
-    a.addedAt.localeCompare(b.addedAt),
-  );
-  const servers = await Promise.all(
-    sorted.map(async (r) => ({
-      ...r,
-      active: await isActive(r.id, deps.scripting),
-    })),
-  );
-  return { servers };
-}
-
 /**
  * Puts back the scripts the browser dropped: Chrome clears dynamically
  * registered content scripts when an extension is updated or reloaded,
@@ -407,18 +402,6 @@ async function restoreOne(deps: RouterDeps, server: ServerId): Promise<void> {
   const allowed = await deps.scripting.hasPermission(permissionOrigin(server));
   if (allowed && !(await isActive(server, deps.scripting)))
     await registerServer(server, deps.scripting);
-}
-
-async function removeServer(
-  deps: RouterDeps,
-  server: ServerId,
-): Promise<unknown> {
-  const ids = Object.keys(await deps.state.servers());
-  if (!ids.includes(server)) return listServers(deps);
-  const others = ids.filter((id) => id !== server);
-  await unregisterServer(server, others, deps.scripting);
-  await deps.state.removeServer(server);
-  return listServers(deps);
 }
 
 const isPage = (path: string, page: string): boolean =>

@@ -6,7 +6,7 @@ import type { Translate } from "../i18n.ts";
 import type { SettingsPlatform } from "./platform.ts";
 
 /** Whether foundryvtt.com is allowed, and changing it. */
-function useAccess(platform: SettingsPlatform) {
+export function useAccess(platform: SettingsPlatform) {
   const [granted, setGranted] = useState<boolean | null>(null);
   const [error, setError] = useState("");
   const check = async (): Promise<void> => {

@@ -61,11 +61,14 @@ class NativeHandlersTest {
     private val ui = FakeUi()
     private val host = FakeHost()
     private val fetched = mutableListOf<String>()
+    private val statusAsked = mutableListOf<String>()
+    private var statusBody = """{"active":false,"version":"14.370","world":"secret"}"""
     private val handlers by lazy {
         NativeHandlers(
             store = KeyValueStore(tmp.root),
             stateFile = tmp.root.resolve("native.json"),
             fetcher = Fetcher { url -> fetched += url; "body" },
+            statusFetcher = Fetcher { url -> statusAsked += url; statusBody },
             scripts = host,
             ui = ui,
             clock = { now },
@@ -131,6 +134,23 @@ class NativeHandlersTest {
         assertEquals(Json.parseToJsonElement("true"), call("permissions.remove", """{"origin":"$PATTERN"}"""))
         assertEquals(emptyMap<String, String>(), handlers.state.scripts)
         assertEquals(Json.parseToJsonElement("false"), call("permissions.remove", """{"origin":"$PATTERN"}"""))
+    }
+
+    @Test
+    fun `a server check answers only Foundry's version, for any address`() = runTest {
+        assertEquals(obj("""{"version":"14.370"}"""), call("server.check", """{"server":"http://10.0.2.2:30000/vtt"}""", HOME_PAGE))
+        assertEquals(listOf("http://10.0.2.2:30000/vtt/api/status"), statusAsked)
+        assertEquals(emptyList<String>(), fetched)
+    }
+
+    @Test
+    fun `a server check refuses what isn't Foundry, and never reads foundryvtt`() = runTest {
+        statusBody = "<html>router login</html>"
+        val notFoundry = runCatching { call("server.check", """{"server":"$SERVER"}""", HOME_PAGE) }
+        assertEquals("Not a Foundry server", notFoundry.exceptionOrNull()?.message)
+        val ours = runCatching { call("server.check", """{"server":"https://foundryvtt.com"}""", HOME_PAGE) }
+        assertTrue(ours.exceptionOrNull() is IllegalArgumentException)
+        assertEquals(listOf("$SERVER/api/status"), statusAsked)
     }
 
     @Test

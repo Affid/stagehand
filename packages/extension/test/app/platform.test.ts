@@ -201,6 +201,28 @@ describe("the home screen's settings platform", () => {
     await p.reload(1);
     expect(p.build).toBe("0.2.0 · test");
   });
+
+  test("checks a typed address over native: Foundry's version, or the error", async () => {
+    const { native, bridge } = setup();
+    native.on("server.check", (p) =>
+      (p as { server: string }).server === "http://10.0.2.2:30000"
+        ? { version: "14.370" }
+        : Promise.reject(new Error("Timed out")),
+    );
+    const app = nativeSettingsPlatform(bridge, "b").app;
+    expect(await app?.check("http://10.0.2.2:30000")).toBe("14.370");
+    await expect(app?.check("https://10.0.2.2:30000")).rejects.toThrow(
+      "Timed out",
+    );
+    expect(app?.serverHref("http://h:1")).toBe("http://h:1/setup");
+  });
+
+  test("an answer without a version is an error, not a quiet empty one", async () => {
+    const { native, bridge } = setup();
+    native.on("server.check", () => ({ text: "<html>" }));
+    const app = nativeSettingsPlatform(bridge, "b").app;
+    await expect(app?.check("http://h:1")).rejects.toThrow();
+  });
 });
 
 describe("the payloads native accepts (native-requests.ts)", () => {

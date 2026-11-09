@@ -23,6 +23,10 @@ export interface ServerRecord {
   readonly id: ServerId;
   readonly addedAt: string;
   readonly adminVerifiedAt?: string;
+  /** The owner's name for it on the app's home; its address otherwise. */
+  readonly name?: string;
+  /** When its Setup last reported to this browser. */
+  readonly openedAt?: string;
 }
 
 /** The last handshake per world: shows "companion outdated" (8.7). */
@@ -58,23 +62,75 @@ const reader =
   async <T>(k: string, fallback: T): Promise<T> =>
     (await kv.get<T>(k)) ?? fallback;
 
+/**
+ * A server's data that goes along to its new address (launch holds don't),
+ * and what the new address holds when the server had none: data a removed
+ * server left there never comes back to life (security review).
+ */
+const MOVED_KINDS: Readonly<Record<string, (to: ServerId) => unknown>> = {
+  library: (to) => emptyLibrary(to),
+  commands: () => [],
+  hello: () => ({}),
+  "news-seen": () => null,
+  setup: () => null,
+  snapshots: () => ({}),
+  sorted: () => null,
+};
+
+async function copyKey(
+  kv: SerializedKeyValue,
+  kind: string,
+  from: ServerId,
+  to: ServerId,
+): Promise<void> {
+  const value = await kv.get<unknown>(key(kind, from));
+  const empty = MOVED_KINDS[kind]?.(to) ?? null;
+  const copied =
+    value === undefined || value === null
+      ? empty
+      : kind === "library"
+        ? { ...(value as Library), serverId: to }
+        : value;
+  await kv.update<unknown>(key(kind, to), null, () => copied);
+}
+
+type ServerEdit = (r: ServerRecord) => ServerRecord;
+
+/** A record without one optional field. */
+const without = (
+  r: ServerRecord,
+  field: "adminVerifiedAt" | "name",
+): ServerRecord =>
+  Object.fromEntries(
+    Object.entries(r).filter(([k]) => k !== field),
+  ) as unknown as ServerRecord;
+
+const serversUpdate =
+  (kv: SerializedKeyValue) =>
+  (fn: (s: Servers) => Servers): Promise<Servers> =>
+    kv.update<Servers>("servers", {}, fn);
+
+/** Changes a saved server's record; an unknown server stays unknown. */
+const serverEdit =
+  (kv: SerializedKeyValue) =>
+  async (id: ServerId, edit: ServerEdit): Promise<void> => {
+    await serversUpdate(kv)((s) => {
+      const current = s[id];
+      return current ? { ...s, [id]: edit(current) } : s;
+    });
+  };
+
 /** Registered servers and their admin verification (R-1, PR-1). */
 function serverStore(kv: SerializedKeyValue) {
-  const update = (fn: (s: Servers) => Servers): Promise<Servers> =>
-    kv.update<Servers>("servers", {}, fn);
+  const update = serversUpdate(kv);
+  const edit = serverEdit(kv);
   return {
     servers: () => reader(kv)<Servers>("servers", {}),
     async addServer(id: ServerId, at: string): Promise<void> {
       await update((s) => ({ ...s, [id]: s[id] ?? { id, addedAt: at } }));
     },
-    async markAdminVerified(id: ServerId, at: string): Promise<void> {
-      await update((s) => {
-        const current = s[id];
-        return current
-          ? { ...s, [id]: { ...current, adminVerifiedAt: at } }
-          : s;
-      });
-    },
+    markAdminVerified: (id: ServerId, at: string): Promise<void> =>
+      edit(id, (r) => ({ ...r, adminVerifiedAt: at })),
     /** Taken off this browser; its library stays, for when it comes back. */
     async removeServer(id: ServerId): Promise<void> {
       await update((s) =>
@@ -82,11 +138,35 @@ function serverStore(kv: SerializedKeyValue) {
       );
     },
     /** Setup said this browser is no longer the admin (security review). */
-    async revokeAdmin(id: ServerId): Promise<void> {
-      await update((s) => {
-        const current = s[id];
-        if (!current?.adminVerifiedAt) return s;
-        return { ...s, [id]: { id: current.id, addedAt: current.addedAt } };
+    revokeAdmin: (id: ServerId): Promise<void> =>
+      edit(id, (r) => (r.adminVerifiedAt ? without(r, "adminVerifiedAt") : r)),
+    ...serverEdits(kv),
+  };
+}
+
+/** What the app's home changes: a server's name and address (phase 6). */
+function serverEdits(kv: SerializedKeyValue) {
+  const edit = serverEdit(kv);
+  return {
+    /** An empty name goes back to showing the address. */
+    renameServer: (id: ServerId, name: string): Promise<void> =>
+      edit(id, (r) => (name ? { ...r, name } : without(r, "name"))),
+    markOpened: (id: ServerId, at: string): Promise<void> =>
+      edit(id, (r) => ({ ...r, openedAt: at })),
+    /**
+     * The server at a new address: its record (name and dates kept, admin
+     * verification not: the new address proves it again) and its data.
+     */
+    async moveServer(from: ServerId, to: ServerId): Promise<void> {
+      for (const kind of Object.keys(MOVED_KINDS))
+        await copyKey(kv, kind, from, to);
+      await serversUpdate(kv)((s) => {
+        const current = s[from];
+        if (!current) return s;
+        return {
+          ...s,
+          [to]: { ...without(current, "adminVerifiedAt"), id: to },
+        };
       });
     },
   };
@@ -125,7 +205,9 @@ function libraryStore(kv: SerializedKeyValue) {
 function worldStore(kv: SerializedKeyValue) {
   const read = reader(kv);
   return {
-    setup: (id: ServerId) => kv.get<StoredSetup>(key("setup", id)),
+    /** None: never seen, or cleared by a move (null). */
+    setup: async (id: ServerId): Promise<StoredSetup | undefined> =>
+      (await kv.get<StoredSetup | null>(key("setup", id))) ?? undefined,
     async putSetup(id: ServerId, data: SetupData, at: string): Promise<void> {
       await kv.update<StoredSetup | null>(key("setup", id), null, () => ({
         ...data,

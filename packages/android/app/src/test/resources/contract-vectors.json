@@ -2862,6 +2862,46 @@
    "valid": false
   },
   {
+   "type": "server.check",
+   "payload": {
+    "server": "http://192.168.178.25:30000"
+   },
+   "valid": true
+  },
+  {
+   "type": "server.check",
+   "payload": {
+    "server": "https://vtt.example.com/foundry"
+   },
+   "valid": true
+  },
+  {
+   "type": "server.check",
+   "payload": {
+    "server": "http://localhost:30000/"
+   },
+   "valid": false
+  },
+  {
+   "type": "server.check",
+   "payload": {
+    "server": "192.168.178.25:30000"
+   },
+   "valid": false
+  },
+  {
+   "type": "server.check",
+   "payload": {
+    "server": "http://u@localhost"
+   },
+   "valid": false
+  },
+  {
+   "type": "server.check",
+   "payload": {},
+   "valid": false
+  },
+  {
    "type": "home.open",
    "payload": {},
    "valid": true
@@ -2877,6 +2917,102 @@
     "x": 1
    },
    "valid": true
+  }
+ ],
+ "statusUrl": [
+  {
+   "server": "http://localhost:30000",
+   "url": "http://localhost:30000/api/status"
+  },
+  {
+   "server": "https://vtt.example.com/foundry",
+   "url": "https://vtt.example.com/foundry/api/status"
+  },
+  {
+   "server": "http://192.168.178.25:30000",
+   "url": "http://192.168.178.25:30000/api/status"
+  },
+  {
+   "server": "http://[::1]:30000",
+   "url": "http://[::1]:30000/api/status"
+  },
+  {
+   "server": "https://appassets.androidplatform.net",
+   "url": null
+  },
+  {
+   "server": "https://foundryvtt.com",
+   "url": null
+  },
+  {
+   "server": "https://www.foundryvtt.com.",
+   "url": null
+  },
+  {
+   "server": "http://localhost:30000/a/b",
+   "url": "http://localhost:30000/a/b/api/status"
+  }
+ ],
+ "foundryVersion": [
+  {
+   "body": "{\"active\":false,\"version\":\"14.370\"}",
+   "version": "14.370"
+  },
+  {
+   "body": "{\"active\":true,\"version\":\"13.351-beta.2\",\"world\":\"w\"}",
+   "version": "13.351-beta.2"
+  },
+  {
+   "body": "{\"version\":14.37}",
+   "version": null
+  },
+  {
+   "body": "{\"version\":\"\"}",
+   "version": null
+  },
+  {
+   "body": "{\"version\":\"14 370\"}",
+   "version": null
+  },
+  {
+   "body": "{\"version\":\"<b>14</b>\"}",
+   "version": null
+  },
+  {
+   "body": "{\"version\":\"1111111111111111111111111111111111111111\"}",
+   "version": "1111111111111111111111111111111111111111"
+  },
+  {
+   "body": "{\"version\":\"11111111111111111111111111111111111111111\"}",
+   "version": null
+  },
+  {
+   "body": "{\"active\":false}",
+   "version": null
+  },
+  {
+   "body": "[\"14.370\"]",
+   "version": null
+  },
+  {
+   "body": "\"14.370\"",
+   "version": null
+  },
+  {
+   "body": "null",
+   "version": null
+  },
+  {
+   "body": "<html>Foundry</html>",
+   "version": null
+  },
+  {
+   "body": "",
+   "version": null
+  },
+  {
+   "body": " {\"version\":\"14.370\"} ",
+   "version": "14.370"
   }
  ],
  "wrapForServer": [

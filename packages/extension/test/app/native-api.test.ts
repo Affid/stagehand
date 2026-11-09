@@ -2,8 +2,10 @@
 import { describe, expect, it } from "vitest";
 import {
   externalAllowed,
+  foundryVersion,
   mayAskAsServer,
   savableServerOrigin,
+  statusUrl,
 } from "../../src/app/native-api.ts";
 
 const SERVER = "http://localhost:30000";
@@ -98,5 +100,29 @@ describe("savableServerOrigin", () => {
     expect(savableServerOrigin("http://localhost:30000/x/*")).toBeUndefined();
     expect(savableServerOrigin("ftp://localhost/*")).toBeUndefined();
     expect(savableServerOrigin("http://u@localhost/*")).toBeUndefined();
+  });
+});
+
+describe("server.check: statusUrl and foundryVersion (app's home)", () => {
+  it("reads a server's /api/status, route prefix kept", () => {
+    expect(statusUrl(SERVER)).toBe(`${SERVER}/api/status`);
+    expect(statusUrl(PREFIXED)).toBe(`${PREFIXED}/api/status`);
+  });
+
+  it("never reads the app's own origin, foundryvtt.com or a non-URL", () => {
+    expect(statusUrl("https://appassets.androidplatform.net")).toBeUndefined();
+    expect(statusUrl("https://api.foundryvtt.com")).toBeUndefined();
+    expect(statusUrl("localhost:30000")).toBeUndefined();
+  });
+
+  it("takes only a plain version string from a JSON object", () => {
+    expect(foundryVersion('{"active":false,"version":"14.370"}')).toBe(
+      "14.370",
+    );
+    expect(foundryVersion('{"version":14.37}')).toBeUndefined();
+    expect(foundryVersion('{"version":"<b>1</b>"}')).toBeUndefined();
+    expect(foundryVersion('["14.370"]')).toBeUndefined();
+    expect(foundryVersion("null")).toBeUndefined();
+    expect(foundryVersion("<html>")).toBeUndefined();
   });
 });

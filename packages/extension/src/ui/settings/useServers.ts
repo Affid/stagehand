@@ -17,6 +17,10 @@ export interface Servers {
   /** Asks for the site, then registers it; false when the user refused. */
   readonly add: (server: ServerId) => Promise<boolean>;
   readonly remove: (server: ServerId) => Promise<void>;
+  /** The app's home: an empty name shows the address again. */
+  readonly rename: (server: ServerId, name: string) => Promise<void>;
+  /** The same server at a new address; false when its site was refused. */
+  readonly move: (from: ServerId, to: ServerId) => Promise<boolean>;
 }
 
 const listOf = (reply: unknown): readonly ListedServer[] =>
@@ -50,5 +54,51 @@ export function useServers(platform: SettingsPlatform): Servers {
   const remove = async (server: ServerId): Promise<void> => {
     setList(listOf(await platform.send({ kind: "remove-server", server })));
   };
-  return { list, add, remove };
+  const rename = async (server: ServerId, name: string): Promise<void> => {
+    setList(
+      listOf(await platform.send({ kind: "rename-server", server, name })),
+    );
+  };
+  const move = async (from: ServerId, to: ServerId): Promise<boolean> => {
+    try {
+      const reply = await moveServer(platform, from, to);
+      if (reply === undefined) return false;
+      setList(listOf(reply));
+      return true;
+    } catch (error: unknown) {
+      // Whatever the move left is shown, not a stale list (code review).
+      await refresh().catch(() => undefined);
+      throw error;
+    }
+  };
+  return { list, add, remove, rename, move };
+}
+
+/**
+ * Asks for the new address's site, then moves; a failed move gives the
+ * site back unless a saved server still uses it (no allowed site left over).
+ */
+async function moveServer(
+  platform: SettingsPlatform,
+  from: ServerId,
+  to: ServerId,
+): Promise<unknown> {
+  const origin = permissionOrigin(to);
+  if (!(await platform.permissions.request(origin))) return undefined;
+  try {
+    return await platform.send({ kind: "move-server", from, to });
+  } catch (error: unknown) {
+    await giveBack(platform, origin).catch(() => undefined);
+    throw error;
+  }
+}
+
+/** The site of a failed move, unless a saved server still uses it. */
+async function giveBack(
+  platform: SettingsPlatform,
+  origin: string,
+): Promise<void> {
+  const saved = listOf(await platform.send({ kind: "list-servers" }));
+  if (!saved.some((s) => permissionOrigin(s.id) === origin))
+    await platform.permissions.remove(origin);
 }

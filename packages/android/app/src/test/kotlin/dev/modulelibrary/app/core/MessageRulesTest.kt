@@ -46,6 +46,15 @@ class MessageRulesTest {
     }
 
     @Test
+    fun `Back on home closes its open sheet first, even pressed again soon`() {
+        assertEquals(BackAction.NONE, backStep(Screen.HOME, pageHandled = true, canGoBack = false, homeOverServer = true))
+        assertEquals(
+            BackAction.NONE,
+            backStep(Screen.HOME, pageHandled = true, canGoBack = false, homeOverServer = false, pressedAgainSoon = true),
+        )
+    }
+
+    @Test
     fun `history goes back only to the same server's own pages, never its login`() {
         val s = listOf("http://localhost:30000")
         assertTrue(historyBackAllowed("http://localhost:30000/setup", s))

@@ -7,10 +7,12 @@ import { MAX_MESSAGE_CHARS } from "../../src/app/bridge.ts";
 import {
   externalAllowed,
   fetchAllowed,
+  foundryVersion,
   type FetchPurpose,
   isServerPage,
   mayAskAsServer,
   savableServerOrigin,
+  statusUrl,
   wrapForServer,
 } from "../../src/app/native-api.ts";
 import {
@@ -222,9 +224,44 @@ const PAYLOADS: readonly (readonly [RequestType, unknown])[] = [
   ["fetch", { url: RELEASES_URL, purpose: "other" }],
   ["fetch", { url: long(4097), purpose: "release" }],
   ["fetch", { purpose: "release" }],
+  ["server.check", { server: LAN }],
+  ["server.check", { server: PREFIXED }],
+  ["server.check", { server: `${SERVER}/` }],
+  ["server.check", { server: "192.168.178.25:30000" }],
+  ["server.check", { server: "http://u@localhost" }],
+  ["server.check", {}],
   ["home.open", {}],
   ["background.ready", {}],
   ["background.ready", { x: 1 }],
+];
+
+const STATUS_SERVERS = [
+  SERVER,
+  PREFIXED,
+  LAN,
+  "http://[::1]:30000",
+  "https://appassets.androidplatform.net",
+  "https://foundryvtt.com",
+  "https://www.foundryvtt.com.",
+  "http://localhost:30000/a/b",
+];
+
+const STATUS_BODIES = [
+  '{"active":false,"version":"14.370"}',
+  '{"active":true,"version":"13.351-beta.2","world":"w"}',
+  '{"version":14.37}',
+  '{"version":""}',
+  '{"version":"14 370"}',
+  '{"version":"<b>14</b>"}',
+  `{"version":"${"1".repeat(40)}"}`,
+  `{"version":"${"1".repeat(41)}"}`,
+  '{"active":false}',
+  '["14.370"]',
+  '"14.370"',
+  "null",
+  "<html>Foundry</html>",
+  "",
+  ' {"version":"14.370"} ',
 ];
 
 const WRAPS = [
@@ -290,6 +327,14 @@ export function contractVectors(): object {
       type,
       payload,
       valid: REQUEST_SCHEMAS[type].safeParse(payload).success,
+    })),
+    statusUrl: STATUS_SERVERS.map((server) => ({
+      server,
+      url: statusUrl(server) ?? null,
+    })),
+    foundryVersion: STATUS_BODIES.map((body) => ({
+      body,
+      version: foundryVersion(body) ?? null,
     })),
     wrapForServer: WRAPS.map(([script = "", server = ""]) => ({
       script,

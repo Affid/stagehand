@@ -29,6 +29,8 @@ export const EnvelopeSchema = z.object({
 const Id = z.string().min(1).max(200);
 /** More installed modules than this is not a real server. */
 const MAX_SORTED = 5000;
+/** A server's name on the app's home card. */
+export const MAX_SERVER_NAME = 80;
 /** More presets than anyone combines in one change. */
 const MAX_PRESETS = 100;
 
@@ -37,6 +39,17 @@ export const ExtensionMessageSchema = z.discriminatedUnion("kind", [
   /** The settings panel's list of servers, and taking one off. */
   z.object({ kind: z.literal("list-servers") }),
   z.object({ kind: z.literal("remove-server"), server: z.string().max(500) }),
+  /** The app's home: a server's name, and its new address. */
+  z.object({
+    kind: z.literal("rename-server"),
+    server: z.string().max(500),
+    name: z.string().max(MAX_SERVER_NAME),
+  }),
+  z.object({
+    kind: z.literal("move-server"),
+    from: z.string().max(500),
+    to: z.string().max(500),
+  }),
   /** The panel is about to ask for this server's site (a popup may close). */
   z.object({ kind: z.literal("adding-server"), server: z.string().max(500) }),
   z.object({ kind: z.literal("setup-seen"), data: SetupDataSchema }),

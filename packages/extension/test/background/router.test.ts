@@ -886,3 +886,105 @@ describe("router: servers come back after an update or reload (owner's bug)", ()
     expect(r.servers[0]?.active).toBe(false);
   });
 });
+
+describe("router: a server's name and address on the app's home (owner, 2026-11-09)", () => {
+  const moved = "http://192.168.1.20:30000";
+
+  test("a server can be named; an empty name goes back to its address", async () => {
+    const d = deps();
+    await registered(d);
+    await route(
+      d,
+      { kind: "rename-server", server: S, name: " Home " },
+      fromOptions,
+    );
+    expect((await d.state.servers())[S]?.name).toBe("Home");
+    await route(d, { kind: "rename-server", server: S, name: "" }, fromOptions);
+    expect((await d.state.servers())[S]?.name).toBeUndefined();
+  });
+
+  test("only the app's own pages rename or move a server", async () => {
+    const d = deps();
+    await registered(d);
+    await expect(
+      route(d, { kind: "rename-server", server: S, name: "x" }, fromSetup),
+    ).rejects.toThrow();
+    await expect(
+      route(d, { kind: "move-server", from: S, to: moved }, fromSetup),
+    ).rejects.toThrow();
+  });
+
+  test("a new address takes the server's library, queue and name along", async () => {
+    const d = deps();
+    await registered(d);
+    await route(
+      d,
+      { kind: "rename-server", server: S, name: "Home" },
+      fromOptions,
+    );
+    await d.state.applyLibraryOp(S, {
+      op: "folder.create",
+      folder: {
+        id: "f1",
+        name: "Favourites",
+        color: "#aa8844",
+        parentId: null,
+      },
+    } as never);
+    const reply = (await route(
+      d,
+      { kind: "move-server", from: S, to: `${moved}/` },
+      fromOptions,
+    )) as { servers: { id: string; name?: string }[] };
+    expect(reply.servers.map((s) => [s.id, s.name])).toEqual([[moved, "Home"]]);
+    const lib = await d.state.library(moved);
+    expect(lib.serverId).toBe(moved);
+    expect(lib.folders.map((f) => f.name)).toEqual(["Favourites"]);
+    expect(d.scripting.register).toHaveBeenLastCalledWith(
+      expect.arrayContaining([
+        expect.objectContaining({ matches: [`${moved}/setup*`] }),
+      ]),
+    );
+  });
+
+  test("moving a server that isn't there, or onto another saved one, changes nothing", async () => {
+    const d = deps();
+    await registered(d);
+    await route(d, { kind: "register-server", server: moved }, fromOptions);
+    await expect(
+      route(
+        d,
+        { kind: "move-server", from: "http://nope:1", to: "http://x:1" },
+        fromOptions,
+      ),
+    ).rejects.toThrow();
+    await expect(
+      route(d, { kind: "move-server", from: S, to: moved }, fromOptions),
+    ).rejects.toThrow();
+    expect(Object.keys(await d.state.servers()).sort()).toEqual(
+      [moved, S].sort(),
+    );
+  });
+
+  test("a move that fails to copy takes the new address's scripts back", async () => {
+    const d = deps();
+    await registered(d);
+    vi.spyOn(d.state, "moveServer").mockRejectedValue(
+      new Error("Storage is full"),
+    );
+    await expect(
+      route(d, { kind: "move-server", from: S, to: moved }, fromOptions),
+    ).rejects.toThrow("Storage is full");
+    expect(d.scripting.unregister).toHaveBeenCalled();
+    expect(Object.keys(await d.state.servers())).toEqual([S]);
+  });
+
+  test("Setup reporting itself marks when the server was last opened", async () => {
+    const d = deps();
+    await registered(d);
+    await route(d, { kind: "setup-seen", data: setupData(true) }, fromSetup);
+    expect((await d.state.servers())[S]?.openedAt).toBe(
+      "2026-11-05T00:00:00.000Z",
+    );
+  });
+});

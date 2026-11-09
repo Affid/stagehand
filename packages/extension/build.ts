@@ -168,7 +168,10 @@ async function buildApp(): Promise<void> {
   for (const name of ["app-setup", "app-game", "app-background", "app-home"])
     await buildEntry(name, outDir, define);
   cpSync(join(root, "static-app"), outDir, { recursive: true });
-  cpSync(join(root, "static", "popup.css"), join(outDir, "popup.css"));
+  cpSync(
+    join(root, "src", "ui", "app-home", "home.css"),
+    join(outDir, "home.css"),
+  );
   checkAppBundle(outDir);
 }
 

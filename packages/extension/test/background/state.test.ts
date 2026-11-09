@@ -116,3 +116,57 @@ describe("state: removing a server (settings panel)", () => {
     expect(await state.library(S)).toEqual(before);
   });
 });
+
+describe("state: a server's name and new address (app's home, 2026-11-09)", () => {
+  const T = "http://192.168.1.20:30000";
+
+  test("a revoked admin keeps the server's name and last opening", async () => {
+    const state = fresh();
+    await state.addServer(S, "t1");
+    await state.renameServer(S, "Home");
+    await state.markOpened(S, "t2");
+    await state.markAdminVerified(S, "t3");
+    await state.revokeAdmin(S);
+    expect((await state.servers())[S]).toEqual({
+      id: S,
+      addedAt: "t1",
+      name: "Home",
+      openedAt: "t2",
+    });
+  });
+
+  test("a move copies the queue and seen modules, not admin verification", async () => {
+    const state = fresh();
+    await state.addServer(S, "t1");
+    await state.markAdminVerified(S, "t2");
+    await state.seedSorted(S, ["a", "b"]);
+    await state.moveServer(S, T);
+    expect((await state.servers())[T]).toEqual({ id: T, addedAt: "t1" });
+    expect(await state.sortedModules(T)).toEqual(["a", "b"]);
+    expect(await state.commands(T)).toEqual([]);
+    expect((await state.library(T)).serverId).toBe(T);
+  });
+
+  test("a move onto an address a removed server left data at clears it", async () => {
+    const state = fresh();
+    await state.addServer(T, "t0");
+    await state.updateCommands(T, () => [{ id: "old" } as never]);
+    await state.seedSorted(T, ["stale"]);
+    await state.removeServer(T);
+    await state.addServer(S, "t1");
+    await state.moveServer(S, T);
+    expect(await state.commands(T)).toEqual([]);
+    expect(await state.sortedModules(T)).toBeNull();
+    expect(await state.setup(T)).toBeUndefined();
+    expect(await state.snapshots(T)).toEqual({});
+    expect((await state.library(T)).serverId).toBe(T);
+  });
+
+  test("moving or renaming an unknown server adds nothing", async () => {
+    const state = fresh();
+    await state.moveServer(S, T);
+    await state.renameServer(S, "x");
+    await state.markOpened(S, "t");
+    expect(await state.servers()).toEqual({});
+  });
+});

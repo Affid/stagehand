@@ -2,12 +2,13 @@
 // install, a server added and Setup taken over; a world and Android's
 // Back; the Library; export and import through the system pickers; a
 // queued change applied at launch by the companion; Release history read
-// from foundryvtt.com; the key screens in Foundry's three Setup themes.
+// from foundryvtt.com; the key screens in Foundry's three Setup themes;
+// last, home: a server renamed, given a new address and removed.
 // One run, in order: each test starts where the last one left the app.
 import { expect, test, type Page } from "@playwright/test";
 import { resetWorldModules } from "../../scripts/foundry/reset-world.ts";
 import { COMPANION_ID } from "../../scripts/foundry/world.ts";
-import { App, installFresh, SERVER } from "./app.ts";
+import { App, HOME, installFresh, SERVER } from "./app.ts";
 import {
   adminLogin,
   closeWorld,
@@ -19,6 +20,7 @@ import {
   THEMES,
   waitClosed,
 } from "./foundry.ts";
+import { moveAndBack, removeFromHome, renameAndBack } from "./home-steps.ts";
 import {
   addServer,
   allowReleaseHistory,
@@ -170,4 +172,23 @@ test("the key screens in Foundry's three Setup themes", async () => {
     // Put back at once, not only at the end of the run.
     if (themeBefore) await setTheme(themeBefore);
   }
+});
+
+test("home: a server renamed, given a new address, opened, removed", async () => {
+  await tab(page, /^Worlds/).click();
+  await shell(page)
+    .getByRole("button", { name: /Module Library settings/ })
+    .click();
+  let home = await app.pageAt(HOME);
+  await renameAndBack(app, home);
+  await moveAndBack(app, home);
+  // The library went along both ways: our Setup page takes over again.
+  await home
+    .getByRole("link", { name: "Open Emulator host" })
+    .click({ noWaitAfter: true });
+  page = await app.pageAt(SERVER);
+  await expectHome(page);
+  back();
+  home = await app.pageAt(HOME);
+  await removeFromHome(app, home);
 });

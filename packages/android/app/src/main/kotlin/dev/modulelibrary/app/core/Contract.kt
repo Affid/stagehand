@@ -27,6 +27,11 @@ const val ROUTE_TIMEOUT_MS = 120_000L
 /** NativeFetch's limits. */
 const val FETCH_MAX_CHARS = 2_000_000
 const val FETCH_TIMEOUT_MS = 15_000
+/** server.check's limits: a status answer is a few dozen characters. */
+const val STATUS_MAX_CHARS = 64_000
+const val STATUS_TIMEOUT_MS = 5_000
+/** Longer than any Foundry version. */
+const val MAX_VERSION = 40
 
 const val RELEASES_URL = "https://foundryvtt.com/releases/"
 const val REMOTE_CONFIG_URL =
@@ -40,7 +45,9 @@ enum class Caller { SERVER, HOME, BACKGROUND }
 /** Requests to native and who may make them (CALLER_REQUESTS). */
 val CALLER_REQUESTS: Map<Caller, Set<String>> = mapOf(
     Caller.SERVER to setOf("runtime.send", "files.save", "files.open", "confirm", "openExternal"),
-    Caller.HOME to setOf("runtime.send", "permissions.contains", "permissions.request", "permissions.remove"),
+    Caller.HOME to setOf(
+        "runtime.send", "permissions.contains", "permissions.request", "permissions.remove", "server.check",
+    ),
     Caller.BACKGROUND to setOf(
         "kv.get", "kv.set", "scripts.registered", "scripts.register", "scripts.unregister",
         "permissions.contains", "permissions.remove", "fetch", "home.open", READY,

@@ -174,6 +174,11 @@ export function savableServerOrigin(pattern: string): string | undefined {
  *   with an error: a URL the rule doesn't allow, any redirect, a status
  *   other than 2xx ("HTTP 404"), more than FETCH_MAX_CHARS, longer than
  *   FETCH_TIMEOUT_MS. Never with cookies.
+ * - server.check {server} → {version}: whether Foundry answers at a server
+ *   id the user typed on the home screen, saved or not. Native GETs
+ *   statusUrl(server) as NativeFetch does (no redirects, no cookies, 2xx),
+ *   within STATUS_TIMEOUT_MS and STATUS_MAX_CHARS, and answers only the
+ *   version foundryVersion reads; anything else is an error.
  * - home.open {} → null: shows the home screen.
  * - background.ready {} → null: the background serves `route` from now
  *   on; native holds `route` requests until then, and again after the
@@ -196,6 +201,7 @@ export const CALLER_REQUESTS: Readonly<Record<Caller, readonly string[]>> = {
     "permissions.contains",
     "permissions.request",
     "permissions.remove",
+    "server.check",
   ],
   background: [
     "kv.get",
@@ -250,6 +256,11 @@ export const FilesOpenResultSchema = z.object({
 });
 export const ConfirmResultSchema = z.object({ yes: z.boolean() });
 export const FetchResultSchema = z.object({ text: z.string() });
+/** Longer than any Foundry version ("14.370", "13.351-beta.2"). */
+export const MAX_VERSION = 40;
+export const CheckResultSchema = z.object({
+  version: z.string().max(MAX_VERSION),
+});
 export const IdsResultSchema = z.array(z.string().max(300)).max(1000);
 
 export type FetchPurpose = "release" | "config";
@@ -278,4 +289,45 @@ export function fetchAllowed(
   // Nothing that could step out of the path: no query, fragment or dots.
   const rest = url.slice(RELEASES_URL.length);
   return /^[0-9A-Za-z.-]*$/.test(rest) && !rest.includes("..");
+}
+
+/** server.check's limits: a status answer is a few dozen characters. */
+export const STATUS_MAX_CHARS = 64_000;
+export const STATUS_TIMEOUT_MS = 5_000;
+
+/**
+ * The address server.check reads for a server id (native-requests.ts
+ * checks its shape): its /api/status, unless native never saves its origin
+ * (the app's own, foundryvtt.com).
+ */
+export function statusUrl(server: string): string | undefined {
+  let origin: string;
+  try {
+    origin = new URL(server).origin;
+  } catch {
+    return undefined;
+  }
+  return savableServerOrigin(`${origin}/*`)
+    ? `${server}/api/status`
+    : undefined;
+}
+
+const VERSION = /^[0-9A-Za-z.-]+$/;
+
+/** Foundry's version from its /api/status answer, or undefined: not Foundry. */
+export function foundryVersion(body: string): string | undefined {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(body);
+  } catch {
+    return undefined;
+  }
+  if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed))
+    return undefined;
+  const version = (parsed as Record<string, unknown>).version;
+  return typeof version === "string" &&
+    version.length <= MAX_VERSION &&
+    VERSION.test(version)
+    ? version
+    : undefined;
 }

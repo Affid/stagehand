@@ -24,6 +24,8 @@ class NativeHandlers(
     private val store: KeyValueStore,
     private val stateFile: File,
     private val fetcher: Fetcher,
+    /** server.check's reads: NativeFetch with STATUS_TIMEOUT_MS and STATUS_MAX_CHARS. */
+    private val statusFetcher: Fetcher,
     private val scripts: ScriptHost,
     private val ui: NativeUi,
     /** A clock that never runs back (SystemClock.elapsedRealtime on Android). */
@@ -69,6 +71,7 @@ class NativeHandlers(
         "permissions.request" -> JsonPrimitive(request(payload.text("origin")))
         "permissions.remove" -> JsonPrimitive(remove(payload.text("origin")))
         "fetch" -> fetch(payload.text("url"), payload.text("purpose"))
+        "server.check" -> check(payload.text("server"))
         "home.open" -> {
             ui.showHome()
             null
@@ -130,6 +133,13 @@ class NativeHandlers(
         require(fetchAllowed(url, purpose, state.releaseHistory)) { "Not an address the app reads" }
         val text = fetcher.fetch(url)
         return buildJsonObject { put("text", text) }
+    }
+
+    /** Only the version goes back to the page: nothing else the server said. */
+    private suspend fun check(server: String): JsonElement {
+        val url = requireNotNull(statusUrl(server)) { "Not a server the app saves" }
+        val version = foundryVersion(statusFetcher.fetch(url)) ?: throw FetchFailed("Not a Foundry server")
+        return buildJsonObject { put("version", version) }
     }
 
     /** One dialog at a time: a second while one is open is a no. */

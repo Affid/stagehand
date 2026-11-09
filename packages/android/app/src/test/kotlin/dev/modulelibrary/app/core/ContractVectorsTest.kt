@@ -67,6 +67,16 @@ class ContractVectorsTest {
     }
 
     @Test
+    fun statusUrl() = cases("statusUrl").forEach { c ->
+        assertEquals(c.toString(), c["url"]!!.jsonPrimitive.contentOrNull, statusUrl(c.str("server")))
+    }
+
+    @Test
+    fun foundryVersion() = cases("foundryVersion").forEach { c ->
+        assertEquals(c.toString(), c["version"]!!.jsonPrimitive.contentOrNull, foundryVersion(c.str("body")))
+    }
+
+    @Test
     fun wrapForServer() = cases("wrapForServer").forEach { c ->
         assertEquals(c.toString(), c.str("out"), wrapForServer(c.str("script"), c.str("server")))
     }

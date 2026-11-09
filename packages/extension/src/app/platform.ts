@@ -17,6 +17,7 @@ import type { UiPorts } from "../ui/ports.ts";
 import type { SettingsPlatform } from "../ui/settings/platform.ts";
 import type { NativeBridge } from "./bridge.ts";
 import {
+  CheckResultSchema,
   ConfirmResultSchema,
   FetchResultSchema,
   type FetchPurpose,
@@ -170,7 +171,17 @@ export function nativeSettingsPlatform(
     reload: () => Promise.resolve(),
     isFoundry: () => Promise.resolve(false),
     build,
-    // A tap opens the server's Setup in the app (native takes the link).
-    app: { serverHref: (server) => `${server}/setup` },
+    app: {
+      // A tap opens the server's Setup in the app (native takes the link).
+      serverHref: (server) => `${server}/setup`,
+      check: async (server) => {
+        const reply = CheckResultSchema.safeParse(
+          await bridge.request("server.check", { server }),
+        );
+        // Native's own words otherwise; never a schema message (review).
+        if (!reply.success) throw new Error("Not a Foundry server");
+        return reply.data.version;
+      },
+    },
   };
 }

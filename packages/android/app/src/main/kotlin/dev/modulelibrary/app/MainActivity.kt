@@ -26,6 +26,8 @@ import dev.modulelibrary.app.core.NativeHandlers
 import dev.modulelibrary.app.core.NativeState
 import dev.modulelibrary.app.core.PageTimeout
 import dev.modulelibrary.app.core.Relay
+import dev.modulelibrary.app.core.STATUS_MAX_CHARS
+import dev.modulelibrary.app.core.STATUS_TIMEOUT_MS
 import dev.modulelibrary.app.core.Screen
 import dev.modulelibrary.app.core.TapRule
 import dev.modulelibrary.app.core.WebUrl
@@ -130,6 +132,7 @@ class MainActivity : ComponentActivity(), AppHost {
             store = KeyValueStore(filesDir),
             stateFile = File(filesDir, "native.json"),
             fetcher = NativeFetch(),
+            statusFetcher = NativeFetch(timeoutMs = STATUS_TIMEOUT_MS, maxChars = STATUS_MAX_CHARS),
             scripts = { state -> serversChanged(state) },
             ui = AndroidUi(this, pickers),
             clock = SystemClock::elapsedRealtime,
@@ -297,7 +300,7 @@ class MainActivity : ComponentActivity(), AppHost {
     private suspend fun back() {
         val pressedAt = SystemClock.elapsedRealtime()
         backAgain = false
-        val handled = showing == Screen.SERVER && setupUsedBack()
+        val handled = if (showing == Screen.SERVER) setupUsedBack() else homeUsedBack()
         // A press while Setup was asked, or soon after the last claimed one
         // (counted from when that claim came, not from its press), goes on:
         // a page that claims or ignores every Back can't keep the user in.
@@ -312,7 +315,8 @@ class MainActivity : ComponentActivity(), AppHost {
             homeOverServer = homeOverServer,
             pressedAgainSoon = again,
         )
-        lastBackClaimedAt = if (action == BackAction.NONE) SystemClock.elapsedRealtime() else Long.MIN_VALUE / 2
+        val serverClaimed = action == BackAction.NONE && showing == Screen.SERVER
+        lastBackClaimedAt = if (serverClaimed) SystemClock.elapsedRealtime() else Long.MIN_VALUE / 2
         debugLog("Back on $showing: Setup used it $handled, again $again, previous $previous, so $action")
         when (action) {
             BackAction.NONE -> Unit
@@ -346,6 +350,23 @@ class MainActivity : ComponentActivity(), AppHost {
             throw e
         } catch (e: Exception) {
             debugLog("Setup's answer to Back failed", e)
+            false
+        }
+    }
+
+    /**
+     * Asks the home screen whether it closed a sheet. Home is the app's own
+     * page: no answer in time means none was open, and Back goes on.
+     */
+    private suspend fun homeUsedBack(): Boolean {
+        if (!homePage.canPost()) return false
+        return try {
+            val answer = relay.ask(Caller.HOME, { homePage.postToCurrent(it) }, BACK, JsonObject(emptyMap()), BACK_ANSWER_MS)
+            answer?.jsonObject?.get("handled")?.jsonPrimitive?.booleanOrNull == true
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            debugLog("Home's answer to Back failed", e)
             false
         }
     }
