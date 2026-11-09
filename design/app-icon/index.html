@@ -1,0 +1,313 @@
+<title>Stagehand Icon</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Signika:wght@400;600;700&family=Amiri:wght@700&family=Roboto+Condensed:wght@700&display=swap">
+<style>
+/* Layout: a control bar; four marks as pick-cards on the left, the picked one in place (phone home screen, app bar, Chrome toolbar) on the right.
+   One dark look on purpose: the app's own Setup palette. */
+:root {
+  --bg: #0b0a13; --bar: #17151f; --panel: #1a1724; --line: #2c2836; --line-2: #3a3646;
+  --fg: #e9e4f2; --muted: #a59eb4; --accent: #ee9b3a; --accent-ink: #1a1206;
+  --display: "Amiri", Georgia, serif; --title: "Roboto Condensed", "Arial Narrow", sans-serif; --body: "Signika", "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+html, body { min-height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 14px/1.45 var(--body); }
+.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding-block: 10px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); background: var(--bar); border-bottom: 1px solid var(--line); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bar); }
+.bar h1 { margin: 0; font: 700 1.35rem/1 var(--display); }
+.bar .tag { font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line); padding: 2px 8px; border-radius: 999px; }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; margin-left: auto; }
+.seg { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.seg .lbl { padding: 0 10px; color: var(--muted); font-size: .86rem; }
+.seg button { font: inherit; color: var(--muted); background: transparent; border: 0; border-left: 1px solid var(--line); padding: 6px 12px; cursor: pointer; }
+.seg button:hover { background: rgb(255 255 255 / 5%); }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.main { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 24px; padding-block: 20px 32px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); max-width: 1280px; margin: 0 auto; }
+@media (max-width: 1000px) { .main { grid-template-columns: minmax(0, 1fr); } .tools { margin-left: 0; } }
+.intro { grid-column: 1 / -1; display: grid; gap: 4px; }
+.intro p { margin: 0; color: var(--muted); max-width: 75ch; }
+
+.options { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 14px; align-content: start; }
+.opt { min-width: 0; display: grid; gap: 12px; text-align: left; font: inherit; color: inherit; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px; cursor: pointer; }
+.opt:hover { border-color: var(--line-2); }
+.opt[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+.opt .row { display: flex; align-items: end; gap: 14px; flex-wrap: wrap; }
+.opt h2 { margin: 0; font: 700 1.3rem/1.1 var(--display); display: flex; align-items: baseline; gap: 8px; }
+.opt h2 small { font: 600 .7rem/1 var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+.opt p { margin: 0; color: #d6d0e2; }
+.sizes { display: flex; align-items: end; gap: 10px; }
+.sizes span { display: grid; justify-items: center; gap: 4px; font-size: .72rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.wall { border-radius: 10px; padding: 14px; display: flex; flex-wrap: wrap; align-items: end; gap: 14px; min-width: 0; }
+
+.side { display: grid; gap: 16px; align-content: start; }
+.side h3 { margin: 0 0 8px; font-size: .74rem; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.phone { justify-self: center; width: 300px; max-width: 100%; background: #1d1b24; border: 1px solid var(--line-2); border-radius: 32px; padding: 9px; box-shadow: 0 20px 60px rgb(0 0 0 / 55%); }
+.screen { border-radius: 24px; overflow: hidden; height: 560px; display: flex; flex-direction: column; }
+.status { height: 24px; display: flex; justify-content: space-between; align-items: center; padding: 0 18px; font: 600 11px/1 var(--body); }
+.home { flex: 1; display: grid; grid-template-rows: auto 1fr auto auto; padding: 16px 14px 12px; gap: 10px; }
+.clock { font: 300 44px/1 var(--body); letter-spacing: -.02em; }
+.date { font-size: 12px; margin-top: 4px; }
+.grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px 6px; justify-items: center; align-self: end; }
+.app { display: grid; justify-items: center; gap: 5px; width: 64px; font-size: 11px; text-align: center; }
+.app em { font-style: normal; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 64px; }
+.search { height: 38px; border-radius: 19px; }
+.nav { height: 14px; display: grid; place-items: center; } .nav i { width: 90px; height: 4px; border-radius: 2px; }
+
+.appbar { background: #0b0a13; border: 1px solid #353042; border-radius: 10px; height: 56px; display: flex; align-items: center; gap: 10px; padding: 0 14px; }
+.appbar b { font: 700 25px/1 var(--title); letter-spacing: .01em; text-transform: uppercase; color: #efe9dd; }
+.chrome { border-radius: 10px; overflow: hidden; border: 1px solid var(--line-2); }
+.chrome .tabs { height: 30px; background: #202124; display: flex; align-items: end; padding: 0 8px; }
+.chrome .tab { height: 24px; width: 170px; max-width: 60%; background: #35363a; border-radius: 8px 8px 0 0; display: flex; align-items: center; gap: 6px; padding: 0 10px; color: #e8eaed; font: 12px/1 system-ui, sans-serif; white-space: nowrap; overflow: hidden; }
+.chrome .tool { height: 38px; background: #35363a; display: flex; align-items: center; gap: 8px; padding: 0 8px; }
+.chrome .url { flex: 1; min-width: 0; height: 28px; border-radius: 14px; background: #202124; color: #9aa0a6; font: 12px/28px system-ui, sans-serif; padding: 0 12px; white-space: nowrap; overflow: hidden; }
+.chrome .ext { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; }
+.chrome .ext.on { background: rgb(255 255 255 / 10%); }
+.chrome .puzzle { width: 16px; height: 16px; border-radius: 3px; border: 2px solid #9aa0a6; box-sizing: border-box; }
+.note { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; display: grid; gap: 8px; }
+.note p, .note li { margin: 0; color: #d6d0e2; max-width: 70ch; }
+.note ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+svg { display: block; }
+@media (prefers-reduced-motion: no-preference) { .opt, .seg button { transition: border-color .15s, background-color .15s; } }
+</style>
+
+<div class="bar">
+  <h1>Stagehand icon</h1>
+  <span class="tag">Four marks to pick from</span>
+  <div class="tools">
+    <div class="seg" role="group" aria-label="Icon shape"><span class="lbl">Shape</span>
+      <button type="button" data-shape="circle" aria-pressed="true">Circle</button>
+      <button type="button" data-shape="squircle" aria-pressed="false">Squircle</button>
+      <button type="button" data-shape="rounded" aria-pressed="false">Rounded square</button>
+    </div>
+    <div class="seg" role="group" aria-label="Icon style"><span class="lbl">Style</span>
+      <button type="button" data-style="color" aria-pressed="true">Colour</button>
+      <button type="button" data-style="themed" aria-pressed="false">Themed</button>
+    </div>
+    <div class="seg" role="group" aria-label="Wallpaper"><span class="lbl">Wallpaper</span>
+      <button type="button" data-wall="dark" aria-pressed="true">Dark</button>
+      <button type="button" data-wall="light" aria-pressed="false">Light</button>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="intro">
+    <p>Pick a card to see that mark on a phone, in the app's top bar and in Chrome's toolbar. Shape is the phone maker's mask (Pixel uses the circle, Samsung the squircle). Themed is Android's single-colour icon setting, which tints every icon from the wallpaper.</p>
+  </div>
+  <div class="options" id="options"></div>
+  <div class="side">
+    <div>
+      <h3>On a home screen</h3>
+      <div class="phone"><div class="screen" id="screen"></div></div>
+    </div>
+    <div>
+      <h3>The app's top bar</h3>
+      <div class="appbar"><span id="barMark"></span><b>Stagehand</b></div>
+    </div>
+    <div>
+      <h3>Chrome's toolbar, 16 px</h3>
+      <div class="chrome">
+        <div class="tabs"><div class="tab"><span id="tabMark"></span>Stagehand · Setup</div></div>
+        <div class="tool"><div class="url">192.168.1.20:30000/setup</div><span class="ext on" id="extMark" title="Stagehand"></span><span class="ext"><i class="puzzle"></i></span></div>
+      </div>
+    </div>
+    <div class="note">
+      <p><b>After you pick</b>, the mark becomes the app's launcher icon (with a single-colour version for Themed), the mark in the app's top bar, and the Chrome extension's icon, which has none today. The companion module needs no icon: Foundry doesn't show one.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+const GROUND = "#2a2340";
+const S_PATH = "M66,40 C64,33 57,31.5 52,31.5 C45,31.5 41,35.5 41,41 C41,48 48,50.5 54,52.5 C60.5,54.6 67,57.5 67,65 C67,71.5 61.5,75.5 54,75.5 C47.5,75.5 43,72.5 41.5,67.5";
+const scallops = (x0, x1, y, n, dip) => {
+  const w = (x1 - x0) / n; let d = "";
+  for (let i = n - 1; i >= 0; i--) { const a = x0 + (i + 1) * w, b = x0 + i * w; d += ` Q${((a + b) / 2).toFixed(2)},${y + dip} ${b.toFixed(2)},${y}`; }
+  return d;
+};
+const drape = (fill, fold, tie) => `
+  <path fill="${fill}" d="M30,31 H49 C47.5,46 44,59 38,67 C39.5,71 40.5,74.5 41,77 H30 Z"/>
+  <path fill="none" stroke="${fold}" stroke-width="1.4" stroke-linecap="round" d="M34,32 C34.4,48 34.4,62 33.6,76 M39,32 C39.4,45 38.6,56 36.4,66 M44,32 C43.6,43 42,52 39.6,60"/>
+  <circle cx="38.6" cy="67.4" r="2.3" fill="${tie}"/>`;
+const OPTIONS = [
+  {
+    id: "curtain", name: "Curtain", tag: "the stage",
+    text: "Two drapes tied back and a pool of light: the stage is set, the show can start. The plainest theatre sign there is.",
+    color: () => `
+      <polygon points="47,35 61,35 71,77 37,77" fill="#ffbf6b" opacity=".13"/>
+      <ellipse cx="54" cy="77.4" rx="16" ry="3" fill="#ffbf6b" opacity=".55"/>
+      <rect x="30" y="77" width="48" height="3.6" rx="1" fill="#7a5a30"/>
+      ${drape("#b8483a", "#8e3329", "#ee9b3a")}
+      <g transform="translate(108,0) scale(-1,1)">${drape("#b8483a", "#8e3329", "#ee9b3a")}</g>
+      <path fill="#ee9b3a" d="M29,27 H79 V33${scallops(29, 79, 33, 7, 5).replace(/^ /, " ")} Z"/>
+      <rect x="29" y="27" width="50" height="2" fill="#ffbf6b"/>`,
+    mono: () => `
+      <ellipse cx="54" cy="77.4" rx="16" ry="3" fill="currentColor" opacity=".45"/>
+      <rect x="30" y="77" width="48" height="3.6" rx="1" fill="currentColor"/>
+      <path fill="currentColor" d="M30,31 H49 C47.5,46 44,59 38,67 C39.5,71 40.5,74.5 41,77 H30 Z"/>
+      <path fill="currentColor" d="M78,31 H59 C60.5,46 64,59 70,67 C68.5,71 67.5,74.5 67,77 H78 Z"/>
+      <path fill="currentColor" d="M29,27 H79 V33${scallops(29, 79, 33, 7, 5)} Z"/>`,
+  },
+  {
+    id: "ghost", name: "Ghost light", tag: "the crew's lamp",
+    text: "The single bulb a stagehand leaves burning on an empty stage overnight. Theatre people know it; everyone else sees a warm light.",
+    ground: "#1b1628",
+    color: () => `
+      <defs><radialGradient id="glow-%ID" cx="54" cy="39" r="34" gradientUnits="userSpaceOnUse">
+        <stop offset="0" stop-color="#ffbf6b" stop-opacity=".55"/><stop offset=".45" stop-color="#ee9b3a" stop-opacity=".16"/><stop offset="1" stop-color="#ee9b3a" stop-opacity="0"/></radialGradient></defs>
+      <rect width="108" height="108" fill="url(#glow-%ID)"/>
+      <ellipse cx="54" cy="80.5" rx="19" ry="3" fill="#ffbf6b" opacity=".22"/>
+      <g stroke="#cfc6dc" stroke-width="2.4" stroke-linecap="round" fill="none"><path d="M54,51 V75 M54,74 L45,81 M54,74 L63,81 M54,74 V81"/></g>
+      <rect x="50" y="46" width="8" height="6.5" rx="1.2" fill="#8f86a0"/>
+      <circle cx="54" cy="37.5" r="8.6" fill="#ffd27a"/>
+      <circle cx="54" cy="37.5" r="4" fill="#fff4d6"/>
+      <g stroke="#cfc6dc" stroke-width="1.3" fill="none" opacity=".9"><circle cx="54" cy="37.5" r="11.6"/><ellipse cx="54" cy="37.5" rx="5" ry="11.6"/></g>`,
+    mono: () => `
+      <g stroke="currentColor" stroke-width="2.4" stroke-linecap="round" fill="none"><path d="M54,51 V75 M54,74 L45,81 M54,74 L63,81 M54,74 V81"/></g>
+      <rect x="50" y="46" width="8" height="6.5" rx="1.2" fill="currentColor"/>
+      <circle cx="54" cy="37.5" r="8.6" fill="currentColor"/>
+      <g stroke="currentColor" stroke-width="1.3" fill="none"><circle cx="54" cy="37.5" r="11.6"/><ellipse cx="54" cy="37.5" rx="5" ry="11.6"/></g>`,
+  },
+  {
+    id: "pulley", name: "Fly rope", tag: "the crew's work",
+    text: "A rope over a pulley with a sandbag, as stagehands fly scenery in and out. Says hands-on work behind the scenes.",
+    color: () => `
+      <rect x="35" y="25.5" width="38" height="3.6" rx="1" fill="#5a4d78"/>
+      <rect x="52.4" y="28.6" width="3.2" height="4.4" fill="#8f86a0"/>
+      <circle cx="54" cy="41" r="9.6" fill="#d9a441"/>
+      <circle cx="54" cy="41" r="6.6" fill="#9c7024"/>
+      <circle cx="54" cy="41" r="2.6" fill="#efe3c8"/>
+      <path d="M44.4,74 V41 A9.6,9.6 0 0 1 63.6,41 V59" fill="none" stroke="#efe3c8" stroke-width="3.2"/>
+      <path d="M44.4,74 V41 A9.6,9.6 0 0 1 63.6,41 V59" fill="none" stroke="#cdbd9e" stroke-width="3.2" stroke-dasharray="1 3"/>
+      <circle cx="44.4" cy="77" r="2.8" fill="none" stroke="#efe3c8" stroke-width="2.2"/>
+      <path fill="#c0584a" d="M63.6,58 C58,62 56,70 57,74.5 Q63.6,80 70.2,74.5 C71.2,70 69.2,62 63.6,58 Z"/>
+      <rect x="60" y="61.2" width="7.2" height="2.2" rx="1" fill="#8e3329"/>`,
+    mono: () => `
+      <rect x="35" y="25.5" width="38" height="3.6" rx="1" fill="currentColor"/>
+      <rect x="52.4" y="28.6" width="3.2" height="4.4" fill="currentColor"/>
+      <circle cx="54" cy="41" r="8.1" fill="none" stroke="currentColor" stroke-width="3"/>
+      <circle cx="54" cy="41" r="2.6" fill="currentColor"/>
+      <path d="M44.4,74 V41 M63.6,41 V59" fill="none" stroke="currentColor" stroke-width="3.2"/>
+      <circle cx="44.4" cy="77" r="2.8" fill="none" stroke="currentColor" stroke-width="2.2"/>
+      <path fill="currentColor" d="M63.6,58 C58,62 56,70 57,74.5 Q63.6,80 70.2,74.5 C71.2,70 69.2,62 63.6,58 Z"/>`,
+  },
+  {
+    id: "rope-s", name: "Rope S", tag: "the name",
+    text: "The S of Stagehand drawn as a stage rope with bound ends. A letter mark: easiest to spot among other icons, least theatrical.",
+    color: () => `
+      <circle cx="54" cy="24.6" r="3.4" fill="none" stroke="#d9a441" stroke-width="2.4"/>
+      <path d="M54,28 V31.5" stroke="#d9a441" stroke-width="2.4"/>
+      <path d="${S_PATH}" fill="none" stroke="#efe3c8" stroke-width="7" stroke-linecap="round"/>
+      <path d="${S_PATH}" fill="none" stroke="#cdbd9e" stroke-width="7" stroke-dasharray="1.1 3.6"/>
+      <circle cx="66" cy="40" r="3.9" fill="#ee9b3a"/>
+      <circle cx="41.5" cy="67.5" r="3.9" fill="#ee9b3a"/>`,
+    mono: () => `
+      <circle cx="54" cy="24.6" r="3.4" fill="none" stroke="currentColor" stroke-width="2.4"/>
+      <path d="M54,28 V31.5" stroke="currentColor" stroke-width="2.4"/>
+      <path d="${S_PATH}" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round"/>`,
+  },
+];
+
+const SHAPES = {
+  circle: `<circle cx="54" cy="54" r="36"/>`,
+  squircle: `<path d="M54,18 C83,18 90,25 90,54 C90,83 83,90 54,90 C25,90 18,83 18,54 C18,25 25,18 54,18 Z"/>`,
+  rounded: `<rect x="18" y="18" width="72" height="72" rx="17"/>`,
+};
+const THEMED = { dark: { bg: "#2d2a36", fg: "#d8ccf4" }, light: { bg: "#e9def8", fg: "#3a2f55" } };
+const WALLS = {
+  dark: { screen: "radial-gradient(120% 70% at 30% 0%, #3b2d5c 0%, #15121f 55%, #0b0a13 100%)", ink: "#f2eef8", dim: "rgb(242 238 248 / 70%)", search: "rgb(255 255 255 / 14%)", nav: "#cfc8dc", card: "linear-gradient(160deg, #2b2340, #120f1b)" },
+  light: { screen: "radial-gradient(120% 70% at 70% 0%, #f7e3c4 0%, #e6dcf3 55%, #d7d1e6 100%)", ink: "#1f1a2b", dim: "rgb(31 26 43 / 70%)", search: "rgb(255 255 255 / 70%)", nav: "#3a3646", card: "linear-gradient(160deg, #efe6fa, #dcd3ea)" },
+};
+const state = { pick: "curtain", shape: "circle", style: "color", wall: "dark" };
+try { Object.assign(state, JSON.parse(localStorage.getItem("stagehand-icon") || "{}")); } catch {}
+const save = () => { try { localStorage.setItem("stagehand-icon", JSON.stringify(state)); } catch {} };
+let uid = 0;
+
+/** A launcher icon: the 108 dp adaptive canvas, masked to the maker's shape, showing its middle 72 dp. */
+function launcher(o, px, shape = state.shape, style = state.style) {
+  const id = `i${uid++}`;
+  const themed = style === "themed" ? THEMED[state.wall] : null;
+  const ground = themed ? themed.bg : o.ground || GROUND;
+  const art = themed ? `<g style="color:${themed.fg}">${o.mono()}</g>` : o.color().replaceAll("%ID", id);
+  return `<svg width="${px}" height="${px}" viewBox="18 18 72 72" role="img" aria-label="${o.name} icon">
+    <defs><clipPath id="c-${id}">${SHAPES[shape]}</clipPath></defs>
+    <g clip-path="url(#c-${id})"><rect width="108" height="108" fill="${ground}"/>${art}</g></svg>`;
+}
+/** The mark on its own ground, unmasked but rounded: the app bar and the extension. */
+function tile(o, px, radius) {
+  const id = `t${uid++}`;
+  return `<svg width="${px}" height="${px}" viewBox="22 21 64 64" role="img" aria-label="${o.name} mark">
+    <defs><clipPath id="c-${id}"><rect x="22" y="21" width="64" height="64" rx="${radius}"/></clipPath></defs>
+    <g clip-path="url(#c-${id})"><rect width="108" height="108" fill="${o.ground || GROUND}"/>${o.color().replaceAll("%ID", id)}</g></svg>`;
+}
+
+function renderOptions() {
+  const w = WALLS[state.wall];
+  document.getElementById("options").innerHTML = OPTIONS.map((o) => `
+    <button type="button" class="opt" data-pick="${o.id}" aria-pressed="${o.id === state.pick}">
+      <h2>${o.name} <small>${o.tag}</small></h2>
+      <div class="wall" style="background:${w.card}">
+        ${launcher(o, 96)}
+        <div class="sizes">
+          <span>${launcher(o, 48)}48</span><span>${launcher(o, 32)}32</span><span>${tile(o, 16, 12)}16</span>
+        </div>
+      </div>
+      <p>${o.text}</p>
+    </button>`).join("");
+}
+
+const GENERIC = [
+  ["Calendar", "#e8eaf6", "#3949ab", `<rect x="40" y="42" width="28" height="26" rx="3" fill="none" stroke="currentColor" stroke-width="3"/><path d="M40,50 H68" stroke="currentColor" stroke-width="3"/>`],
+  ["Notes", "#fff3d6", "#b26a00", `<path d="M42,44 H66 M42,52 H66 M42,60 H58" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/>`],
+  ["Camera", "#e3f2ef", "#00796b", `<rect x="39" y="44" width="30" height="22" rx="4" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="54" cy="55" r="5.5" fill="none" stroke="currentColor" stroke-width="3"/>`],
+  ["Music", "#fde7ef", "#ad1457", `<path d="M50,64 V44 L64,41 V60" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="47" cy="64" r="4" fill="currentColor"/><circle cx="61" cy="60" r="4" fill="currentColor"/>`],
+  ["Maps", "#e6f4ea", "#2e7d32", `<path d="M54,68 C46,58 44,53 44,49 A10,10 0 0 1 64,49 C64,53 62,58 54,68 Z" fill="none" stroke="currentColor" stroke-width="3"/>`],
+  ["Files", "#e8f0fe", "#1a73e8", `<path d="M41,46 H51 L54,49 H67 V66 H41 Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>`],
+  ["Clock", "#f3e8fd", "#7b1fa2", `<circle cx="54" cy="54" r="13" fill="none" stroke="currentColor" stroke-width="3"/><path d="M54,47 V54 L59,57" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>`],
+];
+function generic([name, bg, fg, art], px) {
+  const t = state.style === "themed" ? THEMED[state.wall] : null;
+  const id = `g${uid++}`;
+  return `<svg width="${px}" height="${px}" viewBox="18 18 72 72" aria-hidden="true"><defs><clipPath id="c-${id}">${SHAPES[state.shape]}</clipPath></defs>
+    <g clip-path="url(#c-${id})" style="color:${t ? t.fg : fg}"><rect width="108" height="108" fill="${t ? t.bg : bg}"/>${art}</g></svg>`;
+}
+
+function renderSide() {
+  const o = OPTIONS.find((x) => x.id === state.pick);
+  const w = WALLS[state.wall];
+  const apps = [...GENERIC.slice(0, 5).map((g) => [g[0], generic(g, 50)]), ["Stagehand", launcher(o, 50)], ...GENERIC.slice(5).map((g) => [g[0], generic(g, 50)])];
+  document.getElementById("screen").style.background = w.screen;
+  document.getElementById("screen").innerHTML = `
+    <div class="status" style="color:${w.ink}"><span>19:30</span><span>Wi-Fi · 82%</span></div>
+    <div class="home" style="color:${w.ink}">
+      <div><div class="clock">19:30</div><div class="date" style="color:${w.dim}">Friday, session night</div></div>
+      <div class="grid">${apps.map(([n, svg]) => `<div class="app">${svg}<em>${n}</em></div>`).join("")}</div>
+      <div class="search" style="background:${w.search}"></div>
+      <div class="nav"><i style="background:${w.nav}"></i></div>
+    </div>`;
+  document.getElementById("barMark").innerHTML = tile(o, 30, 13);
+  document.getElementById("tabMark").innerHTML = tile(o, 16, 12);
+  document.getElementById("extMark").innerHTML = tile(o, 16, 12);
+}
+
+function syncButtons() {
+  document.querySelectorAll("[data-shape]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.shape === state.shape)));
+  document.querySelectorAll("[data-style]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.style === state.style)));
+  document.querySelectorAll("[data-wall]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.wall === state.wall)));
+}
+function render() { uid = 0; syncButtons(); renderOptions(); renderSide(); save(); }
+
+document.addEventListener("click", (e) => {
+  const t = e.target.closest("button"); if (!t) return;
+  if (t.dataset.pick) state.pick = t.dataset.pick;
+  else if (t.dataset.shape) state.shape = t.dataset.shape;
+  else if (t.dataset.style) state.style = t.dataset.style;
+  else if (t.dataset.wall) state.wall = t.dataset.wall;
+  else return;
+  render();
+});
+render();
+</script>
