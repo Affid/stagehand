@@ -45,9 +45,10 @@ export function filterWorlds<T extends WorldInfo>(
 }
 
 /**
- * A `url("…")` for one of Foundry's own files. Only same-origin http(s)
- * paths are allowed; the URL parser percent-encodes quotes and spaces, so
- * the value can't leave the url().
+ * A `url("…")` for a world's artwork: a path on the server, or an http(s)
+ * link to another site, which Foundry's own Setup page loads as well
+ * (owner, 2026-11-09). Other schemes are refused; the URL parser
+ * percent-encodes quotes and spaces, so the value can't leave the url().
  */
 export function cssImage(
   path: string | undefined,
@@ -60,7 +61,6 @@ export function cssImage(
   } catch {
     return undefined;
   }
-  if (url.origin !== origin) return undefined;
   if (url.protocol !== "http:" && url.protocol !== "https:") return undefined;
   return `url("${url.href.replaceAll('"', "%22")}")`;
 }

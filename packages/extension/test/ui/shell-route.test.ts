@@ -72,8 +72,19 @@ describe("world artwork as a CSS image", () => {
     expect(css).toBe('url("http://localhost:30000/worlds/a%20b/x%22).png")');
   });
 
-  test("other origins and odd schemes are refused", () => {
-    expect(cssImage("https://evil.example/x.png", origin)).toBeUndefined();
+  test("a background linked from another site shows, as on Foundry's own Setup (owner)", () => {
+    expect(cssImage("https://i.imgur.com/strahd.jpg", origin)).toBe(
+      'url("https://i.imgur.com/strahd.jpg")',
+    );
+    expect(cssImage("//cdn.example.com/a b.webp", origin)).toBe(
+      'url("http://cdn.example.com/a%20b.webp")',
+    );
+    const css = cssImage('https://x.example/a").png', origin) ?? "";
+    expect(css).toBe('url("https://x.example/a%22).png")');
+  });
+
+  test("odd schemes are refused", () => {
+    expect(cssImage("ftp://files.example/x.png", origin)).toBeUndefined();
     expect(cssImage("javascript:alert(1)", origin)).toBeUndefined();
     expect(cssImage("data:image/png;base64,AAAA", origin)).toBeUndefined();
     expect(cssImage(undefined, origin)).toBeUndefined();
