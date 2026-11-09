@@ -107,18 +107,55 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 .input { height: 48px; border: 1px solid #4a4358; border-radius: 7px; background: #0f0d16; color: var(--app-fg); font: 15px/1 var(--body); padding: 0 12px; }
 select.input { appearance: none; }
 
-/* Foundry's login, as Foundry draws it (simplified) */
-.fvtt { flex: 1; min-height: 0; overflow: auto; background: radial-gradient(90% 50% at 50% 10%, #4a2a18, #120c10 70%); display: grid; align-content: start; justify-items: center; gap: 18px; padding: 34px 18px 20px; position: relative; }
-.fvtt .logo { font: 700 54px/0.9 var(--title); text-transform: uppercase; text-align: center; color: #f3ead8; text-shadow: 0 3px 0 #000; letter-spacing: .02em; }
-.fvtt .panel { width: 100%; background: rgb(12 10 16 / 92%); border: 1px solid #3a2f2a; border-radius: 8px; padding: 18px; display: grid; gap: 12px; }
-.fvtt .panel h2 { margin: 0; text-align: center; font: 700 26px/1.1 var(--display); color: #f3ead8; }
-.fvtt .panel p { margin: 0; font-size: 13px; color: #c9bfae; }
-.fvtt .login { height: 46px; border-radius: 4px; border: 0; background: #e8963a; color: #1a1206; font: 700 15px/1 var(--body); text-transform: uppercase; letter-spacing: .03em; }
-.fvtt .ver { font: 700 22px/1 var(--display); color: #d8ccb6; margin-top: 8px; }
-.leavebar { flex: none; height: 48px; display: flex; align-items: center; gap: 6px; padding: 0 10px 0 4px; background: rgb(11 10 19 / 94%); border-bottom: 1px solid var(--app-line); }
-.leavebar .host { font-size: 13px; color: var(--app-dim); margin-left: auto; display: flex; align-items: center; gap: 6px; }
-.leavebar .ibtn { width: auto; padding: 0 10px; gap: 6px; display: inline-flex; align-items: center; font: 600 14px/1 var(--body); }
-.fab { position: absolute; left: 14px; bottom: 16px; z-index: 5; display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 16px 0 12px; border-radius: 999px; background: rgb(26 23 36 / 94%); border: 1px solid #4a4358; color: var(--app-fg); font: 600 14px/1 var(--body); box-shadow: 0 6px 20px rgb(0 0 0 / 50%); cursor: pointer; }
+/* Our login */
+.loginbody { align-content: start; padding-top: 22px; }
+.logincard { padding: 22px 16px 18px; display: grid; gap: 14px; justify-items: center; text-align: center; }
+.logincard .ico { width: 56px; height: 56px; border-radius: 12px; display: grid; place-items: center; background: linear-gradient(160deg, #3b2a52, #1e1a2c); color: var(--app-warm-2); font: 700 24px/1 var(--title); }
+.logincard h2 { margin: 0; font: 700 25px/1.1 var(--display); }
+.logincard .where { margin: -6px 0 0; font-size: 13px; color: var(--app-dim); display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 10px; }
+.logincard .field { width: 100%; text-align: left; }
+.pw { display: flex; align-items: center; gap: 8px; height: 50px; padding: 0 6px 0 12px; border: 1px solid #4a4358; border-radius: 7px; background: #0f0d16; }
+.pw.focus { border-color: var(--app-warm); box-shadow: 0 0 0 3px rgb(238 155 58 / 20%); }
+.pw.bad { border-color: #c4553f; box-shadow: 0 0 0 3px rgb(196 85 63 / 18%); }
+.pw svg { width: 18px; height: 18px; color: var(--app-dim); }
+.pw input { flex: 1; min-width: 0; border: 0; background: transparent; color: var(--app-fg); font: 17px/1 var(--body); letter-spacing: .12em; }
+.pw input::placeholder { letter-spacing: 0; font-size: 15px; color: #6d6679; }
+.pw .ibtn { width: 40px; height: 40px; }
+.suggest { width: 100%; box-sizing: border-box; margin-top: -8px; display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; background: #26222f; border: 1px solid #3a3446; text-align: left; font-size: 13px; }
+.suggest b { display: block; font-weight: 600; }
+.suggest span { color: var(--app-dim); font-size: 12px; }
+.suggest svg { width: 20px; height: 20px; color: #9db8ff; flex: none; }
+.err { width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: 8px; text-align: left; font-size: 13px; padding: 9px 12px; border-radius: 7px; background: #2c1d16; color: #f3c7b5; border: 1px solid rgb(232 138 106 / 35%); }
+.err svg { width: 16px; height: 16px; flex: none; }
+.loginhint { margin: 2px 6px 0; font-size: 12.5px; color: #8e869c; text-align: center; }
+
+/* Launch: the world's page behind, then progress */
+.wpage { flex: 1; min-height: 0; overflow: auto; }
+.wbanner { height: 150px; display: grid; align-content: end; padding: 14px 16px; background: linear-gradient(180deg, rgb(0 0 0 / 10%), rgb(16 14 24 / 96%)), linear-gradient(135deg, #6b2d1a, #2a1530 55%, #141020); }
+.wbanner h2 { margin: 0; font: 700 30px/1 var(--title); text-transform: uppercase; }
+.queued { margin: 14px 12px 0; }
+.chg { display: flex; align-items: center; gap: 10px; padding: 10px 12px; font-size: 14px; }
+.chg + .chg { border-top: 1px solid var(--app-line); }
+.chg i { font-style: normal; font-weight: 700; width: 18px; text-align: center; }
+.chg .on { color: var(--app-ok); } .chg .off { color: var(--app-plain); }
+.chg span { color: var(--app-dim); font-size: 12.5px; margin-left: auto; }
+.prog { flex: 1; min-height: 0; overflow: auto; display: grid; align-content: start; gap: 18px; padding: 70px 18px 18px; background: radial-gradient(120% 50% at 50% 0%, #2a2040, var(--app-bg) 60%); }
+.prog h2 { margin: 0; font: 700 34px/1 var(--title); text-transform: uppercase; }
+.prog .lead { margin: -8px 0 0; color: var(--app-dim); font-size: 13.5px; }
+.barbox { height: 8px; border-radius: 4px; background: #2b2538; overflow: hidden; }
+.barbox i { display: block; height: 100%; border-radius: 4px; background: linear-gradient(90deg, #d9832a, #f4a845); transition: width .5s; }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.steps li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; align-items: start; font-size: 14px; color: #7d768b; }
+.steps li.done { color: var(--app-fg); } .steps li.now { color: var(--app-warm-2); font-weight: 600; }
+.steps li small { grid-column: 2; display: block; margin-top: -8px; font-size: 12px; color: var(--app-dim); font-weight: 400; }
+.steps .dot { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; border: 2px solid #3a3446; box-sizing: border-box; }
+.steps li.done .dot { background: #1f3a28; border-color: rgb(111 220 140 / 60%); color: var(--app-ok); }
+.steps li.now .dot { border-color: var(--app-warm); }
+.steps li.now .dot::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--app-warm); }
+.steps .dot svg { width: 13px; height: 13px; stroke-width: 2.6; }
+.note-ok { display: flex; align-items: center; gap: 8px; font-size: 13px; padding: 10px 12px; border-radius: 7px; background: #13261a; color: #c4f0cf; border: 1px solid rgb(111 220 140 / 30%); }
+.note-ok svg, .note-bad svg { width: 16px; height: 16px; flex: none; }
+.note-bad { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; padding: 10px 12px; border-radius: 7px; background: #2c1d16; color: #f3c7b5; border: 1px solid rgb(232 138 106 / 35%); }
 
 /* Running screen */
 .hero { position: relative; min-height: 270px; display: grid; align-content: end; gap: 8px; padding: 70px 16px 18px; background: linear-gradient(180deg, rgb(0 0 0 / 30%), rgb(16 14 24 / 96%)), linear-gradient(135deg, #6b2d1a, #2a1530 55%, #141020); }
@@ -136,23 +173,32 @@ select.input { appearance: none; }
 
 <header class="bar">
   <h1>App Screens</h1>
-  <span class="tag">Mockup · for your choice</span>
+  <span class="tag">Mockup · our own pages, no game</span>
   <div class="tools">
     <span class="seg" role="group" aria-label="Screen"><span class="lbl">Screen</span>
       <button type="button" data-s="home" aria-pressed="true">Home</button>
       <button type="button" data-s="add" aria-pressed="false">Add a server</button>
-      <button type="button" data-s="login" aria-pressed="false">Foundry's login</button>
-      <button type="button" data-s="launched" aria-pressed="false">After a launch</button>
-      <button type="button" data-s="running" aria-pressed="false">Opened while running</button>
+      <button type="button" data-s="login" aria-pressed="false">Log in</button>
+      <button type="button" data-s="launch" aria-pressed="false">Launch</button>
+      <button type="button" data-s="running" aria-pressed="false">Running</button>
     </span>
     <span class="seg" role="group" aria-label="Home variant" id="homeVar"><span class="lbl">Home</span>
       <button type="button" data-hv="a" aria-pressed="true">A · Servers first</button>
       <button type="button" data-hv="b" aria-pressed="false">B · Settings list</button>
       <button type="button" data-hv="empty" aria-pressed="false">No servers yet</button>
     </span>
-    <span class="seg" role="group" aria-label="Leave variant" id="leaveVar" hidden><span class="lbl">Leave</span>
-      <button type="button" data-lv="a" aria-pressed="true">A · Bar on top</button>
-      <button type="button" data-lv="b" aria-pressed="false">B · Floating button</button>
+    <span class="seg" role="group" aria-label="Login state" id="loginVar" hidden><span class="lbl">State</span>
+      <button type="button" data-lgv="ready" aria-pressed="true">Ready</button>
+      <button type="button" data-lgv="wrong" aria-pressed="false">Wrong password</button>
+    </span>
+    <span class="seg" role="group" aria-label="Launch step" id="launchVar" hidden><span class="lbl">Step</span>
+      <button type="button" data-lnv="review" aria-pressed="true">Review</button>
+      <button type="button" data-lnv="progress" aria-pressed="false">Launching</button>
+    </span>
+    <span class="seg" role="group" aria-label="Running state" id="runVar" hidden><span class="lbl">State</span>
+      <button type="button" data-rv="applied" aria-pressed="true">After a launch</button>
+      <button type="button" data-rv="later" aria-pressed="false">Opened later</button>
+      <button type="button" data-rv="failed" aria-pressed="false">Changes failed</button>
     </span>
   </div>
 </header>
@@ -183,13 +229,16 @@ const ICON = {
   warn: '<svg viewBox="0 0 24 24"><path d="M12 4l9 16H3zM12 10v4M12 17h.01"/></svg>',
   history: '<svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 3-6.2M4 4v4h4M12 8v4l3 2"/></svg>',
   info: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 11v5M12 8h.01"/></svg>',
+  key: '<svg viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="M11 12l8-8M16 7l3 3M14 9l2 2"/></svg>',
+  eye: '<svg viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
+  shield: '<svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg>',
 };
-const MARK = '<span class="mark" aria-hidden="true"><i><b style="height:11px;background:#d9a441"></b><b style="height:16px;background:#efe3c8"></b><b style="height:12px;background:#5fa8a0"></b><b style="height:13px;background:#c0584a;transform:rotate(14deg)"></b></i></span>';
+const MARK = '<span class="mark" aria-hidden="true" style="background:#2a2340;overflow:hidden;display:block"><svg viewBox="22 21 64 64" style="width:100%;height:100%;display:block;fill:revert;stroke:none"><rect x="33" y="26" width="42" height="4.5" fill="#6a5b8c"/><circle cx="54" cy="41" r="11" fill="#d9a441"/><circle cx="54" cy="41" r="4.5" fill="#2a2340"/><path d="M43,77 V41 A11,11 0 0 1 65,41 V60" fill="none" stroke="#efe3c8" stroke-width="4.6"/><path fill="#c0584a" d="M65,58 C58.5,62.5 56.5,71 57.5,76 Q65,82.5 72.5,76 C73.5,71 71.5,62.5 65,58 Z"/></svg></span>';
 const SERVERS = [
   { name: "Home server", addr: "http://192.168.178.25:30000", last: "Opened today", plain: true, letter: "H" },
   { name: "Friday group", addr: "https://vtt.example.com/foundry", last: "Opened 5 days ago", plain: false, letter: "F" },
 ];
-const S = { s: "home", hv: "a", lv: "a", sheet: null, edit: null, removing: false, scheme: "http", typed: "192.168.178.25:30000", history: false, join: false, toast: "" };
+const S = { s: "home", hv: "a", lgv: "ready", lnv: "review", rv: "applied", step: 0, closing: false, sheet: null, edit: null, removing: false, scheme: "http", typed: "192.168.178.25:30000", history: false, join: false, toast: "" };
 const app = document.getElementById("app"), notes = document.getElementById("notes");
 const host = (a) => a.replace(/^https?:\/\//, "");
 
@@ -265,39 +314,92 @@ function addSheet() {
   </div>`;
 }
 
+/** Our login: the admin password in a native Android field, so password managers fill it. */
 function login() {
-  const bar = S.lv === "a" ? `<div class="leavebar"><button class="ibtn" data-act="home">${ICON.back}Servers</button><span class="host">${ICON.unlock}192.168.178.25:30000</span></div>` : "";
-  const fab = S.lv === "b" ? `<button class="fab" data-act="home">${ICON.servers}Other server</button>` : "";
-  return `${bar}<div class="fvtt"><div class="logo">Foundry<br>Virtual<br>Tabletop</div>
-    <div class="panel"><h2>Administrator Access Required</h2><input class="input" type="password" placeholder="Administrator password" style="background:#2a2530"><p>There is not currently an active game on this server. In order to access the setup menu you must provide the server administrator password.</p><button class="login">Log in</button></div>
-    <div class="ver">Version 14 Build 370</div>${fab}</div>`;
+  const wrong = S.lgv === "wrong";
+  return `<header class="top"><button class="ibtn" data-act="home" aria-label="Servers">${ICON.back}</button><h1 style="font-size:21px">Home server</h1><span class="sp"></span></header>
+  <div class="body loginbody">
+    <div class="card logincard">
+      <span class="ico">H</span>
+      <h2>Log in to Setup</h2>
+      <p class="where"><span>192.168.178.25:30000</span><span class="chip plain">${ICON.unlock}Not encrypted</span></p>
+      <div class="field"><label for="pw">Administrator password</label>
+        <div class="pw ${wrong ? "bad" : "focus"}">${ICON.key}<input id="pw" type="password" value="${wrong ? "hunter2" : ""}" placeholder="Password" autocomplete="current-password"><button class="ibtn" aria-label="Show password">${ICON.eye}</button></div></div>
+      ${wrong ? `<div class="err">${ICON.warn}That isn't this server's administrator password.</div>` : `<button class="suggest" data-act="filled">${ICON.shield}<span><b>Home server</b><span>From your password manager · 192.168.178.25</span></span></button>`}
+      <button class="btn bright wide" data-act="loggedin">Log in</button>
+    </div>
+    <p class="loginhint">Foundry asks for the administrator password set in its configuration. A server without one opens Setup straight away; one with a world running opens the running page.</p>
+  </div>`;
 }
 
-function running(launched) {
-  const changes = launched ? 2 : 0;
-  const join = changes
-    ? `<button class="btn bright wide" style="height:58px;flex-direction:column;gap:3px" data-act="join"><span style="display:inline-flex;gap:9px;align-items:center">${ICON.play}Join as Gamemaster</span><span class="sub">applies 2 changes</span></button>
-       <button class="btn wide" data-act="return">${ICON.door}Return to Setup</button>`
-    : `<button class="btn bright wide" data-act="return">${ICON.door}Return to Setup</button>
-       <button class="btn wide" data-act="join">${ICON.play}Join as Gamemaster</button>`;
-  const lead = changes
-    ? "You launched it from here with 2 changes waiting. They apply when the Gamemaster joins from this app."
-    : "Setup, the Library and backups come back once the world is closed.";
-  return `<header class="top topover"><button class="ibtn" data-act="home" aria-label="Servers">${ICON.back}</button><h1 style="font-size:20px">Foundry VTT</h1><span class="sp"></span><span class="chip" style="color:var(--app-dim);border-color:var(--app-line)">14 · 370</span></header>
-  <div style="flex:1;min-height:0;overflow:auto">
-    <div class="hero"><span class="live"><i></i>Running now</span><h2>Curse of Strahd</h2><div class="meta"><span>dnd5e 5.1.4</span><span>${launched ? "Nobody in the game" : "2 people in the game"}</span><span>For ${launched ? "1 min" : "1 h 40 min"}</span></div></div>
-    <div class="runbody"><p>${lead}</p>${join}<p class="hint">${changes ? "Return to Setup closes the world; the changes stay queued for the next launch." : "Foundry saves the world and closes it; the 2 people in the game are disconnected."}</p></div>
+const CHANGES = [["on", "+", "Dice So Nice!", "turn on"], ["off", "−", "Old Lighting", "turn off"]];
+
+/** Launch from our Setup: the review asks who applies the changes, then our progress screen. */
+function launch() {
+  if (S.lnv === "progress") return progress();
+  const list = CHANGES.map(([k, sign, name, what]) => `<div class="chg"><i class="${k}">${sign}</i>${name}<span>${what}</span></div>`).join("");
+  return `<header class="top topover"><button class="ibtn" aria-label="Worlds">${ICON.back}</button><span class="sp"></span></header>
+  <div class="wpage"><div class="wbanner"><h2>Curse of Strahd</h2></div>
+    <div class="eyebrow" style="margin:14px 16px 0">Next launch · 2 changes</div><div class="card queued">${list}</div></div>
+  <div class="dock"><button class="btn bright wide" data-act="review">${ICON.play}Launch</button></div>
+  <div class="scrim"></div><div class="sheet" role="dialog" aria-label="Launch Curse of Strahd">
+    <span class="grab"></span><h2>Launch Curse of Strahd</h2>
+    <div class="card">${list}</div>
+    <div class="field"><label for="gm">Apply them as</label><select id="gm" class="input"><option>Gamemaster</option><option>Assistant GM</option></select></div>
+    <div class="field"><label for="gmpw">Gamemaster's password</label><div class="pw">${ICON.key}<input id="gmpw" type="password" placeholder="Leave empty if the user has none" autocomplete="current-password"></div></div>
+    <p>The app joins as this user out of sight; the companion applies the changes and the world reloads once. The game never opens on this phone.</p>
+    <button class="btn bright wide" data-act="go">${ICON.play}Launch and apply</button>
+    <button class="btn ghost wide" data-act="go">Launch without changes</button>
+  </div>`;
+}
+
+const STEPS = [
+  ["Asking Foundry to launch", "Foundry checks the world and its packages."],
+  ["Loading the world", "Foundry's own progress, step by step."],
+  ["Joining as Gamemaster, out of sight", "No game screen; the app is the only one in the world."],
+  ["Applying 2 changes", "The world reloads once."],
+];
+
+function progress() {
+  const step = Math.min(S.step, STEPS.length);
+  const pct = [6, 38, 72, 90, 100][step];
+  const rows = STEPS.map(([title, sub], i) => {
+    const cls = i < step ? "done" : i === step ? "now" : "";
+    return `<li class="${cls}"><span class="dot">${i < step ? ICON.check : ""}</span><span>${title}</span>${i === step ? `<small>${sub}</small>` : ""}</li>`;
+  }).join("");
+  return `<header class="top topover"><span class="sp"></span><span class="chip" style="color:#ffbf6b;border-color:rgb(255 191 107 / 40%)">Home server</span></header>
+  <div class="prog"><span class="live" style="justify-self:start;display:inline-flex;align-items:center;gap:7px;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#ffd9a6;background:rgb(70 44 12 / 70%)">Launching</span>
+    <h2>Curse of Strahd</h2><p class="lead">This takes 10 to 30 seconds on most servers. You can leave this screen; the launch goes on.</p>
+    <div class="barbox"><i style="width:${pct}%"></i></div>
+    <ol class="steps">${rows}</ol>
   </div>
-  ${S.join ? joinSheet(changes) : ""}`;
+  <div class="dock"><button class="btn ghost wide" data-act="home">${ICON.servers}Server list</button></div>`;
 }
 
-function joinSheet(changes) {
-  return `<div class="scrim" data-act="close"></div><div class="sheet" role="dialog" aria-label="Join as Gamemaster">
-    <span class="grab"></span><h2>Join Curse of Strahd</h2>
-    <div class="field"><label for="u">As</label><select id="u" class="input"><option>Gamemaster</option><option>Assistant GM</option></select></div>
-    <div class="field"><label for="p">Password</label><input id="p" class="input" type="password" placeholder="Leave empty if it has none"></div>
-    <p>${changes ? "The 2 queued changes apply as the world opens; it reloads once." : "Foundry's game screen opens; Back returns here."}</p>
-    <button class="btn bright wide" data-act="joined">${ICON.play}Join</button>
+/** The running page: no game, only Back to Setup and Server list. */
+function running() {
+  const later = S.rv === "later", failed = S.rv === "failed";
+  const state = later ? `<p>Setup, the Library and backups come back once the world is closed.</p>`
+    : failed ? `<div class="note-bad">${ICON.warn}<span>The 2 changes didn't apply: the Gamemaster's password was wrong. They stay queued for the next launch.</span></div>`
+    : `<div class="note-ok">${ICON.check}2 changes applied as it opened.</div>`;
+  return `<header class="top topover"><button class="ibtn" data-act="home" aria-label="Servers">${ICON.back}</button><h1 style="font-size:20px">Home server</h1><span class="sp"></span></header>
+  <div style="flex:1;min-height:0;overflow:auto">
+    <div class="hero"><span class="live"><i></i>Running now</span><h2>Curse of Strahd</h2><div class="meta"><span>dnd5e 5.1.4</span><span>${later ? "2 people in the game" : "Nobody in the game"}</span><span>${later ? "For 1 h 40 min" : "Just started"}</span></div></div>
+    <div class="runbody">${state}
+      <button class="btn bright wide" data-act="close">${ICON.door}Back to Setup</button>
+      <button class="btn wide" data-act="home">${ICON.servers}Server list</button>
+      <p class="hint">Back to Setup closes the world for everyone. Server list leaves it running.</p></div>
+  </div>
+  ${S.closing ? closeSheet(later) : ""}`;
+}
+
+function closeSheet(later) {
+  return `<div class="scrim" data-act="cancel"></div><div class="sheet" role="dialog" aria-label="Close Curse of Strahd">
+    <span class="grab"></span><h2>Close Curse of Strahd?</h2>
+    <p>Foundry saves the world and closes it${later ? "; the 2 people in the game are disconnected" : ""}. Then our Setup opens.</p>
+    <div class="field"><label for="cpw">Administrator password</label><div class="pw focus">${ICON.key}<input id="cpw" type="password" placeholder="Password" autocomplete="current-password"></div></div>
+    <button class="btn bright wide" data-act="closed">${ICON.door}Close and open Setup</button>
+    <button class="btn ghost wide" data-act="cancel">Cancel</button>
   </div>`;
 }
 
@@ -309,26 +411,32 @@ const NOTES = {
   add: () => `<div><h2>Adding a server</h2><p>No protocol to type: <b>http</b> or <b>https</b> is a toggle in front of the address, http first (home servers). A whole address pasted with http:// or https:// sets it.</p></div>
     <div><h3>New</h3><ul><li>The app checks the address before saving: it asks the server for Foundry's status and says what answered ("Foundry 14.370 answers"), or suggests the other protocol.</li><li><b>Add and open</b> saves it and opens its login.</li></ul></div>
     <div><h3>Try</h3><ul><li>Switch to https with the 192.168… address: the hint suggests http.</li><li>Type your own address.</li></ul></div>`,
-  login: () => `<div><h2>Leaving a server without its password</h2><p>Foundry's admin login is Foundry's page; the app adds one way back to your servers.</p></div>
-    <div><h3>A · Bar on top</h3><ul><li>A slim bar of ours above Foundry's page: <b>‹ Servers</b> and which server this is (with the lock if it's http).</li><li>Always visible, takes 48 px.</li></ul></div>
-    <div><h3>B · Floating button</h3><ul><li><b>Other server</b> floats at the bottom left over Foundry's page.</li><li>No space taken; can sit over Foundry's own text.</li></ul></div>
-    <p>Android's Back already goes to the servers from here; this makes it visible. The same way out goes on the running screen and its password question.</p>`,
-  launched: () => `<div><h2>After a launch from the app</h2><p>Our screen instead of Foundry's join page, as you asked. With changes waiting, <b>Join as Gamemaster · applies 2 changes</b> is the main button.</p></div>
-    <div><h3>Try</h3><ul><li><b>Join as Gamemaster</b>: a sheet picks the user (Gamemasters first) and takes a password if the user has one; then Foundry's game screen opens and the companion applies the changes.</li><li><b>Return to Setup</b> closes the world; the changes stay for the next launch.</li><li>‹ goes to your servers.</li></ul></div>`,
-  running: () => `<div><h2>Opened while a world runs</h2><p>As today, with <b>Join as Gamemaster</b> as the second button and ‹ to your servers.</p></div>`,
+  login: () => `<div><h2>Our login, not Foundry's</h2><p>The app replaces Foundry's admin login with its own screen in the app's look. ‹ goes back to your servers.</p></div>
+    <div><h3>The password field is native</h3><ul><li>A real Android password field, not a web one, that tells password managers it belongs to your server's address, so Bitwarden can match and fill the login saved for that address.</li><li>The suggestion under the field shows where Bitwarden's offer appears.</li><li>The password goes from that field straight to Foundry; the app doesn't keep it.</li></ul></div>
+    <div><h3>Try</h3><ul><li>State: <b>Wrong password</b> shows Foundry's refusal in our words.</li><li><b>Log in</b> opens our Setup.</li></ul></div>`,
+  launch: () => `<div><h2>Launching</h2><p>From the moment you tap Launch, our screen shows what Foundry is doing, instead of 10 to 30 seconds of nothing.</p></div>
+    <div><h3>With changes waiting</h3><ul><li>The review asks which Gamemaster applies them, and that user's password (a native field too).</li><li>After the launch the app joins as that user out of sight; the companion applies the changes and the world reloads once. The game never shows.</li><li><b>Launch without changes</b> keeps them queued.</li></ul></div>
+    <div><h3>Try</h3><ul><li><b>Launch and apply</b> plays the steps; the running page follows.</li><li>Step: <b>Launching</b> jumps to the progress screen.</li></ul></div>`,
+  running: () => `<div><h2>A world is running</h2><p>The app never opens Foundry's game. This page says what runs, and offers two ways on.</p></div>
+    <div><h3>Actions</h3><ul><li><b>Back to Setup</b> closes the world (Foundry asks for the administrator password, in a native field) and opens our Setup.</li><li><b>Server list</b> leaves the world running and goes back to your servers.</li></ul></div>
+    <div><h3>States</h3><ul><li><b>After a launch</b>: the changes applied.</li><li><b>Opened later</b>: who is in the game and for how long (the clock now counts minutes, not hours).</li><li><b>Changes failed</b>: why, and that they stay queued.</li></ul></div>`,
 };
 
 function render() {
   document.querySelectorAll("[data-s]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.s === S.s)));
   document.querySelectorAll("[data-hv]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.hv === S.hv)));
-  document.querySelectorAll("[data-lv]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.lv === S.lv)));
+  document.querySelectorAll("[data-lgv]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.lgv === S.lgv)));
+  document.querySelectorAll("[data-lnv]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.lnv === S.lnv)));
+  document.querySelectorAll("[data-rv]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.rv === S.rv)));
   document.getElementById("homeVar").hidden = !(S.s === "home" || S.s === "add");
-  document.getElementById("leaveVar").hidden = S.s !== "login";
+  document.getElementById("loginVar").hidden = S.s !== "login";
+  document.getElementById("launchVar").hidden = S.s !== "launch";
+  document.getElementById("runVar").hidden = S.s !== "running";
   let html = "";
   if (S.s === "home" || S.s === "add") html = (S.hv === "b" ? homeB() : homeA()) + (S.s === "add" ? addSheet() : "") + (S.s === "home" && S.edit !== null ? editSheet() : "");
   if (S.s === "login") html = login();
-  if (S.s === "launched") html = running(true);
-  if (S.s === "running") html = running(false);
+  if (S.s === "launch") html = launch();
+  if (S.s === "running") html = running();
   if (S.toast) html += `<div class="toast">${S.toast}</div>`;
   app.innerHTML = html;
   notes.innerHTML = NOTES[S.s === "add" ? "add" : S.s]();
@@ -341,29 +449,46 @@ function render() {
   });
 }
 
+let timer = null;
+function stopSteps() { if (timer) clearInterval(timer); timer = null; S.step = 0; }
+function playSteps() {
+  stopSteps();
+  timer = setInterval(() => {
+    S.step += 1;
+    if (S.step > STEPS.length) { stopSteps(); S.s = "running"; S.rv = "applied"; S.lnv = "review"; }
+    render();
+  }, 1400);
+}
+
 function flash(text) { S.toast = text; render(); setTimeout(() => { S.toast = ""; render(); }, 1800); }
 
 document.addEventListener("click", (e) => {
   const t = e.target.closest("button, [data-act], [data-go]");
   if (!t) return;
-  if (t.dataset.s) { S.s = t.dataset.s; S.sheet = null; S.join = false; return render(); }
+  if (t.dataset.s) { S.s = t.dataset.s; S.sheet = null; S.closing = false; stopSteps(); if (S.s === "launch" && S.lnv === "progress") playSteps(); return render(); }
+  if (t.dataset.lgv) { S.lgv = t.dataset.lgv; return render(); }
+  if (t.dataset.lnv) { S.lnv = t.dataset.lnv; stopSteps(); if (S.lnv === "progress") playSteps(); return render(); }
+  if (t.dataset.rv) { S.rv = t.dataset.rv; return render(); }
   if (t.dataset.hv) { S.hv = t.dataset.hv; return render(); }
-  if (t.dataset.lv) { S.lv = t.dataset.lv; return render(); }
   if (t.dataset.scheme) { S.scheme = t.dataset.scheme; return render(); }
   if (t.dataset.edit !== undefined) { e.stopPropagation(); S.edit = Number(t.dataset.edit); S.removing = false; return render(); }
   if (t.dataset.go === "login") { S.s = "login"; return render(); }
   const a = t.dataset.act;
   if (a === "add") { S.s = "add"; return render(); }
-  if (a === "close") { if (S.s === "add") S.s = "home"; S.join = false; S.edit = null; S.removing = false; return render(); }
+  if (a === "close" && S.s !== "running") { if (S.s === "add") S.s = "home"; S.edit = null; S.removing = false; return render(); }
   if (a === "remove") { S.removing = true; return render(); }
   if (a === "removed") { const n = SERVERS[S.edit].name; S.edit = null; S.removing = false; return flash(`${n} removed. Its library stays in this app.`); }
   if (a === "saved") { S.edit = null; return flash("Saved."); }
-  if (a === "added") { S.s = "login"; return render(); }
+  if (a === "added") { S.s = "login"; S.lgv = "ready"; return render(); }
   if (a === "history") { S.history = !S.history; return render(); }
-  if (a === "home") { S.s = "home"; S.join = false; return render(); }
-  if (a === "join") { S.join = true; return render(); }
-  if (a === "joined") { S.join = false; return flash("Foundry's game screen opens here; the companion applies the changes."); }
-  if (a === "return") { return flash("Closing the world… then Setup."); }
+  if (a === "home") { S.s = "home"; S.closing = false; stopSteps(); return render(); }
+  if (a === "filled") { S.lgv = "ready"; return flash("Filled by your password manager."); }
+  if (a === "loggedin") { return flash("Logged in: our Setup opens."); }
+  if (a === "review") { return render(); }
+  if (a === "go") { S.lnv = "progress"; playSteps(); return render(); }
+  if (a === "close" && S.s === "running") { S.closing = true; return render(); }
+  if (a === "cancel") { S.closing = false; return render(); }
+  if (a === "closed") { S.closing = false; return flash("Foundry closes the world… then our Setup."); }
 });
 render();
 </script>
