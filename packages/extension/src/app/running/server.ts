@@ -92,6 +92,32 @@ export async function fetchStatus(
 
 export type CloseResult = "closing" | "password" | "failed";
 
+const FORBIDDEN = 403;
+
+/**
+ * Foundry 13's way to close the world: POST /join "shutdown" with the admin
+ * password (or an admin session). It answers JSON with status "success",
+ * or its message as text when the password didn't do.
+ */
+async function closeOn13(
+  deps: ServerDeps,
+  password: string | undefined,
+): Promise<CloseResult> {
+  const res = await deps.fetch(deps.route("join"), {
+    method: "POST",
+    credentials: "same-origin",
+    signal: AbortSignal.timeout(REQUEST_MS),
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      action: "shutdown",
+      ...(password === undefined ? {} : { adminPassword: password }),
+    }),
+  });
+  if (!res.ok) return "failed";
+  const answer = jsonOf((await res.text()).slice(0, MAX_ANSWER));
+  return answer.status === "success" ? "closing" : "password";
+}
+
 /**
  * Asks Foundry to close the world. "password": Foundry wants the admin
  * password (no admin session, or a wrong one).
@@ -111,6 +137,9 @@ export async function closeWorld(
         ...(password === undefined ? {} : { adminPassword: password }),
       }),
     });
+    // Foundry 13 refuses an admin's /setup while a world runs: its join
+    // page closes the world instead (checked in 13.351's code).
+    if (res.status === FORBIDDEN) return await closeOn13(deps, password);
     if (!res.ok) return "failed";
     // Foundry redirects: to Setup when it closes the world, else back to
     // the join page (no password, or a wrong one).
@@ -207,7 +236,13 @@ export async function joinGame(
       credentials: "same-origin",
       signal: AbortSignal.timeout(REQUEST_MS),
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId, password, action: "join" }),
+      // Foundry 14 reads userId, 13 userid (checked in both): both go.
+      body: JSON.stringify({
+        userId,
+        userid: userId,
+        password,
+        action: "join",
+      }),
     });
     const raw = (await res.text()).slice(0, MAX_ANSWER);
     if (!res.ok) return refusal(raw);

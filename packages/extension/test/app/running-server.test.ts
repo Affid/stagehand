@@ -119,6 +119,40 @@ describe("closeWorld", () => {
     });
   });
 
+  test("Foundry 13 refuses /setup while a world runs: its join page closes it", async () => {
+    const replies = [
+      new Response("{}", { status: 403 }),
+      new Response(JSON.stringify({ status: "success" })),
+    ];
+    const fetch = vi.fn((_url: RequestInfo | URL, _init?: RequestInit) =>
+      Promise.resolve(replies.shift() ?? new Response("", { status: 500 })),
+    );
+    expect(await closeWorld({ fetch, route }, "pw")).toBe("closing");
+    expect(fetch.mock.calls[1]?.[0]).toBe("/join");
+    expect(JSON.parse(fetch.mock.calls[1]?.[1]?.body as string)).toEqual({
+      action: "shutdown",
+      adminPassword: "pw",
+    });
+  });
+
+  test("on 13, a message instead of success: the password; an error: failed", async () => {
+    const twice = (second: Response) => {
+      const replies = [new Response("{}", { status: 403 }), second];
+      return vi.fn((_url: RequestInfo | URL, _init?: RequestInit) =>
+        Promise.resolve(replies.shift() ?? new Response("", { status: 500 })),
+      );
+    };
+    expect(
+      await closeWorld({ fetch: twice(new Response("Wrong key")), route }),
+    ).toBe("password");
+    expect(
+      await closeWorld({
+        fetch: twice(new Response("", { status: 500 })),
+        route,
+      }),
+    ).toBe("failed");
+  });
+
   test("anything else failed", async () => {
     expect(
       await closeWorld({ fetch: answer("http://x/setup", 500), route }),
@@ -168,7 +202,12 @@ describe("joinGame", () => {
       credentials: "same-origin",
       signal: expect.any(AbortSignal) as unknown,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: "g1", password: "pw", action: "join" }),
+      body: JSON.stringify({
+        userId: "g1",
+        userid: "g1",
+        password: "pw",
+        action: "join",
+      }),
     });
   });
 
