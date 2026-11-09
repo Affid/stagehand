@@ -12,4 +12,34 @@
     <string name="confirm_title">Stagehand · %1$s</string>
     <string name="cert_title">Certificate not trusted</string>
     <string name="cert_body">The server at %1$s uses a certificate this phone doesn\'t trust, often a self-signed one. Stagehand doesn\'t open such servers yet: use the server\'s plain http address on your home network, or give it a certificate from a public authority.</string>
+    <!-- Our login (Android plan, phase 7; mockup design/app-screens, Log in). -->
+    <string name="login_title">Log in to Setup</string>
+    <string name="login_servers">Servers</string>
+    <string name="login_plain">Not encrypted</string>
+    <string name="login_user">Administrator name</string>
+    <string name="login_password">Administrator password</string>
+    <string name="login_go">Log in</string>
+    <string name="login_busy">Logging in…</string>
+    <string name="login_wrong">That isn\'t this server\'s administrator password.</string>
+    <string name="login_wrong_user">Foundry didn\'t accept that name and password.</string>
+    <string name="login_failed">Foundry didn\'t answer. Check that the server runs, then try again.</string>
+    <string name="login_hint">Foundry asks for the administrator password set in its configuration. A server without one opens Setup straight away; one with a world running opens the running page.</string>
+    <!-- A page's password question, as a native sheet: the words are native's. -->
+    <string name="pw_close_title">Close %1$s?</string>
+    <string name="pw_close_text">Foundry saves the world and closes it. Then our Setup opens.</string>
+    <plurals name="pw_close_people">
+        <item quantity="one">Foundry saves the world and closes it; the person in the game is disconnected. Then our Setup opens.</item>
+        <item quantity="other">Foundry saves the world and closes it; the %d people in the game are disconnected. Then our Setup opens.</item>
+    </plurals>
+    <string name="pw_close_label">Administrator password</string>
+    <string name="pw_close_go">Close and open Setup</string>
+    <string name="pw_close_wrong">That isn\'t this server\'s administrator password.</string>
+    <string name="pw_join_title">Apply as %1$s</string>
+    <string name="pw_join_text">The app joins %2$s as %1$s out of sight; the companion applies the changes and the world reloads once.</string>
+    <string name="pw_join_label">%1$s\'s password</string>
+    <string name="pw_join_hint">Leave empty if the user has none</string>
+    <string name="pw_join_go">Apply the changes</string>
+    <string name="pw_join_wrong">Foundry didn\'t accept that password for %1$s.</string>
+    <string name="pw_cancel">Cancel</string>
+    <string name="pw_show">Show the password</string>
 </resources>

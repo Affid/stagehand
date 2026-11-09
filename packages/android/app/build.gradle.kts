@@ -130,6 +130,13 @@ android {
     }
 }
 
+// The JVM's HttpURLConnection drops headers it calls restricted (Origin,
+// Sec-*); Android's sends them. Unit tests run on the JVM, so they let it
+// send them too, and check what our login really sends (AdminLoginTest).
+tasks.withType<Test>().configureEach {
+    systemProperty("sun.net.http.allowRestrictedHeaders", "true")
+}
+
 androidComponents {
     onVariants { variant ->
         variant.sources.assets?.addGeneratedSourceDirectory(copyWebAssets, CopyWebAssets::outputDir)

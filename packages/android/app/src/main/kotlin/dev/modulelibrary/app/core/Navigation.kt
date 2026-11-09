@@ -13,3 +13,11 @@ fun runningInsteadOf(url: String, servers: Collection<String>): String? {
     val server = servers.firstOrNull { server -> GAME_PAGES.any { isServerPage(url, server, it) } }
     return server?.let { "$it/join" }
 }
+
+/** A saved server's /join, where our running page is: it may ask native only for a password. */
+fun isRunningPage(url: String, servers: Collection<String>): Boolean =
+    servers.any { isServerPage(url, it, "/join") }
+
+/** The saved server whose Foundry login (/auth) this is: native shows our login instead. */
+fun loginServerOf(url: String, servers: Collection<String>): String? =
+    servers.firstOrNull { isServerPage(url, it, "/auth") }

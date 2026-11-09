@@ -43,7 +43,10 @@ describe("showsRunning", () => {
 function screen(
   s: Status | undefined,
   close: (pw?: string) => Promise<CloseResult>,
-  more: { readonly launched?: number } = {},
+  more: {
+    readonly launched?: number;
+    readonly askPassword?: (wrong: boolean) => Promise<string | undefined>;
+  } = {},
 ) {
   return render(
     <RunningScreen
@@ -54,9 +57,57 @@ function screen(
       close={close}
       launched={more.launched}
       serversHref="https://appassets.androidplatform.net/home.html"
+      {...(more.askPassword ? { askPassword: more.askPassword } : {})}
     />,
   );
 }
+
+describe("the password in the app's native sheet (phase 7)", () => {
+  test("asked natively, sent, and asked again natively when wrong", async () => {
+    const close = vi
+      .fn<(pw?: string) => Promise<CloseResult>>()
+      .mockResolvedValueOnce("password")
+      .mockResolvedValueOnce("password")
+      .mockResolvedValueOnce("closing");
+    const askPassword = vi
+      .fn<(wrong: boolean) => Promise<string | undefined>>()
+      .mockResolvedValueOnce("nope")
+      .mockResolvedValueOnce("right");
+    const r = screen(status({ users: 0 }), close, { askPassword });
+    fireEvent.click(r.getByRole("button", { name: "Back to Setup" }));
+    await waitFor(() => {
+      expect(close).toHaveBeenLastCalledWith("right");
+    });
+    expect(askPassword.mock.calls).toEqual([[false], [true]]);
+    expect(r.container.querySelector("input[type=password]")).toBeNull();
+  });
+
+  test("cancelled: nothing is sent and the page is as it was", async () => {
+    const close = vi.fn(() => Promise.resolve<CloseResult>("password"));
+    const askPassword = vi.fn(() => Promise.resolve(undefined));
+    const r = screen(status({ users: 0 }), close, { askPassword });
+    fireEvent.click(r.getByRole("button", { name: "Back to Setup" }));
+    await waitFor(() => {
+      expect(askPassword).toHaveBeenCalled();
+    });
+    expect(close).toHaveBeenCalledTimes(1);
+    expect(r.queryByRole("dialog")).toBeNull();
+    expect(r.getByRole("button", { name: "Back to Setup" })).toHaveProperty(
+      "disabled",
+      false,
+    );
+  });
+
+  test("native refuses to ask: the page's own sheet asks instead", async () => {
+    const close = vi.fn(() => Promise.resolve<CloseResult>("password"));
+    const askPassword = vi.fn(() => Promise.reject(new Error("no tap")));
+    const r = screen(status({ users: 0 }), close, { askPassword });
+    fireEvent.click(r.getByRole("button", { name: "Back to Setup" }));
+    await waitFor(() => {
+      expect(r.getByRole("dialog", { name: "Administrator password" }));
+    });
+  });
+});
 
 describe("the two ways on (owner, phase 7)", () => {
   test("Back to Setup first, Server list second; the game is never offered", () => {

@@ -2,8 +2,10 @@ package dev.modulelibrary.app
 
 import android.app.AlertDialog
 import dev.modulelibrary.app.core.NativeUi
+import dev.modulelibrary.app.core.PasswordAsk
 import dev.modulelibrary.app.core.plainQuestion
 import dev.modulelibrary.app.core.safeFileName
+import dev.modulelibrary.app.core.serverLabel
 import dev.modulelibrary.app.core.shortLabel
 import dev.modulelibrary.app.web.openInBrowser
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -43,6 +45,9 @@ class AndroidUi(private val activity: MainActivity, private val pickers: Pickers
         // Cancellation can come from another thread; the dialog is the UI's.
         cont.invokeOnCancellation { activity.runOnUiThread { dialog.dismiss() } }
     }
+
+    override suspend fun askPassword(ask: PasswordAsk, origin: String): String? =
+        PasswordSheet(activity, origin, shortLabel(serverLabel(origin))).ask(ask)
 
     override fun openExternal(url: String) = openInBrowser(activity, url)
 

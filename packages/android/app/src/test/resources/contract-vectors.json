@@ -2902,6 +2902,117 @@
    "valid": false
   },
   {
+   "type": "password.ask",
+   "payload": {
+    "purpose": "close",
+    "world": "Strahd",
+    "people": 2,
+    "wrong": false
+   },
+   "valid": true
+  },
+  {
+   "type": "password.ask",
+   "payload": {
+    "purpose": "join",
+    "world": "Strahd",
+    "user": "Gamemaster",
+    "people": 0,
+    "wrong": true
+   },
+   "valid": true
+  },
+  {
+   "type": "password.ask",
+   "payload": {
+    "purpose": "open",
+    "world": "Strahd",
+    "people": 0,
+    "wrong": false
+   },
+   "valid": false
+  },
+  {
+   "type": "password.ask",
+   "payload": {
+    "purpose": "close",
+    "world": "",
+    "people": 0,
+    "wrong": false
+   },
+   "valid": false
+  },
+  {
+   "type": "password.ask",
+   "payload": {
+    "purpose": "close",
+    "world": "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk",
+    "people": 0,
+    "wrong": false
+   },
+   "valid": false
+  },
+  {
+   "type": "password.ask",
+   "payload": {
+    "purpose": "join",
+    "world": "S",
+    "user": "",
+    "people": 0,
+    "wrong": false
+   },
+   "valid": false
+  },
+  {
+   "type": "password.ask",
+   "payload": {
+    "purpose": "close",
+    "world": "S",
+    "people": -1,
+    "wrong": false
+   },
+   "valid": false
+  },
+  {
+   "type": "password.ask",
+   "payload": {
+    "purpose": "close",
+    "world": "S",
+    "people": 1.5,
+    "wrong": false
+   },
+   "valid": false
+  },
+  {
+   "type": "password.ask",
+   "payload": {
+    "purpose": "close",
+    "world": "S",
+    "people": "2",
+    "wrong": false
+   },
+   "valid": false
+  },
+  {
+   "type": "password.ask",
+   "payload": {
+    "purpose": "close",
+    "world": "S",
+    "people": 0,
+    "wrong": "no"
+   },
+   "valid": false
+  },
+  {
+   "type": "password.ask",
+   "payload": {
+    "purpose": "close",
+    "world": "S",
+    "people": 0
+   },
+   "valid": false
+  },
+  {
    "type": "home.open",
    "payload": {},
    "valid": true

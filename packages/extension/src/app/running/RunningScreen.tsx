@@ -29,6 +29,11 @@ export interface RunningProps {
   readonly launched: number | undefined;
   /** The app's server list (native opens it on a tap). */
   readonly serversHref: string;
+  /**
+   * The app's native password sheet (password managers fill it); undefined
+   * when cancelled. Without it, or when native refuses, our own sheet asks.
+   */
+  readonly askPassword?: (wrong: boolean) => Promise<string | undefined>;
 }
 
 type Step =
@@ -173,15 +178,31 @@ function Password(props: {
   );
 }
 
-/** Return to Setup: ask first with people in, then the password if wanted. */
+/** Back to Setup: ask first with people in, then the password if wanted. */
 function useReturn(props: RunningProps) {
   const [step, setStep] = useState<Step>({ kind: "idle" });
+  /** The native sheet when there is one; our own when not, or when it refuses. */
+  const askFor = async (wrong: boolean): Promise<void> => {
+    const ask = props.askPassword;
+    if (!ask) {
+      setStep({ kind: "password", wrong });
+      return;
+    }
+    let password: string | undefined;
+    try {
+      password = await ask(wrong);
+    } catch {
+      setStep({ kind: "password", wrong });
+      return;
+    }
+    if (password === undefined) setStep({ kind: "idle" });
+    else await attempt(password);
+  };
   const attempt = async (password?: string): Promise<void> => {
     setStep({ kind: "closing" });
     const result = await props.close(password);
     if (result === "closing") return;
-    if (result === "password")
-      setStep({ kind: "password", wrong: password !== undefined });
+    if (result === "password") await askFor(password !== undefined);
     else setStep({ kind: "failed" });
   };
   const start = (): void => {

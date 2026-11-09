@@ -13,6 +13,7 @@ import dev.modulelibrary.app.core.APP_HOST
 import dev.modulelibrary.app.core.HOME_PAGE
 import dev.modulelibrary.app.core.WebUrl
 import dev.modulelibrary.app.core.externalAllowed
+import dev.modulelibrary.app.core.loginServerOf
 import dev.modulelibrary.app.core.mayAskAsServer
 import dev.modulelibrary.app.core.runningInsteadOf
 import java.io.ByteArrayInputStream
@@ -42,6 +43,9 @@ interface AppHost {
     fun backgroundStarting()
 
     fun serverPageFinished()
+
+    /** A saved server's Foundry login was reached: ours shows instead (phase 7). */
+    fun showLogin(server: String)
 }
 
 private fun blocked() = WebResourceResponse("text/plain", "utf-8", 403, "Blocked", emptyMap(), ByteArrayInputStream(ByteArray(0)))
@@ -97,16 +101,24 @@ class AssetPageClient(
  * error is refused (v1: no self-signed servers).
  */
 class ServerPageClient(private val page: PageState, private val host: AppHost) : WebViewClient() {
-    /** Foundry's game never shows (owner, phase 7): the server's /join, our running page. */
-    private fun runningInstead(view: WebView, url: String): Boolean {
-        val instead = runningInsteadOf(url, host.activeServers()) ?: return false
+    /**
+     * Foundry's game and login never show (owner, phase 7): the server's
+     * /join, our running page, or our native login instead.
+     */
+    private fun ourInstead(view: WebView, url: String): Boolean {
+        val servers = host.activeServers()
+        loginServerOf(url, servers)?.let {
+            host.showLogin(it)
+            return true
+        }
+        val instead = runningInsteadOf(url, servers) ?: return false
         view.loadUrl(instead)
         return true
     }
 
     override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
         if (!request.isForMainFrame) return false
-        if (runningInstead(view, request.url.toString())) return true
+        if (ourInstead(view, request.url.toString())) return true
         val url = WebUrl.parse(request.url.toString())
         if (url != null && url.host != APP_HOST && url.origin in host.origins()) return false
         // Our login bar and running screen link to the server list (owner,
@@ -134,10 +146,11 @@ class ServerPageClient(private val page: PageState, private val host: AppHost) :
     }
 
     override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
-        // A redirect after a form's POST isn't asked about above: caught here.
-        if (runningInsteadOf(url, host.activeServers()) != null) {
+        // A redirect (after a form's POST too) isn't always asked about above.
+        val servers = host.activeServers()
+        if (loginServerOf(url, servers) != null || runningInsteadOf(url, servers) != null) {
             view.stopLoading()
-            runningInstead(view, url)
+            ourInstead(view, url)
             return
         }
         // The committed address, after redirects (checked on the emulator).

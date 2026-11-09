@@ -36,6 +36,7 @@ import dev.modulelibrary.app.core.historyBackAllowed
 import dev.modulelibrary.app.core.isServerPage
 import dev.modulelibrary.app.core.BRIDGE_NAME
 import androidx.webkit.WebViewCompat
+import dev.modulelibrary.app.core.isRunningPage
 import dev.modulelibrary.app.core.mayAskAsServer
 import dev.modulelibrary.app.core.serverLabel
 import dev.modulelibrary.app.web.AppHost
@@ -81,7 +82,7 @@ private object Crash {
  * Foundry with our scripts on its Setup and game pages. Native's work is in
  * core/ (plain Kotlin); this class wires it to the WebViews.
  */
-class MainActivity : ComponentActivity(), AppHost {
+class MainActivity : ComponentActivity(), AppHost, LoginHost {
     private lateinit var root: FrameLayout
     private lateinit var handlers: NativeHandlers
     private lateinit var relay: Relay
@@ -103,6 +104,7 @@ class MainActivity : ComponentActivity(), AppHost {
     private var backAgain = false
     private var recreating = false
     private var certDialog: AlertDialog? = null
+    private lateinit var login: LoginController
     private var activeOrigins: Set<String> = emptySet()
     /** Registered at construction, as the Activity Result API requires. */
     private val pickers = Pickers(this)
@@ -142,6 +144,7 @@ class MainActivity : ComponentActivity(), AppHost {
             scope = lifecycleScope,
             serverAllowed = { url -> mayAskAsServer(url, handlers.state.activeServers()) },
             handle = { _, type, payload, url -> handlers.handle(type, payload, url) },
+            runningAllowed = { url -> isRunningPage(url, handlers.state.activeServers()) },
             log = { message, error ->
                 if (BuildConfig.DEBUG) Log.w(TAG, message, error) else Log.w(TAG, "$message: ${error.javaClass.simpleName}")
             },
@@ -172,6 +175,7 @@ class MainActivity : ComponentActivity(), AppHost {
         root.addView(home, FrameLayout.LayoutParams(-1, -1))
         listen(background, setOf(APP_ORIGIN), Caller.BACKGROUND, backgroundPage, relay)
         listen(home, setOf(APP_ORIGIN), Caller.HOME, homePage, relay)
+        login = LoginController(this, root, lifecycleScope, this)
         injection = Injection(server, assets)
         serversChanged(handlers.state)
         onBackPressedDispatcher.addCallback(this, backCallback)
@@ -212,8 +216,27 @@ class MainActivity : ComponentActivity(), AppHost {
         // Password managers fill the WebView in front, never the hidden ones
         // (owner, 2026-11-09: autofill didn't reach Foundry's login field).
         home.importantForAutofill = autofillFor(screen == Screen.HOME)
-        server.importantForAutofill = autofillFor(screen == Screen.SERVER)
+        server.importantForAutofill = autofillFor(screen == Screen.SERVER && !login.showing)
     }
+
+    override fun showLogin(server: String) {
+        show(Screen.SERVER)
+        login.show(server)
+    }
+
+    override fun loadInServer(url: String) {
+        server.loadUrl(url)
+        show(Screen.SERVER)
+    }
+
+    override fun home() = showHome()
+
+    /** Our login's field is offered to password managers, not the WebView behind it. */
+    override fun serverAutofill(on: Boolean) {
+        server.importantForAutofill = autofillFor(on && showing == Screen.SERVER)
+    }
+
+    override suspend fun serverName(server: String): String? = handlers.serverName(server)
 
     /** Home as Stagehand settings, from a server's Setup (home.open). */
     fun showSettings() {
@@ -224,6 +247,7 @@ class MainActivity : ComponentActivity(), AppHost {
 
     fun showHome() {
         if (!started) return
+        login.hide()
         homeOverServer = false
         // Loaded again each time: the list is read when the page starts.
         home.loadUrl(HOME_PAGE)
@@ -237,6 +261,7 @@ class MainActivity : ComponentActivity(), AppHost {
     override fun openServer(url: String) {
         val full = WebUrl.parse(url)?.let { it.origin + it.rawPath } ?: return
         val id = activeServers().firstOrNull { full == it || full.startsWith("$it/") } ?: return
+        login.hide()
         clearHistoryOnFinish = true
         server.loadUrl(url)
         show(Screen.SERVER)
@@ -298,6 +323,11 @@ class MainActivity : ComponentActivity(), AppHost {
     }
 
     private suspend fun back() {
+        // Our login: Back is its ‹, to the servers.
+        if (showing == Screen.SERVER && login.showing) {
+            login.back()
+            return
+        }
         val pressedAt = SystemClock.elapsedRealtime()
         backAgain = false
         val handled = if (showing == Screen.SERVER) setupUsedBack() else homeUsedBack()

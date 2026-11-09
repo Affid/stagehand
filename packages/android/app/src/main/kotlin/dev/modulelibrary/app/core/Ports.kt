@@ -11,6 +11,12 @@ interface NativeUi {
     /** A native yes or no; `server` names the server asking. */
     suspend fun confirm(question: String, server: String): Boolean
 
+    /**
+     * A password in a native field that password managers fill for `origin`
+     * (the asking page's server), or null when cancelled.
+     */
+    suspend fun askPassword(ask: PasswordAsk, origin: String): String?
+
     fun openExternal(url: String)
 
     fun showHome()
@@ -25,3 +31,15 @@ fun interface ScriptHost {
 fun interface Fetcher {
     suspend fun fetch(url: String): String
 }
+
+/** Why a page wants a password; native writes the words, never the page. */
+enum class PasswordPurpose { CLOSE, JOIN }
+
+/** A page's password question: its purpose, the world, the user to join as, who is in, a retry. */
+data class PasswordAsk(
+    val purpose: PasswordPurpose,
+    val world: String,
+    val user: String?,
+    val people: Int,
+    val wrong: Boolean,
+)

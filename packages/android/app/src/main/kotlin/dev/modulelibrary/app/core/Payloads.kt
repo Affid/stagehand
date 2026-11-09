@@ -14,6 +14,9 @@ private const val MAX_FILE_NAME = 200
 private const val MAX_QUESTION = 2000
 private const val MAX_IDS = 50
 private const val MAX_ID = 300
+private const val MAX_WORLD = 200
+private const val MAX_USER = 100
+private const val MAX_PEOPLE = 10_000
 
 private val FILE_NAME = Regex("""[^/\\\u0000]+""")
 
@@ -37,6 +40,17 @@ private val ids: Field = { value ->
 
 private fun oneOf(vararg options: String): Field = { stringOf(it) in options }
 
+private fun int(max: Int): Field = { value ->
+    val p = value as? JsonPrimitive
+    val n = p?.takeIf { !it.isString }?.content?.toIntOrNull()
+    n != null && n in 0..max
+}
+
+private val bool: Field = { value -> (value as? JsonPrimitive)?.takeIf { !it.isString }?.content in setOf("true", "false") }
+
+/** Missing is fine; present, it must pass. */
+private fun optional(check: Field): Field = { it == null || check(it) }
+
 private val pattern = text(max = MAX_URL, pattern = SERVER_PATTERN)
 
 private val SCHEMAS: Map<String, Map<String, Field>> = mapOf(
@@ -59,6 +73,13 @@ private val SCHEMAS: Map<String, Map<String, Field>> = mapOf(
     "fetch" to mapOf("url" to text(max = MAX_URL), "purpose" to oneOf("release", "config")),
     "server.check" to mapOf("server" to text(max = MAX_URL, pattern = SERVER_ID)),
     "home.open" to emptyMap(),
+    "password.ask" to mapOf(
+        "purpose" to oneOf("close", "join"),
+        "world" to text(1, MAX_WORLD),
+        "user" to optional(text(1, MAX_USER)),
+        "people" to int(MAX_PEOPLE),
+        "wrong" to bool,
+    ),
     READY to emptyMap(),
 )
 

@@ -62,6 +62,8 @@ class Relay(
     /** Whether a server page at this committed URL may make "server" requests. */
     private val serverAllowed: (String) -> Boolean,
     private val handle: Handle,
+    /** Whether a server page at this URL is our running page (a saved server's /join). */
+    private val runningAllowed: (String) -> Boolean = { false },
     private val routeTimeoutMs: Long = ROUTE_TIMEOUT_MS,
     private val parser: CoroutineDispatcher = Dispatchers.Default,
     private val log: (String, Throwable) -> Unit = { _, _ -> },
@@ -159,7 +161,11 @@ class Relay(
     }
 
     private fun callerOf(source: Caller, url: String): Caller? = when (source) {
-        Caller.SERVER -> if (serverAllowed(url)) Caller.SERVER else null
+        Caller.SERVER -> when {
+            serverAllowed(url) -> Caller.SERVER
+            runningAllowed(url) -> Caller.RUNNING
+            else -> null
+        }
         else -> source
     }
 

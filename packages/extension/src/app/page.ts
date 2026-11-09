@@ -16,7 +16,7 @@ import { pressBack } from "../ui/shell/phone/back.ts";
 import { hideResolutionNotice } from "../page/resolution.ts";
 import { allowTextMenus, hintPasswords } from "../page/text-fields.ts";
 import { addLoginBar } from "./login-bar.ts";
-import { nativePorts, nativeSend } from "./platform.ts";
+import { nativePassword, nativePorts, nativeSend } from "./platform.ts";
 import { showsRunning, startRunning } from "./running/start.tsx";
 
 const isPort = (value: unknown): value is NativePort =>
@@ -191,6 +191,8 @@ export function startAppGame(deps: AppGameDeps): boolean {
         },
         serversHref: HOME_PAGE,
         notes: deps.win.sessionStorage,
+        // The bridge stays ours: a password from native's sheet, nothing else.
+        askPassword: nativePassword(createNativeBridge(port)),
       });
     });
     return false;

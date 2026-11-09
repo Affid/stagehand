@@ -24,6 +24,7 @@ import {
   FilesOpenResultSchema,
   IdsResultSchema,
   KvGetResultSchema,
+  PasswordResultSchema,
 } from "./native-api.ts";
 
 /** The user answers dialogs and pickers in their own time. */
@@ -122,6 +123,27 @@ export function nativeReleases(bridge: NativeBridge): ReleasesPlatform {
 export function nativeSend(bridge: NativeBridge): Send {
   return <T>(message: ExtensionMessage) =>
     bridge.request<T>("runtime.send", { message }, USER_PACE);
+}
+
+/** A page's password question to native (password.ask): the words are native's. */
+export interface PasswordQuestion {
+  readonly purpose: "close" | "join";
+  readonly world: string;
+  /** The user to join as ("join"). */
+  readonly user?: string;
+  readonly people: number;
+  /** Foundry refused the last one: native says so. */
+  readonly wrong: boolean;
+}
+
+/** Asks native's password sheet; undefined when the user cancels it. */
+export function nativePassword(
+  bridge: NativeBridge,
+): (q: PasswordQuestion) => Promise<string | undefined> {
+  return async (q) => {
+    const reply = await bridge.request("password.ask", { ...q }, USER_PACE);
+    return PasswordResultSchema.parse(reply).password;
+  };
 }
 
 export function nativePorts(bridge: NativeBridge): UiPorts {

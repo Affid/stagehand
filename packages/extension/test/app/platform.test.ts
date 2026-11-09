@@ -3,6 +3,7 @@ import { describe, expect, test, vi } from "vitest";
 import { createNativeBridge } from "../../src/app/bridge.ts";
 import {
   nativeKeyValue,
+  nativePassword,
   nativePorts,
   nativeReleases,
   nativeScripting,
@@ -150,6 +151,21 @@ describe("files, confirm and links over native (UiPorts)", () => {
     expect(native.asked[0]).toEqual([
       "files.save",
       { fileName: "a.json", text: "{}" },
+    ]);
+  });
+
+  test("a password from native's sheet, or none when cancelled (phase 7)", async () => {
+    const { native, bridge } = setup();
+    native.on("password.ask", (p) =>
+      (p as { wrong: boolean }).wrong ? {} : { password: "secret" },
+    );
+    const ask = nativePassword(bridge);
+    const q = { purpose: "close", world: "Strahd", people: 1 } as const;
+    expect(await ask({ ...q, wrong: false })).toBe("secret");
+    expect(await ask({ ...q, wrong: true })).toBeUndefined();
+    expect(native.asked[0]).toEqual([
+      "password.ask",
+      { purpose: "close", world: "Strahd", people: 1, wrong: false },
     ]);
   });
 

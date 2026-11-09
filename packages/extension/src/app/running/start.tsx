@@ -11,6 +11,7 @@ import { hideResolutionNotice } from "../../page/resolution.ts";
 import { isServerPage } from "../native-api.ts";
 import { createTranslator } from "../../ui/i18n.ts";
 import { readLaunchNote } from "../launch-note.ts";
+import type { PasswordQuestion } from "../platform.ts";
 import { RunningScreen } from "./RunningScreen.tsx";
 import {
   closeWorld,
@@ -49,6 +50,8 @@ export interface RunningDeps {
   readonly serversHref: string;
   /** Where our Setup left its launch note (sessionStorage). */
   readonly notes?: Storage;
+  /** The app's native password sheet (password.ask), when the page has the bridge. */
+  readonly askPassword?: (q: PasswordQuestion) => Promise<string | undefined>;
 }
 
 /** Foundry confirmed the close; Setup is opened anyway after this long. */
@@ -100,6 +103,7 @@ function Root(props: {
   const { deps } = props;
   const [closing, setClosing] = useState(false);
   const status = useStatus(deps, closing);
+  const ask = deps.askPassword;
   return (
     <RunningScreen
       t={createTranslator("en")}
@@ -117,6 +121,17 @@ function Root(props: {
           : undefined
       }
       serversHref={deps.serversHref}
+      {...(ask
+        ? {
+            askPassword: (wrong: boolean) =>
+              ask({
+                purpose: "close",
+                world: props.world.title,
+                people: status?.users ?? 0,
+                wrong,
+              }),
+          }
+        : {})}
     />
   );
 }

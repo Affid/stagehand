@@ -15,6 +15,12 @@ import java.io.File
 
 private const val LINK_GAP_MS = 1_000L
 
+/** Home keeps names this short (MAX_SERVER_NAME). */
+private const val MAX_NAME = 80
+
+/** A wrong password's retry comes from the page, not a tap: allowed this long after an answer. */
+private const val PASSWORD_RETRY_MS = 10_000L
+
 /**
  * Native's answers to the pages' requests (native-api.ts), after the relay
  * has checked who asked and the payload: storage, saved servers and their
@@ -42,12 +48,21 @@ class NativeHandlers(
     var state: NativeState = NativeState.load(stateFile)
         private set
     private var confirming = false
+    private var askingPassword = false
+    private var passwordAnsweredAt = Long.MIN_VALUE / 2
     private var lastLinkAt = Long.MIN_VALUE / 2
 
     private suspend fun change(next: NativeState, scriptsChanged: Boolean) {
         withContext(io) { next.save(stateFile) }
         state = next
         if (scriptsChanged) scripts.serversChanged(next)
+    }
+
+    /** The name home gave `server` (the background's "servers" record), for our login's title. */
+    suspend fun serverName(server: String): String? {
+        val record = store.get("servers") as? JsonObject ?: return null
+        val name = ((record[server] as? JsonObject)?.get("name") as? JsonPrimitive)?.takeIf { it.isString }?.content
+        return name?.trim()?.takeIf { it.isNotEmpty() }?.take(MAX_NAME)
     }
 
     /** The server the app shows now: it opens first next time. */
@@ -83,6 +98,8 @@ class NativeHandlers(
         }
         "files.open" -> ui.openFile()?.let { t -> buildJsonObject { put("text", t) } } ?: JsonObject(emptyMap())
         "confirm" -> buildJsonObject { put("yes", confirm(payload.text("text"), url)) }
+        "password.ask" -> askPassword(passwordAsk(payload), url)
+            ?.let { pw -> buildJsonObject { put("password", pw) } } ?: JsonObject(emptyMap())
         "openExternal" -> {
             openExternal(payload.text("url"))
             null
@@ -153,6 +170,23 @@ class NativeHandlers(
         }
     }
 
+    /**
+     * One at a time; on a tap on the page, or as the page's retry right after
+     * an answer (a wrong password). Null when cancelled or already asking.
+     */
+    private suspend fun askPassword(ask: PasswordAsk, url: String): String? {
+        if (askingPassword) return null
+        val retry = ask.wrong && clock() - passwordAnsweredAt < PASSWORD_RETRY_MS
+        require(tappedLately() || retry) { "A password is asked on a tap" }
+        askingPassword = true
+        try {
+            return ui.askPassword(ask, requireNotNull(WebUrl.parse(url)?.origin) { "No server" })
+        } finally {
+            askingPassword = false
+            passwordAnsweredAt = clock()
+        }
+    }
+
     private fun openExternal(url: String) {
         require(externalAllowed(url, state.origins)) { "Not a link the app opens outside" }
         require(tappedLately()) { "Outside links open on a tap" }
@@ -166,3 +200,11 @@ class NativeHandlers(
 private fun JsonObject.text(key: String): String = getValue(key).jsonPrimitive.content
 
 private fun JsonObject.ids(): List<String> = getValue("ids").jsonArray.map { it.jsonPrimitive.content }
+
+private fun passwordAsk(payload: JsonObject) = PasswordAsk(
+    purpose = if (payload.text("purpose") == "join") PasswordPurpose.JOIN else PasswordPurpose.CLOSE,
+    world = payload.text("world"),
+    user = payload["user"]?.jsonPrimitive?.content,
+    people = payload.getValue("people").jsonPrimitive.content.toInt(),
+    wrong = payload.getValue("wrong").jsonPrimitive.content.toBoolean(),
+)

@@ -26,4 +26,18 @@ class NavigationTest {
         assertNull(runningInsteadOf("https://vtt.example.com/game", servers))
         assertNull(runningInsteadOf("not a url", servers))
     }
+
+    @Test
+    fun `a server's join page is the running page, its auth page our login`() {
+        assertEquals(true, isRunningPage("http://10.0.2.2:30000/join", servers))
+        assertEquals(false, isRunningPage("http://10.0.2.2:30000/joiner", servers))
+        assertEquals(false, isRunningPage("http://other/join", servers))
+        assertEquals("http://10.0.2.2:30000", loginServerOf("http://10.0.2.2:30000/auth", servers))
+        assertEquals(
+            "https://vtt.example.com/foundry",
+            loginServerOf("https://vtt.example.com/foundry/auth?x", servers),
+        )
+        assertNull(loginServerOf("http://10.0.2.2:30000/setup", servers))
+        assertNull(loginServerOf("http://other/auth", servers))
+    }
 }

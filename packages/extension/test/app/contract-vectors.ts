@@ -230,6 +230,38 @@ const PAYLOADS: readonly (readonly [RequestType, unknown])[] = [
   ["server.check", { server: "192.168.178.25:30000" }],
   ["server.check", { server: "http://u@localhost" }],
   ["server.check", {}],
+  [
+    "password.ask",
+    { purpose: "close", world: "Strahd", people: 2, wrong: false },
+  ],
+  [
+    "password.ask",
+    {
+      purpose: "join",
+      world: "Strahd",
+      user: "Gamemaster",
+      people: 0,
+      wrong: true,
+    },
+  ],
+  [
+    "password.ask",
+    { purpose: "open", world: "Strahd", people: 0, wrong: false },
+  ],
+  ["password.ask", { purpose: "close", world: "", people: 0, wrong: false }],
+  [
+    "password.ask",
+    { purpose: "close", world: long(201), people: 0, wrong: false },
+  ],
+  [
+    "password.ask",
+    { purpose: "join", world: "S", user: "", people: 0, wrong: false },
+  ],
+  ["password.ask", { purpose: "close", world: "S", people: -1, wrong: false }],
+  ["password.ask", { purpose: "close", world: "S", people: 1.5, wrong: false }],
+  ["password.ask", { purpose: "close", world: "S", people: "2", wrong: false }],
+  ["password.ask", { purpose: "close", world: "S", people: 0, wrong: "no" }],
+  ["password.ask", { purpose: "close", world: "S", people: 0 }],
   ["home.open", {}],
   ["background.ready", {}],
   ["background.ready", { x: 1 }],

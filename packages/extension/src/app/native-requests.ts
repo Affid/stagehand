@@ -8,6 +8,9 @@ const MAX_URL = 4096;
 const MAX_FILE_NAME = 200;
 const MAX_QUESTION = 2000;
 const MAX_IDS = 50;
+const MAX_WORLD = 200;
+const MAX_USER = 100;
+const MAX_PEOPLE = 10_000;
 
 /** A match pattern as the extension's: "http://host:port/*" or with a path. */
 const pattern = z
@@ -53,6 +56,13 @@ export const REQUEST_SCHEMAS = {
     purpose: z.enum(["release", "config"]),
   }),
   "server.check": z.object({ server }),
+  "password.ask": z.object({
+    purpose: z.enum(["close", "join"]),
+    world: z.string().min(1).max(MAX_WORLD),
+    user: z.string().min(1).max(MAX_USER).optional(),
+    people: z.number().int().min(0).max(MAX_PEOPLE),
+    wrong: z.boolean(),
+  }),
   "home.open": z.object({}),
   "background.ready": z.object({}),
 } as const;

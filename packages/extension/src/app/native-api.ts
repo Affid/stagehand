@@ -47,7 +47,7 @@ export function wrapForServer(script: string, server: string): string {
  * Setup or game page (native checks the WebView's current URL); on its other
  * pages (/join, /auth) the bridge object stays unused.
  */
-export type Caller = "server" | "home" | "background";
+export type Caller = "server" | "running" | "home" | "background";
 
 /** True for `page` ("/setup") or below it on `server`, route prefix included. */
 export function isServerPage(
@@ -95,6 +95,9 @@ export function mayAskAsServer(
 
 /** The longest outside link native opens. */
 export const MAX_EXTERNAL_URL = 4096;
+
+/** The longest password native hands back. */
+const MAX_PASSWORD = 4096;
 
 /**
  * Whether native opens `url` outside the app (a Custom Tab): http or https
@@ -152,6 +155,12 @@ export function savableServerOrigin(pattern: string): string | undefined {
  * - files.open {} → {text?}: the file the user picked, or none.
  * - confirm {text} → {yes}: a native dialog, one at a time (a second while
  *   one is open is answered {yes: false}).
+ * - password.ask {purpose, world, user?, people, wrong} → {password} or {}
+ *   when cancelled: a native sheet whose field password managers fill for
+ *   the asking page's server (phase 7). Native writes the words from the
+ *   purpose ("close" a world, "join" as `user` to apply changes); the page
+ *   passes no text of its own. One at a time; only on a tap on the page,
+ *   or as a retry (`wrong`) within PASSWORD_RETRY_MS of the last answer.
  * - openExternal {url} → null: a Custom Tab; http(s) only, never the
  *   server's own origin, only within a moment of the user's tap, and at
  *   most one a second.
@@ -186,7 +195,7 @@ export function savableServerOrigin(pattern: string): string | undefined {
  *
  * Native also caps every message at MAX_MESSAGE_CHARS (bridge.ts), accepts
  * them only from the main frame, and makes "server" requests only from a
- * saved server's Setup or game page.
+ * saved server's Setup or game page ("running" ones only from its /join).
  */
 export const CALLER_REQUESTS: Readonly<Record<Caller, readonly string[]>> = {
   server: [
@@ -195,7 +204,10 @@ export const CALLER_REQUESTS: Readonly<Record<Caller, readonly string[]>> = {
     "files.open",
     "confirm",
     "openExternal",
+    "password.ask",
   ],
+  // Our running page on a saved server's /join: a password, nothing else.
+  running: ["password.ask"],
   home: [
     "runtime.send",
     "permissions.contains",
@@ -255,6 +267,12 @@ export const FilesOpenResultSchema = z.object({
   text: z.string().optional(),
 });
 export const ConfirmResultSchema = z.object({ yes: z.boolean() });
+/** password.ask's answer: the password, or none when cancelled. */
+export const PasswordResultSchema = z.object({
+  password: z.string().max(MAX_PASSWORD).optional(),
+});
+/** A wrong password's retry may follow the last answer by this much (native's rule). */
+export const PASSWORD_RETRY_MS = 10_000;
 export const FetchResultSchema = z.object({ text: z.string() });
 /** Longer than any Foundry version ("14.370", "13.351-beta.2"). */
 export const MAX_VERSION = 40;

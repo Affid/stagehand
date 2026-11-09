@@ -40,11 +40,13 @@ const val REMOTE_CONFIG_URL =
 const val FOUNDRY_PATTERN = "https://foundryvtt.com/*"
 
 /** Which of the app's WebViews a message came from. */
-enum class Caller { SERVER, HOME, BACKGROUND }
+enum class Caller { SERVER, RUNNING, HOME, BACKGROUND }
 
 /** Requests to native and who may make them (CALLER_REQUESTS). */
 val CALLER_REQUESTS: Map<Caller, Set<String>> = mapOf(
-    Caller.SERVER to setOf("runtime.send", "files.save", "files.open", "confirm", "openExternal"),
+    Caller.SERVER to setOf("runtime.send", "files.save", "files.open", "confirm", "openExternal", "password.ask"),
+    // Our running page on a server's /join (phase 7): a password, nothing else.
+    Caller.RUNNING to setOf("password.ask"),
     Caller.HOME to setOf(
         "runtime.send", "permissions.contains", "permissions.request", "permissions.remove", "server.check",
     ),

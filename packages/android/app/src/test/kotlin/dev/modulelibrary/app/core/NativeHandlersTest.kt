@@ -33,6 +33,12 @@ class NativeHandlersTest {
         var answer = CompletableDeferred(true)
         val links = mutableListOf<String>()
         var homes = 0
+        val asks = mutableListOf<Pair<PasswordAsk, String>>()
+        var password = CompletableDeferred<String?>("pw")
+        override suspend fun askPassword(ask: PasswordAsk, origin: String): String? {
+            asks += ask to origin
+            return password.await()
+        }
         override suspend fun saveFile(fileName: String, text: String) {
             saved += fileName to text
         }
@@ -180,6 +186,54 @@ class NativeHandlersTest {
         ui.answer.complete(true)
         assertEquals(obj("""{"yes":true}"""), first.await())
         assertEquals(listOf("Delete?" to "localhost:30000"), ui.questions)
+    }
+
+    @Test
+    fun `a server's name as home saved it, for our login`() = runTest {
+        assertNull(handlers.serverName(SERVER))
+        call("kv.set", """{"key":"servers","value":{"$SERVER":{"id":"$SERVER","name":"Home server"},"x":{"name":7}}}""")
+        assertEquals("Home server", handlers.serverName(SERVER))
+        assertNull(handlers.serverName("x"))
+        call("kv.set", """{"key":"servers","value":[1]}""")
+        assertNull(handlers.serverName(SERVER))
+    }
+
+    @Test
+    fun `a password, asked natively with the server's name, one at a time`() = runTest {
+        ui.password = CompletableDeferred()
+        val payload = """{"purpose":"close","world":"Strahd","people":2,"wrong":false}"""
+        val first = async { call("password.ask", payload, "$SERVER/join") }
+        runCurrent()
+        assertEquals(obj("{}"), call("password.ask", payload, "$SERVER/join"))
+        ui.password.complete("secret")
+        assertEquals(obj("""{"password":"secret"}"""), first.await())
+        assertEquals(
+            listOf(PasswordAsk(PasswordPurpose.CLOSE, "Strahd", null, 2, false) to SERVER),
+            ui.asks,
+        )
+    }
+
+    @Test
+    fun `a cancelled password answers nothing`() = runTest {
+        ui.password = CompletableDeferred<String?>().apply { complete(null) }
+        val payload = """{"purpose":"join","world":"Strahd","user":"Gamemaster","people":0,"wrong":false}"""
+        assertEquals(obj("{}"), call("password.ask", payload, SETUP))
+        assertEquals("Gamemaster", ui.asks.single().first.user)
+    }
+
+    @Test
+    fun `a password is asked on a tap, or as a retry just after an answer`() = runTest {
+        val payload = """{"purpose":"close","world":"Strahd","people":0,"wrong":false}"""
+        tapped = false
+        assertTrue(runCatching { call("password.ask", payload, "$SERVER/join") }.isFailure)
+        tapped = true
+        call("password.ask", payload, "$SERVER/join")
+        tapped = false
+        now += 5_000
+        val retry = """{"purpose":"close","world":"Strahd","people":0,"wrong":true}"""
+        assertEquals(obj("""{"password":"pw"}"""), call("password.ask", retry, "$SERVER/join"))
+        now += 20_000
+        assertTrue(runCatching { call("password.ask", retry, "$SERVER/join") }.isFailure)
     }
 
     @Test
