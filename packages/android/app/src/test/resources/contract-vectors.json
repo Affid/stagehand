@@ -3013,9 +3013,53 @@
    "valid": false
   },
   {
+   "type": "launch.mark",
+   "payload": {
+    "world": "strahd",
+    "changes": 2
+   },
+   "valid": true
+  },
+  {
+   "type": "launch.mark",
+   "payload": {
+    "world": "strahd",
+    "changes": 0
+   },
+   "valid": false
+  },
+  {
+   "type": "launch.mark",
+   "payload": {
+    "world": "",
+    "changes": 1
+   },
+   "valid": false
+  },
+  {
+   "type": "apply.allowed",
+   "payload": {
+    "world": "strahd"
+   },
+   "valid": true
+  },
+  {
+   "type": "apply.allowed",
+   "payload": {
+    "world": ""
+   },
+   "valid": false
+  },
+  {
+   "type": "apply.allowed",
+   "payload": {},
+   "valid": false
+  },
+  {
    "type": "apply.start",
    "payload": {
-    "world": "Strahd",
+    "world": "strahd",
+    "title": "Strahd",
     "changes": 2
    },
    "valid": true
@@ -3023,7 +3067,8 @@
   {
    "type": "apply.start",
    "payload": {
-    "world": "Strahd",
+    "world": "strahd",
+    "title": "Strahd",
     "changes": 0
    },
    "valid": false
@@ -3032,6 +3077,7 @@
    "type": "apply.start",
    "payload": {
     "world": "",
+    "title": "Strahd",
     "changes": 1
    },
    "valid": false
@@ -3039,7 +3085,8 @@
   {
    "type": "apply.start",
    "payload": {
-    "world": "Strahd"
+    "world": "strahd",
+    "changes": 1
    },
    "valid": false
   },

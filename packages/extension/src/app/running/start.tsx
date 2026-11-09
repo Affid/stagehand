@@ -54,8 +54,14 @@ export interface RunningDeps {
   readonly notes?: Storage;
   /** The app's native password sheet (password.ask), when the page has the bridge. */
   readonly askPassword?: (q: PasswordQuestion) => Promise<string | undefined>;
+  /** Whether native has this world's launch on record (apply.allowed). */
+  readonly applyAllowed?: (world: string) => Promise<boolean>;
   /** Native covers the WebView and lets /game load to apply the changes (apply.start). */
-  readonly startApply?: (world: string, changes: number) => Promise<void>;
+  readonly startApply?: (
+    world: string,
+    title: string,
+    changes: number,
+  ) => Promise<void>;
 }
 
 /** The apply flow's needs from these deps; none without a launch note or native. */
@@ -63,13 +69,14 @@ function flowOf(
   deps: RunningDeps,
   world: RunningWorld,
 ): ApplyFlowDeps | undefined {
-  const { notes, startApply } = deps;
-  if (!notes || !startApply) return undefined;
+  const { notes, startApply, applyAllowed } = deps;
+  if (!notes || !startApply || !applyAllowed) return undefined;
   return {
     store: notes,
     world,
     game: deps.game,
     join: (userId, password) => joinGame(deps.server, userId, password),
+    allowed: applyAllowed,
     start: startApply,
     go: (path) => {
       deps.win.location.assign(path);

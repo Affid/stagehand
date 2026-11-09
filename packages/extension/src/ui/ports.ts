@@ -23,6 +23,11 @@ export interface UiPorts {
   readonly openExternal: (url: string) => boolean;
   /** Our page runs inside the Android app (its home lists the servers). */
   readonly app?: true;
+  /**
+   * The app: a launch with queued changes is recorded with native, which
+   * applies them out of sight only for a launch it has on record (phase 7).
+   */
+  readonly markLaunch?: (world: string, changes: number) => Promise<void>;
 }
 
 /** The extension: the browser's own download, picker, confirm and tabs. */

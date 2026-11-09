@@ -92,8 +92,9 @@ class PasswordSheet(private val activity: Activity, private val origin: String, 
 
     private fun place(dialog: Dialog) {
         dialog.window?.apply {
-            // The typed password stays out of screenshots and the recents view.
-            addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+            // The typed password stays out of screenshots and the recents view
+            // (release builds: the device suite's screenshots need debug's).
+            if (!BuildConfig.DEBUG) addFlags(WindowManager.LayoutParams.FLAG_SECURE)
             setBackgroundDrawable(ColorDrawable(0))
             setGravity(Gravity.BOTTOM)
             setLayout(MATCH_PARENT, WRAP_CONTENT)

@@ -9,7 +9,7 @@ import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.ProgressBar
-import dev.modulelibrary.app.core.WebUrl
+import dev.modulelibrary.app.core.isServerPage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -21,13 +21,10 @@ private const val BAR_PCT = 90
 
 /** What applying out of sight needs from the activity. */
 interface ApplyHost {
-    /** The server WebView goes to `url`: the server's /join once done. */
-    fun loadInServer(url: String)
+    /** The server WebView goes back to our running page: on screen if the server is, else out of sight. */
+    fun backToRunning(url: String)
 
     fun home()
-
-    /** The saved server id whose origin this is. */
-    fun serverOf(origin: String): String?
 }
 
 /**
@@ -43,37 +40,45 @@ class ApplyController(
     private val scope: CoroutineScope,
     private val host: ApplyHost,
 ) {
-    private var origin: String? = null
+    private var server: String? = null
     private var cover: View? = null
     private var timeout: Job? = null
 
-    val showing: Boolean get() = origin != null
+    val showing: Boolean get() = server != null
 
-    /** Whether `url` is the game page the app is applying on: it may load. */
-    fun allowsGame(url: String): Boolean = origin != null && WebUrl.parse(url)?.origin == origin
+    /** Whether `url` is the game page of the server the app is applying on: it may load. */
+    fun allowsGame(url: String): Boolean = server?.let { isServerPage(url, it, "/game") } ?: false
 
-    fun start(origin: String, world: String, changes: Int) {
+    fun start(server: String, title: String, changes: Int) {
         finishQuietly()
-        this.origin = origin
-        val shown = coverView(world, changes)
+        this.server = server
+        val shown = coverView(title, changes)
         cover = shown
         root.addView(shown, FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT))
         timeout = scope.launch {
             delay(APPLY_MAX_MS)
-            done(origin)
+            done(server)
         }
     }
 
-    /** The game page said done (or the time ran out, or Back): /join again. */
-    fun done(origin: String) {
-        if (origin != this.origin) return
+    /** The game page said done (or the time ran out, or Back): our running page again. */
+    fun done(server: String) {
+        if (server != this.server) return
         finishQuietly()
-        host.serverOf(origin)?.let { host.loadInServer("$it/join") }
+        host.backToRunning("$server/join")
     }
 
     /** Back while applying: our running page, which says what happened. */
     fun back() {
-        origin?.let(::done)
+        server?.let(::done)
+    }
+
+    /**
+     * Leaving for home or another server ends it (review): the cover goes
+     * and the hidden game stops; the running page says it didn't finish.
+     */
+    fun cancel() {
+        server?.let(::done)
     }
 
     private fun finishQuietly() {
@@ -81,7 +86,7 @@ class ApplyController(
         timeout = null
         cover?.let { root.removeView(it) }
         cover = null
-        origin = null
+        server = null
     }
 
     private fun coverView(world: String, changes: Int): View = FrameLayout(activity).apply {
@@ -111,7 +116,12 @@ class ApplyController(
         addView(bar(), LinearLayout.LayoutParams(MATCH_PARENT, Look.dp(activity, 8f)).apply { topMargin = Look.dp(activity, 18f) })
         addView(steps(changes), spaced(top = 18f))
         addView(View(activity), LinearLayout.LayoutParams(MATCH_PARENT, 0, 1f))
-        val servers = Look.plain(activity, activity.getString(R.string.apply_servers)).apply { setOnClickListener { host.home() } }
+        val servers = Look.plain(activity, activity.getString(R.string.apply_servers)).apply {
+            setOnClickListener {
+                cancel()
+                host.home()
+            }
+        }
         addView(servers, spaced(top = 8f))
     }
 

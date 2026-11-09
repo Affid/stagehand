@@ -29,6 +29,8 @@ const payloadOf = (e: Envelope | undefined): Loose =>
 
 const MAX_REASON = 500;
 const NO_REASON = "The companion didn't say why.";
+const NOTHING =
+  "Nothing was applied: the changes were no longer queued when the world opened.";
 
 /** One relayed message and its reply: the state after it, and done or failed. */
 export function watchStep(
@@ -48,8 +50,12 @@ export function watchStep(
     return { state: { acked: true } };
   if (msg.type === "COMMANDS_PULL") {
     const world = payloadOf(reply).world;
+    // None left after the acknowledgement (the world reloaded): applied. None
+    // before it: they were no longer queued, so nothing was (review).
     if (Array.isArray(world) && world.length === 0)
-      return { state, event: { kind: "done" } };
+      return state.acked
+        ? { state, event: { kind: "done" } }
+        : { state, event: { kind: "failed", reason: NOTHING } };
   }
   // Acknowledged, then a fresh snapshot with no reload: nothing to change.
   if (msg.type === "SNAPSHOT_PUSH" && state.acked)

@@ -74,7 +74,7 @@ class RelayTest {
         val h = Harness(this)
         val ask = """{"purpose":"close","world":"Strahd","people":0,"wrong":false}"""
         h.page(Caller.SERVER, req("r1", "password.ask", ask), url = JOIN)
-        h.page(Caller.SERVER, req("r2", "apply.start", """{"world":"Strahd","changes":2}"""), url = JOIN)
+        h.page(Caller.SERVER, req("r2", "apply.start", """{"world":"w1","title":"Strahd","changes":2}"""), url = JOIN)
         runCurrent()
         assertEquals(listOf(Caller.RUNNING to "password.ask", Caller.RUNNING to "apply.start"), h.handled.map { it.first to it.second })
         h.page(Caller.SERVER, req("r3", "runtime.send", """{"message":{}}"""), url = JOIN)

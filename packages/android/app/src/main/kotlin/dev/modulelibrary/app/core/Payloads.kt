@@ -80,7 +80,13 @@ private val SCHEMAS: Map<String, Map<String, Field>> = mapOf(
         "people" to int(MAX_PEOPLE),
         "wrong" to bool,
     ),
-    "apply.start" to mapOf("world" to text(1, MAX_WORLD), "changes" to int(MAX_PEOPLE, min = 1)),
+    "launch.mark" to mapOf("world" to text(1, MAX_WORLD), "changes" to int(MAX_PEOPLE, min = 1)),
+    "apply.allowed" to mapOf("world" to text(1, MAX_WORLD)),
+    "apply.start" to mapOf(
+        "world" to text(1, MAX_WORLD),
+        "title" to text(1, MAX_WORLD),
+        "changes" to int(MAX_PEOPLE, min = 1),
+    ),
     "apply.done" to mapOf("ok" to bool),
     READY to emptyMap(),
 )

@@ -168,6 +168,9 @@ export function nativePorts(bridge: NativeBridge): UiPorts {
       return true;
     },
     app: true,
+    async markLaunch(world, changes) {
+      await bridge.request("launch.mark", { world, changes });
+    },
   };
 }
 

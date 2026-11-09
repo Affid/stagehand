@@ -29,9 +29,10 @@ describe("watchStep", () => {
     });
   });
 
-  test("nothing to apply at the first pull: done at once", () => {
-    expect(watchStep({ acked: false }, pull, commands(0)).event).toEqual({
-      kind: "done",
+  test("nothing queued at the first pull: not applied, and said so (review)", () => {
+    expect(watchStep({ acked: false }, pull, commands(0)).event).toMatchObject({
+      kind: "failed",
+      reason: expect.stringContaining("no longer queued") as unknown,
     });
   });
 

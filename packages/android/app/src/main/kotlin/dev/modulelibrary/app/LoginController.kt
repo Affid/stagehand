@@ -62,8 +62,9 @@ class LoginController(
             val shown = LoginScreen(activity, LoginTarget(server, name), onBack = ::back, onSubmit = ::submit)
             screen = shown
             root.addView(shown.view, FrameLayout.LayoutParams(-1, -1))
-            // The typed password stays out of screenshots and the recents view.
-            activity.window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+            // The typed password stays out of screenshots and the recents view
+            // (release builds: the device suite's screenshots need debug's).
+            if (!BuildConfig.DEBUG) activity.window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
             host.serverAutofill(false)
             shown.busy(true)
             readForm(server, shown)

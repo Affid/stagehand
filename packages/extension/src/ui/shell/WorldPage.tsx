@@ -4,6 +4,7 @@
 import type { WorldInfo } from "@module-library/shared/world";
 import { useRef, useState } from "preact/hooks";
 import { Icon } from "../common/widgets.tsx";
+import { logError } from "@module-library/shared/log";
 import { writeLaunchNote } from "../../app/launch-note.ts";
 import { startLaunch } from "../launching.ts";
 import { useUi } from "../context.ts";
@@ -175,12 +176,17 @@ function BannerActions(props: {
  * changes going with it) and our launching screen from this moment.
  */
 function launchNow(
-  ui: Pick<ReturnType<typeof useUi>, "page" | "store" | "t">,
+  ui: Pick<ReturnType<typeof useUi>, "page" | "store" | "t" | "ports">,
   world: WorldInfo,
   changes: number,
   backup: boolean,
 ): void {
   writeLaunchNote(globalThis.sessionStorage, world.id, changes);
+  // The app applies them out of sight only for a launch native has on record.
+  if (changes > 0)
+    ui.ports.markLaunch?.(world.id, changes).catch((error: unknown) => {
+      logError("launch record", error);
+    });
   startLaunch(ui.store, world, backup);
   if (backup)
     ui.page.foundryAction({
@@ -193,7 +199,7 @@ function launchNow(
 
 /** Launching, with the review when changes are queued. */
 function useLaunch(world: WorldInfo, model: WorldModules) {
-  const { page, actions, t, canChange, store } = useUi();
+  const { page, actions, t, canChange, store, ports } = useUi();
   const [review, setReview] = useState(false);
   const [busy, setBusy] = useState(false);
   const running = useRef(false);
@@ -217,7 +223,7 @@ function useLaunch(world: WorldInfo, model: WorldModules) {
       if (queued === undefined) return;
       counted.current = queued;
       if (queued > 0) setReview(true);
-      else launchNow({ page, store, t }, world, 0, false);
+      else launchNow({ page, store, t, ports }, world, 0, false);
     } finally {
       running.current = false;
       setBusy(false);
@@ -235,7 +241,7 @@ function useLaunch(world: WorldInfo, model: WorldModules) {
     // For the app's running screen (counted when Launch was pressed).
     const changes = choice.kind === "plain" ? 0 : counted.current;
     const backup = choice.kind === "apply" && choice.backup;
-    launchNow({ page, store, t }, world, changes, backup);
+    launchNow({ page, store, t, ports }, world, changes, backup);
   };
   return { review, busy, start, run, close: () => setReview(false) };
 }

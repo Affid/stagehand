@@ -1,7 +1,9 @@
 package dev.modulelibrary.app
 
 import android.content.Context
+import android.graphics.Typeface
 import android.text.InputType
+import android.text.method.PasswordTransformationMethod
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewStructure
@@ -21,11 +23,15 @@ class ServerField(
 ) : EditText(context) {
     init {
         id = View.generateViewId()
+        // Single line first: set after, it would undo the password's masking.
+        isSingleLine = true
         inputType = InputType.TYPE_CLASS_TEXT or
             if (password) InputType.TYPE_TEXT_VARIATION_PASSWORD else InputType.TYPE_TEXT_VARIATION_NORMAL
+        if (password) transformationMethod = PasswordTransformationMethod.getInstance()
+        // A password field turns monospace: the app's face, as the other text.
+        typeface = Typeface.DEFAULT
         setAutofillHints(if (password) View.AUTOFILL_HINT_PASSWORD else View.AUTOFILL_HINT_USERNAME)
         importantForAutofill = View.IMPORTANT_FOR_AUTOFILL_YES
-        isSingleLine = true
         setTextColor(Look.INK)
         // 5:1 on the field's ground (review: the dimmer grey was 3.4:1).
         setHintTextColor(0xFF8A8398.toInt())

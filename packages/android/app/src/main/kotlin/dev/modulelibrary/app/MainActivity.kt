@@ -235,14 +235,16 @@ class MainActivity : ComponentActivity(), AppHost, LoginHost, ApplyHost {
 
     override fun gameAllowed(url: String): Boolean = apply.allowsGame(url)
 
-    override fun serverOf(origin: String): String? = activeServers().firstOrNull { WebUrl.parse(it)?.origin == origin }
-
-    fun applyStarted(origin: String, world: String, changes: Int) {
-        if (started) apply.start(origin, world, changes)
+    override fun backToRunning(url: String) {
+        if (showing == Screen.SERVER) loadInServer(url) else server.loadUrl(url)
     }
 
-    fun applyDone(origin: String) {
-        if (started) apply.done(origin)
+    fun applyStarted(server: String, title: String, changes: Int) {
+        if (started) apply.start(server, title, changes)
+    }
+
+    fun applyDone(server: String) {
+        if (started) apply.done(server)
     }
 
     override fun loadInServer(url: String) {
@@ -274,6 +276,8 @@ class MainActivity : ComponentActivity(), AppHost, LoginHost, ApplyHost {
         // Loaded again each time: the list is read when the page starts.
         home.loadUrl(HOME_PAGE)
         show(Screen.HOME)
+        // After home is in front: the hidden game goes back to /join out of sight.
+        apply.cancel()
     }
 
     override fun origins(): Set<String> = handlers.state.origins
@@ -284,6 +288,7 @@ class MainActivity : ComponentActivity(), AppHost, LoginHost, ApplyHost {
         val full = WebUrl.parse(url)?.let { it.origin + it.rawPath } ?: return
         val id = activeServers().firstOrNull { full == it || full.startsWith("$it/") } ?: return
         login.hide()
+        apply.cancel()
         clearHistoryOnFinish = true
         server.loadUrl(url)
         show(Screen.SERVER)

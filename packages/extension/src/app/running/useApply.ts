@@ -9,6 +9,7 @@ import {
   type ApplyFlowDeps,
   type ApplyView,
   applyAtStart,
+  beginApply,
   failApply,
   joinAndHandOver,
   NOT_NOW,
@@ -34,7 +35,7 @@ export function useApply(
     if (!flow || view?.kind !== "start" || started.current) return;
     started.current = true;
     setView({ kind: "applying", n: view.n });
-    void joinAndHandOver(flow, view.n, "").then(setView);
+    void beginApply(flow, view.n).then(setView);
   }, [flow, view]);
   const askLoop = async (v: Extract<ApplyView, { kind: "password" }>) => {
     if (!flow || !ask) return;

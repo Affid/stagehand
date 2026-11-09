@@ -1,11 +1,13 @@
 // @vitest-environment happy-dom
 // Our running page after a launch with changes (Android plan, phase 7): it
-// joins as the world's Gamemaster by Foundry's own request, asks for the
-// password only when Foundry wants one, and hands over to native.
+// joins as the world's Gamemaster by Foundry's own request, only for a
+// launch native has on record, asks for the password only when Foundry
+// wants one, and hands over to native.
 import { afterEach, describe, expect, test, vi } from "vitest";
 import {
   type ApplyFlowDeps,
   applyAtStart,
+  beginApply,
   joinAndHandOver,
 } from "../../src/app/running/apply-flow.ts";
 import {
@@ -35,6 +37,7 @@ function deps(over: Partial<ApplyFlowDeps> = {}): ApplyFlowDeps {
     join: vi.fn(() =>
       Promise.resolve<JoinResult>({ kind: "joined", redirect: "/game" }),
     ),
+    allowed: vi.fn(() => Promise.resolve(true)),
     start: vi.fn(() => Promise.resolve()),
     go: vi.fn(),
     ...over,
@@ -48,19 +51,49 @@ describe("applyAtStart: what the page shows as it opens", () => {
     expect(applyAtStart(deps())).toBeUndefined();
   });
 
-  test("changes waiting: apply them; a result: say it; handed over without one: it didn't finish", () => {
+  test("changes waiting: apply them; a result: said once (review)", () => {
     writeLaunchNote(sessionStorage, "w", 2);
     expect(applyAtStart(deps())).toEqual({ kind: "start", n: 2 });
-    updateLaunchNote(sessionStorage, { applyingAt: Date.now() });
-    expect(applyAtStart(deps())).toMatchObject({ kind: "failed", n: 2 });
     updateLaunchNote(sessionStorage, { result: { ok: true } });
     expect(applyAtStart(deps())).toEqual({ kind: "applied", n: 2 });
+    expect(applyAtStart(deps())).toBeUndefined();
+    writeLaunchNote(sessionStorage, "w", 2);
     updateLaunchNote(sessionStorage, { result: { ok: false, reason: "No" } });
     expect(applyAtStart(deps())).toEqual({
       kind: "failed",
       n: 2,
       reason: "No",
     });
+    expect(currentLaunchNote(sessionStorage)).toBeUndefined();
+  });
+
+  test("handed over without a result: it didn't finish", () => {
+    writeLaunchNote(sessionStorage, "w", 2);
+    updateLaunchNote(sessionStorage, { applyingAt: Date.now() });
+    expect(applyAtStart(deps())).toMatchObject({ kind: "failed", n: 2 });
+  });
+});
+
+describe("beginApply: only for a launch native has on record (security review)", () => {
+  test("no record: nothing joins, and the note goes", async () => {
+    writeLaunchNote(sessionStorage, "w", 2);
+    const d = deps({ allowed: vi.fn(() => Promise.resolve(false)) });
+    expect(await beginApply(d, 2)).toBeUndefined();
+    expect(d.allowed).toHaveBeenCalledWith("w");
+    expect(d.join).not.toHaveBeenCalled();
+    expect(currentLaunchNote(sessionStorage)).toBeUndefined();
+  });
+
+  test("native can't say: the same", async () => {
+    writeLaunchNote(sessionStorage, "w", 2);
+    const d = deps({ allowed: vi.fn(() => Promise.reject(new Error("no"))) });
+    expect(await beginApply(d, 2)).toBeUndefined();
+    expect(d.join).not.toHaveBeenCalled();
+  });
+
+  test("on record: joins and hands over", async () => {
+    writeLaunchNote(sessionStorage, "w", 2);
+    expect(await beginApply(deps(), 2)).toEqual({ kind: "applying", n: 2 });
   });
 });
 
@@ -70,7 +103,7 @@ describe("joinAndHandOver", () => {
     const d = deps();
     expect(await joinAndHandOver(d, 2, "")).toEqual({ kind: "applying", n: 2 });
     expect(d.join).toHaveBeenCalledWith("g", "");
-    expect(d.start).toHaveBeenCalledWith("Strahd", 2);
+    expect(d.start).toHaveBeenCalledWith("w", "Strahd", 2);
     expect(d.go).toHaveBeenCalledWith("/game");
     expect(currentLaunchNote(sessionStorage)?.applyingAt).toBeTypeOf("number");
   });
@@ -78,9 +111,7 @@ describe("joinAndHandOver", () => {
   test("Foundry wants a password: the page asks for it, naming the user", async () => {
     writeLaunchNote(sessionStorage, "w", 2);
     const d = deps({
-      join: vi.fn(() =>
-        Promise.resolve<JoinResult>({ kind: "refused", message: "Wrong" }),
-      ),
+      join: vi.fn(() => Promise.resolve<JoinResult>({ kind: "password" })),
     });
     expect(await joinAndHandOver(d, 2, "")).toEqual({
       kind: "password",
@@ -97,7 +128,20 @@ describe("joinAndHandOver", () => {
     expect(d.go).not.toHaveBeenCalled();
   });
 
-  test("no full Gamemaster, or no answer: why, and the result kept for later visits", async () => {
+  test("another refusal: Foundry's reason, no password question (review)", async () => {
+    writeLaunchNote(sessionStorage, "w", 2);
+    const d = deps({
+      join: vi.fn(() =>
+        Promise.resolve<JoinResult>({ kind: "refused", message: "Banned." }),
+      ),
+    });
+    expect(await joinAndHandOver(d, 2, "")).toMatchObject({
+      kind: "failed",
+      reason: expect.stringContaining("Banned.") as unknown,
+    });
+  });
+
+  test("no full Gamemaster, or no answer: why, and the result kept for the next visit", async () => {
     writeLaunchNote(sessionStorage, "w", 2);
     const none = deps({ game: () => ({ users: new Map() }) });
     expect(await joinAndHandOver(none, 2, "")).toMatchObject({

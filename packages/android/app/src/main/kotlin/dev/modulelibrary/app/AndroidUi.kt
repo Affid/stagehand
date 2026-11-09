@@ -46,9 +46,9 @@ class AndroidUi(private val activity: MainActivity, private val pickers: Pickers
         cont.invokeOnCancellation { activity.runOnUiThread { dialog.dismiss() } }
     }
 
-    override fun applyStarted(origin: String, world: String, changes: Int) = activity.applyStarted(origin, world, changes)
+    override fun applyStarted(server: String, title: String, changes: Int) = activity.applyStarted(server, title, changes)
 
-    override fun applyDone(origin: String, ok: Boolean) = activity.applyDone(origin)
+    override fun applyDone(server: String, ok: Boolean) = activity.applyDone(server)
 
     override suspend fun askPassword(ask: PasswordAsk, origin: String): String? =
         PasswordSheet(activity, origin, shortLabel(serverLabel(origin))).ask(ask)

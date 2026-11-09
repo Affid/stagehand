@@ -36,11 +36,11 @@ class NativeHandlersTest {
         val asks = mutableListOf<Pair<PasswordAsk, String>>()
         var password = CompletableDeferred<String?>("pw")
         val applies = mutableListOf<String>()
-        override fun applyStarted(origin: String, world: String, changes: Int) {
-            applies += "start $origin $world $changes"
+        override fun applyStarted(server: String, title: String, changes: Int) {
+            applies += "start $server $title $changes"
         }
-        override fun applyDone(origin: String, ok: Boolean) {
-            applies += "done $origin $ok"
+        override fun applyDone(server: String, ok: Boolean) {
+            applies += "done $server $ok"
         }
         override suspend fun askPassword(ask: PasswordAsk, origin: String): String? {
             asks += ask to origin
@@ -221,10 +221,32 @@ class NativeHandlersTest {
     }
 
     @Test
-    fun `applying out of sight starts and ends on the screen, for the asking server`() = runTest {
-        call("apply.start", """{"world":"Strahd","changes":2}""", "$SERVER/join")
+    fun `applying out of sight needs the launch our Setup recorded, used once (security review)`() = runTest {
+        call("permissions.request", """{"origin":"$PATTERN"}""")
+        call("scripts.register", """{"server":"$SERVER","ids":["x"]}""")
+        val allowed = """{"world":"w1"}"""
+        assertEquals(obj("""{"allowed":false}"""), call("apply.allowed", allowed, "$SERVER/join"))
+        assertTrue(runCatching { call("apply.start", """{"world":"w1","title":"Strahd","changes":2}""", "$SERVER/join") }.isFailure)
+        call("launch.mark", """{"world":"w1","changes":2}""", SETUP)
+        assertEquals(obj("""{"allowed":true}"""), call("apply.allowed", allowed, "$SERVER/join"))
+        assertEquals(obj("""{"allowed":false}"""), call("apply.allowed", """{"world":"w2"}""", "$SERVER/join"))
+        call("apply.start", """{"world":"w1","title":"Strahd","changes":2}""", "$SERVER/join")
+        assertEquals(listOf("start $SERVER Strahd 2"), ui.applies)
+        // Used up.
+        assertEquals(obj("""{"allowed":false}"""), call("apply.allowed", allowed, "$SERVER/join"))
         call("apply.done", """{"ok":true}""", "$SERVER/game")
-        assertEquals(listOf("start $SERVER Strahd 2", "done $SERVER true"), ui.applies)
+        assertEquals("done $SERVER true", ui.applies.last())
+    }
+
+    @Test
+    fun `a launch is recorded only from Setup, and done only from the game page`() = runTest {
+        call("permissions.request", """{"origin":"$PATTERN"}""")
+        call("scripts.register", """{"server":"$SERVER","ids":["x"]}""")
+        assertTrue(runCatching { call("launch.mark", """{"world":"w1","changes":2}""", "$SERVER/game") }.isFailure)
+        assertTrue(runCatching { call("apply.done", """{"ok":true}""", SETUP) }.isFailure)
+        call("launch.mark", """{"world":"w1","changes":2}""", SETUP)
+        now += 11 * 60_000
+        assertEquals(obj("""{"allowed":false}"""), call("apply.allowed", """{"world":"w1"}""", "$SERVER/join"))
     }
 
     @Test

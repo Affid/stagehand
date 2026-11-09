@@ -161,8 +161,35 @@ const SAME_SERVER_PATH = /^\/(?![/\\])[^\s\\]*$/;
 
 export type JoinResult =
   | { readonly kind: "joined"; readonly redirect: string }
+  /** Foundry's wrong password (or none given where one is wanted). */
+  | { readonly kind: "password" }
   | { readonly kind: "refused"; readonly message: string }
   | { readonly kind: "failed" };
+
+/** How 14.370 answers a wrong user password: 401 with this text, not JSON. */
+const WRONG_PASSWORD = "JOIN.ErrorInvalidPassword";
+const MAX_ANSWER = 64_000;
+
+const jsonOf = (raw: string): Record<string, unknown> => {
+  try {
+    const value: unknown = JSON.parse(raw);
+    return typeof value === "object" && value !== null
+      ? (value as Record<string, unknown>)
+      : {};
+  } catch {
+    return {};
+  }
+};
+
+/** A refused join: a password question only for Foundry's wrong-password answer. */
+function refusal(raw: string): JoinResult {
+  if (raw.includes(WRONG_PASSWORD)) return { kind: "password" };
+  const body = jsonOf(raw);
+  // Plain text only: an HTML error page is no message to show.
+  const plain = raw.trim().startsWith("<") ? undefined : text(raw.trim(), 500);
+  const message = text(body.error, 500) ?? text(body.message, 500) ?? plain;
+  return message ? { kind: "refused", message } : { kind: "failed" };
+}
 
 /**
  * Joins the world as Foundry's join form does (POST /join with action
@@ -182,18 +209,11 @@ export async function joinGame(
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ userId, password, action: "join" }),
     });
-    const body = (await res.json().catch(() => ({}))) as {
-      redirect?: unknown;
-      error?: unknown;
-      message?: unknown;
-    };
-    if (!res.ok) {
-      const message = text(body.error, 500) ?? text(body.message, 500);
-      return message ? { kind: "refused", message } : { kind: "failed" };
-    }
+    const raw = (await res.text()).slice(0, MAX_ANSWER);
+    if (!res.ok) return refusal(raw);
     // Only a plain path on this server: no "//", no backslash or blank a
     // URL parser would turn into another host (review).
-    const redirect = text(body.redirect, 2000);
+    const redirect = text(jsonOf(raw).redirect, 2000);
     if (!redirect || !SAME_SERVER_PATH.test(redirect))
       return { kind: "failed" };
     return { kind: "joined", redirect };

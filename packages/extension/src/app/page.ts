@@ -187,8 +187,16 @@ function startGamePage(port: NativePort, win: Window): void {
 function runningNative(bridge: NativeBridge) {
   return {
     askPassword: nativePassword(bridge),
-    startApply: async (world: string, changes: number): Promise<void> => {
-      await bridge.request("apply.start", { world, changes });
+    applyAllowed: async (world: string): Promise<boolean> => {
+      const reply = await bridge.request("apply.allowed", { world });
+      return (reply as { allowed?: unknown } | null)?.allowed === true;
+    },
+    startApply: async (
+      world: string,
+      title: string,
+      changes: number,
+    ): Promise<void> => {
+      await bridge.request("apply.start", { world, title, changes });
     },
   };
 }

@@ -172,11 +172,29 @@ describe("joinGame", () => {
     });
   });
 
-  test("Foundry refuses: its own message", async () => {
-    const fetch = reply(401, { error: "Incorrect password for Gamemaster" });
+  test("a wrong password, as 14.370 says it: plain text, not JSON (phase 7)", async () => {
+    const fetch = vi.fn(() =>
+      Promise.resolve(
+        new Response("JOIN.ErrorInvalidPassword", { status: 401 }),
+      ),
+    );
     expect(await joinGame({ fetch, route }, "g1", "x")).toEqual({
+      kind: "password",
+    });
+  });
+
+  test("Foundry refuses for another reason: its own message, not a password question", async () => {
+    const text = vi.fn(() =>
+      Promise.resolve(new Response("You are banned", { status: 401 })),
+    );
+    expect(await joinGame({ fetch: text, route }, "g1", "")).toEqual({
       kind: "refused",
-      message: "Incorrect password for Gamemaster",
+      message: "You are banned",
+    });
+    const json = reply(403, { error: "Not now" });
+    expect(await joinGame({ fetch: json, route }, "g1", "")).toEqual({
+      kind: "refused",
+      message: "Not now",
     });
   });
 

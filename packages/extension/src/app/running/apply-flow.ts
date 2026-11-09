@@ -1,12 +1,14 @@
 // Applying a launch's changes out of sight (Android plan, phase 7), our
 // running page's part: Foundry's Setup doesn't know a world's users, so the
-// choice of user comes here, after the launch. It joins as the world's full
-// Gamemaster (the only one the companion applies for) by Foundry's own join
-// request, with no password first (Foundry's default); only when Foundry
-// wants one does the page ask, on a tap, in native's sheet. Joined, it
-// records the hand-over and tells native (apply.start), which covers the
-// WebView while the game loads behind it.
+// choice of user comes here, after the launch. Only for a launch native has
+// on record (our Setup recorded it), it joins as the world's full Gamemaster
+// (the only one the companion applies for) by Foundry's own join request,
+// with no password first (Foundry's default); only when Foundry wants one
+// does the page ask, on a tap, in native's sheet. Joined, it records the
+// hand-over and tells native (apply.start), which covers the WebView while
+// the game loads behind it.
 import {
+  clearLaunchNote,
   currentLaunchNote,
   readLaunchNote,
   updateLaunchNote,
@@ -31,37 +33,57 @@ export interface ApplyFlowDeps {
   /** Foundry's `game` on /join (its users). */
   readonly game: () => unknown;
   readonly join: (userId: string, password: string) => Promise<JoinResult>;
+  /** Whether native has this world's launch on record (apply.allowed). */
+  readonly allowed: (world: string) => Promise<boolean>;
   /** Native covers the WebView and lets /game load (apply.start). */
-  readonly start: (world: string, changes: number) => Promise<void>;
+  readonly start: (
+    world: string,
+    title: string,
+    changes: number,
+  ) => Promise<void>;
   /** Goes where Foundry sent the joined user. */
   readonly go: (path: string) => void;
 }
 
+const QUEUED = "They stay queued for the next launch.";
 const UNFINISHED =
   "The changes didn't finish applying. They stay queued; launch the world again to apply them.";
-const NO_GM =
-  "There's no Gamemaster user in this world to apply them as. They stay queued for the next launch.";
-const NO_JOIN =
-  "Foundry didn't let the app join to apply them. They stay queued for the next launch.";
-const NO_COVER =
-  "The app couldn't apply them out of sight. They stay queued for the next launch.";
-export const NOT_NOW = "Not applied now. They stay queued for the next launch.";
+const NO_GM = `There's no Gamemaster user in this world to apply them as. ${QUEUED}`;
+const NO_JOIN = `Foundry didn't let the app join to apply them. ${QUEUED}`;
+const NO_COVER = `The app couldn't apply them out of sight. ${QUEUED}`;
+export const NOT_NOW = `Not applied now. ${QUEUED}`;
 
-/** What the page shows as it opens, from the launch note. */
+/**
+ * What the page shows as it opens, from the launch note. A result is said
+ * once: the note goes with it, so a later visit isn't this launch (review).
+ */
 export function applyAtStart(deps: ApplyFlowDeps): ApplyView | undefined {
   const note = readLaunchNote(deps.store, deps.world.id);
   if (!note || note.changes === 0) return undefined;
   const n = note.changes;
-  if (note.result)
-    return note.result.ok
-      ? { kind: "applied", n }
-      : { kind: "failed", n, reason: note.result.reason ?? UNFINISHED };
-  if (note.applyingAt !== undefined)
-    return { kind: "failed", n, reason: UNFINISHED };
-  return { kind: "start", n };
+  if (!note.result && note.applyingAt === undefined)
+    return { kind: "start", n };
+  clearLaunchNote(deps.store);
+  if (note.result?.ok) return { kind: "applied", n };
+  return { kind: "failed", n, reason: note.result?.reason ?? UNFINISHED };
 }
 
-/** Kept in the note: a later visit to /join says the same. */
+/**
+ * Starts applying, only for a launch native has on record: a note in the
+ * page's storage alone, which any script there could write, joins nothing
+ * (security review).
+ */
+export async function beginApply(
+  deps: ApplyFlowDeps,
+  n: number,
+): Promise<ApplyView | undefined> {
+  const allowed = await deps.allowed(deps.world.id).catch(() => false);
+  if (allowed) return joinAndHandOver(deps, n, "");
+  clearLaunchNote(deps.store);
+  return undefined;
+}
+
+/** Kept in the note: the next visit to /join says it (once). */
 export function failApply(
   deps: ApplyFlowDeps,
   n: number,
@@ -74,7 +96,8 @@ export function failApply(
 
 /**
  * Joins as the full Gamemaster with `password` ("" the first time), then
- * hands over to native. Foundry's refusal asks for the password.
+ * hands over to native. Only Foundry's wrong-password answer asks for the
+ * password; another refusal says Foundry's reason.
  */
 export async function joinAndHandOver(
   deps: ApplyFlowDeps,
@@ -84,12 +107,14 @@ export async function joinAndHandOver(
   const gm = joinUsers(deps.game()).find((u) => u.full);
   if (!gm) return failApply(deps, n, NO_GM);
   const result = await deps.join(gm.id, password);
-  if (result.kind === "refused")
+  if (result.kind === "password")
     return { kind: "password", n, user: gm.name, wrong: password !== "" };
+  if (result.kind === "refused")
+    return failApply(deps, n, `${result.message} ${QUEUED}`);
   if (result.kind === "failed") return failApply(deps, n, NO_JOIN);
   updateLaunchNote(deps.store, { applyingAt: Date.now() });
   try {
-    await deps.start(deps.world.title, n);
+    await deps.start(deps.world.id, deps.world.title, n);
   } catch {
     return failApply(deps, n, NO_COVER);
   }

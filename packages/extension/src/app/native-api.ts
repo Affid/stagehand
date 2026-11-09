@@ -162,12 +162,18 @@ export function savableServerOrigin(pattern: string): string | undefined {
  *   passes no text of its own. Our running page only (no module runs on
  *   /join; security review). One at a time; only on a tap on the page, or
  *   as one retry (`wrong`) within PASSWORD_RETRY_MS of a typed answer.
- * - apply.start {world, changes} → null (our running page only): the app
- *   applies the launch's changes out of sight (phase 7). Native covers
- *   the server WebView with its Applying screen and lets this server's
- *   /game load behind it, for APPLY_MAX_MS at most.
- * - apply.done {ok} → null (the game page, while applying): the cover
- *   goes and the server WebView goes back to /join, our running page.
+ * - launch.mark {world, changes} → null (a saved server's Setup only): our
+ *   Setup launches `world` with queued changes; native records it for
+ *   LAUNCH_KEEP_MS. Applying out of sight needs this record, so a note in
+ *   the page's storage alone can start nothing (security review).
+ * - apply.allowed {world} → {allowed} (our running page only): whether a
+ *   recorded launch of `world` on this server waits to be applied.
+ * - apply.start {world, title, changes} → null (our running page only):
+ *   uses the recorded launch up; native covers the server WebView with its
+ *   Applying screen (titled `title`) and lets this server's /game load
+ *   behind it, for APPLY_MAX_MS at most (phase 7).
+ * - apply.done {ok} → null (that server's game page only): the cover goes
+ *   and the server WebView goes back to /join, our running page.
  * - openExternal {url} → null: a Custom Tab; http(s) only, never the
  *   server's own origin, only within a moment of the user's tap, and at
  *   most one a second.
@@ -211,11 +217,12 @@ export const CALLER_REQUESTS: Readonly<Record<Caller, readonly string[]>> = {
     "files.open",
     "confirm",
     "openExternal",
+    "launch.mark",
     "apply.done",
   ],
   // Our running page on a saved server's /join: a password, and applying
   // the launch's changes out of sight.
-  running: ["password.ask", "apply.start"],
+  running: ["password.ask", "apply.allowed", "apply.start"],
   home: [
     "runtime.send",
     "permissions.contains",

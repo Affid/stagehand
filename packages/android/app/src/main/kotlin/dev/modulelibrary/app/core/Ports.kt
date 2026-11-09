@@ -17,11 +17,11 @@ interface NativeUi {
      */
     suspend fun askPassword(ask: PasswordAsk, origin: String): String?
 
-    /** The app applies a launch's changes out of sight on `origin` (its cover shows, /game may load). */
-    fun applyStarted(origin: String, world: String, changes: Int)
+    /** The app applies a launch's changes out of sight on `server` (its cover shows, its /game may load). */
+    fun applyStarted(server: String, title: String, changes: Int)
 
-    /** The game page says the changes are applied (or not): the cover goes, /join again. */
-    fun applyDone(origin: String, ok: Boolean)
+    /** `server`'s game page says the changes are applied (or not): the cover goes, /join again. */
+    fun applyDone(server: String, ok: Boolean)
 
     fun openExternal(url: String)
 

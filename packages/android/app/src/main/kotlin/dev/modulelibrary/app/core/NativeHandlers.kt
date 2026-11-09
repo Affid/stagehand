@@ -15,6 +15,11 @@ import java.io.File
 
 private const val LINK_GAP_MS = 1_000L
 
+/** A launch with changes recorded from our Setup is good this long (security review). */
+private const val LAUNCH_KEEP_MS = 10 * 60_000L
+
+private data class Launch(val server: String, val world: String, val at: Long)
+
 /** Home keeps names this short (MAX_SERVER_NAME). */
 private const val MAX_NAME = 80
 
@@ -51,6 +56,8 @@ class NativeHandlers(
     private var askingPassword = false
     /** When a typed password was last handed to a page: one retry may follow it (security review). */
     private var retryUntil = Long.MIN_VALUE / 2
+    /** The launch with changes our Setup recorded (launch.mark): apply.start needs it. */
+    private var launch: Launch? = null
     private var lastLinkAt = Long.MIN_VALUE / 2
 
     private suspend fun change(next: NativeState, scriptsChanged: Boolean) {
@@ -101,12 +108,19 @@ class NativeHandlers(
         "confirm" -> buildJsonObject { put("yes", confirm(payload.text("text"), url)) }
         "password.ask" -> askPassword(passwordAsk(payload), url)
             ?.let { pw -> buildJsonObject { put("password", pw) } } ?: JsonObject(emptyMap())
+        "launch.mark" -> {
+            launch = Launch(serverOn(url, "/setup"), payload.text("world"), clock())
+            null
+        }
+        "apply.allowed" -> buildJsonObject { put("allowed", launchFor(url, payload.text("world")) != null) }
         "apply.start" -> {
-            ui.applyStarted(originOf(url), payload.text("world"), payload.text("changes").toInt())
+            val recorded = requireNotNull(launchFor(url, payload.text("world"))) { "No launch to apply" }
+            launch = null
+            ui.applyStarted(recorded.server, payload.text("title"), payload.text("changes").toInt())
             null
         }
         "apply.done" -> {
-            ui.applyDone(originOf(url), payload.text("ok").toBoolean())
+            ui.applyDone(serverOn(url, "/game"), payload.text("ok").toBoolean())
             null
         }
         "openExternal" -> {
@@ -166,6 +180,17 @@ class NativeHandlers(
         val url = requireNotNull(statusUrl(server)) { "Not a server the app saves" }
         val version = foundryVersion(statusFetcher.fetch(url)) ?: throw FetchFailed("Not a Foundry server")
         return buildJsonObject { put("version", version) }
+    }
+
+    /** The saved server whose `page` this is, or a refusal. */
+    private fun serverOn(url: String, page: String): String =
+        requireNotNull(state.activeServers().firstOrNull { isServerPage(url, it, page) }) { "Not that page of a saved server" }
+
+    /** The recorded launch of `world` on the server whose /join asks, while fresh. */
+    private fun launchFor(url: String, world: String): Launch? {
+        val recorded = launch ?: return null
+        if (clock() - recorded.at > LAUNCH_KEEP_MS) return null
+        return recorded.takeIf { it.world == world && isServerPage(url, it.server, "/join") }
     }
 
     /** One dialog at a time: a second while one is open is a no. */
