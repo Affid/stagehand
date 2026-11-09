@@ -1143,6 +1143,58 @@ Packages:
    icon too; the APK's adaptive icon checks out): to look at on the
    owner's phone.
 
+## Phase 7: the app replaces Foundry's whole UI (started 2026-11-09)
+
+The owner, after trying the phase 6 build on the phone: the app shows only
+our pages. Our own admin login instead of Foundry's `/auth`; never Foundry's
+game: when a world runs, our page says so and offers **Back to Setup**
+(closes the world) or **Server list** (leaves it running). Reported with
+it: Bitwarden still doesn't fill Foundry's login; after Launch nothing
+shows for 10 to 30 s, then the running page; the running page's clock
+counted hours in seconds.
+
+Fixed at once: the clock (`456b631`; Foundry's `/api/status` `uptime` is
+milliseconds, `Date.now()` minus the world's start, read as seconds) and
+world backgrounds linked from other sites (`62884b8`). The launch delay:
+Launch clicks Foundry's hidden control, Foundry shows its progress in its
+own hidden UI (socket `progress`, action `launchWorld`), then goes to
+`/game`; ours showed nothing meanwhile.
+
+The owner's choices (2026-11-09):
+
+- **The login's password field is native**: an Android password field
+  that names the server's address to the autofill framework (web domain),
+  so Bitwarden matches the login saved for that address. The password
+  goes to Foundry's `adminAuth` and isn't kept.
+- **The running page**: Back to Setup (the administrator password, native
+  field too, then `worldShutdown`) and Server list; Join as Gamemaster
+  goes.
+- **Queued changes apply out of sight**: the launch review asks which
+  Gamemaster user applies them (and its password); after the launch the
+  app joins as that user in a hidden view, the companion applies the
+  changes (the world reloads once), and the running page says so. The
+  game never shows.
+
+Mockup for approval: `design/app-screens` (Log in, Launch, Running),
+https://claude.ai/artifact/M1rAQfU44fu4FbhFDVpzvi.
+
+Packages, after the owner approves the screens:
+
+1. **Launch progress**: our launching screen from the tap, Foundry's
+   `progress` events as steps and a bar, its errors in our words; after
+   the launch straight to our running page, never `/game`.
+2. **The running page**: no Join; Back to Setup with the native password
+   field; Server list; any navigation to `/game` or `/players` in the
+   app goes to our running page instead.
+3. **Our login**: the screen in the app, the native password field with
+   the server's web domain for autofill, `adminAuth` from native or the
+   page, Foundry's refusal in our words; Foundry's `/auth` never shows.
+4. **Changes out of sight**: the Gamemaster choice in the launch review,
+   a hidden view that joins as that user so the companion applies the
+   queue, progress and the result on the running page.
+5. **Suite and phone**: the on-device suite through the new pages;
+   Bitwarden on the owner's phone.
+
 ## Native rules (for phase 4)
 
 The contract is `packages/extension/src/app/native-api.ts` (who may ask
