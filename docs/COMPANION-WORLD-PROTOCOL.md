@@ -1,6 +1,7 @@
 # The companion through the world (plan)
 
-Status: proposed 2026-11-09, for the owner's decision. Not started.
+Status: decided 2026-11-09; the spike passed on Foundry 13.351 and 14.370
+(see "Spike results"). Build not started.
 
 ## Why
 
@@ -61,21 +62,24 @@ trusted):
 | `report`   | companion  | `{at, coreVersion, systemVersion, active: [{id, version}], results: [{id, status, error?}]}`: what Setup shows as the world's modules, and what happened to each queued change.                 |
 | `schedule` | Setup      | Unchanged (today's next-session schedule).                                                                                                                                                      |
 
-Sizes stay small: module ids at most 200 characters, `active` at most 5000
-entries, results only for the last launch.
+Sizes stay small: module ids at most 200 characters, results only for the
+last launch, and every save under 90 KB, because Foundry refuses a request
+body over 100 KB (HTTP 413, measured on both versions). `active` is written
+compactly (`"id@version"` strings, about 40 bytes each, so about 2000
+modules per save); a world with more is written without versions, and the
+report says so.
+
+`launch` is honoured once, and only when it was written shortly before the
+world started. Both sides use the server's clock, not their own: Setup
+stamps `at` from the `Date` header of its save's answer, and the companion
+takes the world's start from `/api/status` (`uptime`) and the `Date` header
+of that answer. A device and a Gamemaster's browser with different clocks
+then still agree. Setup removes a leftover `launch` whenever it opens with
+the world stopped.
 
 ## What changes
 
-1. **Spike: confirm Foundry does it** (first, before any build).
-   - From the game page, as the Gamemaster, `fetch` POST `/setup`
-     `{action: "editWorld", id, flags: {stagehand: …}}`: saved to
-     `world.json`, kept through the world's reload and shutdown, and seen
-     by Setup afterwards.
-   - The same on Foundry 13 (the PRD targets 13 and 14). If 13 refuses it,
-     13 keeps today's bridge.
-   - An Assistant GM is refused (Foundry checks the Gamemaster role); a
-     player is refused.
-   - How big `flags` may get before Setup slows down.
+1. **Spike**: done, see "Spike results".
 2. **The shared format** (`packages/shared`): the schema above, its limits,
    and the rules (who writes what, when a result counts as applied).
 3. **Setup writes the queue and reads the report** (extension and app,
@@ -85,28 +89,61 @@ entries, results only for the last launch.
    for Setup's first paint.
 4. **The companion on its own**: reads the queue and launch intent from
    `game.world.flags`, applies, writes the report with the world edit,
-   reloads once if anything changed. The bridge becomes optional: the
-   companion no longer waits for HELLO to act.
+   reloads once if anything changed. It sends only its own world's id
+   (see the risks). The bridge is removed: HELLO, SNAPSHOT_PUSH,
+   COMMANDS_PULL and COMMAND_ACK, the game-page bridge and the relay's
+   handlers. After its own save the companion keeps what it wrote: the
+   running page's `game.world.flags` shows the save only after a reload.
 5. **The app**: "apply now" stays as the out-of-sight join (phase 7), but
    its done comes from the report in the world's flags (read by the game
    page after the reload) instead of watching the relay.
-6. **Moving the queue over**: on the first Setup load with the new version,
-   each world's pending changes move from local storage into its flags,
-   once; a world whose flags already hold a queue keeps it and the local
-   copy is shown for the user to merge or drop.
-7. **Tests**: unit tests on both sides; the harness on both targets; the
+6. **Tests**: unit tests on both sides; the harness on both targets; the
    device suite; and a new live test with no extension at all (Foundry's
    own join in a plain browser) that sees the companion apply and report.
 
-## Decisions for the owner
+## Decided (2026-11-09)
 
-- **The bridge**: keep it as a second path for a release, or remove it
-  once the world path works (recommended: keep one release, then remove).
-- **Changes not reviewed on Setup**: the companion asks the Gamemaster in
-  its dialog wherever they join, as today (recommended), or applies only
-  reviewed launches.
-- **Foundry 13**: if the in-world edit isn't there, 13 keeps the bridge,
-  or 13 support ends with this change.
+- **The bridge is removed**, not kept for a release: there has been no
+  release, so no installed companion depends on it, and no local queue
+  needs moving into the worlds.
+- **Changes not reviewed on Setup** go through the companion's dialog
+  wherever the Gamemaster joins, as today. "Reviewed" means Setup's Apply
+  and launch: Setup records the modules on after the launch as shown on
+  its review sheet; the companion applies without asking only when the
+  live result equals that list and the plan has no conflicts, dependents,
+  missing or blocked modules (`asReviewed` in `packages/module/src/apply.ts`).
+- **Foundry 13** works the same way (spike), so 13 and 14 share one path.
+
+## Spike results (2026-11-09)
+
+Run on two private servers next to the shared one (13.351 on port 30013
+with its own data folder; 14.370 on port 30014 with its own data folder),
+each with a fresh dnd5e world; scripts kept out of the repository. The
+results were the same on both versions unless noted:
+
+- The Gamemaster's save from the game page (`fetch` POST `/setup`
+  `{action: "editWorld", id, flags: {stagehand: ...}}`) answers 200 and
+  writes `world.json` at once (6 to 110 ms).
+- Saves merge: a second save with only `report` keeps `queue`; a key is
+  removed with `"-=queue": null`. No other field of `world.json` changed.
+- The running page's `game.world.flags` does not show the save until the
+  page reloads; after a reload it does.
+- The Assistant GM and a player are refused (403 on 13, 400 on 14), and
+  `world.json` stays as it was.
+- The flags last through the world's shutdown and the next launch, and
+  Setup's `game.worlds` shows them (Setup loaded in about 0.45 s with a
+  6 KB world file).
+- A request body over 100 KB is refused with 413 (101 330 bytes accepted,
+  103 378 refused).
+- Foundry 13 differences that matter to tests only: worlds are created
+  with `/setup` `createWorld` (14: `/create`), the package list answers
+  `{packages, owned}` (14: an array), and the world shuts down with
+  `{shutdown: true}` (14: `{action: "worldShutdown"}`).
+- **A Foundry bug** (seen on 13; 14's code is the same): the save looks the
+  world up by the id in the request, then makes that world the running
+  one. A Gamemaster in world A can save world B's `world.json`; the server
+  then reports B as active and A's game page no longer loads until the
+  server restarts.
 
 ## Risks
 
@@ -118,12 +155,22 @@ entries, results only for the last launch.
   flags: a module could queue or mark changes as reviewed. A module
   running as the Gamemaster can change the world's modules anyway, so this
   adds no power; Setup treats everything it reads as untrusted.
+- Because of the Foundry bug above, a Gamemaster of **another** world on
+  the same server can write this world's flags, which matters on servers
+  where different people run different worlds. What limits it: only one
+  world runs at a time, so such a write lands while this world is
+  stopped; Setup lists everything in the queue on its review sheet before
+  a launch, writes a fresh `launch` for it and removes a leftover one; and
+  the companion honours `launch` only when it was written just before the
+  world started (server time). A forged queue without a fresh `launch`
+  reaches the companion's dialog, never a silent apply. The companion
+  never sends another world's id. Worth reporting to Foundry.
 - Two Gamemasters joining at once: the companion applies only for the
   first one in (as today, the companion runs for the full Gamemaster), and
   the world edit is one request per change of state.
 
 ## Size
 
-The spike first; then about the size of phase 7: the shared format, the
-Setup side, the companion, the app, the move-over and the tests. The spike
-decides whether Foundry 13 needs a separate path.
+About the size of phase 7: the shared format, the Setup side, the
+companion, the app and the tests, less the bridge, which goes. Foundry 13
+needs no separate path.
