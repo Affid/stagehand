@@ -75,7 +75,7 @@ svg { display: block; }
 
 <div class="bar">
   <h1>Stagehand icon</h1>
-  <span class="tag">Four marks to pick from</span>
+  <span class="tag">Five marks to pick from</span>
   <div class="tools">
     <div class="seg" role="group" aria-label="Icon shape"><span class="lbl">Shape</span>
       <button type="button" data-shape="circle" aria-pressed="true">Circle</button>
@@ -122,6 +122,8 @@ svg { display: block; }
 
 <script>
 const GROUND = "#2a2340";
+/** Over the top pulley (left side), under the bottom one (right side), down into the sandbag. */
+const FLY_S = "M63.19,26.29 A12,12 0 1 0 54,46 A12,12 0 1 1 44.81,65.71 C43.2,67.6 42.6,69.5 42.6,71.5";
 const S_PATH = "M66,40 C64,33 57,31.5 52,31.5 C45,31.5 41,35.5 41,41 C41,48 48,50.5 54,52.5 C60.5,54.6 67,57.5 67,65 C67,71.5 61.5,75.5 54,75.5 C47.5,75.5 43,72.5 41.5,67.5";
 const scallops = (x0, x1, y, n, dip) => {
   const w = (x1 - x0) / n; let d = "";
@@ -195,6 +197,24 @@ const OPTIONS = [
       <path fill="currentColor" d="M63.6,58 C58,62 56,70 57,74.5 Q63.6,80 70.2,74.5 C71.2,70 69.2,62 63.6,58 Z"/>`,
   },
   {
+    id: "fly-s", name: "Fly rope S", tag: "the crew and the name",
+    text: "The fly rope wound over two pulleys into the S of Stagehand, its sandbag hanging off the tail. The crew's work and the name in one mark.",
+    color: () => `
+      <rect x="52.7" y="10" width="2.6" height="24" fill="#8f86a0"/>
+      ${[34, 58].map((y) => `<circle cx="54" cy="${y}" r="9.5" fill="#3d3358"/><circle cx="54" cy="${y}" r="7.6" fill="none" stroke="#d9a441" stroke-width="1.4"/><circle cx="54" cy="${y}" r="2.4" fill="#d9a441"/>`).join("")}
+      <path d="${FLY_S}" fill="none" stroke="#efe3c8" stroke-width="5" stroke-linecap="round"/>
+      <path d="${FLY_S}" fill="none" stroke="#cdbd9e" stroke-width="5" stroke-dasharray="1.2 3.4"/>
+      <circle cx="63.19" cy="26.29" r="3.3" fill="#ee9b3a"/>
+      <path fill="#c0584a" d="M42.6,70.5 C37.6,73.6 36.4,78.4 37.3,81 Q42.6,84.6 47.9,81 C48.8,78.4 47.6,73.6 42.6,70.5 Z"/>
+      <rect x="39.2" y="73" width="6.8" height="2.2" rx="1" fill="#8e3329"/>`,
+    mono: () => `
+      <rect x="52.7" y="10" width="2.6" height="16" fill="currentColor"/>
+      ${[34, 58].map((y) => `<circle cx="54" cy="${y}" r="6.2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="54" cy="${y}" r="2.2" fill="currentColor"/>`).join("")}
+      <path d="${FLY_S}" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+      <circle cx="63.19" cy="26.29" r="3.3" fill="currentColor"/>
+      <path fill="currentColor" d="M42.6,70.5 C37.6,73.6 36.4,78.4 37.3,81 Q42.6,84.6 47.9,81 C48.8,78.4 47.6,73.6 42.6,70.5 Z"/>`,
+  },
+  {
     id: "rope-s", name: "Rope S", tag: "the name",
     text: "The S of Stagehand drawn as a stage rope with bound ends. A letter mark: easiest to spot among other icons, least theatrical.",
     color: () => `
@@ -221,8 +241,8 @@ const WALLS = {
   dark: { screen: "radial-gradient(120% 70% at 30% 0%, #3b2d5c 0%, #15121f 55%, #0b0a13 100%)", ink: "#f2eef8", dim: "rgb(242 238 248 / 70%)", search: "rgb(255 255 255 / 14%)", nav: "#cfc8dc", card: "linear-gradient(160deg, #2b2340, #120f1b)" },
   light: { screen: "radial-gradient(120% 70% at 70% 0%, #f7e3c4 0%, #e6dcf3 55%, #d7d1e6 100%)", ink: "#1f1a2b", dim: "rgb(31 26 43 / 70%)", search: "rgb(255 255 255 / 70%)", nav: "#3a3646", card: "linear-gradient(160deg, #efe6fa, #dcd3ea)" },
 };
-const state = { pick: "curtain", shape: "circle", style: "color", wall: "dark" };
-try { Object.assign(state, JSON.parse(localStorage.getItem("stagehand-icon") || "{}")); } catch {}
+const state = { pick: "fly-s", shape: "circle", style: "color", wall: "dark" };
+try { Object.assign(state, JSON.parse(localStorage.getItem("stagehand-icon") || "{}"), { pick: "fly-s" }); } catch {}
 const save = () => { try { localStorage.setItem("stagehand-icon", JSON.stringify(state)); } catch {} };
 let uid = 0;
 
