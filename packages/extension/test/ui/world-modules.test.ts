@@ -55,11 +55,11 @@ describe("a world's modules, now and after the next launch", () => {
   });
 
   test("now comes from the snapshot; nothing queued means no changes", () => {
-    const m = worldModules(state(["module-library", "a"]), "w1");
+    const m = worldModules(state(["stagehand", "a"]), "w1");
     expect(m.tracked).toBe(true);
     expect(m.changes).toBe(0);
     expect(m.nowCount).toBe(2);
-    expect(row(state(["module-library", "a"]), "a")).toMatchObject({
+    expect(row(state(["stagehand", "a"]), "a")).toMatchObject({
       now: true,
       next: true,
     });
@@ -68,7 +68,7 @@ describe("a world's modules, now and after the next launch", () => {
 
   test("queued changes show as turns on / turns off, with dependencies", () => {
     const s = state(
-      ["module-library", "a"],
+      ["stagehand", "a"],
       [cmd("add", { modules: ["c"] }), cmd("remove", { modules: ["a"] })],
     );
     const m = worldModules(s, "w1");
@@ -80,23 +80,23 @@ describe("a world's modules, now and after the next launch", () => {
   });
 
   test("the companion is always on and says so", () => {
-    const s = state(["module-library"]);
-    expect(row(s, "module-library")?.why).toEqual({ kind: "companion" });
+    const s = state(["stagehand"]);
+    expect(row(s, "stagehand")?.why).toEqual({ kind: "companion" });
   });
 
   test("why: from a queued preset", () => {
-    const s = state(["module-library"], [cmd("add", { presetIds: ["p1"] })]);
+    const s = state(["stagehand"], [cmd("add", { presetIds: ["p1"] })]);
     expect(row(s, "a")?.why).toEqual({ kind: "preset", name: "QoL" });
   });
 
   test("why: a module here needs it (info when on, a problem when off)", () => {
-    const on = state(["module-library", "c", "lib"]);
+    const on = state(["stagehand", "c", "lib"]);
     expect(row(on, "lib")).toMatchObject({
       why: { kind: "neededBy", ids: ["c"] },
       problem: false,
     });
     const off = state(
-      ["module-library", "c", "lib"],
+      ["stagehand", "c", "lib"],
       [cmd("remove", { modules: ["lib"] })],
     );
     expect(row(off, "lib")).toMatchObject({
@@ -113,11 +113,11 @@ describe("a world's modules, now and after the next launch", () => {
 
   test("why: conflicts with another module that's on", () => {
     const s = setupState({
-      snapshots: { w1: snap(["module-library", "x", "y"]) },
+      snapshots: { w1: snap(["stagehand", "x", "y"]) },
       setup: {
         ...setupState().setup!,
         modules: [
-          pkg("module-library"),
+          pkg("stagehand"),
           pkg("x", { conflicts: [{ id: "y", type: "module" }] }),
           pkg("y"),
         ],
@@ -131,12 +131,12 @@ describe("a world's modules, now and after the next launch", () => {
 
   test("why: can't turn on, with the resolver's reason", () => {
     const s = setupState({
-      snapshots: { w1: snap(["module-library"]) },
+      snapshots: { w1: snap(["stagehand"]) },
       commands: [cmd("add", { modules: ["d"] })],
       setup: {
         ...setupState().setup!,
         modules: [
-          pkg("module-library"),
+          pkg("stagehand"),
           pkg("d", { requires: [{ id: "gone", type: "module" }] }),
         ],
       },
@@ -151,7 +151,7 @@ describe("a world's modules, now and after the next launch", () => {
 
   test("a newer build of the verified generation is fine, as Foundry rates it", () => {
     const base = setupState();
-    const s = state(["module-library"], [], {
+    const s = state(["stagehand"], [], {
       setup: base.setup && {
         ...base.setup,
         modules: base.setup.modules.map((m) =>
@@ -167,7 +167,7 @@ describe("a world's modules, now and after the next launch", () => {
   });
 
   test("why: not verified, then the note, then the authors", () => {
-    const s = state(["module-library"]);
+    const s = state(["stagehand"]);
     expect(row(s, "b")?.why).toEqual({ kind: "unverified" });
     // "a" has a library note.
     expect(row(s, "a")?.why).toEqual({ kind: "note", text: "for Strahd" });
@@ -175,8 +175,8 @@ describe("a world's modules, now and after the next launch", () => {
   });
 
   test("why: the description before the authors, as the prototype's cards", () => {
-    const base = state(["module-library"]);
-    const s = state(["module-library"], [], {
+    const base = state(["stagehand"]);
+    const s = state(["stagehand"], [], {
       setup: base.setup && {
         ...base.setup,
         modules: base.setup.modules.map((m) =>
@@ -193,7 +193,7 @@ describe("a world's modules, now and after the next launch", () => {
 
 describe("flipping a module's switch", () => {
   test("turning one on queues a single-module change", () => {
-    const s = state(["module-library"]);
+    const s = state(["stagehand"]);
     expect(flipModule(s, "w1", "a", true)).toEqual({
       cancel: [],
       queue: { mode: "add", presetIds: [], modules: ["a"] },
@@ -201,7 +201,7 @@ describe("flipping a module's switch", () => {
   });
 
   test("turning one off queues a removal", () => {
-    const s = state(["module-library", "a"]);
+    const s = state(["stagehand", "a"]);
     expect(flipModule(s, "w1", "a", false)).toEqual({
       cancel: [],
       queue: { mode: "remove", presetIds: [], modules: ["a"] },
@@ -210,13 +210,13 @@ describe("flipping a module's switch", () => {
 
   test("flipping back undoes the earlier change instead of adding another", () => {
     const on = cmd("add", { modules: ["a"] });
-    const s = state(["module-library"], [on]);
+    const s = state(["stagehand"], [on]);
     expect(flipModule(s, "w1", "a", false)).toEqual({ cancel: [on.id] });
   });
 
   test("turning off what a preset adds keeps the preset and removes the module", () => {
     const preset = cmd("add", { presetIds: ["p1"] });
-    const s = state(["module-library"], [preset]);
+    const s = state(["stagehand"], [preset]);
     expect(flipModule(s, "w1", "a", false)).toEqual({
       cancel: [],
       queue: { mode: "remove", presetIds: [], modules: ["a"] },
@@ -224,7 +224,7 @@ describe("flipping a module's switch", () => {
   });
 
   test("a switch that already matches changes nothing", () => {
-    const s = state(["module-library", "a"]);
+    const s = state(["stagehand", "a"]);
     expect(flipModule(s, "w1", "a", true)).toEqual({ cancel: [] });
   });
 });

@@ -1,6 +1,6 @@
 // A module's Library tab: folder, tags, note, the presets that hold it, and
 // every world: a switch that queues a change for its next launch, or
-// "companion off" where Module Library isn't set up.
+// "companion off" where Stagehand isn't set up.
 import type { PackageInfo } from "@module-library/shared/package";
 import type { WorldInfo } from "@module-library/shared/world";
 import { useState } from "preact/hooks";

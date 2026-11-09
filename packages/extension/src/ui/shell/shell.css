@@ -620,7 +620,7 @@
   scrollbar-gutter: stable;
 }
 
-/* The Library: today's Module Library UI fills the panel */
+/* The Library: today's Stagehand UI fills the panel */
 .mls-shell .mls-library .mls-body-main {
   overflow: hidden;
 }

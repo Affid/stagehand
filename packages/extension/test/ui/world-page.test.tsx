@@ -53,8 +53,8 @@ function page(over: Partial<SetupState> = {}) {
   const data: Partial<SetupState> = {
     setup: base.setup ? { ...base.setup, worlds } : undefined,
     snapshots: {
-      w1: snap("w1", ["module-library", "a"]),
-      w2: snap("w2", ["module-library", "c", "lib"]),
+      w1: snap("w1", ["stagehand", "a"]),
+      w2: snap("w2", ["stagehand", "c", "lib"]),
     },
     ...over,
   };
@@ -89,10 +89,8 @@ describe("the Modules tab", () => {
     expect(toggle(container, "a").getAttribute("aria-label")).toBe(
       "Title a on in Strahd",
     );
-    expect(toggle(container, "module-library").disabled).toBe(true);
-    expect(card(container, "module-library").textContent).toContain(
-      "Always on",
-    );
+    expect(toggle(container, "stagehand").disabled).toBe(true);
+    expect(card(container, "stagehand").textContent).toContain("Always on");
   });
 
   test("a card's name opens the module's details beside the page, this world marked", () => {
@@ -149,7 +147,7 @@ describe("the Modules tab", () => {
 
   test("a problem offers its fix", async () => {
     const { container, send } = page({
-      snapshots: { w1: snap("w1", ["module-library", "c", "lib"]) },
+      snapshots: { w1: snap("w1", ["stagehand", "c", "lib"]) },
       commands: [cmd("c1", "remove", { modules: ["lib"] })],
     });
     const lib = card(container, "lib");
@@ -171,7 +169,7 @@ describe("the Modules tab", () => {
     fireEvent.click(getByRole("button", { name: /^Changes/ }));
     expect(shown()).toEqual(["b"]);
     fireEvent.click(getByRole("button", { name: /^On/ }));
-    expect(shown().sort()).toEqual(["a", "b", "module-library"]);
+    expect(shown().sort()).toEqual(["a", "b", "stagehand"]);
     fireEvent.click(getByRole("button", { name: /^All/ }));
     fireEvent.input(getByRole("searchbox", { name: "Filter modules" }), {
       target: { value: "title c" },
@@ -266,7 +264,7 @@ describe("the banner and launching", () => {
     });
     const before = setupState({
       setup: base.setup ? { ...base.setup, worlds } : undefined,
-      snapshots: { w1: snap("w1", ["module-library", "a"]) },
+      snapshots: { w1: snap("w1", ["stagehand", "a"]) },
     });
     let queued = false;
     const r = renderUi("shell", {
@@ -302,7 +300,7 @@ describe("the banner and launching", () => {
     });
     const data = setupState({
       setup: base.setup ? { ...base.setup, worlds } : undefined,
-      snapshots: { w1: snap("w1", ["module-library", "a"]) },
+      snapshots: { w1: snap("w1", ["stagehand", "a"]) },
     });
     const r = renderUi("shell", {
       data,
@@ -322,7 +320,7 @@ describe("the banner and launching", () => {
   test("when the queue can't be read, Launch doesn't launch past it (review)", async () => {
     const data = setupState({
       setup: base.setup ? { ...base.setup, worlds } : undefined,
-      snapshots: { w1: snap("w1", ["module-library", "a"]) },
+      snapshots: { w1: snap("w1", ["stagehand", "a"]) },
     });
     const r = renderUi("shell", {
       data,
@@ -344,7 +342,7 @@ describe("the banner and launching", () => {
     });
     const before = setupState({
       setup: base.setup ? { ...base.setup, worlds } : undefined,
-      snapshots: { w1: snap("w1", ["module-library", "a"]) },
+      snapshots: { w1: snap("w1", ["stagehand", "a"]) },
     });
     let queued = false;
     const r = renderUi("shell", {
@@ -394,7 +392,7 @@ describe("the banner and launching", () => {
       expect(p.foundryAction).toHaveBeenCalledWith({
         action: "backupLaunch",
         worldId: "w1",
-        note: "Before queued changes (Module Library)",
+        note: "Before queued changes (Stagehand)",
       });
     });
     // The review is the confirmation: the result goes with the launch.
@@ -471,7 +469,7 @@ describe("a world without the companion", () => {
     const { container, getByRole, page: p } = page({ snapshots: {} });
     expect(container.querySelector(".mlw-card")).toBe(null);
     expect(container.textContent).toContain(
-      "Module Library isn't set up in Strahd yet",
+      "Stagehand isn't set up in Strahd yet",
     );
     fireEvent.click(getByRole("button", { name: "Launch to set it up" }));
     expect(p.foundryAction).toHaveBeenCalledWith({
@@ -566,8 +564,8 @@ describe("review findings", () => {
         modules: [...base.setup.modules, ...many.map((id) => pkg(id))],
       },
       snapshots: {
-        w1: snap("w1", ["module-library", "a"]),
-        w2: snap("w2", ["module-library", ...many]),
+        w1: snap("w1", ["stagehand", "a"]),
+        w2: snap("w2", ["stagehand", ...many]),
       },
     });
     fireEvent.click(getByRole("button", { name: "Add" }));

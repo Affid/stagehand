@@ -229,7 +229,7 @@ function handle(ctx: Ctx, m: UiToPage): void {
   if (WRITES.has(m.type) && ctx.page.game?.data?.isAdmin !== true) {
     ctx.notify(
       "error",
-      "Module Library: only the administrator's Setup can change Foundry.",
+      "Stagehand: only the administrator's Setup can change Foundry.",
     );
     return;
   }

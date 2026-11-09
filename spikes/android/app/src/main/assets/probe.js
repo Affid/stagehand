@@ -79,7 +79,7 @@
   if (location.pathname.startsWith("/game")) {
     addEventListener("message", (e) => {
       const d = e.data;
-      if (d && d.ns === "module-library")
+      if (d && d.ns === "stagehand")
         report({ kind: "game-msg", from: d.from, type: d.type });
     });
   }

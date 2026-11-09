@@ -1,4 +1,4 @@
-// The Module Library test world and its users.
+// The test world (its id and title keep the old working name) and its users.
 import type { WorldUser } from "./session.ts";
 
 export const TEST_WORLD = {
@@ -19,4 +19,4 @@ export const TEST_USERS: readonly WorldUser[] = [
   { name: "Player1", role: PLAYER },
 ];
 
-export const COMPANION_ID = "module-library";
+export const COMPANION_ID = "stagehand";

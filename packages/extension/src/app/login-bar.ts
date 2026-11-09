@@ -32,7 +32,7 @@ export function addLoginBar(
   }
   const bar = doc.createElement("nav");
   bar.id = BAR;
-  bar.setAttribute("aria-label", "Module Library");
+  bar.setAttribute("aria-label", "Stagehand");
   const link = doc.createElement("a");
   link.href = serversHref;
   link.textContent = "‹ Servers";

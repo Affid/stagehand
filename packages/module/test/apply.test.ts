@@ -10,7 +10,7 @@ import {
 import { fakeChannel, fakeDialog, fakeGame, ok } from "./fakes.ts";
 
 const MODULES = [
-  { id: "module-library", active: true },
+  { id: "stagehand", active: true },
   { id: "a", requires: ["lib"] },
   { id: "lib" },
   { id: "x", active: true },
@@ -62,7 +62,7 @@ describe("world state", () => {
       worldId: "w1",
       coreVersion: "14.369",
       active: [
-        { id: "module-library", version: "1.0.0" },
+        { id: "stagehand", version: "1.0.0" },
         { id: "x", version: "1.0.0" },
         { id: "needs-x", version: "1.0.0" },
       ],
@@ -79,7 +79,7 @@ describe("world state", () => {
   test("the configuration lists every module and always keeps the companion (C-5)", () => {
     const { game } = fakeGame(MODULES);
     expect(moduleConfiguration(game, ["a"])).toEqual({
-      "module-library": true,
+      stagehand: true,
       a: true,
       lib: false,
       x: false,
@@ -91,7 +91,7 @@ describe("world state", () => {
 
 describe("dialog", () => {
   test("escapes every value in the diff", () => {
-    const { game } = fakeGame([{ id: "module-library", active: true }]);
+    const { game } = fakeGame([{ id: "stagehand", active: true }]);
     const plan = planFor(
       game,
       [command({ modules: ['<img src=x onerror="alert(1)">'] })],
@@ -117,7 +117,7 @@ describe("applyCommands (8.4, 8.5)", () => {
         id: "c1",
         worldId: "w1",
         status: "applying",
-        target: ["module-library", "x", "needs-x", "a", "lib"],
+        target: ["stagehand", "x", "needs-x", "a", "lib"],
       },
     ]);
     expect(set).toHaveBeenCalledWith(
@@ -157,7 +157,7 @@ describe("applyCommands (8.4, 8.5)", () => {
     const conflict = [command({ modules: ["a", "hates-a"] })];
     expect(await applyCommands(refused.deps, conflict)).toBe("blocked");
     expect(refused.warn).toHaveBeenCalledWith(
-      "MODULE_LIBRARY.Apply.NeedConflictConsent",
+      "STAGEHAND.Apply.NeedConflictConsent",
     );
     expect(refused.set).not.toHaveBeenCalled();
     const accepted = setup("apply", { acceptConflicts: true });
@@ -169,7 +169,7 @@ describe("applyCommands (8.4, 8.5)", () => {
     const refused = setup("apply");
     expect(await applyCommands(refused.deps, remove)).toBe("blocked");
     expect(refused.warn).toHaveBeenCalledWith(
-      "MODULE_LIBRARY.Apply.NeedDependentsChoice",
+      "STAGEHAND.Apply.NeedDependentsChoice",
     );
     const chosen = setup("apply", { removeDependents: true });
     expect(await applyCommands(chosen.deps, remove)).toBe("applied");
@@ -179,7 +179,7 @@ describe("applyCommands (8.4, 8.5)", () => {
       expect.objectContaining({
         x: false,
         "needs-x": false,
-        "module-library": true,
+        stagehand: true,
       }),
     );
   });
@@ -209,7 +209,7 @@ describe("applyCommands: review fixes", () => {
     expect(await applyCommands(deps, [command()])).toBe("cancelled");
     expect(set).not.toHaveBeenCalled();
     expect(reload).not.toHaveBeenCalled();
-    expect(warn).toHaveBeenCalledWith("MODULE_LIBRARY.Apply.Cancelled");
+    expect(warn).toHaveBeenCalledWith("STAGEHAND.Apply.Cancelled");
     expect(acks(requests).map((a) => (a as { status: string }).status)).toEqual(
       ["applying", "failed"],
     );
@@ -243,7 +243,7 @@ describe("applyCommands: review fixes", () => {
 });
 
 describe("applyCommands: one confirmation (reviewed on Setup)", () => {
-  const TARGET = ["module-library", "x", "needs-x", "a", "lib"];
+  const TARGET = ["stagehand", "x", "needs-x", "a", "lib"];
 
   test("the reviewed result applies without the dialog, with a notice", async () => {
     const { deps, set, reload, info, wait } = setup("later");
@@ -254,7 +254,7 @@ describe("applyCommands: one confirmation (reviewed on Setup)", () => {
       "moduleConfiguration",
       expect.objectContaining({ a: true, lib: true }),
     );
-    expect(info).toHaveBeenCalledWith("MODULE_LIBRARY.Apply.Reviewed");
+    expect(info).toHaveBeenCalledWith("STAGEHAND.Apply.Reviewed");
     expect(reload).toHaveBeenCalledTimes(1);
   });
 
@@ -269,7 +269,7 @@ describe("applyCommands: one confirmation (reviewed on Setup)", () => {
   test("a live result that differs from the review asks again", async () => {
     const { deps, set, wait } = setup("later");
     expect(
-      await applyCommands(deps, [command()], ["module-library", "x", "a"]),
+      await applyCommands(deps, [command()], ["stagehand", "x", "a"]),
     ).toBe("later");
     expect(wait).toHaveBeenCalled();
     expect(set).not.toHaveBeenCalled();
@@ -303,9 +303,9 @@ describe("applyCommands: one confirmation (reviewed on Setup)", () => {
   test("removing a module others need always asks", async () => {
     const { deps, wait } = setup("later");
     const remove = command({ mode: "remove", modules: ["x"] });
-    expect(
-      await applyCommands(deps, [remove], ["module-library", "needs-x"]),
-    ).toBe("later");
+    expect(await applyCommands(deps, [remove], ["stagehand", "needs-x"])).toBe(
+      "later",
+    );
     expect(wait).toHaveBeenCalled();
   });
 });

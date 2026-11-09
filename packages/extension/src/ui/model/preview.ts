@@ -12,7 +12,7 @@ import { parseCoreVersion } from "@module-library/shared/version";
 import { type Command, changeModules } from "@module-library/shared/world";
 import type { SetupState } from "../../messages.ts";
 
-export const COMPANION_ID = "module-library";
+export const COMPANION_ID = "stagehand";
 
 export interface NewChange {
   readonly presetIds: readonly string[];

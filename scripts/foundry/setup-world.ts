@@ -1,4 +1,4 @@
-// Prepares the Module Library test world, safe to run again: creates it,
+// Prepares the Stagehand test world, safe to run again: creates it,
 // its users, enables only the companion module, then returns to Setup.
 // Run `pnpm build && pnpm foundry:link` first.
 import { existsSync } from "node:fs";

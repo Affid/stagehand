@@ -15,7 +15,7 @@ export default defineConfig({
     lib: {
       entry: join(root, "src/index.ts"),
       formats: ["es"],
-      fileName: () => "module-library.js",
+      fileName: () => "stagehand.js",
     },
   },
 });

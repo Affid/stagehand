@@ -94,7 +94,7 @@ async function game(page: Page): Promise<void> {
               modules?: { get(id: string): { active?: boolean } | undefined };
             };
           }
-        ).game?.modules?.get("module-library")?.active ?? "unknown",
+        ).game?.modules?.get("stagehand")?.active ?? "unknown",
     );
     console.log(`game ${state}; companion active: ${String(companion)}`);
     console.log(
@@ -106,7 +106,7 @@ async function game(page: Page): Promise<void> {
         ).game;
         window.postMessage(
           {
-            ns: "module-library",
+            ns: "stagehand",
             v: 1,
             from: "module",
             type: "PROBE_TEST",

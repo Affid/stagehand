@@ -42,7 +42,7 @@ const snap: Snapshot = {
   title: "Strahd",
   system: { id: "dnd5e", version: "5" },
   coreVersion: "14.369",
-  active: ["module-library", "a"].map((id) => ({ id, version: "1.0.0" })),
+  active: ["stagehand", "a"].map((id) => ({ id, version: "1.0.0" })),
   companionVersion: "0.1.0",
   takenAt: new Date(Date.now() - 20 * DAY).toISOString(),
 };

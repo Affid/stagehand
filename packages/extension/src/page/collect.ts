@@ -12,6 +12,8 @@ import {
   ScheduleSchema,
   type SetupData,
   type WorldInfo,
+  FLAGS_KEY,
+  LEGACY_FLAGS_KEY,
 } from "@module-library/shared/world";
 import type { Collection, SetupGame } from "./globals.ts";
 
@@ -46,8 +48,9 @@ function worldExtras(w: Loose): Partial<WorldInfo> {
 /** Our schedule in the world's flags, when it passes the schema. */
 function scheduleOf(w: Loose): Partial<WorldInfo> {
   const flags = w.flags as Loose | undefined;
-  const ours = flags?.["module-library"] as Loose | undefined;
-  const parsed = ScheduleSchema.safeParse(ours?.schedule);
+  const ours = flags?.[FLAGS_KEY] as Loose | undefined;
+  const legacy = flags?.[LEGACY_FLAGS_KEY] as Loose | undefined;
+  const parsed = ScheduleSchema.safeParse(ours?.schedule ?? legacy?.schedule);
   return parsed.success ? { schedule: parsed.data } : {};
 }
 

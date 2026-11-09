@@ -184,7 +184,7 @@ if (!native.kv.has("servers"))
   void run("home", "runtime.send", {
     message: { kind: "register-server", server: SERVER },
   }).catch((error: unknown) => {
-    console.error("Module Library preview", error);
+    console.error("Stagehand preview", error);
   });
 
 // Our scripts on the server's pages, as native adds them.

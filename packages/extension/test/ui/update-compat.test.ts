@@ -45,7 +45,7 @@ const PREVIEW: Preview = {
     entry("b", 4, { verified: "13" }),
     entry("c", 6, { requires: ["lib"] }),
     entry("lib", 7, { maximum: "13" }),
-    entry("module-library", 2),
+    entry("stagehand", 2),
   ],
   world: [entry("w1", 1, { version: null, system: "dnd5e" })],
 };
@@ -72,7 +72,7 @@ describe("Foundry's availability codes", () => {
 
 describe("compatData", () => {
   const state = setupState({
-    snapshots: { w1: snap(["module-library", "a", "c", "lib"]) },
+    snapshots: { w1: snap(["stagehand", "a", "c", "lib"]) },
   });
   const d = compatData(state, PREVIEW);
 
@@ -104,7 +104,7 @@ describe("compatData", () => {
 
   test("worst first, then the most used; updates needed leave out incompatible", () => {
     const order = [...d.module].sort(byConcern).map((x) => x.id);
-    expect(order).toEqual(["lib", "c", "b", "module-library", "a"]);
+    expect(order).toEqual(["lib", "c", "b", "stagehand", "a"]);
     expect(updatesNeeded(d)).toBe(2);
   });
 });

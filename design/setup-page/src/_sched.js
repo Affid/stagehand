@@ -88,7 +88,7 @@ function sessionView(w) {
   }).join("") + (custom && all.length > shown.length ? `<li class="more"><span>and ${plural(all.length - shown.length, "more date")}</span><span></span><a data-act="sedit">Show all</a></li>` : "");
   const rule = s.freq !== "none"
     ? `<div class="mlw-rule"><i class="fa-solid ${custom ? "fa-calendar-days" : "fa-repeat"}"></i><span>${esc(ruleText(s))}</span>
-        <i class="fa-regular fa-circle-question mlw-why" data-tooltip="Foundry keeps one next session for players. When it passes, Module Library moves it to the next date here, when this page opens or the world launches.${custom ? " Past dates drop off." : ""}" aria-label="How the next session moves on"></i>
+        <i class="fa-regular fa-circle-question mlw-why" data-tooltip="Foundry keeps one next session for players. When it passes, Stagehand moves it to the next date here, when this page opens or the world launches.${custom ? " Past dates drop off." : ""}" aria-label="How the next session moves on"></i>
         <a class="mlw-mock" data-act="sjump">Mockup: a week passes</a></div><ol class="mlw-upcoming">${rows}</ol>` : "";
   return `<div class="mlw-next"><i class="fa-solid fa-calendar-day"></i><div><strong>${whenIn(n.ms, s.tz)}</strong>
       <span data-tooltip="Players see it in their own time zone">${relDays(n.ms)} · ${esc(tzLabel(s.tz, n.ms))}${whenIn(n.ms, BROWSER_TZ) !== whenIn(n.ms, s.tz) ? ` · <b>${whenIn(n.ms, BROWSER_TZ)}</b> your time` : ""}</span></div></div>${moved}${rule}

@@ -63,8 +63,7 @@ test("the companion says HELLO on http at a network address", async ({
     (window as unknown as { __mlHello: string[] }).__mlHello = seen;
     addEventListener("message", (e: MessageEvent<unknown>) => {
       const d = e.data as { ns?: string; from?: string; type?: string } | null;
-      if (d?.ns === "module-library" && d.from === "module")
-        seen.push(d.type ?? "");
+      if (d?.ns === "stagehand" && d.from === "module") seen.push(d.type ?? "");
     });
   });
   const url = `http://${String(address)}:${server.port || "80"}`;

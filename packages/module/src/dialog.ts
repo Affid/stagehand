@@ -24,7 +24,7 @@ const ESCAPES: Readonly<Record<string, string>> = {
 export const escapeHtml = (text: string): string =>
   text.replace(/[&<>"']/g, (c) => ESCAPES[c] ?? c);
 
-const K = "MODULE_LIBRARY.Apply";
+const K = "STAGEHAND.Apply";
 
 function section(
   game: FoundryGame,
@@ -87,7 +87,7 @@ export function diffHtml(
     parts.push(
       checkbox("removeDependents", game.i18n.localize(`${K}.RemoveDependents`)),
     );
-  return `<div class="module-library-diff">${parts.join("")}</div>`;
+  return `<div class="stagehand-diff">${parts.join("")}</div>`;
 }
 
 const checked = (button: HTMLButtonElement, name: string): boolean =>

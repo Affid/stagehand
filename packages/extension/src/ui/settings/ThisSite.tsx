@@ -1,5 +1,5 @@
 // The Foundry server the panel opened over: on already, or one click to use
-// Module Library there (asks for that site, adds it, reloads the page).
+// Stagehand there (asks for that site, adds it, reloads the page).
 import { useState } from "preact/hooks";
 import type { ServerId } from "../../background/servers.ts";
 import type { Translate } from "../i18n.ts";

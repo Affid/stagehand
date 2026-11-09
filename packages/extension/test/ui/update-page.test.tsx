@@ -59,7 +59,7 @@ const PREVIEW: Preview = {
     entry("b", 4, { verified: "13" }),
     entry("c", 6, { requires: ["lib"] }),
     entry("lib", 7, { maximum: "13" }),
-    entry("module-library", 2, { verified: "14.369" }),
+    entry("stagehand", 2, { verified: "14.369" }),
   ],
   world: [entry("w1", 1, { version: null, system: "dnd5e" })],
 };
@@ -346,7 +346,7 @@ describe("Your packages (Foundry's compatibility preview)", () => {
       "Title lib",
       "Title c",
       "Title b",
-      "Title module-library",
+      "Title stagehand",
     ]);
     expect(box?.textContent).toContain("1 package needs updating too.");
   });
@@ -364,7 +364,7 @@ describe("Your packages (Foundry's compatibility preview)", () => {
       "Title lib",
       "Title c",
       "Title b",
-      "Title module-library",
+      "Title stagehand",
       "Title a",
     ]);
     expect(view.textContent).toContain(

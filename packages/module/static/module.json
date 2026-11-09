@@ -1,10 +1,10 @@
 {
-  "id": "module-library",
-  "title": "Module Library",
-  "description": "Companion for the Module Library browser extension.",
-  "authors": [{ "name": "Module Library" }],
+  "id": "stagehand",
+  "title": "Stagehand",
+  "description": "Companion for the Stagehand browser extension and Android app.",
+  "authors": [{ "name": "Stagehand" }],
   "version": "0.1.0",
   "compatibility": { "minimum": "13", "verified": "14.370" },
-  "esmodules": ["module-library.js"],
+  "esmodules": ["stagehand.js"],
   "languages": [{ "lang": "en", "name": "English", "path": "lang/en.json" }]
 }

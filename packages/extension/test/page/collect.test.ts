@@ -176,15 +176,15 @@ describe("reading Setup's package data (V-1)", () => {
       worlds: {
         values: () =>
           [
-            { id: "w", flags: { "module-library": { schedule } } },
+            { id: "w", flags: { stagehand: { schedule } } },
             {
               id: "v",
-              flags: { "module-library": { schedule: { time: "25:00" } } },
+              flags: { stagehand: { schedule: { time: "25:00" } } },
             },
             {
               id: "u",
               flags: {
-                "module-library": {
+                stagehand: {
                   schedule: { ...schedule, tz: "Not/AZone" },
                 },
               },
@@ -196,6 +196,38 @@ describe("reading Setup's package data (V-1)", () => {
     expect(data.worlds[1]).not.toHaveProperty("schedule");
     expect(data.worlds[2]).not.toHaveProperty("schedule");
     expect(SetupDataSchema.safeParse(data).success).toBe(true);
+  });
+
+  test("a schedule saved before the rename is read until the next save", () => {
+    const schedule = {
+      start: "2026-11-10",
+      time: "19:00",
+      tz: "UTC",
+      freq: "w1",
+      skips: [],
+    };
+    const data = collect({
+      worlds: {
+        values: () =>
+          [
+            { id: "old", flags: { "module-library": { schedule } } },
+            {
+              id: "empty",
+              flags: { stagehand: {}, "module-library": { schedule } },
+            },
+            {
+              id: "both",
+              flags: {
+                stagehand: { schedule: { ...schedule, time: "20:00" } },
+                "module-library": { schedule },
+              },
+            },
+          ].values(),
+      },
+    });
+    expect(data.worlds[0]?.schedule).toEqual(schedule);
+    expect(data.worlds[1]?.schedule).toEqual(schedule);
+    expect(data.worlds[2]?.schedule?.time).toBe("20:00");
   });
 
   test("world and system names are cut to their bounds (security review)", () => {

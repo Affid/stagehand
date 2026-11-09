@@ -14,10 +14,7 @@ export function useTransfer() {
     exportAll: async (): Promise<void> => {
       const text = await actions.exportLibrary();
       if (text)
-        await ports.files.save(
-          `module-library-${fileStamp(new Date())}.json`,
-          text,
-        );
+        await ports.files.save(`stagehand-${fileStamp(new Date())}.json`, text);
     },
     importAll: async (): Promise<void> => {
       const text = await ports.files.open();

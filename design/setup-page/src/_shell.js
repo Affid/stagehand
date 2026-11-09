@@ -4,7 +4,7 @@
 const IMG = ["fvtt/ui/backgrounds/setup.webp", "fvtt/ui/thumb-dnd5e.webp"];
 const WORLDS_X = [
   { id: "strahd", title: "Curse of Strahd", system: "D&D 5e", sysFull: "Dungeons & Dragons Fifth Edition 5.1.4", last: "2 days ago", img: 0, pos: "30% 40%", desc: "<p>Gothic horror in <strong>Barovia</strong>. Tuesday group, five players, voice through LiveKit.</p><p>House rules:</p><ul><li>Milestone levelling</li><li>Lingering injuries on a critical hit</li><li>No flanking</li></ul><p>Session zero notes, safety tools and the content list are in the <em>Table</em> journal. Read the <a href=\"https://foundryvtt.com/article/game-worlds/\">world guide</a> before the first session.</p>" },
-  { id: "mltest", title: "Module Library test", system: "D&D 5e", sysFull: "Dungeons & Dragons Fifth Edition 5.1.4", last: "today", img: 1, pos: "center", desc: "Test world for the Module Library companion." },
+  { id: "mltest", title: "Stagehand test", system: "D&D 5e", sysFull: "Dungeons & Dragons Fifth Edition 5.1.4", last: "today", img: 1, pos: "center", desc: "Test world for the Stagehand companion." },
   { id: "heist", title: "Dragon Heist", system: "D&D 5e", sysFull: "Dungeons & Dragons Fifth Edition 5.1.4", last: "5 weeks ago", att: "The last snapshot is 5 weeks old. Launch once to refresh it.", img: 0, pos: "80% 60%", desc: "Waterdeep, alternate Fridays." },
   { id: "vaults", title: "Abomination Vaults", system: "Pathfinder 2e", sysFull: "Pathfinder Second Edition 7.2.0", last: "3 weeks ago", att: "The companion is not enabled in this world yet.", noCompanion: true, img: 1, pos: "20% 80%", desc: "PF2e dungeon crawl." },
   { id: "oneshot", title: "One-shot: Heist Night", system: "D&D 5e", sysFull: "Dungeons & Dragons Fifth Edition 5.1.4", last: "2 months ago", img: 0, pos: "60% 20%", desc: "A convention one-shot." },
@@ -203,7 +203,7 @@ function worldPage() {
     body = `<div class="mls-pane"><table><tr><td>Before V14 migration</td><td>14 Mar 2026</td><td>412 MB</td></tr><tr><td>Session 23</td><td>2 Oct 2026</td><td>430 MB</td></tr><tr><td>Session 31</td><td>3 Nov 2026</td><td>441 MB</td></tr></table>
       <button type="button" data-act="foundry" data-what="Take Backup"><i class="fa-solid fa-floppy-disk"></i>Take a backup</button><p class="ml-muted" style="font-size:12px">Backups are Foundry's own: we call its backup and restore.</p></div>`;
   } else if (w.noCompanion) {
-    body = `<div class="mls-notice"><i class="fa-solid fa-puzzle-piece"></i><span>Module Library can't see or change this world's modules until its companion is enabled. Launch the world and turn on <b>Module Library</b> in Manage Modules once.</span></div>
+    body = `<div class="mls-notice"><i class="fa-solid fa-puzzle-piece"></i><span>Stagehand can't see or change this world's modules until its companion is enabled. Launch the world and turn on <b>Stagehand</b> in Manage Modules once.</span></div>
       <ol class="ml-sections scrollable mls-world-cards">${worldSections(w)}</ol>`;
   } else {
     const seg = (id, l) => `<span class="${ST.show === id ? "on" : ""}" data-act="show" data-id="${id}">${l}</span>`;

@@ -167,9 +167,9 @@ describe("relay: review fixes", () => {
 
   test("a launch reviewed on Setup carries the reviewed result once", async () => {
     const { state, send } = await setup();
-    await state.setLaunchHold(S, "w", false, NOW, ["module-library", "a"]);
+    await state.setLaunchHold(S, "w", false, NOW, ["stagehand", "a"]);
     const first = await send("COMMANDS_PULL", { worldId: "w" });
-    expect(first.payload).toMatchObject({ reviewed: ["module-library", "a"] });
+    expect(first.payload).toMatchObject({ reviewed: ["stagehand", "a"] });
     expect((first.payload as { world: unknown[] }).world).toHaveLength(1);
     const next = await send("COMMANDS_PULL", { worldId: "w" });
     expect(next.payload).not.toHaveProperty("reviewed");

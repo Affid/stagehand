@@ -102,7 +102,12 @@ function isTimeZone(tz: string): boolean {
   }
 }
 
-/** The next-session schedule, ours, in the world's flags["module-library"]. */
+/** Our key in a world's flags: the companion's id. */
+export const FLAGS_KEY = "stagehand";
+/** The key before the rename to Stagehand: read, and removed on a save. */
+export const LEGACY_FLAGS_KEY = "module-library";
+
+/** The next-session schedule, ours, in the world's flags[FLAGS_KEY]. */
 export const ScheduleSchema = z.object({
   start: z.string().regex(DATE),
   time: z.string().regex(TIME),

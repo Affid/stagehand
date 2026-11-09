@@ -9,10 +9,7 @@ function deps(
   answer: Parameters<typeof fakeChannel>[0],
   dialogResult: unknown = "later",
 ) {
-  const { game } = fakeGame([
-    { id: "module-library", active: true },
-    { id: "a" },
-  ]);
+  const { game } = fakeGame([{ id: "stagehand", active: true }, { id: "a" }]);
   const { channel, requests } = fakeChannel(answer);
   const d: ApplyDeps = {
     game,
@@ -102,7 +99,7 @@ describe("runSession (8.4)", () => {
           ? ok("COMMANDS", {
               world,
               global: [],
-              reviewed: ["module-library", "a"],
+              reviewed: ["stagehand", "a"],
             })
           : type === "COMMAND_ACK"
             ? ok("OK", { accepted: true })

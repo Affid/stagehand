@@ -1,4 +1,4 @@
-/* Module Library: Setup screen UI. Every class is prefixed ml- and the
+/* Stagehand: Setup screen UI. Every class is prefixed ml- and the
    colours come from Foundry's own variables, so the UI follows its theme. */
 
 /* The tab is a flex column that hides overflow, like core's own list:

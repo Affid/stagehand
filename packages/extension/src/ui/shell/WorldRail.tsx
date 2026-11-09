@@ -189,7 +189,7 @@ function RailBar(props: {
   );
 }
 
-/** The rail's foot: Module Library's settings panel, and a dev build's label. */
+/** The rail's foot: Stagehand's settings panel, and a dev build's label. */
 function RailFoot() {
   const { t, actions } = useUi();
   return (

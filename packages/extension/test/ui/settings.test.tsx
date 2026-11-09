@@ -99,11 +99,11 @@ function fake(
 const show = (f: Fake) => render(<SettingsPanel platform={f.platform} />);
 
 describe("this site, in one click", () => {
-  test("on a Foundry page not yet added: Use Module Library here asks for that site, adds it and reloads the page", async () => {
+  test("on a Foundry page not yet added: Use Stagehand here asks for that site, adds it and reloads the page", async () => {
     const f = fake({ url: "http://192.168.1.20:30000/setup" });
     show(f);
     const use = await screen.findByRole("button", {
-      name: "Use Module Library here",
+      name: "Use Stagehand here",
     });
     expect(screen.getByText("192.168.1.20:30000")).toBeTruthy();
     fireEvent.click(use);
@@ -124,7 +124,7 @@ describe("this site, in one click", () => {
     const f = fake({ url: `${S}/join`, grant: false });
     show(f);
     fireEvent.click(
-      await screen.findByRole("button", { name: "Use Module Library here" }),
+      await screen.findByRole("button", { name: "Use Stagehand here" }),
     );
     expect(await screen.findByText(/didn't allow/)).toBeTruthy();
     expect(f.sent.some((m) => m.kind === "register-server")).toBe(false);
@@ -136,7 +136,7 @@ describe("this site, in one click", () => {
     show(on);
     expect(await screen.findByText(/On for this server/)).toBeTruthy();
     expect(
-      screen.queryByRole("button", { name: "Use Module Library here" }),
+      screen.queryByRole("button", { name: "Use Stagehand here" }),
     ).toBeNull();
     cleanup();
     show(fake({ url: "https://example.com/news" }));
@@ -158,7 +158,7 @@ describe("this site, in one click", () => {
     const f = fake({ url: `${S}/setup` });
     show(f);
     fireEvent.click(
-      await screen.findByRole("button", { name: "Use Module Library here" }),
+      await screen.findByRole("button", { name: "Use Stagehand here" }),
     );
     await waitFor(() => {
       expect(f.platform.reload).toHaveBeenCalled();
@@ -176,7 +176,7 @@ describe("a server that is saved but off (owner's bug)", () => {
     const f = fake({ url: `${S}/setup`, servers: [S], off: [S] });
     show(f);
     const again = await screen.findByRole("button", {
-      name: "Turn Module Library back on here",
+      name: "Turn Stagehand back on here",
     });
     expect(screen.queryByText("On for this server.")).toBeNull();
     fireEvent.click(again);

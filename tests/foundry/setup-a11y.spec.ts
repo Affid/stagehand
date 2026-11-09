@@ -118,7 +118,7 @@ const main = () => shell(page).locator(".mls-main");
 const top = () => shell(page).locator(".mls-top");
 
 test("axe: a world's page, its menus and the launch review", async () => {
-  await seedSnapshot(["module-library", "ml-fixture-lib", "ml-fixture-a"]);
+  await seedSnapshot(["stagehand", "ml-fixture-lib", "ml-fixture-a"]);
   await page.reload();
   await shell(page)
     .locator(`.mls-world[data-world="${TEST_WORLD.id}"]`)

@@ -5,7 +5,11 @@
 // re-render Foundry's Setup so our UI gets fresh data. "editWorld" is an
 // internal request name: the UI only uses this behind the remote config's
 // `editWorld` flag. Returns an error message, or undefined when saved.
-import type { ScheduleData } from "@module-library/shared/world";
+import {
+  FLAGS_KEY,
+  LEGACY_FLAGS_KEY,
+  type ScheduleData,
+} from "@module-library/shared/world";
 import type { WorldChanges } from "../page-save.ts";
 import type { PageGlobals } from "./globals.ts";
 
@@ -20,6 +24,7 @@ const message = (e: unknown): string =>
   e instanceof Error ? e.message : String(e);
 
 type Stored = { readonly dates?: Readonly<Record<string, string>> } | undefined;
+type Flags = Readonly<Record<string, { schedule?: Stored } | undefined>>;
 
 /**
  * The schedule as a change to the stored one. Foundry merges objects, so
@@ -39,15 +44,22 @@ function scheduleChange(next: ScheduleData, stored: Stored): object {
   };
 }
 
-/** Our fields as Foundry stores them: the schedule lives in our flags. */
-function forFoundry(changes: WorldChanges, stored: Stored): object {
+/**
+ * Our fields as Foundry stores them: the schedule lives in our flags. Flags
+ * left under the name before the rename go on the same save; until then
+ * they are read in their place (collect.ts).
+ */
+function forFoundry(changes: WorldChanges, flags: Flags | undefined): object {
   const { schedule, ...rest } = changes;
   if (schedule === undefined) return rest;
   const ours =
     schedule === null
       ? { "-=schedule": null }
-      : { schedule: scheduleChange(schedule, stored) };
-  return { ...rest, flags: { "module-library": ours } };
+      : { schedule: scheduleChange(schedule, flags?.[FLAGS_KEY]?.schedule) };
+  const legacy = flags?.[LEGACY_FLAGS_KEY]
+    ? { [`-=${LEGACY_FLAGS_KEY}`]: null }
+    : {};
+  return { ...rest, flags: { [FLAGS_KEY]: ours, ...legacy } };
 }
 
 export async function saveWorld(
@@ -56,11 +68,8 @@ export async function saveWorld(
   wanted: WorldChanges,
 ): Promise<string | undefined> {
   const current = page.game?.worlds?.get?.(worldId) as
-    { flags?: Record<string, { schedule?: Stored } | undefined> } | undefined;
-  const changes = forFoundry(
-    wanted,
-    current?.flags?.["module-library"]?.schedule,
-  );
+    { flags?: Flags } | undefined;
+  const changes = forFoundry(wanted, current?.flags);
   const game = page.game;
   const world = game?.worlds?.get?.(worldId) as EditableWorld | undefined;
   if (!world || !game?.post) return `No world ${worldId}`;

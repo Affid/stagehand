@@ -74,7 +74,7 @@ test("a world the companion hasn't reported explains the setup", async () => {
 });
 
 test("with a snapshot, the world's modules show as cards", async () => {
-  await seedSnapshot(["module-library", "ml-fixture-lib"]);
+  await seedSnapshot(["stagehand", "ml-fixture-lib"]);
   await page.reload();
   await exitTour(page);
   await shell().locator(`.mls-world[data-world="${TEST_WORLD.id}"]`).click();
@@ -85,7 +85,7 @@ test("with a snapshot, the world's modules show as cards", async () => {
     card("ml-fixture-a").locator('input[role="switch"]'),
   ).not.toBeChecked();
   await expect(
-    card("module-library").locator('input[role="switch"]'),
+    card("stagehand").locator('input[role="switch"]'),
   ).toBeDisabled();
   await page.screenshot({ path: `${SCREENS}/world-modules.png` });
 });

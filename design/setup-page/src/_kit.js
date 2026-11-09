@@ -1,8 +1,8 @@
 // Renderers for Foundry's own Setup markup (copied from the live V14 page and
-// templates/setup/parts/package-*.hbs) plus the Module Library pieces placed
+// templates/setup/parts/package-*.hbs) plus the Stagehand pieces placed
 // into it. Styling comes from Foundry's real foundry2.css.
 
-// ---------- Module Library decorations on a Foundry card ----------
+// ---------- Stagehand decorations on a Foundry card ----------
 const tagChip = (t, extra = "") =>
   `<span class="tag flexrow ml-tag ${extra}" style="--ml-c:${t.color}" data-tooltip="Tag: ${esc(t.name)}"><i class="ml-dot" aria-hidden="true"></i>${esc(t.name)}</span>`;
 
@@ -120,7 +120,7 @@ function sections(groups, o = {}) {
 // ---------- Foundry chrome ----------
 function viewModes({ organise = true, organiseBtn = true } = {}) {
   const b = (id, icon, label) => `<button type="button" data-action="viewMode" class="view-mode icon fa-solid ${icon}${VIEW === id ? " active" : ""}" aria-label="${label}"></button>`;
-  const org = organiseBtn ? `<button type="button" class="view-mode icon fa-solid fa-folder-tree ml-organise${organise ? " active" : ""}" aria-pressed="${organise}" aria-label="Organised view (Module Library)"></button><span class="ml-vsep" aria-hidden="true"></span>` : "";
+  const org = organiseBtn ? `<button type="button" class="view-mode icon fa-solid fa-folder-tree ml-organise${organise ? " active" : ""}" aria-pressed="${organise}" aria-label="Organised view (Stagehand)"></button><span class="ml-vsep" aria-hidden="true"></span>` : "";
   return `<div class="view-modes">${org}${b("gallery", "fa-image-landscape", "Gallery View")}${b("tiles", "fa-grid-horizontal", "Tiles View")}${b("details", "fa-list", "Details View")}</div>`;
 }
 
@@ -178,7 +178,7 @@ const tooltip = (x, y, html, dir = "") => `<aside id="tooltip" class="active the
 /** Static annotation for the reviewer (not product UI). */
 const callout = (x, y, w, html) => `<div class="ml-callout-note" style="left:${x}px;top:${y}px;width:${w}px">${html}</div>`;
 
-// ---------- Shared Module Library popovers ----------
+// ---------- Shared Stagehand popovers ----------
 /** Tri-state tag checklist for a selection: all / some / none, staged until Apply. */
 function tagPopover(x, y, { n = 4, states = {}, query = "", pending = "" } = {}) {
   const rows = TAGS.map((t) => {

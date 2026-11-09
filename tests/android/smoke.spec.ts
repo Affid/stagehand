@@ -177,7 +177,7 @@ test("the key screens in Foundry's three Setup themes", async () => {
 test("home: a server renamed, given a new address, opened, removed", async () => {
   await tab(page, /^Worlds/).click();
   await shell(page)
-    .getByRole("button", { name: /Module Library settings/ })
+    .getByRole("button", { name: /Stagehand settings/ })
     .click();
   let home = await app.pageAt(HOME);
   await renameAndBack(app, home);

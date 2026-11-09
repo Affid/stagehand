@@ -110,7 +110,7 @@ export async function library(app: App, page: Page): Promise<void> {
     .fill("");
 }
 
-const EXPORTS = /module-library-[\w() -]+\.json/g;
+const EXPORTS = /stagehand-[\w() -]+\.json/g;
 
 /** The library exports in the device's Downloads. */
 const exports = (): string[] =>
@@ -148,7 +148,7 @@ export async function exportImport(app: App, page: Page): Promise<void> {
   await shell(page).getByRole("button", { name: MENU }).click();
   await shell(page).getByRole("button", { name: "Import a library…" }).click();
   await tapNative(new RegExp(`^${file.replace(/[().]/g, "\\$&")}$`), 20_000);
-  await waitNative(new RegExp(`Module Library · ${new URL(SERVER).host}`));
+  await waitNative(new RegExp(`Stagehand · ${new URL(SERVER).host}`));
   await waitNative(/Replace the whole library/);
   await app.shot("import-dialog");
   await tapNative(/^OK$/);
@@ -283,14 +283,14 @@ async function foundryRelease(): Promise<Record<string, unknown>> {
 }
 
 /**
- * Home as Module Library settings: Release history allowed there; Back
+ * Home as Stagehand settings: Release history allowed there; Back
  * returns to the server's Setup. Returns that page found again (looking
  * for home may have needed a new connection).
  */
 export async function allowReleaseHistory(app: App, page: Page): Promise<Page> {
   await tab(page, /^Worlds/).click();
   await shell(page)
-    .getByRole("button", { name: /Module Library settings/ })
+    .getByRole("button", { name: /Stagehand settings/ })
     .click();
   const home = await app.pageAt(HOME);
   const release = home.getByRole("switch", { name: "Release history" });

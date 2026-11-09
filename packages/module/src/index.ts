@@ -37,13 +37,13 @@ async function start(): Promise<void> {
     now: () => new Date(),
   });
   if (result.handshake === "rejected")
-    ui.notifications.warn(game.i18n.localize("MODULE_LIBRARY.Outdated"));
+    ui.notifications.warn(game.i18n.localize("STAGEHAND.Outdated"));
   if (
     result.handshake === "none" &&
     game.settings.get(MODULE_ID, NOTICE_SETTING) !== true
   ) {
     // One-time, optional notice (C-1).
-    ui.notifications.info(game.i18n.localize("MODULE_LIBRARY.NoExtension"));
+    ui.notifications.info(game.i18n.localize("STAGEHAND.NoExtension"));
     await game.settings.set(MODULE_ID, NOTICE_SETTING, true);
   }
 }

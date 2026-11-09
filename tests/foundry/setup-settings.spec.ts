@@ -1,5 +1,5 @@
 // The settings panel (toolbar popup and options dialog), on the local
-// Foundry: it lists the server, Remove takes Module Library off it, adding
+// Foundry: it lists the server, Remove takes Stagehand off it, adding
 // it back by address restores it, and Setup's rail opens the panel. Ends
 // with the server added, as it began.
 import { expect, type Page, test } from "@playwright/test";
@@ -62,7 +62,7 @@ test("the panel lists the server, the Release history permission and the build",
   await audit(panel, "settings panel", ".mlp");
 });
 
-test("Remove takes Module Library off the server: Setup is Foundry's own again", async () => {
+test("Remove takes Stagehand off the server: Setup is Foundry's own again", async () => {
   await panel.getByRole("button", { name: `Remove ${HOST}` }).click();
   await expect(panel.getByText(/No servers yet/)).toBeVisible();
   await page.reload();
@@ -78,9 +78,7 @@ test("adding it back by address brings the new Setup page back", async () => {
 
 test("Setup's rail opens the settings panel", async () => {
   await panel.goto("about:blank");
-  await shell()
-    .getByRole("button", { name: "Module Library settings" })
-    .click();
+  await shell().getByRole("button", { name: "Stagehand settings" }).click();
   await waitForSettingsPanel(ext, page);
 });
 

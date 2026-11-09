@@ -58,9 +58,9 @@ describe("the Library page", () => {
   test("the filter narrows the cards", () => {
     const { container, getByRole } = library();
     fireEvent.input(getByRole("searchbox", { name: /Filter Modules/ }), {
-      target: { value: "module-lib" },
+      target: { value: "stageh" },
     });
-    expect(cards(container)).toEqual(["module-library"]);
+    expect(cards(container)).toEqual(["stagehand"]);
   });
 
   test("a group folds and says how many it holds", () => {
@@ -112,7 +112,7 @@ describe("the Library page", () => {
       }),
     );
     fireEvent.input(getByRole("searchbox", { name: /Filter Modules/ }), {
-      target: { value: "module-lib" },
+      target: { value: "stageh" },
     });
     expect(store.get().selection).toEqual([]);
   });

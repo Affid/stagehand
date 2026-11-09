@@ -49,7 +49,7 @@ export const History = () => (
   </Icon>
 );
 
-/** Module Library's mark: four books on a shelf. */
+/** Stagehand's mark: four books on a shelf. */
 export const Mark = () => (
   <span class="mlh-mark" aria-hidden="true">
     <i>

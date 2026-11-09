@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Module Library</string>
+    <string name="app_name">Stagehand</string>
     <string name="webview_missing_title">Android System WebView needs an update</string>
-    <string name="webview_missing_body">Module Library draws its Setup page with Android System WebView, and this version (%1$s) lacks what it needs. Update Android System WebView from the Play Store, then open Module Library again.</string>
+    <string name="webview_missing_body">Stagehand draws its Setup page with Android System WebView, and this version (%1$s) lacks what it needs. Update Android System WebView from the Play Store, then open Stagehand again.</string>
     <string name="webview_old_title">Android System WebView is out of date</string>
     <string name="webview_old_body">Foundry VTT 14 needs Android System WebView %1$d or newer; this phone has %2$s. Foundry may warn about it or misbehave until you update it from the Play Store.</string>
     <string name="webview_update">Update</string>
     <string name="webview_continue">Continue anyway</string>
     <string name="webview_unknown">unknown</string>
     <!-- A page's question, as a native dialog: the app and the server asking. -->
-    <string name="confirm_title">Module Library · %1$s</string>
+    <string name="confirm_title">Stagehand · %1$s</string>
     <string name="cert_title">Certificate not trusted</string>
-    <string name="cert_body">The server at %1$s uses a certificate this phone doesn\'t trust, often a self-signed one. Module Library doesn\'t open such servers yet: use the server\'s plain http address on your home network, or give it a certificate from a public authority.</string>
+    <string name="cert_body">The server at %1$s uses a certificate this phone doesn\'t trust, often a self-signed one. Stagehand doesn\'t open such servers yet: use the server\'s plain http address on your home network, or give it a certificate from a public authority.</string>
 </resources>

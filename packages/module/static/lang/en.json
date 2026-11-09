@@ -1,9 +1,9 @@
 {
-  "MODULE_LIBRARY": {
-    "NoExtension": "Module Library: no browser extension found. Install it to manage this world's modules from the Setup screen. This notice appears once.",
-    "Outdated": "Module Library: the companion module and the browser extension use different protocol versions. Update the older one.",
+  "STAGEHAND": {
+    "NoExtension": "Stagehand: no browser extension found. Install it to manage this world's modules from the Setup screen. This notice appears once.",
+    "Outdated": "Stagehand: the companion module and the browser extension use different protocol versions. Update the older one.",
     "Apply": {
-      "Title": "Module Library: apply module changes",
+      "Title": "Stagehand: apply module changes",
       "Intro": "Changes queued from the Setup screen for this world. Applying reloads the world once.",
       "Presets": "Presets",
       "NoChange": "No change: the world already matches.",
@@ -20,10 +20,10 @@
       "ApplyReload": "Apply & reload",
       "NotNow": "Not now",
       "Discard": "Discard",
-      "Cancelled": "Module Library: nothing was changed, because a queued change was cancelled on the Setup screen meanwhile.",
-      "Reviewed": "Module Library: applying the module changes you reviewed on the Setup screen. The world reloads once.",
-      "NeedConflictConsent": "Module Library: confirm the conflicts to apply, or choose Not now.",
-      "NeedDependentsChoice": "Module Library: choose to disable the dependent modules too, or choose Not now."
+      "Cancelled": "Stagehand: nothing was changed, because a queued change was cancelled on the Setup screen meanwhile.",
+      "Reviewed": "Stagehand: applying the module changes you reviewed on the Setup screen. The world reloads once.",
+      "NeedConflictConsent": "Stagehand: confirm the conflicts to apply, or choose Not now.",
+      "NeedDependentsChoice": "Stagehand: choose to disable the dependent modules too, or choose Not now."
     }
   }
 }

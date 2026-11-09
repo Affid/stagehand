@@ -10,7 +10,7 @@ const snap = {
   title: "Strahd",
   system: { id: "dnd5e", version: "5" },
   coreVersion: "14.369",
-  active: ["module-library", "c", "lib"].map((id) => ({
+  active: ["stagehand", "c", "lib"].map((id) => ({
     id,
     version: "1.0.0",
   })),

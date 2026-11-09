@@ -96,7 +96,7 @@ class MainActivity : ComponentActivity(), AppHost {
     private var started = false
     private var clearHistoryOnFinish = false
     private var backBusy = false
-    /** Home opened over a server (Module Library settings): Back returns there. */
+    /** Home opened over a server (Stagehand settings): Back returns there. */
     private var homeOverServer = false
     private var lastBackClaimedAt = Long.MIN_VALUE / 2
     /** Back pressed again while Setup was being asked: it goes on once asked. */
@@ -215,7 +215,7 @@ class MainActivity : ComponentActivity(), AppHost {
         server.importantForAutofill = autofillFor(screen == Screen.SERVER)
     }
 
-    /** Home as Module Library settings, from a server's Setup (home.open). */
+    /** Home as Stagehand settings, from a server's Setup (home.open). */
     fun showSettings() {
         if (!started) return
         showHome()

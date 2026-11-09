@@ -8,11 +8,13 @@ import {
   PresetSchema,
 } from "./schema.ts";
 
-const FORMAT = "module-library";
+const FORMAT = "stagehand";
+/** Exports made before the rename to Stagehand still import. */
+const LEGACY_FORMAT = "module-library";
 const FORMAT_VERSION = 1;
 
 const Header = z.object({
-  format: z.literal(FORMAT),
+  format: z.enum([FORMAT, LEGACY_FORMAT]),
   kind: z.enum(["library", "preset"]),
   formatVersion: z.number().int().positive(),
   exportedAt: z.string(),
@@ -97,11 +99,11 @@ function parseFile<S extends z.ZodType>(
   }
   const head = Header.safeParse(json);
   if (!head.success)
-    return { ok: false, error: "The file is not a Module Library export." };
+    return { ok: false, error: "The file is not a Stagehand export." };
   if (head.data.formatVersion > FORMAT_VERSION)
     return {
       ok: false,
-      error: "The file comes from a newer version of Module Library.",
+      error: "The file comes from a newer version of Stagehand.",
     };
   const parsed = schema.safeParse(json);
   if (!parsed.success)

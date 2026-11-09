@@ -49,7 +49,7 @@ const activeModules = (p: Page): Promise<string[]> =>
 const shell = (): Locator => page.locator("#ml-shell-root");
 const banner = (): Locator => shell().locator(".mls-banner");
 const inWorldDialog = (p: Page): Locator =>
-  p.locator("dialog.application", { hasText: "Module Library" });
+  p.locator("dialog.application", { hasText: "Stagehand" });
 const flip = (id: string): Promise<void> =>
   shell()
     .locator(`.mlw-card[data-module="${id}"] input[role="switch"]`)

@@ -18,7 +18,7 @@ export const snapshot = (over: Partial<Snapshot> = {}): Snapshot => ({
   system: { id: "dnd5e", version: "5" },
   coreVersion: "14.369",
   active: [
-    { id: "module-library", version: "0.1.0" },
+    { id: "stagehand", version: "0.1.0" },
     { id: "b", version: "1.0.0" },
   ],
   companionVersion: "0.1.0",

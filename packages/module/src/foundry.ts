@@ -1,7 +1,7 @@
 // The parts of Foundry's client API this module uses, typed narrowly, and
 // the one place that reads Foundry's globals.
 
-export const MODULE_ID = "module-library";
+export const MODULE_ID = "stagehand";
 
 export interface FoundryModule {
   readonly id: string;

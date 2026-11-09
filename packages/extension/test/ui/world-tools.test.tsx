@@ -50,7 +50,7 @@ const BACKUPS: BackupInfo[] = [
 
 function page(over: Partial<SetupState> = {}, backups = BACKUPS) {
   const data: Partial<SetupState> = {
-    snapshots: { w1: snap(["module-library", "a"]) },
+    snapshots: { w1: snap(["stagehand", "a"]) },
     ...over,
   };
   const r = renderUi("shell", {
@@ -126,7 +126,7 @@ describe("a group's actions", () => {
 
   test("Turn all off leaves the companion on", async () => {
     const { container, getByRole, send } = page({
-      snapshots: { w1: snap(["module-library", "a", "lib"]) },
+      snapshots: { w1: snap(["stagehand", "a", "lib"]) },
     });
     const unfiled = [...container.querySelectorAll(".mlw-sec")].at(-1);
     if (!unfiled) throw new Error("no unfiled group");

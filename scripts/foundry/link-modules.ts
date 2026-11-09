@@ -9,7 +9,7 @@ const modulesDir = join(loadFoundryEnv().dataDir, "Data", "modules");
 const fixturesDir = join(ROOT, "fixtures", "modules");
 
 const links: readonly (readonly [string, string])[] = [
-  ["module-library", join(ROOT, "packages", "module", "dist")],
+  ["stagehand", join(ROOT, "packages", "module", "dist")],
   ...(await readdir(fixturesDir)).map(
     (id) => [id, join(fixturesDir, id)] as const,
   ),

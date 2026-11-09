@@ -1,4 +1,4 @@
-// Module Library's settings, as one small panel: the toolbar popup over any
+// Stagehand's settings, as one small panel: the toolbar popup over any
 // page, and the browser's options dialog. This site (on a Foundry page),
 // servers, Release history's permission, the build.
 import { useEffect, useState } from "preact/hooks";

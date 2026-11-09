@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Module Library (docs/ANDROID-APP-PLAN.md, "Security"): one activity, the
+  Stagehand (docs/ANDROID-APP-PLAN.md, "Security"): one activity, the
   launcher's; it takes no address from an intent. No backup or device
   transfer of the library or the admin session (dataExtractionRules).
   Plain http allowed for Foundry on a home network; only the system's

@@ -44,7 +44,7 @@ async function stays(still: Locator, act: () => Promise<void>): Promise<void> {
 }
 
 async function seedSnapshot(): Promise<void> {
-  const active = ["module-library", "ml-fixture-lib"].map((m) => ({
+  const active = ["stagehand", "ml-fixture-lib"].map((m) => ({
     id: m,
     version: "1.0.0",
   }));

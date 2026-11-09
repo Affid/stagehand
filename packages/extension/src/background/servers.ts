@@ -85,7 +85,7 @@ const FOUNDRY_PAGE = /\/(setup|join|game|auth|players|license)$/;
 /**
  * The Foundry server a page belongs to, read from its address alone: an
  * http(s) page ending in one of Foundry's pages, with any route prefix kept
- * (settings panel: "Use Module Library here").
+ * (settings panel: "Use Stagehand here").
  */
 export function foundryServerOfPage(pageUrl: string): ServerId | undefined {
   let url: URL;

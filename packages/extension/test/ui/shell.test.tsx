@@ -193,7 +193,7 @@ describe("the worlds rail", () => {
             title: "New One",
             system: { id: "dnd5e", version: "5" },
             coreVersion: "14.370",
-            active: ["module-library", "c", "lib"].map((id) => ({
+            active: ["stagehand", "c", "lib"].map((id) => ({
               id,
               version: "1.0.0",
             })),
@@ -324,12 +324,12 @@ describe("a world's page", () => {
 
   test("the rail's foot names the extension's build", () => {
     const { container } = shell();
-    expect(el(container, ".mls-build").textContent).toBe("Module Library dev");
+    expect(el(container, ".mls-build").textContent).toBe("Stagehand dev");
   });
 
-  test("the rail's foot opens Module Library's settings panel", async () => {
+  test("the rail's foot opens Stagehand's settings panel", async () => {
     const r = shell();
-    fireEvent.click(r.getByRole("button", { name: "Module Library settings" }));
+    fireEvent.click(r.getByRole("button", { name: "Stagehand settings" }));
     await waitFor(() => {
       expect(sent(r.send)).toContainEqual({ kind: "open-settings" });
     });

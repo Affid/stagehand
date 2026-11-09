@@ -1,7 +1,7 @@
 // Messages between the companion module (page JavaScript), the extension's
 // content scripts and its background. Data only: nothing here is executed.
 
-export const NS = "module-library";
+export const NS = "stagehand";
 export const PROTOCOL_VERSIONS: readonly number[] = [1];
 
 /** Who posted a message: each side ignores its own posts on `window`. */

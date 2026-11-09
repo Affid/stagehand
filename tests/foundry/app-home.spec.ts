@@ -59,7 +59,7 @@ test("the home screen lists the server, Release history and the build", async ()
   await audit(home, "app home screen", ".mlp");
 });
 
-test("Remove takes Module Library off the server: Setup is Foundry's own again", async () => {
+test("Remove takes Stagehand off the server: Setup is Foundry's own again", async () => {
   await home.getByRole("button", { name: `Remove ${HOST}` }).click();
   await expect(home.getByText(/No servers yet/)).toBeVisible();
   expect([...app.native.origins]).toEqual([]);
@@ -137,8 +137,6 @@ test("on a site that isn't saved there is no bridge, and native refuses", async 
 
 test("Setup's rail opens the home screen", async () => {
   const before = app.native.homeOpens;
-  await shell()
-    .getByRole("button", { name: "Module Library settings" })
-    .click();
+  await shell().getByRole("button", { name: "Stagehand settings" }).click();
   await expect.poll(() => app.native.homeOpens).toBe(before + 1);
 });

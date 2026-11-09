@@ -48,7 +48,7 @@ const cmd = (modules: string[]): Command => ({
 
 function world(over: Partial<SetupState> = {}) {
   const data: Partial<SetupState> = {
-    snapshots: { w1: snap(["module-library", "a"]) },
+    snapshots: { w1: snap(["stagehand", "a"]) },
     ...over,
   };
   const r = renderUi("shell", {

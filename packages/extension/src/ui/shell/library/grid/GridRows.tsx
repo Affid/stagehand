@@ -5,6 +5,7 @@ import type { PackageInfo } from "@module-library/shared/package";
 import type { WorldInfo } from "@module-library/shared/world";
 import { useUi } from "../../../context.ts";
 import type { LibGroup } from "../../../model/library-groups.ts";
+import { COMPANION_ID } from "../../../model/preview.ts";
 import { useTurnable, useTurnAll } from "../../world/turn-all.ts";
 import type { Folding, Models, WorldRows } from "./types.ts";
 
@@ -32,7 +33,7 @@ function Cell(props: {
         role="switch"
         class="mls-switch"
         checked={row.next}
-        disabled={!canChange || props.pkg.id === "module-library"}
+        disabled={!canChange || props.pkg.id === COMPANION_ID}
         aria-label={t("wp.switch", {
           module: props.pkg.title,
           world: props.world.title,

@@ -52,7 +52,7 @@ test.afterAll(async () => {
 
 test("every installed module shows as a card", async () => {
   await expect(card("ml-fixture-a")).toBeVisible();
-  await expect(card("module-library")).toContainText("in no world");
+  await expect(card("stagehand")).toContainText("in no world");
   await page.screenshot({ path: `${SCREENS}/library-cards.png` });
 });
 

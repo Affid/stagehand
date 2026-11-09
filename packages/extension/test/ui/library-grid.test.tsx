@@ -39,8 +39,8 @@ function grid(over: Partial<SetupState> = {}) {
         }
       : undefined,
     snapshots: {
-      w1: snap("w1", ["module-library", "a"]),
-      w2: snap("w2", ["module-library"]),
+      w1: snap("w1", ["stagehand", "a"]),
+      w2: snap("w2", ["stagehand"]),
     },
     ...over,
   };
@@ -247,13 +247,13 @@ describe("the grid's extras (6c2)", () => {
       "turns on at the next launch",
     );
     fireEvent.input(r.getByRole("searchbox", { name: "Filter modules" }), {
-      target: { value: "module-lib" },
+      target: { value: "stageh" },
     });
     const rows = [
       ...r.container.querySelectorAll(".mll-grid tbody tr[data-module]"),
     ];
     expect(new Set(rows.map((x) => x.getAttribute("data-module")))).toEqual(
-      new Set(["module-library"]),
+      new Set(["stagehand"]),
     );
   });
 });
@@ -266,11 +266,11 @@ describe("group counts (package 6 review)", () => {
         ...base.setup,
         worlds: [world("w2", "Vaults")],
         modules: [
-          base.setup.modules.find((m) => m.id === "module-library")!,
+          base.setup.modules.find((m) => m.id === "stagehand")!,
           pkg("needy", { requires: [{ id: "missing", type: "module" }] }),
         ],
       },
-      snapshots: { w2: snap("w2", ["module-library"]) },
+      snapshots: { w2: snap("w2", ["stagehand"]) },
     });
     const [count] = r
       .getAllByRole("button", { name: /Vaults/ })
@@ -304,7 +304,7 @@ describe("a change made outside the world's page that breaks it (Phase 6)", () =
       setup: base.setup
         ? { ...base.setup, worlds: [world("w1", "Strahd")] }
         : undefined,
-      snapshots: { w1: snap("w1", ["module-library", "c", "lib"]) },
+      snapshots: { w1: snap("w1", ["stagehand", "c", "lib"]) },
     };
     let queued = false;
     const r = renderUi("shell", {

@@ -133,7 +133,7 @@ test("intake: a new module offers only its worlds at first, the rest one click a
       title: id,
       system: { id: "dnd5e", version: "1" },
       coreVersion: "14.370",
-      active: [{ id: "module-library", version: "1.0.0" }],
+      active: [{ id: "stagehand", version: "1.0.0" }],
       companionVersion: "0.1.0",
       takenAt: now,
     };

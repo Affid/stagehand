@@ -64,17 +64,42 @@ describe("saving a world through Foundry", () => {
       action: "editWorld",
       id: "w",
       nextSession: "2026-11-10T18:00:00.000Z",
-      flags: { "module-library": { schedule } },
+      flags: { stagehand: { schedule } },
     });
     await saveWorld(f.page, "w", { schedule: null });
     expect(f.post).toHaveBeenLastCalledWith({
       action: "editWorld",
       id: "w",
-      flags: { "module-library": { "-=schedule": null } },
+      flags: { stagehand: { "-=schedule": null } },
     });
     // The client's copy drops it too: merging the answer alone keeps it.
     expect(f.world.updateSource).toHaveBeenCalledWith({
-      flags: { "module-library": { "-=schedule": null } },
+      flags: { stagehand: { "-=schedule": null } },
+    });
+  });
+
+  test("a save moves a schedule from before the rename under the new name", async () => {
+    const f = foundry();
+    const schedule = {
+      start: "2026-12-01",
+      time: "19:00",
+      tz: "UTC",
+      freq: "dates" as const,
+      skips: [],
+      dates: { "2026-12-01": "19:00" },
+    };
+    Object.assign(f.world, {
+      flags: {
+        "module-library": {
+          schedule: { ...schedule, dates: { "2026-12-08": "19:00" } },
+        },
+      },
+    });
+    await saveWorld(f.page, "w", { schedule });
+    expect(f.post).toHaveBeenLastCalledWith({
+      action: "editWorld",
+      id: "w",
+      flags: { stagehand: { schedule }, "-=module-library": null },
     });
   });
 
@@ -89,7 +114,7 @@ describe("saving a world through Foundry", () => {
       dates: { "2026-12-01": "19:00", "2026-12-08": "19:00" },
     };
     Object.assign(f.world, {
-      flags: { "module-library": { schedule: stored } },
+      flags: { stagehand: { schedule: stored } },
     });
     await saveWorld(f.page, "w", {
       schedule: { ...stored, dates: { "2026-12-01": "19:00" } },
@@ -98,7 +123,7 @@ describe("saving a world through Foundry", () => {
       action: "editWorld",
       id: "w",
       flags: {
-        "module-library": {
+        stagehand: {
           schedule: {
             ...stored,
             dates: { "2026-12-01": "19:00", "-=2026-12-08": null },
@@ -119,7 +144,7 @@ describe("saving a world through Foundry", () => {
     expect(f.post).toHaveBeenLastCalledWith(
       expect.objectContaining({
         flags: {
-          "module-library": {
+          stagehand: {
             schedule: expect.objectContaining({ "-=dates": null }) as unknown,
           },
         },

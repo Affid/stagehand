@@ -7,7 +7,7 @@ import { loadFoundryEnv } from "../../../scripts/foundry/env.ts";
 import { createAdminClient, hasActiveWorld } from "../../../scripts/foundry/admin.ts";
 
 const OUT = new URL("../out/shots", import.meta.url).pathname;
-const NOTE = "Module Library spike: safe to delete";
+const NOTE = "Stagehand spike: safe to delete";
 const env = loadFoundryEnv();
 const api = await createAdminClient(env.url);
 if (await hasActiveWorld(api)) throw new Error("A world is running; leaving it alone.");

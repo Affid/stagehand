@@ -22,7 +22,7 @@ export interface ApplyDeps {
 export type Outcome =
   "applied" | "unchanged" | "later" | "discarded" | "blocked" | "cancelled";
 
-const K = "MODULE_LIBRARY.Apply";
+const K = "STAGEHAND.Apply";
 
 /** Acknowledges every command; true only if the extension accepted all. */
 async function ackAll(

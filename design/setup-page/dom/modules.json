@@ -2,23 +2,23 @@
  {
   "id": "ml-fixture-a",
   "title": "ML Fixture: A (requires library)",
-  "shortDesc": "Test fixture for Module Library. Does nothing.",
-  "description": "Test fixture for Module Library. Does nothing.",
-  "tagsRight": "<span class=\"tag flexrow\" data-tooltip-html=\"Module Library tests\" data-locked=\"\"><i class=\"fa-solid fa-user fa-fw\" inert=\"\"></i></span> <span class=\"tag flexrow badge success\" data-tooltip-html=\"Package is verified for this version of Foundry\"> <i class=\"fa-solid fa-code-branch fa-fw\" inert=\"\"></i> 1.0.0 </span>"
+  "shortDesc": "Test fixture for Stagehand. Does nothing.",
+  "description": "Test fixture for Stagehand. Does nothing.",
+  "tagsRight": "<span class=\"tag flexrow\" data-tooltip-html=\"Stagehand tests\" data-locked=\"\"><i class=\"fa-solid fa-user fa-fw\" inert=\"\"></i></span> <span class=\"tag flexrow badge success\" data-tooltip-html=\"Package is verified for this version of Foundry\"> <i class=\"fa-solid fa-code-branch fa-fw\" inert=\"\"></i> 1.0.0 </span>"
  },
  {
   "id": "ml-fixture-b",
   "title": "ML Fixture: B (conflicts with A)",
-  "shortDesc": "Test fixture for Module Library. Does nothing.",
-  "description": "Test fixture for Module Library. Does nothing.",
-  "tagsRight": "<span class=\"tag flexrow\" data-tooltip-html=\"Module Library tests\" data-locked=\"\"><i class=\"fa-solid fa-user fa-fw\" inert=\"\"></i></span> <span class=\"tag flexrow badge success\" data-tooltip-html=\"Package is verified for this version of Foundry\"> <i class=\"fa-solid fa-code-branch fa-fw\" inert=\"\"></i> 1.0.0 </span>"
+  "shortDesc": "Test fixture for Stagehand. Does nothing.",
+  "description": "Test fixture for Stagehand. Does nothing.",
+  "tagsRight": "<span class=\"tag flexrow\" data-tooltip-html=\"Stagehand tests\" data-locked=\"\"><i class=\"fa-solid fa-user fa-fw\" inert=\"\"></i></span> <span class=\"tag flexrow badge success\" data-tooltip-html=\"Package is verified for this version of Foundry\"> <i class=\"fa-solid fa-code-branch fa-fw\" inert=\"\"></i> 1.0.0 </span>"
  },
  {
   "id": "ml-fixture-lib",
   "title": "ML Fixture: library",
-  "shortDesc": "Test fixture for Module Library. Does nothing.",
-  "description": "Test fixture for Module Library. Does nothing.",
-  "tagsRight": "<span class=\"tag flexrow\" data-tooltip-html=\"Module Library tests\" data-locked=\"\"><i class=\"fa-solid fa-user fa-fw\" inert=\"\"></i></span> <span class=\"tag flexrow badge success\" data-tooltip-html=\"Package is verified for this version of Foundry\"> <i class=\"fa-solid fa-code-branch fa-fw\" inert=\"\"></i> 1.0.0 </span>"
+  "shortDesc": "Test fixture for Stagehand. Does nothing.",
+  "description": "Test fixture for Stagehand. Does nothing.",
+  "tagsRight": "<span class=\"tag flexrow\" data-tooltip-html=\"Stagehand tests\" data-locked=\"\"><i class=\"fa-solid fa-user fa-fw\" inert=\"\"></i></span> <span class=\"tag flexrow badge success\" data-tooltip-html=\"Package is verified for this version of Foundry\"> <i class=\"fa-solid fa-code-branch fa-fw\" inert=\"\"></i> 1.0.0 </span>"
  },
  {
   "id": "modular-av",
@@ -127,9 +127,9 @@
  },
  {
   "id": "module-library",
-  "title": "Module Library",
-  "shortDesc": "Companion for the Module Library browser extension.",
-  "description": "Companion for the Module Library browser extension.",
-  "tagsRight": "<span class=\"tag flexrow\" data-tooltip-html=\"Module Library\" data-locked=\"\"><i class=\"fa-solid fa-user fa-fw\" inert=\"\"></i></span> <span class=\"tag flexrow languages\" data-tooltip=\"\" aria-label=\"Localization\"><i class=\"fa-solid fa-language fa-fw\" inert=\"\"></i></span> <span class=\"tag flexrow badge success\" data-tooltip-html=\"Package is verified for this version of Foundry\"> <i class=\"fa-solid fa-code-branch fa-fw\" inert=\"\"></i> 0.1.0 </span>"
+  "title": "Stagehand",
+  "shortDesc": "Companion for the Stagehand browser extension.",
+  "description": "Companion for the Stagehand browser extension.",
+  "tagsRight": "<span class=\"tag flexrow\" data-tooltip-html=\"Stagehand\" data-locked=\"\"><i class=\"fa-solid fa-user fa-fw\" inert=\"\"></i></span> <span class=\"tag flexrow languages\" data-tooltip=\"\" aria-label=\"Localization\"><i class=\"fa-solid fa-language fa-fw\" inert=\"\"></i></span> <span class=\"tag flexrow badge success\" data-tooltip-html=\"Package is verified for this version of Foundry\"> <i class=\"fa-solid fa-code-branch fa-fw\" inert=\"\"></i> 0.1.0 </span>"
  }
 ]

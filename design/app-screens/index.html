@@ -205,7 +205,7 @@ function editSheet() {
   const s = SERVERS[S.edit];
   if (S.removing) return `<div class="scrim" data-act="close"></div><div class="sheet" role="dialog" aria-label="Remove ${s.name}">
     <span class="grab"></span><h2>Remove ${s.name}?</h2>
-    <p>Module Library stops opening ${host(s.addr)}. Its library (folders, tags, presets) stays in this app, for when you add the server again; nothing on the server changes.</p>
+    <p>Stagehand stops opening ${host(s.addr)}. Its library (folders, tags, presets) stays in this app, for when you add the server again; nothing on the server changes.</p>
     <button class="btn wide" style="border-color:#8a3a2a;color:#ffb39e" data-act="removed">Remove</button>
     <button class="btn ghost wide" data-act="close">Cancel</button></div>`;
   const scheme = s.addr.startsWith("https") ? "https" : "http";
@@ -223,13 +223,13 @@ function editSheet() {
 
 function homeA() {
   const list = S.hv === "empty"
-    ? `<div class="card empty"><h2>Your Foundry servers</h2><p>Add the address you open Foundry at, for example 192.168.1.20:30000. Module Library then shows its own Setup page there.</p></div>`
+    ? `<div class="card empty"><h2>Your Foundry servers</h2><p>Add the address you open Foundry at, for example 192.168.1.20:30000. Stagehand then shows its own Setup page there.</p></div>`
     : `<div class="eyebrow">Servers</div>${SERVERS.map(serverCard).join("")}<p style="margin:0 4px;font-size:12px;color:#8e869c">Tap a server to open it; ⋮ to rename it, change its address or remove it.</p>`;
-  return `<header class="top">${MARK}<h1>Module Library</h1><span class="sp"></span><button class="ibtn" aria-label="More">${ICON.dots}</button></header>
+  return `<header class="top">${MARK}<h1>Stagehand</h1><span class="sp"></span><button class="ibtn" aria-label="More">${ICON.dots}</button></header>
   <div class="body">${list}
     <div class="eyebrow" style="margin-top:6px">Settings</div>
     <div class="card"><div class="row"><span class="chev" style="color:var(--app-warm-2)">${ICON.history}</span><span class="tx"><b>Release history</b><span>The Update page reads Foundry's public release notes at foundryvtt.com.</span></span><button class="switch" role="switch" aria-checked="${S.history}" data-act="history" aria-label="Release history"></button></div></div>
-    <div class="foot">Module Library 0.2.0 · build 61457e0</div>
+    <div class="foot">Stagehand 0.2.0 · build 61457e0</div>
   </div>
   <div class="dock"><button class="btn bright wide" data-act="add">${ICON.plus}Add a server</button></div>`;
 }
@@ -237,13 +237,13 @@ function homeA() {
 function homeB() {
   const rows = S.hv === "empty" ? `<div class="row"><span class="tx"><b>No servers yet</b><span>Add the address you open Foundry at.</span></span></div>` :
     SERVERS.map((s) => `<button class="row" style="width:100%;background:transparent;border:0;color:inherit;font:inherit;text-align:left;cursor:pointer" data-go="login"><span class="tx"><b>${s.name}</b><span>${host(s.addr)} · ${s.last}</span></span>${s.plain ? `<span class="chip plain">${ICON.unlock}http</span>` : `<span class="chip ok">${ICON.lock}https</span>`}<span class="chev">${ICON.chev}</span></button>`).join("");
-  return `<header class="top">${MARK}<h1>Module Library</h1></header>
+  return `<header class="top">${MARK}<h1>Stagehand</h1></header>
   <div class="body">
     <div class="eyebrow">Servers</div>
     <div class="card">${rows}<button class="row" style="width:100%;background:transparent;border:0;border-top:1px solid var(--app-line);color:var(--app-warm-2);font:inherit;font-weight:600;cursor:pointer" data-act="add">${ICON.plus}<span class="tx">Add a server</span></button></div>
     <div class="eyebrow">Foundry</div>
     <div class="card"><div class="row"><span class="tx"><b>Release history</b><span>Read release notes from foundryvtt.com</span></span><button class="switch" role="switch" aria-checked="${S.history}" data-act="history" aria-label="Release history"></button></div>
-      <div class="row"><span class="tx"><b>About Module Library</b><span>Version 0.2.0 · build 61457e0</span></span><span class="chev">${ICON.chev}</span></div></div>
+      <div class="row"><span class="tx"><b>About Stagehand</b><span>Version 0.2.0 · build 61457e0</span></span><span class="chev">${ICON.chev}</span></div></div>
   </div>`;
 }
 

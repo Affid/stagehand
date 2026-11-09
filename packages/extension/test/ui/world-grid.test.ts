@@ -27,7 +27,7 @@ const snap = (id: string) => ({
   title: id,
   system: { id: "dnd5e", version: "5" },
   coreVersion: "14.369",
-  active: [{ id: "module-library", version: "1" }],
+  active: [{ id: "stagehand", version: "1" }],
   companionVersion: "0.1.0",
   takenAt: ago(1),
 });

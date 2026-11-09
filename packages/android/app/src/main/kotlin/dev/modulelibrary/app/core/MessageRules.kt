@@ -19,7 +19,7 @@ enum class BackAction { NONE, HISTORY, HOME, SERVER, EXIT }
 /**
  * Android's Back: on a server, Setup's own Back first, then the history,
  * then home; on home, its open sheet first, then back to the server when
- * home was opened over it (Module Library settings), else out of the app.
+ * home was opened over it (Stagehand settings), else out of the app.
  * On a server, a second press soon after one the page claimed goes on
  * regardless: a page that claims every press can't keep the user in
  * (security review). Home is the app's own page, so its claims count.

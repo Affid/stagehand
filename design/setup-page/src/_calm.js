@@ -222,9 +222,9 @@ A.news = (...a) => (CALM ? A.newsstep(1) : plainNewsAct(...a));
 /** A world without the companion: we can't see its modules, so say so and show the one-time setup. */
 function companionMissing(w) {
   return `<div class="mlw-empty"><i class="fa-solid fa-puzzle-piece"></i>
-    <h3>Module Library isn't set up in ${esc(w.title)} yet</h3>
+    <h3>Stagehand isn't set up in ${esc(w.title)} yet</h3>
     <p>Until its companion module is on, we can't see or change this world's modules. It takes one launch:</p>
-    <ol><li>Launch ${esc(w.title)}.</li><li>Open <b>Manage Modules</b>, turn on <b>Module Library</b> and save.</li><li>Come back here: its modules show up, ready to change.</li></ol>
+    <ol><li>Launch ${esc(w.title)}.</li><li>Open <b>Manage Modules</b>, turn on <b>Stagehand</b> and save.</li><li>Come back here: its modules show up, ready to change.</li></ol>
     <button type="button" class="bright" data-act="launch"><i class="fa-solid fa-play"></i>Launch to set it up</button>
     <p class="ml-muted">Its About and Backups tabs work already.</p></div>`;
 }

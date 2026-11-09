@@ -79,7 +79,7 @@ export async function recordCompanion(page: Page): Promise<void> {
     (window as unknown as { __mlSeen: string[] }).__mlSeen = seen;
     window.addEventListener("message", (e: MessageEvent) => {
       const d = e.data as { ns?: string; type?: string } | null;
-      if (d?.ns === "module-library" && d.type) seen.push(d.type);
+      if (d?.ns === "stagehand" && d.type) seen.push(d.type);
     });
   });
 }

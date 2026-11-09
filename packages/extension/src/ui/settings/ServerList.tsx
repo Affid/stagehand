@@ -1,4 +1,4 @@
-// The servers Module Library runs on, each with Remove, and adding one by
+// The servers Stagehand runs on, each with Remove, and adding one by
 // its address.
 import { useState } from "preact/hooks";
 import { normalizeServerUrl } from "../../background/servers.ts";

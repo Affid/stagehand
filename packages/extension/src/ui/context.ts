@@ -27,7 +27,7 @@ export interface Ui extends UiDeps {
 
 export function useUi(): Ui {
   const deps = useContext(UiContext);
-  if (!deps) throw new Error("Module Library UI used outside its provider");
+  if (!deps) throw new Error("Stagehand UI used outside its provider");
   const state = useStore(deps.store);
   const canChange = state.data.adminVerified && allowsChanges(state.adapter);
   return { ...deps, state, canChange };

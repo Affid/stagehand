@@ -48,7 +48,7 @@ const snapshot = {
   title: TEST_WORLD.title,
   system: { id: TEST_WORLD.system, version: "1" },
   coreVersion: "14.370",
-  active: ["module-library", "ml-fixture-lib"].map((id) => ({
+  active: ["stagehand", "ml-fixture-lib"].map((id) => ({
     id,
     version: "1.0.0",
   })),

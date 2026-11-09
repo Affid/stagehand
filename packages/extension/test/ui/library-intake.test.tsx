@@ -59,7 +59,7 @@ describe("new installs", () => {
   test("Sort them: folder, tags and worlds for each, Done, Done with all", async () => {
     const r = library({
       fresh: ["b", "c"],
-      snapshots: { w1: snap(["module-library"]) },
+      snapshots: { w1: snap(["stagehand"]) },
     });
     fireEvent.click(r.getByRole("button", { name: "Sort them" }));
     const p = panel(r);

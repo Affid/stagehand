@@ -94,7 +94,7 @@ export function setupState(over: Partial<SetupState> = {}): SetupState {
         pkg("b", { compatibility: { minimum: "12", verified: "13" } }),
         pkg("c", { requires: [{ id: "lib", type: "module" }] }),
         pkg("lib", { library: true }),
-        pkg("module-library"),
+        pkg("stagehand"),
       ],
       systems: [
         {

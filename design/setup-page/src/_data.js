@@ -11,7 +11,7 @@ const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<
 
 const CAPTURED = /*MODULES_JSON*/[];
 
-const AUTHOR_OF = (id) => (id.startsWith("ml-fixture") ? "Module Library tests" : id === "module-library" ? "Module Library" : "Andrei Fedorov");
+const AUTHOR_OF = (id) => (id.startsWith("ml-fixture") ? "Stagehand tests" : id === "module-library" ? "Stagehand" : "Andrei Fedorov");
 
 const EXTRA = [
   ["lib-wrapper", "libWrapper", "Rui Pinheiro", "Library for wrapping core Foundry VTT methods.", { lib: 1 }],
@@ -142,7 +142,7 @@ const PRESETS = FIRST_RUN ? [] : [
   { id: "rack", name: "Full audio rack", desc: "Every audio effect, for horror one-shots", modules: ["modular-av-audio-mixer", "modular-av-audio-echo", "modular-av-audio-eq", "modular-av-audio-radio", "modular-av-audio-reverb"] },
   { id: "bench", name: "Fixture test bench", desc: "Dependency and conflict checks", modules: ["ml-fixture-a", "ml-fixture-lib", "module-library"] },
 ];
-const WORLDS = ["Curse of Strahd", "Module Library test", "Dragon Heist", "Abomination Vaults", "One-shot: Heist Night"];
+const WORLDS = ["Curse of Strahd", "Stagehand test", "Dragon Heist", "Abomination Vaults", "One-shot: Heist Night"];
 
 const folderOf = (id) => FOLDERS.find((f) => f.id === FOLDER_OF[id]) ?? null;
 const tagsOf = (id) => (TAGS_OF[id] ?? []).map((t) => TAGS.find((x) => x.id === t)).filter(Boolean);

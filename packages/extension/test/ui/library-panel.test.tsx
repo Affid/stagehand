@@ -25,7 +25,7 @@ const snap = (worldId: string, active: string[]): Snapshot => ({
 
 function open(over: Partial<SetupState> = {}) {
   const data: Partial<SetupState> = {
-    snapshots: { w1: snap("w1", ["module-library", "a"]) },
+    snapshots: { w1: snap("w1", ["stagehand", "a"]) },
     ...over,
   };
   const full = setupState(data);
@@ -222,12 +222,12 @@ describe("a module's details", () => {
 
   test("the companion can't be switched off from here", () => {
     const r = renderUi("shell", {
-      data: { snapshots: { w1: snap("w1", ["module-library", "a"]) } },
+      data: { snapshots: { w1: snap("w1", ["stagehand", "a"]) } },
       state: { route: { kind: "library" } },
     });
-    fireEvent.click(r.getByRole("button", { name: "Title module-library" }));
+    fireEvent.click(r.getByRole("button", { name: "Title stagehand" }));
     const panel = r.getByRole("complementary", {
-      name: "Title module-library",
+      name: "Title stagehand",
     });
     expect(
       within(panel).getByRole<HTMLInputElement>("switch", {

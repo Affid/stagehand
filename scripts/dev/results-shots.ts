@@ -106,7 +106,7 @@ async function protoShots(): Promise<void> {
 async function seed(ext: LoadedExtension, url: string): Promise<void> {
   await ext.worker.evaluate(
     async ([k, id, title, now]) => {
-      const active = ["module-library", "ml-fixture-lib", "ml-fixture-a"].map(
+      const active = ["stagehand", "ml-fixture-lib", "ml-fixture-a"].map(
         (m) => ({ id: m, version: "1.0.0" }),
       );
       const snap = {

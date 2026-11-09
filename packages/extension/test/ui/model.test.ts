@@ -116,7 +116,7 @@ const snapshot = (over: Partial<Snapshot> = {}): Snapshot => ({
   title: "W1",
   system: { id: "dnd5e", version: "5.1.0" },
   coreVersion: "14.369",
-  active: [{ id: "module-library", version: "0.1.0" }],
+  active: [{ id: "stagehand", version: "0.1.0" }],
   companionVersion: "0.1.0",
   takenAt: "2026-11-05T10:00:00.000Z",
   ...over,
@@ -142,7 +142,7 @@ const state = (over: Partial<SetupState> = {}): SetupState => ({
     core: { version: "14.369", generation: 14, build: 369 },
     isAdmin: true,
     lang: "en",
-    modules: [...modules, pkg("module-library")],
+    modules: [...modules, pkg("stagehand")],
     systems: [],
     worlds: [
       {
@@ -239,7 +239,7 @@ describe("previewApply (P-4)", () => {
       removeDependents: false,
     });
     expect(preview.warnings).toEqual(["no-snapshot"]);
-    expect(preview.plan?.start).toEqual(["module-library"]);
+    expect(preview.plan?.start).toEqual(["stagehand"]);
   });
 
   test("uses the world's own core version (V-7)", () => {
@@ -261,7 +261,7 @@ describe("previewApply (P-4)", () => {
         ...state().setup!,
         modules: [
           ...modules,
-          pkg("module-library"),
+          pkg("stagehand"),
           pkg("v15", { compatibility: { minimum: "15" } }),
         ],
       },
@@ -327,7 +327,7 @@ describe("next launch: queued changes combine (P-6)", () => {
       "b",
       "lib",
       "lib-user",
-      "module-library",
+      "stagehand",
     ]);
   });
 

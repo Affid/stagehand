@@ -56,7 +56,7 @@ test("Export saves the library through native's file picker", async () => {
   await transfer("Export the library");
   await expect.poll(() => app.native.saved.length).toBe(1);
   const [file] = app.native.saved;
-  expect(file?.fileName).toMatch(/^module-library-\d{4}-\d{2}-\d{2}\.json$/);
+  expect(file?.fileName).toMatch(/^stagehand-\d{4}-\d{2}-\d{2}\.json$/);
   expect(JSON.parse(file?.text ?? "")).toHaveProperty("library");
 });
 

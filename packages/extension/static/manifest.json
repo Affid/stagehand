@@ -1,12 +1,12 @@
 {
   "manifest_version": 3,
-  "name": "Module Library for Foundry VTT",
+  "name": "Stagehand for Foundry VTT",
   "version": "0.2.0",
   "description": "Organise Foundry VTT modules on the Setup screen.",
   "permissions": ["storage", "scripting", "activeTab"],
   "optional_host_permissions": ["http://*/*", "https://*/*"],
   "action": {
-    "default_title": "Module Library",
+    "default_title": "Stagehand",
     "default_popup": "popup.html"
   },
   "background": {

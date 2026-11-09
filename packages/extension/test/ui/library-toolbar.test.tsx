@@ -19,7 +19,7 @@ const snap: Snapshot = {
   title: "Strahd",
   system: { id: "dnd5e", version: "5" },
   coreVersion: "14.369",
-  active: ["module-library", "a"].map((id) => ({ id, version: "1.0.0" })),
+  active: ["stagehand", "a"].map((id) => ({ id, version: "1.0.0" })),
   companionVersion: "0.1.0",
   takenAt: "2026-11-05T00:00:00.000Z",
 };
@@ -126,7 +126,7 @@ describe("the toolbar", () => {
     transfer(r, "Export the library");
     await waitFor(() => {
       expect(r.ports.files.save).toHaveBeenCalledWith(
-        expect.stringMatching(/^module-library-\d{4}-\d{2}-\d{2}\.json$/),
+        expect.stringMatching(/^stagehand-\d{4}-\d{2}-\d{2}\.json$/),
         '{"v":1}',
       );
     });
