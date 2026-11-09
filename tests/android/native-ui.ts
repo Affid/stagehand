@@ -42,6 +42,17 @@ export function adbWithInput(input: string, ...args: string[]): string {
   }).toString();
 }
 
+/**
+ * Types into the focused native field. The text reaches the device's
+ * shell: spaces as %s, everything else escaped for sh. Never logged.
+ */
+export function typeNative(text: string): void {
+  const escaped = text
+    .replace(/[^A-Za-z0-9 ]/g, (c) => `\\${c}`)
+    .replace(/ /g, "%s");
+  adb("shell", "input", "text", escaped);
+}
+
 interface ViewNode {
   readonly text: string;
   readonly desc: string;

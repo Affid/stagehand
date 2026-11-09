@@ -11,23 +11,26 @@ import {
 } from "../../scripts/foundry/admin.ts";
 import { loadFoundryEnv } from "../../scripts/foundry/env.ts";
 import { TEST_WORLD } from "../../scripts/foundry/world.ts";
-import { sleep } from "./native-ui.ts";
+import { sleep, tapNative, typeNative, waitNative } from "./native-ui.ts";
 
 export const env = loadFoundryEnv();
 export const THEMES = ["dark", "fantasy", "scifi"] as const;
 export type Theme = (typeof THEMES)[number];
 
 /** Admin login in the app's server WebView, then our Setup page on it. */
-export async function adminLogin(page: Page, server: string): Promise<void> {
-  const status = await page.evaluate(async (password) => {
-    const body = new URLSearchParams({
-      action: "adminAuth",
-      adminPassword: password,
-    });
-    return (await fetch("/auth", { method: "POST", body })).status;
-  }, env.adminPassword);
-  expect(status, "Foundry took the admin password").toBe(200);
-  await page.goto(`${server}/setup`);
+/**
+ * Our native login (phase 7): Foundry's /auth never shows in the app; the
+ * password goes into our field, as the user types it. Then Setup.
+ */
+export async function adminLogin(
+  app: { pageAt(start: string, timeoutMs?: number): Promise<Page> },
+  server: string,
+): Promise<Page> {
+  await waitNative(/Log in to Setup/, 60_000);
+  await sleep(500);
+  typeNative(env.adminPassword);
+  await tapNative(/^Log in$/);
+  const page = await app.pageAt(`${server}/setup`, 60_000);
   await page.locator("#ml-shell-root .mlp-top").waitFor({ timeout: 60_000 });
   // Foundry's first-run tour covers the page in a fresh WebView.
   await page.evaluate(async () => {
@@ -38,6 +41,7 @@ export async function adminLogin(page: Page, server: string): Promise<void> {
     };
     await g.foundry?.nue?.Tour?.activeTour?.exit();
   });
+  return page;
 }
 
 /** Until Foundry reports no world running (a shutdown takes a moment). */

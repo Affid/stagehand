@@ -1195,6 +1195,40 @@ Packages, after the owner approves the screens:
 5. **Suite and phone**: the on-device suite through the new pages;
    Bitwarden on the owner's phone.
 
+Progress (2026-11-09):
+
+- **Package 1 done** (`2463a03`, review fixes `92d08a4`): the launching
+  screen from the tap; Foundry's launchWorld ticks forwarded; a failure on
+  our side reaches it as Foundry's would; silence judged per stage (20 s
+  before the first tick, 5 min for a backup, 90 s between loading ticks,
+  30 s after complete).
+- **Package 2 done** (`4759db2`): the running page without Join; Back to
+  Setup and Server list; native sends /game and /players to /join.
+- **Package 3 done** (`6e8a521`, review fixes in `74547ff`): our native
+  login (AdminLogin posts Foundry's /auth with the WebView's cookie,
+  Origin and Sec-Fetch-Site; the cookie handed back; Foundry's /auth never
+  loads) and password.ask, a native sheet. Reviews: password.ask only from
+  our running page on /join (a module on Setup or the game could have read
+  a filled password); one retry after a typed answer; FLAG_SECURE in
+  release builds. Checked on the emulator against a stand-in for /auth:
+  the screen, a wrong password, Setup after the right one; the stand-in
+  saw the login posted with Origin and Sec-Fetch-Site, and Foundry's
+  /auth page never loaded in the WebView.
+- **Package 4 done** (`74547ff`, review fixes `43cf66f`): changes applied
+  out of sight. Foundry's Setup doesn't know a world's users, so the
+  Gamemaster is chosen after the launch, on /join (the world's full
+  Gamemaster; no password first, a tap and native's sheet only when
+  Foundry wants one: 14.370 answers 401 "JOIN.ErrorInvalidPassword" as
+  plain text). This differs from the mockup's review sheet, which asked
+  for the user and password before the launch. Native records the launch
+  (launch.mark from Setup) and applies only for it; the cover (native) over
+  the hidden /game; the game page watches the companion and says done;
+  leaving for home or another server ends it.
+- **Package 5 waits for Foundry**: the device suite logs in through the
+  native field (typeNative) and expects the launching screen, the running
+  page and the changes applied out of sight; not run, the shared server
+  has run another developer's world all day.
+
 ## Native rules (for phase 4)
 
 The contract is `packages/extension/src/app/native-api.ts` (who may ask

@@ -46,8 +46,8 @@ let worldReset = false;
 async function setupAgain(): Promise<void> {
   await closeWorld();
   page = await app.pageAt(SERVER);
-  await page.goto(`${SERVER}/auth`);
-  await adminLogin(page, SERVER);
+  await page.goto(`${SERVER}/setup`);
+  page = await adminLogin(app, SERVER);
 }
 
 test.beforeAll(async () => {

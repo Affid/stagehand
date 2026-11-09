@@ -44,9 +44,7 @@ export function back(): void {
 /** On home: the server added by its address and opened; logged in. */
 export async function addServer(app: App): Promise<Page> {
   await addFromHome(app);
-  const page = await app.pageAt(SERVER);
-  await adminLogin(page, SERVER);
-  return page;
+  return adminLogin(app, SERVER);
 }
 
 /** The phone layout's home: the worlds list. */
