@@ -2,7 +2,8 @@
 // phase 3, package 6): Foundry's public status, the world from the join
 // page's own data, and closing the world. Seen live on 14.370:
 // `/api/status` gives active, version, world, system, systemVersion, users
-// and uptime (seconds); POST /setup {action: "worldShutdown", adminPassword}
+// and uptime (milliseconds since the world started: Foundry's
+// `Date.now() - start`); POST /setup {action: "worldShutdown", adminPassword}
 // closes the world and lands on /setup. Without the right password Foundry
 // answers with /join again, even for an administrator's session (checked
 // live; a server without an admin password needs none).
@@ -54,12 +55,14 @@ export function joinWorld(game: unknown): RunningWorld | undefined {
   };
 }
 
-/** "1 h 40 min", "25 min", "under a minute". */
-export function uptimeParts(seconds: number): {
+const MS_PER_MINUTE = 60_000;
+
+/** "1 h 40 min", "25 min", "under a minute", from Foundry's milliseconds. */
+export function uptimeParts(ms: number): {
   readonly h: number;
   readonly min: number;
 } {
-  const total = Math.floor(seconds / 60);
+  const total = Math.floor(ms / MS_PER_MINUTE);
   return { h: Math.floor(total / 60), min: total % 60 };
 }
 

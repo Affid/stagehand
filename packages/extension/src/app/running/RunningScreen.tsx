@@ -43,9 +43,9 @@ type Step =
   | { readonly kind: "closing" }
   | { readonly kind: "failed" };
 
-function since(t: Translate, seconds: number | undefined): string | null {
-  if (seconds === undefined) return null;
-  const { h, min } = uptimeParts(seconds);
+function since(t: Translate, ms: number | undefined): string | null {
+  if (ms === undefined) return null;
+  const { h, min } = uptimeParts(ms);
   if (h) return t("run.forHours", { h, min });
   return min ? t("run.forMinutes", { min }) : t("run.justStarted");
 }

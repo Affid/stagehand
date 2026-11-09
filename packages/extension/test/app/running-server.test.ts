@@ -18,7 +18,7 @@ const STATUS = {
   system: "dnd5e",
   systemVersion: "6.0.6",
   users: 2,
-  uptime: 6000,
+  uptime: 6_000_000,
 };
 
 describe("parseStatus", () => {
@@ -58,9 +58,11 @@ describe("joinWorld", () => {
   });
 });
 
-test("uptimeParts", () => {
-  expect(uptimeParts(6000)).toEqual({ h: 1, min: 40 });
-  expect(uptimeParts(59)).toEqual({ h: 0, min: 0 });
+test("uptimeParts: Foundry's uptime is milliseconds since the world started", () => {
+  expect(uptimeParts(6_000_000)).toEqual({ h: 1, min: 40 });
+  expect(uptimeParts(59_000)).toEqual({ h: 0, min: 0 });
+  // Owner: 30 hours shown after a world ran 2 to 3 minutes.
+  expect(uptimeParts(180_000)).toEqual({ h: 0, min: 3 });
 });
 
 const route = (p: string) => `/${p}`;

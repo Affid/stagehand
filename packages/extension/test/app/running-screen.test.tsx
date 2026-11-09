@@ -35,7 +35,7 @@ const status = (over: Partial<Status> = {}): Status => ({
   system: "dnd5e",
   systemVersion: "6.0.6",
   users: 2,
-  uptime: 6000,
+  uptime: 6_000_000,
   ...over,
 });
 
