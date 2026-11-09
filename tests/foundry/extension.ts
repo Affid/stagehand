@@ -85,7 +85,9 @@ export async function joinWorld(
   if (isApp) await joinByRequest(page, url, user);
   else {
     await page
-      .locator('#join-game-form select[name="userId"]')
+      .locator(
+        '#join-game-form select[name="userId"], #join-game-form select[name="userid"]',
+      )
       .selectOption({ label: user });
     await page.locator('#join-game-form button[name="join"]').click();
   }
@@ -109,7 +111,13 @@ async function joinByRequest(
         method: "POST",
         credentials: "same-origin",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, password: "", action: "join" }),
+        // Foundry 14 reads userId, 13 userid.
+        body: JSON.stringify({
+          userId,
+          userid: userId,
+          password: "",
+          action: "join",
+        }),
       });
       return ((await res.json()) as { redirect?: string }).redirect;
     },

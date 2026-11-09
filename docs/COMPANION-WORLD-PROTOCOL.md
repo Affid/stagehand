@@ -1,7 +1,8 @@
 # The companion through the world (plan)
 
-Status: decided 2026-11-09; the spike passed on Foundry 13.351 and 14.370
-(see "Spike results"). Build not started.
+Status: built 2026-11-09 (a36f42b companion, 8cd725d Setup and app);
+the live suite passes on a private 14.370 server, the companion's flow on a
+private 13.351 server (see "Built"). The spike passed on both versions.
 
 ## Why
 
@@ -57,9 +58,10 @@ trusted):
 | Field      | Written by | What                                                                                                                                                                                            |
 | ---------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `v`        | both       | The format's version; a side that sees a newer major leaves it alone and says so.                                                                                                               |
-| `queue`    | Setup      | The changes waiting for the next Gamemaster: each `{id, mode, modules, presets (names, for the dialog), queuedAt}`. At most 50.                                                                 |
+| `queue`    | Setup      | The changes waiting for the next Gamemaster: each `{id, mode, modules, presets (names, for the dialog), queuedAt}`. At most 50, and at most 60 KB.                                              |
+| `written`  | Setup      | When Setup last wrote the queue (the server's clock): tells a later write by another device from an older read.                                                                                 |
 | `launch`   | Setup      | This launch's intent: `{kind: "reviewed", target, at}` (Apply and launch: no dialog when the live result matches) or `{kind: "hold", at}` (Launch without changes). Used once by the companion. |
-| `report`   | companion  | `{at, coreVersion, systemVersion, active: [{id, version}], results: [{id, status, error?}]}`: what Setup shows as the world's modules, and what happened to each queued change.                 |
+| `report`   | companion  | `{at, companion, core, system, active: ["id@version"], versions, partial, launchId, results: [{id, status, targetKey?, error?}]}`: the world's modules, and what happened to each change.       |
 | `schedule` | Setup      | Unchanged (today's next-session schedule).                                                                                                                                                      |
 
 Sizes stay small: module ids at most 200 characters, results only for the
@@ -74,8 +76,11 @@ world started. Both sides use the server's clock, not their own: Setup
 stamps `at` from the `Date` header of its save's answer, and the companion
 takes the world's start from `/api/status` (`uptime`) and the `Date` header
 of that answer. A device and a Gamemaster's browser with different clocks
-then still agree. Setup removes a leftover `launch` whenever it opens with
-the world stopped.
+then still agree. Every launch Setup starts writes the queue and its own
+intent (or none), so whatever was left in `launch` never rides along. An
+intent counts once: one the last report answered (`launchId`) is ignored.
+Foundry merges a save into the stored object, so the report always carries
+all of its fields.
 
 ## What changes
 
@@ -149,8 +154,8 @@ results were the same on both versions unless noted:
 
 - `editWorld` is Foundry's internal request name, not a public API; our
   Setup already depends on it behind the remote config's `editWorld` flag.
-  The in-world use goes behind its own flag, so a Foundry release that
-  changes it turns the feature off rather than breaking Setup.
+  The companion has no remote config: if a Foundry release refuses its
+  save, it changes nothing and says so ("couldn't be saved in the world").
 - Any Gamemaster (and any module running as one) can write the world's
   flags: a module could queue or mark changes as reviewed. A module
   running as the Gamemaster can change the world's modules anyway, so this
@@ -160,17 +165,50 @@ results were the same on both versions unless noted:
   where different people run different worlds. What limits it: only one
   world runs at a time, so such a write lands while this world is
   stopped; Setup lists everything in the queue on its review sheet before
-  a launch, writes a fresh `launch` for it and removes a leftover one; and
-  the companion honours `launch` only when it was written just before the
-  world started (server time). A forged queue without a fresh `launch`
-  reaches the companion's dialog, never a silent apply. The companion
-  never sends another world's id. Worth reporting to Foundry.
-- Two Gamemasters joining at once: the companion applies only for the
-  first one in (as today, the companion runs for the full Gamemaster), and
-  the world edit is one request per change of state.
+  a launch, and every launch from Setup overwrites `launch`; the companion
+  honours `launch` only when it was written in the 10 minutes before the
+  world started (server time). What is left: a forged queue with a forged
+  `launch`, followed within 10 minutes by a launch from Foundry's own Setup
+  (not ours), applies without the dialog (security review, accepted: no
+  secret is available to bind the intent to). The companion never sends
+  another world's id. Worth reporting to Foundry.
+- Two Setups open at once on different devices, both changing one world's
+  queue: the later write wins. The earlier device then sees its change as
+  cancelled (the queue's `written` time is later than its own write), not
+  silently kept or lost.
+- Two Gamemasters joining at once: the companion runs only for the full
+  Gamemaster with the lowest id among those in the world. Two pages that
+  each believe they are first (Foundry's `active` not yet sent) could both
+  apply; the second finds the queue already empty or applying.
 
-## Size
+## Built (2026-11-09)
 
-About the size of phase 7: the shared format, the Setup side, the
-companion, the app and the tests, less the bridge, which goes. Foundry 13
-needs no separate path.
+- **Companion** (`packages/module`): `world-session.ts` settles the last
+  launch's results, applies the queue (silently only for a fresh reviewed
+  launch), records each result before changing anything
+  (`world-io.ts`: Foundry's world edit, then the page's own copy), and
+  writes the report. Only the first full Gamemaster runs it
+  (`gamemaster.ts`). The bridge (`channel.ts`, `session.ts`) is gone.
+- **Format** (`packages/shared/src/world-flags.ts`): the schemas, bounds,
+  `fitReport`, `activeKey`, `launchIsFresh`.
+- **Setup** (`packages/extension`): the page reads the flags
+  (`page/collect.ts`) and writes the queue (`page/save-queue.ts`, request
+  `SAVE_QUEUE`, answer `QUEUE_DONE` with the server's time); the background
+  syncs its view from each world (`background/world-sync.ts`,
+  `commands.ts syncFromWorld`); the UI writes the whole queue after every
+  change, one write per world at a time, and before every launch
+  (`ui/actions.ts`). The relay, the game-page content script (and its
+  earlier registration), handshakes and launch holds are gone.
+- **App**: the hidden game page watches the report in its copy of the
+  world's flags, matched by the launch's intent id kept in the launch note
+  (`app/apply-game.ts`, `apply-watch.ts`). Foundry 13 needs the join's
+  `userid` and closes a world through `/join` "shutdown": both handled
+  (`app/running/server.ts`).
+- **Tests**: unit tests on every piece; the live apply suite (7 tests,
+  including a Gamemaster in a plain browser without Stagehand) and the
+  plain-http check pass on a private 14.370 server; on 13.351 the plain-http
+  check and the companion's flow (queue in the flags, the dialog, apply,
+  the report kept through shutdown) pass.
+- **Foundry 13 on Setup**: Setup itself is read-only (safe mode) on 13,
+  as before this change: the remote config has adapters for 14 only.
+  Supporting 13 on Setup is separate work.

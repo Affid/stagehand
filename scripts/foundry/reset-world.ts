@@ -1,6 +1,7 @@
-// Puts the test world back to "only the companion enabled" and returns
-// Foundry to Setup. Used by setup-world.ts and the end-to-end suites.
-import { chromium } from "@playwright/test";
+// Puts the test world back to "only the companion enabled", with none of
+// our flags (no queue, launch or report left from an earlier run), and
+// returns Foundry to Setup. Used by setup-world.ts and the end-to-end suites.
+import { type APIRequestContext, chromium } from "@playwright/test";
 import {
   createAdminClient,
   launchWorld,
@@ -11,11 +12,25 @@ import type { FoundryEnv } from "./env.ts";
 import { joinAs, reloadWorld } from "./session.ts";
 import { COMPANION_ID, TEST_WORLD } from "./world.ts";
 
+/** Removes our flags from the stopped test world (Foundry's world edit). */
+export async function clearOurFlags(api: APIRequestContext): Promise<void> {
+  const res = await api.post("/setup", {
+    data: {
+      action: "editWorld",
+      id: TEST_WORLD.id,
+      flags: { [`-=${COMPANION_ID}`]: null },
+    },
+    maxRedirects: 0,
+  });
+  if (!res.ok()) throw new Error(`Clearing our flags: HTTP ${res.status()}`);
+}
+
 export async function resetWorldModules(env: FoundryEnv): Promise<void> {
   const api = await createAdminClient(env.url);
   try {
     await shutdownWorld(api, env.adminPassword);
     await loginAsAdmin(api, env.adminPassword, `${env.dataDir}/Config`);
+    await clearOurFlags(api);
     await launchWorld(api, TEST_WORLD.id);
     const browser = await chromium.launch();
     try {

@@ -115,8 +115,12 @@ export async function findPackage(
   id: string,
 ): Promise<PackageListing> {
   const body = await post(api, "/setup", { action: "getPackages", type });
-  const listing = Array.isArray(body)
-    ? (body as readonly PackageListing[]).find((p) => p.id === id)
+  // Foundry 14 answers a list; 13 answers { packages, owned }.
+  const list = Array.isArray(body)
+    ? body
+    : ((body as { packages?: unknown }).packages ?? []);
+  const listing = Array.isArray(list)
+    ? (list as readonly PackageListing[]).find((p) => p.id === id)
     : undefined;
   if (!listing)
     throw new Error(`Foundry's package list has no ${type} "${id}"`);
@@ -140,6 +144,24 @@ export async function installPackage(
   );
 }
 
+/** Foundry 14 creates worlds at /create; 13 at /setup (404 at /create). */
+async function createOnce(
+  api: APIRequestContext,
+  world: {
+    readonly id: string;
+    readonly title: string;
+    readonly system: string;
+  },
+): Promise<void> {
+  try {
+    await post(api, "/create", { action: "createWorld", ...world });
+  } catch (error: unknown) {
+    if (!(error instanceof Error) || !error.message.includes("HTTP 404"))
+      throw error;
+    await post(api, "/setup", { action: "createWorld", ...world });
+  }
+}
+
 export async function createWorld(
   api: APIRequestContext,
   world: {
@@ -152,7 +174,7 @@ export async function createWorld(
   // A system that just installed is registered a moment after its files land.
   await waitFor(`system ${world.system} to be registered`, 60_000, async () => {
     try {
-      await post(api, "/create", { action: "createWorld", ...world });
+      await createOnce(api, world);
       return true;
     } catch (error: unknown) {
       if (
@@ -182,10 +204,16 @@ export async function shutdownWorld(
   password: string,
 ): Promise<void> {
   if (!(await hasActiveWorld(api))) return;
-  await api.post("/setup", {
+  const res = await api.post("/setup", {
     data: { action: "worldShutdown", adminPassword: password },
     maxRedirects: 0,
   });
+  // Foundry 13 refuses /setup while a world runs; its join page shuts down.
+  if (res.status() === 403)
+    await api.post("/join", {
+      data: { action: "shutdown", adminPassword: password },
+      maxRedirects: 0,
+    });
   await waitFor("the world to shut down", 60_000, async () => {
     return !(await hasActiveWorld(api));
   });

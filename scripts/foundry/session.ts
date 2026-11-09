@@ -28,7 +28,9 @@ export async function joinAs(
   const page = await context.newPage();
   await page.goto(`${url}/join`);
   await page
-    .locator('#join-game-form select[name="userId"]')
+    .locator(
+      '#join-game-form select[name="userId"], #join-game-form select[name="userid"]',
+    )
     .selectOption({ label: userName });
   await page.locator('#join-game-form button[name="join"]').click();
   await page.waitForURL(/\/game$/, { timeout: READY_TIMEOUT_MS });

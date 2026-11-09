@@ -1,8 +1,8 @@
 // The companion module on plain http at a network address (Android spike,
 // finding 4): there the page is not a secure context and browsers leave out
-// crypto.randomUUID, which the companion used for its request ids, so it
-// never said HELLO and queued changes never applied at launch. The rest of
-// the suite runs on localhost, a secure context, where this can't show.
+// some APIs (crypto.randomUUID once kept the companion from ever acting).
+// The companion must still save its report in the world's flags there. The
+// rest of the suite runs on localhost, a secure context, where this can't show.
 // Needs Foundry listening on all addresses (its default), so the test world
 // is reachable from the local network while it runs; skips when the machine
 // has no network address or the server is https.
@@ -55,27 +55,23 @@ test.afterAll(async () => {
   }
 });
 
-test("the companion says HELLO on http at a network address", async ({
+test("the companion saves its report on http at a network address", async ({
   page,
 }) => {
-  await page.addInitScript(() => {
-    const seen: string[] = [];
-    (window as unknown as { __mlHello: string[] }).__mlHello = seen;
-    addEventListener("message", (e: MessageEvent<unknown>) => {
-      const d = e.data as { ns?: string; from?: string; type?: string } | null;
-      if (d?.ns === "stagehand" && d.from === "module") seen.push(d.type ?? "");
-    });
-  });
   const url = `http://${String(address)}:${server.port || "80"}`;
   await joinWorld(page, url, "Gamemaster");
   expect(await page.evaluate(() => isSecureContext)).toBe(false);
+  // The world was reset without our flags: only this join can have written one.
   await expect
     .poll(
       () =>
-        page.evaluate(
-          () => (window as unknown as { __mlHello: string[] }).__mlHello,
-        ),
+        page.evaluate(() => {
+          const g = globalThis as unknown as {
+            game: { world: { flags: Record<string, { report?: unknown }> } };
+          };
+          return g.game.world.flags.stagehand?.report !== undefined;
+        }),
       { timeout: 20_000 },
     )
-    .toContain("HELLO");
+    .toBe(true);
 });
