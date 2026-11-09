@@ -124,6 +124,9 @@ svg { display: block; }
 const GROUND = "#2a2340";
 /** Over the top pulley (left side), under the bottom one (right side), down into the sandbag. */
 const FLY_S = "M63.19,26.29 A12,12 0 1 0 54,46 A12,12 0 1 1 44.81,65.71 C43.2,67.6 42.6,69.5 42.6,71.5";
+/** Scaled to 90% and centred: the top of the S inside the 66 dp safe zone and the tile crop (review). */
+const FIT = "translate(54 54) scale(.9) translate(-54 -51.2)";
+const BAG = (fill) => `<path fill="${fill}" d="M42.6,70.5 C37.6,73.6 36.4,78.4 37.3,81 Q42.6,84.6 47.9,81 C48.8,78.4 47.6,73.6 42.6,70.5 Z"/>`;
 const S_PATH = "M66,40 C64,33 57,31.5 52,31.5 C45,31.5 41,35.5 41,41 C41,48 48,50.5 54,52.5 C60.5,54.6 67,57.5 67,65 C67,71.5 61.5,75.5 54,75.5 C47.5,75.5 43,72.5 41.5,67.5";
 const scallops = (x0, x1, y, n, dip) => {
   const w = (x1 - x0) / n; let d = "";
@@ -198,21 +201,21 @@ const OPTIONS = [
   },
   {
     id: "fly-s", name: "Fly rope S", tag: "the crew and the name",
-    text: "The fly rope wound over two pulleys into the S of Stagehand, its sandbag hanging off the tail. The crew's work and the name in one mark.",
-    color: () => `
-      <rect x="52.7" y="10" width="2.6" height="24" fill="#8f86a0"/>
-      ${[34, 58].map((y) => `<circle cx="54" cy="${y}" r="9.5" fill="#3d3358"/><circle cx="54" cy="${y}" r="7.6" fill="none" stroke="#d9a441" stroke-width="1.4"/><circle cx="54" cy="${y}" r="2.4" fill="#d9a441"/>`).join("")}
-      <path d="${FLY_S}" fill="none" stroke="#efe3c8" stroke-width="5" stroke-linecap="round"/>
-      <path d="${FLY_S}" fill="none" stroke="#cdbd9e" stroke-width="5" stroke-dasharray="1.2 3.4"/>
-      <circle cx="63.19" cy="26.29" r="3.3" fill="#ee9b3a"/>
-      <path fill="#c0584a" d="M42.6,70.5 C37.6,73.6 36.4,78.4 37.3,81 Q42.6,84.6 47.9,81 C48.8,78.4 47.6,73.6 42.6,70.5 Z"/>
-      <rect x="39.2" y="73" width="6.8" height="2.2" rx="1" fill="#8e3329"/>`,
-    mono: () => `
-      <rect x="52.7" y="10" width="2.6" height="16" fill="currentColor"/>
-      ${[34, 58].map((y) => `<circle cx="54" cy="${y}" r="6.2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="54" cy="${y}" r="2.2" fill="currentColor"/>`).join("")}
-      <path d="${FLY_S}" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
-      <circle cx="63.19" cy="26.29" r="3.3" fill="currentColor"/>
-      <path fill="currentColor" d="M42.6,70.5 C37.6,73.6 36.4,78.4 37.3,81 Q42.6,84.6 47.9,81 C48.8,78.4 47.6,73.6 42.6,70.5 Z"/>`,
+    text: "The fly rope wound over two pulleys into the S of Stagehand, its sandbag hanging off the tail. The crew's work and the name in one mark. At 16 and 32 px it drops the pulleys and keeps the rope and bag.",
+    color: () => `<g transform="${FIT}">
+      ${[34, 58].map((y) => `<circle cx="54" cy="${y}" r="9.3" fill="#3d3358"/><circle cx="54" cy="${y}" r="3.2" fill="#d9a441"/>`).join("")}
+      <path d="${FLY_S}" fill="none" stroke="#efe3c8" stroke-width="6" stroke-linecap="round"/>
+      <path d="${FLY_S}" fill="none" stroke="#cdbd9e" stroke-width="6" stroke-dasharray="1.2 3.4"/>
+      <circle cx="63.19" cy="26.29" r="3.5" fill="#ee9b3a"/>
+      ${BAG("#c0584a")}
+      <rect x="39.2" y="73" width="6.8" height="2.2" rx="1" fill="#8e3329"/></g>`,
+    small: () => `<g transform="${FIT}">
+      <path d="${FLY_S}" fill="none" stroke="#efe3c8" stroke-width="6.5" stroke-linecap="round"/>
+      ${BAG("#c0584a")}</g>`,
+    mono: () => `<g transform="${FIT}">
+      <path d="${FLY_S}" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>
+      <circle cx="63.19" cy="26.29" r="3.5" fill="currentColor"/>
+      ${BAG("currentColor")}</g>`,
   },
   {
     id: "rope-s", name: "Rope S", tag: "the name",
@@ -261,7 +264,7 @@ function tile(o, px, radius) {
   const id = `t${uid++}`;
   return `<svg width="${px}" height="${px}" viewBox="22 21 64 64" role="img" aria-label="${o.name} mark">
     <defs><clipPath id="c-${id}"><rect x="22" y="21" width="64" height="64" rx="${radius}"/></clipPath></defs>
-    <g clip-path="url(#c-${id})"><rect width="108" height="108" fill="${o.ground || GROUND}"/>${o.color().replaceAll("%ID", id)}</g></svg>`;
+    <g clip-path="url(#c-${id})"><rect width="108" height="108" fill="${o.ground || GROUND}"/>${(px <= 32 && o.small ? o.small() : o.color()).replaceAll("%ID", id)}</g></svg>`;
 }
 
 function renderOptions() {
