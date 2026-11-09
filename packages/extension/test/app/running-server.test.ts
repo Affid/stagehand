@@ -151,6 +151,10 @@ describe("closeWorld", () => {
         route,
       }),
     ).toBe("failed");
+    for (const body of ["", '{"status":"failure"}', "<html></html>"])
+      expect(
+        await closeWorld({ fetch: twice(new Response(body)), route }),
+      ).toBe("failed");
   });
 
   test("anything else failed", async () => {

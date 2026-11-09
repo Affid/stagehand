@@ -114,8 +114,11 @@ async function closeOn13(
     }),
   });
   if (!res.ok) return "failed";
-  const answer = jsonOf((await res.text()).slice(0, MAX_ANSWER));
-  return answer.status === "success" ? "closing" : "password";
+  const raw = (await res.text()).slice(0, MAX_ANSWER).trim();
+  if (jsonOf(raw).status === "success") return "closing";
+  // The password's refusal is Foundry's message as plain text; JSON, a
+  // page or nothing at all is some other failure (review).
+  return raw && !/^[{[<]/.test(raw) ? "password" : "failed";
 }
 
 /**

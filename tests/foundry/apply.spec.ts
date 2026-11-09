@@ -68,9 +68,15 @@ const ourFlags = (p: Page): Promise<OurFlags | null> =>
     return (g.game.world.flags[key] as OurFlags | undefined) ?? null;
   }, COMPANION_ID);
 
-/** The status the companion's report gives the latest change (newest first). */
-const reported = async (p: Page): Promise<string | undefined> =>
-  (await ourFlags(p).catch(() => null))?.report?.results[0]?.status;
+/** The status the companion's report gives a change, by its id. */
+const reported = async (p: Page, id: string): Promise<string | undefined> =>
+  (await ourFlags(p).catch(() => null))?.report?.results.find(
+    (r) => r.id === id,
+  )?.status;
+
+/** The id of the change queued last on Setup. */
+const lastChange = async (): Promise<string> =>
+  (await commands()).at(-1)?.id ?? "";
 
 const shell = (): Locator => page.locator("#ml-shell-root");
 const banner = (): Locator => shell().locator(".mls-banner");
@@ -165,8 +171,9 @@ test("Apply and launch: the review is the confirmation; dependencies come along;
   await waitReady(page);
   await expect(inWorldDialog(page)).toHaveCount(0);
   // The companion's report in the world says so; Setup reads it next time.
-  await expect.poll(() => reported(page)).toBe("applied");
-  expect((await ourFlags(page))?.queue).toEqual([]);
+  const id = await lastChange();
+  await expect.poll(() => reported(page, id)).toBe("applied");
+  await expect.poll(async () => (await ourFlags(page))?.queue).toEqual([]);
   await page.screenshot({ path: `${SCREENS}/apply-applied.png` });
 });
 
@@ -195,7 +202,8 @@ test("a remove that others need still asks in the world (the live check differs)
   await page.waitForEvent("load");
   await waitReady(page);
   expect(await activeModules(page)).toEqual([COMPANION_ID]);
-  await expect.poll(() => reported(page)).toBe("applied");
+  const id = await lastChange();
+  await expect.poll(() => reported(page, id)).toBe("applied");
 });
 
 test("a launch Setup didn't review: the Assistant GM gets nothing; the GM can discard (PR-4)", async () => {
@@ -212,7 +220,8 @@ test("a launch Setup didn't review: the Assistant GM gets nothing; the GM can di
   await page.goto("about:blank");
   await joinWorld(page, env.url, "Gamemaster");
   await inWorldDialog(page).getByRole("button", { name: "Discard" }).click();
-  await expect.poll(() => reported(page)).toBe("declined");
+  const id = await lastChange();
+  await expect.poll(() => reported(page, id)).toBe("declined");
   expect(await activeModules(page)).toEqual([COMPANION_ID]);
   await backToSetup();
   await expect
@@ -243,6 +252,7 @@ test("Launch without changes holds the queue for that launch", async () => {
 
 test("a Gamemaster in a browser without Stagehand applies the world's queue, and Setup learns of it", async () => {
   // The change held above is still queued in the world.
+  const id = await lastChange();
   await page.goto("about:blank");
   await shutdownWorld(admin, env.adminPassword);
   await loginAsAdmin(admin, env.adminPassword, `${env.dataDir}/Config`);
@@ -260,7 +270,7 @@ test("a Gamemaster in a browser without Stagehand applies the world's queue, and
     expect(await activeModules(gm)).toEqual(
       ["ml-fixture-a", "ml-fixture-lib", COMPANION_ID].sort(),
     );
-    await expect.poll(() => reported(gm)).toBe("applied");
+    await expect.poll(() => reported(gm, id)).toBe("applied");
   } finally {
     await plain.close();
   }

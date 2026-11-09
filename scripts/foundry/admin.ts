@@ -209,11 +209,17 @@ export async function shutdownWorld(
     maxRedirects: 0,
   });
   // Foundry 13 refuses /setup while a world runs; its join page shuts down.
-  if (res.status() === 403)
-    await api.post("/join", {
+  if (res.status() === 403) {
+    const closed = await api.post("/join", {
       data: { action: "shutdown", adminPassword: password },
       maxRedirects: 0,
     });
+    if (!closed.ok())
+      throw new Error(
+        `Foundry 13 refused the shutdown: HTTP ${closed.status()}`,
+      );
+  } else if (res.status() >= 400)
+    throw new Error(`Foundry refused the shutdown: HTTP ${res.status()}`);
   await waitFor("the world to shut down", 60_000, async () => {
     return !(await hasActiveWorld(api));
   });

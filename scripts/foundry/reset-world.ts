@@ -12,7 +12,10 @@ import type { FoundryEnv } from "./env.ts";
 import { joinAs, reloadWorld } from "./session.ts";
 import { COMPANION_ID, TEST_WORLD } from "./world.ts";
 
-/** Removes our flags from the stopped test world (Foundry's world edit). */
+/**
+ * Removes our flags from the stopped test world (Foundry's world edit) and
+ * checks Foundry's answer no longer has them.
+ */
 export async function clearOurFlags(api: APIRequestContext): Promise<void> {
   const res = await api.post("/setup", {
     data: {
@@ -23,6 +26,9 @@ export async function clearOurFlags(api: APIRequestContext): Promise<void> {
     maxRedirects: 0,
   });
   if (!res.ok()) throw new Error(`Clearing our flags: HTTP ${res.status()}`);
+  const world = (await res.json()) as { flags?: Record<string, unknown> };
+  if (world.flags?.[COMPANION_ID] !== undefined)
+    throw new Error("Clearing our flags: Foundry kept them");
 }
 
 export async function resetWorldModules(env: FoundryEnv): Promise<void> {
@@ -52,6 +58,8 @@ export async function resetWorldModules(env: FoundryEnv): Promise<void> {
       await browser.close();
     }
     await shutdownWorld(api, env.adminPassword);
+    // The joins above let the companion write a report: none is left.
+    await clearOurFlags(api);
   } finally {
     await api.dispose();
   }
