@@ -2,9 +2,13 @@
 import { z } from "zod";
 import { MAX_NEWS, NewsItemSchema } from "./news.ts";
 import { PackageInfoSchema } from "./package.ts";
+import {
+  ApplyModeSchema,
+  MAX_ACTIVE,
+  StagehandFlagsSchema,
+} from "./world-flags.ts";
 
-/** Page scripts can post snapshots: every field is bounded (security review). */
-export const MAX_ACTIVE = 2000;
+export { ApplyModeSchema, MAX_ACTIVE };
 const Short = z.string().max(100);
 
 export const SnapshotSchema = z.object({
@@ -20,8 +24,6 @@ export const SnapshotSchema = z.object({
 });
 
 export type Snapshot = z.infer<typeof SnapshotSchema>;
-
-export const ApplyModeSchema = z.enum(["replace", "add", "remove"]);
 
 export const CommandStatusSchema = z.enum([
   "pending",
@@ -42,12 +44,19 @@ export const CommandSchema = z.object({
     presetIds: z.array(z.string()),
     /** Modules picked one by one, besides (or instead of) presets. */
     modules: z.array(z.string()).optional(),
+    /**
+     * A change queued on another device, read from the world: its presets
+     * by name, for showing only (their modules are in `modules`).
+     */
+    presets: z.array(z.object({ id: z.string(), name: z.string() })).optional(),
   }),
   createdAt: z.string(),
   baseSnapshotAt: z.string().nullable(),
   status: CommandStatusSchema,
   targetKey: z.string().optional(),
   error: z.string().optional(),
+  /** Written into the world's queue (docs/COMPANION-WORLD-PROTOCOL.md). */
+  inWorld: z.boolean().optional(),
 });
 
 export type Command = z.infer<typeof CommandSchema>;
@@ -150,6 +159,8 @@ export const WorldInfoSchema = z.object({
   verified: z.string().max(MAX_VERSION).optional(),
   /** Our next-session schedule, from the world's flags. */
   schedule: ScheduleSchema.optional(),
+  /** The queue and the companion's report, from the world's flags. */
+  stagehand: StagehandFlagsSchema.optional(),
 });
 
 export type WorldInfo = z.infer<typeof WorldInfoSchema>;

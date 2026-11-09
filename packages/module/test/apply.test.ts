@@ -1,13 +1,15 @@
 import type { WorldCommand } from "@module-library/shared/world";
 import { describe, expect, test, vi } from "vitest";
+import type { Result } from "@module-library/shared/world-flags";
+import { activeKey } from "@module-library/shared/world-flags";
 import { type ApplyDeps, applyCommands } from "../src/apply.ts";
 import { diffHtml, escapeHtml } from "../src/dialog.ts";
 import {
+  activeModules,
   moduleConfiguration,
   planFor,
-  takeSnapshot,
 } from "../src/world-state.ts";
-import { fakeChannel, fakeDialog, fakeGame, ok } from "./fakes.ts";
+import { fakeDialog, fakeGame } from "./fakes.ts";
 
 const MODULES = [
   { id: "stagehand", active: true },
@@ -29,45 +31,31 @@ const command = (over: Partial<WorldCommand> = {}): WorldCommand => ({
 function setup(
   dialogResult: unknown,
   form: Record<string, boolean> = {},
-  accepted = true,
+  saves = true,
   modules: Parameters<typeof fakeGame>[0] = MODULES,
 ) {
   const { game, set } = fakeGame(modules);
-  const { channel, requests } = fakeChannel((type) =>
-    type === "COMMAND_ACK" ? ok("OK", { accepted }) : ok(),
-  );
+  const records: Result[][] = [];
+  const record = vi.fn((results: readonly Result[]) => {
+    records.push([...results]);
+    return Promise.resolve(saves);
+  });
   const { dialog, wait } = fakeDialog(dialogResult, form);
   const reload = vi.fn();
   const warn = vi.fn();
   const info = vi.fn();
-  const deps: ApplyDeps = {
-    game,
-    dialog,
-    channel,
-    reload,
-    warn,
-    info,
-    now: () => new Date("2026-11-05T00:00:00Z"),
-  };
-  return { deps, set, requests, reload, warn, info, wait };
+  const deps: ApplyDeps = { game, dialog, record, reload, warn, info };
+  return { deps, set, records, reload, warn, info, wait };
 }
 
-const acks = (requests: { type: string; payload: unknown }[]) =>
-  requests.filter((r) => r.type === "COMMAND_ACK").map((r) => r.payload);
-
 describe("world state", () => {
-  test("the snapshot lists active modules with versions (C-2)", () => {
+  test("lists active modules with versions (C-2)", () => {
     const { game } = fakeGame(MODULES);
-    expect(takeSnapshot(game, new Date("2026-11-05T00:00:00Z"))).toMatchObject({
-      worldId: "w1",
-      coreVersion: "14.369",
-      active: [
-        { id: "stagehand", version: "1.0.0" },
-        { id: "x", version: "1.0.0" },
-        { id: "needs-x", version: "1.0.0" },
-      ],
-      takenAt: "2026-11-05T00:00:00.000Z",
-    });
+    expect(activeModules(game)).toEqual([
+      { id: "stagehand", version: "1.0.0" },
+      { id: "x", version: "1.0.0" },
+      { id: "needs-x", version: "1.0.0" },
+    ]);
   });
 
   test("plans from live Module objects, adding requirements (C-4, C-6)", () => {
@@ -108,17 +96,33 @@ describe("dialog", () => {
   });
 });
 
+describe("dialog: preset names from the queue", () => {
+  test("a few are listed, then a count", () => {
+    const { game } = fakeGame(MODULES);
+    const many = Array.from({ length: 15 }, (_, i) => ({
+      id: `p${String(i)}`,
+      name: `Preset ${String(i)}`,
+    }));
+    const plan = planFor(game, [command({ presets: many })], false);
+    const html = diffHtml(game, plan, [command({ presets: many })]);
+    expect(html).toContain("Preset 9");
+    expect(html).not.toContain("Preset 10");
+    expect(html).toContain("+5");
+  });
+});
+
 describe("applyCommands (8.4, 8.5)", () => {
-  test("Apply & reload: acknowledges with the target, writes the configuration, reloads once", async () => {
-    const { deps, set, requests, reload } = setup("apply");
+  test("Apply & reload: records applying with the target's key, writes the configuration, reloads once", async () => {
+    const { deps, set, records, reload } = setup("apply");
     expect(await applyCommands(deps, [command()])).toBe("applied");
-    expect(acks(requests)).toEqual([
-      {
-        id: "c1",
-        worldId: "w1",
-        status: "applying",
-        target: ["stagehand", "x", "needs-x", "a", "lib"],
-      },
+    expect(records).toEqual([
+      [
+        {
+          id: "c1",
+          status: "applying",
+          targetKey: activeKey(["stagehand", "x", "needs-x", "a", "lib"]),
+        },
+      ],
     ]);
     expect(set).toHaveBeenCalledWith(
       "core",
@@ -128,27 +132,29 @@ describe("applyCommands (8.4, 8.5)", () => {
     expect(reload).toHaveBeenCalledTimes(1);
   });
 
-  test("Not now keeps the command pending: no ack, no change", async () => {
-    const { deps, set, requests } = setup("later");
+  test("Not now keeps the command queued: no record, no change", async () => {
+    const { deps, set, records } = setup("later");
     expect(await applyCommands(deps, [command()])).toBe("later");
-    expect(requests).toEqual([]);
+    expect(records).toEqual([]);
     expect(set).not.toHaveBeenCalled();
   });
 
   test("closing the dialog counts as Not now", async () => {
-    const { deps, requests } = setup(null);
+    const { deps, records } = setup(null);
     expect(await applyCommands(deps, [command()])).toBe("later");
-    expect(requests).toEqual([]);
+    expect(records).toEqual([]);
   });
 
   test("Discard declines every command", async () => {
-    const { deps, requests } = setup("discard");
+    const { deps, records } = setup("discard");
     expect(await applyCommands(deps, [command(), command({ id: "c2" })])).toBe(
       "discarded",
     );
-    expect(acks(requests)).toEqual([
-      { id: "c1", worldId: "w1", status: "declined" },
-      { id: "c2", worldId: "w1", status: "declined" },
+    expect(records).toEqual([
+      [
+        { id: "c1", status: "declined" },
+        { id: "c2", status: "declined" },
+      ],
     ]);
   });
 
@@ -184,15 +190,12 @@ describe("applyCommands (8.4, 8.5)", () => {
     );
   });
 
-  test("no change: acknowledges and pushes a snapshot instead of reloading", async () => {
-    const { deps, requests, reload } = setup("apply");
+  test("no change: records applied at once instead of reloading", async () => {
+    const { deps, records, reload } = setup("apply");
     expect(await applyCommands(deps, [command({ modules: ["x"] })])).toBe(
       "unchanged",
     );
-    expect(requests.map((r) => r.type)).toEqual([
-      "COMMAND_ACK",
-      "SNAPSHOT_PUSH",
-    ]);
+    expect(records).toEqual([[{ id: "c1", status: "applied" }]]);
     expect(reload).not.toHaveBeenCalled();
   });
 
@@ -204,27 +207,30 @@ describe("applyCommands (8.4, 8.5)", () => {
 });
 
 describe("applyCommands: review fixes", () => {
-  test("a command cancelled on Setup meanwhile is not applied", async () => {
-    const { deps, set, reload, warn, requests } = setup("apply", {}, false);
-    expect(await applyCommands(deps, [command()])).toBe("cancelled");
+  test("nothing changes when the record can't be saved", async () => {
+    const { deps, set, reload, warn } = setup("apply", {}, false);
+    expect(await applyCommands(deps, [command()])).toBe("unsaved");
     expect(set).not.toHaveBeenCalled();
     expect(reload).not.toHaveBeenCalled();
-    expect(warn).toHaveBeenCalledWith("STAGEHAND.Apply.Cancelled");
-    expect(acks(requests).map((a) => (a as { status: string }).status)).toEqual(
-      ["applying", "failed"],
+    expect(warn).toHaveBeenCalledWith("STAGEHAND.Apply.Unsaved");
+  });
+
+  test("an unsaved discard or no-change says so too", async () => {
+    const discard = setup("discard", {}, false);
+    expect(await applyCommands(discard.deps, [command()])).toBe("unsaved");
+    const same = setup("apply", {}, false);
+    expect(await applyCommands(same.deps, [command({ modules: ["x"] })])).toBe(
+      "unsaved",
     );
   });
 
-  test("a failed settings write is reported as failed, then rethrown", async () => {
-    const { deps, set, requests, reload } = setup("apply");
+  test("a failed settings write is recorded as failed, then rethrown", async () => {
+    const { deps, set, records, reload } = setup("apply");
     set.mockRejectedValueOnce(new Error("disk full"));
     await expect(applyCommands(deps, [command()])).rejects.toThrow("disk full");
-    expect(acks(requests).at(-1)).toEqual({
-      id: "c1",
-      worldId: "w1",
-      status: "failed",
-      error: "disk full",
-    });
+    expect(records.at(-1)).toEqual([
+      { id: "c1", status: "failed", error: "disk full" },
+    ]);
     expect(reload).not.toHaveBeenCalled();
   });
 

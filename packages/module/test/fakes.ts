@@ -1,8 +1,11 @@
-// Fakes for Foundry's client objects and the bridge, for unit tests.
-import { type Envelope, makeEnvelope } from "@module-library/shared/protocol";
+// Fakes for Foundry's client objects, for unit tests.
 import { vi } from "vitest";
-import type { Channel } from "../src/channel.ts";
-import type { DialogV2, FoundryGame, FoundryModule } from "../src/foundry.ts";
+import type {
+  DialogV2,
+  FoundryGame,
+  FoundryModule,
+  FoundryUser,
+} from "../src/foundry.ts";
 
 interface FakeModuleData {
   readonly id: string;
@@ -35,14 +38,19 @@ function fakeModule(
   };
 }
 
-export function fakeGame(modules: readonly FakeModuleData[], role = 4) {
+export function fakeGame(
+  modules: readonly FakeModuleData[],
+  role = 4,
+  users: readonly FoundryUser[] = [{ id: "u1", role, active: true }],
+) {
   const settings = new Map<string, unknown>();
   const set = vi.fn((ns: string, key: string, value: unknown) => {
     settings.set(`${ns}.${key}`, value);
     return Promise.resolve(value);
   });
   const game: FoundryGame = {
-    user: { role },
+    user: { id: "u1", role },
+    users,
     world: { id: "w1", title: "World One" },
     system: { id: "dnd5e", version: "5.1.0" },
     release: { generation: 14, build: 369 },
@@ -56,31 +64,6 @@ export function fakeGame(modules: readonly FakeModuleData[], role = 4) {
   };
   return { game, set };
 }
-
-/** A channel answering from a table; records what the module sent. */
-export function fakeChannel(
-  answer: (type: string, payload: unknown) => Envelope | Error,
-) {
-  const requests: {
-    type: string;
-    payload: unknown;
-    timeoutMs: number | undefined;
-  }[] = [];
-  const channel: Channel = {
-    request(type, payload, timeoutMs) {
-      requests.push({ type, payload, timeoutMs });
-      const reply = answer(type, payload);
-      return reply instanceof Error
-        ? Promise.reject(reply)
-        : Promise.resolve(reply);
-    },
-    onBridgeReady: vi.fn(),
-  };
-  return { channel, requests };
-}
-
-export const ok = (type = "OK", payload: unknown = {}): Envelope =>
-  makeEnvelope("bridge", type, payload);
 
 /** A dialog whose `wait` returns `result`, or calls the apply callback. */
 export function fakeDialog(

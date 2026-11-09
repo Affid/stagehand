@@ -40,6 +40,20 @@ function checkbox(name: string, label: string): string {
   return `<label class="checkbox"><input type="checkbox" name="${name}"> ${escapeHtml(label)}</label>`;
 }
 
+/** Preset names come from the queue (untrusted): a few, then a count. */
+const MAX_PRESET_NAMES = 10;
+
+function presetNames(commands: readonly WorldCommand[]): string[] {
+  const all = commands.flatMap((c) =>
+    c.presets.map((p) => `${p.name} (${c.mode})`),
+  );
+  if (all.length <= MAX_PRESET_NAMES) return all;
+  return [
+    ...all.slice(0, MAX_PRESET_NAMES),
+    `+${String(all.length - MAX_PRESET_NAMES)}`,
+  ];
+}
+
 /** The plan's sections in display order: [i18n key, items]. */
 function sections(
   plan: Plan,
@@ -47,10 +61,7 @@ function sections(
 ): [string, string[]][] {
   const deps = new Set(plan.dependencyAdditions);
   return [
-    [
-      "Presets",
-      commands.flatMap((c) => c.presets.map((p) => `${p.name} (${c.mode})`)),
-    ],
+    ["Presets", presetNames(commands)],
     ["Enable", plan.enable.filter((id) => !deps.has(id))],
     ["Dependencies", [...plan.dependencyAdditions]],
     ["Disable", [...plan.disable]],

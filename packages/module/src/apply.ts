@@ -1,53 +1,50 @@
 // Applies queued commands (PRD 8.4, 8.5): resolve against the live world,
-// ask the GM, acknowledge, write core's module configuration, reload once.
-// A launch reviewed on Setup was the GM's confirmation: it applies without
-// asking again, unless the live result differs from what was reviewed.
+// ask the GM, record the outcome in the world's flags, write core's module
+// configuration, reload once. A launch reviewed on Setup was the GM's
+// confirmation: it applies without asking again, unless the live result
+// differs from what was reviewed. Nothing is changed unless the record was
+// saved first: an unrecorded change would be applied again next time.
 import type { Plan } from "@module-library/shared/resolver";
 import type { WorldCommand } from "@module-library/shared/world";
-import type { Channel } from "./channel.ts";
+import { activeKey, type Result } from "@module-library/shared/world-flags";
 import { askGm, type Choice } from "./dialog.ts";
 import type { DialogV2, FoundryGame } from "./foundry.ts";
-import { moduleConfiguration, planFor, takeSnapshot } from "./world-state.ts";
+import { moduleConfiguration, planFor } from "./world-state.ts";
+
+/** Saves these results for the commands in the world; false when it couldn't. */
+export type Recorder = (results: readonly Result[]) => Promise<boolean>;
 
 export interface ApplyDeps {
   readonly game: FoundryGame;
   readonly dialog: DialogV2;
-  readonly channel: Channel;
+  readonly record: Recorder;
   readonly reload: () => void;
   readonly warn: (message: string) => void;
   readonly info: (message: string) => void;
-  readonly now: () => Date;
 }
 
 export type Outcome =
-  "applied" | "unchanged" | "later" | "discarded" | "blocked" | "cancelled";
+  "applied" | "unchanged" | "later" | "discarded" | "blocked" | "unsaved";
 
 const K = "STAGEHAND.Apply";
 
-/** Acknowledges every command; true only if the extension accepted all. */
-async function ackAll(
-  deps: ApplyDeps,
-  commands: readonly WorldCommand[],
-  payload: object,
-): Promise<boolean> {
-  const replies = await Promise.all(
-    commands.map((c) =>
-      deps.channel.request("COMMAND_ACK", {
-        id: c.id,
-        worldId: deps.game.world.id,
-        ...payload,
-      }),
-    ),
-  );
-  return replies.every(
-    (r) =>
-      r.type === "OK" &&
-      (r.payload as { accepted?: unknown } | null)?.accepted === true,
-  );
-}
-
 const message = (error: unknown): string =>
   error instanceof Error ? error.message : String(error);
+
+const each = (
+  commands: readonly WorldCommand[],
+  result: Omit<Result, "id">,
+): Result[] => commands.map((c) => ({ id: c.id, ...result }));
+
+/** Records, or says it couldn't: then nothing may change. */
+async function recorded(
+  deps: ApplyDeps,
+  results: readonly Result[],
+): Promise<boolean> {
+  if (await deps.record(results)) return true;
+  deps.warn(deps.game.i18n.localize(`${K}.Unsaved`));
+  return false;
+}
 
 /** Conflicts need explicit consent; removals that break others need a choice. */
 function refusal(
@@ -73,7 +70,9 @@ async function writeConfiguration(
       moduleConfiguration(deps.game, plan.target),
     );
   } catch (error: unknown) {
-    await ackAll(deps, commands, { status: "failed", error: message(error) });
+    await deps.record(
+      each(commands, { status: "failed", error: message(error).slice(0, 500) }),
+    );
     throw error;
   }
 }
@@ -83,28 +82,16 @@ async function write(
   commands: readonly WorldCommand[],
   plan: Plan,
 ): Promise<Outcome> {
-  const accepted = await ackAll(deps, commands, {
-    status: "applying",
-    target: plan.target,
-  });
-  if (!accepted) {
-    // Cancelled on Setup while the dialog was open, or not recorded:
-    // change nothing, and close whatever was marked applying.
-    await ackAll(deps, commands, {
-      status: "failed",
-      error: "Not applied: a queued change was cancelled meanwhile.",
-    });
-    deps.warn(deps.game.i18n.localize(`${K}.Cancelled`));
-    return "cancelled";
-  }
   if (!plan.changed) {
-    // Nothing to reload: a fresh snapshot closes the commands at once.
-    await deps.channel.request(
-      "SNAPSHOT_PUSH",
-      takeSnapshot(deps.game, deps.now()),
-    );
-    return "unchanged";
+    // Nothing to reload: done at once.
+    const saved = await recorded(deps, each(commands, { status: "applied" }));
+    return saved ? "unchanged" : "unsaved";
   }
+  const applying = each(commands, {
+    status: "applying",
+    targetKey: activeKey(plan.target),
+  });
+  if (!(await recorded(deps, applying))) return "unsaved";
   await writeConfiguration(deps, commands, plan);
   deps.reload();
   return "applied";
@@ -140,8 +127,8 @@ export async function applyCommands(
   const choice = await askGm(deps.dialog, deps.game, plan, commands);
   if (choice.kind === "later") return "later";
   if (choice.kind === "discard") {
-    await ackAll(deps, commands, { status: "declined" });
-    return "discarded";
+    const saved = await recorded(deps, each(commands, { status: "declined" }));
+    return saved ? "discarded" : "unsaved";
   }
   const reason = refusal(plan, choice);
   if (reason) {

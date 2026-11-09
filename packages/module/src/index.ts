@@ -1,30 +1,25 @@
-// Companion module entry: registers its setting and runs one session per
-// launch for the full Gamemaster (C-1, PR-4). Assistant GMs and players: nothing.
+// Companion module entry: one session per join, for the first full
+// Gamemaster in the world (C-1, PR-4), through the world's own flags
+// (docs/COMPANION-WORLD-PROTOCOL.md). Assistant GMs and players: nothing.
 import "@module-library/shared/zod-config";
 import { logError } from "@module-library/shared/log";
-import { createChannel } from "./channel.ts";
-import { foundryGlobals, MODULE_ID } from "./foundry.ts";
-import { runSession } from "./session.ts";
-
-const NOTICE_SETTING = "extensionNoticeShown";
-
-function registerSettings(): void {
-  const { game } = foundryGlobals();
-  game.settings.register(MODULE_ID, NOTICE_SETTING, {
-    scope: "client",
-    config: false,
-    type: Boolean,
-    default: false,
-  });
-}
+import { foundryGlobals } from "./foundry.ts";
+import { isFirstGamemaster } from "./gamemaster.ts";
+import { createWorldIo } from "./world-io.ts";
+import { runWorldSession } from "./world-session.ts";
 
 async function start(): Promise<void> {
-  const { game, CONST, ui, foundry } = foundryGlobals();
-  if (game.user?.role !== CONST.USER_ROLES.GAMEMASTER) return;
-  const result = await runSession({
+  const { game, CONST, ui, foundry, Hooks } = foundryGlobals();
+  if (!isFirstGamemaster(game, CONST.USER_ROLES.GAMEMASTER)) return;
+  await runWorldSession({
     game,
     dialog: foundry.applications.api.DialogV2,
-    channel: createChannel(window),
+    io: createWorldIo({
+      fetch: (input, init) => fetch(input, init),
+      route: (path) => foundry.utils.getRoute(path),
+      world: game.world,
+      hooks: Hooks,
+    }),
     reload: () => {
       foundry.utils.debouncedReload();
     },
@@ -34,22 +29,10 @@ async function start(): Promise<void> {
     info: (message) => {
       ui.notifications.info(message);
     },
-    now: () => new Date(),
   });
-  if (result.handshake === "rejected")
-    ui.notifications.warn(game.i18n.localize("STAGEHAND.Outdated"));
-  if (
-    result.handshake === "none" &&
-    game.settings.get(MODULE_ID, NOTICE_SETTING) !== true
-  ) {
-    // One-time, optional notice (C-1).
-    ui.notifications.info(game.i18n.localize("STAGEHAND.NoExtension"));
-    await game.settings.set(MODULE_ID, NOTICE_SETTING, true);
-  }
 }
 
 const { Hooks } = foundryGlobals();
-Hooks.once("init", registerSettings);
 Hooks.once("ready", () => {
   start().catch((error: unknown) => {
     logError("companion", error);

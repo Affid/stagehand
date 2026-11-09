@@ -10,9 +10,24 @@ export interface FoundryModule {
   readonly version: string | null;
 }
 
+/** The running world's own document: its flags and a local update. */
+export interface FoundryWorld {
+  readonly id: string;
+  readonly title: string;
+  readonly flags?: Readonly<Record<string, unknown>>;
+  updateSource?(data: object): unknown;
+}
+
+export interface FoundryUser {
+  readonly id: string;
+  readonly role: number;
+  readonly active: boolean;
+}
+
 export interface FoundryGame {
-  readonly user: { readonly role: number } | null;
-  readonly world: { readonly id: string; readonly title: string };
+  readonly user: { readonly id: string; readonly role: number } | null;
+  readonly users: Iterable<FoundryUser>;
+  readonly world: FoundryWorld;
   readonly system: { readonly id: string; readonly version: string };
   readonly release: { readonly generation: number; readonly build: number };
   readonly modules: ReadonlyMap<string, FoundryModule>;
@@ -50,6 +65,7 @@ export interface FoundryGlobals {
   readonly CONST: { readonly USER_ROLES: { readonly GAMEMASTER: number } };
   readonly Hooks: {
     once(name: string, fn: () => void): number;
+    callAll(name: string, ...args: unknown[]): boolean;
   };
   readonly ui: {
     readonly notifications: {
@@ -59,7 +75,11 @@ export interface FoundryGlobals {
   };
   readonly foundry: {
     readonly applications: { readonly api: { readonly DialogV2: DialogV2 } };
-    readonly utils: { debouncedReload(): void };
+    readonly utils: {
+      debouncedReload(): void;
+      /** A path on this server, with Foundry's route prefix if it has one. */
+      getRoute(path: string): string;
+    };
   };
 }
 

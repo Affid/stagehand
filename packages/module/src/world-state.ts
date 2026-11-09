@@ -1,9 +1,10 @@
-// What the module reads from the running world: its snapshot (C-2) and the
-// resolver input for a set of commands (C-4, C-6), from the live state.
+// What the module reads from the running world: its active modules (C-2)
+// and the resolver input for a set of commands (C-4, C-6), from the live state.
 import { toPackageInfo } from "@module-library/shared/package-read";
 import { type Plan, resolvePlan } from "@module-library/shared/resolver";
 import { parseCoreVersion } from "@module-library/shared/version";
-import type { Snapshot, WorldCommand } from "@module-library/shared/world";
+import type { WorldCommand } from "@module-library/shared/world";
+import type { ActiveModule } from "@module-library/shared/world-flags";
 import { type FoundryGame, MODULE_ID } from "./foundry.ts";
 
 export const coreVersionOf = (game: FoundryGame): string =>
@@ -12,18 +13,14 @@ export const coreVersionOf = (game: FoundryGame): string =>
 export const activeIds = (game: FoundryGame): string[] =>
   [...game.modules.values()].filter((m) => m.active).map((m) => m.id);
 
-export function takeSnapshot(game: FoundryGame, now: Date): Snapshot {
-  const active = [...game.modules.values()].filter((m) => m.active);
-  return {
-    worldId: game.world.id,
-    title: game.world.title,
-    system: { id: game.system.id, version: game.system.version },
-    coreVersion: coreVersionOf(game),
-    active: active.map((m) => ({ id: m.id, version: m.version ?? "" })),
-    companionVersion: game.modules.get(MODULE_ID)?.version ?? "",
-    takenAt: now.toISOString(),
-  };
-}
+/** The active modules with their versions, for the report. */
+export const activeModules = (game: FoundryGame): ActiveModule[] =>
+  [...game.modules.values()]
+    .filter((m) => m.active)
+    .map((m) => ({ id: m.id, version: m.version ?? "" }));
+
+export const companionVersion = (game: FoundryGame): string =>
+  game.modules.get(MODULE_ID)?.version ?? "";
 
 /** Resolves against the live state, never the stale snapshot (C-4). */
 export function planFor(
