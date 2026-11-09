@@ -1061,10 +1061,34 @@ Packages:
      first). Tests joining after a launch now use our screen
      (`tests/foundry/extension.ts` `joinWorld`/`joinFromRunningScreen`,
      `tests/android/steps.ts` `joinAsGm`). App apply spec passes (6).
-   - **Next:** home A with the server sheet (rename, re-address keeping
-     the library, remove), adding a server with the http/https toggle and
-     a native check of `/api/status`; the mockup's card overflow fixed
-     there (`min-width: 0`); then reviews, the suite, commit.
+   - **Next: home A** (mockup `design/app-screens`, the owner approved the
+     server sheet; the card's middle column needs `min-width: 0`, the
+     mockup's overflow). Design for the build:
+     - Background: `ServerRecord` gains `name?` and `openedAt?`; messages
+       `rename-server {server, name}` and `move-server {from, to}`
+       (copies the per-server keys `library` (with its `serverId` set to
+       the new id), `commands`, `hello`, `news-seen`, `setup`,
+       `snapshots`, `sorted` to the new id, registers the new server as
+       `register-server` does, removes the old record and scripts as
+       `remove-server` does; the old keys stay, as after a remove);
+       `openedAt` set when a server's Setup reports (`setup` message).
+     - Home (app only, `ui/settings/` stays the extension's popup): a new
+       `ui/app-home/` in Preact styled like our Setup page: server cards
+       (letter, name or host, host, "Not encrypted", "Opened …"), ⋮ per
+       card opens the server sheet (name, address with the http/https
+       toggle, Save; Remove this server… asks first), Settings card with
+       the Release history switch, build line, **Add a server** in a
+       bottom bar opening the add sheet.
+     - Address entry: host[:port][/prefix] typed without a protocol, an
+       http/https toggle (http first; a pasted `http://`/`https://` sets
+       it); a native `server.check {server}` request (home only) GETs
+       `<server>/api/status` (http(s), saved-or-not origin, 5 s, 64 KB,
+       no cookies, no redirects) and answers `{version}` or an error, shown
+       before saving ("Foundry 14.370 answers at …" or "No answer over
+       https: try http"). Needs `native-api.ts`/`native-requests.ts`
+       entries, Kotlin rules with contract vectors, tests, review.
+     - Suite: home steps (add with the toggle, rename, re-address, remove)
+       in `tests/android`.
 
 ## Native rules (for phase 4)
 
