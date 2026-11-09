@@ -3,6 +3,7 @@
 // (page-progress.ts, page-updates.ts). Kept in the store, so they survive
 // switching pages.
 import { ENDS, type Lock, type Progress } from "../page-progress.ts";
+import { withLaunchTick } from "./launching.ts";
 import type { PageBridge } from "./page.ts";
 import type { Store, UiState } from "./store.ts";
 
@@ -34,7 +35,9 @@ export function trackProgress(
   page: Pick<PageBridge, "subscribe">,
 ): () => void {
   return page.subscribe((e) => {
-    if (e.type === "PROGRESS")
+    if (e.type === "PROGRESS" && e.payload.action === "launchWorld")
+      store.set((s) => ({ launching: withLaunchTick(s.launching, e.payload) }));
+    else if (e.type === "PROGRESS")
       store.set((s) => ({ tasks: withTick(s.tasks, e.payload) }));
     else if (e.type === "LOCK") store.set({ lock: e.payload });
     else if (e.type === "UPDATES") store.set({ updates: e.payload });

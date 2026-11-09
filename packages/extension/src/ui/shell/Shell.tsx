@@ -5,6 +5,7 @@ import { useEffect } from "preact/hooks";
 import { useUi } from "../context.ts";
 import { Announcer } from "./Announcer.tsx";
 import { Header } from "./Header.tsx";
+import { LaunchingScreen } from "./Launching.tsx";
 import { MainPane, PanelColumn, useShownRoute } from "./Panes.tsx";
 import { LayoutContext, useViewportLayout } from "./phone/layout.ts";
 import { PhoneShell } from "./phone/PhoneShell.tsx";
@@ -43,6 +44,7 @@ export function Shell() {
   return (
     <LayoutContext.Provider value={layout}>
       {layout === "desktop" ? <DesktopShell /> : <PhoneShell layout={layout} />}
+      <LaunchingScreen />
     </LayoutContext.Provider>
   );
 }

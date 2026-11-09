@@ -58,7 +58,7 @@ describe("Foundry's progress and lock, forwarded", () => {
 
   test("other actions, bad ids and odd numbers are refused or left out", () => {
     expect(
-      parsePageToUi("PROGRESS", { action: "launchWorld", id: "w" }),
+      parsePageToUi("PROGRESS", { action: "createWorld", id: "w" }),
     ).toBeUndefined();
     expect(
       parsePageToUi("PROGRESS", { action: "createBackup", id: "" }),

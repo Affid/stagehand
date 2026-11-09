@@ -3,9 +3,10 @@
 import type { WorldInfo } from "@module-library/shared/world";
 import { Icon } from "../../common/widgets.tsx";
 import { useUi } from "../../context.ts";
+import { startLaunch } from "../../launching.ts";
 
 export function NotSetUp(props: { readonly world: WorldInfo }) {
-  const { page, t } = useUi();
+  const { page, t, store } = useUi();
   const world = props.world.title;
   return (
     <div class="mlw-empty">
@@ -20,9 +21,10 @@ export function NotSetUp(props: { readonly world: WorldInfo }) {
       <button
         type="button"
         class="bright"
-        onClick={() =>
-          page.foundryAction({ action: "launch", worldId: props.world.id })
-        }
+        onClick={() => {
+          startLaunch(store, props.world, false);
+          page.foundryAction({ action: "launch", worldId: props.world.id });
+        }}
       >
         <Icon name="play" />
         {t("wp.setup.launch")}

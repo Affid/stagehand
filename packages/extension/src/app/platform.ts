@@ -145,6 +145,7 @@ export function nativePorts(bridge: NativeBridge): UiPorts {
       });
       return true;
     },
+    app: true,
   };
 }
 

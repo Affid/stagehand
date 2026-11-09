@@ -21,6 +21,8 @@ export interface UiPorts {
    * itself, false to let the browser follow the link.
    */
   readonly openExternal: (url: string) => boolean;
+  /** Our page runs inside the Android app (its home lists the servers). */
+  readonly app?: true;
 }
 
 /** The extension: the browser's own download, picker, confirm and tabs. */

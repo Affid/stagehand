@@ -14,6 +14,8 @@ export const PROGRESS_ACTIONS = [
   "updateCore",
   "updateDownload",
   "installPackage",
+  // A world's launch: our launching screen (ui/launching.ts), not a task.
+  "launchWorld",
 ] as const;
 
 export type ProgressAction = (typeof PROGRESS_ACTIONS)[number];
@@ -31,6 +33,8 @@ export interface Progress {
   readonly pct?: number;
   /** Foundry's step: "complete", "vend" and "error" end it. */
   readonly step?: string;
+  /** Foundry's reason, on its "error" step. */
+  readonly error?: string;
 }
 
 export interface Lock {
@@ -72,7 +76,7 @@ function packageOf(
 }
 
 export function parseProgress(p: Loose): Progress | undefined {
-  const { action, id, title, pct, step } = p;
+  const { action, id, title, pct, step, error } = p;
   if (!(PROGRESS_ACTIONS as readonly unknown[]).includes(action))
     return undefined;
   if (!isText(id, 300)) return undefined;
@@ -85,6 +89,7 @@ export function parseProgress(p: Loose): Progress | undefined {
     ...(isText(title, 300) ? { title } : {}),
     ...(sound ? { pct: Math.round(pct) } : {}),
     ...(isText(step, 40) ? { step } : {}),
+    ...(step === "error" && isText(error, 500) ? { error } : {}),
   };
 }
 

@@ -66,6 +66,7 @@ function createUi(
     tasks: [],
     lock: UNLOCKED,
     updates: NO_UPDATES,
+    launching: null,
   });
   trackProgress(store, page);
   const actions = createActions(store, deps.send, t, page);

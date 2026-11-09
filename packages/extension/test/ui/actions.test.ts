@@ -49,6 +49,7 @@ const initial: UiState = {
   updates: { module: {}, system: {} },
   side: null,
   lock: { locked: false },
+  launching: null,
 };
 
 const t = createTranslator("en");

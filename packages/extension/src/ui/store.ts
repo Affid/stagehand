@@ -1,5 +1,6 @@
 // A small store for the Setup UI. State survives Setup re-renders, which
 // remount the components.
+import type { Launching } from "./launching.ts";
 import type { ModuleFilterSpec } from "@module-library/shared/library/schema";
 import { useEffect, useState } from "preact/hooks";
 import type { SetupState } from "../messages.ts";
@@ -40,6 +41,8 @@ export interface UiState {
   readonly phone: PhoneNav;
   /** The world whose Next launch sheet is open (phone and tablet layouts). */
   readonly nextLaunch: string | null;
+  /** The world being launched, from the tap until Foundry leaves Setup. */
+  readonly launching: Launching | null;
 }
 
 /** The Library's side panels; tags and presets remember the one chosen. */

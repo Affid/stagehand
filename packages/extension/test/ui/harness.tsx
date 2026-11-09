@@ -201,6 +201,7 @@ export const uiState = (over: Partial<UiState> = {}): UiState => ({
   tasks: [],
   lock: UNLOCKED,
   updates: NO_UPDATES,
+  launching: null,
   ...over,
 });
 
@@ -216,6 +217,8 @@ export function renderUi(
     backupsError?: string;
     /** Answers the page world gives, set before the first render. */
     answers?: (page: ReturnType<typeof fakePage>["page"]) => void;
+    /** Our page inside the Android app rather than the extension. */
+    app?: boolean;
   } = {},
 ) {
   const data = setupState(options.data);
@@ -238,7 +241,7 @@ export function renderUi(
     actions: createActions(store, send as unknown as Send, t, fake.page),
     t,
     page: fake.page,
-    ports: fakePorts(),
+    ports: options.app ? { ...fakePorts(), app: true as const } : fakePorts(),
   };
   const view = render(<ShellRoot deps={deps} />);
   return { ...view, store, send, ports: deps.ports, ...fake };

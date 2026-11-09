@@ -5,6 +5,7 @@ import type { WorldInfo } from "@module-library/shared/world";
 import { useRef, useState } from "preact/hooks";
 import { Icon } from "../common/widgets.tsx";
 import { writeLaunchNote } from "../../app/launch-note.ts";
+import { startLaunch } from "../launching.ts";
 import { useUi } from "../context.ts";
 import { systemTitle } from "../model/system.ts";
 import { plural } from "../i18n.ts";
@@ -169,6 +170,27 @@ function BannerActions(props: {
   );
 }
 
+/**
+ * Asks Foundry to launch, with the note for the app's running screen (the
+ * changes going with it) and our launching screen from this moment.
+ */
+function launchNow(
+  ui: Pick<ReturnType<typeof useUi>, "page" | "store" | "t">,
+  world: WorldInfo,
+  changes: number,
+  backup: boolean,
+): void {
+  writeLaunchNote(globalThis.sessionStorage, world.id, changes);
+  startLaunch(ui.store, world, backup);
+  if (backup)
+    ui.page.foundryAction({
+      action: "backupLaunch",
+      worldId: world.id,
+      note: ui.t("lr.backupNote"),
+    });
+  else ui.page.foundryAction({ action: "launch", worldId: world.id });
+}
+
 /** Launching, with the review when changes are queued. */
 function useLaunch(world: WorldInfo, model: WorldModules) {
   const { page, actions, t, canChange, store } = useUi();
@@ -195,10 +217,7 @@ function useLaunch(world: WorldInfo, model: WorldModules) {
       if (queued === undefined) return;
       counted.current = queued;
       if (queued > 0) setReview(true);
-      else {
-        writeLaunchNote(globalThis.sessionStorage, world.id, 0);
-        page.foundryAction({ action: "launch", worldId: world.id });
-      }
+      else launchNow({ page, store, t }, world, 0, false);
     } finally {
       running.current = false;
       setBusy(false);
@@ -213,16 +232,10 @@ function useLaunch(world: WorldInfo, model: WorldModules) {
       const reviewed = plain ? undefined : model.next;
       if (!(await actions.setLaunchHold(world.id, plain, reviewed))) return;
     }
-    // For the app's running screen on /join (counted when Launch was pressed).
+    // For the app's running screen (counted when Launch was pressed).
     const changes = choice.kind === "plain" ? 0 : counted.current;
-    writeLaunchNote(globalThis.sessionStorage, world.id, changes);
-    if (choice.kind === "apply" && choice.backup)
-      page.foundryAction({
-        action: "backupLaunch",
-        worldId: world.id,
-        note: t("lr.backupNote"),
-      });
-    else page.foundryAction({ action: "launch", worldId: world.id });
+    const backup = choice.kind === "apply" && choice.backup;
+    launchNow({ page, store, t }, world, changes, backup);
   };
   return { review, busy, start, run, close: () => setReview(false) };
 }
