@@ -881,7 +881,8 @@ Kotlin tests, a check on the emulator, a code review and a security review:
 2. **The icon** (books on a shelf) and **the home screen** (the
    extension's settings panel with the app's words, servers that open on
    a tap) were made without a design to follow; both are for you to
-   approve or redesign.
+   approve or redesign. (Since replaced in phase 6: home A, and the owner's
+   pick for the icon, Fly rope.)
 3. **The release key** in `~/.config/module-library/` signs every future
    APK: phones with this one installed take updates only from it. Keep a
    copy somewhere safe.
@@ -1107,7 +1108,7 @@ Packages:
        entries, Kotlin rules with contract vectors, tests, review.
      - Suite: home steps (add with the toggle, rename, re-address, remove)
        in `tests/android`.
-4. **Next: the icon**, the owner's last item, "after the app works
+4. **The icon** (done 2026-11-09), the owner's last item, "after the app works
    great". Waiting on the owner as well: the phone checks (phase 5) and
    autofill with their password manager (Bitwarden) on Foundry's login.
    **Renamed Stagehand** (2026-11-09, the owner's choice from a short
@@ -1126,6 +1127,21 @@ Packages:
    test world turns on `stagehand`), and on any server that ran the old
    companion: install `stagehand` and turn it on in each world in place of
    `module-library`.
+   The icon: the owner picked **Fly rope** (a rope over a pulley with a
+   sandbag, as stagehands fly scenery) from five marks in
+   `design/app-icon/` (curtain, ghost light, fly rope, the rope wound into
+   an S over two pulleys, a rope S); an independent review of the S
+   variant found its top outside the 66 dp safe zone and the tile, and a
+   "$" in its single-colour layer, which turned the owner back to Fly
+   rope. Shipped as the adaptive launcher icon with a monochrome layer
+   (`res/drawable/ic_launcher_*.xml`, solid rope since vector drawables
+   have no dashes), the home page's top-bar mark (`app-home/icons.tsx`,
+   the bold drawing for 32 px and below: open pulley, thicker rope, bigger
+   bag) and the extension's first icons (`static/icons/icon-*.png`, drawn
+   by `node scripts/dev/extension-icons.ts`). On the Android 17 emulator
+   the Pixel launcher shows it shrunk on a lavender plate (the old books
+   icon too; the APK's adaptive icon checks out): to look at on the
+   owner's phone.
 
 ## Native rules (for phase 4)
 

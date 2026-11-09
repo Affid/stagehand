@@ -30,7 +30,7 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .intro { grid-column: 1 / -1; display: grid; gap: 4px; }
 .intro p { margin: 0; color: var(--muted); max-width: 75ch; }
 
-.options { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 14px; align-content: start; }
+.options { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; align-content: start; }
 .opt { min-width: 0; display: grid; gap: 12px; text-align: left; font: inherit; color: inherit; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px; cursor: pointer; }
 .opt:hover { border-color: var(--line-2); }
 .opt[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
@@ -67,6 +67,7 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .chrome .ext.on { background: rgb(255 255 255 / 10%); }
 .chrome .puzzle { width: 16px; height: 16px; border-radius: 3px; border: 2px solid #9aa0a6; box-sizing: border-box; }
 .note { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; display: grid; gap: 8px; }
+.note code { font: 12px/1.4 ui-monospace, monospace; color: #efe9dd; overflow-wrap: anywhere; }
 .note p, .note li { margin: 0; color: #d6d0e2; max-width: 70ch; }
 .note ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
 svg { display: block; }
@@ -75,7 +76,7 @@ svg { display: block; }
 
 <div class="bar">
   <h1>Stagehand icon</h1>
-  <span class="tag">Five marks to pick from</span>
+  <span class="tag">The chosen mark</span>
   <div class="tools">
     <div class="seg" role="group" aria-label="Icon shape"><span class="lbl">Shape</span>
       <button type="button" data-shape="circle" aria-pressed="true">Circle</button>
@@ -95,7 +96,7 @@ svg { display: block; }
 
 <div class="main">
   <div class="intro">
-    <p>Pick a card to see that mark on a phone, in the app's top bar and in Chrome's toolbar. Shape is the phone maker's mask (Pixel uses the circle, Samsung the squircle). Themed is Android's single-colour icon setting, which tints every icon from the wallpaper.</p>
+    <p>Fly rope, as it will ship: the launcher icon, the app's top bar and Chrome's toolbar. Shape is the phone maker's mask (Pixel uses the circle, Samsung the squircle). Themed is Android's single-colour icon setting, which tints every icon from the wallpaper.</p>
   </div>
   <div class="options" id="options"></div>
   <div class="side">
@@ -115,124 +116,43 @@ svg { display: block; }
       </div>
     </div>
     <div class="note">
-      <p><b>After you pick</b>, the mark becomes the app's launcher icon (with a single-colour version for Themed), the mark in the app's top bar, and the Chrome extension's icon, which has none today. The companion module needs no icon: Foundry doesn't show one.</p>
+      <p><b>Where it ships</b>: the app's launcher icon with its single-colour layer for Themed (<code>packages/android/.../drawable/ic_launcher_*.xml</code>), the mark in the app's top bar (<code>app-home/icons.tsx</code>), and the Chrome extension's icons at 16, 32, 48 and 128 px (<code>scripts/dev/extension-icons.ts</code>). The rope is solid: Android's vector icons draw no dashes. The companion module needs no icon: Foundry doesn't show one.</p>
     </div>
   </div>
 </div>
 
 <script>
 const GROUND = "#2a2340";
-/** Over the top pulley (left side), under the bottom one (right side), down into the sandbag. */
-const FLY_S = "M63.19,26.29 A12,12 0 1 0 54,46 A12,12 0 1 1 44.81,65.71 C43.2,67.6 42.6,69.5 42.6,71.5";
-/** Scaled to 90% and centred: the top of the S inside the 66 dp safe zone and the tile crop (review). */
-const FIT = "translate(54 54) scale(.9) translate(-54 -51.2)";
-const BAG = (fill) => `<path fill="${fill}" d="M42.6,70.5 C37.6,73.6 36.4,78.4 37.3,81 Q42.6,84.6 47.9,81 C48.8,78.4 47.6,73.6 42.6,70.5 Z"/>`;
-const S_PATH = "M66,40 C64,33 57,31.5 52,31.5 C45,31.5 41,35.5 41,41 C41,48 48,50.5 54,52.5 C60.5,54.6 67,57.5 67,65 C67,71.5 61.5,75.5 54,75.5 C47.5,75.5 43,72.5 41.5,67.5";
-const scallops = (x0, x1, y, n, dip) => {
-  const w = (x1 - x0) / n; let d = "";
-  for (let i = n - 1; i >= 0; i--) { const a = x0 + (i + 1) * w, b = x0 + i * w; d += ` Q${((a + b) / 2).toFixed(2)},${y + dip} ${b.toFixed(2)},${y}`; }
-  return d;
+/** Fly rope, the owner's pick (2026-11-09). The 108 dp launcher canvas; Android draws it from the same shapes. */
+const FLY = {
+  id: "pulley", name: "Fly rope", tag: "the crew's work",
+  text: "A rope over a pulley with a sandbag, as stagehands fly scenery in and out. At 32 px and below (the app's top bar, Chrome's toolbar) a bolder drawing: an open pulley, a thicker rope, a bigger bag.",
+  color: () => `
+    <rect x="35" y="27.5" width="38" height="3.6" fill="#5a4d78"/>
+    <rect x="52.4" y="30.6" width="3.2" height="4.4" fill="#8f86a0"/>
+    <circle cx="54" cy="43" r="9.6" fill="#d9a441"/>
+    <circle cx="54" cy="43" r="6.6" fill="#9c7024"/>
+    <circle cx="54" cy="43" r="2.6" fill="#efe3c8"/>
+    <path d="M44.4,76 V43 A9.6,9.6 0 0 1 63.6,43 V61" fill="none" stroke="#efe3c8" stroke-width="3.2"/>
+    <circle cx="44.4" cy="79" r="2.8" fill="none" stroke="#efe3c8" stroke-width="2.2"/>
+    <path fill="#c0584a" d="M63.6,60 C58,64 56,72 57,76.5 Q63.6,82 70.2,76.5 C71.2,72 69.2,64 63.6,60 Z"/>
+    <rect x="60" y="63.2" width="7.2" height="2.2" fill="#8e3329"/>`,
+  small: () => `
+    <rect x="33" y="26" width="42" height="4.5" fill="#6a5b8c"/>
+    <circle cx="54" cy="41" r="11" fill="#d9a441"/>
+    <circle cx="54" cy="41" r="4.5" fill="#2a2340"/>
+    <path d="M43,77 V41 A11,11 0 0 1 65,41 V60" fill="none" stroke="#efe3c8" stroke-width="4.6"/>
+    <path fill="#c0584a" d="M65,58 C58.5,62.5 56.5,71 57.5,76 Q65,82.5 72.5,76 C73.5,71 71.5,62.5 65,58 Z"/>`,
+  mono: () => `
+    <rect x="35" y="27.5" width="38" height="3.6" fill="currentColor"/>
+    <rect x="52.4" y="30.6" width="3.2" height="4.4" fill="currentColor"/>
+    <circle cx="54" cy="43" r="8.1" fill="none" stroke="currentColor" stroke-width="3"/>
+    <circle cx="54" cy="43" r="2.6" fill="currentColor"/>
+    <path d="M44.4,76 V43 M63.6,43 V61" fill="none" stroke="currentColor" stroke-width="3.2"/>
+    <circle cx="44.4" cy="79" r="2.8" fill="none" stroke="currentColor" stroke-width="2.2"/>
+    <path fill="currentColor" d="M63.6,60 C58,64 56,72 57,76.5 Q63.6,82 70.2,76.5 C71.2,72 69.2,64 63.6,60 Z"/>`,
 };
-const drape = (fill, fold, tie) => `
-  <path fill="${fill}" d="M30,31 H49 C47.5,46 44,59 38,67 C39.5,71 40.5,74.5 41,77 H30 Z"/>
-  <path fill="none" stroke="${fold}" stroke-width="1.4" stroke-linecap="round" d="M34,32 C34.4,48 34.4,62 33.6,76 M39,32 C39.4,45 38.6,56 36.4,66 M44,32 C43.6,43 42,52 39.6,60"/>
-  <circle cx="38.6" cy="67.4" r="2.3" fill="${tie}"/>`;
-const OPTIONS = [
-  {
-    id: "curtain", name: "Curtain", tag: "the stage",
-    text: "Two drapes tied back and a pool of light: the stage is set, the show can start. The plainest theatre sign there is.",
-    color: () => `
-      <polygon points="47,35 61,35 71,77 37,77" fill="#ffbf6b" opacity=".13"/>
-      <ellipse cx="54" cy="77.4" rx="16" ry="3" fill="#ffbf6b" opacity=".55"/>
-      <rect x="30" y="77" width="48" height="3.6" rx="1" fill="#7a5a30"/>
-      ${drape("#b8483a", "#8e3329", "#ee9b3a")}
-      <g transform="translate(108,0) scale(-1,1)">${drape("#b8483a", "#8e3329", "#ee9b3a")}</g>
-      <path fill="#ee9b3a" d="M29,27 H79 V33${scallops(29, 79, 33, 7, 5).replace(/^ /, " ")} Z"/>
-      <rect x="29" y="27" width="50" height="2" fill="#ffbf6b"/>`,
-    mono: () => `
-      <ellipse cx="54" cy="77.4" rx="16" ry="3" fill="currentColor" opacity=".45"/>
-      <rect x="30" y="77" width="48" height="3.6" rx="1" fill="currentColor"/>
-      <path fill="currentColor" d="M30,31 H49 C47.5,46 44,59 38,67 C39.5,71 40.5,74.5 41,77 H30 Z"/>
-      <path fill="currentColor" d="M78,31 H59 C60.5,46 64,59 70,67 C68.5,71 67.5,74.5 67,77 H78 Z"/>
-      <path fill="currentColor" d="M29,27 H79 V33${scallops(29, 79, 33, 7, 5)} Z"/>`,
-  },
-  {
-    id: "ghost", name: "Ghost light", tag: "the crew's lamp",
-    text: "The single bulb a stagehand leaves burning on an empty stage overnight. Theatre people know it; everyone else sees a warm light.",
-    ground: "#1b1628",
-    color: () => `
-      <defs><radialGradient id="glow-%ID" cx="54" cy="39" r="34" gradientUnits="userSpaceOnUse">
-        <stop offset="0" stop-color="#ffbf6b" stop-opacity=".55"/><stop offset=".45" stop-color="#ee9b3a" stop-opacity=".16"/><stop offset="1" stop-color="#ee9b3a" stop-opacity="0"/></radialGradient></defs>
-      <rect width="108" height="108" fill="url(#glow-%ID)"/>
-      <ellipse cx="54" cy="80.5" rx="19" ry="3" fill="#ffbf6b" opacity=".22"/>
-      <g stroke="#cfc6dc" stroke-width="2.4" stroke-linecap="round" fill="none"><path d="M54,51 V75 M54,74 L45,81 M54,74 L63,81 M54,74 V81"/></g>
-      <rect x="50" y="46" width="8" height="6.5" rx="1.2" fill="#8f86a0"/>
-      <circle cx="54" cy="37.5" r="8.6" fill="#ffd27a"/>
-      <circle cx="54" cy="37.5" r="4" fill="#fff4d6"/>
-      <g stroke="#cfc6dc" stroke-width="1.3" fill="none" opacity=".9"><circle cx="54" cy="37.5" r="11.6"/><ellipse cx="54" cy="37.5" rx="5" ry="11.6"/></g>`,
-    mono: () => `
-      <g stroke="currentColor" stroke-width="2.4" stroke-linecap="round" fill="none"><path d="M54,51 V75 M54,74 L45,81 M54,74 L63,81 M54,74 V81"/></g>
-      <rect x="50" y="46" width="8" height="6.5" rx="1.2" fill="currentColor"/>
-      <circle cx="54" cy="37.5" r="8.6" fill="currentColor"/>
-      <g stroke="currentColor" stroke-width="1.3" fill="none"><circle cx="54" cy="37.5" r="11.6"/><ellipse cx="54" cy="37.5" rx="5" ry="11.6"/></g>`,
-  },
-  {
-    id: "pulley", name: "Fly rope", tag: "the crew's work",
-    text: "A rope over a pulley with a sandbag, as stagehands fly scenery in and out. Says hands-on work behind the scenes.",
-    color: () => `
-      <rect x="35" y="25.5" width="38" height="3.6" rx="1" fill="#5a4d78"/>
-      <rect x="52.4" y="28.6" width="3.2" height="4.4" fill="#8f86a0"/>
-      <circle cx="54" cy="41" r="9.6" fill="#d9a441"/>
-      <circle cx="54" cy="41" r="6.6" fill="#9c7024"/>
-      <circle cx="54" cy="41" r="2.6" fill="#efe3c8"/>
-      <path d="M44.4,74 V41 A9.6,9.6 0 0 1 63.6,41 V59" fill="none" stroke="#efe3c8" stroke-width="3.2"/>
-      <path d="M44.4,74 V41 A9.6,9.6 0 0 1 63.6,41 V59" fill="none" stroke="#cdbd9e" stroke-width="3.2" stroke-dasharray="1 3"/>
-      <circle cx="44.4" cy="77" r="2.8" fill="none" stroke="#efe3c8" stroke-width="2.2"/>
-      <path fill="#c0584a" d="M63.6,58 C58,62 56,70 57,74.5 Q63.6,80 70.2,74.5 C71.2,70 69.2,62 63.6,58 Z"/>
-      <rect x="60" y="61.2" width="7.2" height="2.2" rx="1" fill="#8e3329"/>`,
-    mono: () => `
-      <rect x="35" y="25.5" width="38" height="3.6" rx="1" fill="currentColor"/>
-      <rect x="52.4" y="28.6" width="3.2" height="4.4" fill="currentColor"/>
-      <circle cx="54" cy="41" r="8.1" fill="none" stroke="currentColor" stroke-width="3"/>
-      <circle cx="54" cy="41" r="2.6" fill="currentColor"/>
-      <path d="M44.4,74 V41 M63.6,41 V59" fill="none" stroke="currentColor" stroke-width="3.2"/>
-      <circle cx="44.4" cy="77" r="2.8" fill="none" stroke="currentColor" stroke-width="2.2"/>
-      <path fill="currentColor" d="M63.6,58 C58,62 56,70 57,74.5 Q63.6,80 70.2,74.5 C71.2,70 69.2,62 63.6,58 Z"/>`,
-  },
-  {
-    id: "fly-s", name: "Fly rope S", tag: "the crew and the name",
-    text: "The fly rope wound over two pulleys into the S of Stagehand, its sandbag hanging off the tail. The crew's work and the name in one mark. At 16 and 32 px it drops the pulleys and keeps the rope and bag.",
-    color: () => `<g transform="${FIT}">
-      ${[34, 58].map((y) => `<circle cx="54" cy="${y}" r="9.3" fill="#3d3358"/><circle cx="54" cy="${y}" r="3.2" fill="#d9a441"/>`).join("")}
-      <path d="${FLY_S}" fill="none" stroke="#efe3c8" stroke-width="6" stroke-linecap="round"/>
-      <path d="${FLY_S}" fill="none" stroke="#cdbd9e" stroke-width="6" stroke-dasharray="1.2 3.4"/>
-      <circle cx="63.19" cy="26.29" r="3.5" fill="#ee9b3a"/>
-      ${BAG("#c0584a")}
-      <rect x="39.2" y="73" width="6.8" height="2.2" rx="1" fill="#8e3329"/></g>`,
-    small: () => `<g transform="${FIT}">
-      <path d="${FLY_S}" fill="none" stroke="#efe3c8" stroke-width="6.5" stroke-linecap="round"/>
-      ${BAG("#c0584a")}</g>`,
-    mono: () => `<g transform="${FIT}">
-      <path d="${FLY_S}" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>
-      <circle cx="63.19" cy="26.29" r="3.5" fill="currentColor"/>
-      ${BAG("currentColor")}</g>`,
-  },
-  {
-    id: "rope-s", name: "Rope S", tag: "the name",
-    text: "The S of Stagehand drawn as a stage rope with bound ends. A letter mark: easiest to spot among other icons, least theatrical.",
-    color: () => `
-      <circle cx="54" cy="24.6" r="3.4" fill="none" stroke="#d9a441" stroke-width="2.4"/>
-      <path d="M54,28 V31.5" stroke="#d9a441" stroke-width="2.4"/>
-      <path d="${S_PATH}" fill="none" stroke="#efe3c8" stroke-width="7" stroke-linecap="round"/>
-      <path d="${S_PATH}" fill="none" stroke="#cdbd9e" stroke-width="7" stroke-dasharray="1.1 3.6"/>
-      <circle cx="66" cy="40" r="3.9" fill="#ee9b3a"/>
-      <circle cx="41.5" cy="67.5" r="3.9" fill="#ee9b3a"/>`,
-    mono: () => `
-      <circle cx="54" cy="24.6" r="3.4" fill="none" stroke="currentColor" stroke-width="2.4"/>
-      <path d="M54,28 V31.5" stroke="currentColor" stroke-width="2.4"/>
-      <path d="${S_PATH}" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round"/>`,
-  },
-];
+const OPTIONS = [FLY];
 
 const SHAPES = {
   circle: `<circle cx="54" cy="54" r="36"/>`,
@@ -244,8 +164,8 @@ const WALLS = {
   dark: { screen: "radial-gradient(120% 70% at 30% 0%, #3b2d5c 0%, #15121f 55%, #0b0a13 100%)", ink: "#f2eef8", dim: "rgb(242 238 248 / 70%)", search: "rgb(255 255 255 / 14%)", nav: "#cfc8dc", card: "linear-gradient(160deg, #2b2340, #120f1b)" },
   light: { screen: "radial-gradient(120% 70% at 70% 0%, #f7e3c4 0%, #e6dcf3 55%, #d7d1e6 100%)", ink: "#1f1a2b", dim: "rgb(31 26 43 / 70%)", search: "rgb(255 255 255 / 70%)", nav: "#3a3646", card: "linear-gradient(160deg, #efe6fa, #dcd3ea)" },
 };
-const state = { pick: "fly-s", shape: "circle", style: "color", wall: "dark" };
-try { Object.assign(state, JSON.parse(localStorage.getItem("stagehand-icon") || "{}"), { pick: "fly-s" }); } catch {}
+const state = { pick: "pulley", shape: "circle", style: "color", wall: "dark" };
+try { Object.assign(state, JSON.parse(localStorage.getItem("stagehand-icon") || "{}"), { pick: "pulley" }); } catch {}
 const save = () => { try { localStorage.setItem("stagehand-icon", JSON.stringify(state)); } catch {} };
 let uid = 0;
 
@@ -275,7 +195,7 @@ function renderOptions() {
       <div class="wall" style="background:${w.card}">
         ${launcher(o, 96)}
         <div class="sizes">
-          <span>${launcher(o, 48)}48</span><span>${launcher(o, 32)}32</span><span>${tile(o, 16, 12)}16</span>
+          <span>${launcher(o, 48)}48</span><span>${launcher(o, 32)}32</span><span>${tile(o, 32, 12)}32 tile</span><span>${tile(o, 16, 12)}16</span>
         </div>
       </div>
       <p>${o.text}</p>
