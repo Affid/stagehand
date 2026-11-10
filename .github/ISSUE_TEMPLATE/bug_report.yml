@@ -1,0 +1,42 @@
+name: Bug report
+description: Something in Stagehand doesn't work as it should
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open Setup
+        2. ...
+  - type: dropdown
+    id: part
+    attributes:
+      label: Part
+      options:
+        - Browser extension (Chrome)
+        - Firefox add-on
+        - Android app
+        - Companion module (inside a world)
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      description: Stagehand's version (shown under Stagehand settings on Setup) and Foundry VTT's (for example 14.370).
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Errors
+      description: Anything from the browser console or Foundry's log. Leave out passwords and addresses you'd rather keep private.
+      render: text
