@@ -133,12 +133,22 @@ start the usual server again.
 ## Layout
 
 ```
-packages/shared      protocol, Zod schemas, version logic, resolver, library ops
-packages/extension   background, Setup adapters, Setup UI (Preact), bridge, options
-packages/module      companion module: session, apply flow, dialog
-packages/android     Android app: WebViews, native bridge (Kotlin, Gradle)
-scripts/foundry      local Foundry helpers (admin API, world setup, linking)
-tests/foundry        Playwright end-to-end suites (Setup UI, in-world apply)
-tests/android        the on-device suite for the Android app
-docs                 product requirements, plans and findings
+packages/shared            protocol, schemas, version logic, resolver, library model and sync
+packages/extension         the Setup page, its background and Foundry adapters (Preact)
+  src/compat/v13           everything Foundry 13 does differently (docs/FOUNDRY-13-PLAN.md)
+  src/app                  the app's side of the same page (native bridge, running page)
+packages/module            companion module: session, apply flow, dialog
+packages/android           Android app: WebViews, native bridge (Kotlin, Gradle)
+config/setup-config.json   Setup adapters read from this repository (pnpm config:write)
+scripts/foundry            local Foundry helpers (admin API, world setup, linking)
+scripts/android            Gradle wrapper, contract vectors, coverage
+scripts/dev, scripts/spike developer and spike helpers
+tests/foundry              live suites against a local Foundry (Setup UI, in-world apply)
+tests/app                  the app's web part in Playwright, its native side simulated
+tests/android              the on-device suite for the Android app
+fixtures/modules           three tiny modules the live suites install
+design                     mockups the UI follows (Setup page, app screens, icon)
+spikes                     throwaway experiments that answered early questions
+docs                       product requirements, plans and findings (docs/README.md)
+.github/workflows          CI (pnpm verify) and the companion's release
 ```

@@ -1,7 +1,7 @@
 # Library sync through the server
 
-Status: plan, 2026-11-10. Replaces PRD D-3 (sync via the companion) and drops
-D-4's notes switch.
+Status: built 2026-11-10 (phases 1 to 5, see "Phases"). Replaces PRD D-3
+(sync via the companion) and drops D-4's notes switch.
 
 ## Goal
 
