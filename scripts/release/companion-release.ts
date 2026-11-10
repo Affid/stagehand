@@ -55,6 +55,21 @@ export function newerVersion(
   return `${next} is not newer than ${current}`;
 }
 
+/**
+ * Why `version` can't be released now, or undefined. The current version
+ * may be released once, while its tag doesn't exist (the first release);
+ * after that a release needs a newer one.
+ */
+export function releaseRefusal(
+  version: string,
+  current: string,
+  tagExists: boolean,
+): string | undefined {
+  if (tagExists) return `${tagFor(version)} already exists.`;
+  if (version === current && SEMVER.test(version)) return undefined;
+  return newerVersion(version, current);
+}
+
 const escapeRegExp = (s: string): string =>
   s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 

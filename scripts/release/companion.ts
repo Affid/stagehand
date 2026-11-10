@@ -10,7 +10,7 @@ import { join } from "node:path";
 import {
   bumpManifest,
   changelogHas,
-  newerVersion,
+  releaseRefusal,
   tagFor,
 } from "./companion-release.ts";
 
@@ -40,13 +40,15 @@ function refusal(version: string, current: string): string | undefined {
   } catch {
     return "No git remote 'origin' yet: create the GitHub repository first.";
   }
-  const why = newerVersion(version, current);
+  const why = releaseRefusal(
+    version,
+    current,
+    git("tag", "--list", tagFor(version)) !== "",
+  );
   if (why) return why;
   const changelog = readFileSync(join(root, "CHANGELOG.md"), "utf8");
   if (!changelogHas(changelog, version))
     return `CHANGELOG.md has no "### Companion module ${version}" section.`;
-  if (git("tag", "--list", tagFor(version)) !== "")
-    return `${tagFor(version)} already exists.`;
   return undefined;
 }
 
@@ -56,14 +58,19 @@ function landed(tag: string): boolean {
   return remote !== "" && !git("status", "-sb").includes("ahead");
 }
 
-function release(version: string): void {
+function release(version: string, current: string): void {
   const tag = tagFor(version);
-  writeJson(MANIFEST, bumpManifest(readJson(MANIFEST), version));
-  writeJson(PACKAGE, { ...readJson(PACKAGE), version });
-  run("pnpm", "exec", "prettier", "--write", MANIFEST, PACKAGE);
+  // The first release of the current version has nothing to bump.
+  if (version !== current) {
+    writeJson(MANIFEST, bumpManifest(readJson(MANIFEST), version));
+    writeJson(PACKAGE, { ...readJson(PACKAGE), version });
+    run("pnpm", "exec", "prettier", "--write", MANIFEST, PACKAGE);
+  }
   run("pnpm", "verify");
-  git("add", MANIFEST, PACKAGE);
-  git("commit", "-m", `chore(release): companion ${version}`);
+  if (version !== current) {
+    git("add", MANIFEST, PACKAGE);
+    git("commit", "-m", `chore(release): companion ${version}`);
+  }
   git("tag", tag);
   git("push", "origin", "main");
   git("push", "origin", tag);
@@ -90,7 +97,7 @@ function main(): void {
     );
     return;
   }
-  release(version);
+  release(version, current);
 }
 
 main();

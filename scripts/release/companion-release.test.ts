@@ -6,6 +6,7 @@ import {
   listingRequest,
   MANIFEST_URL,
   newerVersion,
+  releaseRefusal,
   tagFor,
 } from "./companion-release.ts";
 
@@ -48,6 +49,15 @@ describe("companion releases", () => {
     expect(newerVersion("0.0.9", "0.1.0")).toMatch(/newer/);
     expect(newerVersion("0.2.0-beta.1", "0.1.0")).toMatch(/semver/);
     expect(newerVersion("v0.2.0", "0.1.0")).toMatch(/semver/);
+  });
+
+  test("the first release may be the current version; later ones must be newer", () => {
+    expect(releaseRefusal("0.1.0", "0.1.0", false)).toBeUndefined();
+    expect(releaseRefusal("0.1.0", "0.1.0", true)).toMatch(/already exists/);
+    expect(releaseRefusal("0.2.0", "0.1.0", false)).toBeUndefined();
+    expect(releaseRefusal("0.2.0", "0.1.0", true)).toMatch(/already exists/);
+    expect(releaseRefusal("0.0.9", "0.1.0", false)).toMatch(/newer/);
+    expect(releaseRefusal("", "0.1.0", false)).toMatch(/semver/);
   });
 
   test("the changelog must have the version's section", () => {
