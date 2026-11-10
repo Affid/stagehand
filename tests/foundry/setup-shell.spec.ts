@@ -15,6 +15,7 @@ import { loadFoundryEnv } from "../../scripts/foundry/env.ts";
 import { TEST_WORLD } from "../../scripts/foundry/world.ts";
 import { exitTour, SCREENS } from "./extension.ts";
 import { loadTarget, openSetupAsAdmin, type Target } from "./target.ts";
+import { CORE, ON_13 } from "./core.ts";
 
 const env = loadFoundryEnv();
 let ext: Target;
@@ -43,7 +44,9 @@ test("the new Setup page takes over Foundry's layout by itself", async () => {
   await expect(shell(page).locator(".sts-top")).toBeVisible();
   await expect(page.locator("#setup")).toBeHidden();
   await expect(page.locator("#setup-menu")).toBeHidden();
-  await expect(shell(page).locator(".sth-ver")).toContainText("Version 14");
+  await expect(shell(page).locator(".sth-ver")).toContainText(
+    `Version ${String(CORE.generation)}`,
+  );
   await expect(
     shell(page).getByRole("button", { name: "Foundry's Setup page" }),
   ).toHaveCount(0);
@@ -54,7 +57,9 @@ test("the Version chip's menu: the build, the update page, and Help", async () =
   const menu = shell(page).getByRole("region", {
     name: "Foundry Virtual Tabletop",
   });
-  await expect(menu).toContainText("Foundry 14 · build 370");
+  await expect(menu).toContainText(
+    `Foundry ${String(CORE.generation)} · build ${String(CORE.build)}`,
+  );
   await page.screenshot({ path: `${SCREENS}/shell-version-menu.png` });
   await menu.getByRole("button", { name: "Support and issues" }).click();
   // Foundry's own Package Warnings window, in view above our page.
@@ -118,14 +123,24 @@ test("Shut down asks first, with Foundry's own confirm, above our page", async (
   await shell(page)
     .getByRole("button", { name: "Shut down the server" })
     .click();
-  const confirm = page.locator(".application.dialog", {
-    hasText: "Shut Down",
-  });
-  await expect(confirm).toBeVisible();
-  await page.screenshot({ path: `${SCREENS}/shell-shutdown-confirm.png` });
-  // Never accept: "No" keeps the server running.
-  await confirm.locator('button[data-action="no"]').click();
-  await expect(confirm).toHaveCount(0);
+  if (ON_13) {
+    // Foundry 13's menu has no Shut down: our own confirm (FOUNDRY-13-PLAN).
+    const ours = shell(page).getByRole("dialog", { name: "Shut down Foundry" });
+    await expect(ours).toBeVisible();
+    await page.screenshot({ path: `${SCREENS}/shell-shutdown-confirm-13.png` });
+    // Never accept: Cancel keeps the server running.
+    await ours.getByRole("button", { name: "Cancel" }).click();
+    await expect(ours).toHaveCount(0);
+  } else {
+    const confirm = page.locator(".application.dialog", {
+      hasText: "Shut Down",
+    });
+    await expect(confirm).toBeVisible();
+    await page.screenshot({ path: `${SCREENS}/shell-shutdown-confirm.png` });
+    // Never accept: "No" keeps the server running.
+    await confirm.locator('button[data-action="no"]').click();
+    await expect(confirm).toHaveCount(0);
+  }
   await expect(shell(page).locator(".sts-top")).toBeVisible();
 });
 

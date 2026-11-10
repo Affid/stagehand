@@ -5,6 +5,8 @@ import { setTimeout as sleep } from "node:timers/promises";
 import { type APIRequestContext, request } from "@playwright/test";
 
 const POLL_MS = 1000;
+/** How long Foundry 13 takes to close a world's databases after shutdown. */
+const FOUNDRY13_CLOSE_MS = 5000;
 
 export interface PackageListing {
   readonly id: string;
@@ -209,7 +211,8 @@ export async function shutdownWorld(
     maxRedirects: 0,
   });
   // Foundry 13 refuses /setup while a world runs; its join page shuts down.
-  if (res.status() === 403) {
+  const on13 = res.status() === 403;
+  if (on13) {
     const closed = await api.post("/join", {
       data: { action: "shutdown", adminPassword: password },
       maxRedirects: 0,
@@ -223,4 +226,7 @@ export async function shutdownWorld(
   await waitFor("the world to shut down", 60_000, async () => {
     return !(await hasActiveWorld(api));
   });
+  // Foundry 13 is back on Setup before its databases have closed: a launch
+  // at once fails ("Database is not open", seen on 13.351).
+  if (on13) await sleep(FOUNDRY13_CLOSE_MS);
 }

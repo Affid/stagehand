@@ -21,6 +21,7 @@ import {
   settingsOpened,
   type Target,
 } from "./target.ts";
+import { CORE, ON_13 } from "./core.ts";
 import { audit } from "./axe.ts";
 
 const env = loadFoundryEnv();
@@ -101,7 +102,8 @@ test("Configuration reads Foundry's settings and saves one through Foundry, then
   const cfg = shell().locator(".stc-page");
   await expect(cfg.getByLabel("Port", { exact: true })).toHaveValue(/\d+/);
   await cfg
-    .getByRole("button", { name: "Advanced: Unix socket, compression" })
+    // Foundry 13 has no Unix socket setting (docs/FOUNDRY-13-PLAN.md).
+    .getByRole("button", { name: /^Advanced: (Unix socket, )?compression$/ })
     .click();
   const toggle = cfg.getByRole("switch", { name: "Compress web socket data" });
   const was = await toggle.isChecked();
@@ -144,15 +146,21 @@ test("Configuration: the right current password lets a new one be chosen", async
   await expect(cfg.locator(".stc-unsaved")).toHaveCount(0);
 });
 
-test("the Version chip's menu opens the Update page: Foundry's own check says up to date", async () => {
+/** The Version chip's menu, then its way to the Update page. */
+async function openUpdatePage(): Promise<void> {
   await shell().locator(".sth-ver").click();
   await shell()
     .getByRole("region", { name: "Foundry Virtual Tabletop" })
     .getByRole("button", { name: /Update page|See what's new/ })
     .click();
+}
+
+test("the Version chip's menu opens the Update page: Foundry's own check says up to date", async () => {
+  test.skip(ON_13, "Foundry 13 is offered 14: not the newest release");
+  await openUpdatePage();
   const upd = shell().locator(".stu-page");
   await expect(upd).toContainText("Foundry is up to date", { timeout: 30_000 });
-  await expect(upd).toContainText("Foundry 14.370 is the latest");
+  await expect(upd).toContainText(`Foundry ${CORE.version} is the latest`);
 });
 
 /**
@@ -177,6 +185,7 @@ async function answerNewer(): Promise<void> {
 }
 
 test("the Update page reads Foundry's release notes; --noupdate disables the update", async () => {
+  test.skip(ON_13, "fakes a newer 14 build; Foundry 13 is offered 14 itself");
   await answerNewer();
   const upd = shell().locator(".stu-page");
   await upd.getByRole("button", { name: "Check again" }).click();
@@ -215,6 +224,7 @@ test("the Update page reads Foundry's release notes; --noupdate disables the upd
 });
 
 test("Your packages: Foundry's compatibility preview for the release, with where each is used", async () => {
+  test.skip(ON_13, "fakes a newer 14 build; Foundry 13 is offered 14 itself");
   const upd = shell().locator(".stu-page");
   const box = upd.locator(".stu-side .stw-box", {
     hasText: "Your packages on 14.371",
@@ -265,6 +275,8 @@ test("Your packages: Foundry's compatibility preview for the release, with where
 
 test("Release history without the permission: why, and the settings panel to allow it", async () => {
   const upd = shell().locator(".stu-page");
+  // On Foundry 13 the update tests before this one are skipped.
+  if (ON_13) await openUpdatePage();
   await upd.getByRole("tab", { name: /Release history/ }).click();
   const ask = upd.locator(".stu-hask");
   await expect(ask).toBeVisible();

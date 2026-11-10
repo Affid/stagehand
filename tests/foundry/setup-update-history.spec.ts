@@ -6,6 +6,7 @@ import { expect, type Locator, type Page, test } from "@playwright/test";
 import { loadFoundryEnv } from "../../scripts/foundry/env.ts";
 import { SCREENS } from "./extension.ts";
 import { loadTarget, openSetupAsAdmin, type Target } from "./target.ts";
+import { CORE } from "./core.ts";
 import { audit } from "./axe.ts";
 
 const env = loadFoundryEnv();
@@ -51,7 +52,7 @@ test("Release history reads Foundry's list and the release's notes from foundryv
     timeout: 30_000,
   });
   await expect(
-    hist.locator(".stu-rels li", { hasText: "14.370" }),
+    hist.locator(".stu-rels li", { hasText: CORE.version }),
   ).toContainText("installed");
   await expect(hist.locator(".stu-hnotes .stu-sec").first()).toBeVisible({
     timeout: 30_000,
