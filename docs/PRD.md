@@ -171,8 +171,8 @@ Built only from the standard manifest `authors` field. No new author-supplied me
 |---|---|---|
 | D-1 | Export and import the whole library as versioned JSON. | P0 |
 | D-2 | Every preset, folder and tag set carries a `revision`. A save based on an old revision is rejected and goes to a merge prompt, never silently overwritten. | P0 |
-| D-3 | **Server file sync via the module:** the module writes `library.json` to the user data folder, only when the extension reports the server as admin-verified (PR-1). The Setup UI reads it over HTTP, so the library follows the admin across devices, and World GMs can read the published presets (PR-5). | P1 |
-| D-4 | Warn that files in the user data folder are reachable by URL, so notes stored there aren't private. Option to exclude notes from server sync. | P1 |
+| D-3 | **Server file sync from Setup** (built 2026-11-10, docs/LIBRARY-SYNC-PLAN.md): the admin's Setup page keeps the library in `Data/stagehand/library.json` with Foundry's own upload (no companion needed) and merges it with each device's copy, so the library follows the admin across devices. Only an admin-verified Setup (PR-1) writes it. World GMs could later read the published presets from it (PR-5). | P1 |
+| D-4 | ~~Warn that files in the user data folder are reachable by URL; option to exclude notes from server sync.~~ Dropped by the owner (2026-11-10): module notes are not expected to hold anything private, and module manifests and `world.json` are public the same way. | — |
 
 ### 7.8 Companion module (in-world)
 | ID | Requirement | P |
@@ -392,8 +392,8 @@ Until then, organisation comes only from the admin (folders, tags, notes, preset
 | The Foundry desktop app (Electron) has no browser extensions | Setup features unavailable there | Document opening the server in Chrome or Firefox. The in-world part needs the extension in that browser too. |
 | Hosted services may replace or restrict the Setup screen | Reduced reach | Verify per host. The in-world part still works. |
 | Setting module configuration directly skips core's dependency prompts | Broken worlds | Mirror core's checks (8.5). Always show a diff. Require GM confirmation. |
-| Browser storage is per device until D-3 ships | Lost organisation | Export and import in the MVP (D-1). Server file sync next. |
-| User data folder files are URL-readable | Private notes exposed | Warn, and option to exclude notes (D-4). |
+| Browser storage is per device | Lost organisation | Server file sync (D-3, built); export and import (D-1) stay as a backup. |
+| User data folder files are URL-readable | Notes readable by anyone with the path | Accepted by the owner (D-4 dropped); the file holds no secrets. |
 | GMs can upload files and change world settings outside the tool | Published library overwritten by a non-admin | Admin's extension is the master copy; tamper detection and restore (PR-8). |
 | Server has no Administrator password | Anyone who can reach Setup counts as admin | Onboarding notice and docs recommending an admin password, as Foundry itself does. |
 | Store review of host permissions | Delayed listing | Per-origin optional permissions only, with clear justifications. |

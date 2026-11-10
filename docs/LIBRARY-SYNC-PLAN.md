@@ -102,9 +102,20 @@ notice (`ui/actions.ts`). A prompt would be a new screen needing a design, so
 clashes resolve as above, without losing anything, and a prompt can come
 later if clashes turn out to matter.
 
+Which base (review, phase 3): every save of the file has a fresh `id` and
+the ids of the saves it was merged from (`history`, the last 50). A device
+merges three-way only when the server's file is, or descends from, the
+save it last saw. Otherwise (the file was replaced or repaired, another tab
+of the same browser read an older file, two devices saved at the same
+moment) it merges as a union with no base: nothing is deleted, and in those
+rare cases a deletion can come back.
+
 After a push the client reads the file back; if another device wrote in
-between, it merges again (a small window remains: Foundry has no
-compare-and-swap; acceptable for one admin on a few devices).
+between, it merges again, at most three rounds, then looks again after the
+usual delay. Known limit: Foundry's upload has no compare-and-swap, so a
+device writing between our read and our write is overwritten; its own
+items return on its next sync (union, as above), but its deletions in that
+moment may be undone.
 
 ### First sync on a device
 
@@ -125,10 +136,13 @@ covered by unit tests.
 
 ### UI
 
-A small status line on the Library page: "Synced with this server",
-"Syncing...", "Not synced: <reason>" (no admin session, Foundry refused the
-upload, The Forge or another host without a Data folder). No setting to turn
-it off in v1.
+The sync state in the Library's toolbar, beside Import and export: a quiet
+cloud icon when synced, spinning arrows while syncing, and "Library not
+synced" with a warning icon when it failed (Foundry refused the upload, the
+file could not be read, a newer Stagehand wrote it). The full text is the
+tooltip and the screen reader's label. Built as an icon rather than a line
+of text to keep the toolbar calm; the phone layout does not show it yet. No
+setting to turn sync off in v1.
 
 ## Phases
 
@@ -146,15 +160,36 @@ it off in v1.
    our Setup page does not open (remote config has 14 adapters only), so
    the spec cannot run there.
 3. Background: base copy, pull and push scheduling, clash notices; status
-   line.
+   line. Done 2026-11-10: `background/library-sync.ts` (merge inside the
+   library's serialised update; the base moves only after a confirmed
+   write), messages `library-sync` / `library-synced` (admin-gated),
+   `ui/library-sync.ts` (one sync at a time, 2 s batching, read-back, at
+   most 3 rounds), `ui/library-sync-start.ts` (starts on an admin-verified
+   Setup, again when the page shows, flushes when it hides; Foundry notices
+   for clashes and a replaced file). The status is a quiet icon in the
+   Library toolbar (cloud, spinning arrows while syncing), with words only
+   when sync failed; the reason is in its tooltip. Live: four tests in
+   `setup-library-sync.spec.ts` pass on 14.370.
 4. Live suites: two browser contexts on one server edit offline, both sync,
    no change lost; app plus extension on the same server; invalid file is
-   ignored. On 14 (13 once our Setup page runs there).
+   ignored. On 14 (13 once our Setup page runs there). Done 2026-11-10:
+   `tests/foundry/setup-library-devices.spec.ts`, two Chrome profiles with
+   their own extension copies (`loadExtension` option `copy`): a tag made on
+   each ends up on both, a deletion on one reaches the other, a damaged file
+   is replaced with a notice. Passes on 14.370. The app is not one of the
+   devices: its harness cannot open Setup at the moment (`app-smoke` fails
+   the same way, a problem from before this work). The intake test in
+   `setup-library.spec.ts` now also unsorts the module in the server's file,
+   since sorted modules sync.
 5. Docs: PRD D-3 and D-4 updated, README, privacy note (the library is stored
    on the admin's own server, readable by URL).
 
 ## Not in v1
 
+- Large libraries over the app's bridge: the file text crosses the
+  page-to-background messages both ways (up to 8 MB allowed). Real
+  libraries are tens of KB; the WebView bridge's practical limit is not
+  measured yet.
 - Foundry 13: sync runs where our Setup page runs, and that is 14 only for
   now. Foundry 13 itself allows everything sync needs (spike).
 - Syncing the server list between devices.

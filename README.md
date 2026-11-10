@@ -16,7 +16,12 @@ preview. The design is in [docs/PRD.md](docs/PRD.md).
 Two parts, as the PRD describes:
 
 - **Browser extension** (`packages/extension`): enhances the Setup page and
-  holds the library, world snapshots and the command queue.
+  holds the library, world snapshots and the command queue. The admin's
+  Setup also keeps the library on the server, in
+  `Data/stagehand/library.json`, so it follows the admin to every device
+  ([docs/LIBRARY-SYNC-PLAN.md](docs/LIBRARY-SYNC-PLAN.md)). Like everything
+  in Foundry's Data folder, that file can be read by anyone who knows its
+  path.
 - **Companion module** (`packages/module`, id `stagehand`): runs inside
   each world for the full Gamemaster, reports the world's modules and applies
   queued changes after confirmation.
