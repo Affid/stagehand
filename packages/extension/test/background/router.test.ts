@@ -98,12 +98,12 @@ describe("router: registration (R-1)", () => {
     expect(Object.keys(await d.state.servers())).toEqual([S]);
   });
 
-  test("the game page's bridge an earlier version registered is asked for, to be taken off", async () => {
+  test("only the Setup page's scripts are looked for: nothing on the game page", async () => {
     const d = deps();
     await route(d, { kind: "register-server", server: `${S}/` }, fromOptions);
-    expect(d.scripting.registeredIds).toHaveBeenCalledWith(
-      expect.arrayContaining(["ml-bridge-http___localhost_30000"]),
-    );
+    const asked = vi.mocked(d.scripting.registeredIds).mock.calls.flat(2);
+    expect(asked.length).toBeGreaterThan(0);
+    expect(asked.every((id) => id.startsWith("ml-setup-"))).toBe(true);
   });
 
   test("refuses without the host permission", async () => {

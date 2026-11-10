@@ -34,7 +34,7 @@ export interface ContentScript {
   readonly runAt: "document_start" | "document_idle";
 }
 
-export const scriptId = (kind: string, server: ServerId): string =>
+const scriptId = (kind: string, server: ServerId): string =>
   `ml-${kind}-${server.replace(/[^a-z0-9]/gi, "_")}`;
 
 export function contentScriptsFor(server: ServerId): readonly ContentScript[] {

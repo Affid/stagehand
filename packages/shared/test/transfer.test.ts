@@ -42,19 +42,16 @@ describe("library export and import (D-1)", () => {
     });
   });
 
-  test("names itself Stagehand; an export from before the rename still imports", () => {
+  test("names itself Stagehand and imports only Stagehand exports", () => {
     const text = exportLibrary(library, "2026-11-05T00:00:00Z");
     expect(JSON.parse(text)).toMatchObject({ format: "stagehand" });
-    const old = JSON.stringify({
-      ...JSON.parse(text),
-      format: "module-library",
-    });
-    expect(parseLibraryImport(old, "http://b:2")).toMatchObject({ ok: true });
-    const other = JSON.stringify({ ...JSON.parse(text), format: "elsewhere" });
-    expect(parseLibraryImport(other, "s")).toMatchObject({
-      ok: false,
-      error: "The file is not a Stagehand export.",
-    });
+    for (const format of ["module-library", "elsewhere"]) {
+      const other = JSON.stringify({ ...JSON.parse(text), format });
+      expect(parseLibraryImport(other, "s")).toMatchObject({
+        ok: false,
+        error: "The file is not a Stagehand export.",
+      });
+    }
   });
 
   test("rejects a newer format version with a clear message", () => {

@@ -9,12 +9,10 @@ import {
 } from "./schema.ts";
 
 const FORMAT = "stagehand";
-/** Exports made before the rename to Stagehand still import. */
-const LEGACY_FORMAT = "module-library";
 const FORMAT_VERSION = 1;
 
 const Header = z.object({
-  format: z.enum([FORMAT, LEGACY_FORMAT]),
+  format: z.literal(FORMAT),
   kind: z.enum(["library", "preset"]),
   formatVersion: z.number().int().positive(),
   exportedAt: z.string(),

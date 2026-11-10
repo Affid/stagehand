@@ -106,7 +106,7 @@ describe("saving a world through Foundry", () => {
     });
   });
 
-  test("a save moves a schedule from before the rename under the new name", async () => {
+  test("a schedule is saved under our name only; other flags are left alone", async () => {
     const f = foundry();
     const schedule = {
       start: "2026-12-01",
@@ -117,17 +117,13 @@ describe("saving a world through Foundry", () => {
       dates: { "2026-12-01": "19:00" },
     };
     Object.assign(f.world, {
-      flags: {
-        "module-library": {
-          schedule: { ...schedule, dates: { "2026-12-08": "19:00" } },
-        },
-      },
+      flags: { "module-library": { schedule }, other: { x: 1 } },
     });
     await saveWorld(f.page, "w", { schedule });
     expect(f.post).toHaveBeenLastCalledWith({
       action: "editWorld",
       id: "w",
-      flags: { stagehand: { schedule }, "-=module-library": null },
+      flags: { stagehand: { schedule } },
     });
   });
 

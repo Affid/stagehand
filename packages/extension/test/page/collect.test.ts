@@ -229,7 +229,7 @@ describe("reading Setup's package data (V-1)", () => {
     expect(SetupDataSchema.safeParse(data).success).toBe(true);
   });
 
-  test("a schedule saved before the rename is read until the next save", () => {
+  test("a schedule is read from our flags only", () => {
     const schedule = {
       start: "2026-11-10",
       time: "19:00",
@@ -256,8 +256,8 @@ describe("reading Setup's package data (V-1)", () => {
           ].values(),
       },
     });
-    expect(data.worlds[0]?.schedule).toEqual(schedule);
-    expect(data.worlds[1]?.schedule).toEqual(schedule);
+    expect(data.worlds[0]?.schedule).toBeUndefined();
+    expect(data.worlds[1]?.schedule).toBeUndefined();
     expect(data.worlds[2]?.schedule?.time).toBe("20:00");
   });
 

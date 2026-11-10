@@ -13,7 +13,6 @@ import {
   type SetupData,
   type WorldInfo,
   FLAGS_KEY,
-  LEGACY_FLAGS_KEY,
 } from "@module-library/shared/world";
 import { readStagehand } from "@module-library/shared/world-flags";
 import type { Collection, SetupGame } from "./globals.ts";
@@ -50,8 +49,7 @@ function worldExtras(w: Loose): Partial<WorldInfo> {
 function scheduleOf(w: Loose): Partial<WorldInfo> {
   const flags = w.flags as Loose | undefined;
   const ours = flags?.[FLAGS_KEY] as Loose | undefined;
-  const legacy = flags?.[LEGACY_FLAGS_KEY] as Loose | undefined;
-  const parsed = ScheduleSchema.safeParse(ours?.schedule ?? legacy?.schedule);
+  const parsed = ScheduleSchema.safeParse(ours?.schedule);
   return {
     ...(parsed.success ? { schedule: parsed.data } : {}),
     ...stagehandOf(ours),
