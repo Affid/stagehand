@@ -10,9 +10,11 @@ import {
   MAX_QUEUE_BYTES,
   MAX_SAVE_BYTES,
 } from "@module-library/shared/world-flags";
+import { logError } from "@module-library/shared/log";
 import { FLAGS_KEY } from "@module-library/shared/world";
 import type { QueueSaved, SaveQueue } from "../page-queue.ts";
 import type { PageGlobals } from "./globals.ts";
+import { redrawSetup } from "./redraw.ts";
 
 export type QueueGlobals = Pick<PageGlobals, "game" | "ui" | "foundry">;
 
@@ -87,10 +89,25 @@ async function post(
   const game = page.game;
   if (!game?.post) throw new Error("Foundry's Setup can't save worlds here.");
   await game.post({ action: "editWorld", id: worldId, flags });
-  world.updateSource({ flags });
-  const setup = page.ui?.setupPackages as
-    { render?: () => unknown } | undefined;
-  await setup?.render?.();
+  await refreshSetup(page, world, flags);
+}
+
+/**
+ * Saved on the server: Setup's copy and its redraw are a courtesy. Foundry's
+ * own Setup can fail to redraw (on WebViews older than it supports it throws
+ * on `RegExp.escape`), and that must not read as an unsaved queue.
+ */
+async function refreshSetup(
+  page: QueueGlobals,
+  world: Editable,
+  flags: object,
+): Promise<void> {
+  try {
+    world.updateSource({ flags });
+  } catch (error: unknown) {
+    logError("queue copy", error);
+  }
+  await redrawSetup(page, "queue");
 }
 
 /** Saves the queue (and intent); the time of the write, or an error. */

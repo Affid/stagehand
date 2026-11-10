@@ -12,6 +12,8 @@ import {
 } from "@module-library/shared/world";
 import type { WorldChanges } from "../page-save.ts";
 import type { PageGlobals } from "./globals.ts";
+import { redrawSetup } from "./redraw.ts";
+import { logError } from "@module-library/shared/log";
 
 interface EditableWorld {
   validate(options: { changes: object; clean: boolean }): void;
@@ -73,21 +75,32 @@ export async function saveWorld(
   const game = page.game;
   const world = game?.worlds?.get?.(worldId) as EditableWorld | undefined;
   if (!world || !game?.post) return `No world ${worldId}`;
+  let data: object;
   try {
     world.validate({ changes: { id: worldId, ...changes }, clean: true });
-    const data = (await game.post({
+    data = (await game.post({
       action: "editWorld",
       id: worldId,
       ...changes,
     })) as object;
-    // Merging the answer can't remove a key ("-=" deletions): apply ours first.
-    world.updateSource(changes);
-    world.updateSource(data);
-    const setup = page.ui?.setupPackages as
-      { render?: () => unknown } | undefined;
-    await setup?.render?.();
-    return undefined;
   } catch (e: unknown) {
     return message(e);
+  }
+  copySaved(world, changes, data);
+  await redrawSetup(page, "world");
+  return undefined;
+}
+
+/**
+ * Saved on the server: Setup's copy is a courtesy, as its redraw is, and its
+ * failure must not read as an unsaved world. Merging the answer can't remove
+ * a key ("-=" deletions), so ours goes first.
+ */
+function copySaved(world: EditableWorld, changes: object, data: object): void {
+  try {
+    world.updateSource(changes);
+    world.updateSource(data);
+  } catch (error: unknown) {
+    logError("world copy", error);
   }
 }

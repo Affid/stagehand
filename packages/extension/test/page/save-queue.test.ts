@@ -5,11 +5,16 @@ import { saveQueue } from "../../src/page/save-queue.ts";
 const DATE = "Mon, 09 Nov 2026 20:00:00 GMT";
 
 function foundry(
-  over: { post?: () => Promise<unknown>; date?: string | null } = {},
+  over: {
+    post?: () => Promise<unknown>;
+    date?: string | null;
+    render?: () => Promise<unknown>;
+    updateSource?: () => void;
+  } = {},
 ) {
-  const world = { id: "w", updateSource: vi.fn() };
+  const world = { id: "w", updateSource: vi.fn(over.updateSource) };
   const post = vi.fn(over.post ?? (() => Promise.resolve({ id: "w" })));
-  const render = vi.fn(() => Promise.resolve());
+  const render = vi.fn(over.render ?? (() => Promise.resolve()));
   const page = {
     game: {
       worlds: {
@@ -143,6 +148,33 @@ describe("saving a world's queue in its flags", () => {
       (await saveQueue(f.deps, { requestId: "r", worldId: "w", queue: big }))
         .error,
     ).toMatch(/Too many/);
+  });
+
+  test("once saved, a failing redraw of Foundry's Setup (an older WebView) is still a save, and logged", async () => {
+    const log = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    const render = (): Promise<unknown> =>
+      Promise.reject(new TypeError("RegExp.escape is not a function"));
+    const req = { requestId: "r", worldId: "w", queue: [entry] };
+    expect(await saveQueue(foundry({ render }).deps, req)).toEqual({
+      written: "2026-11-09T20:00:00.000Z",
+    });
+    expect(log).toHaveBeenCalledOnce();
+    log.mockRestore();
+  });
+
+  test("once saved, a failing copy into Setup is still a save, logged, and Setup still redrawn", async () => {
+    const log = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    const updateSource = (): void => {
+      throw new Error("bad copy");
+    };
+    const f = foundry({ updateSource });
+    const req = { requestId: "r", worldId: "w", queue: [entry] };
+    expect(await saveQueue(f.deps, req)).toEqual({
+      written: "2026-11-09T20:00:00.000Z",
+    });
+    expect(f.render).toHaveBeenCalled();
+    expect(log).toHaveBeenCalledOnce();
+    log.mockRestore();
   });
 
   test("Setup without Foundry's post says so", async () => {

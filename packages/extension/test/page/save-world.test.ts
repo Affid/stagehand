@@ -2,18 +2,23 @@ import { describe, expect, test, vi } from "vitest";
 import { saveWorld } from "../../src/page/save-world.ts";
 
 function foundry(
-  over: { validate?: () => void; post?: () => Promise<unknown> } = {},
+  over: {
+    validate?: () => void;
+    post?: () => Promise<unknown>;
+    render?: () => Promise<unknown>;
+    updateSource?: () => void;
+  } = {},
 ) {
   const world = {
     id: "w",
     title: "Old",
     validate: vi.fn(over.validate ?? (() => undefined)),
-    updateSource: vi.fn(),
+    updateSource: vi.fn(over.updateSource),
   };
   const post = vi.fn(
     over.post ?? (() => Promise.resolve({ id: "w", title: "New" })),
   );
-  const render = vi.fn(() => Promise.resolve());
+  const render = vi.fn(over.render ?? (() => Promise.resolve()));
   const page = {
     game: {
       worlds: {
@@ -45,6 +50,29 @@ describe("saving a world through Foundry", () => {
       title: "New",
     });
     expect(f.render).toHaveBeenCalled();
+  });
+
+  test("once saved, a failing redraw of Foundry's Setup is still a save, and logged", async () => {
+    const log = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    const render = (): Promise<unknown> =>
+      Promise.reject(new TypeError("RegExp.escape is not a function"));
+    const f = foundry({ render });
+    expect(await saveWorld(f.page, "w", { title: "New" })).toBeUndefined();
+    expect(f.render).toHaveBeenCalled();
+    expect(log).toHaveBeenCalledOnce();
+    log.mockRestore();
+  });
+
+  test("once saved, a failing copy into Setup is still a save, and logged", async () => {
+    const log = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    const updateSource = (): void => {
+      throw new Error("bad copy");
+    };
+    const f = foundry({ updateSource });
+    expect(await saveWorld(f.page, "w", { title: "New" })).toBeUndefined();
+    expect(f.render).toHaveBeenCalled();
+    expect(log).toHaveBeenCalledOnce();
+    log.mockRestore();
   });
 
   test("our schedule goes into the world's flags; null removes it", async () => {

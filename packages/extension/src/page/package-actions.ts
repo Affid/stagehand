@@ -3,6 +3,7 @@
 // internal lockPackage request (behind the lockPackage flag), its update,
 // backup and uninstall flows with their own dialogs.
 import type { PageGlobals } from "./globals.ts";
+import { redrawSetup } from "./redraw.ts";
 import { placeInView } from "./place.ts";
 
 export type PackageType = "world" | "module" | "system";
@@ -35,12 +36,6 @@ export function packageOf(
   return p && typeof p === "object" ? p : undefined;
 }
 
-async function rerender(page: ActionGlobals): Promise<void> {
-  const setup = page.ui?.setupPackages as
-    { render?: () => unknown } | undefined;
-  await setup?.render?.();
-}
-
 /** As SetupPackages#toggleFavorite: Foundry's setting, then a re-render. */
 export async function toggleFavorite(
   page: ActionGlobals,
@@ -62,7 +57,7 @@ export async function toggleFavorite(
   };
   await settings.set("core", FAVORITES, next);
   pkg.favorite = !pkg.favorite;
-  await rerender(page);
+  await redrawSetup(page, "package");
   return undefined;
 }
 
@@ -78,7 +73,7 @@ export async function setLock(
   if (!pkg || !game?.post) return `No ${type} ${id}`;
   await game.post({ action: "lockPackage", type, id, shouldLock });
   pkg.locked = shouldLock;
-  await rerender(page);
+  await redrawSetup(page, "package");
   return undefined;
 }
 
