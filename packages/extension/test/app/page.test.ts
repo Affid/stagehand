@@ -17,10 +17,10 @@ const SERVER = "http://localhost:30000/vtt";
 
 afterEach(() => {
   document.documentElement.className = "";
-  document.querySelectorAll("style[data-ml]").forEach((s) => {
+  document.querySelectorAll("style[data-st]").forEach((s) => {
     s.remove();
   });
-  Reflect.deleteProperty(window, "mlApp");
+  Reflect.deleteProperty(window, "stApp");
 });
 
 describe("which page a script runs on", () => {
@@ -43,9 +43,9 @@ describe("which page a script runs on", () => {
 describe("the bridge object WebView injects", () => {
   test("is kept and its global name removed, so later page scripts can't use it", () => {
     const port = fakeNative().port;
-    Object.assign(window, { mlApp: port });
+    Object.assign(window, { stApp: port });
     expect(takeBridge(window)).toBe(port);
-    expect((window as { mlApp?: unknown }).mlApp).toBeUndefined();
+    expect((window as { stApp?: unknown }).stApp).toBeUndefined();
   });
 
   test("is missing on an old WebView", () => {
@@ -54,7 +54,7 @@ describe("the bridge object WebView injects", () => {
 
   test("one whose name can't be taken away is refused, not used", () => {
     const win = {};
-    Object.defineProperty(win, "mlApp", {
+    Object.defineProperty(win, "stApp", {
       value: fakeNative().port,
       configurable: false,
       writable: false,
@@ -67,28 +67,28 @@ describe("app-setup on a server's Setup page", () => {
   test("hides Foundry's Setup before the first paint and starts both halves", () => {
     const native = fakeNative();
     native.on("runtime.send", () => ({}));
-    Object.assign(window, { mlApp: native.port });
+    Object.assign(window, { stApp: native.port });
     const started = startAppSetup({
       win: window,
       doc: document,
       href: `${SERVER}/setup`,
       server: SERVER,
-      css: ".ml-test { color: red }",
+      css: ".st-test { color: red }",
     });
     expect(started).toBe(true);
-    const style = document.querySelector("style[data-ml]");
-    expect(style?.textContent).toBe(".ml-test { color: red }");
+    const style = document.querySelector("style[data-st]");
+    expect(style?.textContent).toBe(".st-test { color: red }");
     expect(style?.parentElement).toBe(document.documentElement);
-    expect(document.documentElement.classList.contains("ml-shell-wait")).toBe(
+    expect(document.documentElement.classList.contains("st-shell-wait")).toBe(
       true,
     );
-    expect((window as { mlApp?: unknown }).mlApp).toBeUndefined();
+    expect((window as { stApp?: unknown }).stApp).toBeUndefined();
   });
 
   test("answers native's Back: nothing to go back to on a bare page", async () => {
     const native = fakeNative();
     native.on("runtime.send", () => ({}));
-    Object.assign(window, { mlApp: native.port });
+    Object.assign(window, { stApp: native.port });
     startAppSetup({
       win: window,
       doc: document,
@@ -109,7 +109,7 @@ describe("app-setup on a server's Setup page", () => {
         (q: string) =>
           ({ matches: q === "(pointer: coarse)" }) as MediaQueryList,
       );
-    Object.assign(window, { mlApp: fakeNative().port });
+    Object.assign(window, { stApp: fakeNative().port });
     startAppSetup({
       win: window,
       doc: document,
@@ -121,7 +121,7 @@ describe("app-setup on a server's Setup page", () => {
     expect(clearNotice).toHaveBeenCalledWith(window);
     coarse.mockImplementation(() => ({ matches: false }) as MediaQueryList);
     clearNotice.mockClear();
-    Object.assign(window, { mlApp: fakeNative().port });
+    Object.assign(window, { stApp: fakeNative().port });
     startAppSetup({
       win: window,
       doc: document,
@@ -135,7 +135,7 @@ describe("app-setup on a server's Setup page", () => {
   });
 
   test("does nothing on another page, or without the bridge", () => {
-    Object.assign(window, { mlApp: fakeNative().port });
+    Object.assign(window, { stApp: fakeNative().port });
     expect(
       startAppSetup({
         win: window,
@@ -145,8 +145,8 @@ describe("app-setup on a server's Setup page", () => {
         css: "",
       }),
     ).toBe(false);
-    expect((window as { mlApp?: unknown }).mlApp).toBeDefined();
-    Reflect.deleteProperty(window, "mlApp");
+    expect((window as { stApp?: unknown }).stApp).toBeDefined();
+    Reflect.deleteProperty(window, "stApp");
     expect(
       startAppSetup({
         win: window,
@@ -156,7 +156,7 @@ describe("app-setup on a server's Setup page", () => {
         css: "",
       }),
     ).toBe(false);
-    expect(document.querySelector("style[data-ml]")).toBe(null);
+    expect(document.querySelector("style[data-st]")).toBe(null);
     expect(document.documentElement.className).toBe("");
   });
 });
@@ -204,7 +204,7 @@ describe("app-game on a server's game page", () => {
     const native = fakeNative();
     const done = vi.fn(() => ({}));
     native.on("apply.done", done);
-    Object.assign(window, { mlApp: native.port });
+    Object.assign(window, { stApp: native.port });
     expect(
       startAppGame({ win: window, href: `${SERVER}/game`, server: SERVER }),
     ).toBe(true);
@@ -220,7 +220,7 @@ describe("app-game on a server's game page", () => {
 
   test("on Foundry's /join (no running screen) and on /auth, it clears Foundry's size notice", () => {
     const clearNotice = vi.fn();
-    Object.assign(window, { mlApp: fakeNative().port });
+    Object.assign(window, { stApp: fakeNative().port });
     startAppGame({
       win: window,
       href: `${SERVER}/join`,
@@ -228,7 +228,7 @@ describe("app-game on a server's game page", () => {
       clearNotice: clearNotice,
     });
     expect(clearNotice).toHaveBeenCalledWith(window);
-    Object.assign(window, { mlApp: fakeNative().port });
+    Object.assign(window, { stApp: fakeNative().port });
     startAppGame({
       win: window,
       href: `${SERVER}/auth`,
@@ -236,7 +236,7 @@ describe("app-game on a server's game page", () => {
       clearNotice: clearNotice,
     });
     expect(clearNotice).toHaveBeenCalledTimes(2);
-    Object.assign(window, { mlApp: fakeNative().port });
+    Object.assign(window, { stApp: fakeNative().port });
     startAppGame({
       win: window,
       href: `${SERVER}/game`,
@@ -248,24 +248,24 @@ describe("app-game on a server's game page", () => {
 
   test("on any other page of the server it takes the bridge away, unused", () => {
     const native = fakeNative();
-    Object.assign(window, { mlApp: native.port });
+    Object.assign(window, { stApp: native.port });
     expect(
       startAppGame({ win: window, href: `${SERVER}/join`, server: SERVER }),
     ).toBe(false);
-    expect((window as { mlApp?: unknown }).mlApp).toBeUndefined();
+    expect((window as { stApp?: unknown }).stApp).toBeUndefined();
     expect(native.sent).toEqual([]);
   });
 
   test("on /join it starts the running-world screen, after a launch too", () => {
     const native = fakeNative();
-    Object.assign(window, { mlApp: native.port });
+    Object.assign(window, { stApp: native.port });
     startAppGame({
       win: window,
       href: `${SERVER}/join`,
       server: SERVER,
-      runningCss: "#ml-run-root{}",
+      runningCss: "#st-run-root{}",
     });
-    expect(document.documentElement.classList.contains("ml-run-wait")).toBe(
+    expect(document.documentElement.classList.contains("st-run-wait")).toBe(
       true,
     );
     expect(native.sent).toEqual([]);
@@ -285,11 +285,11 @@ describe("native's wrapper around a page script (odd servers)", () => {
 describe("native's wrapper around a page script", () => {
   test("gives the script its server as a parameter, JSON-quoted", () => {
     const wrapped = wrapForServer(
-      "var moduleLibrary = ML_APP_SERVER;",
+      "var stagehand = ST_APP_SERVER;",
       'http://host:30000/a"b',
     );
     expect(wrapped).toBe(
-      '(function (ML_APP_SERVER) {\nvar moduleLibrary = ML_APP_SERVER;\n})("http://host:30000/a\\"b");\n',
+      '(function (ST_APP_SERVER) {\nvar stagehand = ST_APP_SERVER;\n})("http://host:30000/a\\"b");\n',
     );
   });
 });

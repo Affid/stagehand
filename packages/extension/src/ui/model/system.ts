@@ -1,5 +1,5 @@
 // A world's game system by the title Foundry shows, not its id.
-import type { SetupData } from "@module-library/shared/world";
+import type { SetupData } from "@stagehand/shared/world";
 
 /** The installed system's title; its id when it isn't installed. */
 export function systemTitle(

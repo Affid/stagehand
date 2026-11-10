@@ -1,6 +1,6 @@
 // A world page's body: the tab row (Modules, About, Backups with icons and
 // counts, and the Modules tools), the open tab, then recent changes.
-import type { WorldInfo } from "@module-library/shared/world";
+import type { WorldInfo } from "@stagehand/shared/world";
 import type { ComponentChildren } from "preact";
 import { useEffect, useState } from "preact/hooks";
 import { TabList, TabPanel } from "../../common/tabs.tsx";
@@ -20,7 +20,7 @@ import { isCompact, useLayout } from "../phone/layout.ts";
 export type WorldTab = "modules" | "about" | "backups";
 type Tab = WorldTab;
 const TABS: readonly Tab[] = ["modules", "about", "backups"];
-const WORLD_TABS = "ml-wt";
+const WORLD_TABS = "st-wt";
 const ICONS: Record<Tab, string> = {
   modules: "plug",
   about: "scroll",
@@ -36,12 +36,12 @@ function useCounts(model: WorldModules, backups: WorldBackups) {
   const compact = isCompact(useLayout());
   const list = backups.view.list;
   const after = compact
-    ? t("mlp.countArrow", { from: model.nowCount, to: model.nextCount })
+    ? t("stp.countArrow", { from: model.nowCount, to: model.nextCount })
     : t("wt.afterLaunch", { n: model.nextCount });
   // The arrow, said in words (screen readers read "→" unevenly).
   const spoken =
     compact && model.tracked && model.changes
-      ? t("mlp.countSr", { from: model.nowCount, to: model.nextCount })
+      ? t("stp.countSr", { from: model.nowCount, to: model.nextCount })
       : undefined;
   return {
     modules: model.tracked
@@ -66,7 +66,7 @@ function TabRow(props: {
   const { t } = useUi();
   const spoken = props.counts.spoken;
   return (
-    <nav class="mls-subtabs">
+    <nav class="sts-subtabs">
       <TabList
         id={WORLD_TABS}
         label={t("wt.label")}
@@ -87,7 +87,7 @@ function TabRow(props: {
                   {props.counts[k]}
                 </span>
                 {k === "modules" && spoken ? (
-                  <span class="ml-sr-only">{spoken}</span>
+                  <span class="st-sr-only">{spoken}</span>
                 ) : null}
               </>
             ) : null}
@@ -114,7 +114,7 @@ function Recent(props: { readonly world: WorldInfo }) {
   const recent = worldRow(state.data, props.world).recent;
   if (!recent.length) return null;
   return (
-    <details class="mlw-history">
+    <details class="stw-history">
       <summary>{t("wp.history")}</summary>
       <HistoryList commands={recent} />
     </details>

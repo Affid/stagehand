@@ -39,24 +39,24 @@ export function ReleaseAccess(props: {
   const { t } = props;
   const a = useAccess(props.platform);
   return (
-    <section aria-labelledby="mlp-release-h">
-      <h2 id="mlp-release-h">{t("set.release")}</h2>
-      <p class="mlp-muted">{t("set.releaseText")}</p>
+    <section aria-labelledby="stp-release-h">
+      <h2 id="stp-release-h">{t("set.release")}</h2>
+      <p class="stp-muted">{t("set.releaseText")}</p>
       {a.granted === false ? (
         <button type="button" onClick={a.allow}>
           {t("set.allow")}
         </button>
       ) : null}
       {a.granted ? (
-        <p class="mlp-row">
-          <span class="mlp-ok">{t("set.allowed")}</span>
-          <button type="button" class="mlp-quiet" onClick={a.remove}>
+        <p class="stp-row">
+          <span class="stp-ok">{t("set.allowed")}</span>
+          <button type="button" class="stp-quiet" onClick={a.remove}>
             {t("set.removePerm")}
           </button>
         </p>
       ) : null}
       {a.error ? (
-        <p class="mlp-err" role="alert">
+        <p class="stp-err" role="alert">
           {a.error}
         </p>
       ) : null}

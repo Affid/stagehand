@@ -43,7 +43,7 @@ function Unsaved(props: {
   const label = (k: ChangeKey): string =>
     t(k === "password" ? "cfg.password" : `cfg.${k}`);
   return (
-    <div class="mlc-unsaved" role="status">
+    <div class="stc-unsaved" role="status">
       <Icon name="pen" />
       <span>
         <b>{plural(t, "cfg.changes", c.keys.length)}</b> {t("cfg.notSaved")}:{" "}
@@ -77,7 +77,7 @@ function Waiting(props: { readonly c: Config; readonly onStop: () => void }) {
   const label = (k: ChangeKey): string =>
     t(k === "password" ? "cfg.password" : `cfg.${k}`);
   return (
-    <div class="mlc-waiting" role="status">
+    <div class="stc-waiting" role="status">
       <Icon name="rotate" />
       <span>
         <b>{t("cfg.waiting")}</b> {c.waiting.map(label).join(", ")}.
@@ -98,7 +98,7 @@ function Bar(props: {
   const { c } = props;
   if (!c.keys.length && !c.waiting.length) return null;
   return (
-    <div class="mlc-bar">
+    <div class="stc-bar">
       {c.keys.length ? (
         <Unsaved
           c={c}
@@ -119,7 +119,7 @@ function Body(props: {
 }) {
   const { c, problems } = props;
   return (
-    <div class="mlc-cols">
+    <div class="stc-cols">
       <div class="col">
         <Access c={c} />
         <Startup c={c} />
@@ -145,16 +145,16 @@ export function ConfigPage() {
   const problems = saved ? problemsOf(saved, c.typed) : new Set<string>();
   const close = (): void => setDialog(null);
   return (
-    <div class="mlc-page ml-app">
+    <div class="stc-page st-app">
       <PageHead
         title={t("cfg.title")}
         summary={c.loaded ? <Running c={c} /> : undefined}
       />
-      {c.error && !dialog ? <p class="ml-banner ml-warn">{c.error}</p> : null}
+      {c.error && !dialog ? <p class="st-banner st-warn">{c.error}</p> : null}
       {c.loaded ? (
         <Body c={c} problems={problems} onDialog={setDialog} />
       ) : c.error ? null : (
-        <p class="ml-empty">{t("cfg.loading")}</p>
+        <p class="st-empty">{t("cfg.loading")}</p>
       )}
       {/* On a phone the bar sits above the tabs, where Save stays in reach. */}
       <Docked>

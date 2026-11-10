@@ -89,7 +89,7 @@ async function open(listing: ServerListing = LISTING) {
   r.page.serverBackups.mockResolvedValue({ listing });
   fireEvent.click(r.getByRole("button", { name: "Backups" }));
   await waitFor(() => {
-    expect(r.container.querySelector(".mlb-page .mls-subtabs")).toBeTruthy();
+    expect(r.container.querySelector(".stb-page .sts-subtabs")).toBeTruthy();
   });
   return r;
 }
@@ -99,14 +99,14 @@ const tabTo = (r: Awaited<ReturnType<typeof open>>, name: string): void => {
 };
 
 const pkgRow = (c: ParentNode, key: string): HTMLElement =>
-  el(c, `.mlb-pkg[data-package="${key}"]`);
+  el(c, `.stb-pkg[data-package="${key}"]`);
 
 describe("the server Backups page", () => {
   test("the head sums up the server's backups, snapshots and free space", async () => {
     const { container, page, store } = await open();
     expect(store.get().route).toEqual({ kind: "server", page: "backups" });
     expect(page.serverBackups).toHaveBeenCalledWith("list", [], true);
-    const head = el(container, ".mlb-page .mlb-head");
+    const head = el(container, ".stb-page .stb-head");
     expect(head.querySelector("h2")?.textContent).toBe("Backups");
     expect(head.textContent).toContain("51 MB of backups on this server");
     expect(head.textContent).toContain("1 snapshot");
@@ -115,7 +115,7 @@ describe("the server Backups page", () => {
 
   test("four tabs in Foundry's order, with counts and sizes", async () => {
     const { container } = await open();
-    const tabs = [...container.querySelectorAll(".mlb-page [role=tab]")].map(
+    const tabs = [...container.querySelectorAll(".stb-page [role=tab]")].map(
       (x) => x.textContent,
     );
     expect(tabs).toEqual([
@@ -128,13 +128,13 @@ describe("the server Backups page", () => {
 
   test("a snapshot: its note, when, packages, Foundry's build and size", async () => {
     const { container } = await open();
-    const s = el(container, '.mlb-snaps li[data-snapshot="snapshot.1"]');
+    const s = el(container, '.stb-snaps li[data-snapshot="snapshot.1"]');
     expect(s.textContent).toContain("Before 14.371");
     expect(s.textContent).toContain("22 packages");
     expect(s.textContent).toContain("5 weeks ago");
     expect(el(s, ".core").textContent).toContain("14.370");
     expect(s.textContent).toContain("131 MB");
-    expect(el(container, ".mlb-page .mlw-bhead").textContent).toContain(
+    expect(el(container, ".stb-page .stw-bhead").textContent).toContain(
       "rolls the whole server back",
     );
   });
@@ -198,7 +198,7 @@ describe("the server Backups page", () => {
 
   test("Restore… and Delete go to Foundry's dialogs", async () => {
     const { container, page } = await open();
-    const s = el(container, '.mlb-snaps li[data-snapshot="snapshot.1"]');
+    const s = el(container, '.stb-snaps li[data-snapshot="snapshot.1"]');
     fireEvent.click(within(s).getByRole("button", { name: "Restore…" }));
     await waitFor(() => {
       expect(page.serverBackups).toHaveBeenCalledWith("restoreSnapshot", [
@@ -248,7 +248,7 @@ describe("the server Backups page", () => {
       fireEvent.click(
         within(el(container, `[data-snapshot="${id}"]`)).getByRole("checkbox"),
       );
-    expect(el(container, ".mlw-bhead.sel").textContent).toContain(
+    expect(el(container, ".stw-bhead.sel").textContent).toContain(
       "2 snapshots selected",
     );
     fireEvent.click(getByRole("button", { name: "Delete 2…" }));
@@ -262,7 +262,7 @@ describe("the server Backups page", () => {
 
   test("no snapshots yet says what one is", async () => {
     const { container } = await open({ ...LISTING, snapshots: [] });
-    expect(el(container, ".mlb-page .mlw-empty").textContent).toContain(
+    expect(el(container, ".stb-page .stw-empty").textContent).toContain(
       "No snapshots yet",
     );
   });
@@ -305,7 +305,7 @@ describe("the Worlds, Modules and Systems tabs", () => {
     fireEvent.click(
       within(w).getByRole("button", { name: "Show the backups of Strahd" }),
     );
-    expect(w.querySelectorAll(".mlb-inner li")).toHaveLength(1);
+    expect(w.querySelectorAll(".stb-inner li")).toHaveLength(1);
     fireEvent.click(
       within(w).getByRole("button", { name: "Open Strahd's Backups tab" }),
     );
@@ -344,11 +344,11 @@ describe("the Worlds, Modules and Systems tabs", () => {
     const r = await open();
     tabTo(r, "Modules");
     const names = (): string[] =>
-      [...r.container.querySelectorAll(".mlb-pkg .nm strong")].map((x) =>
+      [...r.container.querySelectorAll(".stb-pkg .nm strong")].map((x) =>
         (x.firstChild?.textContent ?? "").trim(),
       );
     expect(names()).toEqual(["Big Mod", "Old Mod"]);
-    expect(el(r.container, ".mlb-tools").textContent).toContain(
+    expect(el(r.container, ".stb-tools").textContent).toContain(
       "2 backups of 2 modules · 11 MB",
     );
     fireEvent.change(r.getByRole("combobox", { name: "Sort by" }), {
@@ -406,9 +406,9 @@ describe("a snapshot in progress", () => {
       },
     });
     await waitFor(() => {
-      expect(r.container.querySelector(".mlb-job")).toBeTruthy();
+      expect(r.container.querySelector(".stb-job")).toBeTruthy();
     });
-    const job = el(r.container, ".mlb-job");
+    const job = el(r.container, ".stb-job");
     expect(job.getAttribute("role")).toBe("status");
     expect(job.textContent).toContain("Creating a snapshot · 50%");
     expect(job.textContent).toContain(
@@ -450,7 +450,7 @@ describe("select mode after a refresh (code review)", () => {
         null,
       );
     });
-    expect(el(container, ".mlw-bhead.sel").textContent).toContain(
+    expect(el(container, ".stw-bhead.sel").textContent).toContain(
       "1 snapshot selected",
     );
     expect(getByRole("button", { name: "Delete 1…" })).toBeTruthy();

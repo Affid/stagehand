@@ -13,7 +13,7 @@ const ext = await loadExtension();
 const page = await ext.context.newPage();
 await page.setViewportSize({ width: 1366, height: 768 });
 await openSetupAsAdmin(ext, page, env.url, env.adminPassword);
-const root = page.locator("#ml-shell-root");
+const root = page.locator("#st-shell-root");
 
 /** The focused element and whether focus shows on it. */
 const stop = (p: Page) =>
@@ -33,9 +33,9 @@ const stop = (p: Page) =>
       .trim()
       .slice(0, 40);
     // Each element once: mark it, so cards with the same labels differ.
-    el.dataset.mlWalk ??= String(Math.random());
-    const where = `${el.tagName.toLowerCase()}[${el.getAttribute("type") ?? ""}].${el.className.slice(0, 30)} "${label}" #${el.dataset.mlWalk.slice(2, 7)}`;
-    const inShell = !!el.closest("#ml-shell-root");
+    el.dataset.stWalk ??= String(Math.random());
+    const where = `${el.tagName.toLowerCase()}[${el.getAttribute("type") ?? ""}].${el.className.slice(0, 30)} "${label}" #${el.dataset.stWalk.slice(2, 7)}`;
+    const inShell = !!el.closest("#st-shell-root");
     const visible = r.width > 0 && r.height > 0;
     return { where, ring, inShell, visible };
   });
@@ -59,18 +59,18 @@ async function walk(name: string, steps = 300): Promise<void> {
   for (const b of bad) console.log(`  ${b}`);
 }
 
-await root.locator(".mls-world").first().click();
+await root.locator(".sts-world").first().click();
 await walk("world");
-await root.locator(".mls-main").getByRole("tab", { name: /About/ }).click();
+await root.locator(".sts-main").getByRole("tab", { name: /About/ }).click();
 await walk("about");
-await root.locator(".mls-lib").click();
+await root.locator(".sts-lib").click();
 await walk("library");
 await root
-  .locator(".mls-main")
+  .locator(".sts-main")
   .getByRole("tab", { name: /By world/ })
   .click();
 await walk("by world");
-const top = root.locator(".mls-top");
+const top = root.locator(".sts-top");
 await top.getByRole("button", { name: "Backups" }).click();
 await walk("server backups");
 await top.getByRole("button", { name: "Configuration" }).click();

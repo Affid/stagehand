@@ -13,12 +13,12 @@ const MIN_PASSWORD = 8;
 function State(props: { readonly set: boolean }) {
   const { t } = useUi();
   return props.set ? (
-    <span class="mlc-state ok">
+    <span class="stc-state ok">
       <Icon name="lock" />
       {t("cfg.pw.set")}
     </span>
   ) : (
-    <span class="mlc-state bad">
+    <span class="stc-state bad">
       <Icon name="lock-open" />
       {t("cfg.pw.notSet")}
     </span>
@@ -32,7 +32,7 @@ function Current(props: {
   const { t } = useUi();
   const [text, setText] = useState("");
   return (
-    <div class="mlc-pw">
+    <div class="stc-pw">
       <input
         type="password"
         autocomplete="current-password"
@@ -79,7 +79,7 @@ function Next(props: {
     else props.c.setPw({ step: "done", password: a });
   };
   return (
-    <div class="mlc-pw">
+    <div class="stc-pw">
       <input
         type="password"
         autocomplete="new-password"
@@ -121,7 +121,7 @@ function PasswordFlow(props: { readonly c: Config }) {
   if (pw?.step === "done")
     return (
       <>
-        <span class="mlc-state warn">
+        <span class="stc-state warn">
           <Icon name="clock" />
           {t("cfg.pw.chosen")}
         </span>
@@ -147,7 +147,7 @@ function PasswordFlow(props: { readonly c: Config }) {
 export function Access(props: { readonly c: Config }) {
   const { t } = useUi();
   return (
-    <section class="mlw-box">
+    <section class="stw-box">
       <h4>
         <span>{t("cfg.access")}</span>
       </h4>

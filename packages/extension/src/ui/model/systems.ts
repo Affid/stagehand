@@ -1,8 +1,8 @@
 // Installed systems as the Library shows them: a system's data as a
 // package (the fields a system lacks take their empty values), and the
 // worlds that use it.
-import type { PackageInfo } from "@module-library/shared/package";
-import type { SystemInfo, WorldInfo } from "@module-library/shared/world";
+import type { PackageInfo } from "@stagehand/shared/package";
+import type { SystemInfo, WorldInfo } from "@stagehand/shared/world";
 
 export function asPackage(s: SystemInfo): PackageInfo {
   const optional = Object.fromEntries(

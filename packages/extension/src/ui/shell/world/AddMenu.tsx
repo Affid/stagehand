@@ -1,7 +1,7 @@
 // "Add ▾" on the world page: queue a preset, or copy another world's
 // modules (match it, or add only). Everything waits for the next launch.
 import { useCallback, useId, useRef, useState } from "preact/hooks";
-import { MAX_PICKED } from "@module-library/shared/world";
+import { MAX_PICKED } from "@stagehand/shared/world";
 import { useFocusFirst } from "../../common/disclosure.ts";
 import { useDismiss } from "../../common/dismiss.ts";
 import { Icon } from "../../common/widgets.tsx";
@@ -36,7 +36,7 @@ function CopyStep(props: {
   const none = n === 0 || tooMany;
   const id = useId();
   return (
-    <div class="mlw-addstep">
+    <div class="stw-addstep">
       <button
         type="button"
         disabled={none}
@@ -58,11 +58,11 @@ function CopyStep(props: {
         <span id={`${id}-a`}>{t("wp.add.addAllHint")}</span>
       </button>
       {tooMany ? (
-        <p class="ml-hint">
+        <p class="st-hint">
           {t("wp.add.tooMany", { max: MAX_PICKED, world, n })}
         </p>
       ) : null}
-      <button type="button" class="ml-link" onClick={props.onBack}>
+      <button type="button" class="st-link" onClick={props.onBack}>
         {t("wp.add.back")}
       </button>
     </div>
@@ -81,7 +81,7 @@ function Choices(props: {
     <>
       <h4>{t("wp.add.presets")}</h4>
       {presets.length === 0 ? (
-        <p class="ml-empty">{t("wp.add.noPresets")}</p>
+        <p class="st-empty">{t("wp.add.noPresets")}</p>
       ) : null}
       {presets.map((p) => (
         <button
@@ -96,7 +96,7 @@ function Choices(props: {
       ))}
       <h4>{t("wp.add.copy")}</h4>
       {sources.length === 0 ? (
-        <p class="ml-empty">{t("wp.add.noWorlds")}</p>
+        <p class="st-empty">{t("wp.add.noWorlds")}</p>
       ) : null}
       {sources.map((s) => (
         <button
@@ -145,7 +145,7 @@ export function AddMenu(props: { readonly worldId: string }) {
     void actions.queueApply(props.worldId, mode, presets, mods);
   };
   return (
-    <div class="mlw-add" ref={wrap}>
+    <div class="stw-add" ref={wrap}>
       <button
         type="button"
         ref={trigger}
@@ -157,7 +157,7 @@ export function AddMenu(props: { readonly worldId: string }) {
         <i class="fa-solid fa-caret-down" aria-hidden="true" />
       </button>
       {open ? (
-        <div class="mlw-addmenu" ref={menu}>
+        <div class="stw-addmenu" ref={menu}>
           {source ? (
             <CopyStep
               source={source}

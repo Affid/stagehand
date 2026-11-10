@@ -1,9 +1,9 @@
 /* The launching screen (Shell.tsx, Launching.tsx; mockup design/app-screens,
-   Launch). Inside #ml-shell-root's layer, so Foundry's own dialogs (a
+   Launch). Inside #st-shell-root's layer, so Foundry's own dialogs (a
    migration question) still show above it. Full screen on a phone; a panel
    over the page on a desktop. */
 
-.mll-launch {
+.stl-launch {
   position: absolute;
   inset: 0;
   z-index: 130;
@@ -16,7 +16,7 @@
   font-family: var(--font-body, Signika, sans-serif);
 }
 
-.mll-box {
+.stl-box {
   width: min(520px, 100%);
   max-height: 100%;
   overflow: auto;
@@ -31,11 +31,11 @@
   box-shadow: 0 20px 60px rgb(0 0 0 / 60%);
 }
 
-.mll-box:focus {
+.stl-box:focus {
   outline: none;
 }
 
-.mll-chip {
+.stl-chip {
   justify-self: start;
   padding: 4px 10px;
   border-radius: 999px;
@@ -47,7 +47,7 @@
   text-transform: uppercase;
 }
 
-.mll-box h2 {
+.stl-box h2 {
   margin: 0;
   border: 0;
   font: 700 34px/1 var(--font-h1, "Roboto Condensed", sans-serif);
@@ -55,20 +55,20 @@
   overflow-wrap: anywhere;
 }
 
-.mll-lead {
+.stl-lead {
   margin: -8px 0 0;
   color: var(--color-text-subtle, #b5aec2);
   font-size: 14px;
 }
 
-.mll-bar {
+.stl-bar {
   height: 8px;
   border-radius: 4px;
   background: #2b2538;
   overflow: hidden;
 }
 
-.mll-bar i {
+.stl-bar i {
   display: block;
   height: 100%;
   border-radius: 4px;
@@ -76,7 +76,7 @@
   transition: width 0.5s;
 }
 
-.mll-steps {
+.stl-steps {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -84,7 +84,7 @@
   gap: 12px;
 }
 
-.mll-steps li {
+.stl-steps li {
   display: grid;
   grid-template-columns: 22px minmax(0, 1fr);
   gap: 4px 10px;
@@ -93,23 +93,23 @@
   font-size: 15px;
 }
 
-.mll-steps li.done {
+.stl-steps li.done {
   color: var(--color-light-1, #efe9dd);
 }
 
-.mll-steps li.now {
+.stl-steps li.now {
   color: #ffbf6b;
   font-weight: 600;
 }
 
-.mll-steps small {
+.stl-steps small {
   grid-column: 2;
   color: var(--color-text-subtle, #b5aec2);
   font-size: 13px;
   font-weight: 400;
 }
 
-.mll-dot {
+.stl-dot {
   width: 22px;
   height: 22px;
   box-sizing: border-box;
@@ -120,17 +120,17 @@
   font-size: 11px;
 }
 
-.mll-steps li.done .mll-dot {
+.stl-steps li.done .stl-dot {
   border-color: rgb(111 220 140 / 60%);
   background: #1f3a28;
   color: #6fdc8c;
 }
 
-.mll-steps li.now .mll-dot {
+.stl-steps li.now .stl-dot {
   border-color: #ee9b3a;
 }
 
-.mll-steps li.now .mll-dot::after {
+.stl-steps li.now .stl-dot::after {
   content: "";
   width: 8px;
   height: 8px;
@@ -138,36 +138,36 @@
   background: #ee9b3a;
 }
 
-.mll-error,
-.mll-note {
+.stl-error,
+.stl-note {
   margin: 0;
   padding: 10px 12px;
   border-radius: 7px;
   font-size: 14px;
 }
 
-.mll-error {
+.stl-error {
   border: 1px solid rgb(232 138 106 / 35%);
   background: #2c1d16;
   color: #f3c7b5;
 }
 
-.mll-note {
+.stl-note {
   border: 1px solid #3a3446;
   background: #1a1724;
   color: var(--color-text-subtle, #b5aec2);
 }
 
-.mll-dock {
+.stl-dock {
   display: grid;
   gap: 8px;
 }
 
-.mll-dock:empty {
+.stl-dock:empty {
   display: none;
 }
 
-.mll-dock button {
+.stl-dock button {
   height: 48px;
   margin: 0;
   display: inline-flex;
@@ -181,7 +181,7 @@
   font: 600 15px/1 var(--font-body, Signika, sans-serif);
 }
 
-.mll-dock button.mll-primary {
+.stl-dock button.stl-primary {
   border-color: #b06a1e;
   background: linear-gradient(180deg, #f4a845, #d9832a);
   color: #1a1206;
@@ -190,11 +190,11 @@
 
 /* A phone: the whole screen, the dock at the foot. */
 @media (max-width: 599px), (max-height: 520px) {
-  .mll-launch {
+  .stl-launch {
     background: #100e18;
   }
 
-  .mll-box {
+  .stl-box {
     width: 100%;
     height: 100%;
     max-height: none;
@@ -205,13 +205,13 @@
     grid-template-rows: auto auto auto auto auto auto 1fr;
   }
 
-  .mll-dock {
+  .stl-dock {
     align-self: end;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .mll-bar i {
+  .stl-bar i {
     transition: none;
   }
 }

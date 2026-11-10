@@ -16,8 +16,8 @@ const env = loadFoundryEnv();
 let ext: Target;
 let page: Page;
 
-const shell = (p: Page) => p.locator("#ml-shell-root");
-const main = (p: Page) => shell(p).locator(".mls-main");
+const shell = (p: Page) => p.locator("#st-shell-root");
+const main = (p: Page) => shell(p).locator(".sts-main");
 
 test.describe.configure({ mode: "serial" });
 
@@ -42,11 +42,11 @@ test.afterAll(async () => {
 });
 
 test("the rail scrolls; it fades while more worlds are below, not at the end", async () => {
-  const list = shell(page).locator(".mls-worlds");
-  await expect(list.locator(".mls-world")).toHaveCount(32);
+  const list = shell(page).locator(".sts-worlds");
+  await expect(list.locator(".sts-world")).toHaveCount(32);
   await expect(list).toHaveClass(/\bmore\b/);
   // News and Featured Content stay below the list, in view.
-  const news = await shell(page).locator(".mlr-feat").boundingBox();
+  const news = await shell(page).locator(".str-feat").boundingBox();
   expect((news?.y ?? 0) + (news?.height ?? 0)).toBeLessThanOrEqual(768);
   await page.screenshot({ path: `${SCREENS}/many-rail-1366.png` });
   await list.evaluate((l) => {
@@ -56,11 +56,11 @@ test("the rail scrolls; it fades while more worlds are below, not at the end", a
 });
 
 test("By world: 92 px columns at least, names and headers pinned, a fade while worlds are hidden", async () => {
-  await shell(page).locator(".mls-lib").click();
+  await shell(page).locator(".sts-lib").click();
   await main(page)
     .getByRole("tab", { name: /By world/ })
     .click();
-  const wrap = main(page).locator(".mll-gridwrap");
+  const wrap = main(page).locator(".stl-gridwrap");
   await expect(wrap.locator("thead th.w")).toHaveCount(32);
   const col = await wrap.locator("thead th.w").first().boundingBox();
   expect(col?.width).toBeGreaterThanOrEqual(92);
@@ -97,7 +97,7 @@ test("By world: Show narrows the worlds and says how many", async () => {
   await main(page)
     .getByRole("combobox", { name: "Show" })
     .selectOption({ label: "Played in the last 3 months" });
-  const shown = await main(page).locator(".mll-gridwrap thead th.w").count();
+  const shown = await main(page).locator(".stl-gridwrap thead th.w").count();
   expect(shown).toBeGreaterThan(0);
   expect(shown).toBeLessThan(32);
   await expect(main(page)).toContainText(`${String(shown)} of 32 worlds`);
@@ -110,10 +110,10 @@ test("a module's details list every world and scroll", async () => {
   await main(page)
     .getByRole("tab", { name: /Modules/ })
     .click();
-  await expect(main(page).locator(".mll-card")).toHaveCount(139);
+  await expect(main(page).locator(".stl-card")).toHaveCount(139);
   await main(page).locator("button.t").first().click();
-  const panel = shell(page).locator(".mls-panel");
-  await expect(panel.locator(".mls-wlist li")).toHaveCount(32);
+  const panel = shell(page).locator(".sts-panel");
+  await expect(panel.locator(".sts-wlist li")).toHaveCount(32);
   const scrolls = await panel
     .locator(".scroll")
     .evaluate((s) => s.scrollHeight > s.clientHeight);
@@ -127,7 +127,7 @@ test("intake: a new module offers only its worlds at first, the rest one click a
   const now = new Date().toISOString();
   const snaps: Record<string, unknown> = {};
   for (let i = 1; i <= 30; i++) {
-    const id = `ml-many-${String(i).padStart(3, "0")}`;
+    const id = `st-many-${String(i).padStart(3, "0")}`;
     snaps[id] = {
       worldId: id,
       title: id,
@@ -144,17 +144,17 @@ test("intake: a new module offers only its worlds at first, the rest one click a
     (all) => ({ ...all, ...snaps }),
   );
   await updateStored<string[]>(ext, `sorted:${env.url}`, (all) =>
-    (all ?? []).filter((m) => m !== "ml-stub-001"),
+    (all ?? []).filter((m) => m !== "st-stub-001"),
   );
   await page.reload();
-  await shell(page).locator(".mls-lib").click();
+  await shell(page).locator(".sts-lib").click();
   await main(page).getByRole("button", { name: "Sort them" }).click();
   const item = shell(page).locator(
-    '.mls-intake-item[data-module="ml-stub-001"]',
+    '.sts-intake-item[data-module="st-stub-001"]',
   );
-  const chips = item.locator(".mls-tchip");
+  const chips = item.locator(".sts-tchip");
   await expect(chips).toHaveCount(0);
-  const more = item.locator(".mls-morew");
+  const more = item.locator(".sts-morew");
   await expect(more).toHaveText(/30 worlds/);
   await more.click();
   await expect(chips).toHaveCount(30);

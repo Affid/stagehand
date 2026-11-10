@@ -85,7 +85,7 @@ export function Calendar(props: CalendarProps) {
   const days = new Date(Date.UTC(y, m, 0)).getUTCDate();
   const lead = (new Date(Date.UTC(y, m - 1, 1)).getUTCDay() + 6) % 7;
   return (
-    <div class="mlw-cal">
+    <div class="stw-cal">
       <CalHead month={props.month} onMonth={props.onMonth} />
       <div class="dow">
         {DOW.map((d) => (
@@ -149,7 +149,7 @@ function ZoneList(props: {
   const { t } = useUi();
   const { hits, q } = props;
   return (
-    <ul id="ml-tzlist" role="listbox" aria-label={t("sched.tz")}>
+    <ul id="st-tzlist" role="listbox" aria-label={t("sched.tz")}>
       {!q.trim() ? <li class="hint">{t("sched.findHint")}</li> : null}
       {q.trim() && !hits.length ? (
         <li class="hint">{t("sched.findNone")}</li>
@@ -157,7 +157,7 @@ function ZoneList(props: {
       {hits.map((z, i) => (
         <li
           key={z}
-          id={`ml-tz-${String(i)}`}
+          id={`st-tz-${String(i)}`}
           role="option"
           aria-selected={i === props.active}
           class={i === props.active ? "on" : ""}
@@ -212,7 +212,7 @@ function ZoneFinder(props: {
   const [active, setActive] = useState(0);
   const { hits, total } = findZones(q);
   return (
-    <div class="mlw-tzfind">
+    <div class="stw-tzfind">
       <div class="in">
         <Icon name="magnifying-glass" />
         <input
@@ -220,9 +220,9 @@ function ZoneFinder(props: {
           role="combobox"
           list={undefined}
           aria-expanded={hits.length > 0}
-          aria-controls="ml-tzlist"
+          aria-controls="st-tzlist"
           aria-activedescendant={
-            hits.length ? `ml-tz-${String(active)}` : undefined
+            hits.length ? `st-tz-${String(active)}` : undefined
           }
           aria-label={t("sched.findLabel")}
           placeholder={t("sched.findLabel")}
@@ -280,7 +280,7 @@ export function ZonePick(props: {
         ? ` ${t("sched.usedZone")}`
         : "";
   return (
-    <div class="mlw-tzrow">
+    <div class="stw-tzrow">
       <select
         aria-label={t("sched.tz")}
         value={props.tz}

@@ -3,7 +3,7 @@
 // launch sends ticks for the world (action launchWorld, id = the world's id)
 // as it migrates the core data, reads the world and checks it; "complete"
 // ends it, then Foundry leaves Setup.
-import type { WorldInfo } from "@module-library/shared/world";
+import type { WorldInfo } from "@stagehand/shared/world";
 import type { Progress } from "../page-progress.ts";
 import type { Store } from "./store.ts";
 

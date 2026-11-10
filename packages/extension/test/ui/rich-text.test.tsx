@@ -23,7 +23,7 @@ describe("world descriptions, cleaned", () => {
     const out = html(
       "<p>ok</p><script>alert(1)</script><style>p{}</style><iframe src='x'></iframe><svg><text>s</text></svg>",
     );
-    expect(out).toBe('<div class="ml-rich"><p>ok</p></div>');
+    expect(out).toBe('<div class="st-rich"><p>ok</p></div>');
   });
 
   test("drops every attribute except a safe link", () => {
@@ -42,7 +42,7 @@ describe("world descriptions, cleaned", () => {
   test("leaves out images, so nothing loads from elsewhere", () => {
     expect(
       html('<p>a<img src="https://evil.example/x.png" onerror="x()">b</p>'),
-    ).toBe('<div class="ml-rich"><p>ab</p></div>');
+    ).toBe('<div class="st-rich"><p>ab</p></div>');
   });
 
   test("unknown elements keep their text", () => {
@@ -52,7 +52,7 @@ describe("world descriptions, cleaned", () => {
   test("plain text keeps its line breaks as paragraphs", () => {
     const out = html("First line\nsame paragraph\n\nSecond paragraph");
     expect(out).toBe(
-      '<div class="ml-rich"><p>First line<br>same paragraph</p><p>Second paragraph</p></div>',
+      '<div class="st-rich"><p>First line<br>same paragraph</p><p>Second paragraph</p></div>',
     );
   });
 

@@ -2,7 +2,7 @@
 // A world's Backups tab as the prototype: the nudge while changes wait, an
 // empty state, the summary head with Select, rows with the latest pill and
 // Foundry's version badge, Foundry's progress, and its lock.
-import type { Command, Snapshot } from "@module-library/shared/world";
+import type { Command, Snapshot } from "@stagehand/shared/world";
 import { cleanup, fireEvent, waitFor, within } from "@testing-library/preact";
 import { afterEach, describe, expect, test } from "vitest";
 import type { SetupState } from "../../src/messages.ts";
@@ -70,14 +70,14 @@ async function backups(
   });
   fireEvent.click(r.getByRole("tab", { name: /^Backups/ }));
   await waitFor(() => {
-    expect(r.container.querySelector(".mlw-backups")).toBeTruthy();
+    expect(r.container.querySelector(".stw-backups")).toBeTruthy();
   });
   return r;
 }
 
 const row = (c: ParentNode, id: string): HTMLElement => {
   const found = c.querySelector<HTMLElement>(
-    `.mlw-blist li[data-backup="${id}"]`,
+    `.stw-blist li[data-backup="${id}"]`,
   );
   if (!found) throw new Error(`no row ${id}`);
   return found;
@@ -105,7 +105,7 @@ describe("a world's Backups tab", () => {
   test("the head sums them up and offers Select and Take a backup", async () => {
     const { container } = await backups();
     await waitFor(() => row(container, "b2"));
-    const head = el(container, ".mlw-bhead");
+    const head = el(container, ".stw-bhead");
     expect(head.textContent).toContain("3 backups");
     expect(head.textContent).toContain("latest 3 days ago");
     expect(head.textContent).toContain("1.2 GB in all");
@@ -169,7 +169,7 @@ describe("a world's Backups tab", () => {
     const { container, getByRole, page } = await backups();
     await waitFor(() => row(container, "b2"));
     fireEvent.click(getByRole("button", { name: "Select" }));
-    expect(el(container, ".mlw-bhead").textContent).toContain(
+    expect(el(container, ".stw-bhead").textContent).toContain(
       "Select backups to delete",
     );
     fireEvent.click(
@@ -177,11 +177,11 @@ describe("a world's Backups tab", () => {
         name: /^Select/,
       }),
     );
-    expect(el(container, ".mlw-bhead").textContent).toContain(
+    expect(el(container, ".stw-bhead").textContent).toContain(
       "1 backup selected · deleting frees 420 MB",
     );
     fireEvent.click(getByRole("button", { name: "All" }));
-    expect(el(container, ".mlw-bhead").textContent).toContain(
+    expect(el(container, ".stw-bhead").textContent).toContain(
       "2 backups selected",
     );
     fireEvent.click(getByRole("button", { name: "Delete 2…" }));
@@ -189,7 +189,7 @@ describe("a world's Backups tab", () => {
       expect(page.backups).toHaveBeenCalledWith("w1", "delete", ["b2", "b3"]);
     });
     await waitFor(() => {
-      expect(container.querySelector(".mlw-bhead.sel")).toBe(null);
+      expect(container.querySelector(".stw-bhead.sel")).toBe(null);
     });
   });
 
@@ -207,7 +207,7 @@ describe("a world's Backups tab", () => {
   test("the footnote links to all the server's backups", async () => {
     const { container, getByRole, store } = await backups();
     await waitFor(() => row(container, "b2"));
-    expect(el(container, ".mlw-backups .hint").textContent).toContain(
+    expect(el(container, ".stw-backups .hint").textContent).toContain(
       "These are Foundry's own backups.",
     );
     fireEvent.click(
@@ -240,11 +240,11 @@ describe("changes waiting for the next launch", () => {
       commands: [queued(Date.now() - DAY)],
     });
     await waitFor(() => row(container, "b2"));
-    const nudge = el(container, ".mlw-nudge");
+    const nudge = el(container, ".stw-nudge");
     expect(nudge.textContent).toContain("1 change");
     expect(nudge.textContent).toContain("wait for the next launch");
     expect(
-      within(el(container, ".mlw-bhead")).queryByRole("button", {
+      within(el(container, ".stw-bhead")).queryByRole("button", {
         name: "Take a backup",
       }),
     ).toBe(null);
@@ -252,7 +252,7 @@ describe("changes waiting for the next launch", () => {
     await waitFor(() => {
       expect(page.backups).toHaveBeenCalledWith("w1", "create", []);
     });
-    expect(el(container, ".mlw-backups .hint").textContent).toContain(
+    expect(el(container, ".stw-backups .hint").textContent).toContain(
       "Restoring keeps your 1 queued change",
     );
   });
@@ -262,7 +262,7 @@ describe("changes waiting for the next launch", () => {
       commands: [queued(Date.now() - 5 * DAY)],
     });
     await waitFor(() => row(container, "b2"));
-    const nudge = el(container, ".mlw-nudge.done");
+    const nudge = el(container, ".stw-nudge.done");
     expect(nudge.textContent).toContain("Backed up 3 days ago");
     expect(nudge.textContent).toContain("Session 31");
   });
@@ -284,9 +284,9 @@ describe("Foundry's progress and lock", () => {
       },
     });
     await waitFor(() => {
-      expect(container.querySelector(".mlw-blist li.busy")).toBeTruthy();
+      expect(container.querySelector(".stw-blist li.busy")).toBeTruthy();
     });
-    const busy = el(container, ".mlw-blist li.busy");
+    const busy = el(container, ".stw-blist li.busy");
     expect(busy.textContent).toContain("Backing up Strahd…");
     expect(busy.textContent).toContain("47%");
     expect(busy.getAttribute("role")).toBe("status");
@@ -315,7 +315,7 @@ describe("Foundry's progress and lock", () => {
     });
     emit({ type: "LOCK", payload: { locked: false } });
     await waitFor(() => {
-      expect(container.querySelector(".mlw-blist li.busy")).toBe(null);
+      expect(container.querySelector(".stw-blist li.busy")).toBe(null);
     });
     expect(launch.disabled).toBe(false);
   });
@@ -335,7 +335,7 @@ describe("Foundry's progress and lock", () => {
         }).disabled,
       ).toBe(true);
     });
-    expect(container.querySelector(".mlw-blist li.busy")).toBe(null);
+    expect(container.querySelector(".stw-blist li.busy")).toBe(null);
   });
 });
 

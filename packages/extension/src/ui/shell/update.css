@@ -2,11 +2,11 @@
    the release notes in a scrolling box on the left, the Update box on the
    right, and the up-to-date state. Appended to setup-ui.css. */
 
-.mls-shell .mlu-page {
+.sts-shell .stu-page {
   flex: 1;
 }
 
-.mls-shell .mlu-cols {
+.sts-shell .stu-cols {
   flex: 1;
   min-height: 0;
   display: grid;
@@ -14,19 +14,19 @@
   gap: 14px;
 }
 
-.mls-shell .mlu-left {
+.sts-shell .stu-left {
   min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.mls-shell .mlu-left > .mlu-notes,
-.mls-shell .mlu-left > .mls-tabpanel > .mlu-notes {
+.sts-shell .stu-left > .stu-notes,
+.sts-shell .stu-left > .sts-tabpanel > .stu-notes {
   flex: 1;
 }
 
-.mls-shell .mlu-notes {
+.sts-shell .stu-notes {
   min-height: 0;
   overflow: auto;
   border: 1px solid var(--color-cool-4);
@@ -38,25 +38,25 @@
   gap: 10px;
 }
 
-.mls-shell .mlu-nhead {
+.sts-shell .stu-nhead {
   display: grid;
   gap: 2px;
 }
 
-.mls-shell .mlu-nhead h3 {
+.sts-shell .stu-nhead h3 {
   margin: 0;
   font-size: 17px;
   color: var(--color-light-1);
   border: 0;
 }
 
-.mls-shell .mlu-nhead span {
+.sts-shell .stu-nhead span {
   font-size: 12.5px;
   color: var(--color-text-subtle);
 }
 
 /* Buttons that read as links: "All release notes", "Expand all". */
-.mls-shell .mlu-link.ml-link {
+.sts-shell .stu-link.st-link {
   display: inline;
   width: auto;
   height: auto;
@@ -69,12 +69,12 @@
   text-decoration-color: var(--color-light-5);
 }
 
-.mls-shell .mlu-link.ml-link:hover {
+.sts-shell .stu-link.st-link:hover {
   color: var(--color-warm-1);
   box-shadow: none;
 }
 
-.mls-shell .mlu-tools {
+.sts-shell .stu-tools {
   display: flex;
   gap: 12px;
   align-items: center;
@@ -82,29 +82,29 @@
   color: var(--color-light-2);
 }
 
-.mls-shell .mlu-tools input[type="search"] {
+.sts-shell .stu-tools input[type="search"] {
   height: 28px;
   width: 240px;
   flex: none;
 }
 
-.mls-shell .mlu-tools label {
+.sts-shell .stu-tools label {
   display: inline-flex;
   gap: 6px;
   align-items: center;
 }
 
-.mls-shell .mlu-tools .ml-spacer {
+.sts-shell .stu-tools .st-spacer {
   flex: 1;
 }
 
-.mls-shell .mlu-jump {
+.sts-shell .stu-jump {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
 }
 
-.mls-shell .mlu-jump button {
+.sts-shell .stu-jump button {
   width: auto;
   height: auto;
   line-height: 1.4;
@@ -116,33 +116,33 @@
   color: var(--color-light-2);
 }
 
-.mls-shell .mlu-jump button b {
+.sts-shell .stu-jump button b {
   color: var(--color-light-1);
 }
 
-.mls-shell .mlu-jump button:hover {
+.sts-shell .stu-jump button:hover {
   border-color: var(--color-warm-1);
   box-shadow: none;
 }
 
-.mls-shell .mlu-jump button.brk {
+.sts-shell .stu-jump button.brk {
   border-color: rgb(245 196 94 / 60%);
   color: #f3dca4;
 }
 
-.mls-shell .mlu-body {
+.sts-shell .stu-body {
   display: grid;
   gap: 6px;
 }
 
-.mls-shell .mlu-sec h3 {
+.sts-shell .stu-sec h3 {
   margin: 6px 0 2px;
   border: 0;
   border-bottom: 1px solid var(--color-cool-4);
   padding-bottom: 4px;
 }
 
-.mls-shell .mlu-sec h3 button {
+.sts-shell .stu-sec h3 button {
   width: 100%;
   height: auto;
   padding: 0;
@@ -157,39 +157,39 @@
   color: var(--color-light-1);
 }
 
-.mls-shell .mlu-sec h3 button:hover {
+.sts-shell .stu-sec h3 button:hover {
   box-shadow: none;
   color: var(--color-warm-1);
 }
 
-.mls-shell .mlu-sec h3 button > i:first-child {
+.sts-shell .stu-sec h3 button > i:first-child {
   font-size: 11px;
   color: var(--color-light-4);
   width: 12px;
 }
 
-.mls-shell .mlu-sec h3 .c {
+.sts-shell .stu-sec h3 .c {
   font-size: 12px;
   color: var(--color-text-subtle);
   font-weight: 400;
 }
 
-.mls-shell .mlu-sec.breaking {
+.sts-shell .stu-sec.breaking {
   border: 1px solid rgb(245 196 94 / 50%);
   background: rgb(245 196 94 / 7%);
   border-radius: 4px;
   padding: 2px 10px 6px;
 }
 
-.mls-shell .mlu-sec.breaking h3 {
+.sts-shell .stu-sec.breaking h3 {
   border-bottom-color: rgb(245 196 94 / 30%);
 }
 
-.mls-shell .mlu-sec.breaking h3 .fa-triangle-exclamation {
+.sts-shell .stu-sec.breaking h3 .fa-triangle-exclamation {
   color: #f5c45e;
 }
 
-.mls-shell .mlu-sec h4 {
+.sts-shell .stu-sec h4 {
   margin: 8px 0 2px;
   font-family: var(--font-body, Signika), sans-serif;
   font-size: 12px;
@@ -199,37 +199,37 @@
   border: 0;
 }
 
-.mls-shell .mlu-sec ul {
+.sts-shell .stu-sec ul {
   margin: 0;
   padding-left: 20px;
   display: grid;
   gap: 4px;
 }
 
-.mls-shell .mlu-sec li {
+.sts-shell .stu-sec li {
   font-size: 13.5px;
   line-height: 1.45;
   color: var(--color-light-2);
 }
 
-.mls-shell .mlu-sec li a.mlu-issue {
+.sts-shell .stu-sec li a.stu-issue {
   font-size: 11.5px;
   color: var(--color-light-4);
   text-decoration: none;
   white-space: nowrap;
 }
 
-.mls-shell .mlu-sec li a.mlu-issue:hover {
+.sts-shell .stu-sec li a.stu-issue:hover {
   color: var(--color-warm-1);
 }
 
-.mls-shell .mlu-banner {
+.sts-shell .stu-banner {
   margin: 0;
   display: grid;
   gap: 4px;
 }
 
-.mls-shell .mlu-banner img {
+.sts-shell .stu-banner img {
   width: 100%;
   max-height: 260px;
   object-fit: cover;
@@ -237,42 +237,42 @@
   border: 1px solid var(--color-cool-4);
 }
 
-.mls-shell .mlu-banner figcaption {
+.sts-shell .stu-banner figcaption {
   font-size: 12px;
   color: var(--color-text-subtle);
 }
 
-.mls-shell .mlu-banner figcaption a,
-.mls-shell .mlu-sec li a:not(.mlu-issue),
-.mls-shell .mlu-notes .mlu-p a {
+.sts-shell .stu-banner figcaption a,
+.sts-shell .stu-sec li a:not(.stu-issue),
+.sts-shell .stu-notes .stu-p a {
   color: var(--color-light-2);
   text-decoration: underline;
   text-decoration-color: var(--color-light-5);
 }
 
-.mls-shell .mlu-notes .mlu-p {
+.sts-shell .stu-notes .stu-p {
   margin: 0 0 6px;
   font-size: 13.5px;
   line-height: 1.5;
   color: var(--color-light-2);
 }
 
-.mls-shell .mlu-notes .mlu-p p,
-.mls-shell .mlu-notes .mlu-p dl {
+.sts-shell .stu-notes .stu-p p,
+.sts-shell .stu-notes .stu-p dl {
   margin: 0 0 6px;
 }
 
-.mls-shell .mlu-notes .mlu-p dt {
+.sts-shell .stu-notes .stu-p dt {
   font-weight: 700;
   color: var(--color-light-1);
 }
 
-.mls-shell .mlu-notes .mlu-p dd {
+.sts-shell .stu-notes .stu-p dd {
   margin: 0 0 6px 16px;
 }
 
-.mls-shell .mlu-sec li code,
-.mls-shell .mlu-notes .mlu-p code {
+.sts-shell .stu-sec li code,
+.sts-shell .stu-notes .stu-p code {
   font-size: 12.5px;
   padding: 0 4px;
   border-radius: 3px;
@@ -281,7 +281,7 @@
 }
 
 /* The Update box */
-.mls-shell .mlu-side {
+.sts-shell .stu-side {
   min-height: 0;
   overflow: auto;
   display: grid;
@@ -289,11 +289,11 @@
   align-content: start;
 }
 
-.mls-shell .mlu-act {
+.sts-shell .stu-act {
   gap: 10px;
 }
 
-.mls-shell .mlu-act .mlu-go {
+.sts-shell .stu-act .stu-go {
   justify-self: stretch;
   height: 38px;
   width: 100%;
@@ -302,11 +302,11 @@
   font-weight: 700;
 }
 
-.mls-shell .mlu-act .mlu-go[disabled] {
+.sts-shell .stu-act .stu-go[disabled] {
   opacity: 0.6;
 }
 
-.mls-shell .mlu-why {
+.sts-shell .stu-why {
   margin: 0;
   display: flex;
   gap: 8px;
@@ -315,25 +315,25 @@
   color: var(--color-light-3);
 }
 
-.mls-shell .mlu-why i {
+.sts-shell .stu-why i {
   color: var(--color-light-4);
 }
 
-.mls-shell .mlu-why a {
+.sts-shell .stu-why a {
   color: var(--color-light-2);
   text-decoration: underline;
 }
 
-.mls-shell .mlu-why code {
+.sts-shell .stu-why code {
   font-size: 12px;
 }
 
-.mls-shell .mlu-why.err,
-.mls-shell .mlu-why.err i {
+.sts-shell .stu-why.err,
+.sts-shell .stu-why.err i {
   color: #ffb3a6;
 }
 
-.mls-shell .mls-bfirst {
+.sts-shell .sts-bfirst {
   display: flex;
   gap: 10px;
   align-items: flex-start;
@@ -345,37 +345,37 @@
   color: var(--color-light-2);
 }
 
-.mls-shell .mls-bfirst input {
+.sts-shell .sts-bfirst input {
   margin-top: 2px;
   flex: none;
 }
 
-.mls-shell .mls-bfirst .ml-muted {
+.sts-shell .sts-bfirst .st-muted {
   font-size: 12px;
 }
 
-.mls-shell .mlu-chan {
+.sts-shell .stu-chan {
   display: grid;
   grid-template-columns: 64px 1fr;
   gap: 4px 10px;
   align-items: center;
 }
 
-.mls-shell .mlu-chan .k {
+.sts-shell .stu-chan .k {
   font-size: 12.5px;
   color: var(--color-text-subtle);
 }
 
-.mls-shell .mlu-chan select {
+.sts-shell .stu-chan select {
   height: 28px;
 }
 
-.mls-shell .mlu-chan .hint {
+.sts-shell .stu-chan .hint {
   grid-column: 2;
   margin: 0;
 }
 
-.mls-shell .mlu-force {
+.sts-shell .stu-force {
   display: flex;
   gap: 10px;
   align-items: flex-start;
@@ -383,15 +383,15 @@
   color: var(--color-light-2);
 }
 
-.mls-shell .mlu-force input {
+.sts-shell .stu-force input {
   flex: none;
 }
 
-.mls-shell .mlu-force .ml-muted {
+.sts-shell .stu-force .st-muted {
   font-size: 12px;
 }
 
-.mls-shell .mlu-steps {
+.sts-shell .stu-steps {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -402,25 +402,25 @@
   color: var(--color-light-4);
 }
 
-.mls-shell .mlu-steps li {
+.sts-shell .stu-steps li {
   display: inline-flex;
   gap: 5px;
   align-items: center;
 }
 
-.mls-shell .mlu-steps li.done {
+.sts-shell .stu-steps li.done {
   color: #8fd49b;
 }
 
-.mls-shell .mlu-steps li.now {
+.sts-shell .stu-steps li.now {
   color: var(--color-light-1);
 }
 
-.mls-shell .mlu-steps .fa-circle {
+.sts-shell .stu-steps .fa-circle {
   font-size: 6px;
 }
 
-.mls-shell .mlu-sub {
+.sts-shell .stu-sub {
   margin: 0;
   font-size: 12.5px;
   color: var(--color-light-3);
@@ -429,62 +429,62 @@
   text-overflow: ellipsis;
 }
 
-.mls-shell .mlu-bar {
+.sts-shell .stu-bar {
   height: 6px;
   border-radius: 3px;
   background: rgb(255 255 255 / 10%);
   overflow: hidden;
 }
 
-.mls-shell .mlu-bar span {
+.sts-shell .stu-bar span {
   display: block;
   height: 100%;
   background: var(--color-warm-1);
   transition: width 0.2s;
 }
 
-.mls-shell .mlu-done {
+.sts-shell .stu-done {
   display: flex;
   gap: 10px;
   align-items: flex-start;
 }
 
-.mls-shell .mlu-done > i {
+.sts-shell .stu-done > i {
   color: #8fd49b;
   font-size: 20px;
   margin-top: 2px;
 }
 
-.mls-shell .mlu-done > div {
+.sts-shell .stu-done > div {
   display: grid;
   gap: 4px;
 }
 
-.mls-shell .mlu-done strong {
+.sts-shell .stu-done strong {
   color: var(--color-light-1);
   font-size: 14.5px;
 }
 
-.mls-shell .mlu-done span {
+.sts-shell .stu-done span {
   font-size: 12.5px;
   color: var(--color-light-3);
 }
 
 @media (max-width: 1280px) {
-  .mls-shell .mlu-cols {
+  .sts-shell .stu-cols {
     grid-template-columns: minmax(0, 1fr) 320px;
   }
 }
 
-/* Tabs in the left column (prototype mlu-tabs) */
-.mls-shell .mlu-tabs .c.w,
-.mls-shell .mlu-compat .mls-subtabs .c b.w {
+/* Tabs in the left column (prototype stu-tabs) */
+.sts-shell .stu-tabs .c.w,
+.sts-shell .stu-compat .sts-subtabs .c b.w {
   color: #f5c45e;
   font-weight: 600;
 }
 
 /* Your packages: the summary box */
-.mls-shell .mlu-side .mlw-box h4 .ml-link {
+.sts-shell .stu-side .stw-box h4 .st-link {
   width: auto;
   height: auto;
   padding: 0;
@@ -497,36 +497,36 @@
   text-decoration: underline;
 }
 
-.mls-shell .mlu-tags {
+.sts-shell .stu-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
   align-items: center;
 }
 
-.mls-shell .mlu-tag {
+.sts-shell .stu-tag {
   font-size: 12px;
   padding: 1px 8px;
   border-radius: 10px;
   border: 1px solid;
 }
 
-.mls-shell .mlu-tag.ok {
+.sts-shell .stu-tag.ok {
   color: #8fd49b;
   border-color: rgb(63 143 82 / 60%);
 }
 
-.mls-shell .mlu-tag.unv {
+.sts-shell .stu-tag.unv {
   color: #f5c45e;
   border-color: rgb(245 196 94 / 55%);
 }
 
-.mls-shell .mlu-tag.bad {
+.sts-shell .stu-tag.bad {
   color: #ffb3a6;
   border-color: rgb(180 82 63 / 70%);
 }
 
-.mls-shell .mlu-flag {
+.sts-shell .stu-flag {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -534,7 +534,7 @@
   gap: 3px;
 }
 
-.mls-shell .mlu-flag li {
+.sts-shell .stu-flag li {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 8px;
@@ -545,16 +545,16 @@
   background: rgb(255 255 255 / 3%);
 }
 
-.mls-shell .mlu-flag li.unv {
+.sts-shell .stu-flag li.unv {
   border-left-color: #f5c45e;
 }
 
-.mls-shell .mlu-flag li.bad {
+.sts-shell .stu-flag li.bad {
   border-left-color: #e0705a;
 }
 
-.mls-shell .mlu-flag li .t,
-.mls-shell .mlu-clist .nm .t {
+.sts-shell .stu-flag li .t,
+.sts-shell .stu-clist .nm .t {
   width: auto;
   height: auto;
   padding: 0;
@@ -568,18 +568,18 @@
   white-space: nowrap;
 }
 
-.mls-shell .mlu-flag li .t:hover,
-.mls-shell .mlu-clist .nm .t:hover {
+.sts-shell .stu-flag li .t:hover,
+.sts-shell .stu-clist .nm .t:hover {
   color: var(--color-warm-1);
   box-shadow: none;
 }
 
-.mls-shell .mlu-flag li .w {
+.sts-shell .stu-flag li .w {
   font-size: 12px;
   color: var(--color-text-subtle);
 }
 
-.mls-shell .mlu-flag li.more {
+.sts-shell .stu-flag li.more {
   border: 0;
   background: none;
   display: block;
@@ -588,25 +588,25 @@
 }
 
 /* Your packages: the full list */
-.mls-shell .mlu-compat .mls-subtabs {
+.sts-shell .stu-compat .sts-subtabs {
   margin-top: 2px;
   align-items: center;
 }
 
-.mls-shell .mlu-csearch {
+.sts-shell .stu-csearch {
   margin-left: auto;
   height: 26px;
   width: 180px;
   margin-bottom: 4px;
 }
 
-.mls-shell .mlu-chips {
+.sts-shell .stu-chips {
   display: flex;
   gap: 5px;
   flex-wrap: wrap;
 }
 
-.mls-shell .mlu-chips button {
+.sts-shell .stu-chips button {
   width: auto;
   height: auto;
   line-height: 1.4;
@@ -621,50 +621,50 @@
   color: var(--color-light-3);
 }
 
-.mls-shell .mlu-chips button i {
+.sts-shell .stu-chips button i {
   font-size: 11px;
 }
 
-.mls-shell .mlu-chips button b {
+.sts-shell .stu-chips button b {
   color: var(--color-light-1);
 }
 
-.mls-shell .mlu-chips button.on {
+.sts-shell .stu-chips button.on {
   border-color: var(--color-warm-1);
   background: rgb(238 155 58 / 12%);
   color: var(--color-light-1);
 }
 
-.mls-shell .mlu-chips button:hover {
+.sts-shell .stu-chips button:hover {
   box-shadow: none;
 }
 
-.mls-shell .mlu-chips .ok i,
-.mls-shell .mlu-chips .ok b {
+.sts-shell .stu-chips .ok i,
+.sts-shell .stu-chips .ok b {
   color: #8fd49b;
 }
 
-.mls-shell .mlu-chips .unv i,
-.mls-shell .mlu-chips .unv b {
+.sts-shell .stu-chips .unv i,
+.sts-shell .stu-chips .unv b {
   color: #f5c45e;
 }
 
-.mls-shell .mlu-chips .risk i,
-.mls-shell .mlu-chips .risk b {
+.sts-shell .stu-chips .risk i,
+.sts-shell .stu-chips .risk b {
   color: #f0a050;
 }
 
-.mls-shell .mlu-chips .bad i,
-.mls-shell .mlu-chips .bad b {
+.sts-shell .stu-chips .bad i,
+.sts-shell .stu-chips .bad b {
   color: #ff9c8f;
 }
 
-.mls-shell .mlu-chips button.zero {
+.sts-shell .stu-chips button.zero {
   opacity: 0.45;
   cursor: default;
 }
 
-.mls-shell .mlu-clist {
+.sts-shell .stu-clist {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -672,7 +672,7 @@
   gap: 4px;
 }
 
-.mls-shell .mlu-clist li {
+.sts-shell .stu-clist li {
   display: grid;
   grid-template-columns: 22px minmax(0, 1fr) 130px 110px 46px;
   gap: 10px;
@@ -683,77 +683,77 @@
   border-left: 3px solid transparent;
 }
 
-.mls-shell .mlu-clist li.unv {
+.sts-shell .stu-clist li.unv {
   border-left-color: #f5c45e;
 }
 
-.mls-shell .mlu-clist li.risk {
+.sts-shell .stu-clist li.risk {
   border-left-color: #f0a050;
 }
 
-.mls-shell .mlu-clist li.bad,
-.mls-shell .mlu-clist li.dep {
+.sts-shell .stu-clist li.bad,
+.sts-shell .stu-clist li.dep {
   border-left-color: #e0705a;
 }
 
-.mls-shell .mlu-clist li .st {
+.sts-shell .stu-clist li .st {
   text-align: center;
 }
 
-.mls-shell .mlu-clist li.ok .st {
+.sts-shell .stu-clist li.ok .st {
   color: #8fd49b;
 }
 
-.mls-shell .mlu-clist li.unv .st {
+.sts-shell .stu-clist li.unv .st {
   color: #f5c45e;
 }
 
-.mls-shell .mlu-clist li.risk .st {
+.sts-shell .stu-clist li.risk .st {
   color: #f0a050;
 }
 
-.mls-shell .mlu-clist li.bad .st,
-.mls-shell .mlu-clist li.dep .st {
+.sts-shell .stu-clist li.bad .st,
+.sts-shell .stu-clist li.dep .st {
   color: #ff9c8f;
 }
 
-.mls-shell .mlu-clist .nm {
+.sts-shell .stu-clist .nm {
   display: grid;
   min-width: 0;
 }
 
-.mls-shell .mlu-clist .nm .t {
+.sts-shell .stu-clist .nm .t {
   font-size: 13.5px;
   font-weight: 700;
 }
 
-.mls-shell .mlu-clist .nm span {
+.sts-shell .stu-clist .nm span {
   font-size: 12.5px;
   color: var(--color-text-subtle);
 }
 
-.mls-shell .mlu-clist .v {
+.sts-shell .stu-clist .v {
   font-size: 12px;
   color: var(--color-light-3);
   font-variant-numeric: tabular-nums;
 }
 
-.mls-shell .mlu-clist .v b {
+.sts-shell .stu-clist .v b {
   color: #8fd49b;
   font-weight: 600;
 }
 
-.mls-shell .mlu-clist .u {
+.sts-shell .stu-clist .u {
   font-size: 12.5px;
   color: var(--color-light-3);
   text-align: right;
 }
 
-.mls-shell .mlu-clist .u .none {
+.sts-shell .stu-clist .u .none {
   color: var(--color-light-5);
 }
 
-.mls-shell .mlu-clist .u .ml-link {
+.sts-shell .stu-clist .u .st-link {
   width: auto;
   height: auto;
   padding: 0;
@@ -764,29 +764,29 @@
   text-decoration: underline;
 }
 
-.mls-shell .mlu-clist .lk {
+.sts-shell .stu-clist .lk {
   display: flex;
   gap: 8px;
   justify-content: flex-end;
   font-size: 11px;
 }
 
-.mls-shell .mlu-clist .lk a {
+.sts-shell .stu-clist .lk a {
   color: var(--color-light-4);
 }
 
-.mls-shell .mlu-clist .lk a:hover {
+.sts-shell .stu-clist .lk a:hover {
   color: var(--color-warm-1);
 }
 
-.mls-shell .mlu-clist li.empty {
+.sts-shell .stu-clist li.empty {
   display: block;
   color: var(--color-text-subtle);
   background: none;
 }
 
 /* Release history */
-.mls-shell .mlu-hcols {
+.sts-shell .stu-hcols {
   flex: 1;
   min-height: 0;
   display: grid;
@@ -794,7 +794,7 @@
   gap: 12px;
 }
 
-.mls-shell .mlu-rels {
+.sts-shell .stu-rels {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -804,7 +804,7 @@
   overflow: auto;
 }
 
-.mls-shell .mlu-rels li button {
+.sts-shell .stu-rels li button {
   width: 100%;
   height: auto;
   display: grid;
@@ -819,71 +819,71 @@
   line-height: 1.3;
 }
 
-.mls-shell .mlu-rels li button:hover {
+.sts-shell .stu-rels li button:hover {
   background: rgb(255 255 255 / 4%);
   box-shadow: none;
 }
 
-.mls-shell .mlu-rels li.on button {
+.sts-shell .stu-rels li.on button {
   background: rgb(238 155 58 / 12%);
   border-left-color: var(--color-warm-1);
 }
 
-.mls-shell .mlu-rels li strong {
+.sts-shell .stu-rels li strong {
   color: var(--color-light-1);
   font-size: 13.5px;
   font-variant-numeric: tabular-nums;
 }
 
-.mls-shell .mlu-rels li.newer strong {
+.sts-shell .stu-rels li.newer strong {
   color: #b9e3c1;
 }
 
-.mls-shell .mlu-rels li button > span:nth-of-type(1) {
+.sts-shell .stu-rels li button > span:nth-of-type(1) {
   font-size: 12px;
   color: var(--color-text-subtle);
   text-align: right;
 }
 
-.mls-shell .mlu-rels li .tg {
+.sts-shell .stu-rels li .tg {
   grid-column: 1 / -1;
   display: flex;
   gap: 4px;
   flex-wrap: wrap;
 }
 
-.mls-shell .mlu-hnotes {
+.sts-shell .stu-hnotes {
   min-height: 0;
   overflow: auto;
   border-left: 1px solid var(--color-cool-4);
   padding-left: 12px;
 }
 
-.mls-shell .mlu-hhead {
+.sts-shell .stu-hhead {
   display: grid;
   gap: 2px;
   margin-bottom: 8px;
 }
 
-.mls-shell .mlu-hhead strong {
+.sts-shell .stu-hhead strong {
   color: var(--color-light-1);
   font-size: 15px;
 }
 
-.mls-shell .mlu-hhead span {
+.sts-shell .stu-hhead span {
   font-size: 12.5px;
   color: var(--color-text-subtle);
 }
 
-.mls-shell .mlu-hhead a,
-.mls-shell .mlu-hist .mlu-nhead a,
-.mls-shell .mlu-hask a {
+.sts-shell .stu-hhead a,
+.sts-shell .stu-hist .stu-nhead a,
+.sts-shell .stu-hask a {
   color: var(--color-light-3);
   text-decoration: underline;
   text-decoration-color: var(--color-light-5);
 }
 
-.mls-shell .mlu-sec h3.plain {
+.sts-shell .stu-sec h3.plain {
   display: flex;
   gap: 8px;
   align-items: center;
@@ -892,7 +892,7 @@
   cursor: default;
 }
 
-.mls-shell .mlu-hask {
+.sts-shell .stu-hask {
   display: grid;
   gap: 10px;
   justify-items: start;
@@ -902,22 +902,22 @@
   font-size: 13.5px;
 }
 
-.mls-shell .mlu-hask > i {
+.sts-shell .stu-hask > i {
   font-size: 20px;
   color: var(--color-light-4);
 }
 
-.mls-shell .mlu-hask p {
+.sts-shell .stu-hask p {
   margin: 0;
 }
 
-.mls-shell .mlu-hask .row {
+.sts-shell .stu-hask .row {
   display: flex;
   gap: 10px;
   align-items: center;
 }
 
-.mls-shell .mlu-hask .row button {
+.sts-shell .stu-hask .row button {
   width: auto;
   height: 30px;
   padding: 0 12px;

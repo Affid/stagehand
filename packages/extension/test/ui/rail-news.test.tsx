@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import type { NewsItem } from "@module-library/shared/news";
+import type { NewsItem } from "@stagehand/shared/news";
 import {
   act,
   cleanup,
@@ -34,13 +34,13 @@ const data = (over: Partial<SetupState> = {}): Partial<SetupState> => ({
   ...over,
 });
 
-const news = (container: ParentNode) => el(container, ".mlr-news");
+const news = (container: ParentNode) => el(container, ".str-news");
 
 describe("News and Featured Content at the foot of the rail (Phase 6)", () => {
   test("no news from Foundry: no section", () => {
     const { container } = renderUi("shell");
-    expect(container.querySelector(".mlr-news")).toBeNull();
-    expect(container.querySelector(".mlr-feat")).toBeNull();
+    expect(container.querySelector(".str-news")).toBeNull();
+    expect(container.querySelector(".str-feat")).toBeNull();
   });
 
   test("something unread: open on the latest, marked New, links open a new tab safely", () => {
@@ -171,7 +171,7 @@ describe("News and Featured Content at the foot of the rail (Phase 6)", () => {
 
   test("Featured Content: its own label and banner, always open", () => {
     const { container } = renderUi("shell", { data: data() });
-    const feat = el(container, ".mlr-feat");
+    const feat = el(container, ".str-feat");
     expect(feat.getAttribute("aria-label")).toBe("Featured Content");
     const link = el(feat, "a.banner") as HTMLAnchorElement;
     expect(link.href).toBe(FEATURED.url);
@@ -187,7 +187,7 @@ describe("News and Featured Content at the foot of the rail (Phase 6)", () => {
         newsUnread: [NEWS[0]!.url],
       },
     });
-    expect(container.querySelector(".mlr-news .navs")).toBeNull();
-    expect(container.querySelector(".mlr-feat")).toBeNull();
+    expect(container.querySelector(".str-news .navs")).toBeNull();
+    expect(container.querySelector(".str-feat")).toBeNull();
   });
 });

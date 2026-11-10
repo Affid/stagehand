@@ -1,7 +1,7 @@
 // Updates Foundry would install, as the Library counts and marks them: a
 // newer version than the installed one, and never for a locked package.
-import type { PackageInfo } from "@module-library/shared/package";
-import { bareVersion, isNewerVersion } from "@module-library/shared/version";
+import type { PackageInfo } from "@stagehand/shared/package";
+import { bareVersion, isNewerVersion } from "@stagehand/shared/version";
 import type { Updates } from "../../page-updates.ts";
 
 interface Installed {

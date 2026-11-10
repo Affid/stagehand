@@ -1,4 +1,4 @@
-// Chosen dates under the calendar (prototype _sched.js, .mlw-chosen): each
+// Chosen dates under the calendar (prototype _sched.js, .stw-chosen): each
 // date with its own time, which can be changed, and Remove.
 import { Icon } from "../../../../common/widgets.tsx";
 import { useUi } from "../../../../context.ts";
@@ -61,7 +61,7 @@ export function ChosenDates(props: ChosenProps) {
     a.localeCompare(b),
   );
   return (
-    <ol class="mlw-chosen">
+    <ol class="stw-chosen">
       {rows.length ? (
         rows.map(([date, time]) => (
           <ChosenRow

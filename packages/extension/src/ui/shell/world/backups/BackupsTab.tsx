@@ -1,7 +1,7 @@
 // A world's Backups tab, as the prototype: the nudge while changes wait, an
 // empty state, the head, Foundry's progress, the rows and the footnote.
 // Every operation goes through Foundry's own dialogs.
-import type { WorldInfo } from "@module-library/shared/world";
+import type { WorldInfo } from "@stagehand/shared/world";
 import { useState } from "preact/hooks";
 import type { BackupInfo } from "../../../../page-backups.ts";
 import type { Progress } from "../../../../page-progress.ts";
@@ -34,7 +34,7 @@ function useOff(busy: boolean): string | null {
 function Empty(props: { readonly title: string; readonly onTake: () => void }) {
   const { t, canChange } = useUi();
   return (
-    <div class="mlw-empty">
+    <div class="stw-empty">
       <Icon name="floppy-disks" />
       <h3>{t("bk.emptyTitle", { title: props.title })}</h3>
       <p>{t("bk.emptyText")}</p>
@@ -61,7 +61,7 @@ function Footnote(props: { readonly queued: number }) {
         : ""}{" "}
       <button
         type="button"
-        class="ml-link"
+        class="st-link"
         onClick={() =>
           store.set({ route: { kind: "server", page: "backups" } })
         }
@@ -156,7 +156,7 @@ function Listed(
           onTake={() => void run("create")}
         />
       )}
-      <ol class="mlw-blist">
+      <ol class="stw-blist">
         {props.jobs.map((j) => (
           <Running key={j.id} task={j} title={props.world.title} />
         ))}
@@ -183,16 +183,16 @@ export function BackupsTab(props: Props) {
     />
   ) : null;
   const error = view.error ? (
-    <p class="ml-banner ml-warn">{view.error}</p>
+    <p class="st-banner st-warn">{view.error}</p>
   ) : null;
   const list = view.list;
   return (
-    <div class="mlw-backups">
+    <div class="stw-backups">
       {list ? nudge : null}
       {error}
       {!list ? (
         error ? null : (
-          <p class="ml-empty">{t("bk.loading")}</p>
+          <p class="st-empty">{t("bk.loading")}</p>
         )
       ) : !list.length && !jobs.length ? (
         <Empty title={props.world.title} onTake={take} />

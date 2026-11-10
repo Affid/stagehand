@@ -31,15 +31,15 @@ interface View {
   readonly build: (root: Locator, page: Page) => Promise<void>;
 }
 
-const top = (root: Locator) => root.locator(".mls-top");
+const top = (root: Locator) => root.locator(".sts-top");
 const VIEWS: readonly View[] = [
   {
     name: "world",
     proto: "&page=world",
     build: async (root) => {
-      await root.locator(`.mls-world[data-world="${TEST_WORLD.id}"]`).click();
+      await root.locator(`.sts-world[data-world="${TEST_WORLD.id}"]`).click();
       await root
-        .locator(".mls-main")
+        .locator(".sts-main")
         .getByRole("tab", { name: /Modules/ })
         .click();
     },
@@ -48,8 +48,8 @@ const VIEWS: readonly View[] = [
     name: "library",
     proto: "&page=library&panel=modular-av",
     build: async (root) => {
-      await root.locator(".mls-lib").click();
-      await root.locator(".mls-main button.t").first().click();
+      await root.locator(".sts-lib").click();
+      await root.locator(".sts-main button.t").first().click();
     },
   },
   {
@@ -58,11 +58,11 @@ const VIEWS: readonly View[] = [
     protoClicks: ["[data-act=lsub][data-id=grid]"],
     build: async (root) => {
       await root
-        .locator(".mls-panel")
+        .locator(".sts-panel")
         .getByRole("button", { name: "Close" })
         .click();
       await root
-        .locator(".mls-main")
+        .locator(".sts-main")
         .getByRole("tab", { name: /By world/ })
         .click();
     },
@@ -106,7 +106,7 @@ async function protoShots(): Promise<void> {
 async function seed(ext: LoadedExtension, url: string): Promise<void> {
   await ext.worker.evaluate(
     async ([k, id, title, now]) => {
-      const active = ["stagehand", "ml-fixture-lib", "ml-fixture-a"].map(
+      const active = ["stagehand", "st-fixture-lib", "st-fixture-a"].map(
         (m) => ({ id: m, version: "1.0.0" }),
       );
       const snap = {
@@ -146,8 +146,8 @@ async function buildShots(): Promise<void> {
     for (const [w, h] of SIZES) {
       await page.setViewportSize({ width: w, height: h });
       await page.reload();
-      await page.locator("#ml-shell-root .mls-top").waitFor();
-      const root = page.locator("#ml-shell-root");
+      await page.locator("#st-shell-root .sts-top").waitFor();
+      const root = page.locator("#st-shell-root");
       for (const v of VIEWS) {
         await v.build(root, page);
         await page.mouse.move(0, 0);

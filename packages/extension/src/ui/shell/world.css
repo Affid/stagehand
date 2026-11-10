@@ -2,7 +2,7 @@
    setup-ui.css by the build after shell.css. Matches the calm world page in
    design/setup-page/src/_calm.css. */
 
-.ml-sr-only {
+.st-sr-only {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -15,7 +15,7 @@
 }
 
 /* Banner: queued changes and the Launch count */
-.mls-shell .mlc-pending {
+.sts-shell .stc-pending {
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -28,16 +28,16 @@
   font-size: 12.5px;
 }
 
-.mls-shell .mlc-pending.warn {
+.sts-shell .stc-pending.warn {
   border-color: rgb(245 196 94 / 70%);
   color: #f3dca4;
 }
 
-.mls-shell .mlc-pending > i {
+.sts-shell .stc-pending > i {
   color: var(--color-warm-1);
 }
 
-.mls-shell .mlc-pending .ml-link {
+.sts-shell .stc-pending .st-link {
   width: auto;
   height: auto;
   padding: 0;
@@ -48,7 +48,7 @@
   font-size: inherit;
 }
 
-.mls-shell .mlc-badge {
+.sts-shell .stc-badge {
   margin-left: 4px;
   min-width: 20px;
   height: 20px;
@@ -61,7 +61,7 @@
   place-items: center;
 }
 
-.mls-shell .ml-seg2 {
+.sts-shell .st-seg2 {
   display: inline-flex;
   border: 1px solid var(--color-cool-3);
   border-radius: 3px;
@@ -70,7 +70,7 @@
   flex: none;
 }
 
-.mls-shell .ml-seg2 button {
+.sts-shell .st-seg2 button {
   width: auto;
   height: 100%;
   padding: 0 10px;
@@ -84,30 +84,30 @@
   transition: none;
 }
 
-.mls-shell .ml-seg2 button:last-child {
+.sts-shell .st-seg2 button:last-child {
   border-right: 0;
 }
 
-.mls-shell .ml-seg2 button.on {
+.sts-shell .st-seg2 button.on {
   background: var(--color-cool-3);
   color: var(--color-light-1);
 }
 
-.mls-shell .ml-seg2 .c {
+.sts-shell .st-seg2 .c {
   color: var(--color-light-4);
   font-size: 11.5px;
 }
 
 /* On the chosen segment the count stays readable (4.5:1, Phase 6). */
-.mls-shell .ml-seg2 button.on .c {
+.sts-shell .st-seg2 button.on .c {
   color: var(--color-light-2);
 }
 
-.mls-shell .mlw-add {
+.sts-shell .stw-add {
   position: relative;
 }
 
-.mls-shell .mlw-add > button {
+.sts-shell .stw-add > button {
   height: 28px;
   width: auto;
   padding: 0 10px;
@@ -115,7 +115,7 @@
   font-size: 13px;
 }
 
-.mls-shell .mlw-addmenu {
+.sts-shell .stw-addmenu {
   position: absolute;
   top: calc(100% + 6px);
   right: 0;
@@ -132,7 +132,7 @@
   box-shadow: 0 4px 14px #000;
 }
 
-.mls-shell .mlw-addmenu h4 {
+.sts-shell .stw-addmenu h4 {
   margin: 6px 6px 2px;
   font-size: 11.5px;
   letter-spacing: 0.06em;
@@ -142,7 +142,7 @@
   padding-bottom: 3px;
 }
 
-.mls-shell .mlw-addmenu button {
+.sts-shell .stw-addmenu button {
   width: 100%;
   height: auto;
   min-height: 30px;
@@ -154,40 +154,40 @@
   gap: 8px;
 }
 
-.mls-shell .mlw-addmenu button:hover,
-.mls-shell .mlw-addmenu button:focus-visible {
+.sts-shell .stw-addmenu button:hover,
+.sts-shell .stw-addmenu button:focus-visible {
   background: rgb(255 255 255 / 7%);
 }
 
-.mls-shell .mlw-addstep {
+.sts-shell .stw-addstep {
   display: grid;
   gap: 4px;
 }
 
-.mls-shell .mlw-addstep button:not(.ml-link) {
+.sts-shell .stw-addstep button:not(.st-link) {
   display: grid;
   gap: 2px;
 }
 
-.mls-shell .mlw-addstep button span {
+.sts-shell .stw-addstep button span {
   font-size: 12px;
   color: var(--color-text-subtle);
 }
 
-.mls-shell .mlw-addmenu .ml-empty {
+.sts-shell .stw-addmenu .st-empty {
   margin: 2px 8px 6px;
   font-size: 12.5px;
 }
 
 /* Sections and cards */
-.mls-shell .mlw-modules {
+.sts-shell .stw-modules {
   display: flex;
   flex-direction: column;
   gap: 10px;
   min-height: 0;
 }
 
-.mls-shell .mlw-sections {
+.sts-shell .stw-sections {
   list-style: none;
   margin: 0;
   padding: 0 0 16px;
@@ -196,7 +196,7 @@
   align-content: start;
 }
 
-.mls-shell .mlw-head {
+.sts-shell .stw-head {
   width: 100%;
   height: 28px;
   display: flex;
@@ -216,23 +216,23 @@
   transition: none;
 }
 
-.mls-shell .mlw-head .name {
+.sts-shell .stw-head .name {
   font-size: 14px;
   font-weight: 600;
   color: var(--color-light-1);
 }
 
-.mls-shell .mlw-head .count {
+.sts-shell .stw-head .count {
   color: var(--color-text-subtle);
   font-size: 12px;
 }
 
-.mls-shell .mlw-head > i {
+.sts-shell .stw-head > i {
   color: var(--color-light-4);
   font-size: 11px;
 }
 
-.mls-shell .mlw-grid {
+.sts-shell .stw-grid {
   list-style: none;
   margin: 6px 0 0;
   padding: 0;
@@ -241,7 +241,7 @@
   gap: 8px;
 }
 
-.mls-shell .mlw-card {
+.sts-shell .stw-card {
   display: grid;
   gap: 4px;
   padding: 8px 10px 8px 9px;
@@ -255,43 +255,43 @@
 /* A module that is simply on keeps the neutral edge: only changes and
    problems are coloured (SETUP-REDESIGN.md; prototype _calm.css). */
 
-.mls-shell .mlw-card.off {
+.sts-shell .stw-card.off {
   background: rgb(11 10 19 / 38%);
 }
 
-.mls-shell .mlw-card.off .t {
+.sts-shell .stw-card.off .t {
   color: var(--color-light-4);
 }
 
 /* Foundry would badge it a compatibility risk; a change's colour still wins. */
-.mls-shell .mlw-card.risk {
+.sts-shell .stw-card.risk {
   border-color: rgb(245 196 94 / 55%);
   border-left-color: #f5c45e;
 }
 
-.mls-shell .mlw-card.plus {
+.sts-shell .stw-card.plus {
   border-left-color: #6fd083;
   background: rgb(63 143 82 / 14%);
 }
 
-.mls-shell .mlw-card.minus {
+.sts-shell .stw-card.minus {
   border-left-color: #e0705a;
   background: rgb(180 82 63 / 14%);
 }
 
-.mls-shell .mlw-card.prob {
+.sts-shell .stw-card.prob {
   border-color: rgb(245 196 94 / 55%);
   border-left-color: #f5c45e;
 }
 
-.mls-shell .mlw-card .l1 {
+.sts-shell .stw-card .l1 {
   display: flex;
   align-items: center;
   gap: 9px;
   min-width: 0;
 }
 
-.mls-shell .mlw-card .t {
+.sts-shell .stw-card .t {
   font-size: 14.5px;
   font-weight: 600;
   color: var(--color-light-1);
@@ -302,7 +302,7 @@
   flex: 1;
 }
 
-.mls-shell .mlw-delta {
+.sts-shell .stw-delta {
   flex: none;
   font-size: 11px;
   font-weight: 700;
@@ -310,15 +310,15 @@
   text-transform: uppercase;
 }
 
-.mls-shell .mlw-card.plus .mlw-delta {
+.sts-shell .stw-card.plus .stw-delta {
   color: #8fd49b;
 }
 
-.mls-shell .mlw-card.minus .mlw-delta {
+.sts-shell .stw-card.minus .stw-delta {
   color: #ff9c8f;
 }
 
-.mls-shell .mlw-card .l2 {
+.sts-shell .stw-card .l2 {
   display: flex;
   align-items: baseline;
   gap: 6px;
@@ -328,45 +328,45 @@
   min-width: 0;
 }
 
-.mls-shell .mlw-card .l2 span {
+.sts-shell .stw-card .l2 span {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.mls-shell .mlw-card .l2 i {
+.sts-shell .stw-card .l2 i {
   font-size: 10.5px;
   flex: none;
   color: var(--color-light-4);
 }
 
-.mls-shell .mlw-card .l2.warn {
+.sts-shell .stw-card .l2.warn {
   color: #f3dca4;
 }
 
-.mls-shell .mlw-card .l2.warn i {
+.sts-shell .stw-card .l2.warn i {
   color: #f5c45e;
 }
 
-.mls-shell .mlw-card .l2.dep {
+.sts-shell .stw-card .l2.dep {
   color: #d9c08a;
 }
 
-.mls-shell .mlw-card .l2.dep i {
+.sts-shell .stw-card .l2.dep i {
   color: #c9a24e;
 }
 
-.mls-shell .mlw-card .l2.note {
+.sts-shell .stw-card .l2.note {
   color: var(--color-light-3);
   font-style: italic;
 }
 
-.mls-shell .mlw-card.off .l2.desc {
+.sts-shell .stw-card.off .l2.desc {
   opacity: 0.7;
 }
 
-.mls-shell .mlw-card .l2 .ml-link {
+.sts-shell .stw-card .l2 .st-link {
   width: auto;
   height: auto;
   padding: 0;
@@ -379,7 +379,7 @@
 }
 
 /* The on/off switch */
-.mls-shell .mls-switch {
+.sts-shell .sts-switch {
   appearance: none;
   width: 26px;
   height: 15px;
@@ -392,7 +392,7 @@
   flex: none;
 }
 
-.mls-shell .mls-switch::after {
+.sts-shell .sts-switch::after {
   content: "";
   position: absolute;
   top: 2px;
@@ -404,27 +404,27 @@
   transition: left 0.1s;
 }
 
-.mls-shell .mls-switch:checked {
+.sts-shell .sts-switch:checked {
   background: #3f8f52;
 }
 
-.mls-shell .mls-switch:checked::after {
+.sts-shell .sts-switch:checked::after {
   left: 13px;
   background: #fff;
 }
 
-.mls-shell .mls-switch:disabled {
+.sts-shell .sts-switch:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
 
-.mls-shell .mls-switch:focus-visible {
+.sts-shell .sts-switch:focus-visible {
   outline: 2px solid var(--color-warm-1);
   outline-offset: 2px;
 }
 
 /* A world without the companion */
-.mls-shell .mlw-empty {
+.sts-shell .stw-empty {
   margin: 48px auto;
   max-width: 520px;
   display: grid;
@@ -435,23 +435,23 @@
   font-size: 14px;
 }
 
-.mls-shell .mlw-empty > i {
+.sts-shell .stw-empty > i {
   font-size: 34px;
   color: var(--color-light-4);
 }
 
-.mls-shell .mlw-empty h3 {
+.sts-shell .stw-empty h3 {
   margin: 4px 0 0;
   font-size: 19px;
   color: var(--color-light-1);
   border: 0;
 }
 
-.mls-shell .mlw-empty p {
+.sts-shell .stw-empty p {
   margin: 0;
 }
 
-.mls-shell .mlw-empty ol {
+.sts-shell .stw-empty ol {
   margin: 4px 0 6px;
   padding-left: 20px;
   text-align: left;
@@ -459,7 +459,7 @@
   gap: 4px;
 }
 
-.mls-shell .mlw-empty button {
+.sts-shell .stw-empty button {
   height: 36px;
   width: auto;
   flex: none;
@@ -468,29 +468,29 @@
   font-weight: 700;
 }
 
-.mls-shell .mlw-history {
+.sts-shell .stw-history {
   color: var(--color-light-3);
   font-size: 13px;
 }
 
 /* The launch review (in our Modal) */
-.mlw-lr {
+.stw-lr {
   display: grid;
   gap: 12px;
   font-size: 13px;
 }
 
-.mlw-lr .ml-hint {
+.stw-lr .st-hint {
   margin: 0;
 }
 
-.mlw-lr-cols {
+.stw-lr-cols {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 14px;
 }
 
-.mlw-lr-cols h4 {
+.stw-lr-cols h4 {
   margin: 0 0 4px;
   font-size: 12px;
   letter-spacing: 0.06em;
@@ -500,7 +500,7 @@
   padding-bottom: 3px;
 }
 
-.mlw-lr-cols ul {
+.stw-lr-cols ul {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -508,7 +508,7 @@
   gap: 3px;
 }
 
-.mlw-check {
+.stw-check {
   display: flex;
   gap: 8px;
   margin: 0;
@@ -518,13 +518,13 @@
   align-items: baseline;
 }
 
-.mlw-check.ok {
+.stw-check.ok {
   border-color: rgb(63 143 82 / 60%);
   background: rgb(63 143 82 / 10%);
   color: #b9e3c1;
 }
 
-ul.mlw-check.warn {
+ul.stw-check.warn {
   display: grid;
   list-style: none;
   border-color: rgb(245 196 94 / 50%);
@@ -532,7 +532,7 @@ ul.mlw-check.warn {
   color: #f3dca4;
 }
 
-.mlw-bfirst {
+.stw-bfirst {
   display: flex;
   gap: 10px;
   align-items: flex-start;
@@ -542,26 +542,26 @@ ul.mlw-check.warn {
   cursor: pointer;
 }
 
-.mlw-bfirst > span {
+.stw-bfirst > span {
   display: grid;
   gap: 2px;
 }
 
-.mls-shell .mlw-addmenu button .n {
+.sts-shell .stw-addmenu button .n {
   margin-left: auto;
   font-size: 12px;
   color: var(--color-text-subtle);
 }
 
 /* The About tab */
-.mls-shell .mlw-about {
+.sts-shell .stw-about {
   display: grid;
   grid-template-columns: minmax(0, 1.45fr) minmax(280px, 1fr);
   gap: 18px;
   align-items: start;
 }
 
-.mls-shell .mlw-box {
+.sts-shell .stw-box {
   display: grid;
   gap: 10px;
   padding: 12px 14px;
@@ -570,7 +570,7 @@ ul.mlw-check.warn {
   background: rgb(11 10 19 / 55%);
 }
 
-.mls-shell .mlw-box h3 {
+.sts-shell .stw-box h3 {
   margin: 0;
   font-size: 12px;
   letter-spacing: 0.06em;
@@ -579,7 +579,7 @@ ul.mlw-check.warn {
   border: 0;
 }
 
-.mls-shell .mlw-box > button {
+.sts-shell .stw-box > button {
   justify-self: start;
   width: auto;
   height: 30px;
@@ -587,18 +587,18 @@ ul.mlw-check.warn {
   gap: 6px;
 }
 
-.mls-shell .mlw-desc {
+.sts-shell .stw-desc {
   display: grid;
   gap: 6px;
 }
 
-.mls-shell .mlw-desc.folded .ml-rich {
+.sts-shell .stw-desc.folded .st-rich {
   max-height: calc(1.5em * 6);
   overflow: hidden;
   mask-image: linear-gradient(to bottom, #000 70%, transparent);
 }
 
-.mls-shell .mlw-desc .ml-link {
+.sts-shell .stw-desc .st-link {
   justify-self: start;
   width: auto;
   height: auto;
@@ -610,39 +610,39 @@ ul.mlw-check.warn {
   font-size: 12.5px;
 }
 
-.mls-shell .ml-rich {
+.sts-shell .st-rich {
   font-size: 14px;
   line-height: 1.5;
   color: var(--color-light-1);
 }
 
-.mls-shell .ml-rich > :first-child {
+.sts-shell .st-rich > :first-child {
   margin-top: 0;
 }
 
-.mls-shell .ml-rich p,
-.mls-shell .ml-rich ul,
-.mls-shell .ml-rich ol {
+.sts-shell .st-rich p,
+.sts-shell .st-rich ul,
+.sts-shell .st-rich ol {
   margin: 0 0 0.5em;
 }
 
-.mls-shell .ml-rich ul,
-.mls-shell .ml-rich ol {
+.sts-shell .st-rich ul,
+.sts-shell .st-rich ol {
   padding-left: 1.4em;
 }
 
-.mls-shell .ml-rich h4 {
+.sts-shell .st-rich h4 {
   margin: 0.4em 0 0.3em;
   font-size: 15px;
   border: 0;
 }
 
-.mls-shell .ml-rich a {
+.sts-shell .st-rich a {
   color: var(--color-warm-1);
   text-decoration: underline;
 }
 
-.mls-shell .mlw-details {
+.sts-shell .stw-details {
   display: grid;
   grid-template-columns: 130px minmax(0, 1fr);
   gap: 7px 12px;
@@ -650,22 +650,22 @@ ul.mlw-check.warn {
   font-size: 13.5px;
 }
 
-.mls-shell .mlw-details dt {
+.sts-shell .stw-details dt {
   color: var(--color-text-subtle);
 }
 
-.mls-shell .mlw-details dd {
+.sts-shell .stw-details dd {
   margin: 0;
   color: var(--color-light-1);
 }
 
-.mls-shell .mlw-editable {
+.sts-shell .stw-editable {
   display: inline-flex;
   align-items: center;
   gap: 6px;
 }
 
-.mls-shell .mlw-editable .ml-icon {
+.sts-shell .stw-editable .st-icon {
   width: 22px;
   height: 22px;
   padding: 0;
@@ -675,12 +675,12 @@ ul.mlw-check.warn {
   color: var(--color-light-4);
 }
 
-.mls-shell .mlw-editable .ml-icon:hover {
+.sts-shell .stw-editable .st-icon:hover {
   color: var(--color-warm-1);
 }
 
 /* The Update page, and the chip's update mark */
-.mls-shell .mlh-ver .upd {
+.sts-shell .sth-ver .upd {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -691,14 +691,14 @@ ul.mlw-check.warn {
 }
 
 /* A server page's heading: Foundry's display face and a summary line. */
-.mls-shell .mlb-head {
+.sts-shell .stb-head {
   display: flex;
   align-items: flex-end;
   gap: 12px;
   flex: none;
 }
 
-.mls-shell .mlb-head h2 {
+.sts-shell .stb-head h2 {
   margin: 0;
   text-align: left;
   font-family: "Modesto Condensed", serif;
@@ -708,18 +708,18 @@ ul.mlw-check.warn {
   border: 0;
 }
 
-.mls-shell .mlb-head p {
+.sts-shell .stb-head p {
   margin: 4px 0 0;
   color: var(--color-text-subtle);
   font-size: 13px;
 }
 
-.mls-shell .mlb-head code {
+.sts-shell .stb-head code {
   font-size: 12px;
   color: var(--color-light-3);
 }
 
-.mls-shell .mlb-head button {
+.sts-shell .stb-head button {
   width: auto;
   height: 32px;
   padding: 0 12px;

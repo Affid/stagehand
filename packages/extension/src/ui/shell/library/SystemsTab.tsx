@@ -2,13 +2,13 @@
 // Foundry's star, lock and an update; which worlds use it (or that none
 // does, so it is safe to uninstall); version and authors. The name opens
 // the system's panel.
-import type { SystemInfo } from "@module-library/shared/world";
+import type { SystemInfo } from "@stagehand/shared/world";
 import { Icon } from "../../common/widgets.tsx";
 import { useUi } from "../../context.ts";
 import { plural } from "../../i18n.ts";
 import { worldsUsing } from "../../model/systems.ts";
 import { updateFor } from "../../model/updates.ts";
-import { shownVersion } from "@module-library/shared/version";
+import { shownVersion } from "@stagehand/shared/version";
 
 function Marks(props: { readonly s: SystemInfo }) {
   const { state, page, t, canChange } = useUi();
@@ -18,14 +18,14 @@ function Marks(props: { readonly s: SystemInfo }) {
     <>
       {s.favorite ? (
         <i
-          class="fa-solid fa-star mlw-fav"
+          class="fa-solid fa-star stw-fav"
           title={t("lib.favourite")}
           aria-label={t("lib.favourite")}
         />
       ) : null}
       {s.locked ? (
         <i
-          class="fa-solid fa-lock mlw-lock"
+          class="fa-solid fa-lock stw-lock"
           title={t("lib.locked")}
           aria-label={t("lib.locked")}
         />
@@ -33,7 +33,7 @@ function Marks(props: { readonly s: SystemInfo }) {
       {update ? (
         <button
           type="button"
-          class="mlw-upd"
+          class="stw-upd"
           disabled={!canChange}
           title={t("lib.updateFrom", { version: s.version })}
           aria-label={t("lib.updateTo", { title: s.title, version: update })}
@@ -60,7 +60,7 @@ function SysCard(props: { readonly s: SystemInfo }) {
   const open = state.side?.kind === "system" && state.side.id === s.id;
   const authors = (s.authors ?? []).map((a) => a.name).join(", ");
   return (
-    <li class={`mll-card${open ? " viewing" : ""}`} data-system={s.id}>
+    <li class={`stl-card${open ? " viewing" : ""}`} data-system={s.id}>
       <div class="l1">
         <button
           type="button"
@@ -100,9 +100,9 @@ export function SystemsTab() {
   const systems = [...(state.data.setup?.systems ?? [])]
     .filter((s) => !q || s.title.toLowerCase().includes(q))
     .sort((a, b) => a.title.localeCompare(b.title));
-  if (!systems.length) return <p class="ml-empty">{t("lib.noSystems")}</p>;
+  if (!systems.length) return <p class="st-empty">{t("lib.noSystems")}</p>;
   return (
-    <ol class="mlw-grid mll-systems">
+    <ol class="stw-grid stl-systems">
       {systems.map((s) => (
         <SysCard key={s.id} s={s} />
       ))}

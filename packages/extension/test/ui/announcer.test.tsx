@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import type { Command } from "@module-library/shared/world";
+import type { Command } from "@stagehand/shared/world";
 import { act, cleanup } from "@testing-library/preact";
 import { afterEach, describe, expect, test } from "vitest";
 import { renderUi, setupState } from "./harness.tsx";
@@ -18,7 +18,7 @@ const queued = (id: string): Command => ({
 });
 
 const said = (c: ParentNode): string =>
-  c.querySelector(".mls-announce")?.textContent ?? "";
+  c.querySelector(".sts-announce")?.textContent ?? "";
 
 describe("queued changes are announced wherever they come from (Phase 6)", () => {
   test("a world's queue growing or emptying is said once; nothing on load", () => {

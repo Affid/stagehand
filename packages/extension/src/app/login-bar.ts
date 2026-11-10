@@ -4,15 +4,15 @@
 // page: native opens the server list for a tapped link there, so the page
 // gets no new rights.
 
-const BAR = "ml-login-bar";
-const STYLE = "ml-login-style";
+const BAR = "st-login-bar";
+const STYLE = "st-login-style";
 
 const CSS = `
 #${BAR} { position: fixed; top: 0; left: 0; right: 0; z-index: 2147483000; height: 48px; display: flex; align-items: center; gap: 8px; padding: 0 12px 0 4px; box-sizing: border-box; background: rgb(11 10 19 / 94%); border-bottom: 1px solid #353042; font: 600 14px/1 Signika, system-ui, sans-serif; color: #efe9dd; }
 #${BAR} a { display: inline-flex; align-items: center; gap: 4px; height: 44px; padding: 0 10px; color: inherit; text-decoration: none; border-radius: 8px; }
 #${BAR} a:focus-visible { outline: 2px solid #ee9b3a; }
-#${BAR} .ml-host { margin-left: auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 400; font-size: 13px; color: #b5aec2; }
-#${BAR} .ml-plain { color: #e88a6a; }
+#${BAR} .st-host { margin-left: auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 400; font-size: 13px; color: #b5aec2; }
+#${BAR} .st-plain { color: #e88a6a; }
 body:has(#${BAR}) { padding-top: 48px !important; box-sizing: border-box; }
 `;
 
@@ -37,10 +37,10 @@ export function addLoginBar(
   link.href = serversHref;
   link.textContent = "‹ Servers";
   const host = doc.createElement("span");
-  host.className = "ml-host";
+  host.className = "st-host";
   if (server.startsWith("http:")) {
     const plain = doc.createElement("span");
-    plain.className = "ml-plain";
+    plain.className = "st-plain";
     plain.textContent = "Not encrypted · ";
     host.append(plain);
   }

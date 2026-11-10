@@ -1,6 +1,6 @@
 // The Library's groups: a header with the name and how many modules it
 // holds (renamed in place after New folder), and its cards when open.
-import type { Folder } from "@module-library/shared/library/schema";
+import type { Folder } from "@stagehand/shared/library/schema";
 import { useEffect, useRef } from "preact/hooks";
 import { InlineInput } from "../../common/widgets.tsx";
 import { useUi } from "../../context.ts";
@@ -21,7 +21,7 @@ function RenameHead(props: {
   const ops = useFolderOps();
   const { folder } = props;
   return (
-    <div class="mlw-head mll-renaming">
+    <div class="stw-head stl-renaming">
       <InlineInput
         initial={folder.name}
         label={t("folder.rename")}
@@ -86,12 +86,12 @@ function Head(props: {
   if (props.renaming && folder)
     return <RenameHead folder={folder} onDone={props.onRenamed} />;
   return (
-    <div class="mlw-headrow">
+    <div class="stw-headrow">
       {props.page.selecting ? <GroupCheck group={group} name={name} /> : null}
       <button
         type="button"
         ref={head}
-        class="mlw-head"
+        class="stw-head"
         aria-expanded={props.open}
         onClick={props.onToggle}
       >
@@ -111,7 +111,7 @@ function Head(props: {
   );
 }
 
-/** In select mode: the whole group at once (prototype mls-gcheck). */
+/** In select mode: the whole group at once (prototype sts-gcheck). */
 function GroupCheck(props: {
   readonly group: LibGroup;
   readonly name: string;
@@ -123,7 +123,7 @@ function GroupCheck(props: {
   return (
     <input
       type="checkbox"
-      class="mls-gcheck"
+      class="sts-gcheck"
       checked={n === ids.length}
       ref={(el) => {
         if (el) el.indeterminate = n > 0 && n < ids.length;
@@ -151,7 +151,7 @@ function Section(props: {
   const { group, page } = props;
   const open = !page.closed.has(group.key);
   return (
-    <li class="mll-sec" style={{ "--c": group.color ?? "var(--color-cool-3)" }}>
+    <li class="stl-sec" style={{ "--c": group.color ?? "var(--color-cool-3)" }}>
       <Head
         group={group}
         open={open}
@@ -161,10 +161,10 @@ function Section(props: {
         page={page}
       />
       {open && !group.modules.length ? (
-        <p class="ml-muted mll-emptygroup">{t("lib.emptyGroup")}</p>
+        <p class="st-muted stl-emptygroup">{t("lib.emptyGroup")}</p>
       ) : null}
       {open && group.modules.length ? (
-        <ol class="mlw-grid">
+        <ol class="stw-grid">
           {group.modules.map((m) => (
             <LibCard
               key={m.id}
@@ -191,9 +191,9 @@ export function Sections(props: {
 }) {
   const { t } = useUi();
   if (props.groups.length === 0)
-    return <p class="ml-empty">{t("lib.empty")}</p>;
+    return <p class="st-empty">{t("lib.empty")}</p>;
   return (
-    <ol class="mll-sections">
+    <ol class="stl-sections">
       {props.groups.map((g) => (
         <Section key={g.key} group={g} model={props.model} page={props.page} />
       ))}

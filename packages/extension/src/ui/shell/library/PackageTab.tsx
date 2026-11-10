@@ -2,11 +2,11 @@
 // says (version and Foundry's badge, what it needs, authors, links), its
 // relationships, its contents, and Foundry's own settings and actions for
 // it on this server.
-import type { PackageInfo, Relation } from "@module-library/shared/package";
+import type { PackageInfo, Relation } from "@stagehand/shared/package";
 import {
   isCompatibilityRisk,
   testAvailability,
-} from "@module-library/shared/version";
+} from "@stagehand/shared/version";
 import { safeUrl } from "../../common/files.ts";
 import { Icon } from "../../common/widgets.tsx";
 import { useUi } from "../../context.ts";
@@ -22,7 +22,7 @@ function Badge(props: { readonly pkg: PackageInfo }) {
     testAvailability(props.pkg.compatibility, core),
   );
   return (
-    <span class={`mls-badge ${risk ? "warn" : "ok"}`}>
+    <span class={`sts-badge ${risk ? "warn" : "ok"}`}>
       <Icon name="code-branch" />
       {t(risk ? "pk.verifiedOnly" : "pk.verified", { version: verified })}
     </span>
@@ -42,9 +42,9 @@ function Links(props: { readonly pkg: PackageInfo }) {
     const href = safeUrl(raw);
     return href ? [{ label, href }] : [];
   });
-  if (!links.length) return <span class="ml-muted">{t("mp.none")}</span>;
+  if (!links.length) return <span class="st-muted">{t("mp.none")}</span>;
   return (
-    <span class="mls-links">
+    <span class="sts-links">
       {links.map((l, i) => (
         <span key={l.label}>
           {i ? " · " : ""}
@@ -62,7 +62,7 @@ function Facts(props: { readonly pkg: PackageInfo }) {
   const { pkg } = props;
   const min = pkg.compatibility.minimum;
   return (
-    <div class="mls-kv">
+    <div class="sts-kv">
       <span>{t("mp.version")}</span>
       <span>
         {pkg.version} <Badge pkg={pkg} />
@@ -91,7 +91,7 @@ function Relationships(props: { readonly pkg: PackageInfo }) {
   );
   if (!rows.length) return null;
   return (
-    <div class="mls-chg">
+    <div class="sts-chg">
       <h4>
         <span>{t("pk.relationships")}</span>
       </h4>
@@ -118,7 +118,7 @@ function Contents(props: { readonly pkg: PackageInfo }) {
   const packs = props.pkg.packs ?? [];
   const langs = props.pkg.languages ?? [];
   return (
-    <div class="mls-chg">
+    <div class="sts-chg">
       <h4>
         <span>{t("pk.contents")}</span>
       </h4>
@@ -153,12 +153,12 @@ export function PackageTab(props: {
   const { t } = useUi();
   const kind = props.kind ?? "module";
   return (
-    <div class="mls-pkgtab">
+    <div class="sts-pkgtab">
       <Facts pkg={props.pkg} />
       <Relationships pkg={props.pkg} />
       <Contents pkg={props.pkg} />
       <OnServer pkg={props.pkg} kind={kind} />
-      <p class="ml-muted mls-foot">{t(`pk.foot.${kind}`)}</p>
+      <p class="st-muted sts-foot">{t(`pk.foot.${kind}`)}</p>
     </div>
   );
 }

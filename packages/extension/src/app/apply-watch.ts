@@ -5,7 +5,7 @@
 // writes the world's module configuration and reloads it once; after the
 // reload they read applied (or failed). The page reloads in between, so the
 // one thing to remember (taken up) is kept by the caller, in the launch note.
-import { readStagehand } from "@module-library/shared/world-flags";
+import { readStagehand } from "@stagehand/shared/world-flags";
 
 export interface WatchNote {
   /** The launch's intent written into the world's flags. */

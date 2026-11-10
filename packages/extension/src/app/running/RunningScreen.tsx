@@ -61,7 +61,7 @@ function Hero(props: RunningProps) {
   const image = cssImage(world.background, props.origin);
   const uptime = since(t, status?.uptime);
   return (
-    <div class="mlr-hero" style={image ? { "--img": image } : undefined}>
+    <div class="str-hero" style={image ? { "--img": image } : undefined}>
       <span class="live">
         <i aria-hidden="true" />
         {t("run.live")}
@@ -99,10 +99,10 @@ function Sheet(props: {
   useModalFocus(box, props.onCancel);
   return (
     <>
-      <div class="mlr-scrim" aria-hidden="true" onClick={props.onCancel} />
+      <div class="str-scrim" aria-hidden="true" onClick={props.onCancel} />
       <div
         ref={box}
-        class="mlr-sheet"
+        class="str-sheet"
         role="dialog"
         aria-modal="true"
         aria-label={props.title}
@@ -130,7 +130,7 @@ function Ask(
         <button type="button" onClick={props.cancel}>
           {t("run.cancel")}
         </button>
-        <button type="button" class="bright mlr-go" onClick={props.go}>
+        <button type="button" class="bright str-go" onClick={props.go}>
           <Icon name="door-open" />
           {t("run.disconnect")}
         </button>
@@ -150,7 +150,7 @@ function Password(props: {
   return (
     <Sheet title={t("run.pwTitle")} onCancel={props.cancel}>
       <form
-        class="mlr-form"
+        class="str-form"
         onSubmit={(e) => {
           e.preventDefault();
           props.go(pw);
@@ -173,7 +173,7 @@ function Password(props: {
           <button type="button" onClick={props.cancel}>
             {t("run.cancel")}
           </button>
-          <button type="submit" class="bright mlr-go">
+          <button type="submit" class="bright str-go">
             <Icon name="door-open" />
             {t("run.return")}
           </button>
@@ -228,7 +228,7 @@ function ReturnButton(props: {
   return (
     <button
       type="button"
-      class={props.main ? "bright mlr-go" : "mlr-go"}
+      class={props.main ? "bright str-go" : "str-go"}
       disabled={closing}
       onClick={props.onClick}
     >
@@ -243,25 +243,25 @@ function ApplyLine(props: RunningProps & { readonly apply: ApplyView }) {
   const { t, apply } = props;
   if (apply.kind === "applied")
     return (
-      <p class="mlr-ok">
+      <p class="str-ok">
         <Icon name="check" />
         {plural(t, "run.applied", apply.n)}
       </p>
     );
   if (apply.kind === "failed")
     return (
-      <p class="mlr-bad" role="alert">
+      <p class="str-bad" role="alert">
         <Icon name="triangle-exclamation" />
         {apply.reason}
       </p>
     );
   if (apply.kind === "password")
     return (
-      <div class="mlr-ask">
+      <div class="str-ask">
         <p>{plural(t, "run.applyPassword", apply.n, { user: apply.user })}</p>
         <button
           type="button"
-          class="bright mlr-go"
+          class="bright str-go"
           onClick={props.onApplyPassword}
         >
           <Icon name="key" />
@@ -269,7 +269,7 @@ function ApplyLine(props: RunningProps & { readonly apply: ApplyView }) {
         </button>
         <button
           type="button"
-          class="mlr-go mlr-quiet"
+          class="str-go str-quiet"
           onClick={props.onApplyNotNow}
         >
           {t("run.applyNotNow")}
@@ -277,7 +277,7 @@ function ApplyLine(props: RunningProps & { readonly apply: ApplyView }) {
       </div>
     );
   return (
-    <p class="mlr-ok" aria-live="polite">
+    <p class="str-ok" aria-live="polite">
       <Icon name="spinner fa-spin-pulse" />
       {plural(t, "run.applying", apply.n)}
     </p>
@@ -295,7 +295,7 @@ function Body(
   const { t, r } = props;
   const n = props.status?.users ?? 0;
   return (
-    <div class="mlr-body">
+    <div class="str-body">
       {props.apply ? (
         <ApplyLine {...props} apply={props.apply} />
       ) : (
@@ -308,7 +308,7 @@ function Body(
         main
         onClick={r.start}
       />
-      <a class="mlr-go mlr-servers" href={props.serversHref}>
+      <a class="str-go str-servers" href={props.serversHref}>
         <Icon name="server" />
         {t("run.serverList")}
       </a>
@@ -329,26 +329,26 @@ export function RunningScreen(props: RunningProps) {
   const asking = r.step.kind === "asking" || r.step.kind === "password";
   return (
     <>
-      <header class="mlr-top" inert={asking}>
+      <header class="str-top" inert={asking}>
         <a
-          class="mlr-back"
+          class="str-back"
           href={props.serversHref}
           aria-label={t("run.servers")}
         >
           <Icon name="chevron-left" />
         </a>
         <span class="logo" aria-hidden="true" />
-        <h1>{t("mlp.title")}</h1>
+        <h1>{t("stp.title")}</h1>
         {status?.version ? (
           <span
-            class="mlr-ver"
+            class="str-ver"
             title={t("run.version", { version: status.version })}
           >
             {status.version.replace(".", " · ")}
           </span>
         ) : null}
       </header>
-      <main class="mlr-scroll" inert={asking}>
+      <main class="str-scroll" inert={asking}>
         <Hero {...props} />
         <Body {...props} r={r} />
       </main>

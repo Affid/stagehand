@@ -47,7 +47,7 @@ page's world. `setup-main` (page world) lends them over `window.postMessage`:
   renders notification HTML.
 
 Every message is checked by hand on both sides (`src/page-protocol.ts`). The
-UI renders only into a host inside an `.application.ml-window`.
+UI renders only into a host inside an `.application.st-window`.
 
 ## Fragility
 

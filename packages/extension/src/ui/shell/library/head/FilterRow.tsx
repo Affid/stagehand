@@ -10,7 +10,7 @@ export function FilterRow(props: {
   const { state, store, page, t, canChange } = useUi();
   const label = t(`lib.filter.${props.kind}`, { n: String(props.count) });
   return (
-    <header class="controls flexrow mll-controls">
+    <header class="controls flexrow stl-controls">
       <label class="filter search">
         <input
           type="search"

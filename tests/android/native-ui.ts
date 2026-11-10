@@ -5,11 +5,11 @@
 import { execFileSync } from "node:child_process";
 
 const ADB =
-  process.env.ML_ADB ?? "/mnt/c/Users/fagot/Android/Sdk/platform-tools/adb.exe";
+  process.env.ST_ADB ?? "/mnt/c/Users/fagot/Android/Sdk/platform-tools/adb.exe";
 
-/** The device every call goes to: ML_ANDROID_SERIAL, else the only one. */
+/** The device every call goes to: ST_ANDROID_SERIAL, else the only one. */
 function serial(): string {
-  if (process.env.ML_ANDROID_SERIAL) return process.env.ML_ANDROID_SERIAL;
+  if (process.env.ST_ANDROID_SERIAL) return process.env.ST_ANDROID_SERIAL;
   const lines = execFileSync(ADB, ["devices"])
     .toString()
     .split(/\r?\n/)
@@ -19,10 +19,10 @@ function serial(): string {
     .map(([id]) => id ?? "");
   if (lines.length !== 1)
     throw new Error(
-      `Set ML_ANDROID_SERIAL: adb sees ${String(lines.length)} devices (${lines.join(", ")})`,
+      `Set ST_ANDROID_SERIAL: adb sees ${String(lines.length)} devices (${lines.join(", ")})`,
     );
   const [only = ""] = lines;
-  process.env.ML_ANDROID_SERIAL = only;
+  process.env.ST_ANDROID_SERIAL = only;
   return only;
 }
 
@@ -63,7 +63,7 @@ interface ViewNode {
 /** The screen's view tree, as uiautomator dumps it. */
 export function nodes(): ViewNode[] {
   try {
-    adb("shell", "uiautomator", "dump", "/sdcard/ml-ui.xml");
+    adb("shell", "uiautomator", "dump", "/sdcard/st-ui.xml");
   } catch (error: unknown) {
     // uiautomator sometimes exits 137 after writing the dump.
     const stdout =
@@ -74,7 +74,7 @@ export function nodes(): ViewNode[] {
         : "";
     if (!out.includes("dumped")) throw error;
   }
-  const xml = adb("shell", "cat", "/sdcard/ml-ui.xml");
+  const xml = adb("shell", "cat", "/sdcard/st-ui.xml");
   return [...xml.matchAll(/<node [^>]*>/g)].flatMap((m): ViewNode[] => {
     const attr = (name: string): string =>
       new RegExp(`${name}="([^"]*)"`).exec(m[0])?.[1] ?? "";

@@ -1,14 +1,14 @@
 // Queued world commands (P-3, P-5, P-6), and how they meet the world's own
 // queue and the companion's report (docs/COMPANION-WORLD-PROTOCOL.md).
 // Pure functions over the command list.
-import type { Library } from "@module-library/shared/library/schema";
-import type { ApplyMode } from "@module-library/shared/resolver";
-import { type Command, changeModules } from "@module-library/shared/world";
+import type { Library } from "@stagehand/shared/library/schema";
+import type { ApplyMode } from "@stagehand/shared/resolver";
+import { type Command, changeModules } from "@stagehand/shared/world";
 import type {
   QueueEntry,
   Result,
   StagehandFlags,
-} from "@module-library/shared/world-flags";
+} from "@stagehand/shared/world-flags";
 
 export interface NewCommand {
   readonly id: string;

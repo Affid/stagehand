@@ -1,6 +1,6 @@
-import { listAuthors } from "@module-library/shared/organise/authors";
-import { smartGroups } from "@module-library/shared/organise/groups";
-import { parseCoreVersion } from "@module-library/shared/version";
+import { listAuthors } from "@stagehand/shared/organise/authors";
+import { smartGroups } from "@stagehand/shared/organise/groups";
+import { parseCoreVersion } from "@stagehand/shared/version";
 import { describe, expect, test } from "vitest";
 import { createTranslator } from "../../src/ui/i18n.ts";
 import { groupLibrary } from "../../src/ui/model/library-groups.ts";

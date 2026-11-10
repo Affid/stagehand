@@ -23,17 +23,17 @@ export function Sheet(props: SheetProps) {
   };
   return (
     <>
-      <div class="mlh-scrim" onClick={onClose} />
+      <div class="sth-scrim" onClick={onClose} />
       <div
         ref={box}
-        class="mlh-sheet"
+        class="sth-sheet"
         role="dialog"
         aria-modal="true"
         aria-label={props.title}
         tabIndex={-1}
         onKeyDown={onKey}
       >
-        <span class="mlh-grab" aria-hidden="true" />
+        <span class="sth-grab" aria-hidden="true" />
         <h2>{props.title}</h2>
         {props.children}
       </div>

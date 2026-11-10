@@ -1,4 +1,4 @@
-import type { WorldInfo } from "@module-library/shared/world";
+import type { WorldInfo } from "@stagehand/shared/world";
 import { describe, expect, test } from "vitest";
 import {
   cssImage,

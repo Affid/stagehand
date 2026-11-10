@@ -21,7 +21,7 @@ function Update(props: { readonly onPage: () => void }) {
       <div class="avail">
         <Icon name="arrow-up" />
         <span>{t("vm.available", { version: update.version })}</span>
-        <button type="button" class="ml-primary" onClick={props.onPage}>
+        <button type="button" class="st-primary" onClick={props.onPage}>
           {t("vm.whatsNew")}
         </button>
       </div>
@@ -31,7 +31,7 @@ function Update(props: { readonly onPage: () => void }) {
     <div class={`avail none${unreachable ? " warn" : ""}`}>
       <Icon name={unreachable ? "triangle-exclamation" : "circle-check"} />
       <span>{t(unreachable ? "vm.unreachable" : "vm.current")}</span>
-      <button type="button" class="ml-link" onClick={props.onPage}>
+      <button type="button" class="st-link" onClick={props.onPage}>
         {t("vm.updatePage")}
       </button>
     </div>
@@ -48,7 +48,7 @@ function Help(props: MenuProps) {
   const { state, page, t } = useUi();
   const issues = state.data.setup?.issues ?? 0;
   return (
-    <div class="mlh-help">
+    <div class="sth-help">
       <button
         type="button"
         ref={(el) => {
@@ -62,7 +62,7 @@ function Help(props: MenuProps) {
         <Icon name="life-ring" />
         <span>{t("vm.support")}</span>
         {issues ? (
-          <span class="ml-muted">{t("vm.issues", { n: String(issues) })}</span>
+          <span class="st-muted">{t("vm.issues", { n: String(issues) })}</span>
         ) : null}
       </button>
       <a href={KB_URL} target="_blank" rel="noopener noreferrer">
@@ -83,11 +83,11 @@ function Menu(props: MenuProps) {
     store.set({ route: { kind: "server", page: "update" } });
   };
   return (
-    <section class="ml-pop mlh-fm" role="region" aria-label={t("shell.title")}>
+    <section class="st-pop sth-fm" role="region" aria-label={t("shell.title")}>
       <header>
         <strong>{t("shell.title")}</strong>
       </header>
-      <div class="mlh-upd">
+      <div class="sth-upd">
         <div>
           <strong>
             {t("vm.build", {
@@ -96,7 +96,7 @@ function Menu(props: MenuProps) {
             })}
           </strong>
           {channel ? (
-            <span class="ml-muted">{t("vm.channel", { channel })}</span>
+            <span class="st-muted">{t("vm.channel", { channel })}</span>
           ) : null}
         </div>
         <Update onPage={toUpdate} />
@@ -156,14 +156,14 @@ export function VersionMenu(props: { readonly compact?: boolean }) {
   const version = state.data.setup?.core.version ?? "";
   if (!version) return null;
   return (
-    <span class="mlh-chipwrap" ref={wrap}>
+    <span class="sth-chipwrap" ref={wrap}>
       <button
         type="button"
         ref={trigger}
-        class={`mlh-ver${open ? " ml-on" : ""}`}
+        class={`sth-ver${open ? " st-on" : ""}`}
         aria-expanded={open}
         aria-label={t(
-          hasUpdate && props.compact ? "mlp.chipUpdate" : "vm.chip",
+          hasUpdate && props.compact ? "stp.chipUpdate" : "vm.chip",
           {
             version: versionLabel(version),
           },

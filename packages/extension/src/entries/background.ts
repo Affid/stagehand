@@ -1,6 +1,6 @@
 // Extension background entry: wires Chrome/Firefox APIs into the router.
-import "@module-library/shared/zod-config";
-import { logError } from "@module-library/shared/log";
+import "@stagehand/shared/zod-config";
+import { logError } from "@stagehand/shared/log";
 import type { SetupConfig } from "../adapters/config.ts";
 import { loadSetupConfig } from "../adapters/remote.ts";
 import { serialized } from "../background/kv.ts";

@@ -11,9 +11,9 @@
 import { _android, type AndroidDevice, type Page } from "@playwright/test";
 import { loadFoundryEnv } from "../foundry/env.ts";
 
-const PKG = process.env.ML_APP_PKG ?? "io.github.affid.stagehand.debug";
+const PKG = process.env.ST_APP_PKG ?? "io.github.affid.stagehand.debug";
 /** The local Foundry as the emulator reaches it. */
-const SERVER = process.env.ML_APP_SERVER ?? "http://10.0.2.2:30000";
+const SERVER = process.env.ST_APP_SERVER ?? "http://10.0.2.2:30000";
 const OUT = "test-results/screens";
 const HOME = "https://appassets.androidplatform.net/home.html";
 
@@ -65,7 +65,7 @@ async function login(pages: Page[]): Promise<void> {
   }, env.adminPassword);
   await server.goto(`${SERVER}/setup`);
   await server
-    .locator("#ml-shell-root .mls-top, #ml-shell-root .mlp-top")
+    .locator("#st-shell-root .sts-top, #st-shell-root .stp-top")
     .first()
     .waitFor();
   console.log(`login ${String(status)}, Setup is ours`);

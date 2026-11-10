@@ -1,7 +1,7 @@
 // The About tab's Description: shown cleaned and folded when long; Edit
 // opens Foundry's own prose-mirror editor here (the page world mounts it in
 // our host) and Save stores its HTML through editWorld (SETUP-REDESIGN.md).
-import { MAX_DESCRIPTION, type WorldInfo } from "@module-library/shared/world";
+import { MAX_DESCRIPTION, type WorldInfo } from "@stagehand/shared/world";
 import { useEffect, useMemo, useState } from "preact/hooks";
 import { cleanForEditor } from "../../../common/clean-html.ts";
 import { RichText } from "../../../common/rich-text.tsx";
@@ -17,15 +17,15 @@ function View(props: { readonly html: string | undefined }) {
   const { t } = useUi();
   const [open, setOpen] = useState(false);
   const html = props.html ?? "";
-  if (!html.trim()) return <p class="ml-empty">{t("about.noDescription")}</p>;
+  if (!html.trim()) return <p class="st-empty">{t("about.noDescription")}</p>;
   const long = html.length > FOLD_CHARS;
   return (
-    <div class={`mlw-desc${long && !open ? " folded" : ""}`}>
+    <div class={`stw-desc${long && !open ? " folded" : ""}`}>
       <RichText html={html} />
       {long ? (
         <button
           type="button"
-          class="ml-link"
+          class="st-link"
           aria-expanded={open}
           onClick={() => setOpen(!open)}
         >
@@ -44,7 +44,7 @@ function Editor(props: {
   const { page, actions, t } = useUi();
   const hostId = useMemo(
     () =>
-      `ml-pm-${props.world.id.replace(/[^a-z0-9-]/gi, "")}-${String(++hosts)}`,
+      `st-pm-${props.world.id.replace(/[^a-z0-9-]/gi, "")}-${String(++hosts)}`,
     [props.world.id],
   );
   useEffect(() => {
@@ -62,8 +62,8 @@ function Editor(props: {
     });
   };
   return (
-    <div class="mlw-edit">
-      <div id={hostId} class="mlw-pmhost" />
+    <div class="stw-edit">
+      <div id={hostId} class="stw-pmhost" />
       <div class="bar">
         <button type="button" class="bright" onClick={save}>
           {t("about.save")}
@@ -88,7 +88,7 @@ export function DescriptionBox(props: {
   const cut = (props.world.description?.length ?? 0) >= MAX_DESCRIPTION;
   const canEdit = props.canEdit && !cut;
   return (
-    <section class="mlw-box">
+    <section class="stw-box">
       <h4>
         <span>{t("about.description")}</span>
         <SavedMark on={saved && !editing} />
@@ -96,7 +96,7 @@ export function DescriptionBox(props: {
           <button
             type="button"
             ref={focus.link}
-            class="ml-link"
+            class="st-link"
             aria-label={t("about.editDescription")}
             onClick={() => {
               setSaved(false);

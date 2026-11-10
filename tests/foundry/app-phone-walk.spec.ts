@@ -82,7 +82,7 @@ test.afterAll(async () => {
   }
 });
 
-const shell = (page: Page) => page.locator("#ml-shell-root .mls-shell");
+const shell = (page: Page) => page.locator("#st-shell-root .sts-shell");
 
 /**
  * Nothing goes sideways: not the page, not the page's scroller, and no
@@ -94,19 +94,19 @@ async function noSideways(page: Page, where: string): Promise<void> {
   const found = await page.evaluate(() => {
     const vw = window.innerWidth;
     const main = document.querySelector<HTMLElement>(
-      "#ml-shell-root .mls-main",
+      "#st-shell-root .sts-main",
     );
     const scrolls = (el: Element): boolean => {
       for (
         let a = el.parentElement;
-        a && a !== main && a.id !== "ml-shell-root";
+        a && a !== main && a.id !== "st-shell-root";
         a = a.parentElement
       )
         if (["auto", "scroll"].includes(getComputedStyle(a).overflowX))
           return true;
       return false;
     };
-    const out = [...document.querySelectorAll("#ml-shell-root *")]
+    const out = [...document.querySelectorAll("#st-shell-root *")]
       .filter((el) => el.checkVisibility())
       .filter((el) => {
         const r = el.getBoundingClientRect();
@@ -129,7 +129,7 @@ async function bigEnough(page: Page, where: string): Promise<void> {
   const r = await page.evaluate((tap) => {
     const controls = [
       ...document.querySelectorAll(
-        "#ml-shell-root :is(.mlp-top, .mlp-dock, .mlp-tabs) :is(button, a[href], input, select, [role=button], [role=tab])",
+        "#st-shell-root :is(.stp-top, .stp-dock, .stp-tabs) :is(button, a[href], input, select, [role=button], [role=tab])",
       ),
     ].filter((el) => el.checkVisibility());
     const small = controls
@@ -156,13 +156,13 @@ async function stop(page: Page, tag: string, where: string): Promise<void> {
 
 async function tab(page: Page, name: string): Promise<void> {
   await shell(page)
-    .locator(".mlp-tabs")
+    .locator(".stp-tabs")
     .getByRole("button", { name: new RegExp(`^${name}`) })
     .click();
 }
 
 async function inPage(page: Page, name: RegExp): Promise<void> {
-  await shell(page).locator(".mls-main").getByRole("tab", { name }).click();
+  await shell(page).locator(".sts-main").getByRole("tab", { name }).click();
 }
 
 async function sheet(page: Page, tag: string, where: string): Promise<void> {
@@ -175,7 +175,7 @@ async function sheet(page: Page, tag: string, where: string): Promise<void> {
 /** A menu that opened (bottom menus share these classes; phone/popups.ts). */
 async function menu(page: Page, tag: string, where: string): Promise<void> {
   await expect(
-    shell(page).locator(".ml-pop, .mlh-menu, .mlw-addmenu").first(),
+    shell(page).locator(".st-pop, .sth-menu, .stw-addmenu").first(),
   ).toBeVisible();
   await stop(page, tag, where);
 }
@@ -183,7 +183,7 @@ async function menu(page: Page, tag: string, where: string): Promise<void> {
 async function walkWorld(page: Page, tag: string): Promise<void> {
   await tab(page, "Worlds");
   await stop(page, tag, "worlds");
-  await shell(page).locator(".mls-world").first().click();
+  await shell(page).locator(".sts-world").first().click();
   await stop(page, tag, "world-modules");
   await inPage(page, /^About/);
   await stop(page, tag, "world-about");
@@ -199,8 +199,8 @@ async function walkLibrary(
   await tab(page, "Library");
   await stop(page, tag, "library");
   // The local library has packages (the walk needs one to open).
-  await expect(shell(page).locator(".mls-main button.t").first()).toBeVisible();
-  await shell(page).locator(".mls-main button.t").first().click();
+  await expect(shell(page).locator(".sts-main button.t").first()).toBeVisible();
+  await shell(page).locator(".sts-main button.t").first().click();
   await sheet(page, tag, "details");
   await shell(page)
     .getByRole("button", { name: /^Select, install/ })
@@ -223,23 +223,23 @@ async function walkLibrary(
 
 async function walkServer(page: Page, tag: string): Promise<void> {
   await tab(page, "Backups");
-  await shell(page).locator(".mlp-dock .mlp-bkbar").waitFor();
+  await shell(page).locator(".stp-dock .stp-bkbar").waitFor();
   await stop(page, tag, "backups");
   for (const name of ["Worlds", "Modules", "Systems"]) {
     await inPage(page, new RegExp(`^${name}`));
     await stop(page, tag, `backups-${name.toLowerCase()}`);
   }
   await tab(page, "Configuration");
-  await shell(page).locator(".mlc-cols").waitFor();
+  await shell(page).locator(".stc-cols").waitFor();
   await stop(page, tag, "configuration");
   await tab(page, "Worlds");
-  await shell(page).locator(".mlh-ver").click();
+  await shell(page).locator(".sth-ver").click();
   await menu(page, tag, "version-menu");
   await shell(page)
     .getByRole("button", { name: /Update page|What's new/ })
     .click();
   await shell(page)
-    .locator(".mls-main .mlb-head, .mls-main .mlu-cols")
+    .locator(".sts-main .stb-head, .sts-main .stu-cols")
     .first()
     .waitFor();
   await stop(page, tag, "whats-new");

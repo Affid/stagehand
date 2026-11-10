@@ -1,7 +1,7 @@
 // "Turn all on / off" for a group of a world's modules: the world page's
 // group menu and the By world grid's group counts. Queued for the next
 // launch, in parts the background accepts.
-import { MAX_PICKED } from "@module-library/shared/world";
+import { MAX_PICKED } from "@stagehand/shared/world";
 import { useUi } from "../../context.ts";
 import { COMPANION_ID } from "../../model/preview.ts";
 import type { WorldModuleRow } from "../../model/world-modules.ts";

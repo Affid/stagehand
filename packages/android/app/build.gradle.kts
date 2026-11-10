@@ -30,13 +30,13 @@ fun versionCodeOf(version: String): Int {
 
 /**
  * The release key lives outside the repository: a properties file named by
- * ML_ANDROID_SIGNING, else ~/.config/module-library/android-signing.properties
+ * ST_ANDROID_SIGNING, else ~/.config/stagehand/android-signing.properties
  * (storeFile, storePassword, keyAlias, keyPassword). Without it the release
  * APK is built unsigned.
  */
 val signingProps: Properties? = run {
-    val path = System.getenv("ML_ANDROID_SIGNING")
-        ?: "${System.getProperty("user.home")}/.config/module-library/android-signing.properties"
+    val path = System.getenv("ST_ANDROID_SIGNING")
+        ?: "${System.getProperty("user.home")}/.config/stagehand/android-signing.properties"
     val file = File(path)
     if (!file.isFile) {
         logger.warn("No release signing file at $path: the release APK is unsigned")
@@ -84,7 +84,7 @@ val copyWebAssets = tasks.register<CopyWebAssets>("copyWebAssets") {
 }
 
 android {
-    namespace = "dev.modulelibrary.app"
+    namespace = "io.github.affid.stagehand"
     compileSdk = 36
 
     defaultConfig {

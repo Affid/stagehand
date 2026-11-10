@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 // The About tab as the prototype: Details with Rename and Change, Background,
 // Maintenance (data, safe mode, reset passwords, lock) and the Danger zone.
-import type { WorldInfo } from "@module-library/shared/world";
+import type { WorldInfo } from "@stagehand/shared/world";
 import { cleanup, fireEvent, waitFor, within } from "@testing-library/preact";
 import { afterEach, describe, expect, test } from "vitest";
 import type { BackupInfo } from "../../src/page-backups.ts";
@@ -46,7 +46,7 @@ function about(over: Partial<WorldInfo> = {}) {
 
 const box = (c: ParentNode, title: string): HTMLElement => {
   const found = [
-    ...c.querySelectorAll<HTMLElement>(".mlw-about .mlw-box"),
+    ...c.querySelectorAll<HTMLElement>(".stw-about .stw-box"),
   ].find((b) => b.querySelector("h4")?.textContent.startsWith(title));
   if (!found) throw new Error(`no box ${title}`);
   return found;
@@ -55,9 +55,9 @@ const box = (c: ParentNode, title: string): HTMLElement => {
 describe("the About tab's boxes", () => {
   test("two columns: Description, Next session, Details; Background, Maintenance, Danger zone", () => {
     const { container } = about();
-    const cols = [...container.querySelectorAll(".mlw-about > .col")].map(
+    const cols = [...container.querySelectorAll(".stw-about > .col")].map(
       (col) =>
-        [...col.querySelectorAll(".mlw-box > h4 > span:first-child")].map(
+        [...col.querySelectorAll(".stw-box > h4 > span:first-child")].map(
           (h) => h.textContent,
         ),
     );
@@ -130,15 +130,15 @@ describe("the About tab's boxes", () => {
     fireEvent.click(
       within(d).getByRole("button", { name: "Edit description" }),
     );
-    const host = el(d, ".mlw-pmhost");
-    expect(host.id).toMatch(/^ml-pm-/);
+    const host = el(d, ".stw-pmhost");
+    expect(host.id).toMatch(/^st-pm-/);
     expect(page.editorOpen).toHaveBeenCalledWith(host.id, "<p>Gothic</p>");
     fireEvent.click(within(d).getByRole("button", { name: "Save" }));
     await waitFor(() => {
       expect(page.editorSave).toHaveBeenCalledWith("w1", host.id);
     });
     await waitFor(() => {
-      expect(d.querySelector(".mlw-pmhost")).toBe(null);
+      expect(d.querySelector(".stw-pmhost")).toBe(null);
     });
     await waitFor(() => {
       expect(page.editorClose).toHaveBeenCalledWith(host.id);
@@ -226,7 +226,7 @@ describe("the About tab's boxes", () => {
     }) as HTMLButtonElement;
     expect(launch.disabled).toBe(true);
     expect(launch.parentElement?.getAttribute("title")).toContain("Locked");
-    expect(el(container, ".mlw-about").textContent).toContain("Locked:");
+    expect(el(container, ".stw-about").textContent).toContain("Locked:");
   });
 });
 

@@ -57,42 +57,42 @@ function serverBackupsPage() {
     const size = id === "snapshots" ? "" : ` · ${fmtSize(sbTotal(id))}`;
     return `<a class="${tab === id ? "active" : ""}" data-act="sbtab" data-id="${id}"><i class="fa-solid ${icon}"></i>${label} <span class="c">${sbCount(id)}${size}</span></a>`;
   }).join("");
-  const create = job ? sbProgress(job) : `${lock ? `<span class="mlw-tipwrap" data-tooltip="${busyTip()}">` : ""}<button type="button" class="bright" data-act="snapnew"${lock}><i class="fa-solid fa-camera-retro"></i>Create a snapshot</button>${lock ? "</span>" : ""}`;
-  const head = `<div class="mlb-head"><div><h2>Backups</h2><p>${fmtSize(pkgMB)} of backups on this server · ${plural(SNAPSHOTS.length, "snapshot")} · 48 GB of disk free</p></div><span class="ml-spacer"></span>${create}</div>`;
+  const create = job ? sbProgress(job) : `${lock ? `<span class="stw-tipwrap" data-tooltip="${busyTip()}">` : ""}<button type="button" class="bright" data-act="snapnew"${lock}><i class="fa-solid fa-camera-retro"></i>Create a snapshot</button>${lock ? "</span>" : ""}`;
+  const head = `<div class="stb-head"><div><h2>Backups</h2><p>${fmtSize(pkgMB)} of backups on this server · ${plural(SNAPSHOTS.length, "snapshot")} · 48 GB of disk free</p></div><span class="st-spacer"></span>${create}</div>`;
   const progress = "";
   const body = tab === "snapshots" ? sbSnapshots(lock) : sbPackageList(tab, lock);
-  return `<section id="setup-packages" class="application framed mls-main mlb-page"><div class="mls-body-main">${head}${progress}
-    <nav class="mls-subtabs">${tabs}</nav>${body}</div></section>`;
+  return `<section id="setup-packages" class="application framed sts-main stb-page"><div class="sts-body-main">${head}${progress}
+    <nav class="sts-subtabs">${tabs}</nav>${body}</div></section>`;
 }
 
 function sbProgress(job) {
   // Foundry's own order, seen live on 14.370: modules, then systems, then worlds.
   const steps = [["module", "Modules"], ["system", "Systems"], ["world", "Worlds"]].map(([k, l], i) =>
     `<li class="${i < job.step ? "done" : i === job.step ? "now" : ""}"><i class="fa-solid ${i < job.step ? "fa-check" : i === job.step ? "fa-spinner fa-spin-pulse" : "fa-circle"}"></i>${l}</li>`).join("");
-  return `<div class="mlb-job" role="status" data-tooltip="A snapshot can't be interrupted. Launching, restoring and deleting wait until it's done."><div class="t"><strong>Creating a snapshot · ${job.pct}%</strong><span>${job.current ? `Backing up ${esc(job.current)}` : "Starting…"}</span></div>
+  return `<div class="stb-job" role="status" data-tooltip="A snapshot can't be interrupted. Launching, restoring and deleting wait until it's done."><div class="t"><strong>Creating a snapshot · ${job.pct}%</strong><span>${job.current ? `Backing up ${esc(job.current)}` : "Starting…"}</span></div>
     <ol>${steps}</ol><div class="bar"><span style="width:${job.pct}%"></span></div></div>`;
 }
 
 function sbSnapshots(lock) {
-  if (!SNAPSHOTS.length) return `<div class="mlw-empty"><i class="fa-solid fa-camera-retro"></i><h3>No snapshots yet</h3><p>A snapshot backs up every world, module and system at once, so you can roll the whole server back, for example before updating Foundry.</p></div>`;
+  if (!SNAPSHOTS.length) return `<div class="stw-empty"><i class="fa-solid fa-camera-retro"></i><h3>No snapshots yet</h3><p>A snapshot backs up every world, module and system at once, so you can roll the whole server back, for example before updating Foundry.</p></div>`;
   const sel = ST.snapSel;
   const rows = SNAPSHOTS.map((s) => {
     const v = sbVersion(s.build, "Taken");
     const pick = sel ? `<input type="checkbox" data-act="snappick" data-id="${s.id}" ${sel.has(s.id) ? "checked" : ""} aria-label="Select the snapshot of ${esc(s.date)}">` : '<i class="fa-solid fa-camera-retro"></i>';
-    const restore = !v.ok ? `<span class="mlw-tipwrap" data-tooltip="${esc(v.tip)}"><button type="button" disabled>Restore…</button></span>`
-      : lock ? `<span class="mlw-tipwrap" data-tooltip="${busyTip()}"><button type="button" disabled>Restore…</button></span>`
+    const restore = !v.ok ? `<span class="stw-tipwrap" data-tooltip="${esc(v.tip)}"><button type="button" disabled>Restore…</button></span>`
+      : lock ? `<span class="stw-tipwrap" data-tooltip="${busyTip()}"><button type="button" disabled>Restore…</button></span>`
       : `<button type="button" data-act="foundry" data-what="Restore the snapshot of ${esc(s.date)}: Foundry checks disk space, lists packages added since, and asks you to type a code">Restore…</button>`;
-    const del = lock ? `<span class="mlw-tipwrap" data-tooltip="${busyTip()}"><button type="button" class="icon" disabled aria-label="Delete"><i class="fa-solid fa-trash"></i></button></span>`
+    const del = lock ? `<span class="stw-tipwrap" data-tooltip="${busyTip()}"><button type="button" class="icon" disabled aria-label="Delete"><i class="fa-solid fa-trash"></i></button></span>`
       : `<button type="button" class="icon" data-act="snapdelone" data-id="${s.id}" aria-label="Delete the snapshot ${esc(s.note || s.date)}" data-tooltip="Delete this snapshot and the backups in it"><i class="fa-solid fa-trash"></i></button>`;
     return `<li class="${sel?.has(s.id) ? "picked" : ""}">${pick}<div class="nm"><strong>${esc(s.note || s.date)}</strong><span>${s.note ? `${esc(s.date)}, ` : ""}${esc(s.time)} · ${esc(s.rel)} · ${plural(s.packages, "package")}</span></div>
       <span class="core ${v.cls}" data-tooltip="${esc(v.tip)}"><i class="fa-solid ${v.cls ? "fa-triangle-exclamation" : "fa-code-branch"}"></i> ${esc(s.build)}</span><span class="sz">${esc(s.size)}</span>${sel ? "<span></span><span></span>" : `${restore}${del}`}</li>`;
   }).join("");
   const bar = sel
-    ? `<div class="mlw-bhead sel"><i class="fa-solid fa-square-check"></i><span><b>${sel.size ? `${plural(sel.size, "snapshot")} selected` : "Select snapshots to delete"}</b></span><span class="ml-spacer"></span>
+    ? `<div class="stw-bhead sel"><i class="fa-solid fa-square-check"></i><span><b>${sel.size ? `${plural(sel.size, "snapshot")} selected` : "Select snapshots to delete"}</b></span><span class="st-spacer"></span>
         <button type="button" class="del" data-act="snapdel"${sel.size ? "" : " disabled"}><i class="fa-solid fa-trash"></i>Delete${sel.size ? ` ${sel.size}` : ""}…</button><button type="button" data-act="snapselect">Done</button></div>`
-    : `<div class="mlw-bhead"><span>A snapshot holds a backup of every package; restoring it rolls the whole server back. Its backups are counted under Worlds, Modules and Systems.</span><span class="ml-spacer"></span>
+    : `<div class="stw-bhead"><span>A snapshot holds a backup of every package; restoring it rolls the whole server back. Its backups are counted under Worlds, Modules and Systems.</span><span class="st-spacer"></span>
         ${SNAPSHOTS.length > 1 && !lock ? '<button type="button" data-act="snapselect"><i class="fa-solid fa-square-check"></i>Select</button>' : ""}</div>`;
-  return `<div class="mlb-scroll">${bar}<ol class="mlw-blist mlb-snaps">${rows}</ol></div>`;
+  return `<div class="stb-scroll">${bar}<ol class="stw-blist stb-snaps">${rows}</ol></div>`;
 }
 
 function sbPackageList(type, lock) {
@@ -101,31 +101,31 @@ function sbPackageList(type, lock) {
   const pkgs = sbPackages(type).filter((p) => !q || p.title.toLowerCase().includes(q))
     .sort((a, b) => (sort === "size" ? sumMB(b.list) - sumMB(a.list) : sort === "latest" ? BACKUP_AGE(a) - BACKUP_AGE(b) : a.title.localeCompare(b.title)));
   const noun = { world: "world", module: "module", system: "system" }[type];
-  const tools = `<div class="ml-row mlb-tools"><input type="search" data-filter="sb" value="${esc(ST.sbq ?? "")}" placeholder="Filter ${noun}s" aria-label="Filter ${noun}s">
-    <span class="ml-label">Sort by</span><select data-change="sbsort" aria-label="Sort by">${[["name", "Name"], ["size", "Size"], ["latest", "Latest backup"]].map(([k, l]) => `<option value="${k}"${k === sort ? " selected" : ""}>${l}</option>`).join("")}</select>
-    <span class="ml-spacer"></span><span class="ml-muted">${plural(sbCount(type), "backup")} of ${plural(sbPackages(type).length, noun)} · ${fmtSize(sbTotal(type))}</span></div>`;
-  if (!pkgs.length) return `${tools}<p class="ml-muted" style="padding:12px 2px">${q ? `No ${noun} matches.` : `No ${noun} backups yet.`}</p>`;
+  const tools = `<div class="st-row stb-tools"><input type="search" data-filter="sb" value="${esc(ST.sbq ?? "")}" placeholder="Filter ${noun}s" aria-label="Filter ${noun}s">
+    <span class="st-label">Sort by</span><select data-change="sbsort" aria-label="Sort by">${[["name", "Name"], ["size", "Size"], ["latest", "Latest backup"]].map(([k, l]) => `<option value="${k}"${k === sort ? " selected" : ""}>${l}</option>`).join("")}</select>
+    <span class="st-spacer"></span><span class="st-muted">${plural(sbCount(type), "backup")} of ${plural(sbPackages(type).length, noun)} · ${fmtSize(sbTotal(type))}</span></div>`;
+  if (!pkgs.length) return `${tools}<p class="st-muted" style="padding:12px 2px">${q ? `No ${noun} matches.` : `No ${noun} backups yet.`}</p>`;
   const rows = pkgs.map((p) => {
     const open = ST.sbOpen?.has(`${type}:${p.id}`);
     const latest = p.list[0], v = sbVersion(latest.core, "Made");
     const ver = latest.ver ? `v${esc(latest.ver)} · ` : "";
-    const gone = p.gone ? `<span class="mlw-pill" data-tooltip="No longer installed. Restoring a backup installs it again.">not installed</span>` : "";
-    const restoreLatest = lock ? `<span class="mlw-tipwrap" data-tooltip="${busyTip()}"><button type="button" disabled>Restore latest…</button></span>`
+    const gone = p.gone ? `<span class="stw-pill" data-tooltip="No longer installed. Restoring a backup installs it again.">not installed</span>` : "";
+    const restoreLatest = lock ? `<span class="stw-tipwrap" data-tooltip="${busyTip()}"><button type="button" disabled>Restore latest…</button></span>`
       : `<button type="button" data-act="foundry" data-what="Restore the latest backup of ${esc(p.title)} (Foundry asks you to type a code and offers a backup of the current state first)">Restore latest…</button>`;
-    const inner = open ? `<ol class="mlb-inner">${p.list.map((b, k) => {
+    const inner = open ? `<ol class="stb-inner">${p.list.map((b, k) => {
       const bv = sbVersion(b.core, "Made");
-      const del = b.snapshot ? `<span class="mlw-tipwrap" data-tooltip="Part of a snapshot: it's deleted with the snapshot"><button type="button" class="icon" disabled aria-label="Can't delete alone: part of a snapshot"><i class="fa-solid fa-trash"></i></button></span>`
+      const del = b.snapshot ? `<span class="stw-tipwrap" data-tooltip="Part of a snapshot: it's deleted with the snapshot"><button type="button" class="icon" disabled aria-label="Can't delete alone: part of a snapshot"><i class="fa-solid fa-trash"></i></button></span>`
         : `<button type="button" class="icon" data-act="sbdel" data-id="${type}|${p.id}|${b.id}" aria-label="Delete this backup" data-tooltip="Delete"${lock}><i class="fa-solid fa-trash"></i></button>`;
-      return `<li><i class="fa-solid ${b.snapshot ? "fa-camera" : "fa-floppy-disk"}"></i><div class="nm"><strong>${esc(b.name || b.date)}</strong><span>${esc(b.date)}${b.time ? `, ${esc(b.time)}` : ""} · ${esc(b.rel)}${b.snapshot ? " · part of a snapshot" : ""}${k === 0 ? ' <span class="mlw-pill">latest</span>' : ""}</span></div>
+      return `<li><i class="fa-solid ${b.snapshot ? "fa-camera" : "fa-floppy-disk"}"></i><div class="nm"><strong>${esc(b.name || b.date)}</strong><span>${esc(b.date)}${b.time ? `, ${esc(b.time)}` : ""} · ${esc(b.rel)}${b.snapshot ? " · part of a snapshot" : ""}${k === 0 ? ' <span class="stw-pill">latest</span>' : ""}</span></div>
         <span class="core ${bv.cls}" data-tooltip="${esc(bv.tip)}"><i class="fa-solid fa-code-branch"></i> ${b.ver ? `v${esc(b.ver)}` : esc(b.core)}</span><span class="sz">${esc(b.size)}</span>
-        ${lock ? `<span class="mlw-tipwrap" data-tooltip="${busyTip()}"><button type="button" disabled>Restore…</button></span>` : `<button type="button" data-act="foundry" data-what="Restore “${esc(b.name || b.date)}” of ${esc(p.title)} (Foundry asks you to type a code)">Restore…</button>`}${del}</li>`;
-    }).join("")}</ol>${type === "world" && !p.gone ? `<a class="mlb-open" data-act="sbworld" data-id="${p.id}">Open ${esc(p.title)}'s Backups tab</a>` : ""}` : "";
-    return `<li class="mlb-pkg${open ? " open" : ""}"><div class="row">
+        ${lock ? `<span class="stw-tipwrap" data-tooltip="${busyTip()}"><button type="button" disabled>Restore…</button></span>` : `<button type="button" data-act="foundry" data-what="Restore “${esc(b.name || b.date)}” of ${esc(p.title)} (Foundry asks you to type a code)">Restore…</button>`}${del}</li>`;
+    }).join("")}</ol>${type === "world" && !p.gone ? `<a class="stb-open" data-act="sbworld" data-id="${p.id}">Open ${esc(p.title)}'s Backups tab</a>` : ""}` : "";
+    return `<li class="stb-pkg${open ? " open" : ""}"><div class="row">
       <button type="button" class="icon tog" data-act="sbopen" data-id="${type}:${p.id}" aria-expanded="${!!open}" aria-label="${open ? "Hide" : "Show"} the backups of ${esc(p.title)}"><i class="fa-solid fa-chevron-${open ? "down" : "right"}"></i></button>
       <div class="nm" data-act="sbopen" data-id="${type}:${p.id}"><strong>${esc(p.title)} ${gone}</strong><span>${plural(p.list.length, "backup")} · latest ${esc(latest.rel)}</span></div>
       <span class="core ${v.cls}" data-tooltip="${esc(v.tip)}"><i class="fa-solid fa-code-branch"></i> ${ver}${esc(latest.core)}</span><span class="sz">${fmtSize(sumMB(p.list))}</span>${restoreLatest}</div>${inner}</li>`;
   }).join("");
-  return `${tools}<div class="mlb-scroll"><ol class="mlb-pkgs">${rows}</ol></div>`;
+  return `${tools}<div class="stb-scroll"><ol class="stb-pkgs">${rows}</ol></div>`;
 }
 const AGE_DAYS = { "just now": 0, "3 days ago": 3, "9 days ago": 9, "3 weeks ago": 21, "5 weeks ago": 35, "2 months ago": 60, "11 weeks ago": 77, "8 months ago": 240, "9 months ago": 270 };
 const BACKUP_AGE = (p) => AGE_DAYS[p.list[0].rel] ?? 999;
@@ -133,14 +133,14 @@ const BACKUP_AGE = (p) => AGE_DAYS[p.list[0].rel] ?? 999;
 function snapshotDialog() {
   if (ST.dialog !== "snapshot") return "";
   const counts = `${plural(WORLDS_X.length, "world")}, ${plural(ALL_MODULES.length, "module")} and ${plural(SYSTEMS.length, "system")}`;
-  const body = `<div class="mls-launch-body">
+  const body = `<div class="sts-launch-body">
     <p>A snapshot backs up every installed world, module and system, so you can later roll the whole server back to this moment.</p>
-    <div class="mlb-facts"><span><i class="fa-solid fa-box-archive"></i>${counts}</span><span><i class="fa-solid fa-hard-drive"></i>About 3.4 GB needed · 48 GB free</span><span class="ml-muted" style="font-size:12px">Needed is the size before compression; the snapshot itself is usually smaller.</span></div>
-    <label class="mlb-note"><span>Note</span><input type="text" id="snapnote" placeholder="Optional, for example: Before updating Foundry" maxlength="200"></label>
-    <div class="mls-check warn"><i class="fa-solid fa-triangle-exclamation"></i><span>It can take a while and can't be interrupted. Launching, restoring and deleting wait until it's done.</span></div></div>`;
+    <div class="stb-facts"><span><i class="fa-solid fa-box-archive"></i>${counts}</span><span><i class="fa-solid fa-hard-drive"></i>About 3.4 GB needed · 48 GB free</span><span class="st-muted" style="font-size:12px">Needed is the size before compression; the snapshot itself is usually smaller.</span></div>
+    <label class="stb-note"><span>Note</span><input type="text" id="snapnote" placeholder="Optional, for example: Before updating Foundry" maxlength="200"></label>
+    <div class="sts-check warn"><i class="fa-solid fa-triangle-exclamation"></i><span>It can take a while and can't be interrupted. Launching, restoring and deleting wait until it's done.</span></div></div>`;
   const footer = `<button type="button" data-act="closedialog">Cancel</button><button type="button" class="bright" data-act="snapgo"><i class="fa-solid fa-camera-retro"></i>Create the snapshot</button>`;
   const x = Math.round(innerWidth / 2 - 260), y = Math.max(80, Math.round(innerHeight / 2 - 220));
-  return `<div class="mls-backdrop" data-act="closedialog"></div>${fwindow({ title: "Create a snapshot", icon: "fa-solid fa-camera-retro", x, y, w: 520, body, footer, cls: "mls-dialog" })}`;
+  return `<div class="sts-backdrop" data-act="closedialog"></div>${fwindow({ title: "Create a snapshot", icon: "fa-solid fa-camera-retro", x, y, w: 520, body, footer, cls: "sts-dialog" })}`;
 }
 
 A.srvbackups = () => { ST.page = "backups"; ST.pop = null; ST.panel = null; ST.select = false; ST.snapSel = null; render(); };

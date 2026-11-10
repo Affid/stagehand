@@ -21,7 +21,7 @@ import { hideResolutionNotice } from "../page/resolution.ts";
 import { allowTextMenus, hintPasswords } from "../page/text-fields.ts";
 import { addLoginBar } from "./login-bar.ts";
 import { startApplyWatch } from "./apply-game.ts";
-import { FLAGS_KEY } from "@module-library/shared/world";
+import { FLAGS_KEY } from "@stagehand/shared/world";
 import { nativePassword, nativePorts, nativeSend } from "./platform.ts";
 import { showsRunning, startRunning } from "./running/start.tsx";
 
@@ -103,7 +103,7 @@ function whenBody(doc: Document, fn: () => void): void {
 /** Our styles before Foundry's first paint: the veil keeps Setup hidden. */
 function addStyles(root: HTMLElement, css: string): void {
   const style = root.ownerDocument.createElement("style");
-  style.dataset.ml = "setup";
+  style.dataset.st = "setup";
   style.textContent = css;
   root.append(style);
 }

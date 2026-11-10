@@ -36,46 +36,46 @@ function foundry() {
 
 describe("Foundry's editor in our host", () => {
   test("opens with the description, editing at once, in our host only", () => {
-    document.body.innerHTML = '<div id="ml-pm-w1"></div>';
+    document.body.innerHTML = '<div id="st-pm-w1"></div>';
     const f = foundry();
-    expect(openEditor(document, f.page as never, "ml-pm-w1", "<p>x</p>")).toBe(
+    expect(openEditor(document, f.page as never, "st-pm-w1", "<p>x</p>")).toBe(
       undefined,
     );
     expect(f.create).toHaveBeenCalledWith(
       expect.objectContaining({ value: "<p>x</p>", toggled: false }),
     );
-    expect(document.querySelector("#ml-pm-w1 .fake-pm")).toBeTruthy();
+    expect(document.querySelector("#st-pm-w1 .fake-pm")).toBeTruthy();
   });
 
   test("saves the editor's HTML through editWorld, then closes it", async () => {
-    document.body.innerHTML = '<div id="ml-pm-w1"></div>';
+    document.body.innerHTML = '<div id="st-pm-w1"></div>';
     const f = foundry();
-    openEditor(document, f.page, "ml-pm-w1", "<p>x</p>");
+    openEditor(document, f.page, "st-pm-w1", "<p>x</p>");
     const el = document.querySelector<HTMLElement & { value: string }>(
-      "#ml-pm-w1 .fake-pm",
+      "#st-pm-w1 .fake-pm",
     );
     if (el) el.value = "<p>edited</p>";
     expect(
-      await saveFromEditor(document, f.page as never, "ml-pm-w1", "w1"),
+      await saveFromEditor(document, f.page as never, "st-pm-w1", "w1"),
     ).toBeUndefined();
     expect(f.post).toHaveBeenCalledWith({
       action: "editWorld",
       id: "w1",
       description: "<p>edited</p>",
     });
-    closeEditor(document, "ml-pm-w1");
+    closeEditor(document, "st-pm-w1");
     expect(document.querySelector(".fake-pm")).toBe(null);
   });
 
   test("no host, no editor, or no Foundry editor class is reported, never thrown", async () => {
     const f = foundry();
-    expect(openEditor(document, f.page as never, "ml-pm-w1", "")).toMatch(
+    expect(openEditor(document, f.page as never, "st-pm-w1", "")).toMatch(
       /host/,
     );
     expect(
-      await saveFromEditor(document, f.page as never, "ml-pm-w1", "w1"),
+      await saveFromEditor(document, f.page as never, "st-pm-w1", "w1"),
     ).toMatch(/editor/);
-    document.body.innerHTML = '<div id="ml-pm-w1"></div>';
-    expect(openEditor(document, {}, "ml-pm-w1", "")).toMatch(/editor/);
+    document.body.innerHTML = '<div id="st-pm-w1"></div>';
+    expect(openEditor(document, {}, "st-pm-w1", "")).toMatch(/editor/);
   });
 });

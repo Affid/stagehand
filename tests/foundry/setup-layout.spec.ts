@@ -13,7 +13,7 @@ const env = loadFoundryEnv();
 let ext: Target;
 let page: Page;
 
-const shell = (p: Page) => p.locator("#ml-shell-root");
+const shell = (p: Page) => p.locator("#st-shell-root");
 
 test.describe.configure({ mode: "serial" });
 
@@ -41,17 +41,17 @@ async function box(l: Locator): Promise<Box> {
 /** The world page and the Library with a module's details open. */
 async function measure(w: number, h: number) {
   await page.setViewportSize({ width: w, height: h });
-  await shell(page).locator(".mls-world").first().click();
+  await shell(page).locator(".sts-world").first().click();
   const world = {
-    rail: await box(shell(page).locator(".mls-rail")),
-    main: await box(shell(page).locator(".mls-main")),
+    rail: await box(shell(page).locator(".sts-rail")),
+    main: await box(shell(page).locator(".sts-main")),
   };
   await page.screenshot({ path: `${SCREENS}/layout-world-${String(w)}.png` });
-  await shell(page).locator(".mls-lib").click();
-  await shell(page).locator(".mls-main button.t").first().click();
-  const panel = shell(page).locator(".mls-panel");
+  await shell(page).locator(".sts-lib").click();
+  await shell(page).locator(".sts-main button.t").first().click();
+  const panel = shell(page).locator(".sts-panel");
   const library = {
-    main: await box(shell(page).locator(".mls-main")),
+    main: await box(shell(page).locator(".sts-main")),
     panel: await box(panel),
     // From the header's foot to 16 px above the window's.
     panelBottom: Math.round(
@@ -71,7 +71,7 @@ test("2560: the side panes at their widest, the middle pane fills the rest", asy
   expect(m.world.main).toEqual({ x: 440, w: 2096 });
   expect(m.library.main).toEqual({ x: 440, w: 1620 });
   expect(m.library.panel).toEqual({ x: 2076, w: 460 });
-  expect(await box(shell(page).locator(".mls-top"))).toEqual({ x: 0, w: 2560 });
+  expect(await box(shell(page).locator(".sts-top"))).toEqual({ x: 0, w: 2560 });
 });
 
 test("1920: the side panes part of the way between 1366 and 2560", async () => {
@@ -109,8 +109,8 @@ test("1280: a narrower rail; the details float over the page", async () => {
 
 test("1366 with a side panel: the selection bar keeps Done inside the page", async () => {
   await page.setViewportSize({ width: 1366, height: 768 });
-  const main = shell(page).locator(".mls-main");
-  await shell(page).locator(".mls-lib").click();
+  const main = shell(page).locator(".sts-main");
+  await shell(page).locator(".sts-lib").click();
   await main.getByRole("button", { name: "Presets" }).click();
   await main.getByRole("button", { name: "Select" }).click();
   const done = await box(main.getByRole("button", { name: "Done" }));
@@ -118,37 +118,37 @@ test("1366 with a side panel: the selection bar keeps Done inside the page", asy
   expect(done.x + done.w).toBeLessThanOrEqual(pane.x + pane.w);
   await main.getByRole("button", { name: "Done" }).click();
   await shell(page)
-    .locator(".mls-panel")
+    .locator(".sts-panel")
     .getByRole("button", { name: "Close" })
     .click();
 });
 
 test("2560: By world columns keep their width; the frame ends at the table (polish)", async () => {
   await page.setViewportSize({ width: 2560, height: 1440 });
-  await shell(page).locator(".mls-lib").click();
+  await shell(page).locator(".sts-lib").click();
   await shell(page)
-    .locator(".mls-main")
+    .locator(".sts-main")
     .getByRole("tab", { name: /By world/ })
     .click();
-  const heads = shell(page).locator(".mll-grid thead th.w");
+  const heads = shell(page).locator(".stl-grid thead th.w");
   const n = await heads.count();
   expect(n).toBeGreaterThan(0);
   for (const w of await heads.evaluateAll((els) =>
     els.map((e) => Math.round(e.getBoundingClientRect().width)),
   ))
     expect(w).toBe(92);
-  const table = await box(shell(page).locator(".mll-grid"));
+  const table = await box(shell(page).locator(".stl-grid"));
   expect(table.w).toBe(250 + n * 92);
   // The frame holds the table and no more (its border and scrollbar
   // gutter aside).
   expect(
     await shell(page)
-      .locator(".mll-gridwrap")
+      .locator(".stl-gridwrap")
       .evaluate((e) => e.clientWidth),
   ).toBe(table.w);
   await page.screenshot({ path: `${SCREENS}/layout-grid-2560.png` });
   await shell(page)
-    .locator(".mls-main")
+    .locator(".sts-main")
     .getByRole("tab", { name: /^Modules/ })
     .click();
 });
@@ -160,12 +160,12 @@ test("1366×768: a long grid scrolls down without cutting the last world (review
     const p = await own.context.newPage();
     await p.setViewportSize({ width: 1366, height: 768 });
     await openSetupAsAdmin(own, p, env.url, env.adminPassword);
-    await shell(p).locator(".mls-lib").click();
+    await shell(p).locator(".sts-lib").click();
     await shell(p)
-      .locator(".mls-main")
+      .locator(".sts-main")
       .getByRole("tab", { name: /By world/ })
       .click();
-    const frame = shell(p).locator(".mll-gridwrap");
+    const frame = shell(p).locator(".stl-gridwrap");
     await expect(frame).toBeVisible();
     const m = await frame.evaluate((e) => ({
       down: e.scrollHeight > e.clientHeight,
@@ -183,10 +183,10 @@ test("1366×768: a long grid scrolls down without cutting the last world (review
 
 test("2560: the server pages fill the screen too", async () => {
   await page.setViewportSize({ width: 2560, height: 1440 });
-  const top = shell(page).locator(".mls-top");
+  const top = shell(page).locator(".sts-top");
   for (const name of ["Backups", "Configuration"]) {
     await top.getByRole("button", { name }).click();
-    expect(await box(shell(page).locator(".mls-main"))).toEqual({
+    expect(await box(shell(page).locator(".sts-main"))).toEqual({
       x: 440,
       w: 2096,
     });
@@ -195,11 +195,11 @@ test("2560: the server pages fill the screen too", async () => {
 
 test("1366×768: the Library's lists scroll under their head (owner's bug)", async () => {
   await page.setViewportSize({ width: 1366, height: 768 });
-  const main = shell(page).locator(".mls-main");
-  await shell(page).locator(".mls-lib").click();
+  const main = shell(page).locator(".sts-main");
+  await shell(page).locator(".sts-lib").click();
   const tabs: readonly [RegExp, string][] = [
-    [/^Modules/, ".mll-sections"],
-    [/^Systems/, ".mll-systems"],
+    [/^Modules/, ".stl-sections"],
+    [/^Systems/, ".stl-systems"],
   ];
   for (const [tab, list] of tabs) {
     await main.getByRole("tab", { name: tab }).click();
@@ -212,12 +212,12 @@ test("1366×768: the Library's lists scroll under their head (owner's bug)", asy
     );
   }
   await main.getByRole("tab", { name: /^Modules/ }).click();
-  const sections = main.locator(".mll-sections");
+  const sections = main.locator(".stl-sections");
   const tall = await sections.evaluate((e) => e.scrollHeight > e.clientHeight);
   expect(tall).toBe(true);
   // The last module comes into view by scrolling the list, head kept.
-  await main.locator(".mll-card").last().scrollIntoViewIfNeeded();
-  await expect(main.locator(".mll-card").last()).toBeInViewport();
+  await main.locator(".stl-card").last().scrollIntoViewIfNeeded();
+  await expect(main.locator(".stl-card").last()).toBeInViewport();
   await expect(main.getByRole("tab", { name: /^Modules/ })).toBeInViewport();
   expect(await sections.evaluate((e) => e.scrollTop)).toBeGreaterThan(0);
 });

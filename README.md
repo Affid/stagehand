@@ -1,12 +1,12 @@
 # Stagehand for Foundry VTT
 
-Named Stagehand on 2026-11-09 (before: Module Library, a working name). Code
-names keep the old one: the `@module-library/*` workspace packages, the
-Kotlin package `dev.modulelibrary.app` and the test world
-`module-library-test`. The app's id on a device is
-`io.github.affid.stagehand` and the Firefox add-on id
-`stagehand@affid.github.io`; both are fixed once a release is installed.
-Nothing was released under the old name, so nothing old is read or migrated.
+Named Stagehand on 2026-11-09 (before: Module Library, a working name),
+everywhere since 2026-11-10: the `@stagehand/*` workspace packages, the
+Kotlin package and app id `io.github.affid.stagehand`, the Firefox add-on
+id `stagehand@affid.github.io`, the test world `stagehand-test`, and the
+`st` prefix on CSS classes, script ids and `ST_*` environment variables.
+The app and add-on ids are fixed once a release is installed. Nothing was
+released under the old name, so nothing old is read or migrated.
 
 Organise installed Foundry VTT modules on the Setup screen (folders, tags,
 notes, smart groups, authors), see which modules each world uses, and apply
@@ -50,7 +50,7 @@ extension's options.
 
 The app (`packages/android`, Kotlin; docs/ANDROID-APP-PLAN.md) shows the
 same Setup page in a WebView. It needs JDK 21 in `~/opt/jdk-21*` and the
-Android SDK in `~/Android/Sdk` (or `ML_ANDROID_JAVA_HOME` and
+Android SDK in `~/Android/Sdk` (or `ST_ANDROID_JAVA_HOME` and
 `ANDROID_HOME`); see docs/ANDROID-SPIKE.md for the install.
 
 ```bash
@@ -60,10 +60,10 @@ pnpm test:android     # the app end to end on a device (the emulator by default)
 ```
 
 `pnpm test:android` needs the emulator (or a phone) on Windows' adb and
-the local Foundry on Setup; for a phone, set `ML_ANDROID_SERIAL` and
-`ML_APP_SERVER` (the server as the phone reaches it). The APKs land in
+the local Foundry on Setup; for a phone, set `ST_ANDROID_SERIAL` and
+`ST_APP_SERVER` (the server as the phone reaches it). The APKs land in
 `packages/android/app/build/outputs/apk/`. The release
-is signed with the key in `~/.config/module-library/` (outside git; built
+is signed with the key in `~/.config/stagehand/` (outside git; built
 unsigned without it). `node scripts/android/contract-vectors.ts` rewrites
 the native rules' answers the Kotlin tests check, after a change to
 `packages/extension/src/app/native-api.ts` or `native-requests.ts`.
@@ -77,7 +77,7 @@ ModularAV project.
 ```bash
 pnpm foundry:start    # runs Foundry (V14 Node build) in the foreground
 pnpm build && pnpm foundry:link   # links the module and test fixtures into Data/modules
-pnpm foundry:setup    # creates the module-library-test world and its users, safe to repeat
+pnpm foundry:setup    # creates the stagehand-test world and its users, safe to repeat
 pnpm test:foundry     # end-to-end suites against the running Foundry (~5 minutes)
 ```
 

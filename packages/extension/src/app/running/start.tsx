@@ -3,7 +3,7 @@
 // (owner, 2026-11-09); the app never opens the game. Foundry's page
 // waits behind a veil until the world's data is there (or gives up and
 // shows Foundry's page).
-import { logError } from "@module-library/shared/log";
+import { logError } from "@stagehand/shared/log";
 import { render } from "preact";
 import { useEffect, useState } from "preact/hooks";
 import type { PageGlobals } from "../../page/globals.ts";
@@ -24,9 +24,9 @@ import {
   type Status,
 } from "./server.ts";
 
-const HOST = "ml-run-root";
-const WAIT_CLASS = "ml-run-wait";
-const STYLE_ID = "ml-run-style";
+const HOST = "st-run-root";
+const WAIT_CLASS = "st-run-wait";
+const STYLE_ID = "st-run-style";
 const POLL_MS = 100;
 const MAX_POLLS = 300;
 /** While waiting for Foundry's data, the status is asked every this many polls. */

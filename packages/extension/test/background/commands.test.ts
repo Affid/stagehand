@@ -1,13 +1,7 @@
 import { describe, expect, test } from "vitest";
-import {
-  emptyLibrary,
-  type Library,
-} from "@module-library/shared/library/schema";
-import type { Command } from "@module-library/shared/world";
-import type {
-  QueueEntry,
-  StagehandFlags,
-} from "@module-library/shared/world-flags";
+import { emptyLibrary, type Library } from "@stagehand/shared/library/schema";
+import type { Command } from "@stagehand/shared/world";
+import type { QueueEntry, StagehandFlags } from "@stagehand/shared/world-flags";
 import {
   cancel,
   MAX_CLOSED_PER_WORLD,

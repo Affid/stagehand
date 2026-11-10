@@ -1,6 +1,6 @@
 // A world's modules in groups (View options: folder, tag, author or smart
 // group), as cards or one line each. A group's ⋮ turns all of it on or off.
-import type { WorldInfo } from "@module-library/shared/world";
+import type { WorldInfo } from "@stagehand/shared/world";
 import { useState } from "preact/hooks";
 import { useDisclosure } from "../../common/disclosure.ts";
 import { Icon } from "../../common/widgets.tsx";
@@ -35,11 +35,11 @@ function GroupMenu(props: {
     turnAll(on);
   };
   return (
-    <span class="mlw-gmenu" ref={d.wrap} onFocusOut={d.onFocusOut}>
+    <span class="stw-gmenu" ref={d.wrap} onFocusOut={d.onFocusOut}>
       <button
         type="button"
         ref={d.trigger}
-        class="ml-hbtn"
+        class="st-hbtn"
         aria-label={t("wp.groupActions", { group: props.name })}
         title={t("wp.groupActionsHint")}
         aria-expanded={d.open}
@@ -49,7 +49,7 @@ function GroupMenu(props: {
         <Icon name="ellipsis-vertical" />
       </button>
       {d.open ? (
-        <div class="mlh-menu">
+        <div class="sth-menu">
           <button
             type="button"
             ref={(el) => {
@@ -80,10 +80,10 @@ function SectionHead(props: {
   const { t, canChange } = useUi();
   const name = props.name;
   return (
-    <div class="mlw-headrow">
+    <div class="stw-headrow">
       <button
         type="button"
-        class="mlw-head"
+        class="stw-head"
         aria-expanded={props.open}
         onClick={props.onToggle}
       >
@@ -121,7 +121,7 @@ function Section(props: {
     t(group.label ?? "", group.param ? { param: group.param } : {});
   const list = state.worldView.layout === "list";
   return (
-    <li class="mlw-sec" style={{ "--c": group.color ?? "var(--color-cool-3)" }}>
+    <li class="stw-sec" style={{ "--c": group.color ?? "var(--color-cool-3)" }}>
       <SectionHead
         name={name}
         open={props.open}
@@ -130,7 +130,7 @@ function Section(props: {
         worldId={props.p.world.id}
       />
       {props.open ? (
-        <ol class={list ? "mlc-list" : "mlw-grid"}>
+        <ol class={list ? "stc-list" : "stw-grid"}>
           {rows.map((r) =>
             list ? (
               <ModuleLine key={r.pkg.id} row={r} p={props.p} />
@@ -173,7 +173,7 @@ export function ModuleSections(props: SectionsProps) {
   const rowsOf = (g: LibGroup): WorldModuleRow[] =>
     g.modules.flatMap((m) => rowOf.get(m.id) ?? []);
   return (
-    <ol class="mlw-sections">
+    <ol class="stw-sections">
       {groups.map((g) => {
         const all = rowsOf(g);
         const rows = all.filter((r) => shown.has(r.pkg.id));

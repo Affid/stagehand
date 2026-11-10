@@ -1,6 +1,6 @@
 // The About tab's Next session box: the view, or the editor after
 // "Set a date" / "Change".
-import type { WorldInfo } from "@module-library/shared/world";
+import type { WorldInfo } from "@stagehand/shared/world";
 import { useState } from "preact/hooks";
 import { useUi } from "../../../../context.ts";
 import { SessionEditor } from "./SessionEditor.tsx";
@@ -18,7 +18,7 @@ export function SessionBox(props: {
   const { world } = props;
   const has = world.schedule !== undefined || world.nextSession !== undefined;
   return (
-    <section class="mlw-box mlw-sess">
+    <section class="stw-box stw-sess">
       <h4>
         <span>{t("about.nextBox")}</span>
         <SavedMark on={saved && !editing} />
@@ -26,7 +26,7 @@ export function SessionBox(props: {
           <button
             type="button"
             ref={focus.link}
-            class="ml-link"
+            class="st-link"
             aria-label={has ? t("sched.changeLabel") : t("sched.setLabel")}
             onClick={() => {
               setSaved(false);

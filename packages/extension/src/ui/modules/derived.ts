@@ -2,18 +2,15 @@
 import {
   type AuthorEntry,
   listAuthors,
-} from "@module-library/shared/organise/authors";
-import { filterModules } from "@module-library/shared/organise/filter";
+} from "@stagehand/shared/organise/authors";
+import { filterModules } from "@stagehand/shared/organise/filter";
 import {
   type SmartGroup,
   smartGroups,
-} from "@module-library/shared/organise/groups";
-import { usageCounts } from "@module-library/shared/organise/usage";
-import type { PackageInfo } from "@module-library/shared/package";
-import {
-  type CoreVersion,
-  parseCoreVersion,
-} from "@module-library/shared/version";
+} from "@stagehand/shared/organise/groups";
+import { usageCounts } from "@stagehand/shared/organise/usage";
+import type { PackageInfo } from "@stagehand/shared/package";
+import { type CoreVersion, parseCoreVersion } from "@stagehand/shared/version";
 import { useMemo } from "preact/hooks";
 import type { UiState } from "../store.ts";
 import { scopeModules, sortByTitle } from "../model/modules.ts";

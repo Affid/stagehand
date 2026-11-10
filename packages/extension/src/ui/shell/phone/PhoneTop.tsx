@@ -1,7 +1,7 @@
 // The top bar of the phone and tablet layouts: Foundry's name, the version
 // chip and the power menu at home (always on a tablet); a tab's name on its
 // own page; Back and the page's name on a world or What's new.
-import type { WorldInfo } from "@module-library/shared/world";
+import type { WorldInfo } from "@stagehand/shared/world";
 import { useEffect, useRef } from "preact/hooks";
 import { Icon } from "../../common/widgets.tsx";
 import { useUi } from "../../context.ts";
@@ -15,7 +15,7 @@ function useTitle(route: Route, world: WorldInfo | undefined): string {
   const { t } = useUi();
   if (route.kind === "world") return world?.title ?? "";
   if (route.kind === "library") return t("shell.library");
-  if (route.page === "update") return t("mlp.update");
+  if (route.page === "update") return t("stp.update");
   return t(route.page === "backups" ? "shell.backups" : "shell.configuration");
 }
 
@@ -24,8 +24,8 @@ function BackButton(props: { readonly layout: Layout }) {
   return (
     <button
       type="button"
-      class="icon mlp-back"
-      aria-label={t("mlp.back")}
+      class="icon stp-back"
+      aria-label={t("stp.back")}
       onClick={() => {
         const patch = backPatch(store.get(), props.layout);
         if (patch) store.set(patch);
@@ -42,8 +42,8 @@ function HomeItems() {
   return (
     <>
       <span class="logo" aria-hidden="true" />
-      <h1 tabIndex={-1}>{t("mlp.title")}</h1>
-      <span class="ml-spacer" />
+      <h1 tabIndex={-1}>{t("stp.title")}</h1>
+      <span class="st-spacer" />
       <VersionMenu compact />
       {state.data.setup?.passwordSet === false ? null : <PowerMenu />}
     </>
@@ -82,7 +82,7 @@ export function PhoneTop(props: {
   const bar = useRef<HTMLElement>(null);
   useFocusOnChange(bar, `${String(home)}:${title}`);
   return (
-    <header class="mls-top mlp-top" ref={bar}>
+    <header class="sts-top stp-top" ref={bar}>
       {back ? <BackButton layout={layout} /> : null}
       {home ? (
         <HomeItems />

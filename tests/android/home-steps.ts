@@ -42,7 +42,7 @@ async function sheetOf(home: Page, label: string): Promise<void> {
 async function readdress(home: Page, label: string, typed: string) {
   await sheetOf(home, label);
   await home.getByLabel("Address").fill(typed);
-  await expect(home.locator(".mlh-check:not(.mlh-wait)")).toBeVisible({
+  await expect(home.locator(".sth-check:not(.sth-wait)")).toBeVisible({
     timeout: 15_000,
   });
 }
@@ -65,7 +65,7 @@ export async function renameAndBack(app: App, home: Page): Promise<void> {
 /** A new address (nothing answers there), then the real one again. */
 export async function moveAndBack(app: App, home: Page): Promise<void> {
   await readdress(home, "Emulator host", "127.0.0.1:30000");
-  await expect(home.locator(".mlh-check.mlh-warn")).toBeVisible();
+  await expect(home.locator(".sth-check.sth-warn")).toBeVisible();
   await home.getByRole("button", { name: "Save" }).click();
   await expect(home.getByText("127.0.0.1:30000")).toBeVisible();
   await readdress(home, "Emulator host", TYPED);

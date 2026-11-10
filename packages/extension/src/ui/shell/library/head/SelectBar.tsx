@@ -111,9 +111,9 @@ export function SelectBar(props: {
   const { state, store, t } = useUi();
   const ids = state.selection;
   return (
-    <div class="ml-row mls-selbar" role="toolbar" aria-label={t("sel.label")}>
+    <div class="st-row sts-selbar" role="toolbar" aria-label={t("sel.label")}>
       <Icon name="square-check" />
-      <strong class="mls-selcount" title={t("sel.countHint")}>
+      <strong class="sts-selcount" title={t("sel.countHint")}>
         {ids.length ? t("sel.count", { n: String(ids.length) }) : t("sel.none")}
       </strong>
       <button
@@ -129,12 +129,12 @@ export function SelectBar(props: {
       >
         {t("sel.clear")}
       </button>
-      <span class="mls-sep" />
+      <span class="sts-sep" />
       <MoveTo ids={ids} />
       <TagsPop ids={ids} />
       <ToPreset ids={ids} />
       <WorldOn ids={ids} />
-      <span class="ml-spacer" />
+      <span class="st-spacer" />
       <button type="button" class="bright" onClick={props.onDone}>
         {t("lib.done")}
       </button>

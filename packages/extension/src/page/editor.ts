@@ -22,7 +22,7 @@ type EditorGlobals = Pick<PageGlobals, "game" | "ui" | "foundry">;
 const editorIn = (doc: Document, hostId: string): EditorElement | null =>
   doc
     .getElementById(hostId)
-    ?.querySelector<EditorElement>("[data-ml-editor]") ?? null;
+    ?.querySelector<EditorElement>("[data-st-editor]") ?? null;
 
 /** Mounts the editor, editing at once; an error message, or undefined. */
 export function openEditor(
@@ -38,7 +38,7 @@ export function openEditor(
   if (!Editor) return "Foundry's editor is missing";
   host.replaceChildren();
   const el = Editor.create({ name: "description", value, toggled: false });
-  el.dataset.mlEditor = "";
+  el.dataset.stEditor = "";
   host.append(el);
   return undefined;
 }

@@ -54,13 +54,13 @@ async function open(over: Partial<Settings & ReadOnly> = {}) {
   });
   fireEvent.click(r.getByRole("button", { name: "Configuration" }));
   await waitFor(() => {
-    expect(r.container.querySelector(".mlc-cols")).toBeTruthy();
+    expect(r.container.querySelector(".stc-cols")).toBeTruthy();
   });
   return r;
 }
 
 const box = (c: ParentNode, title: string): HTMLElement => {
-  const found = [...c.querySelectorAll<HTMLElement>(".mlc-cols .mlw-box")].find(
+  const found = [...c.querySelectorAll<HTMLElement>(".stc-cols .stw-box")].find(
     (b) => b.querySelector("h4")?.textContent.startsWith(title),
   );
   if (!found) throw new Error(`no box ${title}`);
@@ -70,16 +70,16 @@ const box = (c: ParentNode, title: string): HTMLElement => {
 describe("the Configuration page", () => {
   test("its heading says what runs now: version, port and data folder", async () => {
     const { container } = await open();
-    const head = el(container, ".mlc-page .mlb-head");
+    const head = el(container, ".stc-page .stb-head");
     expect(head.textContent).toContain("running on port 30000");
     expect(head.textContent).toContain("/home/gm/foundry/data");
   });
 
   test("two columns, as the prototype, with only what Foundry's own window edits", async () => {
     const { container, queryByRole } = await open();
-    const cols = [...container.querySelectorAll(".mlc-cols > .col")].map(
+    const cols = [...container.querySelectorAll(".stc-cols > .col")].map(
       (col) =>
-        [...col.querySelectorAll(".mlw-box > h4")].map((h) => h.textContent),
+        [...col.querySelectorAll(".stw-box > h4")].map((h) => h.textContent),
     );
     expect(cols).toEqual([
       ["Access", "Startup and appearance", "Other"],
@@ -107,12 +107,12 @@ describe("the Configuration page", () => {
     fireEvent.change(getByRole("combobox", { name: "Setup theme" }), {
       target: { value: "fantasy" },
     });
-    expect(el(container, ".mlc-unsaved").textContent).toContain(
+    expect(el(container, ".stc-unsaved").textContent).toContain(
       "1 change not saved: Setup theme",
     );
-    expect(container.querySelector(".mlc-set.changed")).toBeTruthy();
+    expect(container.querySelector(".stc-set.changed")).toBeTruthy();
     fireEvent.click(getByRole("button", { name: "Discard" }));
-    expect(container.querySelector(".mlc-unsaved")).toBe(null);
+    expect(container.querySelector(".stc-unsaved")).toBe(null);
   });
 
   test("Save… lists each change; saving sends only the changes; then the restart notice", async () => {
@@ -141,7 +141,7 @@ describe("the Configuration page", () => {
       );
     });
     await waitFor(() => {
-      expect(el(container, ".mlc-waiting").textContent).toContain(
+      expect(el(container, ".stc-waiting").textContent).toContain(
         "apply after a restart: Setup theme",
       );
     });
@@ -197,7 +197,7 @@ describe("the password (package 7)", () => {
       target: { value: "longenough" },
     });
     fireEvent.click(getByRole("button", { name: "Use it" }));
-    expect(el(container, ".mlc-unsaved").textContent).toContain(
+    expect(el(container, ".stc-unsaved").textContent).toContain(
       "Administrator password",
     );
     fireEvent.click(getByRole("button", { name: "Save…" }));
@@ -234,7 +234,7 @@ describe("the password (package 7)", () => {
 describe("HTTPS (package 7)", () => {
   test("not encrypted: Get a free certificate… explains, then asks Foundry", async () => {
     const { container, getByRole, page } = await open();
-    expect(el(container, ".mlc-https").textContent).toContain(
+    expect(el(container, ".stc-https").textContent).toContain(
       "Not encrypted (http)",
     );
     fireEvent.click(getByRole("button", { name: "Get a free certificate…" }));
@@ -260,20 +260,20 @@ describe("HTTPS (package 7)", () => {
 
   test("a reverse proxy, Let's Encrypt, or your own certificate each say so", async () => {
     let r = await open({ proxySSL: true });
-    expect(el(r.container, ".mlc-https").textContent).toContain(
+    expect(el(r.container, ".stc-https").textContent).toContain(
       "reverse proxy",
     );
     cleanup();
     r = await open({
       certificate: { managed: true, expired: false, error: null },
     });
-    expect(el(r.container, ".mlc-https").textContent).toContain(
+    expect(el(r.container, ".stc-https").textContent).toContain(
       "Let's Encrypt",
     );
     expect(r.getByRole("button", { name: "Stop renewing…" })).toBeTruthy();
     cleanup();
     r = await open({ sslCert: "c.pem", sslKey: "k.pem" });
-    expect(el(r.container, ".mlc-https").textContent).toContain(
+    expect(el(r.container, ".stc-https").textContent).toContain(
       "your own certificate",
     );
   });

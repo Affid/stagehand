@@ -1,5 +1,5 @@
 import { describe, expect, test, vi } from "vitest";
-import { emptyLibrary } from "@module-library/shared/library/schema";
+import { emptyLibrary } from "@stagehand/shared/library/schema";
 import { BUNDLED_CONFIG, V14_SELECTORS } from "../../src/adapters/config.ts";
 import type { SetupState } from "../../src/messages.ts";
 import {

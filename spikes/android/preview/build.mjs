@@ -19,7 +19,7 @@ await build({
   resolve: {
     alias: [
       {
-        find: /^@module-library\/shared\/(.*)$/,
+        find: /^@stagehand\/shared\/(.*)$/,
         replacement: join(root, "packages", "shared", "src", "$1.ts"),
       },
       {
@@ -32,11 +32,11 @@ await build({
   },
   oxc: { jsx: { runtime: "automatic", importSource: "preact" } },
   define: {
-    __ML_SETUP_CSS__: css("dist/setup-ui.css"),
-    __ML_RUNNING_CSS__: css("src/app/running/running.css"),
-    __ML_VERSION__: JSON.stringify("preview"),
-    __ML_BUILD__: JSON.stringify("preview"),
-    __ML_DEV__: "true",
+    __ST_SETUP_CSS__: css("dist/setup-ui.css"),
+    __ST_RUNNING_CSS__: css("src/app/running/running.css"),
+    __ST_VERSION__: JSON.stringify("preview"),
+    __ST_BUILD__: JSON.stringify("preview"),
+    __ST_DEV__: "true",
   },
   build: {
     outDir: join(import.meta.dirname, "..", "app", "src", "main", "assets"),
@@ -46,7 +46,7 @@ await build({
     lib: {
       entry: join(import.meta.dirname, "preview.ts"),
       formats: ["iife"],
-      name: "moduleLibraryPreview",
+      name: "stagehandPreview",
       fileName: () => "preview.js",
     },
   },

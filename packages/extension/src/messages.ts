@@ -1,16 +1,16 @@
 // Messages from the extension's pages and content scripts to its background.
 // Validated with Zod in the background: content scripts run on web pages.
-import { LibraryOpSchema } from "@module-library/shared/library/ops";
-import type { Library } from "@module-library/shared/library/schema";
-import { MAX_NEWS, MAX_NEWS_URL } from "@module-library/shared/news";
+import { LibraryOpSchema } from "@stagehand/shared/library/ops";
+import type { Library } from "@stagehand/shared/library/schema";
+import { MAX_NEWS, MAX_NEWS_URL } from "@stagehand/shared/news";
 import {
   ApplyModeSchema,
   type Command,
   MAX_PICKED,
   SetupDataSchema,
   type Snapshot,
-} from "@module-library/shared/world";
-import { MAX_QUEUE } from "@module-library/shared/world-flags";
+} from "@stagehand/shared/world";
+import { MAX_QUEUE } from "@stagehand/shared/world-flags";
 import { z } from "zod";
 import type { SetupConfig } from "./adapters/config.ts";
 import type { StoredSetup } from "./background/state.ts";

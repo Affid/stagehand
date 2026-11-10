@@ -4,18 +4,15 @@ import {
   applyOp,
   type LibraryOp,
   type OpResult,
-} from "@module-library/shared/library/ops";
-import {
-  emptyLibrary,
-  type Library,
-} from "@module-library/shared/library/schema";
-import { rebaseRevisions } from "@module-library/shared/library/transfer";
+} from "@stagehand/shared/library/ops";
+import { emptyLibrary, type Library } from "@stagehand/shared/library/schema";
+import { rebaseRevisions } from "@stagehand/shared/library/transfer";
 import {
   type Command,
   MAX_PACKAGES,
   type SetupData,
   type Snapshot,
-} from "@module-library/shared/world";
+} from "@stagehand/shared/world";
 import { type SerializedKeyValue, type Updated, withResult } from "./kv.ts";
 import type { ServerId } from "./servers.ts";
 

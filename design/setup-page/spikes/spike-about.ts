@@ -5,7 +5,7 @@ import { loadFoundryEnv } from "../../../scripts/foundry/env.ts";
 import { createAdminClient, hasActiveWorld } from "../../../scripts/foundry/admin.ts";
 
 const OUT = new URL("../out/shots", import.meta.url).pathname;
-const WORLD = "module-library-test";
+const WORLD = "stagehand-test";
 const env = loadFoundryEnv();
 const api = await createAdminClient(env.url);
 if (await hasActiveWorld(api)) throw new Error("A world is running; leaving it alone.");

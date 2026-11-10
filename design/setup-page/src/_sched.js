@@ -73,9 +73,9 @@ function ruleText(s) {
 
 function sessionView(w) {
   const s = SCHEDULES[w.id], n = nextOf(s);
-  const moved = ST.sMoved?.[w.id] ? `<p class="mlw-moved"><i class="fa-solid fa-forward"></i>${esc(ST.sMoved[w.id])}</p>` : "";
+  const moved = ST.sMoved?.[w.id] ? `<p class="stw-moved"><i class="fa-solid fa-forward"></i>${esc(ST.sMoved[w.id])}</p>` : "";
   if (!n) {
-    return `<div class="mlw-next none"><i class="fa-solid fa-calendar-plus"></i><div><span>No next session set. Players see it on the join screen.</span></div></div>${moved}`;
+    return `<div class="stw-next none"><i class="fa-solid fa-calendar-plus"></i><div><span>No next session set. Players see it on the join screen.</span></div></div>${moved}`;
   }
   const custom = s.freq === "dates";
   // A rule never ends, so it shows the next three; chosen dates show four and count the rest.
@@ -84,13 +84,13 @@ function sessionView(w) {
     const isNext = x.ms === n.ms;
     const act = ST.wlock.has(w.id) ? "<span></span>" : custom ? `<a data-act="sdrop" data-id="${x.date}">Remove</a>` : `<a data-act="sskip" data-id="${x.date}">${x.skipped ? "Restore" : "Skip"}</a>`;
     return `<li class="${x.skipped ? "skipped" : ""}${isNext ? " next" : ""}"><span class="d">${whenIn(x.ms, s.tz)}</span>
-      ${isNext ? '<span class="mlw-pill ok">next</span>' : x.skipped ? '<span class="mlw-pill">skipped</span>' : "<span></span>"}${act}</li>`;
+      ${isNext ? '<span class="stw-pill ok">next</span>' : x.skipped ? '<span class="stw-pill">skipped</span>' : "<span></span>"}${act}</li>`;
   }).join("") + (custom && all.length > shown.length ? `<li class="more"><span>and ${plural(all.length - shown.length, "more date")}</span><span></span><a data-act="sedit">Show all</a></li>` : "");
   const rule = s.freq !== "none"
-    ? `<div class="mlw-rule"><i class="fa-solid ${custom ? "fa-calendar-days" : "fa-repeat"}"></i><span>${esc(ruleText(s))}</span>
-        <i class="fa-regular fa-circle-question mlw-why" data-tooltip="Foundry keeps one next session for players. When it passes, Stagehand moves it to the next date here, when this page opens or the world launches.${custom ? " Past dates drop off." : ""}" aria-label="How the next session moves on"></i>
-        <a class="mlw-mock" data-act="sjump">Mockup: a week passes</a></div><ol class="mlw-upcoming">${rows}</ol>` : "";
-  return `<div class="mlw-next"><i class="fa-solid fa-calendar-day"></i><div><strong>${whenIn(n.ms, s.tz)}</strong>
+    ? `<div class="stw-rule"><i class="fa-solid ${custom ? "fa-calendar-days" : "fa-repeat"}"></i><span>${esc(ruleText(s))}</span>
+        <i class="fa-regular fa-circle-question stw-why" data-tooltip="Foundry keeps one next session for players. When it passes, Stagehand moves it to the next date here, when this page opens or the world launches.${custom ? " Past dates drop off." : ""}" aria-label="How the next session moves on"></i>
+        <a class="stw-mock" data-act="sjump">Mockup: a week passes</a></div><ol class="stw-upcoming">${rows}</ol>` : "";
+  return `<div class="stw-next"><i class="fa-solid fa-calendar-day"></i><div><strong>${whenIn(n.ms, s.tz)}</strong>
       <span data-tooltip="Players see it in their own time zone">${relDays(n.ms)} · ${esc(tzLabel(s.tz, n.ms))}${whenIn(n.ms, BROWSER_TZ) !== whenIn(n.ms, s.tz) ? ` · <b>${whenIn(n.ms, BROWSER_TZ)}</b> your time` : ""}</span></div></div>${moved}${rule}
 `;
 }
@@ -110,7 +110,7 @@ function calendar(d) {
     return `<button type="button" class="${cls}" ${past ? "disabled" : `data-act="sday" data-id="${date}"`} aria-label="${date}"${picked ? ' aria-pressed="true"' : ""}>${i + 1}</button>`;
   })].join("");
   const title = first.toLocaleDateString("en-GB", { month: "long", year: "numeric", timeZone: "UTC" });
-  return `<div class="mlw-cal"><header><button type="button" class="icon" data-act="smonth" data-id="-1" aria-label="Previous month"><i class="fa-solid fa-chevron-left"></i></button>
+  return `<div class="stw-cal"><header><button type="button" class="icon" data-act="smonth" data-id="-1" aria-label="Previous month"><i class="fa-solid fa-chevron-left"></i></button>
     <strong>${title}</strong><button type="button" class="icon" data-act="smonth" data-id="1" aria-label="Next month"><i class="fa-solid fa-chevron-right"></i></button></header>
     <div class="dow">${["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"].map((x) => `<span>${x}</span>`).join("")}</div><div class="days">${cells}</div></div>`;
 }
@@ -150,14 +150,14 @@ function tzList() {
 }
 function tzSelect(d) {
   if (ST.sAllZones) {
-    return `<div class="mlw-tzfind"><div class="in"><i class="fa-solid fa-magnifying-glass"></i><input type="search" id="tzq" value="${esc(ST.tzq ?? "")}" placeholder="Find a time zone" autocomplete="off"
+    return `<div class="stw-tzfind"><div class="in"><i class="fa-solid fa-magnifying-glass"></i><input type="search" id="tzq" value="${esc(ST.tzq ?? "")}" placeholder="Find a time zone" autocomplete="off"
       role="combobox" aria-expanded="true" aria-controls="tzlist" aria-activedescendant="tz-${ST.tzi ?? 0}" aria-label="Find a time zone"><button type="button" data-act="tzback">Cancel</button></div>
       <ul id="tzlist" role="listbox" aria-label="Time zones">${tzList()}</ul></div>`;
   }
   const used = [...new Set(Object.values(SCHEDULES).map((x) => x.tz))];
   const opt = (z, note = "") => `<option value="${z}"${z === d.tz ? " selected" : ""}>${esc(cityOf(z))}${note}</option>`;
   const top = [...new Set([d.tz, BROWSER_TZ, ...used])];
-  return `<div class="mlw-tzrow"><select data-sched="tz" aria-label="Time zone">${top.map((z) => opt(z, z === BROWSER_TZ ? " (this browser)" : used.includes(z) && z !== d.tz ? " (used in your worlds)" : "")).join("")}</select>
+  return `<div class="stw-tzrow"><select data-sched="tz" aria-label="Time zone">${top.map((z) => opt(z, z === BROWSER_TZ ? " (this browser)" : used.includes(z) && z !== d.tz ? " (used in your worlds)" : "")).join("")}</select>
     <button type="button" data-act="tzfind"><i class="fa-solid fa-magnifying-glass"></i>Find another</button></div>`;
 }
 const focusTz = () => { const el = document.getElementById("tzq"); if (el) { el.focus(); el.setSelectionRange(el.value.length, el.value.length); } };
@@ -213,23 +213,23 @@ function sessionEditor(w) {
         <span class="others">${d.dates.size ? `Players see it in their own time, for example ${others}` : "Click days on the calendar to add them."}</span></div></div>`
     : `<div class="sum"><i class="fa-solid fa-calendar-check"></i><div><strong>${whenIn(ms, d.tz)} <span>${esc(cityOf(d.tz))} time</span></strong>
         <span class="others">Players see it in their own time, for example ${others}</span></div></div>`;
-  return `<div class="mlw-sched${custom ? " custom" : ""}">
+  return `<div class="stw-sched${custom ? " custom" : ""}">
     ${calendar(d)}
     <div class="side">
       <label>Repeats</label><div><select data-sched="freq" aria-label="Repeats">${freqOpts}</select>${d.freq !== "none" && !custom ? `<span class="tzl">${esc(ruleText(d))}</span>` : custom ? '<span class="tzl">Click days on the calendar to add or remove them.</span>' : ""}</div>
       <label>${custom ? "Usual time" : "Time"}</label><div class="t"><div class="hm"><select data-sched="hh" aria-label="Hour">${hours}</select><span>:</span><select data-sched="mm" aria-label="Minutes">${mins}</select><span class="h24">24-hour</span></div><div class="chips">${quick}</div>${custom ? '<span class="tzl">New dates get this time; change any date below.</span>' : ""}</div>
       <label>Time zone</label><div>${tzSelect(d)}<span class="tzl">${esc(tzLabel(d.tz, firstMs))}</span></div>
     </div>
-    ${custom ? `<ol class="mlw-chosen">${chosen || '<li class="none">No dates yet.</li>'}</ol>` : ""}
+    ${custom ? `<ol class="stw-chosen">${chosen || '<li class="none">No dates yet.</li>'}</ol>` : ""}
     ${summary}
     <div class="bar"><button type="button" class="bright" data-act="ssave"${custom && !d.dates.size ? " disabled" : ""}>Save</button><button type="button" data-act="scancel">Cancel</button>
-      ${SCHEDULES[w.id] ? '<span class="ml-spacer"></span><button type="button" data-act="sclear">No next session</button>' : ""}</div></div>`;
+      ${SCHEDULES[w.id] ? '<span class="st-spacer"></span><button type="button" data-act="sclear">No next session</button>' : ""}</div></div>`;
 }
 
 function sessionBox(w) {
   const editing = ST.aboutEdit === "next";
   const link = editing || ST.wlock.has(w.id) ? "" : `${savedMark("next")}<a data-act="sedit">${SCHEDULES[w.id] ? "Change" : "Set a date"}</a>`;
-  return `<section class="mlw-box mlw-sess"><h4><span>Next session</span>${link}</h4>${editing ? sessionEditor(w) : sessionView(w)}</section>`;
+  return `<section class="stw-box stw-sess"><h4><span>Next session</span>${link}</h4>${editing ? sessionEditor(w) : sessionView(w)}</section>`;
 }
 
 A.sedit = () => {

@@ -26,9 +26,9 @@ function DesktopShell() {
   const { route, world } = useShownRoute();
   const { state } = useUi();
   return (
-    <div class="mls-shell" inert={state.launching !== null}>
+    <div class="sts-shell" inert={state.launching !== null}>
       <Header />
-      <div class="mls">
+      <div class="sts">
         <WorldRail route={route} />
         <MainPane route={route} world={world} />
         {route.kind === "server" ? null : <PanelColumn here={world?.id} />}

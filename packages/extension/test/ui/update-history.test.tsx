@@ -103,12 +103,12 @@ describe("Foundry's release pages", () => {
 describe("Release history", () => {
   test("this generation on your channel; the newest newer release is shown first", async () => {
     const r = await open();
-    const hist = await waitFor(() => el(r.container, ".mlu-hist .mlu-rels"));
+    const hist = await waitFor(() => el(r.container, ".stu-hist .stu-rels"));
     const versions = [...hist.querySelectorAll("li strong")].map(
       (s) => s.textContent,
     );
     expect(versions).toEqual(["14.371", "14.370", "14.369"]);
-    expect(el(r.container, ".mlu-hist .mlu-nhead").textContent).toContain(
+    expect(el(r.container, ".stu-hist .stu-nhead").textContent).toContain(
       "2 releases since your 14.369",
     );
     const on = el(hist, "li.on");
@@ -121,19 +121,19 @@ describe("Release history", () => {
       within(hist).getByText("installed").closest("li")?.textContent,
     ).toContain("14.369");
     await waitFor(() => {
-      expect(el(r.container, ".mlu-hnotes").textContent).toContain(
+      expect(el(r.container, ".stu-hnotes").textContent).toContain(
         "Fixed 14.371.",
       );
     });
-    expect(el(r.container, ".mlu-hhead").textContent).toContain("1 change");
+    expect(el(r.container, ".stu-hhead").textContent).toContain("1 change");
   });
 
   test("another release's notes are read when it is picked", async () => {
     const r = await open();
-    await waitFor(() => el(r.container, ".mlu-hist .mlu-rels"));
+    await waitFor(() => el(r.container, ".stu-hist .stu-rels"));
     fireEvent.click(r.getByRole("button", { name: /^14\.369/ }));
     await waitFor(() => {
-      expect(el(r.container, ".mlu-hnotes").textContent).toContain(
+      expect(el(r.container, ".stu-hnotes").textContent).toContain(
         "Fixed 14.369.",
       );
     });
@@ -145,18 +145,18 @@ describe("Release history", () => {
 
   test("Include testing and development adds those channels", async () => {
     const r = await open();
-    await waitFor(() => el(r.container, ".mlu-hist .mlu-rels"));
+    await waitFor(() => el(r.container, ".stu-hist .stu-rels"));
     fireEvent.click(
       r.getByRole("checkbox", { name: "Include testing and development" }),
     );
-    const hist = el(r.container, ".mlu-hist .mlu-rels");
+    const hist = el(r.container, ".stu-hist .stu-rels");
     expect(hist.querySelector("li strong")?.textContent).toBe("14.372");
     expect(hist.textContent).toContain("testing");
   });
 
   test("without the permission: why, the way to allow it, and the site itself", async () => {
     const r = await open(false);
-    const ask = await waitFor(() => el(r.container, ".mlu-hask"));
+    const ask = await waitFor(() => el(r.container, ".stu-hask"));
     expect(ask.textContent).toContain(
       "one extra permission for foundryvtt.com",
     );
@@ -178,14 +178,14 @@ describe("Release history", () => {
   test("a release whose notes failed can be read again (review)", async () => {
     const r = await open(true, true);
     const again = await waitFor(() =>
-      within(el(r.container, ".mlu-hnotes")).getByRole("button", {
+      within(el(r.container, ".stu-hnotes")).getByRole("button", {
         name: "Try again",
       }),
     );
-    expect(el(r.container, ".mlu-hnotes").textContent).toContain("offline");
+    expect(el(r.container, ".stu-hnotes").textContent).toContain("offline");
     fireEvent.click(again);
     await waitFor(() => {
-      expect(el(r.container, ".mlu-hnotes").textContent).toContain(
+      expect(el(r.container, ".stu-hnotes").textContent).toContain(
         "Fixed 14.371.",
       );
     });

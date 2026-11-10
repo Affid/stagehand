@@ -5,8 +5,8 @@
 // the sheet is a layer of its own.
 import { useEffect, useState } from "preact/hooks";
 
-export const POPUPS = ".ml-pop, .mlh-menu, .mlw-addmenu";
-export const SHEET = ".mlp-sheet";
+export const POPUPS = ".st-pop, .sth-menu, .stw-addmenu";
+export const SHEET = ".stp-sheet";
 
 /**
  * How long the scrim outlives the menu. A finger's tap closes the menu on

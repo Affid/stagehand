@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { emptyLibrary } from "@module-library/shared/library/schema";
+import { emptyLibrary } from "@stagehand/shared/library/schema";
 import { memoryKeyValue, serialized } from "../../src/background/kv.ts";
 import { createState, MAX_WORLDS } from "../../src/background/state.ts";
 

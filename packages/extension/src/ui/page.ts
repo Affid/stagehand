@@ -1,6 +1,6 @@
 // The UI's link to the Setup page's own world: Foundry's actions, dialogs,
 // editor and notifications, over the page channel (page-channel.ts).
-import { newRequestId } from "@module-library/shared/protocol";
+import { newRequestId } from "@stagehand/shared/protocol";
 import type { PageChannel } from "../page-channel.ts";
 import {
   type FoundryAction,
@@ -20,7 +20,7 @@ import type {
 } from "../page-config.ts";
 import type { WorldChanges } from "../page-save.ts";
 import type { LaunchAsk, QueueDone, QueueSaved } from "../page-queue.ts";
-import type { QueueEntry } from "@module-library/shared/world-flags";
+import type { QueueEntry } from "@stagehand/shared/world-flags";
 import type {
   ServerBackupOp,
   ServerListing,

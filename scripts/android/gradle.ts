@@ -2,7 +2,7 @@
 // SDK it needs: JDK 21 (AGP refuses the system's Java 25) and the Android
 // SDK in WSL (docs/ANDROID-SPIKE.md, "Tooling").
 // Usage: node scripts/android/gradle.ts <gradle tasks...>
-// Overrides: ML_ANDROID_JAVA_HOME (a JDK 17-21), ANDROID_HOME (the SDK).
+// Overrides: ST_ANDROID_JAVA_HOME (a JDK 17-21), ANDROID_HOME (the SDK).
 import { spawnSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
@@ -23,11 +23,11 @@ function defaultJdk(): string {
   return join(opt, found[0] ?? "jdk-21");
 }
 
-const javaHome = process.env.ML_ANDROID_JAVA_HOME ?? defaultJdk();
+const javaHome = process.env.ST_ANDROID_JAVA_HOME ?? defaultJdk();
 const sdk = process.env.ANDROID_HOME ?? join(homedir(), "Android", "Sdk");
 
 if (!existsSync(join(javaHome, "bin", "java")))
-  throw new Error(`No JDK at ${javaHome}: set ML_ANDROID_JAVA_HOME`);
+  throw new Error(`No JDK at ${javaHome}: set ST_ANDROID_JAVA_HOME`);
 if (!existsSync(join(sdk, "platforms")))
   throw new Error(`No Android SDK at ${sdk}: set ANDROID_HOME`);
 

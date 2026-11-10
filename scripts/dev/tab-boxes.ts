@@ -15,13 +15,13 @@ const ext = await loadExtension();
 const page = await ext.context.newPage();
 await page.setViewportSize({ width: 1366, height: 768 });
 await openSetupAsAdmin(ext, page, env.url, env.adminPassword);
-const root = page.locator("#ml-shell-root");
+const root = page.locator("#st-shell-root");
 
 /** Every element's box, without our tab panels themselves. */
 const boxes = (p: Page): Promise<string[]> =>
   p.evaluate(() =>
-    [...document.querySelectorAll("#ml-shell-root *")]
-      .filter((e) => !e.classList.contains("mls-tabpanel"))
+    [...document.querySelectorAll("#st-shell-root *")]
+      .filter((e) => !e.classList.contains("sts-tabpanel"))
       .map((e) => {
         const r = e.getBoundingClientRect();
         const cls = typeof e.className === "string" ? e.className : "";
@@ -42,16 +42,16 @@ async function tabs(name: string, row: string): Promise<void> {
   }
 }
 
-await root.locator(".mls-world").first().click();
-await tabs("world", ".mls-main .mls-tablist");
-await root.locator(".mls-lib").click();
-await tabs("library", ".mls-main .mls-tablist");
+await root.locator(".sts-world").first().click();
+await tabs("world", ".sts-main .sts-tablist");
+await root.locator(".sts-lib").click();
+await tabs("library", ".sts-main .sts-tablist");
 await root.getByRole("tab").first().click();
-await root.locator(".mls-main button.t").first().click();
+await root.locator(".sts-main button.t").first().click();
 await page.waitForTimeout(500);
-await tabs("panel", ".mls-panel [role=tablist]");
-await root.locator(".mls-top").getByRole("button", { name: "Backups" }).click();
-await tabs("backups", ".mls-main .mls-tablist");
+await tabs("panel", ".sts-panel [role=tablist]");
+await root.locator(".sts-top").getByRole("button", { name: "Backups" }).click();
+await tabs("backups", ".sts-main .sts-tablist");
 writeFileSync(out, JSON.stringify(result, null, 1));
 console.log(Object.keys(result).join(" "));
 await ext.context.close();

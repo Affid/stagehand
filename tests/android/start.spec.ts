@@ -23,6 +23,6 @@ test("a fresh install opens on home, answered by the background", async () => {
   const background = await app.pageAt(
     "https://appassets.androidplatform.net/background.html",
   );
-  expect(await background.evaluate(() => "mlApp" in window)).toBe(false);
+  expect(await background.evaluate(() => "stApp" in window)).toBe(false);
   await app.shot("home-empty");
 });

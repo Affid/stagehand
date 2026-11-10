@@ -56,7 +56,7 @@ function View(props: Pick<PhoneHeadProps, "by" | "onBy">) {
   return (
     <PopMenu
       iconOnly
-      label={t("mlp.libView", { by: t(`lib.groupBy.${props.by}`) })}
+      label={t("stp.libView", { by: t(`lib.groupBy.${props.by}`) })}
       icon="sliders"
       title={t("lib.groupBy")}
       items={items}
@@ -128,21 +128,21 @@ function useManageEntries(props: PhoneHeadProps): Entry[] {
     {
       key: "select",
       icon: "square-check",
-      label: t("mlp.selectModules"),
+      label: t("stp.selectModules"),
       onPick: props.onSelect,
       on: canChange,
     },
     {
       key: "install",
       icon: "download",
-      label: t("mlp.installModule"),
+      label: t("stp.installModule"),
       onPick: foundry("installPackage"),
       on: canChange,
     },
     {
       key: "update",
       icon: "cloud-arrow-down",
-      label: t("mlp.updateAll", { n: updates }),
+      label: t("stp.updateAll", { n: updates }),
       onPick: foundry("updateAll"),
       on: canChange && updates > 0,
     },
@@ -157,11 +157,11 @@ function useOrganiseEntries(props: PhoneHeadProps): Entry[] {
   };
   const fold = props.allClosed ? "expandAll" : "collapseAll";
   return [
-    { key: "tags", icon: "tags", label: t("mlp.tags"), onPick: side("tags") },
+    { key: "tags", icon: "tags", label: t("stp.tags"), onPick: side("tags") },
     {
       key: "presets",
       icon: "layer-group",
-      label: t("mlp.presets"),
+      label: t("stp.presets"),
       onPick: side("presets"),
     },
     {
@@ -193,12 +193,12 @@ export function PhoneModulesHead(props: PhoneHeadProps) {
   const { t } = useUi();
   const more = useMoreItems(props);
   return (
-    <header class="controls mll-controls mlp-libhead">
+    <header class="controls stl-controls stp-libhead">
       <Filter kind="module" />
       <View by={props.by} onBy={props.onBy} />
       <PopMenu
         iconOnly
-        label={t("mlp.libMore")}
+        label={t("stp.libMore")}
         icon="ellipsis-vertical"
         title={t("shell.library")}
         items={more}
@@ -227,7 +227,7 @@ export function PhoneSystemsHead() {
     </button>
   );
   return (
-    <header class="controls mll-controls mlp-libhead">
+    <header class="controls stl-controls stp-libhead">
       <Filter kind="system" />
       {act("installPackage", t("lib.install.system"), "plus")}
       {act("updateAll", t("lib.updateAll"), "cloud-arrow-down")}

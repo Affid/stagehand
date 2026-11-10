@@ -1,5 +1,5 @@
 // Folder operations, each sent with the revision the UI last saw (D-2).
-import type { Folder } from "@module-library/shared/library/schema";
+import type { Folder } from "@stagehand/shared/library/schema";
 import { newId, nextColor } from "../actions.ts";
 import { useUi } from "../context.ts";
 

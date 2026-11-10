@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import type { Snapshot } from "@module-library/shared/world";
+import type { Snapshot } from "@stagehand/shared/world";
 import {
   act,
   cleanup,
@@ -131,14 +131,14 @@ describe("a module's details", () => {
 
   test("presets that hold it are listed as chips", () => {
     const { panel } = open();
-    expect(el(panel, ".mll-chip.preset").textContent).toContain("QoL");
+    expect(el(panel, ".stl-chip.preset").textContent).toContain("QoL");
   });
 
   test("its own column beside the page, headed id · version · authors", () => {
     const { panel, container } = open();
-    expect(panel.parentElement).toBe(el(container, ".mls"));
-    expect(panel.classList.contains("mls-panel")).toBe(true);
-    expect(el(panel, ".mls-modhead .sub").textContent).toBe("a · v1.0.0 · Ann");
+    expect(panel.parentElement).toBe(el(container, ".sts"));
+    expect(panel.classList.contains("sts-panel")).toBe(true);
+    expect(el(panel, ".sts-modhead .sub").textContent).toBe("a · v1.0.0 · Ann");
   });
 
   test("every world is listed; one without the companion says so", () => {
@@ -159,7 +159,7 @@ describe("a module's details", () => {
       },
     });
     expect(panel.textContent).toContain("On in worlds · 1 of 2");
-    const vaults = [...panel.querySelectorAll(".mls-wlist li")].find((li) =>
+    const vaults = [...panel.querySelectorAll(".sts-wlist li")].find((li) =>
       li.textContent.includes("Vaults"),
     );
     expect(vaults?.textContent).toContain("companion off");
@@ -187,12 +187,12 @@ describe("a module's details", () => {
   test("the Package tab: version with Foundry's badge, needs, authors and links", () => {
     const { panel } = open();
     fireEvent.click(within(panel).getByRole("tab", { name: "Package" }));
-    const text = el(panel, ".mls-pkgtab .mls-kv").textContent;
+    const text = el(panel, ".sts-pkgtab .sts-kv").textContent;
     expect(text).toContain("1.0.0");
     expect(text).toContain("verified for 14");
     expect(text).toContain("Foundry 13 or newer");
     expect(text).toContain("Ann");
-    expect(el(panel, ".mls-pkgtab").textContent).toContain(
+    expect(el(panel, ".sts-pkgtab").textContent).toContain(
       "No compendium packs",
     );
   });
@@ -257,7 +257,7 @@ describe("the Package tab's server settings and actions (6b2)", () => {
       },
     });
     fireEvent.click(within(panel).getByRole("tab", { name: "Package" }));
-    const rel = el(panel, ".mls-pkgtab").textContent;
+    const rel = el(panel, ".sts-pkgtab").textContent;
     expect(rel).toContain("Needs Title libinstalled");
     expect(rel).toContain("Conflicts with gonenot installed");
     expect(rel).toContain("1 compendium pack: Macros");

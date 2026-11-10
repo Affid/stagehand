@@ -43,11 +43,11 @@ test.afterAll(async () => {
   await app.close();
 });
 
-const shell = () => page.locator("#ml-shell-root");
+const shell = () => page.locator("#st-shell-root");
 
 test("the home screen lists the server, Release history and the build", async () => {
   await home.reload();
-  const row = home.locator(".mlp-servers li").filter({ hasText: HOST });
+  const row = home.locator(".stp-servers li").filter({ hasText: HOST });
   await expect(row).toBeVisible();
   await expect(
     home.getByRole("button", { name: `Remove ${HOST}` }),
@@ -56,7 +56,7 @@ test("the home screen lists the server, Release history and the build", async ()
   await expect(home.getByText("This site")).toHaveCount(0);
   await expect(home.locator("footer")).toContainText("Build 0.2.0");
   await home.screenshot({ path: `${SCREENS}/app-home.png` });
-  await audit(home, "app home screen", ".mlp");
+  await audit(home, "app home screen", ".stp");
 });
 
 test("Remove takes Stagehand off the server: Setup is Foundry's own again", async () => {
@@ -71,7 +71,7 @@ test("Remove takes Stagehand off the server: Setup is Foundry's own again", asyn
 test("adding it back by address brings the new Setup page back", async () => {
   await addServerAtHome(app, env.url);
   await page.reload();
-  await expect(shell().locator(".mls-top")).toBeVisible();
+  await expect(shell().locator(".sts-top")).toBeVisible();
 });
 
 test("a background that refuses Setup gives Foundry's page back at once", async () => {
@@ -86,7 +86,7 @@ test("a background that refuses Setup gives Foundry's page back at once", async 
   await expect(shell()).toHaveCount(0);
   app.native.set("servers", servers);
   await page.reload();
-  await expect(shell().locator(".mls-top")).toBeVisible();
+  await expect(shell().locator(".sts-top")).toBeVisible();
 });
 
 test("Release history is allowed and taken back in native", async () => {
@@ -106,7 +106,7 @@ test("on a site that isn't saved there is no bridge, and native refuses", async 
   await other.goto(`${env.url.replace("localhost", "127.0.0.1")}/setup`);
   expect(
     await other.evaluate(() => [
-      typeof (globalThis as { mlApp?: unknown }).mlApp,
+      typeof (globalThis as { stApp?: unknown }).stApp,
       typeof (globalThis as { __mlHarnessDeliver?: unknown })
         .__mlHarnessDeliver,
     ]),

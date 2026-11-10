@@ -30,7 +30,7 @@ type PageName = keyof typeof PAGES;
 
 const boxes = (p: Page) =>
   p.evaluate(() =>
-    [".mls-top", ".mls-rail", ".mls-main", ".mls-panel"]
+    [".sts-top", ".sts-rail", ".sts-main", ".sts-panel"]
       .map((sel) => {
         const e = document.querySelector(sel);
         if (!e) return `${sel}: -`;
@@ -56,13 +56,13 @@ const env = loadFoundryEnv();
 const ext = await loadExtension();
 const page = await ext.context.newPage();
 await openSetupAsAdmin(ext, page, env.url, env.adminPassword);
-const root = page.locator("#ml-shell-root");
-const top = root.locator(".mls-top");
+const root = page.locator("#st-shell-root");
+const top = root.locator(".sts-top");
 const go: Record<PageName, () => Promise<void>> = {
-  world: () => root.locator(".mls-world").first().click(),
+  world: () => root.locator(".sts-world").first().click(),
   library: async () => {
-    await root.locator(".mls-lib").click();
-    await root.locator(".mls-main button.t").first().click();
+    await root.locator(".sts-lib").click();
+    await root.locator(".sts-main button.t").first().click();
   },
   backups: () => top.getByRole("button", { name: "Backups" }).click(),
   config: () => top.getByRole("button", { name: "Configuration" }).click(),

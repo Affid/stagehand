@@ -20,12 +20,12 @@ import {
 } from "./compat.ts";
 import { STATUS_ICON, statusLabel, why } from "./compat-text.ts";
 import { useOpenRow } from "./useOpenRow.ts";
-import { shownVersion } from "@module-library/shared/version";
+import { shownVersion } from "@stagehand/shared/version";
 
 type Chip = "all" | Exclude<Status, "dep">;
 const CHIPS: readonly Chip[] = ["all", "ok", "unv", "risk", "bad"];
 const KINDS: readonly Kind[] = ["system", "module", "world"];
-const KIND_TABS = "ml-uk";
+const KIND_TABS = "st-uk";
 
 /** Incompatible includes a missing dependency. */
 const inChip = (x: CompatRow, c: Chip): boolean =>
@@ -74,7 +74,7 @@ function Chips(props: {
 }) {
   const { t } = useUi();
   return (
-    <div class="mlu-chips" role="group" aria-label={t("up.show")}>
+    <div class="stu-chips" role="group" aria-label={t("up.show")}>
       {CHIPS.map((c) => {
         const n = props.list.filter((x) => inChip(x, c)).length;
         const zero = !n && c !== "all";
@@ -106,7 +106,7 @@ function Where(props: { readonly x: CompatRow }) {
     return (
       <button
         type="button"
-        class="ml-link"
+        class="st-link"
         onClick={() => {
           open(x);
         }}
@@ -244,16 +244,16 @@ export function CompatView(props: {
     .filter((x) => inChip(x, chip) && (!q || x.title.toLowerCase().includes(q)))
     .sort(byConcern);
   return (
-    <div class="mlu-notes mlu-compat">
-      <div class="mlu-nhead">
+    <div class="stu-notes stu-compat">
+      <div class="stu-nhead">
         <h3>{t("up.compatTitle", { version: release.version })}</h3>
         <span>{t("up.compatSub")}</span>
       </div>
-      <nav class="mls-subtabs">
+      <nav class="sts-subtabs">
         <Kinds data={data} kind={f.kind} onKind={f.onKind} />
         <input
           type="search"
-          class="mlu-csearch"
+          class="stu-csearch"
           value={f.q}
           placeholder={t(`up.filter.${f.kind}`)}
           aria-label={t(`up.filter.${f.kind}`)}
@@ -264,7 +264,7 @@ export function CompatView(props: {
       </nav>
       <TabPanel id={KIND_TABS} tab={f.kind}>
         <Chips list={list} chip={chip} onChip={f.setChip} />
-        <ol class="mlu-clist">
+        <ol class="stu-clist">
           {shown.length ? (
             shown.map((x) => <Row key={x.id} x={x} version={release.version} />)
           ) : (

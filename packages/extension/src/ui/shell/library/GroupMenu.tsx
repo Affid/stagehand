@@ -2,7 +2,7 @@
 // Move up and down; for any group Select its modules, New preset from these,
 // Turn on in a world…; for a folder Delete folder. Colour and the world
 // list open as a second step in the same menu.
-import type { Folder } from "@module-library/shared/library/schema";
+import type { Folder } from "@stagehand/shared/library/schema";
 import { useState } from "preact/hooks";
 import { PALETTE, PALETTE_NAMES } from "../../actions.ts";
 import { useDisclosure } from "../../common/disclosure.ts";
@@ -53,12 +53,12 @@ function Colours(props: {
   const { t } = useUi();
   const ops = useFolderOps();
   return (
-    <div class="ml-swatches" role="group" aria-label={t("folder.color")}>
+    <div class="st-swatches" role="group" aria-label={t("folder.color")}>
       {PALETTE.map((c, i) => (
         <button
           key={c}
           type="button"
-          class={`ml-swatch${c === props.folder.color ? " ml-on" : ""}`}
+          class={`st-swatch${c === props.folder.color ? " st-on" : ""}`}
           style={{ background: c }}
           aria-label={t(`color.${PALETTE_NAMES[i] ?? "grey"}`)}
           aria-pressed={c === props.folder.color}
@@ -216,11 +216,11 @@ export function GroupMenu(props: GroupMenuProps) {
     d.first.current = el;
   };
   return (
-    <span class="mlw-gmenu" ref={d.wrap} onFocusOut={d.onFocusOut}>
+    <span class="stw-gmenu" ref={d.wrap} onFocusOut={d.onFocusOut}>
       <button
         type="button"
         ref={d.trigger}
-        class="ml-hbtn"
+        class="st-hbtn"
         aria-label={t("lib.g.actions", { group: props.name })}
         title={t("lib.g.actions", { group: props.name })}
         aria-expanded={d.open}
@@ -233,7 +233,7 @@ export function GroupMenu(props: GroupMenuProps) {
         <Icon name="ellipsis-vertical" />
       </button>
       {d.open ? (
-        <div class="mlh-menu" role="group" aria-label={props.name}>
+        <div class="sth-menu" role="group" aria-label={props.name}>
           {step === "colour" && props.folder ? (
             <Colours folder={props.folder} done={close} />
           ) : step === "world" ? (

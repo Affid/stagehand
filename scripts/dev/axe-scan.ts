@@ -16,14 +16,14 @@ const ext = await loadExtension();
 const page = await ext.context.newPage();
 await page.setViewportSize({ width, height });
 await openSetupAsAdmin(ext, page, env.url, env.adminPassword);
-const root = page.locator("#ml-shell-root");
+const root = page.locator("#st-shell-root");
 
 async function scan(name: string, p: Page): Promise<void> {
   // No hover state: the scan is of the page at rest.
   await p.mouse.move(0, 0);
   await p.waitForTimeout(800);
   const r = await new AxeBuilder({ page: p })
-    .include("#ml-shell-root")
+    .include("#st-shell-root")
     .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
     .analyze();
   console.log(`\n== ${name}: ${String(r.violations.length)} rules`);
@@ -39,19 +39,19 @@ async function scan(name: string, p: Page): Promise<void> {
 }
 
 const tab = (name: string) =>
-  root.locator(".mls-main").getByRole("tab", { name: new RegExp(name) });
-await root.locator(".mls-world").first().click();
+  root.locator(".sts-main").getByRole("tab", { name: new RegExp(name) });
+await root.locator(".sts-world").first().click();
 await scan("world modules", page);
 await tab("About").click();
 await scan("world about", page);
 await tab("Backups").click();
 await scan("world backups", page);
-await root.locator(".mls-lib").click();
+await root.locator(".sts-lib").click();
 await scan("library modules", page);
-await root.locator(".mls-main button.t").first().click();
+await root.locator(".sts-main button.t").first().click();
 await scan("module panel library", page);
 await root
-  .locator(".mls-panel")
+  .locator(".sts-panel")
   .getByRole("tab", { name: /Package/ })
   .click();
 await scan("module panel package", page);
@@ -59,12 +59,12 @@ await tab("Systems").click();
 await scan("library systems", page);
 await tab("By world").click();
 await scan("library by world", page);
-const top = root.locator(".mls-top");
+const top = root.locator(".sts-top");
 await top.getByRole("button", { name: "Backups" }).click();
 await scan("server backups", page);
 await top.getByRole("button", { name: "Configuration" }).click();
 await scan("configuration", page);
-await top.locator(".mlh-ver").click();
+await top.locator(".sth-ver").click();
 await scan("version menu", page);
 await page.keyboard.press("Escape");
 await ext.context.close();

@@ -5,11 +5,11 @@
    in Fantasy our Note boxes were nearly invisible (polish pass). Ours take
    the theme's values. */
 
-body.theme-fantasy .mls-shell textarea {
+body.theme-fantasy .sts-shell textarea {
   --input-background-color: var(--color-warm-3);
 }
 
-body.theme-scifi .mls-shell textarea {
+body.theme-scifi .sts-shell textarea {
   --input-background-color: #202137;
   --input-focus-outline-color: #3a9bee;
 }

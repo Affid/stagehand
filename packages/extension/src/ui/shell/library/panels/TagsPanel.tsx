@@ -1,6 +1,6 @@
 // Tags, as the prototype's panel: every tag with its colour and count, New
 // tag, and the chosen tag's name, colour and modules, or Delete tag.
-import type { Tag } from "@module-library/shared/library/schema";
+import type { Tag } from "@stagehand/shared/library/schema";
 import { newId, nextColor, PALETTE, PALETTE_NAMES } from "../../../actions.ts";
 import { Icon } from "../../../common/widgets.tsx";
 import { useUi } from "../../../context.ts";
@@ -29,7 +29,7 @@ function TagList(props: { readonly current: Tag | undefined }) {
     store.set({ side: { kind: "tags", id: tag.id } });
   };
   return (
-    <ul class="mls-list">
+    <ul class="sts-list">
       {tags.map((x) => (
         <li key={x.id} class={x.id === props.current?.id ? "active" : ""}>
           <button
@@ -37,7 +37,7 @@ function TagList(props: { readonly current: Tag | undefined }) {
             aria-pressed={x.id === props.current?.id}
             onClick={() => store.set({ side: { kind: "tags", id: x.id } })}
           >
-            <span class="sw" style={{ "--ml-c": x.color }} />
+            <span class="sw" style={{ "--st-c": x.color }} />
             <span>{x.name}</span>
             <span class="c">{count(x.id)}</span>
           </button>
@@ -60,13 +60,13 @@ function Swatches(props: { readonly tag: Tag }) {
   const { actions, t, canChange } = useUi();
   const { tag } = props;
   return (
-    <div class="mls-sws" role="group" aria-label={t("tags.colour")}>
+    <div class="sts-sws" role="group" aria-label={t("tags.colour")}>
       {PALETTE.map((c, i) => (
         <button
           key={c}
           type="button"
-          class={`ml-swatch${c === tag.color ? " ml-on" : ""}`}
-          style={{ "--ml-c": c, background: c }}
+          class={`st-swatch${c === tag.color ? " st-on" : ""}`}
+          style={{ "--st-c": c, background: c }}
           aria-label={t(`color.${PALETTE_NAMES[i] ?? "grey"}`)}
           aria-pressed={c === tag.color}
           disabled={!canChange}
@@ -88,7 +88,7 @@ function TagFields(props: { readonly tag: Tag }) {
   const { actions, t, canChange } = useUi();
   const { tag } = props;
   return (
-    <div class="mls-kv">
+    <div class="sts-kv">
       <span>{t("tags.name")}</span>
       <input
         type="text"
@@ -132,7 +132,7 @@ function TagEdit(props: { readonly tag: Tag }) {
   return (
     <>
       <TagFields tag={tag} />
-      <div class="mls-chg">
+      <div class="sts-chg">
         <h4>
           <span>
             {t("tags.modules", { name: tag.name, n: String(count(tag.id)) })}
@@ -140,7 +140,7 @@ function TagEdit(props: { readonly tag: Tag }) {
           {canChange ? (
             <button
               type="button"
-              class="ml-link"
+              class="st-link"
               onClick={() => void actions.guard(remove)}
             >
               {t("tags.delete")}

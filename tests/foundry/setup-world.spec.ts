@@ -29,10 +29,10 @@ let ext: Target;
 let admin: APIRequestContext;
 let page: Page;
 
-const shell = (): Locator => page.locator("#ml-shell-root");
+const shell = (): Locator => page.locator("#st-shell-root");
 const card = (id: string): Locator =>
-  shell().locator(`.mlw-card[data-module="${id}"]`);
-const banner = (): Locator => shell().locator(".mls-banner");
+  shell().locator(`.stw-card[data-module="${id}"]`);
+const banner = (): Locator => shell().locator(".sts-banner");
 
 async function seedSnapshot(active: readonly string[]): Promise<void> {
   const snapshot = {
@@ -59,7 +59,7 @@ test.beforeAll(async () => {
   ext = await loadTarget();
   page = await ext.context.newPage();
   await openSetupAsAdmin(ext, page, env.url, env.adminPassword);
-  await expect(shell().locator(".mls-top")).toBeVisible();
+  await expect(shell().locator(".sts-top")).toBeVisible();
 });
 
 test.afterAll(async () => {
@@ -68,21 +68,21 @@ test.afterAll(async () => {
 });
 
 test("a world the companion hasn't reported explains the setup", async () => {
-  await shell().locator(`.mls-world[data-world="${TEST_WORLD.id}"]`).click();
-  await expect(shell().locator(".mlw-empty h3")).toContainText("isn't set up");
+  await shell().locator(`.sts-world[data-world="${TEST_WORLD.id}"]`).click();
+  await expect(shell().locator(".stw-empty h3")).toContainText("isn't set up");
   await page.screenshot({ path: `${SCREENS}/world-not-set-up.png` });
 });
 
 test("with a snapshot, the world's modules show as cards", async () => {
-  await seedSnapshot(["stagehand", "ml-fixture-lib"]);
+  await seedSnapshot(["stagehand", "st-fixture-lib"]);
   await page.reload();
   await exitTour(page);
-  await shell().locator(`.mls-world[data-world="${TEST_WORLD.id}"]`).click();
+  await shell().locator(`.sts-world[data-world="${TEST_WORLD.id}"]`).click();
   await expect(
-    card("ml-fixture-lib").locator('input[role="switch"]'),
+    card("st-fixture-lib").locator('input[role="switch"]'),
   ).toBeChecked();
   await expect(
-    card("ml-fixture-a").locator('input[role="switch"]'),
+    card("st-fixture-a").locator('input[role="switch"]'),
   ).not.toBeChecked();
   await expect(
     card("stagehand").locator('input[role="switch"]'),
@@ -91,13 +91,13 @@ test("with a snapshot, the world's modules show as cards", async () => {
 });
 
 test("a switch queues a change; the banner and Launch count it", async () => {
-  await card("ml-fixture-a").locator('input[role="switch"]').click();
-  await expect(card("ml-fixture-a")).toContainText("turns on");
+  await card("st-fixture-a").locator('input[role="switch"]').click();
+  await expect(card("st-fixture-a")).toContainText("turns on");
   await expect(
-    card("ml-fixture-a").locator('input[role="switch"]'),
+    card("st-fixture-a").locator('input[role="switch"]'),
   ).toBeChecked();
   await expect(banner()).toContainText("1 change waits for the next launch");
-  await expect(banner().locator(".mlc-badge")).toHaveText("1");
+  await expect(banner().locator(".stc-badge")).toHaveText("1");
   await page.screenshot({ path: `${SCREENS}/world-change-queued.png` });
 });
 
@@ -113,18 +113,18 @@ test("Launch opens the review; Cancel keeps everything", async () => {
   await page.screenshot({ path: `${SCREENS}/world-launch-review.png` });
   await dialog.getByRole("button", { name: "Cancel" }).click();
   await expect(dialog).toHaveCount(0);
-  await expect(banner().locator(".mlc-badge")).toHaveText("1");
+  await expect(banner().locator(".stc-badge")).toHaveText("1");
 });
 
 test("flipping back undoes the change", async () => {
-  await card("ml-fixture-a").locator('input[role="switch"]').click();
-  await expect(card("ml-fixture-a")).not.toContainText("turns on");
-  await expect(banner().locator(".mlc-pending")).toHaveCount(0);
+  await card("st-fixture-a").locator('input[role="switch"]').click();
+  await expect(card("st-fixture-a")).not.toContainText("turns on");
+  await expect(banner().locator(".stc-pending")).toHaveCount(0);
 });
 
 test("Add offers presets and copying another world", async () => {
   await shell().getByRole("button", { name: "Add" }).click();
-  const menu = shell().locator(".mlw-addmenu");
+  const menu = shell().locator(".stw-addmenu");
   await expect(menu).toContainText("Presets");
   await expect(menu).toContainText("Copy from another world");
   await page.screenshot({ path: `${SCREENS}/world-add-menu.png` });
@@ -133,39 +133,39 @@ test("Add offers presets and copying another world", async () => {
 });
 
 test("Discard cancels every queued change", async () => {
-  await card("ml-fixture-a").locator('input[role="switch"]').click();
-  await expect(banner().locator(".mlc-badge")).toHaveText("1");
+  await card("st-fixture-a").locator('input[role="switch"]').click();
+  await expect(banner().locator(".stc-badge")).toHaveText("1");
   await banner().getByRole("button", { name: "Discard" }).click();
-  await expect(banner().locator(".mlc-pending")).toHaveCount(0);
+  await expect(banner().locator(".stc-pending")).toHaveCount(0);
 });
 
 test("About shows Foundry's details for the world", async () => {
   await shell().getByRole("tab", { name: "About" }).click();
-  const box = shell().locator(".mlw-about");
+  const box = shell().locator(".stw-about");
   await expect(box).toContainText(TEST_WORLD.systemTitle);
-  await expect(box.locator(".mlw-next")).toBeVisible();
+  await expect(box.locator(".stw-next")).toBeVisible();
   await page.screenshot({ path: `${SCREENS}/world-about.png` });
   await shell().getByRole("tab", { name: "Modules" }).click();
 });
 
 test("About saves the title and next session through Foundry, and they come back", async () => {
   await shell().getByRole("tab", { name: "About" }).click();
-  const box = shell().locator(".mlw-about");
+  const box = shell().locator(".stw-about");
   // Title: change it, see it in the banner, put it back.
   await box.getByRole("button", { name: "Rename" }).click();
   await box
     .getByRole("textbox", { name: "Title" })
     .fill(`${TEST_WORLD.title} (edited)`);
   await box.getByRole("button", { name: "Save" }).click();
-  await expect(shell().locator(".mls-banner h2")).toHaveText(
+  await expect(shell().locator(".sts-banner h2")).toHaveText(
     `${TEST_WORLD.title} (edited)`,
   );
   await box.getByRole("button", { name: "Rename" }).click();
   await box.getByRole("textbox", { name: "Title" }).fill(TEST_WORLD.title);
   await box.getByRole("button", { name: "Save" }).click();
-  await expect(shell().locator(".mls-banner h2")).toHaveText(TEST_WORLD.title);
+  await expect(shell().locator(".sts-banner h2")).toHaveText(TEST_WORLD.title);
   // Next session: set a weekly one, see it, clear it (schedule and date).
-  const sess = shell().locator(".mlw-sess");
+  const sess = shell().locator(".stw-sess");
   await sess
     .getByRole("button", { name: "Set a date for the next session" })
     .click();
@@ -181,7 +181,7 @@ test("About saves the title and next session through Foundry, and they come back
 
 test("About edits the description in Foundry's own editor and saves it", async () => {
   await shell().getByRole("tab", { name: "About" }).click();
-  const box = shell().locator(".mlw-about .mlw-box", {
+  const box = shell().locator(".stw-about .stw-box", {
     hasText: "Description",
   });
   const before = await page.evaluate(
@@ -195,13 +195,13 @@ test("About edits the description in Foundry's own editor and saves it", async (
   );
   await box.getByRole("button", { name: "Edit description" }).click();
   // Foundry's prose-mirror, mounted by the page world in our host.
-  const editor = box.locator(".mlw-pmhost .ProseMirror");
+  const editor = box.locator(".stw-pmhost .ProseMirror");
   await expect(editor).toBeVisible();
   await editor.click();
   await page.keyboard.type("Written in Foundry's editor");
   await page.screenshot({ path: `${SCREENS}/world-about-editor.png` });
   await box.getByRole("button", { name: "Save" }).click();
-  await expect(box.locator(".mlw-pmhost")).toHaveCount(0);
+  await expect(box.locator(".stw-pmhost")).toHaveCount(0);
   await expect(box).toContainText("Written in Foundry's editor");
   // Put the description back as it was.
   await page.evaluate(
@@ -238,13 +238,13 @@ async function deleteBackup(row: Locator): Promise<void> {
 }
 
 test("Backups: take one with Foundry's dialog, cancel a restore, delete it with the code", async () => {
-  const PREFIX = "Module Library live test";
+  const PREFIX = "Stagehand live test";
   const NOTE = `${PREFIX} ${Date.now()}`;
   await shell().getByRole("tab", { name: "Backups" }).click();
-  const tab = shell().locator(".mlw-backups");
+  const tab = shell().locator(".stw-backups");
   await expect(tab.getByText("Reading Foundry's backups…")).toHaveCount(0);
   // Leftovers from an earlier failed run go first.
-  const leftovers = tab.locator(".mlw-blist li", { hasText: PREFIX });
+  const leftovers = tab.locator(".stw-blist li", { hasText: PREFIX });
   while ((await leftovers.count()) > 0) {
     const before = await leftovers.count();
     await deleteBackup(leftovers.first());
@@ -263,7 +263,7 @@ test("Backups: take one with Foundry's dialog, cancel a restore, delete it with 
     .locator('button[data-action="ok"], button[type="submit"]')
     .first()
     .click();
-  const mine = tab.locator(".mlw-blist li", { hasText: NOTE });
+  const mine = tab.locator(".stw-blist li", { hasText: NOTE });
   await expect(mine).toHaveCount(1, { timeout: 120_000 });
   await page.screenshot({ path: `${SCREENS}/world-backups.png` });
   // Restore: open Foundry's confirm-code dialog and say no. Never confirmed.

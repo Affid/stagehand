@@ -21,20 +21,20 @@ const out = (theme: string, view: string): string =>
   `test-results/screens/theme-${theme}-${view}.png`;
 
 async function views(page: Page, theme: string): Promise<void> {
-  const shell = page.locator("#ml-shell-root");
-  await shell.locator(".mls-world").first().click();
+  const shell = page.locator("#st-shell-root");
+  await shell.locator(".sts-world").first().click();
   await page.waitForTimeout(500);
   await page.screenshot({ path: out(theme, "world") });
-  await shell.locator(".mlh-ver").click();
+  await shell.locator(".sth-ver").click();
   await page.waitForTimeout(300);
   await page.screenshot({ path: out(theme, "menu") });
   await page.keyboard.press("Escape");
-  await shell.locator(".mls-lib").click();
-  await shell.locator(".mls-main button.t").first().click();
+  await shell.locator(".sts-lib").click();
+  await shell.locator(".sts-main button.t").first().click();
   await page.waitForTimeout(500);
   await page.screenshot({ path: out(theme, "library") });
   await shell
-    .locator(".mls-panel")
+    .locator(".sts-panel")
     .getByRole("button", { name: "Close" })
     .click();
   await shell.getByRole("tab", { name: /By world/ }).click();
@@ -42,12 +42,12 @@ async function views(page: Page, theme: string): Promise<void> {
   await page.screenshot({ path: out(theme, "grid") });
   await shell.getByRole("tab", { name: /^Modules/ }).click();
   for (const name of ["Backups", "Configuration"]) {
-    await shell.locator(".mls-top").getByRole("button", { name }).click();
+    await shell.locator(".sts-top").getByRole("button", { name }).click();
     await page.waitForTimeout(1200);
     await page.screenshot({ path: out(theme, name.toLowerCase()) });
   }
   await shell
-    .locator(".mls-main")
+    .locator(".sts-main")
     .getByRole("button", { name: /Create a snapshot/i })
     .click()
     .catch(() => undefined);
@@ -72,7 +72,7 @@ try {
       config: { cssTheme: theme },
     });
     await page.goto(`${env.url}/setup`);
-    await page.locator("#ml-shell-root .mls-rail").waitFor();
+    await page.locator("#st-shell-root .sts-rail").waitFor();
     const body = await page.evaluate(() => document.body.className);
     console.log(`${theme}: body "${body}"`);
     await views(page, theme);

@@ -1,7 +1,7 @@
 // A small store for the Setup UI. State survives Setup re-renders, which
 // remount the components.
 import type { Launching } from "./launching.ts";
-import type { ModuleFilterSpec } from "@module-library/shared/library/schema";
+import type { ModuleFilterSpec } from "@stagehand/shared/library/schema";
 import { useEffect, useState } from "preact/hooks";
 import type { SetupState } from "../messages.ts";
 import type { Lock, Progress } from "../page-progress.ts";

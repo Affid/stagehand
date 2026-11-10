@@ -1,7 +1,7 @@
 // The next session as the prototype shows it: the date in the schedule's
 // own time zone (and the viewer's, when it differs), the rule, and the next
 // dates with Skip / Restore, or Remove for chosen dates.
-import type { WorldInfo } from "@module-library/shared/world";
+import type { WorldInfo } from "@stagehand/shared/world";
 import { Icon } from "../../../../common/widgets.tsx";
 import { useUi } from "../../../../context.ts";
 import {
@@ -58,16 +58,16 @@ function UpcomingRow(props: {
     <li class={`${x.skipped ? "skipped" : ""}${props.isNext ? " next" : ""}`}>
       <span class="d">{whenIn(x.ms, s.tz)}</span>
       {props.isNext ? (
-        <span class="mlw-pill ok">{t("sched.next")}</span>
+        <span class="stw-pill ok">{t("sched.next")}</span>
       ) : x.skipped ? (
-        <span class="mlw-pill">{t("sched.skipped")}</span>
+        <span class="stw-pill">{t("sched.skipped")}</span>
       ) : (
         <span />
       )}
       {props.canEdit ? (
         <button
           type="button"
-          class="ml-link"
+          class="st-link"
           aria-label={t(`sched.${verb}Date`, { date: whenIn(x.ms, s.tz) })}
           onClick={() => props.onToggle(x)}
         >
@@ -95,7 +95,7 @@ function Upcoming(props: {
   const next = nextOf(s, now);
   const more = all.length - shown.length;
   return (
-    <ol class="mlw-upcoming">
+    <ol class="stw-upcoming">
       {shown.map((x) => (
         <UpcomingRow
           key={x.date}
@@ -123,7 +123,7 @@ function When(props: { readonly ms: number; readonly tz: string }) {
   const { t } = useUi();
   const mine = whenIn(props.ms, BROWSER_TZ);
   return (
-    <div class="mlw-next">
+    <div class="stw-next">
       <Icon name="calendar-day" />
       <div>
         <strong>{whenIn(props.ms, props.tz)}</strong>
@@ -156,7 +156,7 @@ export function SessionView(props: {
       <>
         <When ms={next.ms} tz={s.tz} />
         {s.freq === "none" ? null : (
-          <div class="mlw-rule" title={t("sched.how")}>
+          <div class="stw-rule" title={t("sched.how")}>
             <Icon name={s.freq === "dates" ? "calendar-days" : "repeat"} />
             <span>{ruleText(t, s, Date.now())}</span>
           </div>
@@ -169,7 +169,7 @@ export function SessionView(props: {
   if (Number.isFinite(foundryOnly))
     return <When ms={foundryOnly} tz={BROWSER_TZ} />;
   return (
-    <div class="mlw-next none">
+    <div class="stw-next none">
       <Icon name="calendar-plus" />
       <span>{t("sched.none")}</span>
     </div>

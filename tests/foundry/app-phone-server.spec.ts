@@ -19,11 +19,11 @@ const env = loadFoundryEnv();
 let app: AppHarness;
 let page: Page;
 
-const shell = () => page.locator("#ml-shell-root .mls-shell");
-const dock = () => shell().locator(".mlp-dock");
+const shell = () => page.locator("#st-shell-root .sts-shell");
+const dock = () => shell().locator(".stp-dock");
 const tab = (name: string) =>
   shell()
-    .locator(".mlp-tabs")
+    .locator(".stp-tabs")
     .getByRole("button", { name: new RegExp(`^${name}`) });
 
 test.describe.configure({ mode: "serial" });
@@ -44,10 +44,10 @@ test.afterAll(async () => {
 
 test("Backups: the summary and New snapshot sit above the tabs", async () => {
   await tab("Backups").click();
-  const bar = dock().locator(".mlp-bkbar");
+  const bar = dock().locator(".stp-bkbar");
   await expect(bar).toContainText(/\d+ snapshots?/);
   await expect(bar).toContainText("of disk free");
-  await expect(shell().locator(".mls-main .mlb-head")).toHaveCount(0);
+  await expect(shell().locator(".sts-main .stb-head")).toHaveCount(0);
   await bar.getByRole("button", { name: /New snapshot/ }).click();
   const dialog = page.getByRole("dialog", { name: "Create a snapshot" });
   await expect(dialog).toBeVisible();
@@ -68,17 +68,17 @@ async function tick(ticks: readonly Record<string, unknown>[]): Promise<void> {
   }, ticks);
 }
 
-const SNAP = { action: "createSnapshot", id: "snapshot.ml-test" };
+const SNAP = { action: "createSnapshot", id: "snapshot.st-test" };
 const BACKUP = {
   action: "createBackup",
-  id: "world.ml-test.20261108.1",
-  title: "Module Library test world with a long name",
+  id: "world.st-test.20261108.1",
+  title: "Stagehand test world with a long name",
 };
 
 test("A snapshot under way fits a phone: one column, the bar inside", async () => {
   await tab("Backups").click();
-  await dock().locator(".mlp-bkbar").waitFor();
-  const job = shell().locator(".mls-main .mlb-job");
+  await dock().locator(".stp-bkbar").waitFor();
+  const job = shell().locator(".sts-main .stb-job");
   try {
     // One tick at a time, as Foundry's socket brings them.
     await tick([{ ...SNAP, step: "snapshotWorlds", pct: 0 }]);
@@ -134,7 +134,7 @@ test("Configuration: an unsaved change's bar sits above the tabs", async () => {
   await tab("Configuration").click();
   const field = shell().getByRole("textbox", { name: /username/i });
   await field.fill("someone");
-  const bar = dock().locator(".mlc-bar");
+  const bar = dock().locator(".stc-bar");
   await expect(bar).toContainText("1 change not saved");
   await page.screenshot({ path: `${SCREENS}/phone-config-unsaved.png` });
   await bar.getByRole("button", { name: "Discard" }).click();
@@ -143,7 +143,7 @@ test("Configuration: an unsaved change's bar sits above the tabs", async () => {
 
 test("What's new opens from the version chip, and Back returns", async () => {
   await tab("Worlds").click();
-  await shell().locator(".mlh-ver").click();
+  await shell().locator(".sth-ver").click();
   await shell()
     .getByRole("button", { name: /Update page|What's new/ })
     .click();

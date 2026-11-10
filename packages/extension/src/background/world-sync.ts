@@ -6,8 +6,8 @@ import {
   type SetupData,
   type Snapshot,
   type WorldInfo,
-} from "@module-library/shared/world";
-import { decodeActive, type Report } from "@module-library/shared/world-flags";
+} from "@stagehand/shared/world";
+import { decodeActive, type Report } from "@stagehand/shared/world-flags";
 import { syncFromWorld } from "./commands.ts";
 import type { ServerId } from "./servers.ts";
 import type { ServerState } from "./state.ts";

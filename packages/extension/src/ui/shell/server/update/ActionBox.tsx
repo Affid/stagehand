@@ -22,7 +22,7 @@ function Steps(props: { readonly at: number }) {
   const { t } = useUi();
   const { at } = props;
   return (
-    <ol class="mlu-steps">
+    <ol class="stu-steps">
       {STEPS.map((s, i) => (
         <li key={s} class={i < at ? "done" : i === at ? "now" : ""}>
           <Icon
@@ -53,7 +53,7 @@ function Running(props: {
     STEPS.indexOf((update?.step ?? "download") as (typeof STEPS)[number]),
   );
   return (
-    <section class="mlw-box mlu-act">
+    <section class="stw-box stu-act">
       <h4>
         <span role="status">
           {snapping
@@ -63,13 +63,13 @@ function Running(props: {
         <span>{pct}%</span>
       </h4>
       {snapping ? (
-        <p class="mlu-sub">
+        <p class="stu-sub">
           {snap?.title ? t("up.backingUp", { title: snap.title }) : " "}
         </p>
       ) : (
         <Steps at={at} />
       )}
-      <div class="mlu-bar">
+      <div class="stu-bar">
         <span style={{ width: `${String(pct)}%` }} />
       </div>
       <p class="hint">{t("up.locked")}</p>
@@ -80,8 +80,8 @@ function Running(props: {
 function Done(props: { readonly version: string; readonly electron: boolean }) {
   const { t } = useUi();
   return (
-    <section class="mlw-box mlu-act">
-      <div class="mlu-done">
+    <section class="stw-box stu-act">
+      <div class="stu-done">
         <Icon name="circle-check" />
         <div>
           <strong>{t("up.installedTitle", { version: props.version })}</strong>
@@ -96,7 +96,7 @@ function Done(props: { readonly version: string; readonly electron: boolean }) {
 
 function Why(props: { readonly children: ComponentChildren }) {
   return (
-    <p class="mlu-why" id="mlu-why">
+    <p class="stu-why" id="stu-why">
       <Icon name="circle-info" />
       <span>{props.children}</span>
     </p>
@@ -114,9 +114,9 @@ function Blocked(props: {
     <>
       <button
         type="button"
-        class="bright mlu-go"
+        class="bright stu-go"
         disabled
-        aria-describedby="mlu-why"
+        aria-describedby="stu-why"
       >
         <Icon name={props.manual ? "hand" : "ban"} />
         {props.manual ? t("up.manualButton") : t("up.disabledButton")}
@@ -147,12 +147,12 @@ function SnapshotFirst(props: {
 }) {
   const { t } = useUi();
   return (
-    <label class="mls-bfirst">
+    <label class="sts-bfirst">
       <input type="checkbox" checked={props.on} onChange={props.toggle} />
       <span>
         <b>{t("up.snapFirst")}</b>
         <br />
-        <span class="ml-muted">
+        <span class="st-muted">
           {props.last === null
             ? t("up.noSnapshot")
             : t("up.lastSnapshot", { ago: agoMs(t, props.last) })}{" "}
@@ -168,7 +168,7 @@ function Channel(props: { readonly u: UpdateState }) {
   const { u } = props;
   const value = u.channel ?? "stable";
   return (
-    <div class="mlu-chan">
+    <div class="stu-chan">
       <span class="k">{t("up.channelK")}</span>
       <select
         aria-label={t("up.channel")}
@@ -195,7 +195,7 @@ function Force(props: { readonly on: boolean; readonly toggle: () => void }) {
   const link = (
     <button
       type="button"
-      class="mlc-more ml-link"
+      class="stc-more st-link"
       aria-expanded={more}
       onClick={() => {
         setMore(!more);
@@ -207,12 +207,12 @@ function Force(props: { readonly on: boolean; readonly toggle: () => void }) {
   if (!more) return link;
   return (
     <>
-      <label class="mlu-force">
+      <label class="stu-force">
         <input type="checkbox" checked={props.on} onChange={props.toggle} />
         <span>
           <b>{t("up.force")}</b>
           <br />
-          <span class="ml-muted">{t("up.forceHint")}</span>
+          <span class="st-muted">{t("up.forceHint")}</span>
         </span>
       </label>
       {link}
@@ -234,7 +234,7 @@ function Go(props: {
     <>
       <button
         type="button"
-        class="bright mlu-go"
+        class="bright stu-go"
         disabled={!canChange || busy !== null}
         title={busy ?? undefined}
         onClick={props.onGo}
@@ -250,7 +250,7 @@ function Go(props: {
 function Failed(props: { readonly error: string }) {
   const { t } = useUi();
   return (
-    <p class="mlu-why err" role="alert">
+    <p class="stu-why err" role="alert">
       <Icon name="triangle-exclamation" />
       <span>{props.error || t("up.failed")}</span>
     </p>
@@ -267,7 +267,7 @@ function Idle(props: { readonly u: UpdateState; readonly release: Release }) {
   const blocked = release.manual || disabled;
   const first = canSnap && snap;
   return (
-    <section class="mlw-box mlu-act">
+    <section class="stw-box stu-act">
       <h4>{t("up.box")}</h4>
       {blocked || !canSnap ? null : (
         <SnapshotFirst

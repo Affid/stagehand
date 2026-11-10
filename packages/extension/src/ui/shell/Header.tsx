@@ -27,11 +27,11 @@ export function PowerMenu() {
     page.foundryAction(action);
   };
   return (
-    <div class="mlh-power" ref={wrap}>
+    <div class="sth-power" ref={wrap}>
       <button
         type="button"
         ref={trigger}
-        class={`icon${open ? " ml-on" : ""}`}
+        class={`icon${open ? " st-on" : ""}`}
         aria-label={t("shell.power")}
         title={t("shell.power")}
         aria-expanded={open}
@@ -40,7 +40,7 @@ export function PowerMenu() {
         <Icon name="power-off" />
       </button>
       {open ? (
-        <div class="mlh-menu">
+        <div class="sth-menu">
           <button
             type="button"
             ref={first}
@@ -66,10 +66,10 @@ function Actions() {
   const onBackups = on === "backups";
   const onConfig = on === "config";
   return (
-    <div class="mlh-acts">
+    <div class="sth-acts">
       <button
         type="button"
-        class={onBackups ? "ml-on" : ""}
+        class={onBackups ? "st-on" : ""}
         aria-current={onBackups ? "page" : undefined}
         onClick={() =>
           store.set({ route: { kind: "server", page: "backups" } })
@@ -80,7 +80,7 @@ function Actions() {
       </button>
       <button
         type="button"
-        class={onConfig ? "ml-on" : ""}
+        class={onConfig ? "st-on" : ""}
         aria-current={onConfig ? "page" : undefined}
         onClick={() => store.set({ route: { kind: "server", page: "config" } })}
       >
@@ -96,11 +96,11 @@ function Actions() {
 export function Header() {
   const { t } = useUi();
   return (
-    <header class="mls-top mlh">
+    <header class="sts-top sth">
       <span class="logo" aria-hidden="true" />
       <h1>{t("shell.title")}</h1>
       <VersionMenu />
-      <span class="ml-spacer" />
+      <span class="st-spacer" />
       <Actions />
     </header>
   );

@@ -23,7 +23,7 @@ export function SummaryHead(props: {
   const latest = list[0];
   const deletable = list.filter((b) => !b.snapshot).length;
   return (
-    <div class="mlw-bhead">
+    <div class="stw-bhead">
       <span>
         <b>{plural(t, "bk.count", list.length)}</b>
         {latest
@@ -31,7 +31,7 @@ export function SummaryHead(props: {
           : ""}
         {` · ${t("bk.total", { size: formatSize(sizeOf(list)) })}`}
       </span>
-      <span class="ml-spacer" />
+      <span class="st-spacer" />
       {deletable > 1 ? (
         <span class="nodel" title={tip(off)}>
           <button
@@ -99,7 +99,7 @@ export function SelectHead(props: {
   const n = chosen.length;
   const frees = sizeOf(chosen);
   return (
-    <div class="mlw-bhead sel">
+    <div class="stw-bhead sel">
       <Icon name="square-check" />
       <span>
         <b>
@@ -112,7 +112,7 @@ export function SelectHead(props: {
       <button type="button" onClick={props.onAll}>
         {t("bk.all")}
       </button>
-      <span class="ml-spacer" />
+      <span class="st-spacer" />
       <DeleteSome n={n} off={props.off} onDelete={props.onDelete} />
       <button type="button" onClick={props.onDone}>
         {t("bk.done")}

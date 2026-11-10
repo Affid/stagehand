@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import type { Snapshot } from "@module-library/shared/world";
+import type { Snapshot } from "@stagehand/shared/world";
 import { cleanup, fireEvent, waitFor, within } from "@testing-library/preact";
 import { afterEach, describe, expect, test } from "vitest";
 import type { SetupState } from "../../src/messages.ts";
@@ -21,13 +21,13 @@ const library = (data: Partial<SetupState> = {}) =>
   renderUi("shell", { data, state: { route: { kind: "library" } } });
 
 const sections = (c: ParentNode): string[] =>
-  [...c.querySelectorAll(".mll-sec .name")].map((n) => n.textContent);
+  [...c.querySelectorAll(".stl-sec .name")].map((n) => n.textContent);
 const cards = (c: ParentNode): string[] =>
-  [...c.querySelectorAll(".mll-card")].map(
+  [...c.querySelectorAll(".stl-card")].map(
     (n) => n.getAttribute("data-module") ?? "",
   );
 const card = (c: ParentNode, id: string): HTMLElement =>
-  el(c, `.mll-card[data-module="${id}"]`);
+  el(c, `.stl-card[data-module="${id}"]`);
 
 describe("the Library page", () => {
   test("cards in folder groups, each with its line, tags, version and worlds", () => {
@@ -75,11 +75,11 @@ describe("the Library page", () => {
   test("a group folded in By world is folded on Modules too", () => {
     const r = library({ snapshots: { w1: snap(["a"]) } });
     fireEvent.click(r.getByRole("tab", { name: /^By world/ }));
-    const head = el(r.container, ".mll-grid tr.grp button");
+    const head = el(r.container, ".stl-grid tr.grp button");
     const name = head.textContent;
     fireEvent.click(head);
     fireEvent.click(r.getByRole("tab", { name: /^Modules/ }));
-    const folded = [...r.container.querySelectorAll(".mll-sec .mlw-head")].find(
+    const folded = [...r.container.querySelectorAll(".stl-sec .stw-head")].find(
       (b) => name.startsWith(b.querySelector(".name")?.textContent ?? "?"),
     );
     expect(folded?.getAttribute("aria-expanded")).toBe("false");
@@ -87,7 +87,7 @@ describe("the Library page", () => {
 
   test("Select shows checkboxes and the selection band; Done leaves it", () => {
     const { container, getByRole, store } = library();
-    expect(container.querySelector(".mll-card input[type=checkbox]")).toBe(
+    expect(container.querySelector(".stl-card input[type=checkbox]")).toBe(
       null,
     );
     fireEvent.click(getByRole("button", { name: "Select" }));
@@ -97,10 +97,10 @@ describe("the Library page", () => {
       }),
     );
     expect(store.get().selection).toEqual(["a"]);
-    expect(el(container, ".mls-selbar").textContent).toContain("1 selected");
+    expect(el(container, ".sts-selbar").textContent).toContain("1 selected");
     fireEvent.click(getByRole("button", { name: "Done" }));
     expect(store.get().selection).toEqual([]);
-    expect(container.querySelector(".mls-selbar")).toBe(null);
+    expect(container.querySelector(".sts-selbar")).toBe(null);
   });
 
   test("typing in the filter clears the selection, so bulk actions can't reach hidden cards", () => {
@@ -141,8 +141,8 @@ describe("a card's marks and line (6b)", () => {
 
   test("Foundry's star and lock show on the card", () => {
     const { container } = withPkg({ favorite: true, locked: true });
-    expect(card(container, "b").querySelector(".mlw-fav")).toBeTruthy();
-    expect(card(container, "b").querySelector(".mlw-lock")).toBeTruthy();
+    expect(card(container, "b").querySelector(".stw-fav")).toBeTruthy();
+    expect(card(container, "b").querySelector(".stw-lock")).toBeTruthy();
   });
 
   test("an update Foundry would install: the chip runs Foundry's own update", () => {
@@ -165,8 +165,8 @@ describe("a card's marks and line (6b)", () => {
     const r = withPkg({ locked: true });
     r.store.set({ updates: { module: { b: "2.0.0" }, system: {} } });
     await waitFor(() => {
-      expect(card(r.container, "b").querySelector(".mlw-lock")).toBeTruthy();
+      expect(card(r.container, "b").querySelector(".stw-lock")).toBeTruthy();
     });
-    expect(card(r.container, "b").querySelector(".mlw-upd")).toBe(null);
+    expect(card(r.container, "b").querySelector(".stw-upd")).toBe(null);
   });
 });

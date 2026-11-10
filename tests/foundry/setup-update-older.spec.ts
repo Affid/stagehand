@@ -21,8 +21,8 @@ let page: Page;
 let newer: string | undefined;
 const SKIP = "Foundry is up to date: run on an older build to check this";
 
-const shell = (): Locator => page.locator("#ml-shell-root");
-const upd = (): Locator => shell().locator(".mlu-page");
+const shell = (): Locator => page.locator("#st-shell-root");
+const upd = (): Locator => shell().locator(".stu-page");
 
 test.describe.configure({ mode: "serial" });
 
@@ -41,7 +41,7 @@ test.afterAll(async () => {
 });
 
 test("the Version chip names the newer release from Foundry's real check", async () => {
-  await shell().locator(".mlh-ver").click();
+  await shell().locator(".sth-ver").click();
   const menu = shell().getByRole("region", {
     name: "Foundry Virtual Tabletop",
   });
@@ -60,18 +60,18 @@ test("the Version chip names the newer release from Foundry's real check", async
 
 test("What's new: Foundry's notes for that release, searchable", async () => {
   test.skip(!newer, SKIP);
-  const notes = upd().locator(".mlu-notes");
+  const notes = upd().locator(".stu-notes");
   await expect(notes).toContainText(`Foundry ${newer ?? ""}`);
-  await expect(notes.locator(".mlu-body li").first()).toBeVisible();
+  await expect(notes.locator(".stu-body li").first()).toBeVisible();
   const search = notes.getByRole("searchbox", { name: "Search the notes" });
   await search.fill("fixed");
-  await expect(notes.locator(".mlu-body li").first()).toContainText(/fixed/i);
+  await expect(notes.locator(".stu-body li").first()).toContainText(/fixed/i);
   await search.fill("");
 });
 
 test("the Update box: manual install with the download page, or an Update not pressed", async () => {
   test.skip(!newer, SKIP);
-  const box = upd().locator(".mlu-side");
+  const box = upd().locator(".stu-side");
   const manual = box.getByRole("button", {
     name: "Manual installation required",
   });
@@ -90,10 +90,10 @@ test("the Update box: manual install with the download page, or an Update not pr
 
 test("Your packages: Foundry's real compatibility preview for that release", async () => {
   test.skip(!newer, SKIP);
-  const side = upd().locator(".mlu-side .mlw-box", {
+  const side = upd().locator(".stu-side .stw-box", {
     hasText: `Your packages on ${newer ?? ""}`,
   });
-  await expect(side.locator(".mlu-tags")).toContainText(
+  await expect(side.locator(".stu-tags")).toContainText(
     /compatible|unverified/,
     {
       timeout: 60_000,
@@ -102,13 +102,13 @@ test("Your packages: Foundry's real compatibility preview for that release", asy
   await upd()
     .getByRole("tab", { name: /Your packages/ })
     .click();
-  const view = upd().locator(".mlu-compat");
+  const view = upd().locator(".stu-compat");
   await view.getByRole("tab", { name: /^Modules/ }).click();
   const installed = await page.evaluate(
     () =>
       (window as unknown as { game: { modules: { size: number } } }).game
         .modules.size,
   );
-  await expect(view.locator(".mlu-clist li")).toHaveCount(installed);
+  await expect(view.locator(".stu-clist li")).toHaveCount(installed);
   await page.screenshot({ path: `${SCREENS}/server-update-older-compat.png` });
 });

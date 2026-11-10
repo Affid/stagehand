@@ -43,14 +43,14 @@ function ServerCards(props: {
   if (list === null) return null;
   if (list.length === 0)
     return (
-      <div class="mlh-card mlh-empty">
+      <div class="sth-card sth-empty">
         <h2>{t("home.emptyTitle")}</h2>
         <p>{t("home.emptyText")}</p>
       </div>
     );
   return (
     <>
-      <h2 class="mlh-eyebrow">{t("home.servers")}</h2>
+      <h2 class="sth-eyebrow">{t("home.servers")}</h2>
       {list.map((s) => (
         <ServerCard
           key={s.id}
@@ -63,7 +63,7 @@ function ServerCards(props: {
           }}
         />
       ))}
-      <p class="mlh-hint">{t("home.hint")}</p>
+      <p class="sth-hint">{t("home.hint")}</p>
     </>
   );
 }
@@ -107,8 +107,8 @@ function Sheets(props: {
 
 function Dock(props: { readonly onAdd: () => void; readonly inert: boolean }) {
   return (
-    <div class="mlh-dock" inert={props.inert}>
-      <button type="button" class="mlh-btn mlh-bright" onClick={props.onAdd}>
+    <div class="sth-dock" inert={props.inert}>
+      <button type="button" class="sth-btn sth-bright" onClick={props.onAdd}>
         <Plus />
         {t("home.add")}
       </button>
@@ -142,12 +142,12 @@ export function AppHome(props: AppHomeProps) {
   const [open, setOpen] = useSheet();
   return (
     <BackContext.Provider value={props.back}>
-      <div class="mlh">
-        <header class="mlh-top" inert={open !== null}>
+      <div class="sth">
+        <header class="sth-top" inert={open !== null}>
           <Mark />
           <h1>{t("set.title")}</h1>
         </header>
-        <main class="mlh-body" inert={open !== null}>
+        <main class="sth-body" inert={open !== null}>
           <ServerCards
             t={t}
             servers={servers}
@@ -157,9 +157,9 @@ export function AppHome(props: AppHomeProps) {
               setOpen({ kind: "edit", id });
             }}
           />
-          <h2 class="mlh-eyebrow">{t("home.settings")}</h2>
+          <h2 class="sth-eyebrow">{t("home.settings")}</h2>
           <ReleaseSwitch t={t} platform={platform} />
-          <footer class="mlh-foot">
+          <footer class="sth-foot">
             {t("set.build", { build: platform.build })}
           </footer>
         </main>

@@ -1,6 +1,6 @@
 // What the live suites run against (Android plan, phase 2, package 5): the
 // extension in Chromium (default) or the app's web part in the app harness
-// (`ML_TARGET=app`, `pnpm test:foundry:app`). The specs open Setup and read
+// (`ST_TARGET=app`, `pnpm test:foundry:app`). The specs open Setup and read
 // or seed the background's storage through this, the same on both.
 import { type BrowserContext, expect, type Page } from "@playwright/test";
 import { FOUNDRY_ORIGIN } from "../../packages/extension/src/background/releases.ts";
@@ -22,7 +22,7 @@ import {
 export type TargetKind = "extension" | "app";
 
 export const TARGET: TargetKind =
-  process.env.ML_TARGET === "app" ? "app" : "extension";
+  process.env.ST_TARGET === "app" ? "app" : "extension";
 export const ON_APP = TARGET === "app";
 
 /** The background's storage, as chrome.storage.local's get and set. */

@@ -2,8 +2,8 @@
 // Foundry's preview rates the newest version of each installed system and
 // module, and each world by its system; we add where each one is used and,
 // for a world, which of its modules need a look.
-import { isNewerVersion } from "@module-library/shared/version";
-import type { WorldInfo } from "@module-library/shared/world";
+import { isNewerVersion } from "@stagehand/shared/version";
+import type { WorldInfo } from "@stagehand/shared/world";
 import type { SetupState } from "../../../../messages.ts";
 import type { CompatEntry, Preview } from "../../../../page-compat.ts";
 import { worldsUsing } from "../../../model/systems.ts";

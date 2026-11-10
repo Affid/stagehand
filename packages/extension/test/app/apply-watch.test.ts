@@ -1,6 +1,6 @@
 // Applying out of sight (phase 7): what the companion's report in the
 // world's flags says about this launch's changes.
-import type { Report } from "@module-library/shared/world-flags";
+import type { Report } from "@stagehand/shared/world-flags";
 import { describe, expect, test } from "vitest";
 import { watchStep } from "../../src/app/apply-watch.ts";
 

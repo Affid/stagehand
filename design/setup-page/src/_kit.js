@@ -4,7 +4,7 @@
 
 // ---------- Stagehand decorations on a Foundry card ----------
 const tagChip = (t, extra = "") =>
-  `<span class="tag flexrow ml-tag ${extra}" style="--ml-c:${t.color}" data-tooltip="Tag: ${esc(t.name)}"><i class="ml-dot" aria-hidden="true"></i>${esc(t.name)}</span>`;
+  `<span class="tag flexrow st-tag ${extra}" style="--st-c:${t.color}" data-tooltip="Tag: ${esc(t.name)}"><i class="st-dot" aria-hidden="true"></i>${esc(t.name)}</span>`;
 
 /** Our tags, note and usage as Foundry `.tag` items, first in `.tags.right`. */
 function decorations(m, { maxTags = 2, usage = VIEW === "details" } = {}) {
@@ -13,25 +13,25 @@ function decorations(m, { maxTags = 2, usage = VIEW === "details" } = {}) {
   if (VIEW === "tiles" && tags.length) {
     const names = tags.map((t) => t.name).join(", ");
     // One chip: tag dots, plus the note icon when there is a note.
-    const note = NOTES[m.id] ? `<i class="fa-solid fa-note-sticky ml-chipnote" inert></i>` : "";
+    const note = NOTES[m.id] ? `<i class="fa-solid fa-note-sticky st-chipnote" inert></i>` : "";
     const tip = `Tags: ${esc(names)}${NOTES[m.id] ? ` · Note: ${esc(NOTES[m.id])}` : ""}`;
-    return `<span class="tag flexrow ml-tagdots" data-tooltip="${tip}" aria-label="${tip}">${tags.slice(0, 4).map((t) => `<i class="ml-dot" style="--ml-c:${t.color}"></i>`).join("")}${note}</span>`;
+    return `<span class="tag flexrow st-tagdots" data-tooltip="${tip}" aria-label="${tip}">${tags.slice(0, 4).map((t) => `<i class="st-dot" style="--st-c:${t.color}"></i>`).join("")}${note}</span>`;
   }
   const shown = tags.slice(0, maxTags).map((t) => tagChip(t)).join("");
   const more = tags.length > maxTags
-    ? `<span class="tag flexrow ml-more" data-tooltip="Also: ${esc(tags.slice(maxTags).map((t) => t.name).join(", "))}">+${tags.length - maxTags}</span>` : "";
+    ? `<span class="tag flexrow st-more" data-tooltip="Also: ${esc(tags.slice(maxTags).map((t) => t.name).join(", "))}">+${tags.length - maxTags}</span>` : "";
   const note = NOTES[m.id]
-    ? `<span class="tag flexrow ml-note" data-tooltip="${esc(NOTES[m.id])}" aria-label="Note: ${esc(NOTES[m.id])}"><i class="fa-solid fa-note-sticky fa-fw" inert></i></span>` : "";
+    ? `<span class="tag flexrow st-note" data-tooltip="${esc(NOTES[m.id])}" aria-label="Note: ${esc(NOTES[m.id])}"><i class="fa-solid fa-note-sticky fa-fw" inert></i></span>` : "";
   const n = usageOf(m.id);
   const used = usage
-    ? `<span class="tag flexrow ml-used${n === 0 ? " ml-zero" : ""}" data-tooltip="Active in ${n} of ${WORLDS.length} worlds" aria-label="Active in ${n} worlds"><i class="fa-solid fa-globe fa-fw" inert></i>${n}</span>` : "";
+    ? `<span class="tag flexrow st-used${n === 0 ? " st-zero" : ""}" data-tooltip="Active in ${n} of ${WORLDS.length} worlds" aria-label="Active in ${n} worlds"><i class="fa-solid fa-globe fa-fw" inert></i>${n}</span>` : "";
   return shown + more + note + used;
 }
 
 /** One Foundry module card in the current view mode. `o` adds our state. */
 function card(m, o = {}) {
-  const cls = ["package", "module", o.selected ? "ml-selected" : "", o.dragging ? "ml-dragging" : "", o.ghost ? "ml-ghost" : ""].join(" ");
-  const check = o.check ? `<label class="ml-check" aria-label="Select ${esc(m.title)}"><input type="checkbox" ${o.selected ? "checked" : ""}></label>` : "";
+  const cls = ["package", "module", o.selected ? "st-selected" : "", o.dragging ? "st-dragging" : "", o.ghost ? "st-ghost" : ""].join(" ");
+  const check = o.check ? `<label class="st-check" aria-label="Select ${esc(m.title)}"><input type="checkbox" ${o.selected ? "checked" : ""}></label>` : "";
   const status = `<div class="status-icons">${o.favorite ? '<i class="favorite fa-solid fa-star"></i>' : ""}<i class="fa-solid fa-lock" hidden></i></div>`;
   const update = READONLY && o.lockUpdate ? "" : `<a class="control package-update" data-action="updatePackage" aria-label="Perform Update If Available"><i class="fa-solid fa-rotate" inert></i></a>`;
   // Tiles clip Foundry's right-hand row from the left, so there our chip sits on the left, by the update button.
@@ -55,12 +55,12 @@ function card(m, o = {}) {
 
 /** Details mode has room in the description: our note and usage go there. */
 function detailExtra(m) {
-  const note = NOTES[m.id] ? `<p class="ml-detail-line"><i class="fa-solid fa-note-sticky"></i><span>${esc(NOTES[m.id])}</span></p>` : "";
+  const note = NOTES[m.id] ? `<p class="st-detail-line"><i class="fa-solid fa-note-sticky"></i><span>${esc(NOTES[m.id])}</span></p>` : "";
   const n = usageOf(m.id);
   const where = n ? `Active in ${n} world${n === 1 ? "" : "s"}: ${WORLDS.slice(0, n).join(", ")}` : "Not active in any world";
   const presets = presetsOf(m.id).map((p) => p.name);
   const pre = presets.length ? ` · In preset${presets.length > 1 ? "s" : ""} ${presets.join(", ")}` : "";
-  return `${note}<p class="ml-detail-line ml-muted"><i class="fa-solid fa-globe"></i><span>${where}${pre}</span></p>`;
+  return `${note}<p class="st-detail-line st-muted"><i class="fa-solid fa-globe"></i><span>${where}${pre}</span></p>`;
 }
 
 // ---------- Grouping ----------
@@ -95,32 +95,32 @@ function groupsFor(by, modules) {
 /** A section: Foundry's own folder header (as in the in-game sidebar) over a card list. */
 function section(g, o = {}) {
   const collapsed = o.collapsed?.includes(g.key);
-  const tint = g.kind === "tag" ? "ml-tinted" : "";
-  const style = g.color && g.kind === "folder" ? `--sidebar-folder-color:${g.color}` : g.color ? `--ml-c:${g.color}` : "";
+  const tint = g.kind === "tag" ? "st-tinted" : "";
+  const style = g.color && g.kind === "folder" ? `--sidebar-folder-color:${g.color}` : g.color ? `--st-c:${g.color}` : "";
   const count = o.total?.[g.key] !== undefined && o.total[g.key] !== g.modules.length
     ? `${g.modules.length} of ${o.total[g.key]}` : `${g.modules.length}`;
-  const more = o.noMore || READONLY && !o.moreInRo ? "" : `<button type="button" class="ml-hbtn${o.menuOn === g.key ? " ml-on" : ""}" aria-label="${esc(g.name)}: actions" data-tooltip="Actions (or right-click)"><i class="fa-solid fa-ellipsis-vertical"></i></button>`;
-  const hint = g.hint && !collapsed && o.hints ? `<span class="ml-hint">${esc(g.hint)}</span>` : "";
-  const header = `<header class="folder-header ml-section-header ${g.kind} ${tint}" style="${style}" role="button" aria-expanded="${!collapsed}">
+  const more = o.noMore || READONLY && !o.moreInRo ? "" : `<button type="button" class="st-hbtn${o.menuOn === g.key ? " st-on" : ""}" aria-label="${esc(g.name)}: actions" data-tooltip="Actions (or right-click)"><i class="fa-solid fa-ellipsis-vertical"></i></button>`;
+  const hint = g.hint && !collapsed && o.hints ? `<span class="st-hint">${esc(g.hint)}</span>` : "";
+  const header = `<header class="folder-header st-section-header ${g.kind} ${tint}" style="${style}" role="button" aria-expanded="${!collapsed}">
       <i class="fa-solid ${collapsed ? (g.kind === "folder" || g.kind === "unfiled" ? "fa-folder" : g.icon) : g.icon} fa-fw"></i>
-      ${g.kind === "tag" ? `<i class="ml-dot" aria-hidden="true"></i>` : ""}
+      ${g.kind === "tag" ? `<i class="st-dot" aria-hidden="true"></i>` : ""}
       <span class="folder-name">${esc(g.name)}</span>${hint}
-      ${o.extra?.[g.key] ?? ""}<span class="ml-count">${count}</span>${more}
-      <i class="fa-solid fa-chevron-${collapsed ? "right" : "down"} ml-caret" aria-hidden="true"></i></header>`;
+      ${o.extra?.[g.key] ?? ""}<span class="st-count">${count}</span>${more}
+      <i class="fa-solid fa-chevron-${collapsed ? "right" : "down"} st-caret" aria-hidden="true"></i></header>`;
   const body = collapsed ? "" : g.modules.length
-    ? `<ol class="package-list ${VIEW} ml-cards">${g.modules.map((m) => card(m, o.cardOpts?.(m, g) ?? {})).join("")}</ol>`
-    : `<p class="ml-empty-section">${o.emptyText?.(g) ?? "Empty. Drag modules here."}</p>`;
-  return `<li class="folder ml-section${collapsed ? "" : " expanded"}${o.drop === g.key ? " droptarget" : ""}" data-group="${esc(g.key)}">${header}${body}</li>`;
+    ? `<ol class="package-list ${VIEW} st-cards">${g.modules.map((m) => card(m, o.cardOpts?.(m, g) ?? {})).join("")}</ol>`
+    : `<p class="st-empty-section">${o.emptyText?.(g) ?? "Empty. Drag modules here."}</p>`;
+  return `<li class="folder st-section${collapsed ? "" : " expanded"}${o.drop === g.key ? " droptarget" : ""}" data-group="${esc(g.key)}">${header}${body}</li>`;
 }
 
 function sections(groups, o = {}) {
-  return `<ol class="ml-sections scrollable">${groups.map((g) => section(g, o)).join("")}</ol>`;
+  return `<ol class="st-sections scrollable">${groups.map((g) => section(g, o)).join("")}</ol>`;
 }
 
 // ---------- Foundry chrome ----------
 function viewModes({ organise = true, organiseBtn = true } = {}) {
   const b = (id, icon, label) => `<button type="button" data-action="viewMode" class="view-mode icon fa-solid ${icon}${VIEW === id ? " active" : ""}" aria-label="${label}"></button>`;
-  const org = organiseBtn ? `<button type="button" class="view-mode icon fa-solid fa-folder-tree ml-organise${organise ? " active" : ""}" aria-pressed="${organise}" aria-label="Organised view (Stagehand)"></button><span class="ml-vsep" aria-hidden="true"></span>` : "";
+  const org = organiseBtn ? `<button type="button" class="view-mode icon fa-solid fa-folder-tree st-organise${organise ? " active" : ""}" aria-pressed="${organise}" aria-label="Organised view (Stagehand)"></button><span class="st-vsep" aria-hidden="true"></span>` : "";
   return `<div class="view-modes">${org}${b("gallery", "fa-image-landscape", "Gallery View")}${b("tiles", "fa-grid-horizontal", "Tiles View")}${b("details", "fa-list", "Details View")}</div>`;
 }
 
@@ -161,51 +161,51 @@ function coreList(modules = ALL_MODULES, deco = true) {
 // ---------- Foundry overlays: ContextMenu, window, toast, tooltip ----------
 function contextMenu(x, y, groups) {
   const items = groups.map((g) => `<li class="context-group"><ol>${g.map(([icon, label, cls = ""]) => `<li class="context-item ${cls}"><i class="fa-solid ${icon} fa-fw" inert></i><span>${label}</span></li>`).join("")}</ol></li>`).join("");
-  return `<nav id="context-menu" class="expand-down themed theme-dark ml-static-menu" style="left:${x}px;top:${y}px"><menu class="context-items">${items}</menu></nav>`;
+  return `<nav id="context-menu" class="expand-down themed theme-dark st-static-menu" style="left:${x}px;top:${y}px"><menu class="context-items">${items}</menu></nav>`;
 }
 
 function fwindow({ title, icon = "fa-solid fa-folder-tree", x, y, w, h, body, footer = "", cls = "" }) {
-  return `<div class="application ml-window ${cls}" style="left:${x}px;top:${y}px;width:${w}px;${h ? `height:${h}px;` : ""}z-index:101">
+  return `<div class="application st-window ${cls}" style="left:${x}px;top:${y}px;width:${w}px;${h ? `height:${h}px;` : ""}z-index:101">
     <header class="window-header"><i class="window-icon fa-fw ${icon}" inert></i><h1 class="window-title">${title}</h1>
       <button type="button" class="header-control icon fa-solid fa-ellipsis-vertical" aria-label="Toggle Controls"></button>
       <button type="button" class="header-control icon fa-solid fa-xmark" aria-label="Close Window"></button></header>
-    <section class="window-content">${body}</section>${footer ? `<footer class="ml-window-footer form-footer">${footer}</footer>` : ""}</div>`;
+    <section class="window-content">${body}</section>${footer ? `<footer class="st-window-footer form-footer">${footer}</footer>` : ""}</div>`;
 }
 
-const toast = (text, type = "info") => `<ol id="notifications" class="ml-toasts"><li class="notification ${type} active"><p>${text}</p></li></ol>`;
-const tooltip = (x, y, html, dir = "") => `<aside id="tooltip" class="active themed theme-dark ml-static-tip ${dir}" style="left:${x}px;top:${y}px">${html}</aside>`;
+const toast = (text, type = "info") => `<ol id="notifications" class="st-toasts"><li class="notification ${type} active"><p>${text}</p></li></ol>`;
+const tooltip = (x, y, html, dir = "") => `<aside id="tooltip" class="active themed theme-dark st-static-tip ${dir}" style="left:${x}px;top:${y}px">${html}</aside>`;
 
 /** Static annotation for the reviewer (not product UI). */
-const callout = (x, y, w, html) => `<div class="ml-callout-note" style="left:${x}px;top:${y}px;width:${w}px">${html}</div>`;
+const callout = (x, y, w, html) => `<div class="st-callout-note" style="left:${x}px;top:${y}px;width:${w}px">${html}</div>`;
 
 // ---------- Shared Stagehand popovers ----------
 /** Tri-state tag checklist for a selection: all / some / none, staged until Apply. */
 function tagPopover(x, y, { n = 4, states = {}, query = "", pending = "" } = {}) {
   const rows = TAGS.map((t) => {
     const s = states[t.id] ?? { state: "none" };
-    const label = s.changed ? "" : s.state === "some" ? `<span class="ml-muted">${s.of ?? 2} of ${n}</span>` : s.state === "all" ? `<span class="ml-muted">all ${n}</span>` : "";
-    const changed = s.changed ? `<span class="ml-delta ${s.changed === "+" ? "ml-plus" : "ml-minus"}">${s.changed === "+" ? "add" : "remove"}</span>` : "";
+    const label = s.changed ? "" : s.state === "some" ? `<span class="st-muted">${s.of ?? 2} of ${n}</span>` : s.state === "all" ? `<span class="st-muted">all ${n}</span>` : "";
+    const changed = s.changed ? `<span class="st-delta ${s.changed === "+" ? "st-plus" : "st-minus"}">${s.changed === "+" ? "add" : "remove"}</span>` : "";
     const shown = s.changed === "+" ? "all" : s.changed === "-" ? "none" : s.state;
-    return `<li class="${s.changed ? "ml-changed" : ""}"><label><input type="checkbox" ${shown === "all" ? "checked" : ""} data-indeterminate="${shown === "some"}"><i class="ml-dot" style="--ml-c:${t.color}"></i><span class="ml-name">${t.name}</span>${changed}${label}</label></li>`;
+    return `<li class="${s.changed ? "st-changed" : ""}"><label><input type="checkbox" ${shown === "all" ? "checked" : ""} data-indeterminate="${shown === "some"}"><i class="st-dot" style="--st-c:${t.color}"></i><span class="st-name">${t.name}</span>${changed}${label}</label></li>`;
   }).join("");
-  const create = query ? `<li class="ml-create"><i class="fa-solid fa-plus fa-fw"></i>Create tag “${esc(query)}” and add to ${n}</li>` : "";
-  return `<div class="ml-pop ml-tagpop" style="left:${x}px;top:${y}px" role="dialog" aria-label="Tags for ${n} modules">
+  const create = query ? `<li class="st-create"><i class="fa-solid fa-plus fa-fw"></i>Create tag “${esc(query)}” and add to ${n}</li>` : "";
+  return `<div class="st-pop st-tagpop" style="left:${x}px;top:${y}px" role="dialog" aria-label="Tags for ${n} modules">
     <header><strong>Tags for ${n} selected modules</strong></header>
-    <input type="search" class="ml-pop-search" placeholder="Find or create a tag" value="${esc(query)}">
-    <ul class="ml-checklist">${rows}${create}</ul>
-    <footer><span class="ml-muted">${pending || "Click a box: all, then none, then back"}</span><button type="button" class="ml-small-btn">Cancel</button><button type="button" class="ml-small-btn bright">Apply</button></footer></div>`;
+    <input type="search" class="st-pop-search" placeholder="Find or create a tag" value="${esc(query)}">
+    <ul class="st-checklist">${rows}${create}</ul>
+    <footer><span class="st-muted">${pending || "Click a box: all, then none, then back"}</span><button type="button" class="st-small-btn">Cancel</button><button type="button" class="st-small-btn bright">Apply</button></footer></div>`;
 }
 
 const PALETTE = ["#6e2a2a", "#7a4a1e", "#6b4a1f", "#5c5a1f", "#2f5a35", "#1f5a52", "#2b4f5c", "#2a3f6e", "#3a3f6e", "#5a3a6e", "#6e2f5a", "#444046"];
 
 /** Colour choice: swatches plus Foundry's own <color-picker> for a custom value. */
 function colourPopover(x, y, { current = "#5a3a6e", custom = "" } = {}) {
-  const sw = PALETTE.map((c) => `<button type="button" class="ml-swatch${c === current ? " ml-on" : ""}" style="--ml-c:${c}" aria-label="${c}"${c === current ? ' aria-pressed="true"' : ""}></button>`).join("");
-  return `<div class="ml-pop ml-colourpop" style="left:${x}px;top:${y}px" role="dialog" aria-label="Folder colour">
+  const sw = PALETTE.map((c) => `<button type="button" class="st-swatch${c === current ? " st-on" : ""}" style="--st-c:${c}" aria-label="${c}"${c === current ? ' aria-pressed="true"' : ""}></button>`).join("");
+  return `<div class="st-pop st-colourpop" style="left:${x}px;top:${y}px" role="dialog" aria-label="Folder colour">
     <header><strong>Folder colour</strong></header>
-    <div class="ml-swatches">${sw}</div>
-    <div class="ml-custom"><span>Custom</span><color-picker class="ml-picker"><input type="text" value="${custom || current}"><input type="color" value="${custom || current}"></color-picker></div>
-    <footer><button type="button" class="ml-small-btn">No colour</button></footer></div>`;
+    <div class="st-swatches">${sw}</div>
+    <div class="st-custom"><span>Custom</span><color-picker class="st-picker"><input type="text" value="${custom || current}"><input type="color" value="${custom || current}"></color-picker></div>
+    <footer><button type="button" class="st-small-btn">No colour</button></footer></div>`;
 }
 
 function mount(html, after) {

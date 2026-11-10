@@ -2,14 +2,14 @@
 // snapshot), on after the next launch (every queued change resolved, as the
 // companion will), and the one line that says why (SETUP-REDESIGN.md, world
 // page cards). Also what flipping one switch queues or undoes.
-import type { Plan } from "@module-library/shared/resolver";
-import type { PackageInfo } from "@module-library/shared/package";
+import type { Plan } from "@stagehand/shared/resolver";
+import type { PackageInfo } from "@stagehand/shared/package";
 import {
   isCompatibilityRisk,
   parseCoreVersion,
   testAvailability,
-} from "@module-library/shared/version";
-import type { Command } from "@module-library/shared/world";
+} from "@stagehand/shared/version";
+import type { Command } from "@stagehand/shared/world";
 import type { SetupState } from "../../messages.ts";
 import {
   COMPANION_ID,

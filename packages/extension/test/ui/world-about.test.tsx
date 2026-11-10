@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import type { WorldInfo } from "@module-library/shared/world";
+import type { WorldInfo } from "@stagehand/shared/world";
 import { cleanup, fireEvent, waitFor } from "@testing-library/preact";
 import { BUNDLED_CONFIG } from "../../src/adapters/config.ts";
 import { afterEach, describe, expect, test } from "vitest";
@@ -33,17 +33,17 @@ describe("a world's About tab", () => {
     expect(
       r.getByRole("tab", { name: "About" }).getAttribute("aria-selected"),
     ).toBe("true");
-    expect(r.container.querySelector(".mlw-about")).toBeTruthy();
+    expect(r.container.querySelector(".stw-about")).toBeTruthy();
     fireEvent.click(r.getByRole("tab", { name: "Modules" }));
-    expect(r.container.querySelector(".mlw-about")).toBe(null);
+    expect(r.container.querySelector(".stw-about")).toBe(null);
   });
 
   test("shows the cleaned description and Foundry's details", () => {
     const { container } = about({
       description: "<p>Gothic <strong>horror</strong></p><script>x()</script>",
     });
-    const box = el(container, ".mlw-about");
-    expect(box.querySelector(".ml-rich strong")?.textContent).toBe("horror");
+    const box = el(container, ".stw-about");
+    expect(box.querySelector(".st-rich strong")?.textContent).toBe("horror");
     expect(box.querySelector("script")).toBe(null);
     expect(box.textContent).toContain("Dungeons & Dragons Fifth Edition 5.1");
     expect(box.textContent).toContain("14.369");
@@ -51,7 +51,7 @@ describe("a world's About tab", () => {
 
   test("no description says so", () => {
     const { container } = about();
-    expect(el(container, ".mlw-about").textContent).toContain(
+    expect(el(container, ".stw-about").textContent).toContain(
       "No description yet.",
     );
   });

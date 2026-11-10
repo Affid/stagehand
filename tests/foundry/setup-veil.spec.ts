@@ -53,8 +53,8 @@ interface Watch {
 test("Foundry's own Setup is never seen before the new page takes over", async () => {
   const watcher = await ext.context.newPage();
   await watcher.addInitScript((sel: readonly string[]) => {
-    const w = window as unknown as { mlWatch: Watch };
-    w.mlWatch = { shownFrames: 0, shellOnAt: null };
+    const w = window as unknown as { stWatch: Watch };
+    w.stWatch = { shownFrames: 0, shellOnAt: null };
     const seen = (e: Element): boolean => {
       const cs = getComputedStyle(e);
       const r = e.getBoundingClientRect();
@@ -69,23 +69,23 @@ test("Foundry's own Setup is never seen before the new page takes over", async (
     const frame = (): void => {
       // No body yet at the very start of the load.
       const body = document.body as HTMLElement | null;
-      const on = body?.classList.contains("ml-shell-on") ?? false;
-      if (on && w.mlWatch.shellOnAt === null)
-        w.mlWatch = { ...w.mlWatch, shellOnAt: performance.now() };
+      const on = body?.classList.contains("st-shell-on") ?? false;
+      if (on && w.stWatch.shellOnAt === null)
+        w.stWatch = { ...w.stWatch, shellOnAt: performance.now() };
       const shown = sel.some((s) => {
         const e = document.querySelector(s);
         return e !== null && seen(e);
       });
       if (shown)
-        w.mlWatch = { ...w.mlWatch, shownFrames: w.mlWatch.shownFrames + 1 };
+        w.stWatch = { ...w.stWatch, shownFrames: w.stWatch.shownFrames + 1 };
       if (performance.now() < 15_000) requestAnimationFrame(frame);
     };
     requestAnimationFrame(frame);
   }, FOUNDRY);
   await watcher.goto(`${env.url}/setup`);
-  await watcher.locator("#ml-shell-root .mls-top").waitFor();
+  await watcher.locator("#st-shell-root .sts-top").waitFor();
   const watch = await watcher.evaluate(
-    () => (window as unknown as { mlWatch: Watch }).mlWatch,
+    () => (window as unknown as { stWatch: Watch }).stWatch,
   );
   test.info().annotations.push({
     type: "took over",
@@ -109,7 +109,7 @@ const visibility = (): Promise<string> =>
   page.locator("#setup").evaluate((e) => getComputedStyle(e).visibility);
 
 test("if the new page gives up, Foundry's comes back at once", async () => {
-  await bare("ml-shell-off");
+  await bare("st-shell-off");
   expect(await visibility()).toBe("visible");
 });
 
@@ -122,7 +122,7 @@ test("if the extension's script never starts, Foundry's page shows by itself", a
 });
 
 test("while the early script waits, the CSS alone doesn't show Foundry's page", async () => {
-  await bare("ml-shell-wait");
+  await bare("st-shell-wait");
   await page.waitForTimeout(FAILSAFE_MS + 500);
   expect(await visibility()).toBe("hidden");
 });

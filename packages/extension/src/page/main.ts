@@ -4,7 +4,7 @@
 // the UI is checked; anything unexpected is ignored. Started by the
 // extension's setup-main script and by the app's app-setup script, each
 // with its own channel (page-channel.ts).
-import { logError } from "@module-library/shared/log";
+import { logError } from "@stagehand/shared/log";
 import type { PageChannel } from "../page-channel.ts";
 import {
   type FoundryAction,

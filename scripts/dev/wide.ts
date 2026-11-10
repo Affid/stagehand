@@ -9,7 +9,7 @@ const env = loadFoundryEnv();
 const ext = await loadExtension();
 const page = await ext.context.newPage();
 await openSetupAsAdmin(ext, page, env.url, env.adminPassword);
-const shell = page.locator("#ml-shell-root");
+const shell = page.locator("#st-shell-root");
 const out = "test-results/screens";
 const box = async (sel: string) => {
   const b = await shell.locator(sel).first().boundingBox();
@@ -22,19 +22,19 @@ for (const [w, h] of [
   [3440, 1440],
 ] as const) {
   await page.setViewportSize({ width: w, height: h });
-  await shell.locator(".mls-world").first().click();
+  await shell.locator(".sts-world").first().click();
   await page.waitForTimeout(400);
   await page.screenshot({ path: `${out}/wide-world-${String(w)}.png` });
-  const world = `rail ${await box(".mls-rail")} main ${await box(".mls-main")}`;
-  await shell.locator(".mls-lib").click();
-  await shell.locator(".mls-main button.t").first().click();
+  const world = `rail ${await box(".sts-rail")} main ${await box(".sts-main")}`;
+  await shell.locator(".sts-lib").click();
+  await shell.locator(".sts-main button.t").first().click();
   await page.waitForTimeout(400);
   await page.screenshot({ path: `${out}/wide-library-${String(w)}.png` });
   console.log(
-    `${String(w)}: ${world} | library main ${await box(".mls-main")} panel ${await box(".mls-panel")}`,
+    `${String(w)}: ${world} | library main ${await box(".sts-main")} panel ${await box(".sts-panel")}`,
   );
   await shell
-    .locator(".mls-panel")
+    .locator(".sts-panel")
     .getByRole("button", { name: "Close" })
     .click();
   await shell.getByRole("tab", { name: /By world/ }).click();

@@ -26,8 +26,8 @@ test.beforeAll(async () => {
   await admin.dispose();
 });
 
-const shell = (page: Page) => page.locator("#ml-shell-root .mls-shell");
-const tabBar = (page: Page) => shell(page).locator(".mlp-tabs");
+const shell = (page: Page) => page.locator("#st-shell-root .sts-shell");
+const tabBar = (page: Page) => shell(page).locator(".stp-tabs");
 const tab = (page: Page, name: string) =>
   tabBar(page).getByRole("button", { name: new RegExp(`^${name}`) });
 
@@ -63,10 +63,10 @@ test.describe("on a phone", () => {
     await expect(
       shell(page).getByRole("heading", { name: "Foundry VTT" }),
     ).toBeVisible();
-    await expect(shell(page).locator(".mls-world").first()).toBeVisible();
+    await expect(shell(page).locator(".sts-world").first()).toBeVisible();
     await expect(tab(page, "Worlds")).toHaveAttribute("aria-current", "page");
     // The world behind the list keeps its bar to itself (seen in the emulator).
-    await expect(shell(page).locator(".mlp-dock")).toBeHidden();
+    await expect(shell(page).locator(".stp-dock")).toBeHidden();
     // Foundry raised it at load; the phone layout took it away.
     await expect(
       page.locator("#notifications li.permanent", { hasText: "1024px" }),
@@ -75,7 +75,7 @@ test.describe("on a phone", () => {
   });
 
   test("a world opens with Back; Back and Escape return to the list", async () => {
-    const first = shell(page).locator(".mls-world strong").first();
+    const first = shell(page).locator(".sts-world strong").first();
     const name = (await first.textContent()) ?? "";
     await first.click();
     await expect(shell(page)).toHaveAttribute("data-screen", "page");
@@ -112,11 +112,11 @@ test.describe("on a phone", () => {
 test("a tablet on its side keeps the worlds list beside the page", async () => {
   const [app, page] = await open("tablet-side");
   try {
-    const rail = await shell(page).locator(".mls-rail").boundingBox();
-    const main = await shell(page).locator(".mls-main").boundingBox();
+    const rail = await shell(page).locator(".sts-rail").boundingBox();
+    const main = await shell(page).locator(".sts-main").boundingBox();
     expect(rail && main && rail.x + rail.width <= main.x + 1).toBe(true);
     await tab(page, "Library").click();
-    await expect(shell(page).locator(".mls-rail")).toBeVisible();
+    await expect(shell(page).locator(".sts-rail")).toBeVisible();
     await noSidewaysScroll(page);
   } finally {
     await app.close();
@@ -126,7 +126,7 @@ test("a tablet on its side keeps the worlds list beside the page", async () => {
 test("a phone on its side has short bars and icon-only tabs", async () => {
   const [app, page] = await open("phone-side");
   try {
-    await expect(shell(page)).not.toHaveClass(/mlp-wide/);
+    await expect(shell(page)).not.toHaveClass(/stp-wide/);
     // The labels go from sight but stay the tabs' names.
     const label = tab(page, "Library").locator("span").first();
     await expect(label).toHaveText("Library");
@@ -142,7 +142,7 @@ test("a phone on its side has short bars and icon-only tabs", async () => {
 test("a tablet held upright gets the phone layout", async () => {
   const [app, page] = await open("tablet");
   try {
-    await expect(shell(page)).not.toHaveClass(/mlp-wide/);
+    await expect(shell(page)).not.toHaveClass(/stp-wide/);
     await expect(shell(page)).toHaveAttribute("data-screen", "home");
   } finally {
     await app.close();

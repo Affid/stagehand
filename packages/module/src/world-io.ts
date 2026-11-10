@@ -4,9 +4,9 @@
 // checked on 13.351 and 14.370); the page's copy of the world shows a save
 // only after a reload, so each save is also applied to it here, and told
 // to whoever listens (the Android app watching its changes apply).
-import { logError } from "@module-library/shared/log";
-import { byteSize, MAX_SAVE_BYTES } from "@module-library/shared/world-flags";
-import { FLAGS_KEY } from "@module-library/shared/world";
+import { logError } from "@stagehand/shared/log";
+import { byteSize, MAX_SAVE_BYTES } from "@stagehand/shared/world-flags";
+import { FLAGS_KEY } from "@stagehand/shared/world";
 import type { FoundryWorld } from "./foundry.ts";
 
 /** The server's time now and when the running world started (ms). */

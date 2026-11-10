@@ -1,7 +1,7 @@
 // The app's home screen (home.html on the app's own origin): the saved
 // servers, Release history and the build, over native (ui/app-home).
-import "@module-library/shared/zod-config";
-import { logError } from "@module-library/shared/log";
+import "@stagehand/shared/zod-config";
+import { logError } from "@stagehand/shared/log";
 import { render } from "preact";
 import { createNativeBridge } from "../app/bridge.ts";
 import { BACK } from "../app/native-api.ts";

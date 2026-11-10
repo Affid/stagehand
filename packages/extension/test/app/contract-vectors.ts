@@ -186,7 +186,7 @@ const PAYLOADS: readonly (readonly [RequestType, unknown])[] = [
   ["kv.set", { key: "servers", value: null }],
   ["kv.set", { value: 1 }],
   ["scripts.registered", { ids: [] }],
-  ["scripts.registered", { ids: ["ml-a"] }],
+  ["scripts.registered", { ids: ["st-a"] }],
   ["scripts.registered", { ids: [""] }],
   ["scripts.registered", { ids: [long(300)] }],
   ["scripts.registered", { ids: [long(301)] }],
@@ -311,7 +311,7 @@ const STATUS_BODIES = [
 ];
 
 const WRAPS = [
-  ["console.log(ML_APP_SERVER);", SERVER],
+  ["console.log(ST_APP_SERVER);", SERVER],
   ["x", PREFIXED],
   ["a\nb", 'http://h:1/p"q\\r'],
   ["", "http://h/ é\u0001"],

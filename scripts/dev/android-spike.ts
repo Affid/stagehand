@@ -2,7 +2,7 @@
 // app's WebView with Playwright's Android support, through the adb server on
 // 127.0.0.1:5037 (Windows' adb, reached from WSL by mirrored networking;
 // plain connectOverCDP fails on a WebView: no browser contexts). The probe
-// in the app reports to logcat (tag MLSPIKE); this script only moves the
+// in the app reports to logcat (tag STSPIKE); this script only moves the
 // page.
 // Usage: node scripts/dev/android-spike.ts <login|game>
 //   login: admin login on the app's Foundry origin, then Setup.
@@ -19,7 +19,7 @@ import { loadFoundryEnv } from "../foundry/env.ts";
 import { resetWorldModules } from "../foundry/reset-world.ts";
 import { TEST_WORLD } from "../foundry/world.ts";
 
-const PKG = "dev.modulelibrary.spike";
+const PKG = "io.github.affid.stagehand.spike";
 const OUT = "test-results/screens";
 const env = loadFoundryEnv();
 const step = process.argv[2];
@@ -71,7 +71,7 @@ async function game(page: Page): Promise<void> {
     const errors: string[] = [];
     page.on("pageerror", (e) => errors.push(e.message.slice(0, 160)));
     page.on("console", (m) => {
-      if (/module.library|companion/i.test(m.text()))
+      if (/stagehand|companion/i.test(m.text()))
         errors.push(`console ${m.type()}: ${m.text().slice(0, 160)}`);
     });
     await join(page, origin, "Gamemaster");

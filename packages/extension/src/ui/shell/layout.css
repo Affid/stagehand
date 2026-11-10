@@ -10,33 +10,33 @@
    world's row. At 1280 px and below the rail narrows and the details panel
    floats over the page. */
 
-.mls-shell {
-  --mls-rail-w: clamp(
+.sts-shell {
+  --sts-rail-w: clamp(
     290px,
     calc(290px + (100vw - 1366px) * 110 / 1194),
     400px
   );
-  --mls-panel-w: clamp(
+  --sts-panel-w: clamp(
     340px,
     calc(340px + (100vw - 1366px) * 120 / 1194),
     460px
   );
 }
 
-.mls-shell .mls-rail {
-  flex-basis: var(--mls-rail-w);
+.sts-shell .sts-rail {
+  flex-basis: var(--sts-rail-w);
 }
 
-.mls-shell .mls-panel {
-  flex-basis: var(--mls-panel-w);
+.sts-shell .sts-panel {
+  flex-basis: var(--sts-panel-w);
 }
 
 @media (max-width: 1280px) {
-  .mls-shell .mls-rail {
+  .sts-shell .sts-rail {
     flex-basis: 240px;
   }
 
-  .mls-shell .mls > .application.mls-panel {
+  .sts-shell .sts > .application.sts-panel {
     position: fixed;
     right: 16px;
     top: 76px;
@@ -47,7 +47,7 @@
        shorten it. */
     margin: 0;
     /* Above the page's sticky headers; only orders things inside our root
-       (#ml-shell-root is its own stacking context, under Foundry's windows).
+       (#st-shell-root is its own stacking context, under Foundry's windows).
        Popovers (120) and the dropdowns below stay above it. */
     z-index: 110;
     box-shadow: -8px 0 24px rgb(0 0 0 / 70%);
@@ -55,21 +55,21 @@
 }
 
 /* Dropdowns inside the page open above a floating panel (review). */
-.mls-shell .mlw-tzfind ul,
-.mls-shell .mlw-addmenu {
+.sts-shell .stw-tzfind ul,
+.sts-shell .stw-addmenu {
   z-index: 120;
 }
 
 /* Lists cut off while more is hidden fade there (common/scroll-fade.ts). */
-.mls-shell .mls-worlds.more {
+.sts-shell .sts-worlds.more {
   mask-image: linear-gradient(to bottom, #000 calc(100% - 36px), transparent);
 }
 
 /* A world reached by keyboard scrolls clear of the fade (review). */
-.mls-shell .mls-worlds {
+.sts-shell .sts-worlds {
   scroll-padding-bottom: 36px;
 }
 
-.mls-shell .mll-gridwrap.more-right {
+.sts-shell .stl-gridwrap.more-right {
   mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent);
 }

@@ -1,7 +1,7 @@
 // The world page's modules, in groups (View options). The filter, All / On /
 // Changes, Add and View options sit in the tab row (ModulesTools). A switch
 // queues a change for the next launch; a live region says what it did.
-import type { WorldInfo } from "@module-library/shared/world";
+import type { WorldInfo } from "@stagehand/shared/world";
 import { useRef, useState } from "preact/hooks";
 import { useUi } from "../../context.ts";
 import type {
@@ -52,7 +52,7 @@ export function ModulesTab(props: {
   };
   const rows = props.model.rows.filter(keep(show, text));
   return (
-    <div class="mlw-modules">
+    <div class="stw-modules">
       {rows.length ? (
         <ModuleSections
           rows={rows}
@@ -62,9 +62,9 @@ export function ModulesTab(props: {
           onFlip={onFlip}
         />
       ) : (
-        <p class="ml-empty">{t(`wp.empty.${show}`)}</p>
+        <p class="st-empty">{t(`wp.empty.${show}`)}</p>
       )}
-      <p class="ml-sr-only" aria-live="polite">
+      <p class="st-sr-only" aria-live="polite">
         {said}
       </p>
     </div>

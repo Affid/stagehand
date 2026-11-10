@@ -54,7 +54,7 @@ export const shownCount = (f: Filter, s: NoteSection): number =>
   shownItems(f, s).length +
   s.areas.reduce((n, a) => n + shownItems(f, s, a).length, 0);
 
-const anchor = (h: string): string => `mlu-${h.replace(/\W+/g, "-")}`;
+const anchor = (h: string): string => `stu-${h.replace(/\W+/g, "-")}`;
 
 const ISSUES = "https://github.com/foundryvtt/foundryvtt/issues/";
 
@@ -69,7 +69,7 @@ export function Items(props: { readonly items: readonly NoteEntry[] }) {
             <>
               {" "}
               <a
-                class="mlu-issue"
+                class="stu-issue"
                 href={`${ISSUES}${String(i.issue)}`}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -91,11 +91,11 @@ export function Intro(props: { readonly blocks: readonly Element[] }) {
       {props.blocks.map((b, n) =>
         // A highlights list keeps its own element: dt and dd need their dl.
         b.tagName === "DL" ? (
-          <dl class="mlu-p" key={n}>
+          <dl class="stu-p" key={n}>
             {cleanChildren(b)}
           </dl>
         ) : (
-          <div class="mlu-p" key={n}>
+          <div class="stu-p" key={n}>
             {cleanChildren(b)}
           </div>
         ),
@@ -106,7 +106,7 @@ export function Intro(props: { readonly blocks: readonly Element[] }) {
 
 function DevPill() {
   const { t } = useUi();
-  return <span class="mlw-pill">{t("up.developers")}</span>;
+  return <span class="stw-pill">{t("up.developers")}</span>;
 }
 
 function Body(props: {
@@ -148,7 +148,7 @@ function Section(props: {
   const searching = f.q.trim() !== "";
   const open = props.open || searching;
   return (
-    <section class={`mlu-sec ${s.kind}`} id={anchor(s.h)}>
+    <section class={`stu-sec ${s.kind}`} id={anchor(s.h)}>
       <h3>
         <button type="button" aria-expanded={open} onClick={props.onToggle}>
           <Icon name={open ? "chevron-down" : "chevron-right"} />
@@ -169,7 +169,7 @@ function Jump(props: {
 }) {
   const { t } = useUi();
   return (
-    <nav class="mlu-jump" aria-label={t("up.jumpTo")}>
+    <nav class="stu-jump" aria-label={t("up.jumpTo")}>
       {props.sections.map((s) => {
         const n = shownCount(props.f, s);
         if (!n) return null;
@@ -195,7 +195,7 @@ function Banner(props: { readonly notes: Notes }) {
   const b = props.notes.banner;
   if (!b) return null;
   return (
-    <figure class="mlu-banner">
+    <figure class="stu-banner">
       <img
         src={b.src}
         alt={b.alt}
@@ -239,7 +239,7 @@ function Tools(props: {
   const { t } = useUi();
   const { f, setF } = props;
   return (
-    <div class="mlu-tools">
+    <div class="stu-tools">
       <input
         type="search"
         value={f.q}
@@ -259,8 +259,8 @@ function Tools(props: {
         />
         {t("up.devNotes")}
       </label>
-      <span class="ml-spacer" />
-      <button type="button" class="mlu-link ml-link" onClick={props.toggleAll}>
+      <span class="st-spacer" />
+      <button type="button" class="stu-link st-link" onClick={props.toggleAll}>
         {props.allOpen ? t("up.collapseAll") : t("up.expandAll")}
       </button>
     </div>
@@ -282,7 +282,7 @@ function NotesHead(props: {
   const { t } = useUi();
   const r = props.release;
   return (
-    <div class="mlu-nhead">
+    <div class="stu-nhead">
       <h3>
         {t("up.notesTitle", {
           title: props.title || `Version ${String(r.generation)} ${r.suffix}`,
@@ -295,7 +295,7 @@ function NotesHead(props: {
             {" · "}
             <button
               type="button"
-              class="mlu-link ml-link"
+              class="stu-link st-link"
               onClick={props.onHistory}
             >
               {t("up.allNotes")}
@@ -331,14 +331,14 @@ export function NotesView(props: {
   ));
   const any = sections.some((s) => shownCount(f, s) > 0);
   return (
-    <div class="mlu-notes">
+    <div class="stu-notes">
       <NotesHead release={r} title={notes.title} onHistory={props.onHistory} />
       <Tools f={f} setF={setF} allOpen={o.allOpen} toggleAll={o.toggleAll} />
       <Jump sections={sections} f={f} onJump={o.jump} />
       {searching ? null : <Banner notes={notes} />}
       {searching ? null : <Intro blocks={notes.intro} />}
-      <div class="mlu-body">
-        {any ? body : <p class="ml-muted">{t("up.nothing")}</p>}
+      <div class="stu-body">
+        {any ? body : <p class="st-muted">{t("up.nothing")}</p>}
       </div>
     </div>
   );

@@ -100,9 +100,9 @@ function updItems(sec, parent) {
   return (sec.items ?? []).filter((i) => !q || i.text.toLowerCase().includes(q) || String(i.n ?? "").includes(q));
 }
 const secCount = (s) => (s.items ? updItems(s) : (s.sub ?? []).flatMap((x) => updItems(x, s))).length;
-const issue = (n) => `<a class="mlu-issue" data-act="foundry" data-what="Open issue #${n} on GitHub" data-tooltip="Issue #${n} on GitHub">#${n}</a>`;
+const issue = (n) => `<a class="stu-issue" data-act="foundry" data-what="Open issue #${n} on GitHub" data-tooltip="Issue #${n} on GitHub">#${n}</a>`;
 const itemList = (items) => `<ul>${items.map((i) => `<li>${i.html}${i.n ? ` ${issue(i.n)}` : ""}</li>`).join("")}</ul>`;
-const intro = (ps) => (ST.upd.q.trim() ? "" : ps.map((p) => p.replace("<p>", '<p class="mlu-p">')).join(""));
+const intro = (ps) => (ST.upd.q.trim() ? "" : ps.map((p) => p.replace("<p>", '<p class="stu-p">')).join(""));
 
 function updNotes(rel) {
   const notes = notesFor(rel);
@@ -112,68 +112,68 @@ function updNotes(rel) {
     const n = secCount(s);
     if (!n) return "";
     const open = ST.upd.open.has(s.h) || !!ST.upd.q.trim();
-    const inner = !open ? "" : intro(s.intro ?? []) + (s.items ? itemList(updItems(s)) : (s.sub ?? []).map((x) => { const it = updItems(x, s); return it.length ? `<h4>${esc(x.h)}${isDevSection(x, s) && s.kind !== "dev" ? ' <span class="mlw-pill">developers</span>' : ""}</h4>${intro(x.intro ?? [])}${itemList(it)}` : ""; }).join(""));
-    return `<section class="mlu-sec ${s.kind}" id="upd-${esc(s.h).replace(/\W+/g, "-")}"><h3 data-act="updsec" data-id="${esc(s.h)}" aria-expanded="${open}"><i class="fa-solid fa-chevron-${open ? "down" : "right"}"></i>${s.kind === "breaking" ? '<i class="fa-solid fa-triangle-exclamation"></i>' : ""}${esc(s.h)} <span class="c">${n}</span>${s.kind === "dev" ? ' <span class="mlw-pill">developers</span>' : ""}</h3>${inner}</section>`;
-  }).join("") || '<p class="ml-muted">Nothing matches.</p>';
-  const banner = notes.banner && !ST.upd.q.trim() ? `<figure class="mlu-banner"><img src="${esc(notes.banner.src)}" alt="${esc(notes.banner.alt)}" loading="lazy">${notes.banner.caption ? `<figcaption>${notes.banner.caption}</figcaption>` : ""}</figure>` : "";
-  return `<div class="mlu-notes"><div class="mlu-nhead"><div><h3>Release notes: ${esc(notes.title || rel.label)}</h3><span>Foundry ${esc(rel.version)} · ${esc(rel.date)} · <a data-act="updview" data-id="history">All release notes</a></span></div></div>
-    <div class="mlu-tools"><input type="search" data-filter="updq" value="${esc(ST.upd.q)}" placeholder="Search the notes" aria-label="Search the notes">
-      <label><input type="checkbox" data-act="upddev" ${ST.upd.devNotes ? "checked" : ""}>Developer notes</label><span class="ml-spacer"></span><a data-act="updall">${notes.sections.every((x) => ST.upd.open.has(x.h)) ? "Collapse all" : "Expand all"}</a></div>
-    <nav class="mlu-jump">${jump}</nav>${banner}${intro(notes.intro)}<div class="mlu-body">${body}</div></div>`;
+    const inner = !open ? "" : intro(s.intro ?? []) + (s.items ? itemList(updItems(s)) : (s.sub ?? []).map((x) => { const it = updItems(x, s); return it.length ? `<h4>${esc(x.h)}${isDevSection(x, s) && s.kind !== "dev" ? ' <span class="stw-pill">developers</span>' : ""}</h4>${intro(x.intro ?? [])}${itemList(it)}` : ""; }).join(""));
+    return `<section class="stu-sec ${s.kind}" id="upd-${esc(s.h).replace(/\W+/g, "-")}"><h3 data-act="updsec" data-id="${esc(s.h)}" aria-expanded="${open}"><i class="fa-solid fa-chevron-${open ? "down" : "right"}"></i>${s.kind === "breaking" ? '<i class="fa-solid fa-triangle-exclamation"></i>' : ""}${esc(s.h)} <span class="c">${n}</span>${s.kind === "dev" ? ' <span class="stw-pill">developers</span>' : ""}</h3>${inner}</section>`;
+  }).join("") || '<p class="st-muted">Nothing matches.</p>';
+  const banner = notes.banner && !ST.upd.q.trim() ? `<figure class="stu-banner"><img src="${esc(notes.banner.src)}" alt="${esc(notes.banner.alt)}" loading="lazy">${notes.banner.caption ? `<figcaption>${notes.banner.caption}</figcaption>` : ""}</figure>` : "";
+  return `<div class="stu-notes"><div class="stu-nhead"><div><h3>Release notes: ${esc(notes.title || rel.label)}</h3><span>Foundry ${esc(rel.version)} · ${esc(rel.date)} · <a data-act="updview" data-id="history">All release notes</a></span></div></div>
+    <div class="stu-tools"><input type="search" data-filter="updq" value="${esc(ST.upd.q)}" placeholder="Search the notes" aria-label="Search the notes">
+      <label><input type="checkbox" data-act="upddev" ${ST.upd.devNotes ? "checked" : ""}>Developer notes</label><span class="st-spacer"></span><a data-act="updall">${notes.sections.every((x) => ST.upd.open.has(x.h)) ? "Collapse all" : "Expand all"}</a></div>
+    <nav class="stu-jump">${jump}</nav>${banner}${intro(notes.intro)}<div class="stu-body">${body}</div></div>`;
 }
 
 /** Short summary beside the notes; the full list is the Your packages tab. */
 function updCompat(rel) {
   const d = compatData(rel), all = [...d.system, ...d.module];
   const cnt = (sts) => all.filter((x) => sts.includes(x.st)).length;
-  const tag = (n, st, label) => (n ? `<span class="mlu-tag ${st}">${n} ${label}</span>` : "");
+  const tag = (n, st, label) => (n ? `<span class="stu-tag ${st}">${n} ${label}</span>` : "");
   const order = { bad: 0, dep: 1, risk: 2, unv: 3 };
   const flagged = all.filter((x) => x.st !== "ok").sort((a, b) => order[a.st] - order[b.st] || b.worlds.length - a.worlds.length).slice(0, 5)
     .map((x) => `<li class="${FILTER_OF[x.st]}"><span class="t" ${x.kind === "module" ? `data-act="updmod" data-id="${x.id}"` : `data-act="updsys" data-id="${x.id}"`}>${esc(x.title)}</span><span class="w">${ST_INFO[x.st][0].toLowerCase()}</span></li>`).join("");
   const more = all.filter((x) => x.st !== "ok").length - 5;
   const updates = all.filter((x) => x.needsUpdate && x.st !== "bad").length;
-  return `<section class="mlw-box"><h4><span>Your packages on ${esc(rel.version)}</span><a data-act="updview" data-id="compat">Full list</a></h4>
-    <div class="mlu-tags">${tag(cnt(["ok"]), "ok", "compatible")}${tag(cnt(["unv"]), "unv", "unverified")}${tag(cnt(["risk"]), "unv", "risk")}${tag(cnt(["bad", "dep"]), "bad", "incompatible")}</div>
-    ${flagged ? `<ul class="mlu-flag">${flagged}${more > 0 ? `<li class="more">and ${more} more</li>` : ""}</ul>` : '<p class="ml-muted" style="margin:0">Every installed package has a compatible version.</p>'}
+  return `<section class="stw-box"><h4><span>Your packages on ${esc(rel.version)}</span><a data-act="updview" data-id="compat">Full list</a></h4>
+    <div class="stu-tags">${tag(cnt(["ok"]), "ok", "compatible")}${tag(cnt(["unv"]), "unv", "unverified")}${tag(cnt(["risk"]), "unv", "risk")}${tag(cnt(["bad", "dep"]), "bad", "incompatible")}</div>
+    ${flagged ? `<ul class="stu-flag">${flagged}${more > 0 ? `<li class="more">and ${more} more</li>` : ""}</ul>` : '<p class="st-muted" style="margin:0">Every installed package has a compatible version.</p>'}
     ${updates ? `<p class="hint">${plural(updates, "package")} need${updates === 1 ? "s" : ""} updating too.</p>` : ""}</section>`;
 }
 
 function updAction(rel) {
   const u = ST.upd, last = SNAPSHOTS[0];
-  if (u.done) return `<section class="mlw-box mlu-act"><div class="mlu-done"><i class="fa-solid fa-circle-check"></i><div><strong>Installed Foundry ${esc(rel.version)}</strong>
+  if (u.done) return `<section class="stw-box stu-act"><div class="stu-done"><i class="fa-solid fa-circle-check"></i><div><strong>Installed Foundry ${esc(rel.version)}</strong>
       <span>Foundry is shutting down so the new version can start. If a service, Docker or your host restarts it, this page comes back by itself; otherwise start Foundry again the way you started it.</span></div></div>
-      <a class="mlw-mock" data-act="updrestarted">Mockup: Foundry restarted</a></section>`;
+      <a class="stw-mock" data-act="updrestarted">Mockup: Foundry restarted</a></section>`;
   if (u.job) {
     const steps = ["Downloading", "Extracting", "Cleaning up", "Installing"].map((l, i) => `<li class="${i < u.job.step ? "done" : i === u.job.step ? "now" : ""}"><i class="fa-solid ${i < u.job.step ? "fa-check" : i === u.job.step ? "fa-spinner fa-spin-pulse" : "fa-circle"}"></i>${l}</li>`).join("");
-    return `<section class="mlw-box mlu-act" role="status"><h4><span>${u.job.snap ? "Taking a snapshot first" : `Updating to ${esc(rel.version)}`}</span><span>${u.job.pct}%</span></h4>
-      ${u.job.snap ? `<p class="mlu-sub">Backing up ${esc(u.job.current ?? "")}</p>` : `<ol class="mlu-steps">${steps}</ol>`}<div class="mlu-bar"><span style="width:${u.job.pct}%"></span></div>
+    return `<section class="stw-box stu-act" role="status"><h4><span>${u.job.snap ? "Taking a snapshot first" : `Updating to ${esc(rel.version)}`}</span><span>${u.job.pct}%</span></h4>
+      ${u.job.snap ? `<p class="stu-sub">Backing up ${esc(u.job.current ?? "")}</p>` : `<ol class="stu-steps">${steps}</ol>`}<div class="stu-bar"><span style="width:${u.job.pct}%"></span></div>
       <p class="hint">Setup is locked until it's done. Don't close Foundry.</p></section>`;
   }
-  const snap = `<label class="mls-bfirst"><input type="checkbox" data-act="updsnap" ${u.snapFirst ? "checked" : ""}><span><b>Take a snapshot first</b><br><span class="ml-muted">${last ? `The latest is from ${esc(last.rel)}.` : "You have no snapshot yet."} If the update goes wrong, restore it from Backups.</span></span></label>`;
-  const chan = `<div class="mlu-chan"><span class="k">Channel</span><select data-change="updchan" aria-label="Update channel">${Object.entries(CHANNELS).map(([k, [l]]) => `<option value="${k}"${k === u.channel ? " selected" : ""}>${l}</option>`).join("")}</select><span class="hint">${CHANNELS[u.channel][1]}</span></div>`;
+  const snap = `<label class="sts-bfirst"><input type="checkbox" data-act="updsnap" ${u.snapFirst ? "checked" : ""}><span><b>Take a snapshot first</b><br><span class="st-muted">${last ? `The latest is from ${esc(last.rel)}.` : "You have no snapshot yet."} If the update goes wrong, restore it from Backups.</span></span></label>`;
+  const chan = `<div class="stu-chan"><span class="k">Channel</span><select data-change="updchan" aria-label="Update channel">${Object.entries(CHANNELS).map(([k, [l]]) => `<option value="${k}"${k === u.channel ? " selected" : ""}>${l}</option>`).join("")}</select><span class="hint">${CHANNELS[u.channel][1]}</span></div>`;
   let button;
-  if (rel.manual) button = `<button type="button" class="bright mlu-go" disabled aria-describedby="upd-why"><i class="fa-solid fa-hand"></i>Manual installation required</button>
-      <p class="mlu-why" id="upd-why"><i class="fa-solid fa-circle-info"></i>${esc(rel.manual)} <a data-act="foundry" data-what="Open your foundryvtt.com account's download page">Download page</a></p>`;
-  else if (rel.disabled) button = `<button type="button" class="bright mlu-go" disabled aria-describedby="upd-why"><i class="fa-solid fa-ban"></i>Updates disabled</button>
-      <p class="mlu-why" id="upd-why"><i class="fa-solid fa-circle-info"></i>Started with <code>--noupdate</code>: whoever runs this server updates it, for example by pulling a new Docker image.</p>`;
-  else button = `<button type="button" class="bright mlu-go" data-act="updgo"><i class="fa-solid fa-cloud-arrow-down"></i>${u.snapFirst ? "Snapshot, then update" : "Download and install"} ${esc(rel.version)}</button>
+  if (rel.manual) button = `<button type="button" class="bright stu-go" disabled aria-describedby="upd-why"><i class="fa-solid fa-hand"></i>Manual installation required</button>
+      <p class="stu-why" id="upd-why"><i class="fa-solid fa-circle-info"></i>${esc(rel.manual)} <a data-act="foundry" data-what="Open your foundryvtt.com account's download page">Download page</a></p>`;
+  else if (rel.disabled) button = `<button type="button" class="bright stu-go" disabled aria-describedby="upd-why"><i class="fa-solid fa-ban"></i>Updates disabled</button>
+      <p class="stu-why" id="upd-why"><i class="fa-solid fa-circle-info"></i>Started with <code>--noupdate</code>: whoever runs this server updates it, for example by pulling a new Docker image.</p>`;
+  else button = `<button type="button" class="bright stu-go" data-act="updgo"><i class="fa-solid fa-cloud-arrow-down"></i>${u.snapFirst ? "Snapshot, then update" : "Download and install"} ${esc(rel.version)}</button>
       <p class="hint">Downloads, installs, then ${CFG_ENV.electron ? "restarts Foundry" : "shuts Foundry down so it can start the new version"}. Worlds migrate when they next launch.</p>`;
-  const adv = u.adv ? `<label class="mlu-force"><input type="checkbox" data-act="updforce" ${u.force ? "checked" : ""}><span><b>Force update</b><br><span class="ml-muted">Reinstalls the latest version on this channel over your current one. Only to repair a broken install.</span></span></label><a class="mlc-more" data-act="updadv">Fewer options</a>` : '<a class="mlc-more" data-act="updadv">Advanced: force update</a>';
-  return `<section class="mlw-box mlu-act"><h4><span>Update</span></h4>${rel.manual || rel.disabled ? "" : snap}${button}${chan}${adv}</section>`;
+  const adv = u.adv ? `<label class="stu-force"><input type="checkbox" data-act="updforce" ${u.force ? "checked" : ""}><span><b>Force update</b><br><span class="st-muted">Reinstalls the latest version on this channel over your current one. Only to repair a broken install.</span></span></label><a class="stc-more" data-act="updadv">Fewer options</a>` : '<a class="stc-more" data-act="updadv">Advanced: force update</a>';
+  return `<section class="stw-box stu-act"><h4><span>Update</span></h4>${rel.manual || rel.disabled ? "" : snap}${button}${chan}${adv}</section>`;
 }
 
 function updatePage() {
   const rel = UPD_STATES[ST.upd.state];
   const st = (id, l) => `<a class="${ST.upd.state === id ? "on" : ""}" data-act="updstate" data-id="${id}">${l}</a>`;
-  const mock = `<div class="mlu-mock"><span>Mockup, show:</span>${st("available", "update available")}${st("manual", "manual install")}${st("disabled", "updates disabled")}${st("none", "up to date")}</div>`;
-  const head = `<div class="mlb-head"><div><h2>Update Foundry</h2><p>You're on Foundry ${esc(ST.upd.installed)} (${CHANNELS[ST.upd.channel][0]}).${rel ? ` <b>${esc(rel.version)}</b> is available.` : " You have the latest version."}</p></div><span class="ml-spacer"></span>${mock}</div>`;
+  const mock = `<div class="stu-mock"><span>Mockup, show:</span>${st("available", "update available")}${st("manual", "manual install")}${st("disabled", "updates disabled")}${st("none", "up to date")}</div>`;
+  const head = `<div class="stb-head"><div><h2>Update Foundry</h2><p>You're on Foundry ${esc(ST.upd.installed)} (${CHANNELS[ST.upd.channel][0]}).${rel ? ` <b>${esc(rel.version)}</b> is available.` : " You have the latest version."}</p></div><span class="st-spacer"></span>${mock}</div>`;
   if (!rel) {
-    return `<section id="setup-packages" class="application framed mls-main mlb-page"><div class="mls-body-main">${head}
-      <div class="mlw-empty"><i class="fa-solid fa-circle-check"></i><h3>Foundry is up to date</h3><p>Foundry ${esc(ST.upd.installed)} is the latest ${CHANNELS[ST.upd.channel][0]} version.</p>
-      <button type="button" data-act="updcheck"><i class="fa-solid fa-rotate"></i>Check again</button><p class="ml-muted">Foundry checks by itself when Setup opens.</p></div></div></section>`;
+    return `<section id="setup-packages" class="application framed sts-main stb-page"><div class="sts-body-main">${head}
+      <div class="stw-empty"><i class="fa-solid fa-circle-check"></i><h3>Foundry is up to date</h3><p>Foundry ${esc(ST.upd.installed)} is the latest ${CHANNELS[ST.upd.channel][0]} version.</p>
+      <button type="button" data-act="updcheck"><i class="fa-solid fa-rotate"></i>Check again</button><p class="st-muted">Foundry checks by itself when Setup opens.</p></div></div></section>`;
   }
-  return `<section id="setup-packages" class="application framed mls-main mlb-page mlu-page"><div class="mls-body-main">${head}
-    <div class="mlu-cols">${updLeft(rel)}<div class="mlu-side">${updAction(rel)}${(ST.upd.view ?? "notes") === "compat" ? "" : updCompat(rel)}</div></div></div></section>`;
+  return `<section id="setup-packages" class="application framed sts-main stb-page stu-page"><div class="sts-body-main">${head}
+    <div class="stu-cols">${updLeft(rel)}<div class="stu-side">${updAction(rel)}${(ST.upd.view ?? "notes") === "compat" ? "" : updCompat(rel)}</div></div></div></section>`;
 }
 
 A.updpage = () => { ST.page = "update"; ST.pop = null; ST.panel = null; render(); };
@@ -222,17 +222,17 @@ document.addEventListener("change", (e) => { if (e.target.dataset?.change === "u
    Worlds are judged by their system. The sample registry below stands in for Foundry's answer. */
 /** Newest version per target generation, as the registry answers getRepositoryPackages({release}). Missing → installed. */
 const REGISTRY = {
-  "module-library": { 14: { latest: "0.1.1", verified: "14.371" }, 15: { latest: "0.2.0", verified: "15" } },
+  "stagehand": { 14: { latest: "0.1.1", verified: "14.371" }, 15: { latest: "0.2.0", verified: "15" } },
   "modular-av-jitsi": { 14: { verified: "13.351", max: "14" } },
   "modular-av-dock": { 14: { latest: "0.12.0", verified: "14.371" } },
-  "ml-fixture-b": { 14: { verified: "14.369" } },
-  "ml-fixture-lib": { 14: { verified: "14", max: "14" } },
+  "st-fixture-b": { 14: { verified: "14.369" } },
+  "st-fixture-lib": { 14: { verified: "14", max: "14" } },
   sequencer: { 14: { verified: "14.360" } },
   dnd5e: { 14: { latest: "5.2.0", verified: "14" }, 15: { latest: "6.0.0", verified: "15" } },
   pf2e: { 14: { verified: "14.369" } },
   swade: { 14: { verified: "13.351", max: "14" } },
 };
-const REQUIRES = { "ml-fixture-a": ["ml-fixture-lib"] };
+const REQUIRES = { "st-fixture-a": ["st-fixture-lib"] };
 const vGen = (v) => Number(String(v).split(".")[0]), vBuild = (v) => Number(String(v).split(".")[1] ?? Infinity);
 /** The newest version for a release: the target generation's entry, else the newest known one (judged as-is). */
 function registryFor(id, installed, unverified, rel) {
@@ -315,10 +315,10 @@ function updCompatView(rel) {
       <div class="nm"><strong ${open}>${esc(x.title)}</strong><span>${esc(compatWhy(x, rel))}</span></div>${ver}<span class="u">${where}</span>${links}</li>`;
   }).join("") || '<li class="empty">Nothing matches.</li>';
   const updates = data.module.concat(data.system).filter((x) => x.needsUpdate && x.st !== "bad").length;
-  return `<div class="mlu-notes mlu-compat"><div class="mlu-nhead"><div><h3>Your packages on Foundry ${esc(rel.version)}</h3><span>Foundry's compatibility preview: it checks the newest version of each installed package. We add where you use them.</span></div></div>
-    <nav class="mls-subtabs">${tabs}<input type="search" class="mlu-csearch" data-filter="updcq" value="${esc(ST.upd.cq ?? "")}" placeholder="Filter ${cat}s" aria-label="Filter ${cat}s"></nav>
-    <div class="mlu-chips" role="group" aria-label="Show">${["all", "ok", "unv", "risk", "bad"].map(chip).join("")}</div>
-    <ol class="mlu-clist">${rows}</ol>
+  return `<div class="stu-notes stu-compat"><div class="stu-nhead"><div><h3>Your packages on Foundry ${esc(rel.version)}</h3><span>Foundry's compatibility preview: it checks the newest version of each installed package. We add where you use them.</span></div></div>
+    <nav class="sts-subtabs">${tabs}<input type="search" class="stu-csearch" data-filter="updcq" value="${esc(ST.upd.cq ?? "")}" placeholder="Filter ${cat}s" aria-label="Filter ${cat}s"></nav>
+    <div class="stu-chips" role="group" aria-label="Show">${["all", "ok", "unv", "risk", "bad"].map(chip).join("")}</div>
+    <ol class="stu-clist">${rows}</ol>
     <p class="hint">${updates ? `${plural(updates, "package")} only ${updates === 1 ? "works" : "work"} on ${esc(rel.version)} after you update ${updates === 1 ? "it" : "them"} too (Library, Update all). ` : ""}Unverified: verified for an earlier build, likely still fine. Compatibility risk: verified for an earlier generation, may not work. Incompatible won't load.</p></div>`;
 }
 
@@ -350,17 +350,17 @@ function updHistoryView() {
   const sel = RELEASES.find((r) => r.version === ST.upd.hist) ?? list.find((r) => newer(r.version, inst)) ?? list[0];
   const since = list.filter((r) => newer(r.version, inst)).length;
   const rows = list.map((r) => {
-    const tags = `${r.version === inst ? '<span class="mlw-pill">installed</span>' : ""}${newer(r.version, inst) ? '<span class="mlw-pill ok">new</span>' : ""}${r.manual ? '<span class="mlw-pill warn" data-tooltip="Installed by hand, not from Setup">manual</span>' : ""}${r.channel !== "stable" ? `<span class="mlw-pill">${CHANNELS[r.channel][0].toLowerCase()}</span>` : ""}`;
+    const tags = `${r.version === inst ? '<span class="stw-pill">installed</span>' : ""}${newer(r.version, inst) ? '<span class="stw-pill ok">new</span>' : ""}${r.manual ? '<span class="stw-pill warn" data-tooltip="Installed by hand, not from Setup">manual</span>' : ""}${r.channel !== "stable" ? `<span class="stw-pill">${CHANNELS[r.channel][0].toLowerCase()}</span>` : ""}`;
     return `<li class="${r === sel ? "on" : ""}${newer(r.version, inst) ? " newer" : ""}" data-act="updhist" data-id="${r.version}"><strong>${esc(r.version)}</strong><span>${esc(r.date)}</span><span class="tg">${tags}</span></li>`;
   }).join("");
   const known = Object.values(UPD_STATES).find((x) => x?.version === sel.version);
   const rel = known ?? { ...sel, notesHtml: olderNotesHtml(sel), gen: Number(sel.version.split(".")[0]) };
   const n = notesFor(rel);
   const items = n.sections.flatMap((s) => [...(s.items ?? []), ...(s.sub ?? []).flatMap((x) => x.items)]);
-  const notes = `${n.intro.map((p) => p.replace("<p>", '<p class="mlu-p">')).join("")}${n.sections.map((s) => `<section class="mlu-sec ${s.kind}"><h3>${esc(s.h)} <span class="c">${(s.items ?? []).length + (s.sub ?? []).reduce((t, x) => t + x.items.length, 0)}</span></h3>${(s.sub ?? []).map((x) => `<h4>${esc(x.h)}</h4>${itemList(x.items)}`).join("")}${s.items ? itemList(s.items) : ""}</section>`).join("")}`;
-  return `<div class="mlu-notes mlu-hist"><div class="mlu-nhead"><div><h3>Release history</h3><span>${since ? `${plural(since, "release")} since your ${esc(inst)}` : `You have the latest ${CHANNELS[ST.upd.channel][0]} release`} · <a data-act="foundry" data-what="Open foundryvtt.com/releases">foundryvtt.com/releases</a></span></div></div>
-    <div class="mlu-tools"><label><input type="checkbox" data-act="updhistall" ${all ? "checked" : ""}>Include testing and development</label></div>
-    <div class="mlu-hcols"><ol class="mlu-rels">${rows}</ol><div class="mlu-hnotes"><div class="mlu-hhead"><strong>${esc(n.title || sel.label)}</strong><span>${esc(sel.date)} · ${plural(items.length, "change")} · <a data-act="foundry" data-what="Open the ${esc(sel.version)} notes on foundryvtt.com">On foundryvtt.com</a></span></div>${notes}</div></div>
+  const notes = `${n.intro.map((p) => p.replace("<p>", '<p class="stu-p">')).join("")}${n.sections.map((s) => `<section class="stu-sec ${s.kind}"><h3>${esc(s.h)} <span class="c">${(s.items ?? []).length + (s.sub ?? []).reduce((t, x) => t + x.items.length, 0)}</span></h3>${(s.sub ?? []).map((x) => `<h4>${esc(x.h)}</h4>${itemList(x.items)}`).join("")}${s.items ? itemList(s.items) : ""}</section>`).join("")}`;
+  return `<div class="stu-notes stu-hist"><div class="stu-nhead"><div><h3>Release history</h3><span>${since ? `${plural(since, "release")} since your ${esc(inst)}` : `You have the latest ${CHANNELS[ST.upd.channel][0]} release`} · <a data-act="foundry" data-what="Open foundryvtt.com/releases">foundryvtt.com/releases</a></span></div></div>
+    <div class="stu-tools"><label><input type="checkbox" data-act="updhistall" ${all ? "checked" : ""}>Include testing and development</label></div>
+    <div class="stu-hcols"><ol class="stu-rels">${rows}</ol><div class="stu-hnotes"><div class="stu-hhead"><strong>${esc(n.title || sel.label)}</strong><span>${esc(sel.date)} · ${plural(items.length, "change")} · <a data-act="foundry" data-what="Open the ${esc(sel.version)} notes on foundryvtt.com">On foundryvtt.com</a></span></div>${notes}</div></div>
     <p class="hint">From Foundry's public list at foundryvtt.com/releases and each release's page (Foundry's own update check only returns the newest). Reading them needs one extra permission for foundryvtt.com, asked the first time you open this tab; without it, releases open there in a new tab.</p></div>`;
 }
 
@@ -368,11 +368,11 @@ function updLeft(rel) {
   const v = ST.upd.view ?? "notes";
   const t = (id, icon, label) => `<a class="${v === id ? "active" : ""}" data-act="updview" data-id="${id}"><i class="fa-solid ${icon}"></i>${label}</a>`;
   const bad = (() => { const d = compatData(rel); return [...d.module, ...d.system].filter((x) => x.st !== "ok").length; })(); // packages to check
-  const tabs = `<nav class="mls-subtabs mlu-tabs">${t("notes", "fa-newspaper", "What's new")}${t("compat", "fa-puzzle-piece", `Your packages${bad ? ` <span class="c w">${bad}</span>` : ""}`)}${t("history", "fa-clock-rotate-left", "Release history")}</nav>`;
-  return `<div class="mlu-left">${tabs}${v === "compat" ? updCompatView(rel) : v === "history" ? updHistoryView() : updNotes(rel)}</div>`;
+  const tabs = `<nav class="sts-subtabs stu-tabs">${t("notes", "fa-newspaper", "What's new")}${t("compat", "fa-puzzle-piece", `Your packages${bad ? ` <span class="c w">${bad}</span>` : ""}`)}${t("history", "fa-clock-rotate-left", "Release history")}</nav>`;
+  return `<div class="stu-left">${tabs}${v === "compat" ? updCompatView(rel) : v === "history" ? updHistoryView() : updNotes(rel)}</div>`;
 }
 
-A.updview = (id) => { ST.upd.view = id; render(); document.querySelector(".mlu-left .mlu-notes")?.scrollTo(0, 0); };
+A.updview = (id) => { ST.upd.view = id; render(); document.querySelector(".stu-left .stu-notes")?.scrollTo(0, 0); };
 A.updccat = (id) => { ST.upd.ccat = id; ST.upd.cfilter = "all"; render(); };
 A.updcfilter = (id) => { ST.upd.cfilter = id; render(); };
 A.updsys = (id) => { A.library(); ST.lsub = "systems"; ST.panel = { kind: "system", id }; ST.mtab = "package"; render(); };

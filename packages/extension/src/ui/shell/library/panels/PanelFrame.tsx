@@ -1,4 +1,4 @@
-// A panel in the column beside the Library, as the prototype's mls-panel:
+// A panel in the column beside the Library, as the prototype's sts-panel:
 // a divider title, a close button, a scrolling body and an optional footer.
 import type { ComponentChildren } from "preact";
 import { Icon } from "../../../common/widgets.tsx";
@@ -12,11 +12,11 @@ export function PanelFrame(props: {
 }) {
   const { t, store } = useUi();
   return (
-    <aside class="application framed mls-panel ml-app" aria-label={props.label}>
+    <aside class="application framed sts-panel st-app" aria-label={props.label}>
       <h2 class="divider">{props.title}</h2>
       <button
         type="button"
-        class="icon mls-close"
+        class="icon sts-close"
         aria-label={t("mp.close")}
         title={t("mp.close")}
         onClick={() => store.set({ side: null })}

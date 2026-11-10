@@ -139,9 +139,9 @@ function plain(text: string): ComponentChildren[] {
 export function RichText(props: { readonly html: string }) {
   const source = props.html.trim();
   if (!source) return null;
-  if (!looksLikeHtml(source)) return <div class="ml-rich">{plain(source)}</div>;
+  if (!looksLikeHtml(source)) return <div class="st-rich">{plain(source)}</div>;
   const doc = new DOMParser().parseFromString(source, "text/html");
   return (
-    <div class="ml-rich">{children(doc.body, { nodes: 0, depth: 0 })}</div>
+    <div class="st-rich">{children(doc.body, { nodes: 0, depth: 0 })}</div>
   );
 }

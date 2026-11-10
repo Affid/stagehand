@@ -5,12 +5,12 @@ const p = await (await b.newContext({ viewport: { width: 1600, height: 1000 }, t
 p.on("pageerror", (e) => errs.push(e.message));
 await p.goto(`file://${dir}out/setup-shell.html?calm=1`); await p.waitForTimeout(800);
 await p.click('[data-act=wtab][data-id=about]'); await p.click("[data-act=sedit]"); await p.waitForTimeout(100);
-const calH = () => p.evaluate(() => Math.round(document.querySelector(".mlw-cal").getBoundingClientRect().height));
+const calH = () => p.evaluate(() => Math.round(document.querySelector(".stw-cal").getBoundingClientRect().height));
 const before = await calH();
 await p.click("[data-act=tzfind]"); await p.keyboard.type("m"); await p.waitForTimeout(80);
 const after = await calH();
 const m = await p.evaluate(() => [...document.querySelectorAll("#tzlist li")].slice(0, 6).map((l) => l.innerText.replace(/\s+/g, " ")).concat(document.querySelector("#tzlist li.more")?.textContent ?? "no more-line"));
-const box = await p.evaluate(() => { const r = document.querySelector(".mlw-sess").getBoundingClientRect(); return { x: Math.round(r.x) - 4, y: Math.round(r.y) - 4, width: Math.round(r.width) + 8, height: Math.round(r.height) + 8 }; });
+const box = await p.evaluate(() => { const r = document.querySelector(".stw-sess").getBoundingClientRect(); return { x: Math.round(r.x) - 4, y: Math.round(r.y) - 4, width: Math.round(r.width) + 8, height: Math.round(r.height) + 8 }; });
 await p.screenshot({ path: `${dir}out/shots/s-9-tzfind-m.png`, clip: box });
 for (let i = 0; i < 12; i++) await p.keyboard.press("ArrowDown");
 const inView = await p.evaluate(() => { const li = document.querySelector("#tzlist li.on"), ul = document.getElementById("tzlist"); const a = li.getBoundingClientRect(), c = ul.getBoundingClientRect(); return a.top >= c.top && a.bottom <= c.bottom; });

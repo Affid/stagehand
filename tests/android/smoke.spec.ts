@@ -93,7 +93,7 @@ test.afterAll(async () => {
 test("a server added on home; our Setup page takes over", async () => {
   page = await addServer(app);
   await expectHome(page);
-  await expect(shell(page).locator(".mls-world").first()).toBeVisible();
+  await expect(shell(page).locator(".sts-world").first()).toBeVisible();
   await app.shot("setup");
 });
 
@@ -125,17 +125,17 @@ test("the first launch from our page: our launching screen, then our running pag
 test("a queued change, launched through the review, applied by the companion", async () => {
   await openWorld(page);
   await shell(page)
-    .locator('.mlw-card[data-module="ml-fixture-a"] input[role="switch"]')
+    .locator('.stw-card[data-module="st-fixture-a"] input[role="switch"]')
     .click();
   // Fixture A brings its library along.
-  await expect(shell(page).locator(".mlp-dock")).toContainText("2 changes");
+  await expect(shell(page).locator(".stp-dock")).toContainText("2 changes");
   await app.shot("queued");
   await launch(page, "2 changes");
   // Applied out of sight: the companion, the reload, back to our page.
   await waitRunning(app, page, 2);
   await setupAgain();
   await openWorld(page);
-  await expect(shell(page).locator(".mls-banner")).toContainText(
+  await expect(shell(page).locator(".sts-banner")).toContainText(
     "3 modules on",
   );
   await app.shot("after");
@@ -153,7 +153,7 @@ test("the key screens in Foundry's three Setup themes", async () => {
     for (const theme of THEMES) {
       await setTheme(theme);
       await page.reload();
-      await shell(page).locator(".mlp-top").waitFor({ timeout: 60_000 });
+      await shell(page).locator(".stp-top").waitFor({ timeout: 60_000 });
       await expect(page.locator("body")).toHaveClass(
         new RegExp(`theme-${theme}`),
       );

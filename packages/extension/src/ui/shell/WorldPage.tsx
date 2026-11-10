@@ -1,10 +1,10 @@
 // One world's page: a banner with Foundry's artwork, the favourite star,
 // Edit and Launch, a line for queued changes; then its modules, or how to
 // set it up. Launch reviews queued changes first.
-import type { WorldInfo } from "@module-library/shared/world";
+import type { WorldInfo } from "@stagehand/shared/world";
 import { useRef, useState } from "preact/hooks";
 import { Icon } from "../common/widgets.tsx";
-import { logError } from "@module-library/shared/log";
+import { logError } from "@stagehand/shared/log";
 import { type LaunchWritten, writeLaunchNote } from "../../app/launch-note.ts";
 import { startLaunch } from "../launching.ts";
 import { useUi } from "../context.ts";
@@ -55,11 +55,11 @@ function BannerTitle(props: { readonly world: WorldInfo }) {
   const { page, t } = useUi();
   const { world } = props;
   return (
-    <div class="mls-titlerow">
+    <div class="sts-titlerow">
       <h2>{world.title}</h2>
       <button
         type="button"
-        class={`mlw-star${world.favorite ? " on" : ""}`}
+        class={`stw-star${world.favorite ? " on" : ""}`}
         aria-label={t("shell.favorite")}
         title={t("shell.favorite")}
         aria-pressed={world.favorite === true}
@@ -73,7 +73,7 @@ function BannerTitle(props: { readonly world: WorldInfo }) {
         />
       </button>
       {world.locked ? (
-        <span class="mlw-locktag">
+        <span class="stw-locktag">
           <Icon name="lock" />
           {t("shell.locked")}
         </span>
@@ -99,18 +99,18 @@ function PendingLine(props: {
     problems ? plural(t, "wp.pending.problems", problems) : "",
   ].filter(Boolean);
   return (
-    <div class={`mlc-pending${problems ? " warn" : ""}`}>
+    <div class={`stc-pending${problems ? " warn" : ""}`}>
       <Icon name={problems ? "triangle-exclamation" : "clock-rotate-left"} />
       <span>{parts.join(" · ")}</span>
       {queued ? (
-        <button type="button" class="ml-link" onClick={props.onReview}>
+        <button type="button" class="st-link" onClick={props.onReview}>
           {t("wp.review")}
         </button>
       ) : null}
       {queued && canChange ? (
         <button
           type="button"
-          class="ml-link"
+          class="st-link"
           onClick={() => void actions.discard(props.world.id)}
         >
           {t("wp.discard")}
@@ -145,12 +145,12 @@ function BannerActions(props: {
       </button>
       {/* A locked world can't launch: the reason sits on a wrapper that gets the hover. */}
       <span
-        class={off === null ? "mls-launchwrap" : "mlw-tipwrap"}
+        class={off === null ? "sts-launchwrap" : "stw-tipwrap"}
         title={off ?? undefined}
       >
         <button
           type="button"
-          class="bright mls-launch"
+          class="bright sts-launch"
           disabled={off !== null}
           aria-busy={props.busy || undefined}
           onClick={props.onLaunch}
@@ -159,7 +159,7 @@ function BannerActions(props: {
           {t("shell.launch")}
           {changes ? (
             <span
-              class="mlc-badge"
+              class="stc-badge"
               aria-label={plural(t, "wp.launchBadge", changes)}
             >
               {changes}
@@ -269,7 +269,7 @@ function Banner(props: {
 }) {
   const { world, model, image } = props;
   return (
-    <div class="mls-banner" style={image ? { "--img": image } : undefined}>
+    <div class="sts-banner" style={image ? { "--img": image } : undefined}>
       <div>
         <BannerTitle world={world} />
         <BannerMeta world={world} model={model} />
@@ -343,7 +343,7 @@ export function WorldPage(props: { readonly world: WorldInfo }) {
   const [tab, setTab] = useState<WorldTab>(opening ?? "modules");
   const image = cssImage(world.background, location.origin);
   return (
-    <section class="application framed mls-main">
+    <section class="application framed sts-main">
       <Banner
         world={world}
         model={model}
@@ -352,7 +352,7 @@ export function WorldPage(props: { readonly world: WorldInfo }) {
         onLaunch={() => void launch.start()}
         onEdit={() => setTab("about")}
       />
-      <div class="mls-body-main ml-app">
+      <div class="sts-body-main st-app">
         <WorldBody
           world={world}
           model={model}

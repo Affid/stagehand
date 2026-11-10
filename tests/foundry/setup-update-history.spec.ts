@@ -12,7 +12,7 @@ const env = loadFoundryEnv();
 let ext: Target;
 let page: Page;
 
-const shell = (): Locator => page.locator("#ml-shell-root");
+const shell = (): Locator => page.locator("#st-shell-root");
 
 test.beforeAll(async () => {
   ext = await loadTarget(["https://foundryvtt.com/*"]);
@@ -39,24 +39,24 @@ test("Release history reads Foundry's list and the release's notes from foundryv
     const release = (await real.json()) as Record<string, unknown>;
     return route.fulfill({ json: { ...release, build: 371, flags: {} } });
   });
-  await shell().locator(".mlh-ver").click();
+  await shell().locator(".sth-ver").click();
   await shell()
     .getByRole("region", { name: "Foundry Virtual Tabletop" })
     .getByRole("button", { name: /Update page|See what's new/ })
     .click();
-  const upd = shell().locator(".mlu-page");
+  const upd = shell().locator(".stu-page");
   await upd.getByRole("button", { name: "All release notes" }).click();
-  const hist = upd.locator(".mlu-hist");
-  await expect(hist.locator(".mlu-rels li").first()).toContainText(/^14\.\d+/, {
+  const hist = upd.locator(".stu-hist");
+  await expect(hist.locator(".stu-rels li").first()).toContainText(/^14\.\d+/, {
     timeout: 30_000,
   });
   await expect(
-    hist.locator(".mlu-rels li", { hasText: "14.370" }),
+    hist.locator(".stu-rels li", { hasText: "14.370" }),
   ).toContainText("installed");
-  await expect(hist.locator(".mlu-hnotes .mlu-sec").first()).toBeVisible({
+  await expect(hist.locator(".stu-hnotes .stu-sec").first()).toBeVisible({
     timeout: 30_000,
   });
-  await expect(hist.locator(".mlu-hhead")).toContainText(/\d+ changes/);
+  await expect(hist.locator(".stu-hhead")).toContainText(/\d+ changes/);
   await page.screenshot({ path: `${SCREENS}/server-update-history.png` });
   await audit(page, "update: release history");
   await page.unroute(`${env.url}/update`);

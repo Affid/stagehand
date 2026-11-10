@@ -1,5 +1,5 @@
-// A button that opens a short pick list (the prototype's ml-pop with
-// mls-pick): each item picks and closes; off items say why.
+// A button that opens a short pick list (the prototype's st-pop with
+// sts-pick): each item picks and closes; off items say why.
 import type { ComponentChildren } from "preact";
 import { useDisclosure } from "../../../common/disclosure.ts";
 import { Icon } from "../../../common/widgets.tsx";
@@ -22,11 +22,11 @@ function PopList(props: {
   readonly onPick: () => void;
 }) {
   return (
-    <section class="ml-pop" role="region" aria-label={props.title}>
+    <section class="st-pop" role="region" aria-label={props.title}>
       <header>
         <strong>{props.title}</strong>
       </header>
-      <ul class="mls-pick">
+      <ul class="sts-pick">
         {props.items.map((x, i) => (
           <li key={x.key} class={x.disabled ? "dis" : ""}>
             <button
@@ -42,12 +42,12 @@ function PopList(props: {
             >
               {x.icon ?? <span />}
               <span>{x.label}</span>
-              <span class="ml-muted">{x.extra ?? ""}</span>
+              <span class="st-muted">{x.extra ?? ""}</span>
             </button>
           </li>
         ))}
       </ul>
-      {props.note ? <div class="mls-pop-note">{props.note}</div> : null}
+      {props.note ? <div class="sts-pop-note">{props.note}</div> : null}
     </section>
   );
 }
@@ -65,14 +65,14 @@ export function PopMenu(props: {
 }) {
   const d = useDisclosure<HTMLSpanElement>();
   return (
-    <span class="mls-popwrap" ref={d.wrap} onFocusOut={d.onFocusOut}>
+    <span class="sts-popwrap" ref={d.wrap} onFocusOut={d.onFocusOut}>
       <button
         type="button"
         ref={d.trigger}
         class={[
           props.bright ? "bright" : "",
           props.iconOnly ? "icon" : "",
-          d.open ? "ml-on" : "",
+          d.open ? "st-on" : "",
         ]
           .join(" ")
           .trim()}

@@ -8,7 +8,7 @@ import {
 } from "../../../scripts/foundry/admin.ts";
 
 const OUT = new URL("../out/shots", import.meta.url).pathname;
-const WORLD = "module-library-test";
+const WORLD = "stagehand-test";
 const env = loadFoundryEnv();
 const results: Record<string, unknown> = {};
 
@@ -32,11 +32,11 @@ await page.evaluate(async () => { await (globalThis as any).foundry.nue.Tour.act
 // Our "page": Foundry's Setup layout hidden by CSS, a placeholder shell on top.
 await page.addStyleTag({ content: `
   #setup, #setup-menu, #main-header, #watermark { display: none !important; }
-  #ml-shell { position: fixed; inset: 0; z-index: 0; display: grid; place-items: center;
+  #st-shell { position: fixed; inset: 0; z-index: 0; display: grid; place-items: center;
     color: #8a8296; font: 600 22px Signika, sans-serif; background: #0e0c14; }` });
 await page.evaluate(() => {
   const d = document.createElement("div");
-  d.id = "ml-shell"; d.textContent = "Our Setup page (placeholder)";
+  d.id = "st-shell"; d.textContent = "Our Setup page (placeholder)";
   document.body.prepend(d);
 });
 
@@ -141,31 +141,31 @@ const menuClick = (sel: string, label: string) => page.evaluate(([s, l]) => {
   return true;
 }, [sel, label]);
 await step("favourite", async () => {
-  const sel = '#modules-list li[data-package-id="ml-fixture-b"]';
-  const before = await page.evaluate(() => (globalThis as any).game.modules.get("ml-fixture-b").favorite);
+  const sel = '#modules-list li[data-package-id="st-fixture-b"]';
+  const before = await page.evaluate(() => (globalThis as any).game.modules.get("st-fixture-b").favorite);
   const a = await menuClick(sel, before ? "Unmark" : "Mark Favorite");
   await page.waitForTimeout(800);
-  const mid = await page.evaluate(() => (globalThis as any).game.modules.get("ml-fixture-b").favorite);
+  const mid = await page.evaluate(() => (globalThis as any).game.modules.get("st-fixture-b").favorite);
   const b = await menuClick(sel, mid ? "Unmark" : "Mark Favorite");
   await page.waitForTimeout(800);
-  const after = await page.evaluate(() => (globalThis as any).game.modules.get("ml-fixture-b").favorite);
+  const after = await page.evaluate(() => (globalThis as any).game.modules.get("st-fixture-b").favorite);
   return { clicked: [a, b], before, mid, after };
 });
 await step("lock", async () => {
-  const sel = '#modules-list li[data-package-id="ml-fixture-b"]';
-  const before = await page.evaluate(() => (globalThis as any).game.modules.get("ml-fixture-b").locked);
+  const sel = '#modules-list li[data-package-id="st-fixture-b"]';
+  const before = await page.evaluate(() => (globalThis as any).game.modules.get("st-fixture-b").locked);
   const a = await menuClick(sel, before ? "Unlock" : "Lock");
   await page.waitForTimeout(1000);
-  const mid = await page.evaluate(() => (globalThis as any).game.modules.get("ml-fixture-b").locked);
+  const mid = await page.evaluate(() => (globalThis as any).game.modules.get("st-fixture-b").locked);
   const b = await menuClick(sel, mid ? "Unlock" : "Lock");
   await page.waitForTimeout(1000);
-  const after = await page.evaluate(() => (globalThis as any).game.modules.get("ml-fixture-b").locked);
+  const after = await page.evaluate(() => (globalThis as any).game.modules.get("st-fixture-b").locked);
   return { clicked: [a, b], before, mid, after };
 });
 
 // 9. Uninstall: open the confirmation only, then dismiss it
 await step("uninstallConfirm", async () => {
-  await page.evaluate(() => { const g = globalThis as any; void g.game.uninstallPackage(g.game.modules.get("ml-fixture-b")); });
+  await page.evaluate(() => { const g = globalThis as any; void g.game.uninstallPackage(g.game.modules.get("st-fixture-b")); });
   await waitWindow("DialogV2");
   await page.waitForTimeout(300);
   await shot("uninstall-confirm");
@@ -175,7 +175,7 @@ await step("uninstallConfirm", async () => {
     (d.element.querySelector('[data-action="no"]') as HTMLElement).click();
   });
   await page.waitForTimeout(500);
-  const still = await page.evaluate(() => !!(globalThis as any).game.modules.get("ml-fixture-b"));
+  const still = await page.evaluate(() => !!(globalThis as any).game.modules.get("st-fixture-b"));
   return { windows: w, moduleStillInstalled: still };
 });
 

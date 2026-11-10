@@ -25,10 +25,10 @@ test.beforeAll(async () => {
   await admin.dispose();
 });
 
-const shell = (page: Page) => page.locator("#ml-shell-root .mls-shell");
+const shell = (page: Page) => page.locator("#st-shell-root .sts-shell");
 const tab = (page: Page, name: string) =>
   shell(page)
-    .locator(".mlp-tabs")
+    .locator(".stp-tabs")
     .getByRole("button", { name: new RegExp(`^${name}`) });
 
 async function open(device: Device): Promise<[AppHarness, Page]> {
@@ -94,39 +94,39 @@ test.describe("on a phone", () => {
   });
 
   test("a long press on a world's flag explains it, and doesn't open the world", async () => {
-    await longPress(app, page, ".mls-world .flag.a");
+    await longPress(app, page, ".sts-world .flag.a");
     await expect(shell(page).getByRole("tooltip")).toBeVisible();
     await expect(shell(page)).toHaveAttribute("data-screen", "home");
   });
 
   test("the version chip's menu comes up from the bottom; a tap outside only closes it", async () => {
-    await shell(page).locator(".mlh-ver").click();
-    const menu = await edges(page, ".ml-pop");
+    await shell(page).locator(".sth-ver").click();
+    const menu = await edges(page, ".st-pop");
     expect(menu).toMatchObject({ left: 0, right: 0, bottom: 0 });
-    await expect(shell(page).locator("> .mlp-scrim.pop")).toBeVisible();
+    await expect(shell(page).locator("> .stp-scrim.pop")).toBeVisible();
     // A finger's tap over the first world: it closes the menu and opens
     // nothing (the scrim outlives the menu until the tap's click).
-    const world = await shell(page).locator(".mls-world").first().boundingBox();
+    const world = await shell(page).locator(".sts-world").first().boundingBox();
     if (!world) throw new Error("no world shown");
     await page.touchscreen.tap(world.x + 60, world.y + world.height / 2);
-    await expect(shell(page).locator(".ml-pop")).toHaveCount(0);
-    await expect(shell(page).locator(".mlp-scrim")).toHaveCount(0);
+    await expect(shell(page).locator(".st-pop")).toHaveCount(0);
+    await expect(shell(page).locator(".stp-scrim")).toHaveCount(0);
     await expect(shell(page)).toHaveAttribute("data-screen", "home");
   });
 
   test("a module's details are a bottom sheet over an inert page; Back closes them", async () => {
     await tab(page, "Library").click();
-    await shell(page).locator(".mls-main button.t").first().click();
+    await shell(page).locator(".sts-main button.t").first().click();
     const sheet = shell(page).getByRole("dialog");
     await expect(sheet).toBeVisible();
-    expect(await edges(page, ".mlp-sheet")).toMatchObject({
+    expect(await edges(page, ".stp-sheet")).toMatchObject({
       left: 0,
       right: 0,
       bottom: 0,
     });
     expect(
       await shell(page)
-        .locator(".mls-main")
+        .locator(".sts-main")
         .evaluate((el) => (el as HTMLElement).inert),
     ).toBe(true);
     await page.keyboard.press("Escape");
@@ -135,13 +135,13 @@ test.describe("on a phone", () => {
     await expect
       .poll(() =>
         page.evaluate(
-          () => document.activeElement?.closest(".mll-card") !== null,
+          () => document.activeElement?.closest(".stl-card") !== null,
         ),
       )
       .toBe(true);
     expect(
       await shell(page)
-        .locator(".mls-main")
+        .locator(".sts-main")
         .evaluate((el) => (el as HTMLElement).inert),
     ).toBe(false);
     await expect(shell(page)).toHaveAttribute("data-page", "library");
@@ -155,7 +155,7 @@ test.describe("on a phone", () => {
       .click();
     const dialog = page.getByRole("dialog", { name: "Create a snapshot" });
     await expect(dialog).toBeVisible();
-    await settled(page, ".ml-modal");
+    await settled(page, ".st-modal");
     const box = await dialog.boundingBox();
     const view = page.viewportSize();
     expect(box && view && Math.round(box.width)).toBe(view?.width);
@@ -169,11 +169,11 @@ test("a tablet's sheet comes in from the right, under the top bar", async () => 
   const [app, page] = await open("tablet-side");
   try {
     await tab(page, "Library").click();
-    await shell(page).locator(".mls-main button.t").first().click();
-    const sheet = await edges(page, ".mlp-sheet");
+    await shell(page).locator(".sts-main button.t").first().click();
+    const sheet = await edges(page, ".stp-sheet");
     expect(sheet.right).toBe(0);
     expect(sheet.left).toBeGreaterThan(400);
-    await expect(shell(page).locator(".mlp-grab")).toHaveCount(0);
+    await expect(shell(page).locator(".stp-grab")).toHaveCount(0);
   } finally {
     await app.close();
   }

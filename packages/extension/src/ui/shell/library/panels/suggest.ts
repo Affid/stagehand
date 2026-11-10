@@ -1,8 +1,8 @@
 // A suggestion for a new module: file it like its family. Its family is the
 // module it needs, else the installed module whose id it extends
 // ("modular-av-livekit-krisp" extends "modular-av-livekit").
-import type { PackageInfo } from "@module-library/shared/package";
-import type { Library } from "@module-library/shared/library/schema";
+import type { PackageInfo } from "@stagehand/shared/package";
+import type { Library } from "@stagehand/shared/library/schema";
 
 export interface Suggestion {
   readonly from: PackageInfo;

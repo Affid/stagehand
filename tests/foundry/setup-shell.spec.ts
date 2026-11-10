@@ -21,7 +21,7 @@ let ext: Target;
 let admin: APIRequestContext;
 let page: Page;
 
-const shell = (p: Page) => p.locator("#ml-shell-root");
+const shell = (p: Page) => p.locator("#st-shell-root");
 
 test.describe.configure({ mode: "serial" });
 
@@ -40,17 +40,17 @@ test.afterAll(async () => {
 });
 
 test("the new Setup page takes over Foundry's layout by itself", async () => {
-  await expect(shell(page).locator(".mls-top")).toBeVisible();
+  await expect(shell(page).locator(".sts-top")).toBeVisible();
   await expect(page.locator("#setup")).toBeHidden();
   await expect(page.locator("#setup-menu")).toBeHidden();
-  await expect(shell(page).locator(".mlh-ver")).toContainText("Version 14");
+  await expect(shell(page).locator(".sth-ver")).toContainText("Version 14");
   await expect(
     shell(page).getByRole("button", { name: "Foundry's Setup page" }),
   ).toHaveCount(0);
 });
 
 test("the Version chip's menu: the build, the update page, and Help", async () => {
-  await shell(page).locator(".mlh-ver").click();
+  await shell(page).locator(".sth-ver").click();
   const menu = shell(page).getByRole("region", {
     name: "Foundry Virtual Tabletop",
   });
@@ -67,19 +67,19 @@ test("the Version chip's menu: the build, the update page, and Help", async () =
 
 test("a world's page shows its banner, then how to set the world up", async () => {
   await shell(page)
-    .locator(`.mls-world[data-world="${TEST_WORLD.id}"]`)
+    .locator(`.sts-world[data-world="${TEST_WORLD.id}"]`)
     .click();
-  const banner = shell(page).locator(".mls-banner");
+  const banner = shell(page).locator(".sts-banner");
   await expect(banner.locator("h2")).toContainText(TEST_WORLD.title);
   await expect(banner).toContainText(TEST_WORLD.systemTitle);
   // Fresh storage: the companion hasn't reported this world yet.
-  await expect(shell(page).locator(".mlw-empty")).toBeVisible();
+  await expect(shell(page).locator(".stw-empty")).toBeVisible();
   await page.screenshot({ path: `${SCREENS}/shell-world.png` });
 });
 
 test("the pencil opens About", async () => {
   await shell(page)
-    .locator(".mls-banner")
+    .locator(".sts-banner")
     .getByRole("button", { name: "Edit World" })
     .click();
   await expect(shell(page).getByRole("tab", { name: "About" })).toHaveAttribute(
@@ -95,14 +95,14 @@ test("the Library shows the module cards", async () => {
   await shell(page)
     .getByRole("button", { name: /^Library/ })
     .click();
-  await expect(shell(page).locator(".mll-page .mll-toolbar")).toBeVisible();
-  await expect(shell(page).locator(".mls-banner")).toHaveCount(0);
+  await expect(shell(page).locator(".stl-page .stl-toolbar")).toBeVisible();
+  await expect(shell(page).locator(".sts-banner")).toHaveCount(0);
   await page.screenshot({ path: `${SCREENS}/shell-library.png` });
 });
 
 test("Configuration opens our page, with no way out to Foundry's window", async () => {
   await shell(page).getByRole("button", { name: "Configuration" }).click();
-  await expect(shell(page).locator(".mlc-page .mlc-cols")).toBeVisible();
+  await expect(shell(page).locator(".stc-page .stc-cols")).toBeVisible();
   await expect(
     shell(page).getByRole("button", {
       name: "Foundry's Application Configuration",
@@ -126,12 +126,12 @@ test("Shut down asks first, with Foundry's own confirm, above our page", async (
   // Never accept: "No" keeps the server running.
   await confirm.locator('button[data-action="no"]').click();
   await expect(confirm).toHaveCount(0);
-  await expect(shell(page).locator(".mls-top")).toBeVisible();
+  await expect(shell(page).locator(".sts-top")).toBeVisible();
 });
 
 test("the choice survives a reload", async () => {
   await page.reload();
   await exitTour(page);
-  await expect(shell(page).locator(".mls-top")).toBeVisible();
+  await expect(shell(page).locator(".sts-top")).toBeVisible();
   await expect(page.locator("#setup")).toBeHidden();
 });

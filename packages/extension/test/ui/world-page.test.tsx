@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import type { Command, Snapshot } from "@module-library/shared/world";
+import type { Command, Snapshot } from "@stagehand/shared/world";
 import { cleanup, fireEvent, waitFor, within } from "@testing-library/preact";
 import { screen } from "@testing-library/preact";
 import { afterEach, describe, expect, test } from "vitest";
@@ -80,14 +80,14 @@ function page(over: Partial<SetupState> = {}) {
 }
 
 const card = (c: ParentNode, id: string): HTMLElement =>
-  el(c, `.mlw-card[data-module="${id}"]`);
+  el(c, `.stw-card[data-module="${id}"]`);
 const toggle = (c: ParentNode, id: string): HTMLInputElement =>
   el(card(c, id), 'input[role="switch"]') as HTMLInputElement;
 
 describe("the Modules tab", () => {
   test("cards are grouped by folder, with a switch per module", () => {
     const { container } = page();
-    const groups = [...container.querySelectorAll(".mlw-sec .name")].map(
+    const groups = [...container.querySelectorAll(".stw-sec .name")].map(
       (n) => n.textContent,
     );
     expect(groups).toEqual(["Combat", "Unfiled"]);
@@ -104,8 +104,8 @@ describe("the Modules tab", () => {
     const { getByRole, container } = page();
     fireEvent.click(getByRole("button", { name: "Title a" }));
     const panel = getByRole("complementary", { name: "Title a" });
-    expect(panel.parentElement).toBe(el(container, ".mls"));
-    const here = el(panel, ".mls-wlist li.mls-here");
+    expect(panel.parentElement).toBe(el(container, ".sts"));
+    const here = el(panel, ".sts-wlist li.sts-here");
     expect(here.textContent).toContain("Strahd");
     expect(here.textContent).toContain("this world");
   });
@@ -170,7 +170,7 @@ describe("the Modules tab", () => {
       commands: [cmd("c1", "add", { modules: ["b"] })],
     });
     const shown = () =>
-      [...container.querySelectorAll(".mlw-card")].map((c) =>
+      [...container.querySelectorAll(".stw-card")].map((c) =>
         c.getAttribute("data-module"),
       );
     fireEvent.click(getByRole("button", { name: /^Changes/ }));
@@ -239,9 +239,9 @@ describe("the banner and launching", () => {
         cmd("c2", "remove", { modules: ["a"] }),
       ],
     });
-    const banner = el(container, ".mls-banner");
+    const banner = el(container, ".sts-banner");
     expect(banner.textContent).toContain("2 changes wait for the next launch");
-    expect(el(banner, ".mlc-badge").textContent).toBe("2");
+    expect(el(banner, ".stc-badge").textContent).toBe("2");
     fireEvent.click(getByRole("button", { name: "Discard" }));
     await waitFor(() => {
       expect(sent(send)).toEqual(
@@ -529,7 +529,7 @@ describe("the banner and launching", () => {
 describe("a world without the companion", () => {
   test("explains the one-time setup instead of showing switches", async () => {
     const { container, getByRole, page: p } = page({ snapshots: {} });
-    expect(container.querySelector(".mlw-card")).toBe(null);
+    expect(container.querySelector(".stw-card")).toBe(null);
     expect(container.textContent).toContain(
       "Stagehand isn't set up in Strahd yet",
     );
@@ -575,7 +575,7 @@ describe("review findings", () => {
     const { container, getByRole, send } = page({
       commands: [cmd("c1", "add", { modules: ["a"] })],
     });
-    const banner = el(container, ".mls-banner");
+    const banner = el(container, ".sts-banner");
     expect(banner.textContent).toContain("1 queued change changes nothing");
     fireEvent.click(getByRole("button", { name: /^Launch/ }));
     expect(
@@ -639,6 +639,6 @@ describe("review findings", () => {
       name: "Match Vaults",
     }) as HTMLButtonElement;
     expect(match.disabled).toBe(true);
-    expect(match.closest(".mlw-addstep")?.textContent).toContain("500");
+    expect(match.closest(".stw-addstep")?.textContent).toContain("500");
   });
 });

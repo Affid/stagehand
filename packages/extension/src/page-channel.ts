@@ -6,8 +6,8 @@
 //   they talk with window messages (any page script can post those too).
 // - The app runs both in one injected closure: a private pair that no page
 //   script can reach (Android plan, "What the app replaces").
-import { logError } from "@module-library/shared/log";
-import { isEnvelope, makeEnvelope } from "@module-library/shared/protocol";
+import { logError } from "@stagehand/shared/log";
+import { isEnvelope, makeEnvelope } from "@stagehand/shared/protocol";
 
 export type ChannelListener = (type: string, payload: unknown) => void;
 

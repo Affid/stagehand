@@ -30,36 +30,36 @@ const clickItem = (label: string) => page.evaluate((l) => {
 const settle = () => page.waitForTimeout(1200);
 const step = async (n: string, f: () => Promise<unknown>) => { try { R[n] = await f(); } catch (e) { R[n] = { error: String((e as Error).message).slice(0, 300) }; } };
 
-await step("worldMenu", async () => { const m = await openMenu('#worlds-list li[data-package-id="module-library-test"]'); await page.screenshot({ path: `${OUT}/spike-context-menu-hidden-card.png` }); await page.keyboard.press("Escape"); await page.mouse.click(5, 5); return m; });
+await step("worldMenu", async () => { const m = await openMenu('#worlds-list li[data-package-id="stagehand-test"]'); await page.screenshot({ path: `${OUT}/spike-context-menu-hidden-card.png` }); await page.keyboard.press("Escape"); await page.mouse.click(5, 5); return m; });
 await step("favourite", async () => {
-  const sel = '#modules-list li[data-package-id="ml-fixture-b"]';
-  const before = await mod("ml-fixture-b");
+  const sel = '#modules-list li[data-package-id="st-fixture-b"]';
+  const before = await mod("st-fixture-b");
   await openMenu(sel); const a = await clickItem("Mark Favorite"); await settle();
-  const mid = await mod("ml-fixture-b");
+  const mid = await mod("st-fixture-b");
   await openMenu(sel); const b = await clickItem(mid?.favorite ? "Unmark Favorite" : "Mark Favorite"); await settle();
-  return { a, b, before, mid, after: await mod("ml-fixture-b") };
+  return { a, b, before, mid, after: await mod("st-fixture-b") };
 });
 await step("lock", async () => {
-  const sel = '#modules-list li[data-package-id="ml-fixture-b"]';
-  const before = await mod("ml-fixture-b");
+  const sel = '#modules-list li[data-package-id="st-fixture-b"]';
+  const before = await mod("st-fixture-b");
   const m1 = await openMenu(sel); const lockLabel = m1.items.find((t) => /^Lock/.test(t))!; const a = await clickItem(lockLabel); await settle();
-  const mid = await mod("ml-fixture-b");
+  const mid = await mod("st-fixture-b");
   const m2 = await openMenu(sel); const unl = m2.items.find((t) => /^Unlock/.test(t))!; const b = await clickItem(unl); await settle();
-  return { labels: [lockLabel, unl], a, b, before, mid, after: await mod("ml-fixture-b") };
+  return { labels: [lockLabel, unl], a, b, before, mid, after: await mod("st-fixture-b") };
 });
 await step("uninstallConfirm", async () => {
-  if ((await mod("ml-fixture-b"))?.locked) return { skipped: "locked" };
-  await page.evaluate(() => { const g = (globalThis as any); void g.game.uninstallPackage(g.game.modules.get("ml-fixture-b")); });
+  if ((await mod("st-fixture-b"))?.locked) return { skipped: "locked" };
+  await page.evaluate(() => { const g = (globalThis as any); void g.game.uninstallPackage(g.game.modules.get("st-fixture-b")); });
   await page.waitForSelector(".application.dialog", { timeout: 10000 });
   await page.waitForTimeout(300);
   await page.screenshot({ path: `${OUT}/spike-uninstall-confirm.png` });
   const title = await page.evaluate(() => document.querySelector(".application.dialog .window-title")?.textContent);
   await page.click('.application.dialog [data-action="no"]');
   await settle();
-  return { title, stillInstalled: !!(await mod("ml-fixture-b")) };
+  return { title, stillInstalled: !!(await mod("st-fixture-b")) };
 });
 await step("backupList", async () => {
-  await openMenu('#worlds-list li[data-package-id="module-library-test"]');
+  await openMenu('#worlds-list li[data-package-id="stagehand-test"]');
   const ok = await clickItem("Manage Backups");
   await page.waitForFunction(() => [...(globalThis as any).foundry.applications.instances.values()].some((a: any) => a.constructor.name === "BackupList" && a.rendered), null, { timeout: 10000 });
   await page.waitForTimeout(500);

@@ -21,7 +21,7 @@ spikes/android/build/
 spikes/android/app/build/
 packages/android/build/
 packages/android/app/build/
-# Signing keys never enter the repository (kept in ~/.config/module-library)
+# Signing keys never enter the repository (kept in ~/.config/stagehand)
 *.jks
 *.keystore
 *.p12

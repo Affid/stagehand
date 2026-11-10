@@ -99,7 +99,7 @@ function useInertBehind(
   // opener, which can't take focus while inert (review).
   useLayoutEffect(() => {
     const behind = root.current?.querySelectorAll<HTMLElement>(
-      ":scope > .mlp-top, :scope > .mls > .mls-rail, :scope > .mls > .mls-main, :scope > .mlp-dock, :scope > .mlp-tabs",
+      ":scope > .stp-top, :scope > .sts > .sts-rail, :scope > .sts > .sts-main, :scope > .stp-dock, :scope > .stp-tabs",
     );
     behind?.forEach((el) => {
       el.inert = sheet;
@@ -114,9 +114,9 @@ function useInertBehind(
 
 /** Whether a world's banner has scrolled away under the top bar. */
 function bannerScrolledAway(host: HTMLElement): boolean {
-  const main = host.querySelector<HTMLElement>(":scope > .mls > .mls-main");
-  const banner = main?.querySelector<HTMLElement>(".mls-banner");
-  const bar = host.querySelector<HTMLElement>(":scope > .mlp-top");
+  const main = host.querySelector<HTMLElement>(":scope > .sts > .sts-main");
+  const banner = main?.querySelector<HTMLElement>(".sts-banner");
+  const bar = host.querySelector<HTMLElement>(":scope > .stp-top");
   if (!main || !banner) return false;
   return main.scrollTop > banner.offsetHeight - (bar?.offsetHeight ?? 0);
 }
@@ -171,21 +171,21 @@ export function PhoneShell(props: { readonly layout: Layout }) {
       <SheetHostContext.Provider value={sheets}>
         <div
           ref={root}
-          class={`mls-shell mlp${layout === "tablet" ? " mlp-wide" : ""}${bannerGone ? " mlp-scrolled" : ""}`}
+          class={`sts-shell stp${layout === "tablet" ? " stp-wide" : ""}${bannerGone ? " stp-scrolled" : ""}`}
           data-screen={home ? "home" : "page"}
           data-page={pageName(route)}
           inert={state.launching !== null}
         >
           <PhoneTop layout={layout} route={route} world={world} />
-          <div class="mls">
+          <div class="sts">
             <WorldRail route={route} />
             <MainPane route={route} world={world} />
             {route.kind === "server" ? null : <PanelColumn here={world?.id} />}
           </div>
-          <div class="mlp-sheets" ref={setSheets} />
-          <div class="mlp-dock" ref={setDock} />
+          <div class="stp-sheets" ref={setSheets} />
+          <div class="stp-dock" ref={setDock} />
           <TabBar layout={layout} />
-          {popup ? <div class="mlp-scrim pop" aria-hidden="true" /> : null}
+          {popup ? <div class="stp-scrim pop" aria-hidden="true" /> : null}
           <TipBubble tip={tip} />
           <Announcer />
         </div>

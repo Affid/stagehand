@@ -1,10 +1,10 @@
 // Takes over Foundry's Setup layout for the new Setup page, and gives it back.
 // CSS only: Foundry's apps stay rendered and running underneath, so their hidden
 // buttons, menus, hooks and progress events keep working (docs/SETUP-SPIKE.md).
-export const SHELL_CLASS = "ml-shell-on";
-const STYLE_ID = "ml-shell-style";
+export const SHELL_CLASS = "st-shell-on";
+const STYLE_ID = "st-shell-style";
 /** The UI's host for the new page (ui/shell/mount.tsx's SHELL_HOST). */
-const HOST_ID = "ml-shell-root";
+const HOST_ID = "st-shell-root";
 
 export interface ShellSelectors {
   /** Must all exist, or the take-over is refused and nothing changes. */

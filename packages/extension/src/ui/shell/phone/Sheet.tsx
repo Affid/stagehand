@@ -10,7 +10,7 @@ import { usePopupOpen } from "./popups.ts";
 
 /** How far a sheet must be dragged down to close (mockup: 110 px). */
 export const DRAG_CLOSE_PX = 110;
-const GRAB = ".mlp-grab, .mls-panel > h2.divider";
+const GRAB = ".stp-grab, .sts-panel > h2.divider";
 
 interface Drag {
   y0: number;
@@ -97,7 +97,7 @@ export function Sheet(props: {
       {/* A tap that only closed a menu inside the sheet doesn't also close
           the sheet (the menu's scrim lingers past its click; review). */}
       <div
-        class="mlp-scrim"
+        class="stp-scrim"
         aria-hidden="true"
         onClick={() => {
           if (!popup) props.onClose();
@@ -105,15 +105,15 @@ export function Sheet(props: {
       />
       <div
         ref={box}
-        class="mlp-sheet"
+        class="stp-sheet"
         role="dialog"
         aria-modal="true"
         tabIndex={-1}
         {...drag}
       >
-        {phone ? <span class="mlp-grab" aria-hidden="true" /> : null}
+        {phone ? <span class="stp-grab" aria-hidden="true" /> : null}
         {props.children}
-        {popup ? <div class="mlp-scrim pop" aria-hidden="true" /> : null}
+        {popup ? <div class="stp-scrim pop" aria-hidden="true" /> : null}
       </div>
     </>
   );

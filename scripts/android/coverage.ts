@@ -11,7 +11,10 @@ const REPORT = join(
   "..",
   "packages/android/app/build/reports/coverage/test/debug/report.xml",
 );
-const GATED = ["dev/modulelibrary/app/core", "dev/modulelibrary/app/web"];
+const GATED = [
+  "io/github/affid/stagehand/core",
+  "io/github/affid/stagehand/web",
+];
 /** Android glue in a gated package, left to the device checks. */
 const GLUE = new Set(
   [
@@ -21,7 +24,7 @@ const GLUE = new Set(
     "Injection.kt",
     "Links.kt",
     "Clients.kt",
-  ].map((f) => `dev/modulelibrary/app/web/${f}`),
+  ].map((f) => `io/github/affid/stagehand/web/${f}`),
 );
 const MIN = 80;
 

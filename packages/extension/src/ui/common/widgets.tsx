@@ -13,24 +13,24 @@ export function Modal(props: {
   useModalFocus(box, props.onClose);
   return (
     <div
-      class="ml-backdrop"
+      class="st-backdrop"
       onClick={(e) => e.target === e.currentTarget && props.onClose()}
     >
       <div
         ref={box}
         tabIndex={-1}
-        class="ml-modal"
+        class="st-modal"
         role="dialog"
         aria-modal="true"
         aria-label={props.title}
       >
-        <header class="ml-modal-header">
+        <header class="st-modal-header">
           <h2>{props.title}</h2>
           <IconButton icon="xmark" label="Close" onClick={props.onClose} />
         </header>
-        <div class="ml-modal-body">{props.children}</div>
+        <div class="st-modal-body">{props.children}</div>
         {props.footer ? (
-          <footer class="ml-modal-footer">{props.footer}</footer>
+          <footer class="st-modal-footer">{props.footer}</footer>
         ) : null}
       </div>
     </div>
@@ -61,7 +61,7 @@ export function InlineInput(props: {
   return (
     <input
       ref={ref}
-      class="ml-inline-input"
+      class="st-inline-input"
       aria-label={props.label}
       placeholder={props.label}
       value={value}
@@ -96,7 +96,7 @@ export function IconButton(props: {
   return (
     <button
       type="button"
-      class="ml-icon"
+      class="st-icon"
       title={props.label}
       aria-label={props.label}
       disabled={props.disabled ?? false}
@@ -108,5 +108,5 @@ export function IconButton(props: {
 }
 
 export const Dot = (props: { readonly color: string }) => (
-  <span class="ml-dot" style={{ background: props.color }} aria-hidden="true" />
+  <span class="st-dot" style={{ background: props.color }} aria-hidden="true" />
 );

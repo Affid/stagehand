@@ -37,7 +37,7 @@ export function SettingsPanel(props: { readonly platform: SettingsPlatform }) {
   const tab = useFoundryTab(platform);
   const here = tab ? foundryServerOfPage(tab.url) : undefined;
   return (
-    <main class="mlp">
+    <main class="stp">
       <h1>{t("set.title")}</h1>
       {tab && here && servers.list ? (
         <ThisSite
@@ -52,7 +52,7 @@ export function SettingsPanel(props: { readonly platform: SettingsPlatform }) {
       ) : null}
       <ServerList t={t} s={servers} app={platform.app} />
       <ReleaseAccess t={t} platform={platform} />
-      <footer class="mlp-muted mlp-small">
+      <footer class="stp-muted stp-small">
         {t("set.build", { build: platform.build })}
       </footer>
     </main>

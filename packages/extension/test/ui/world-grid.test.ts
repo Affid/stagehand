@@ -1,4 +1,4 @@
-import type { WorldInfo } from "@module-library/shared/world";
+import type { WorldInfo } from "@stagehand/shared/world";
 import { describe, expect, test } from "vitest";
 import { gridWorlds } from "../../src/ui/model/world-grid.ts";
 import { setupState } from "./harness.tsx";

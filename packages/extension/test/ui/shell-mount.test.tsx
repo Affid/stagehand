@@ -20,7 +20,7 @@ afterEach(() => {
 
 /** Foundry's own Setup shown again (the veil lifted). */
 const foundryShown = (): boolean =>
-  document.documentElement.classList.contains("ml-shell-off");
+  document.documentElement.classList.contains("st-shell-off");
 
 function setup(over: Parameters<typeof uiState>[0] = {}) {
   const store = createStore(uiState(over));
@@ -57,7 +57,7 @@ describe("mounting the new Setup page", () => {
     expect(page.setShell).toHaveBeenCalledWith(true);
     expect(host()).toBe(null);
     emit({ type: "SHELL_STATE", payload: { on: true } });
-    expect(host()?.querySelector(".mls-top")).toBeTruthy();
+    expect(host()?.querySelector(".sts-top")).toBeTruthy();
   });
 
   test("links to other sites on the page go to the host's openExternal", () => {
@@ -128,7 +128,7 @@ describe("mounting the new Setup page", () => {
     sync();
     emit({ type: "SHELL_STATE", payload: { on: false } });
     emit({ type: "SHELL_STATE", payload: { on: true } });
-    expect(host()?.querySelector(".mls-top")).toBeTruthy();
+    expect(host()?.querySelector(".sts-top")).toBeTruthy();
     expect(page.notify).not.toHaveBeenCalled();
   });
 
@@ -185,7 +185,7 @@ describe("an error after the page is up", () => {
         Shell: () => {
           const { state } = useUi();
           if (state.route?.kind === "library") throw new Error("late boom");
-          return <div class="mls-top" />;
+          return <div class="sts-top" />;
         },
       };
     });

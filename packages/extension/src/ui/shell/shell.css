@@ -3,7 +3,7 @@
    own layout is hidden by page/shell.ts while this is shown. Panels keep
    Foundry's .application look but sit in our flex layout, not absolutely. */
 
-#ml-shell-root {
+#st-shell-root {
   position: fixed;
   inset: 0;
   z-index: 1;
@@ -11,7 +11,7 @@
   min-height: 0;
 }
 
-.mls-shell {
+.sts-shell {
   flex: 1;
   min-width: 0;
   min-height: 0;
@@ -19,7 +19,7 @@
   flex-direction: column;
 }
 
-.mls-shell .mls {
+.sts-shell .sts {
   flex: 1;
   min-height: 0;
   display: flex;
@@ -27,7 +27,7 @@
   padding: 0 24px 16px;
 }
 
-.mls-shell .mls > .application {
+.sts-shell .sts > .application {
   position: relative;
   z-index: auto;
   /* Foundry caps windows at 1200px; our panels fill the screen. */
@@ -43,12 +43,12 @@
   box-shadow: 0 0 10px #000;
 }
 
-.mls-shell button {
+.sts-shell button {
   cursor: pointer;
 }
 
 /* Header bar */
-.mls-shell .mls-top {
+.sts-shell .sts-top {
   display: flex;
   align-items: center;
   gap: 16px;
@@ -57,7 +57,7 @@
   flex: none;
 }
 
-.mls-shell .mls-top .logo {
+.sts-shell .sts-top .logo {
   width: 44px;
   height: 44px;
   flex: none;
@@ -65,7 +65,7 @@
   background: url("icons/vtt-512.png") center / contain no-repeat;
 }
 
-.mls-shell .mls-top h1 {
+.sts-shell .sts-top h1 {
   margin: 0;
   font-family: "Modesto Condensed", serif;
   font-size: 30px;
@@ -75,11 +75,11 @@
   border: 0;
 }
 
-.mls-shell .ml-spacer {
+.sts-shell .st-spacer {
   flex: 1;
 }
 
-.mls-shell .mlh-ver {
+.sts-shell .sth-ver {
   height: 32px;
   width: auto;
   flex: none;
@@ -94,13 +94,13 @@
   font-size: 13px;
 }
 
-.mls-shell .mlh-ver:hover,
-.mls-shell .mlh-ver.ml-on {
+.sts-shell .sth-ver:hover,
+.sts-shell .sth-ver.st-on {
   border-color: var(--color-warm-1);
   color: var(--color-light-1);
 }
 
-.mls-shell .mlh-ver .upd {
+.sts-shell .sth-ver .upd {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -110,23 +110,23 @@
   border-left: 1px solid rgb(255 255 255 / 15%);
 }
 
-.mls-shell .mlh-ver .upd i,
-.mls-shell .mlh-ver > .fa-caret-down {
+.sts-shell .sth-ver .upd i,
+.sts-shell .sth-ver > .fa-caret-down {
   font-size: 11px;
 }
 
-.mls-shell .mlh-ver > .fa-caret-down {
+.sts-shell .sth-ver > .fa-caret-down {
   color: var(--color-light-4);
 }
 
 /* The Version chip's menu */
-.mls-shell .mlh-chipwrap {
+.sts-shell .sth-chipwrap {
   position: relative;
   display: inline-flex;
   margin-left: 4px;
 }
 
-.mls-shell .ml-pop {
+.sts-shell .st-pop {
   z-index: 120;
   min-width: 240px;
   padding: 0;
@@ -138,17 +138,17 @@
   font-size: var(--font-size-13);
 }
 
-.mls-shell .ml-pop > header {
+.sts-shell .st-pop > header {
   padding: 8px 10px 6px;
   border-bottom: 1px solid var(--color-cool-4);
 }
 
-.mls-shell .ml-pop > header strong {
+.sts-shell .st-pop > header strong {
   color: var(--color-light-1);
   font-size: var(--font-size-13);
 }
 
-.mls-shell .mlh-fm {
+.sts-shell .sth-fm {
   position: absolute;
   top: calc(100% + 6px);
   left: 0;
@@ -158,7 +158,7 @@
   padding-bottom: 6px;
 }
 
-.mls-shell .mlh-fm h4 {
+.sts-shell .sth-fm h4 {
   margin: 8px 12px 2px;
   padding-bottom: 3px;
   font-family: var(--font-body, Signika), sans-serif;
@@ -169,23 +169,23 @@
   border-bottom: 1px solid var(--color-cool-4);
 }
 
-.mls-shell .mlh-upd {
+.sts-shell .sth-upd {
   padding: 8px 12px;
   display: grid;
   gap: 8px;
 }
 
-.mls-shell .mlh-upd > div:first-child {
+.sts-shell .sth-upd > div:first-child {
   display: flex;
   align-items: baseline;
   gap: 8px;
 }
 
-.mls-shell .mlh-upd strong {
+.sts-shell .sth-upd strong {
   color: var(--color-light-1);
 }
 
-.mls-shell .mlh-upd .avail {
+.sts-shell .sth-upd .avail {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -197,21 +197,21 @@
   font-size: 13px;
 }
 
-.mls-shell .mlh-upd .avail.none {
+.sts-shell .sth-upd .avail.none {
   border-color: var(--color-cool-4);
   background: none;
   color: var(--color-light-2);
 }
 
-.mls-shell .mlh-upd .avail > i {
+.sts-shell .sth-upd .avail > i {
   color: #8fd49b;
 }
 
-.mls-shell .mlh-upd .avail > span {
+.sts-shell .sth-upd .avail > span {
   flex: 1;
 }
 
-.mls-shell .mlh-upd .avail button {
+.sts-shell .sth-upd .avail button {
   height: 26px;
   width: auto;
   flex: none;
@@ -219,13 +219,13 @@
   font-size: 12.5px;
 }
 
-.mls-shell .mlh-help {
+.sts-shell .sth-help {
   display: grid;
   padding: 0 6px;
 }
 
-.mls-shell .mlh-help > button,
-.mls-shell .mlh-help > a {
+.sts-shell .sth-help > button,
+.sts-shell .sth-help > a {
   display: grid;
   grid-template-columns: 18px 1fr auto;
   gap: 8px;
@@ -241,27 +241,27 @@
   text-decoration: none;
 }
 
-.mls-shell .mlh-help > button:hover,
-.mls-shell .mlh-help > button:focus-visible,
-.mls-shell .mlh-help > a:hover,
-.mls-shell .mlh-help > a:focus-visible {
+.sts-shell .sth-help > button:hover,
+.sts-shell .sth-help > button:focus-visible,
+.sts-shell .sth-help > a:hover,
+.sts-shell .sth-help > a:focus-visible {
   background: rgb(255 255 255 / 6%);
   color: var(--color-light-1);
 }
 
-.mls-shell .mlh-help .ml-muted,
-.mls-shell .mlh-help > a > i:last-child {
+.sts-shell .sth-help .st-muted,
+.sts-shell .sth-help > a > i:last-child {
   color: var(--color-text-subtle);
   font-size: 11.5px;
 }
 
-.mls-shell .mlh-acts {
+.sts-shell .sth-acts {
   display: flex;
   gap: 8px;
   align-items: center;
 }
 
-.mls-shell .mlh-acts button {
+.sts-shell .sth-acts button {
   height: 36px;
   width: auto;
   flex: none;
@@ -270,22 +270,22 @@
   font-size: 14px;
 }
 
-.mls-shell .mlh-acts button.icon {
+.sts-shell .sth-acts button.icon {
   width: 36px;
   padding: 0;
   font-size: 16px;
 }
 
-.mls-shell .mlh-acts button.ml-on {
+.sts-shell .sth-acts button.st-on {
   border-color: var(--color-warm-1);
   box-shadow: 0 0 6px var(--color-warm-2);
 }
 
-.mls-shell .mlh-power {
+.sts-shell .sth-power {
   position: relative;
 }
 
-.mls-shell .mlh-menu {
+.sts-shell .sth-menu {
   position: absolute;
   top: calc(100% + 6px);
   right: 0;
@@ -300,7 +300,7 @@
   box-shadow: 0 4px 14px #000;
 }
 
-.mls-shell .mlh-menu button {
+.sts-shell .sth-menu button {
   width: 100%;
   justify-content: flex-start;
   background: none;
@@ -309,20 +309,20 @@
   padding: 0 10px;
 }
 
-.mls-shell .mlh-menu button:hover,
-.mls-shell .mlh-menu button:focus-visible {
+.sts-shell .sth-menu button:hover,
+.sts-shell .sth-menu button:focus-visible {
   background: rgb(255 255 255 / 7%);
 }
 
 /* Worlds rail */
-.mls-shell .mls-rail {
+.sts-shell .sts-rail {
   flex: 0 0 290px;
   padding: 12px 10px;
   gap: 8px;
 }
 
-.mls-shell .mls-lib,
-.mls-shell .mls-world {
+.sts-shell .sts-lib,
+.sts-shell .sts-world {
   width: 100%;
   height: auto;
   display: grid;
@@ -337,63 +337,63 @@
   transition: none;
 }
 
-.mls-shell .mls-lib {
+.sts-shell .sts-lib {
   grid-template-columns: 40px 1fr;
   gap: 2px 10px;
   padding: 8px 10px;
 }
 
-.mls-shell .mls-lib i {
+.sts-shell .sts-lib i {
   grid-row: span 2;
   font-size: 22px;
   color: var(--color-warm-1);
   text-align: center;
 }
 
-.mls-shell .mls-lib strong {
+.sts-shell .sts-lib strong {
   color: var(--color-light-1);
   font-size: 15px;
 }
 
-.mls-shell .mls-lib span {
+.sts-shell .sts-lib span {
   color: var(--color-text-subtle);
   font-size: 12px;
 }
 
-.mls-shell .mls-lib:hover,
-.mls-shell .mls-world:hover {
+.sts-shell .sts-lib:hover,
+.sts-shell .sts-world:hover {
   background: rgb(255 255 255 / 4%);
 }
 
-.mls-shell .mls-rail .mls-on {
+.sts-shell .sts-rail .sts-on {
   background: rgb(255 255 255 / 7%);
   border-color: var(--color-warm-1);
   box-shadow: inset 3px 0 0 var(--color-warm-1);
 }
 
-.mls-shell .mls-rail h2.divider {
+.sts-shell .sts-rail h2.divider {
   margin: 6px 0 2px;
   font-size: 18px;
 }
 
-.mls-shell .mls-railbar {
+.sts-shell .sts-railbar {
   display: flex;
   gap: 6px;
 }
 
-.mls-shell .mls-railbar input {
+.sts-shell .sts-railbar input {
   flex: 1;
   height: 30px;
 }
 
-.mls-shell .mls-railbar button {
+.sts-shell .sts-railbar button {
   width: 30px;
   height: 30px;
   flex: none;
   padding: 0;
 }
 
-.mls-shell .mls-worlds {
+.sts-shell .sts-worlds {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -404,13 +404,13 @@
   align-content: start;
 }
 
-.mls-shell .mls-world {
+.sts-shell .sts-world {
   grid-template-columns: 64px minmax(0, 1fr) auto;
   gap: 2px 10px;
   padding: 6px;
 }
 
-.mls-shell .mls-world .thumb {
+.sts-shell .sts-world .thumb {
   grid-row: span 2;
   width: 64px;
   height: 44px;
@@ -419,7 +419,7 @@
   border: 1px solid rgb(255 255 255 / 12%);
 }
 
-.mls-shell .mls-world strong {
+.sts-shell .sts-world strong {
   color: var(--color-light-1);
   font-size: 14px;
   white-space: nowrap;
@@ -427,14 +427,14 @@
   text-overflow: ellipsis;
 }
 
-.mls-shell .mls-world .marks {
+.sts-shell .sts-world .marks {
   grid-row: span 2;
   display: flex;
   gap: 6px;
   align-items: center;
 }
 
-.mls-shell .mls-world .meta {
+.sts-shell .sts-world .meta {
   color: var(--color-text-subtle);
   font-size: 12px;
   white-space: nowrap;
@@ -442,17 +442,17 @@
   text-overflow: ellipsis;
 }
 
-.mls-shell .mls-wfav {
+.sts-shell .sts-wfav {
   color: #e8c35a;
   font-size: 10px;
 }
 
-.mls-shell .mls-wlock {
+.sts-shell .sts-wlock {
   color: var(--color-light-4);
   font-size: 10px;
 }
 
-.mls-shell .mls-world .flag.q {
+.sts-shell .sts-world .flag.q {
   font-size: 11px;
   padding: 1px 6px;
   border-radius: 9px;
@@ -463,7 +463,7 @@
 }
 
 /* A problem at the next launch (prototype _ideas.css .flag.p). */
-.mls-shell .mls-world .flag.p {
+.sts-shell .sts-world .flag.p {
   font-size: 11px;
   padding: 1px 6px;
   border-radius: 9px;
@@ -476,13 +476,13 @@
   border: 1px solid rgb(245 196 94 / 50%);
 }
 
-.mls-shell .mls-world .flag.a {
+.sts-shell .sts-world .flag.a {
   color: #f5c45e;
   font-size: 12px;
 }
 
 /* A world's page */
-.mls-shell .mls-main {
+.sts-shell .sts-main {
   flex: 1;
   min-width: 0;
   padding: 0;
@@ -490,7 +490,7 @@
   overflow: hidden;
 }
 
-.mls-shell .mls-banner {
+.sts-shell .sts-banner {
   position: relative;
   height: 140px;
   flex: none;
@@ -505,7 +505,7 @@
   gap: 16px;
 }
 
-.mls-shell .mls-banner h2 {
+.sts-shell .sts-banner h2 {
   margin: 0;
   font-family: "Modesto Condensed", serif;
   font-size: 40px;
@@ -517,7 +517,7 @@
   text-align: left;
 }
 
-.mls-shell .mls-banner .meta {
+.sts-shell .sts-banner .meta {
   color: var(--color-light-2);
   font-size: 13px;
   margin-top: 6px;
@@ -527,12 +527,12 @@
   flex-wrap: wrap;
 }
 
-.mls-shell .mls-banner .meta i {
+.sts-shell .sts-banner .meta i {
   color: var(--color-light-4);
   margin-right: 4px;
 }
 
-.mls-shell .mls-banner .acts {
+.sts-shell .sts-banner .acts {
   margin-left: auto;
   display: flex;
   gap: 8px;
@@ -540,7 +540,7 @@
   flex: none;
 }
 
-.mls-shell .mls-banner .acts button {
+.sts-shell .sts-banner .acts button {
   height: 36px;
   width: auto;
   flex: none;
@@ -548,12 +548,12 @@
   gap: 8px;
 }
 
-.mls-shell .mls-banner .acts button.icon {
+.sts-shell .sts-banner .acts button.icon {
   width: 36px;
   padding: 0;
 }
 
-.mls-shell .mls-banner .acts button.mls-launch {
+.sts-shell .sts-banner .acts button.sts-launch {
   height: 40px;
   padding: 0 20px;
   font-size: 15px;
@@ -561,13 +561,13 @@
 }
 
 /* A locked world, or Foundry busy backing up: the reason sits on the wrapper. */
-.mls-shell .mls-banner .acts button.mls-launch[disabled] {
+.sts-shell .sts-banner .acts button.sts-launch[disabled] {
   opacity: 0.55;
   cursor: not-allowed;
   pointer-events: none;
 }
 
-.mls-shell .mls-banner .mlw-star {
+.sts-shell .sts-banner .stw-star {
   width: 30px;
   height: 30px;
   padding: 0;
@@ -579,21 +579,21 @@
   text-shadow: 0 0 6px #000;
 }
 
-.mls-shell .mls-banner .mlw-star:hover {
+.sts-shell .sts-banner .stw-star:hover {
   color: #f5d77a;
 }
 
-.mls-shell .mls-banner .mlw-star.on {
+.sts-shell .sts-banner .stw-star.on {
   color: #e8c35a;
 }
 
-.mls-shell .mls-banner .mls-titlerow {
+.sts-shell .sts-banner .sts-titlerow {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.mls-shell .mlw-locktag {
+.sts-shell .stw-locktag {
   font-family: var(--font-body, Signika), sans-serif;
   text-shadow: none;
   display: inline-flex;
@@ -608,7 +608,7 @@
   color: var(--color-light-2);
 }
 
-.mls-shell .mls-body-main {
+.sts-shell .sts-body-main {
   flex: 1;
   min-height: 0;
   display: flex;
@@ -621,26 +621,26 @@
 }
 
 /* The Library: today's Stagehand UI fills the panel */
-.mls-shell .mls-library .mls-body-main {
+.sts-shell .sts-library .sts-body-main {
   overflow: hidden;
 }
 
 /* Foundry draws a focus box on every focused button, mouse clicks included;
    on our page only keyboard focus shows a ring. */
-.mls-shell button:focus:not(:focus-visible) {
+.sts-shell button:focus:not(:focus-visible) {
   outline: none;
   box-shadow: none;
 }
 
 /* The rail's foot: the settings panel, then which build is running. */
-.mls-shell .mls-foot {
+.sts-shell .sts-foot {
   flex: none;
   display: grid;
   justify-items: center;
   gap: 2px;
 }
 
-.mls-shell .mls-foot .mls-settings {
+.sts-shell .sts-foot .sts-settings {
   width: auto;
   height: auto;
   min-height: 0;
@@ -652,12 +652,12 @@
   color: var(--color-light-3);
 }
 
-.mls-shell .mls-foot .mls-settings:hover {
+.sts-shell .sts-foot .sts-settings:hover {
   color: var(--color-light-1);
   text-shadow: none;
 }
 
-.mls-shell .mls-build {
+.sts-shell .sts-build {
   margin: 0;
   flex: none;
   font-size: 11px;
@@ -665,18 +665,18 @@
   color: var(--color-light-4);
 }
 
-.mls-shell .mlh-upd .avail.warn {
+.sts-shell .sth-upd .avail.warn {
   border-color: rgb(245 196 94 / 55%);
   color: #f3dca4;
 }
 
-.mls-shell .mlh-upd .avail.warn > i {
+.sts-shell .sth-upd .avail.warn > i {
   color: #f5c45e;
 }
 
 /* Foundry's plain checkboxes show no focus on our pages: give them the same
    ring as our switches (Phase 6, focus visible). */
-.mls-shell input[type="checkbox"]:not(.mls-switch):focus-visible {
+.sts-shell input[type="checkbox"]:not(.sts-switch):focus-visible {
   outline: 2px solid var(--color-warm-1);
   outline-offset: 2px;
 }

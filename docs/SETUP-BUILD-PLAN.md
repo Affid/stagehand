@@ -337,7 +337,7 @@ save protocol fields, collected world fields (joinTheme, safeMode,
 playtime, verified), page-world actions lock/unlock/deleteWorld/
 pickBackground. 4a done (`7e43b7b`): the About layout and boxes. 4b done
 (`e92c423`): Foundry's prose-mirror mounted by the page world in an
-`ml-pm-` host (EDITOR_OPEN / EDITOR_SAVE / EDITOR_CLOSE), live-tested. Next:
+`st-pm-` host (EDITOR_OPEN / EDITOR_SAVE / EDITOR_CLOSE), live-tested. Next:
 4c, the schedule (port `design/setup-page/src/_sched.js`: `zonedToUtc`,
 `upcoming`, `nextOf`, `ruleText` as a pure tested model; the session box
 with the next date, rule, upcoming list with Skip / Remove; the editor with
@@ -536,7 +536,7 @@ a code review and a security review:
 
 1. **News and Featured Content** at the foot of the worlds rail, as the
    prototype (`design/setup-page/src/_calm.js` railNews, `_calm.css`
-   `.mlr-news`, `.mlr-feat`). Setup data gains `news` (up to 20) and
+   `.str-news`, `.str-feat`). Setup data gains `news` (up to 20) and
    `featured`, read field by field: https links only, images only https on
    foundryvtt.com or its subdomains (else no image), titles cut. Read state
    is ours, per server, in the background: the URLs seen (bounded); the first
@@ -662,8 +662,8 @@ details open), and opening a panel can re-wrap the selection bar.
 
 Package 5 done (`2d42566`, fixes after it). `scripts/foundry/many.ts` adds
 30 test worlds (spread-out last played dates, a few never) and 120 stub
-modules to the local server and takes them away (only `ml-many-*` and
-`ml-stub-*`). Live: `setup-many.spec.ts` (adds, checks, removes): the rail
+modules to the local server and takes them away (only `st-many-*` and
+`st-stub-*`). Live: `setup-many.spec.ts` (adds, checks, removes): the rail
 scrolls and fades while more worlds are below (`common/scroll-fade.ts`, as
 the prototype's `more`); By world keeps 92 px columns, pins module names and
 world headers and fades at the right edge while worlds are hidden; Show
@@ -857,7 +857,7 @@ a normal window the popup opens.
   be removed) and never leaves a server half removed.
 - Found on the way (owner): the Library's Modules and Systems lists spilled
   past the window with no scrolling; they now scroll under the Library's
-  head as the prototype's `.ml-sections` (`cc361b4`, live test at 1366×768).
+  head as the prototype's `.st-sections` (`cc361b4`, live test at 1366×768).
 - A live test hard-coded the Foundry theme's orange for an active tab; it
   now compares with the theme's own accent (`--color-warm-1`).
 
@@ -888,7 +888,7 @@ won't start (safe mode), after 15 s if nothing took over, and after 4 s by
 CSS alone if even the early script never ran. Live (`setup-veil.spec.ts`):
 every frame of a Setup load is checked and Foundry's UI is never seen;
 giving up, the CSS failsafe and the wait are checked on a bare page.
-Review: no critical or high. Fixed: the veil ended when `ml-shell-on` was
+Review: no critical or high. Fixed: the veil ended when `st-shell-on` was
 set, a moment before the take-over rule (which needs the new page's host)
 hid Foundry's pieces, so a frame could slip through; it now ends exactly
 when the host exists, and the lift carries the same condition so it still
@@ -924,7 +924,7 @@ already listed.
 Before screenshots (`themes.ts`, `wide.ts`) showed: in Fantasy the Note box
 is invisible (Foundry 14.370's themes set `--input-background-color` on
 `input` and `select` only, and Foundry's `textarea` reads that variable);
-Configuration's "Backups" link is the bare `.ml-link` accent
+Configuration's "Backups" link is the bare `.st-link` accent
 (`--color-warm-2`), measured at 4.69:1 in Foundry's theme, 1.86:1 in Fantasy
 and 1.65:1 in Sci-Fi (`scripts/dev/link-colours.ts` under
 `scripts/dev/with-theme.ts`; every other text link already uses
@@ -939,7 +939,7 @@ code review and a security review:
 1. **Fields and links in every theme.** Our text boxes take the theme's
    field colours as inputs do (Fantasy and Sci-Fi, values as Foundry
    14.370's theme rules); Configuration's Backups link as the prototype
-   (`_config.css` `.mlc-state + a`: `--color-light-3`, underlined, 12.5 px).
+   (`_config.css` `.stc-state + a`: `--color-light-3`, underlined, 12.5 px).
    Live: `setup-themes.spec.ts` sets each theme, checks that the module
    panel's Note box has the Folder select's background, and that every
    text link on the world's About and on Configuration reaches 4.5:1

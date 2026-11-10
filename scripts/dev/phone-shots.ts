@@ -21,11 +21,11 @@ const asked = process.argv.slice(2) as Device[];
 const devices = asked.length ? asked : PHONE_SIZES;
 mkdirSync(OUT, { recursive: true });
 
-const shell = (page: Page) => page.locator("#ml-shell-root");
+const shell = (page: Page) => page.locator("#st-shell-root");
 
 async function tab(page: Page, name: string): Promise<void> {
   await shell(page)
-    .locator(".mlp-tabs")
+    .locator(".stp-tabs")
     .getByRole("button", { name: new RegExp(`^${name}`) })
     .click();
   await page.waitForTimeout(400);
@@ -44,7 +44,7 @@ async function shots(device: Device): Promise<void> {
     const snap = (name: string) =>
       page.screenshot({ path: `${OUT}/${device}-${name}.png` });
     await snap("home");
-    await shell(page).locator(".mls-world").first().click();
+    await shell(page).locator(".sts-world").first().click();
     await page.waitForTimeout(400);
     await snap("world");
     for (const [name, file] of [

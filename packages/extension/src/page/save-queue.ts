@@ -9,9 +9,9 @@ import {
   FORMAT,
   MAX_QUEUE_BYTES,
   MAX_SAVE_BYTES,
-} from "@module-library/shared/world-flags";
-import { logError } from "@module-library/shared/log";
-import { FLAGS_KEY } from "@module-library/shared/world";
+} from "@stagehand/shared/world-flags";
+import { logError } from "@stagehand/shared/log";
+import { FLAGS_KEY } from "@stagehand/shared/world";
 import type { QueueSaved, SaveQueue } from "../page-queue.ts";
 import type { PageGlobals } from "./globals.ts";
 import { redrawSetup } from "./redraw.ts";

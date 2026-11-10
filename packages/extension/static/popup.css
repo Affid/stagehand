@@ -33,21 +33,21 @@ body {
   min-width: 340px;
 }
 
-.mlp {
+.stp {
   display: grid;
   gap: 14px;
   padding: 14px 16px 12px;
   max-width: 460px;
 }
 
-.mlp h1 {
+.stp h1 {
   margin: 0;
   font-size: 16px;
   font-weight: 650;
   letter-spacing: 0.01em;
 }
 
-.mlp h2 {
+.stp h2 {
   margin: 0 0 6px;
   font-size: 11px;
   font-weight: 650;
@@ -56,57 +56,57 @@ body {
   color: var(--muted);
 }
 
-.mlp section {
+.stp section {
   display: grid;
   gap: 8px;
   padding-top: 12px;
   border-top: 1px solid var(--line);
 }
 
-.mlp p {
+.stp p {
   margin: 0;
 }
 
-.mlp-site {
+.stp-site {
   padding: 12px;
   border: 1px solid var(--line);
   border-radius: 6px;
   background: var(--surface);
 }
 
-.mlp .mlp-site {
+.stp .stp-site {
   border-top: 1px solid var(--line);
 }
 
-.mlp-addr {
+.stp-addr {
   font-family: ui-monospace, "Cascadia Mono", Menlo, monospace;
   font-size: 12.5px;
   overflow-wrap: anywhere;
 }
 
-.mlp-muted {
+.stp-muted {
   color: var(--muted);
 }
 
-.mlp-small {
+.stp-small {
   font-size: 12px;
 }
 
-.mlp-ok {
+.stp-ok {
   color: var(--ok);
 }
 
-.mlp-err {
+.stp-err {
   color: var(--err);
 }
 
-.mlp-row {
+.stp-row {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.mlp-servers {
+.stp-servers {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -114,7 +114,7 @@ body {
   gap: 4px;
 }
 
-.mlp-servers li {
+.stp-servers li {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -126,32 +126,32 @@ body {
   background: var(--surface);
 }
 
-.mlp-add {
+.stp-add {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 6px;
 }
 
-.mlp-add .mlp-err {
+.stp-add .stp-err {
   grid-column: 1 / -1;
 }
 
-.mlp-servers .mlp-err {
+.stp-servers .stp-err {
   flex-basis: 100%;
 }
 
-.mlp-servers .mlp-addr {
+.stp-servers .stp-addr {
   flex: 1;
   min-width: 0;
 }
 
-.mlp-off {
+.stp-off {
   display: inline-flex;
   align-items: center;
   gap: 6px;
 }
 
-.mlp-tag {
+.stp-tag {
   padding: 0 6px;
   border: 1px solid var(--err);
   border-radius: 999px;
@@ -159,11 +159,11 @@ body {
   font-size: 11px;
 }
 
-.mlp .mlp-off button {
+.stp .stp-off button {
   padding: 1px 8px;
 }
 
-.mlp input {
+.stp input {
   min-width: 0;
   padding: 6px 8px;
   border: 1px solid var(--line);
@@ -173,7 +173,7 @@ body {
   font: inherit;
 }
 
-.mlp button {
+.stp button {
   justify-self: start;
   padding: 5px 12px;
   border: 1px solid var(--line);
@@ -184,38 +184,38 @@ body {
   cursor: pointer;
 }
 
-.mlp button:hover:not(:disabled) {
+.stp button:hover:not(:disabled) {
   border-color: var(--accent);
 }
 
-.mlp button:disabled {
+.stp button:disabled {
   opacity: 0.6;
   cursor: default;
 }
 
-.mlp button.mlp-primary {
+.stp button.stp-primary {
   border-color: var(--accent);
   background: var(--accent);
   color: var(--accent-fg);
   font-weight: 650;
 }
 
-.mlp button.mlp-quiet {
+.stp button.stp-quiet {
   padding: 2px 8px;
   border-color: transparent;
   color: var(--muted);
 }
 
-.mlp button.mlp-quiet:hover {
+.stp button.stp-quiet:hover {
   color: var(--fg);
 }
 
-.mlp :focus-visible {
+.stp :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
-.mlp footer {
+.stp footer {
   padding-top: 8px;
   border-top: 1px solid var(--line);
 }

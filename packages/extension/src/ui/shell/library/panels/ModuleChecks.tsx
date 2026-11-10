@@ -39,7 +39,7 @@ export function ModuleChecks(props: {
   const { canChange } = useUi();
   const groups = useFolderGroups();
   return (
-    <ul class="mls-mods">
+    <ul class="sts-mods">
       {groups.flatMap((g) => [
         <li key={`g:${g.key}`} class="grp">
           {g.name}

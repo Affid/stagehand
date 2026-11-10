@@ -18,11 +18,11 @@ import {
 import { addFromHome } from "./home-steps.ts";
 import { adb, sleep, tapNative, waitNative } from "./native-ui.ts";
 
-export const shell = (page: Page): Locator => page.locator("#ml-shell-root");
+export const shell = (page: Page): Locator => page.locator("#st-shell-root");
 /** Our page's screen (home or page), "" while it is between pages. */
 const screen = (page: Page): Promise<string> =>
   shell(page)
-    .locator(".mls-shell")
+    .locator(".sts-shell")
     .evaluate((el) => (el as HTMLElement).dataset.screen ?? "", null, {
       timeout: 5_000,
     })
@@ -30,7 +30,7 @@ const screen = (page: Page): Promise<string> =>
 /** Which page our shell shows (worlds, library, a server page). */
 const shownPage = (page: Page): Promise<string> =>
   shell(page)
-    .locator(".mls-shell")
+    .locator(".sts-shell")
     .evaluate((el) => (el as HTMLElement).dataset.page ?? "", null, {
       timeout: 5_000,
     })
@@ -65,10 +65,10 @@ export async function expectHome(page: Page): Promise<void> {
 
 export async function openWorld(page: Page): Promise<void> {
   await shell(page)
-    .locator(`.mls-world[data-world="${TEST_WORLD.id}"]`)
+    .locator(`.sts-world[data-world="${TEST_WORLD.id}"]`)
     .click();
   await expect.poll(() => screen(page)).toBe("page");
-  await expect(shell(page).locator(".mls-banner")).toBeVisible();
+  await expect(shell(page).locator(".sts-banner")).toBeVisible();
 }
 
 /** Back until our page says home (a menu or sheet closes first). */
@@ -94,21 +94,21 @@ export async function backHome(page: Page): Promise<void> {
 }
 
 export const tab = (page: Page, name: RegExp): Locator =>
-  shell(page).locator(".mlp-tabs").getByRole("button", { name });
+  shell(page).locator(".stp-tabs").getByRole("button", { name });
 
 const MENU = "Select, install, update, tags, presets, folders";
 
 /** Library: the tab, a filter that narrows the cards, the ⋮ menu. */
 export async function library(app: App, page: Page): Promise<void> {
   await tab(page, /^Library/).click();
-  const cards = shell(page).locator(".mll-card");
+  const cards = shell(page).locator(".stl-card");
   await expect(cards.first()).toBeVisible();
   const all = await cards.count();
   await shell(page)
     .getByPlaceholder(/^Filter Modules/)
-    .fill("ML Fixture");
+    .fill("Stagehand Fixture");
   await expect.poll(() => cards.count()).toBeLessThan(all);
-  await expect(cards.first()).toContainText("ML Fixture");
+  await expect(cards.first()).toContainText("Stagehand Fixture");
   await app.shot("library");
   await shell(page).getByRole("button", { name: MENU }).click();
   await expect(
@@ -178,7 +178,7 @@ export async function exportImport(app: App, page: Page): Promise<void> {
 export async function launch(page: Page, changes?: string): Promise<void> {
   await recordCompanion(page);
   await shell(page)
-    .locator(".mlp-dock")
+    .locator(".stp-dock")
     .getByRole("button", { name: /^Launch/ })
     .click();
   if (!changes) return;
@@ -215,7 +215,7 @@ export async function waitRunning(
     await app.shot("applying");
   }
   await page.waitForURL(/\/join$/, { timeout: 240_000 });
-  const run = page.locator("#ml-run-root");
+  const run = page.locator("#st-run-root");
   await expect(run.getByRole("button", { name: "Back to Setup" })).toBeVisible({
     timeout: 60_000,
   });
@@ -255,15 +255,15 @@ export async function releaseHistory(app: App, page: Page): Promise<void> {
   });
   try {
     await openHistory(page);
-    const hist = shell(page).locator(".mlu-page .mlu-hist");
-    await expect(hist.locator(".mlu-rels li").first()).toContainText(
+    const hist = shell(page).locator(".stu-page .stu-hist");
+    await expect(hist.locator(".stu-rels li").first()).toContainText(
       /^\d+\.\d+/,
       { timeout: 30_000 },
     );
     await expect(
-      hist.locator(".mlu-rels li", { hasText: version }),
+      hist.locator(".stu-rels li", { hasText: version }),
     ).toContainText("installed");
-    await expect(hist.locator(".mlu-hnotes .mlu-sec").first()).toBeVisible({
+    await expect(hist.locator(".stu-hnotes .stu-sec").first()).toBeVisible({
       timeout: 30_000,
     });
     await app.shot("release-history");
@@ -274,13 +274,13 @@ export async function releaseHistory(app: App, page: Page): Promise<void> {
 
 /** The version chip's menu, the Update page, its Release history. */
 async function openHistory(page: Page): Promise<void> {
-  await shell(page).locator(".mlh-ver").click();
+  await shell(page).locator(".sth-ver").click();
   await shell(page)
     .getByRole("region", { name: "Foundry Virtual Tabletop" })
     .getByRole("button", { name: /Update page|See what's new/ })
     .click();
   await shell(page)
-    .locator(".mlu-page")
+    .locator(".stu-page")
     .getByRole("button", { name: "All release notes" })
     .click();
 }
@@ -316,6 +316,6 @@ export async function allowReleaseHistory(app: App, page: Page): Promise<Page> {
   await expect(release).toHaveAttribute("aria-checked", "true");
   await back();
   const server = await app.pageAt(SERVER);
-  await expect(shell(server).locator(".mlp-top")).toBeVisible();
+  await expect(shell(server).locator(".stp-top")).toBeVisible();
   return server;
 }

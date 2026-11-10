@@ -1,6 +1,6 @@
 /* The details column beside the Library or a world's page, and the
    sub-tabs it shares with the world page (prototype _shell.css). */
-.mls-shell .mls-panel {
+.sts-shell .sts-panel {
   flex: 0 0 340px;
   min-width: 0;
   padding: 0;
@@ -9,13 +9,13 @@
   position: relative;
 }
 
-.mls-shell .mls-panel > h2.divider {
+.sts-shell .sts-panel > h2.divider {
   margin: 12px 12px 4px;
   font-size: 18px;
   flex: none;
 }
 
-.mls-shell .mls-panel > .mls-close {
+.sts-shell .sts-panel > .sts-close {
   position: absolute;
   right: 12px;
   top: 10px;
@@ -25,7 +25,7 @@
   z-index: 2;
 }
 
-.mls-shell .mls-panel .scroll {
+.sts-shell .sts-panel .scroll {
   flex: 1;
   min-height: 0;
   overflow: auto;
@@ -36,21 +36,21 @@
   font-size: 13px;
 }
 
-.mls-shell .mls-modhead h3 {
+.sts-shell .sts-modhead h3 {
   margin: 0;
   font-size: 17px;
   color: var(--color-light-1);
   border: 0;
 }
 
-.mls-shell .mls-modhead .sub {
+.sts-shell .sts-modhead .sub {
   margin-top: 2px;
   color: var(--color-text-subtle);
   font-size: 12px;
   overflow-wrap: anywhere;
 }
 
-.mls-shell .mls-subtabs {
+.sts-shell .sts-subtabs {
   display: flex;
   gap: 2px;
   align-items: flex-end;
@@ -58,7 +58,7 @@
   flex: none;
 }
 
-.mls-shell .mls-subtabs button[role="tab"] {
+.sts-shell .sts-subtabs button[role="tab"] {
   width: auto;
   height: auto;
   padding: 6px 12px;
@@ -75,22 +75,22 @@
   font-size: 14px;
 }
 
-.mls-shell .mls-subtabs button[role="tab"].active {
+.sts-shell .sts-subtabs button[role="tab"].active {
   color: var(--color-light-1);
   border-bottom-color: var(--color-warm-1);
 }
 
-.mls-shell .mls-subtabs button[role="tab"] .c {
+.sts-shell .sts-subtabs button[role="tab"] .c {
   color: var(--color-light-4);
   font-size: 12px;
 }
 
-.mls-shell .mls-panel .mls-subtabs button[role="tab"] {
+.sts-shell .sts-panel .sts-subtabs button[role="tab"] {
   font-size: 13px;
   padding: 5px 10px;
 }
 
-.mls-shell .mls-chg h4 {
+.sts-shell .sts-chg h4 {
   margin: 0 0 4px;
   padding-bottom: 3px;
   display: flex;
@@ -104,7 +104,7 @@
   border-bottom: 1px solid var(--color-cool-4);
 }
 
-.mls-shell .mls-wlist {
+.sts-shell .sts-wlist {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -112,7 +112,7 @@
   gap: 2px;
 }
 
-.mls-shell .mls-wlist li {
+.sts-shell .sts-wlist li {
   display: grid;
   grid-template-columns: 1fr auto auto;
   gap: 8px;
@@ -121,36 +121,36 @@
   color: var(--color-light-2);
 }
 
-.mls-shell .mls-wlist li.mls-here {
+.sts-shell .sts-wlist li.sts-here {
   background: rgb(238 155 58 / 10%);
   border-radius: 3px;
   padding-left: 6px;
 }
 
-.mls-shell .mls-wlist li .d {
+.sts-shell .sts-wlist li .d {
   font-size: 11px;
   font-weight: 600;
 }
 
-.mls-shell .mls-wlist li .d.plus {
+.sts-shell .sts-wlist li .d.plus {
   color: #8fd49b;
 }
 
-.mls-shell .mls-wlist li .d.minus {
+.sts-shell .sts-wlist li .d.minus {
   color: #ff9c8f;
 }
 
-.mls-shell .mls-wlist li .d.na {
+.sts-shell .sts-wlist li .d.na {
   color: var(--color-light-5);
   font-weight: 400;
 }
 
-.mls-shell .mll-chip.preset i {
+.sts-shell .stl-chip.preset i {
   font-size: 10px;
 }
 
 /* A world card's name opens the details, like the Library's. */
-.mls-shell .mlw-card button.t {
+.sts-shell .stw-card button.t {
   flex: 1;
   min-width: 0;
   width: auto;
@@ -171,50 +171,50 @@
   cursor: pointer;
 }
 
-.mls-shell .mlw-card.off button.t {
+.sts-shell .stw-card.off button.t {
   color: var(--color-light-4);
 }
 
-.mls-shell .mlw-card button.t:hover {
+.sts-shell .stw-card button.t:hover {
   color: var(--color-warm-1);
 }
 
-.mls-shell .mlw-card.viewing {
+.sts-shell .stw-card.viewing {
   border-color: var(--color-warm-1);
   box-shadow: 0 0 6px rgb(238 155 58 / 35%);
 }
 
 /* The Library tab as the prototype's key-value grid: label, then value. */
-.mls-shell .mls-panel .mll-libtab {
+.sts-shell .sts-panel .stl-libtab {
   display: grid;
   gap: 10px;
 }
 
-.mls-shell .mls-panel .mll-field {
+.sts-shell .sts-panel .stl-field {
   display: grid;
   grid-template-columns: 70px minmax(0, 1fr);
   gap: 8px 10px;
   align-items: center;
 }
 
-.mls-shell .mls-panel .mll-field > span:first-child {
+.sts-shell .sts-panel .stl-field > span:first-child {
   font-size: 13px;
   color: var(--color-text-subtle);
 }
 
-.mls-shell .mls-panel .mll-field textarea {
+.sts-shell .sts-panel .stl-field textarea {
   height: 56px;
   min-height: 0;
   resize: none;
 }
 
 /* The world page's tab row wraps when the details column narrows it. */
-.mls-shell .mls-subtabs {
+.sts-shell .sts-subtabs {
   flex-wrap: wrap;
   row-gap: 4px;
 }
 
-.mls-shell .mls-subtabs button[role="tab"] {
+.sts-shell .sts-subtabs button[role="tab"] {
   white-space: nowrap;
 }
 
@@ -222,6 +222,6 @@
    stays in the parent's layout, scrolling and padding (review), while the
    panel keeps its role and name for screen readers (checked in Chrome's
    accessibility tree). */
-.mls-shell .mls-tabpanel {
+.sts-shell .sts-tabpanel {
   display: contents;
 }

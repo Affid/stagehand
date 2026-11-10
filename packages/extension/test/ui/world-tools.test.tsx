@@ -2,7 +2,7 @@
 // The world page as the prototype: tabs with icons and counts, the tools in
 // the tab row, a group's "Turn all on / off", View options, and the launch
 // review's extras.
-import type { Command, Snapshot } from "@module-library/shared/world";
+import type { Command, Snapshot } from "@stagehand/shared/world";
 import { cleanup, fireEvent, waitFor, within } from "@testing-library/preact";
 import { screen } from "@testing-library/preact";
 import { afterEach, describe, expect, test } from "vitest";
@@ -69,7 +69,7 @@ function page(over: Partial<SetupState> = {}, backups = BACKUPS) {
 }
 
 const tabs = (c: ParentNode): string[] =>
-  [...c.querySelectorAll(".mls-subtabs [role=tab]")].map((b) =>
+  [...c.querySelectorAll(".sts-subtabs [role=tab]")].map((b) =>
     b.textContent.replace(/\s+/g, " ").trim(),
   );
 
@@ -79,7 +79,7 @@ describe("the world page's tab row", () => {
     await waitFor(() => {
       expect(tabs(container)).toEqual(["Modules 2 on", "About", "Backups 2"]);
     });
-    expect(container.querySelectorAll(".mls-subtabs [role=tab] i").length).toBe(
+    expect(container.querySelectorAll(".sts-subtabs [role=tab] i").length).toBe(
       3,
     );
   });
@@ -93,7 +93,7 @@ describe("the world page's tab row", () => {
 
   test("the filter, All / On / Changes, Add and View options sit in the tab row", () => {
     const { container } = page();
-    const row = el(container, ".mls-subtabs");
+    const row = el(container, ".sts-subtabs");
     expect(row.querySelector('input[type="search"]')).toBeTruthy();
     expect(within(row).getByRole("button", { name: /^All/ })).toBeTruthy();
     expect(within(row).getByRole("button", { name: /^Add/ })).toBeTruthy();
@@ -107,7 +107,7 @@ describe("a group's actions", () => {
   test("Turn all on queues the group's modules that are off, in one change", async () => {
     const { container, getByRole, send } = page();
     // Unfiled holds b, c and lib (off) and the companion (on).
-    const unfiled = [...container.querySelectorAll<HTMLElement>(".mlw-sec")].at(
+    const unfiled = [...container.querySelectorAll<HTMLElement>(".stw-sec")].at(
       -1,
     );
     if (!unfiled) throw new Error("no unfiled group");
@@ -128,7 +128,7 @@ describe("a group's actions", () => {
     const { container, getByRole, send } = page({
       snapshots: { w1: snap(["stagehand", "a", "lib"]) },
     });
-    const unfiled = [...container.querySelectorAll(".mlw-sec")].at(-1);
+    const unfiled = [...container.querySelectorAll(".stw-sec")].at(-1);
     if (!unfiled) throw new Error("no unfiled group");
     fireEvent.click(
       within(unfiled as HTMLElement).getByRole("button", { name: /actions$/ }),
@@ -155,7 +155,7 @@ describe("review fixes (package 3)", () => {
         ],
       },
     });
-    const unfiled = [...container.querySelectorAll<HTMLElement>(".mlw-sec")].at(
+    const unfiled = [...container.querySelectorAll<HTMLElement>(".stw-sec")].at(
       -1,
     );
     if (!unfiled) throw new Error("no unfiled group");
@@ -210,7 +210,7 @@ describe("View options", () => {
     fireEvent.change(getByRole("combobox", { name: "Group by" }), {
       target: { value: "tag" },
     });
-    const names = [...container.querySelectorAll(".mlw-sec .name")].map(
+    const names = [...container.querySelectorAll(".stw-sec .name")].map(
       (n) => n.textContent,
     );
     expect(names).toContain("visual");
@@ -220,8 +220,8 @@ describe("View options", () => {
     const { container, getByRole } = page();
     fireEvent.click(getByRole("button", { name: "View options" }));
     fireEvent.click(getByRole("button", { name: "List" }));
-    expect(container.querySelector(".mlc-row")).toBeTruthy();
-    expect(container.querySelector(".mlw-card")).toBe(null);
+    expect(container.querySelector(".stc-row")).toBeTruthy();
+    expect(container.querySelector(".stw-card")).toBe(null);
   });
 });
 

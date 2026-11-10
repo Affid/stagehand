@@ -7,9 +7,9 @@ import {
   type ApplySpec,
   type Plan,
   resolvePlan,
-} from "@module-library/shared/resolver";
-import { parseCoreVersion } from "@module-library/shared/version";
-import { type Command, changeModules } from "@module-library/shared/world";
+} from "@stagehand/shared/resolver";
+import { parseCoreVersion } from "@stagehand/shared/version";
+import { type Command, changeModules } from "@stagehand/shared/world";
 import type { SetupState } from "../../messages.ts";
 
 export const COMPANION_ID = "stagehand";

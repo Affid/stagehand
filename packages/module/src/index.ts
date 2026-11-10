@@ -1,8 +1,8 @@
 // Companion module entry: one session per join, for the first full
 // Gamemaster in the world (C-1, PR-4), through the world's own flags
 // (docs/COMPANION-WORLD-PROTOCOL.md). Assistant GMs and players: nothing.
-import "@module-library/shared/zod-config";
-import { logError } from "@module-library/shared/log";
+import "@stagehand/shared/zod-config";
+import { logError } from "@stagehand/shared/log";
 import { foundryGlobals } from "./foundry.ts";
 import { isFirstGamemaster } from "./gamemaster.ts";
 import { createWorldIo } from "./world-io.ts";

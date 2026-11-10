@@ -1,5 +1,5 @@
 // Commands and snapshots shared by the Game Worlds tests.
-import type { Command, Snapshot } from "@module-library/shared/world";
+import type { Command, Snapshot } from "@stagehand/shared/world";
 
 export const pending: Command = {
   id: "c1",

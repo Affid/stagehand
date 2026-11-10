@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import type { WorldInfo } from "@module-library/shared/world";
+import type { WorldInfo } from "@stagehand/shared/world";
 import { cleanup, fireEvent, waitFor, within } from "@testing-library/preact";
 import { afterEach, describe, expect, test } from "vitest";
 import { el, renderUi, sent, setupState } from "./harness.tsx";
@@ -35,7 +35,7 @@ const shell = (over: Parameters<typeof renderUi>[1] = {}) =>
   renderUi("shell", { data: withWorlds, ...over });
 
 const railTitles = (container: ParentNode): string[] =>
-  [...container.querySelectorAll(".mls-world strong")].map(
+  [...container.querySelectorAll(".sts-world strong")].map(
     (s) => s.textContent,
   );
 
@@ -43,12 +43,12 @@ describe("the header bar", () => {
   test("shows Foundry's name and version", () => {
     const { getByRole, container } = shell();
     expect(getByRole("heading", { name: "Foundry Virtual Tabletop" }));
-    expect(el(container, ".mlh-ver").textContent).toContain("14 · 369");
+    expect(el(container, ".sth-ver").textContent).toContain("14 · 369");
   });
 
   test("the version opens a menu: Foundry's build, the update, and Help", () => {
     const { store, container, getByRole, queryByRole, page } = shell();
-    const chip = el(container, ".mlh-ver");
+    const chip = el(container, ".sth-ver");
     expect(chip.getAttribute("aria-expanded")).toBe("false");
     fireEvent.click(chip);
     expect(chip.getAttribute("aria-expanded")).toBe("true");
@@ -82,7 +82,7 @@ describe("the header bar", () => {
         },
       },
     });
-    const chip = el(container, ".mlh-ver");
+    const chip = el(container, ".sth-ver");
     expect(chip.textContent).toContain("update");
     // The name holds the words shown, in order (axe, label-content-name-mismatch).
     const norm = (x: string | null): string =>
@@ -146,7 +146,7 @@ describe("the worlds rail", () => {
 
   test("marks favourites and locked worlds", () => {
     const { container } = shell();
-    const strahd = el(container, '.mls-world[data-world="strahd"]');
+    const strahd = el(container, '.sts-world[data-world="strahd"]');
     expect(within(strahd).getByLabelText("Favourite")).toBeTruthy();
     expect(within(strahd).getByLabelText("Locked")).toBeTruthy();
   });
@@ -177,7 +177,7 @@ describe("the worlds rail", () => {
         ],
       },
     });
-    const row = el(container, '.mls-world[data-world="new"]');
+    const row = el(container, '.sts-world[data-world="new"]');
     expect(row.querySelector(".flag.q")?.textContent).toMatch(/1/);
     // No companion snapshot for any world: each one is flagged.
     expect(row.querySelector(".flag.a")).toBeTruthy();
@@ -216,7 +216,7 @@ describe("the worlds rail", () => {
         ],
       },
     });
-    const row = el(container, '.mls-world[data-world="new"]');
+    const row = el(container, '.sts-world[data-world="new"]');
     const flag = el(row, ".flag.p");
     expect(flag.textContent).toContain("1 queued");
     expect(flag.getAttribute("title")).toBe("2 modules need attention");
@@ -233,11 +233,11 @@ describe("the worlds rail", () => {
 describe("routing", () => {
   test("opens on the first world; a click opens another; Library switches", () => {
     const { container, getByRole, store } = shell();
-    expect(el(container, ".mls-banner h2").textContent).toContain(
+    expect(el(container, ".sts-banner h2").textContent).toContain(
       "Curse of Strahd",
     );
     fireEvent.click(getByRole("button", { name: /Old Campaign/ }));
-    expect(el(container, ".mls-banner h2").textContent).toContain(
+    expect(el(container, ".sts-banner h2").textContent).toContain(
       "Old Campaign",
     );
     expect(
@@ -247,24 +247,24 @@ describe("routing", () => {
     ).toBe("page");
     fireEvent.click(getByRole("button", { name: /^Library/ }));
     expect(store.get().route).toEqual({ kind: "library" });
-    expect(container.querySelector(".mls-world.mls-on")).toBe(null);
-    expect(container.querySelector(".mls-world[aria-current]")).toBe(null);
-    expect(container.querySelector(".mls-banner")).toBe(null);
-    expect(container.querySelector(".mll-page")).toBeTruthy();
+    expect(container.querySelector(".sts-world.sts-on")).toBe(null);
+    expect(container.querySelector(".sts-world[aria-current]")).toBe(null);
+    expect(container.querySelector(".sts-banner")).toBe(null);
+    expect(container.querySelector(".stl-page")).toBeTruthy();
   });
 
   test("with no worlds the Library is shown", () => {
     const { container } = renderUi("shell", {
       data: { setup: base.setup ? { ...base.setup, worlds: [] } : undefined },
     });
-    expect(container.querySelector(".mll-page")).toBeTruthy();
+    expect(container.querySelector(".stl-page")).toBeTruthy();
   });
 });
 
 describe("a world's page", () => {
   test("the banner has the system, last played, Edit and Launch", () => {
     const { container, page } = shell();
-    const banner = el(container, ".mls-banner");
+    const banner = el(container, ".sts-banner");
     // The system's title, as the prototype; no core version in the banner.
     expect(banner.textContent).toContain("Dungeons & Dragons Fifth Edition");
     expect(banner.textContent).not.toContain("dnd5e");
@@ -290,7 +290,7 @@ describe("a world's page", () => {
       state: { route: { kind: "world", worldId: "new" } },
     });
     fireEvent.click(
-      within(el(container, ".mls-banner")).getByRole("button", {
+      within(el(container, ".sts-banner")).getByRole("button", {
         name: "Launch",
       }),
     );
@@ -304,8 +304,8 @@ describe("a world's page", () => {
   test("the title carries the star and the Locked tag; the star toggles Foundry's favourite", () => {
     const { container, page } = shell();
     // The heading is the bare title; the star and tag sit beside it.
-    expect(el(container, ".mls-banner h2").textContent).toBe("Curse of Strahd");
-    const title = el(container, ".mls-banner .mls-titlerow");
+    expect(el(container, ".sts-banner h2").textContent).toBe("Curse of Strahd");
+    const title = el(container, ".sts-banner .sts-titlerow");
     expect(title.textContent).toContain("Locked");
     const star = within(title).getByRole("button", { name: "Favourite" });
     expect(star.getAttribute("aria-pressed")).toBe("true");
@@ -318,13 +318,13 @@ describe("a world's page", () => {
 
   test("a world the companion hasn't reported explains the setup", () => {
     const { container } = shell();
-    expect(container.querySelector(".mlw-empty")).toBeTruthy();
-    expect(container.querySelector(".mlw-card")).toBe(null);
+    expect(container.querySelector(".stw-empty")).toBeTruthy();
+    expect(container.querySelector(".stw-card")).toBe(null);
   });
 
   test("the rail's foot names the extension's build", () => {
     const { container } = shell();
-    expect(el(container, ".mls-build").textContent).toBe("Stagehand dev");
+    expect(el(container, ".sts-build").textContent).toBe("Stagehand dev");
   });
 
   test("the rail's foot opens Stagehand's settings panel", async () => {

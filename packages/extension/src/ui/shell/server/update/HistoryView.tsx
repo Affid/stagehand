@@ -17,7 +17,7 @@ const SITE = "https://foundryvtt.com/releases/";
 function Denied(props: { readonly h: History }) {
   const { t } = useUi();
   return (
-    <div class="mlu-hask">
+    <div class="stu-hask">
       <Icon name="lock" />
       <p>{t("up.hist.why")}</p>
       <div class="row">
@@ -41,18 +41,18 @@ function Tags(props: { readonly r: ReleaseItem; readonly installed: string }) {
   return (
     <span class="tg">
       {r.version === props.installed ? (
-        <span class="mlw-pill">{t("up.hist.installed")}</span>
+        <span class="stw-pill">{t("up.hist.installed")}</span>
       ) : null}
       {isNewer(r, props.installed) ? (
-        <span class="mlw-pill ok">{t("up.hist.new")}</span>
+        <span class="stw-pill ok">{t("up.hist.new")}</span>
       ) : null}
       {r.full ? (
-        <span class="mlw-pill warn" title={t("up.hist.manualTip")}>
+        <span class="stw-pill warn" title={t("up.hist.manualTip")}>
           {t("up.hist.manual")}
         </span>
       ) : null}
       {r.channel && r.channel !== "stable" ? (
-        <span class="mlw-pill">{channelName(r.channel).toLowerCase()}</span>
+        <span class="stw-pill">{channelName(r.channel).toLowerCase()}</span>
       ) : null}
     </span>
   );
@@ -65,7 +65,7 @@ function List(props: {
   readonly onPick: (v: string) => void;
 }) {
   return (
-    <ol class="mlu-rels">
+    <ol class="stu-rels">
       {props.releases.map((r) => (
         <li
           key={r.version}
@@ -116,7 +116,7 @@ function Head(props: {
 }) {
   const { t } = useUi();
   return (
-    <div class="mlu-nhead">
+    <div class="stu-nhead">
       <h3>{t("up.hist.title")}</h3>
       <span>
         {props.since
@@ -167,7 +167,7 @@ function Ready(props: {
   return (
     <>
       <Head since={since} installed={installed} channel={props.channel} />
-      <div class="mlu-tools">
+      <div class="stu-tools">
         <label>
           <input
             type="checkbox"
@@ -179,7 +179,7 @@ function Ready(props: {
           {t("up.hist.all")}
         </label>
       </div>
-      <div class="mlu-hcols">
+      <div class="stu-hcols">
         <List
           releases={shown}
           selected={selected}
@@ -206,15 +206,15 @@ export function HistoryView(props: { readonly channel: string }) {
   const h = useHistory();
   const l = h.list;
   return (
-    <div class="mlu-notes mlu-hist">
+    <div class="stu-notes stu-hist">
       {l.kind === "loading" ? (
-        <p class="ml-muted" role="status">
+        <p class="st-muted" role="status">
           {t("up.hist.loading")}
         </p>
       ) : l.kind === "denied" ? (
         <Denied h={h} />
       ) : l.kind === "error" ? (
-        <div class="mlu-hask">
+        <div class="stu-hask">
           <p>{t("up.hist.failed", { error: l.error })}</p>
           <div class="row">
             <button type="button" onClick={h.load}>

@@ -6,7 +6,7 @@ import {
   MAX_ACTIVE,
   QueueEntrySchema,
   MAX_QUEUE,
-} from "@module-library/shared/world-flags";
+} from "@stagehand/shared/world-flags";
 import { z } from "zod";
 
 const Id = z.string().min(1).max(200);

@@ -1,6 +1,6 @@
 // Which page the new Setup page shows, the worlds filter, and world artwork
 // made safe for CSS.
-import type { WorldInfo } from "@module-library/shared/world";
+import type { WorldInfo } from "@stagehand/shared/world";
 import { worldOrder } from "../model/order.ts";
 
 export type Route =

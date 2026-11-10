@@ -2,7 +2,7 @@
 // changes). Apply and launch (optionally after Foundry's own backup), launch
 // without them (they stay queued), or cancel. This review is the GM's
 // confirmation: the world asks again only if its live check differs.
-import type { WorldInfo } from "@module-library/shared/world";
+import type { WorldInfo } from "@stagehand/shared/world";
 import { useState } from "preact/hooks";
 import { Icon, Modal } from "../../common/widgets.tsx";
 import { useUi } from "../../context.ts";
@@ -29,7 +29,7 @@ export function Changes(props: {
   const list = (delta: "on" | "off") =>
     props.model.rows.filter((r) => r.delta === delta);
   return (
-    <div class="mlw-lr-cols">
+    <div class="stw-lr-cols">
       {(["on", "off"] as const).map((d) => (
         <div key={d}>
           <h4>{t(`lr.${d}`, { n: list(d).length })}</h4>
@@ -60,7 +60,7 @@ export function Changes(props: {
               </li>
             ))}
             {list(d).length === 0 ? (
-              <li class="ml-empty">{t("lr.nothing")}</li>
+              <li class="st-empty">{t("lr.nothing")}</li>
             ) : null}
           </ul>
         </div>
@@ -77,13 +77,13 @@ export function Check(props: {
   const problems = props.model.rows.filter((r) => r.problem);
   if (problems.length === 0)
     return (
-      <p class="mlw-check ok">
+      <p class="stw-check ok">
         <Icon name="circle-check" />
         {t("lr.ok", { from: props.model.nowCount, to: props.model.nextCount })}
       </p>
     );
   return (
-    <ul class="mlw-check warn">
+    <ul class="stw-check warn">
       {problems.map((r) => (
         <li key={r.pkg.id}>
           <Icon name="triangle-exclamation" />
@@ -133,7 +133,7 @@ function Footer(props: {
       ) : null}
       <button
         type="button"
-        class="ml-primary"
+        class="st-primary"
         onClick={() => props.onLaunch("apply")}
       >
         <Icon name="play" />
@@ -166,7 +166,7 @@ function BackupFirst(props: {
 }) {
   const { t } = useUi();
   return (
-    <label class="mlw-bfirst">
+    <label class="stw-bfirst">
       <input
         type="checkbox"
         checked={props.on}
@@ -174,7 +174,7 @@ function BackupFirst(props: {
       />
       <span>
         <strong>{t("lr.backup", { world: props.world.title })}</strong>
-        <span class="ml-hint">{backupHint(t, props.backups)}</span>
+        <span class="st-hint">{backupHint(t, props.backups)}</span>
       </span>
     </label>
   );
@@ -228,11 +228,11 @@ export function LaunchReview(props: {
       onClose={props.onClose}
       footer={footer}
     >
-      <div class="mlw-lr">
+      <div class="stw-lr">
         <Check model={model} why={props.why} />
         <Changes model={model} worldId={world.id} />
         {presets.length ? (
-          <p class="ml-hint">
+          <p class="st-hint">
             {t("lr.presets", { names: presets.join(", ") })}
           </p>
         ) : null}

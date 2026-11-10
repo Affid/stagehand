@@ -28,7 +28,7 @@ let ext: Target;
 let admin: APIRequestContext;
 let page: Page;
 
-const shell = (): Locator => page.locator("#ml-shell-root");
+const shell = (): Locator => page.locator("#st-shell-root");
 
 test.describe.configure({ mode: "serial" });
 
@@ -47,20 +47,20 @@ test.afterAll(async () => {
 
 test("the header's Backups opens the server Backups page", async () => {
   await shell().getByRole("button", { name: "Backups" }).click();
-  const pageEl = shell().locator(".mlb-page");
+  const pageEl = shell().locator(".stb-page");
   await expect(pageEl.getByRole("tab").first()).toContainText("Snapshots");
   await expect(pageEl.getByText("Reading Foundry's backups…")).toHaveCount(0);
 });
 
 const snapshotIds = (): Promise<string[]> =>
   shell()
-    .locator(".mlb-snaps li[data-snapshot]")
+    .locator(".stb-snaps li[data-snapshot]")
     .evaluateAll((els) =>
       els.map((e) => e.getAttribute("data-snapshot") ?? ""),
     );
 
 test("a snapshot is taken from our dialog and deleted with Foundry's code", async () => {
-  const pageEl = shell().locator(".mlb-page");
+  const pageEl = shell().locator(".stb-page");
   const before = await snapshotIds();
   await pageEl.getByRole("button", { name: "Create a snapshot" }).click();
   // Ours, as the prototype: what it holds, Foundry's own space check, a note.
@@ -74,7 +74,7 @@ test("a snapshot is taken from our dialog and deleted with Foundry's code", asyn
   await page.screenshot({ path: `${SCREENS}/server-snapshot-dialog.png` });
   await dialog
     .getByRole("textbox", { name: "Note" })
-    .fill("Module Library live test");
+    .fill("Stagehand live test");
   await dialog.getByRole("button", { name: "Create the snapshot" }).click();
   // Foundry's own dialog stays shut.
   await expect(page.locator(".snapshot-dialog")).toHaveCount(0);
@@ -84,7 +84,7 @@ test("a snapshot is taken from our dialog and deleted with Foundry's code", asyn
     .toBe(before.length + 1);
   const id = (await snapshotIds()).find((x) => !before.includes(x));
   expect(id).toBeTruthy();
-  const mine = pageEl.locator(`.mlb-snaps li[data-snapshot="${id ?? ""}"]`);
+  const mine = pageEl.locator(`.stb-snaps li[data-snapshot="${id ?? ""}"]`);
   await page.screenshot({ path: `${SCREENS}/server-backups.png` });
   await mine.getByRole("button", { name: /^Delete the snapshot/ }).click();
   const confirm = page.locator("dialog.application", {
@@ -98,7 +98,7 @@ test("a snapshot is taken from our dialog and deleted with Foundry's code", asyn
 
 test("Configuration reads Foundry's settings and saves one through Foundry, then back", async () => {
   await shell().getByRole("button", { name: "Configuration" }).click();
-  const cfg = shell().locator(".mlc-page");
+  const cfg = shell().locator(".stc-page");
   await expect(cfg.getByLabel("Port", { exact: true })).toHaveValue(/\d+/);
   await cfg
     .getByRole("button", { name: "Advanced: Unix socket, compression" })
@@ -113,20 +113,20 @@ test("Configuration reads Foundry's settings and saves one through Foundry, then
       .click();
   };
   await toggle.click();
-  await expect(cfg.locator(".mlc-bar")).toContainText("1 change not saved");
+  await expect(cfg.locator(".stc-bar")).toContainText("1 change not saved");
   await page.screenshot({ path: `${SCREENS}/server-config.png` });
   await saveOne();
-  await expect(cfg.locator(".mlc-bar")).toContainText("apply after a restart");
+  await expect(cfg.locator(".stc-bar")).toContainText("apply after a restart");
   await expect(toggle).toBeChecked({ checked: !was });
   // Put it back, so options.json ends as it began.
   await toggle.click();
   await saveOne();
   await expect(toggle).toBeChecked({ checked: was });
-  await expect(cfg.locator(".mlc-unsaved")).toHaveCount(0);
+  await expect(cfg.locator(".stc-unsaved")).toHaveCount(0);
 });
 
 test("Configuration: a wrong current password is refused by Foundry", async () => {
-  const cfg = shell().locator(".mlc-page");
+  const cfg = shell().locator(".stc-page");
   await cfg.getByRole("button", { name: "Change…" }).click();
   await cfg.getByLabel("Current password").fill("certainly-not-the-password");
   await cfg.getByRole("button", { name: "Continue" }).click();
@@ -135,22 +135,22 @@ test("Configuration: a wrong current password is refused by Foundry", async () =
 });
 
 test("Configuration: the right current password lets a new one be chosen", async () => {
-  const cfg = shell().locator(".mlc-page");
+  const cfg = shell().locator(".stc-page");
   await cfg.getByRole("button", { name: "Change…" }).click();
   await cfg.getByLabel("Current password").fill(env.adminPassword);
   await cfg.getByRole("button", { name: "Continue" }).click();
   await expect(cfg.getByLabel("New password", { exact: true })).toBeVisible();
   await cfg.getByRole("button", { name: "Cancel" }).click();
-  await expect(cfg.locator(".mlc-unsaved")).toHaveCount(0);
+  await expect(cfg.locator(".stc-unsaved")).toHaveCount(0);
 });
 
 test("the Version chip's menu opens the Update page: Foundry's own check says up to date", async () => {
-  await shell().locator(".mlh-ver").click();
+  await shell().locator(".sth-ver").click();
   await shell()
     .getByRole("region", { name: "Foundry Virtual Tabletop" })
     .getByRole("button", { name: /Update page|See what's new/ })
     .click();
-  const upd = shell().locator(".mlu-page");
+  const upd = shell().locator(".stu-page");
   await expect(upd).toContainText("Foundry is up to date", { timeout: 30_000 });
   await expect(upd).toContainText("Foundry 14.370 is the latest");
 });
@@ -178,28 +178,28 @@ async function answerNewer(): Promise<void> {
 
 test("the Update page reads Foundry's release notes; --noupdate disables the update", async () => {
   await answerNewer();
-  const upd = shell().locator(".mlu-page");
+  const upd = shell().locator(".stu-page");
   await upd.getByRole("button", { name: "Check again" }).click();
-  const notes = upd.locator(".mlu-notes");
-  await expect(notes.locator(".mlu-nhead h3")).toContainText(
+  const notes = upd.locator(".stu-notes");
+  await expect(notes.locator(".stu-nhead h3")).toContainText(
     "Release notes: Version 14",
     { timeout: 30_000 },
   );
-  await expect(upd.locator(".mlb-head")).toContainText("14.371 is available.");
-  await expect(upd.locator(".mlu-jump")).toContainText("bug fixes");
-  await expect(notes.locator("a.mlu-issue").first()).toHaveAttribute(
+  await expect(upd.locator(".stb-head")).toContainText("14.371 is available.");
+  await expect(upd.locator(".stu-jump")).toContainText("bug fixes");
+  await expect(notes.locator("a.stu-issue").first()).toHaveAttribute(
     "href",
     /^https:\/\/github\.com\/foundryvtt\/foundryvtt\/issues\/\d+$/,
   );
   await expect(
     upd.getByRole("button", { name: "Updates disabled" }),
   ).toBeDisabled();
-  await expect(upd.locator(".mlu-why")).toContainText("--noupdate");
+  await expect(upd.locator(".stu-why")).toContainText("--noupdate");
   // Foundry's banner, from foundryvtt.com, as its own notes window shows it.
   await expect
     .poll(() =>
       notes
-        .locator(".mlu-banner img")
+        .locator(".stu-banner img")
         .evaluate((img: HTMLImageElement) => img.naturalWidth),
     )
     .toBeGreaterThan(0);
@@ -208,22 +208,22 @@ test("the Update page reads Foundry's release notes; --noupdate disables the upd
   await notes
     .getByRole("searchbox", { name: "Search the notes" })
     .fill("password");
-  await expect(notes.locator(".mlu-body li").first()).toContainText(
+  await expect(notes.locator(".stu-body li").first()).toContainText(
     /password/i,
   );
   await notes.getByRole("searchbox", { name: "Search the notes" }).fill("");
 });
 
 test("Your packages: Foundry's compatibility preview for the release, with where each is used", async () => {
-  const upd = shell().locator(".mlu-page");
-  const box = upd.locator(".mlu-side .mlw-box", {
+  const upd = shell().locator(".stu-page");
+  const box = upd.locator(".stu-side .stw-box", {
     hasText: "Your packages on 14.371",
   });
-  await expect(box.locator(".mlu-tags")).toContainText("compatible", {
+  await expect(box.locator(".stu-tags")).toContainText("compatible", {
     timeout: 60_000,
   });
   await upd.getByRole("tab", { name: /Your packages/ }).click();
-  const view = upd.locator(".mlu-compat");
+  const view = upd.locator(".stu-compat");
   await view.getByRole("tab", { name: /^Modules/ }).click();
   await expect(upd.getByRole("tab", { name: /Your packages/ })).toHaveClass(
     /active/,
@@ -253,20 +253,20 @@ test("Your packages: Foundry's compatibility preview for the release, with where
       (window as unknown as { game: { modules: { size: number } } }).game
         .modules.size,
   );
-  await expect(view.locator(".mlu-clist li")).toHaveCount(installed);
-  await expect(view.locator(".mlu-clist li").first()).toContainText(
+  await expect(view.locator(".stu-clist li")).toHaveCount(installed);
+  await expect(view.locator(".stu-clist li").first()).toContainText(
     /14\.371|verified/,
   );
   await page.screenshot({ path: `${SCREENS}/server-update-compat.png` });
   await audit(page, "update: your packages");
   await view.getByRole("tab", { name: /^Worlds/ }).click();
-  await expect(view.locator(".mlu-clist li")).not.toHaveCount(0);
+  await expect(view.locator(".stu-clist li")).not.toHaveCount(0);
 });
 
 test("Release history without the permission: why, and the settings panel to allow it", async () => {
-  const upd = shell().locator(".mlu-page");
+  const upd = shell().locator(".stu-page");
   await upd.getByRole("tab", { name: /Release history/ }).click();
-  const ask = upd.locator(".mlu-hask");
+  const ask = upd.locator(".stu-hask");
   await expect(ask).toBeVisible();
   await audit(page, "update: release history, not allowed");
   await expect(ask).toContainText("one extra permission for foundryvtt.com");

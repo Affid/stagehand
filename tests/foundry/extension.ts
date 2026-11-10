@@ -80,7 +80,7 @@ export async function joinWorld(
   // Foundry's form.
   // The app's script adds its screen's style at document start.
   const isApp = await page.evaluate(
-    () => document.getElementById("ml-run-style") !== null,
+    () => document.getElementById("st-run-style") !== null,
   );
   if (isApp) await joinByRequest(page, url, user);
   else {
@@ -188,7 +188,7 @@ export async function addServer(
   await page.getByLabel("Server address").fill(`${url}/`);
   await page.getByRole("button", { name: "Add", exact: true }).click();
   await page
-    .locator(".mlp-servers li")
+    .locator(".stp-servers li")
     .filter({ hasText: new URL(url).host })
     .waitFor();
 }
@@ -208,7 +208,7 @@ export async function openSetupAsAdmin(
   });
   await page.goto(`${url}/setup`);
   // The new Setup page takes over whenever the extension runs.
-  await page.locator("#ml-shell-root .mls-top").waitFor();
+  await page.locator("#st-shell-root .sts-top").waitFor();
   await exitTour(page);
 }
 

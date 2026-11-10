@@ -12,10 +12,10 @@ const pending = await where();
 await p.screenshot({ path: `${dir}out/shots/cfg-6-bar.png` });
 await p.click("[data-act=cfgsave]"); await p.click("[data-act=cfgdosave]"); await p.waitForTimeout(250);
 const saved = await where();
-const covered = await p.evaluate(() => { const bar = document.querySelector(".mlc-bar").getBoundingClientRect(); const c = document.querySelector(".mlc-cols"); c.scrollTop = c.scrollHeight; const last = [...document.querySelectorAll(".mlc-set")].map((x) => x.getBoundingClientRect().bottom); return Math.max(...last) > bar.top; });
+const covered = await p.evaluate(() => { const bar = document.querySelector(".stc-bar").getBoundingClientRect(); const c = document.querySelector(".stc-cols"); c.scrollTop = c.scrollHeight; const last = [...document.querySelectorAll(".stc-set")].map((x) => x.getBoundingClientRect().bottom); return Math.max(...last) > bar.top; });
 const still = JSON.stringify(before) === JSON.stringify(pending) && JSON.stringify(before) === JSON.stringify(saved);
 console.log({ before, pending, saved, still, lastRowHiddenByBar: covered }, still && !covered ? "ok" : "WRONG");
 for (const [w, h] of [[1280, 800]]) { await p.setViewportSize({ width: w, height: h }); await p.click('[data-cfg="hotReload"]'); await p.waitForTimeout(200);
-  const c2 = await p.evaluate(() => { const bar = document.querySelector(".mlc-bar").getBoundingClientRect(); const c = document.querySelector(".mlc-cols"); c.scrollTop = c.scrollHeight; return Math.max(...[...document.querySelectorAll(".mlc-set")].map((x) => x.getBoundingClientRect().bottom)) > bar.top; });
+  const c2 = await p.evaluate(() => { const bar = document.querySelector(".stc-bar").getBoundingClientRect(); const c = document.querySelector(".stc-cols"); c.scrollTop = c.scrollHeight; return Math.max(...[...document.querySelectorAll(".stc-set")].map((x) => x.getBoundingClientRect().bottom)) > bar.top; });
   console.log(`${w}x${h} last row hidden by bar:`, c2); await p.screenshot({ path: `${dir}out/shots/cfg-7-bar-1280.png` }); }
 console.log(errs.length ? errs : "no errors"); await b.close();

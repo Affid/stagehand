@@ -1,11 +1,11 @@
 /* The world page's tab row and its tools, group actions, the list layout,
    and the launch review's list (prototype _calm.css). */
-.mls-shell .mls-subtabs .mls-tablist {
+.sts-shell .sts-subtabs .sts-tablist {
   display: flex;
   gap: 2px;
 }
 
-.mls-shell .mls-subtabs .mlc-tools {
+.sts-shell .sts-subtabs .stc-tools {
   margin-left: auto;
   display: flex;
   gap: 6px;
@@ -13,13 +13,13 @@
   padding-bottom: 4px;
 }
 
-.mls-shell .mlc-tools input[type="search"] {
+.sts-shell .stc-tools input[type="search"] {
   height: 28px;
   width: 170px;
   flex: none;
 }
 
-.mls-shell .mlc-tools button {
+.sts-shell .stc-tools button {
   height: 28px;
   width: auto;
   flex: none;
@@ -28,24 +28,24 @@
   font-size: 13px;
 }
 
-.mls-shell .mlc-tools button.icon {
+.sts-shell .stc-tools button.icon {
   width: 28px;
   padding: 0;
 }
 
-.mls-shell .mlc-viewwrap {
+.sts-shell .stc-viewwrap {
   position: relative;
   display: inline-flex;
 }
 
-.mls-shell .mlc-viewpop {
+.sts-shell .stc-viewpop {
   position: absolute;
   top: calc(100% + 6px);
   right: 0;
   width: 320px;
 }
 
-.mls-shell .mlc-viewbody {
+.sts-shell .stc-viewbody {
   display: grid;
   grid-template-columns: 70px 1fr;
   gap: 10px;
@@ -53,36 +53,36 @@
   padding: 10px;
 }
 
-.mls-shell .mlc-viewbody label {
+.sts-shell .stc-viewbody label {
   display: contents;
 }
 
-.mls-shell .mlc-viewbody select {
+.sts-shell .stc-viewbody select {
   height: 28px;
 }
 
-.mls-shell .mlc-viewbody .ml-seg2 button {
+.sts-shell .stc-viewbody .st-seg2 button {
   width: auto;
 }
 
 /* A group's header with its ⋮ actions */
-.mls-shell .mlw-headrow {
+.sts-shell .stw-headrow {
   display: flex;
   align-items: center;
   gap: 4px;
 }
 
-.mls-shell .mlw-headrow .mlw-head {
+.sts-shell .stw-headrow .stw-head {
   flex: 1;
   min-width: 0;
 }
 
-.mls-shell .mlw-gmenu {
+.sts-shell .stw-gmenu {
   position: relative;
   display: inline-flex;
 }
 
-.mls-shell .mlw-gmenu .ml-hbtn {
+.sts-shell .stw-gmenu .st-hbtn {
   width: 22px;
   height: 22px;
   padding: 0;
@@ -93,14 +93,14 @@
   opacity: 0.6;
 }
 
-.mls-shell .mlw-headrow:hover .ml-hbtn,
-.mls-shell .mlw-gmenu .ml-hbtn[aria-expanded="true"],
-.mls-shell .mlw-gmenu .ml-hbtn:focus-visible {
+.sts-shell .stw-headrow:hover .st-hbtn,
+.sts-shell .stw-gmenu .st-hbtn[aria-expanded="true"],
+.sts-shell .stw-gmenu .st-hbtn:focus-visible {
   opacity: 1;
 }
 
 /* View options › List: one line per module */
-.mls-shell .mlc-list {
+.sts-shell .stc-list {
   list-style: none;
   margin: 4px 0 0;
   padding: 0;
@@ -109,7 +109,7 @@
   gap: 0 18px;
 }
 
-.mls-shell .mlc-row {
+.sts-shell .stc-row {
   display: flex;
   align-items: center;
   gap: 9px;
@@ -122,28 +122,28 @@
   min-width: 0;
 }
 
-.mls-shell .mlc-row:hover {
+.sts-shell .stc-row:hover {
   background: rgb(255 255 255 / 5%);
 }
 
-.mls-shell .mlc-row.viewing {
+.sts-shell .stc-row.viewing {
   background: rgb(238 155 58 / 10%);
 }
 
-.mls-shell .mlc-row.plus {
+.sts-shell .stc-row.plus {
   border-left-color: #6fd083;
 }
 
-.mls-shell .mlc-row.minus {
+.sts-shell .stc-row.minus {
   border-left-color: #e0705a;
 }
 
-.mls-shell .mlc-row.prob {
+.sts-shell .stc-row.prob {
   border-left-color: #f5c45e;
   background: rgb(245 196 94 / 8%);
 }
 
-.mls-shell .mlc-row button.t {
+.sts-shell .stc-row button.t {
   flex: 0 1 auto;
   min-width: 0;
   width: auto;
@@ -160,35 +160,35 @@
   white-space: nowrap;
 }
 
-.mls-shell .mlc-row.off button.t {
+.sts-shell .stc-row.off button.t {
   color: var(--color-light-4);
 }
 
-.mls-shell .mlc-row .dots {
+.sts-shell .stc-row .dots {
   display: inline-flex;
   gap: 2px;
   flex: none;
 }
 
-.mls-shell .mlc-row .dots .ml-dot {
+.sts-shell .stc-row .dots .st-dot {
   width: 7px;
   height: 7px;
-  background: var(--ml-c, #777);
+  background: var(--st-c, #777);
 }
 
-.mls-shell .mlc-row .mlc-warn {
+.sts-shell .stc-row .stc-warn {
   color: #f5c45e;
   font-size: 11px;
   flex: none;
 }
 
-.mls-shell .mlc-row .mlc-note {
+.sts-shell .stc-row .stc-note {
   color: var(--color-light-4);
   font-size: 11px;
   flex: none;
 }
 
-.mls-shell .mlc-row .d {
+.sts-shell .stc-row .d {
   margin-left: auto;
   font-size: 11px;
   font-weight: 700;
@@ -198,27 +198,27 @@
 }
 
 /* The launch review: + and − with a way to drop each change */
-.mlw-lr-cols li {
+.stw-lr-cols li {
   display: grid;
   grid-template-columns: 14px 1fr auto;
   gap: 8px;
   align-items: center;
 }
 
-.mlw-lr-cols li .s {
+.stw-lr-cols li .s {
   font-weight: 700;
   text-align: center;
 }
 
-.mlw-lr-cols li .s.plus {
+.stw-lr-cols li .s.plus {
   color: #8fd49b;
 }
 
-.mlw-lr-cols li .s.minus {
+.stw-lr-cols li .s.minus {
   color: #ff9c8f;
 }
 
-.mlw-lr-cols li button.x {
+.stw-lr-cols li button.x {
   width: 22px;
   height: 22px;
   padding: 0;
@@ -229,7 +229,7 @@
   color: var(--color-light-4);
 }
 
-.mlw-lr-cols li button.x:hover,
-.mlw-lr-cols li button.x:focus-visible {
+.stw-lr-cols li button.x:hover,
+.stw-lr-cols li button.x:focus-visible {
   color: var(--color-light-1);
 }

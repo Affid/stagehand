@@ -1,11 +1,8 @@
 // Renders the Setup UI roots against a fake background for component tests.
 import type { QueueSaved } from "../../src/page-queue.ts";
 import { render } from "@testing-library/preact";
-import {
-  emptyLibrary,
-  type Library,
-} from "@module-library/shared/library/schema";
-import type { PackageInfo } from "@module-library/shared/package";
+import { emptyLibrary, type Library } from "@stagehand/shared/library/schema";
+import type { PackageInfo } from "@stagehand/shared/package";
 import { vi } from "vitest";
 import { BUNDLED_CONFIG, V14_SELECTORS } from "../../src/adapters/config.ts";
 import type { AdapterChoice } from "../../src/adapters/select.ts";

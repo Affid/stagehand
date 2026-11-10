@@ -4,7 +4,7 @@
 // all, New folder, the Tags and Presets panels, and Import and export.
 import { cleanup, fireEvent, waitFor, within } from "@testing-library/preact";
 import { afterEach, describe, expect, test, vi } from "vitest";
-import type { Snapshot } from "@module-library/shared/world";
+import type { Snapshot } from "@stagehand/shared/world";
 import type { SetupState } from "../../src/messages.ts";
 import { el, renderUi, sent, setupState } from "./harness.tsx";
 
@@ -41,7 +41,7 @@ const opSent = (r: ReturnType<typeof library>, op: object) =>
 describe("the Library's head", () => {
   test("tabs Modules, Systems and By world, with icons and counts", () => {
     const { container } = library();
-    const tabs = [...container.querySelectorAll(".mll-page [role=tab]")].map(
+    const tabs = [...container.querySelectorAll(".stl-page [role=tab]")].map(
       (x) => x.textContent,
     );
     expect(tabs).toEqual(["Modules 5", "Systems 1", "By world 1"]);
@@ -85,7 +85,7 @@ describe("the toolbar", () => {
   test("Collapse all folds every group; again opens them", () => {
     const { container, getByRole } = library();
     fireEvent.click(getByRole("button", { name: "Collapse all" }));
-    const heads = [...container.querySelectorAll(".mll-sec .mlw-head")];
+    const heads = [...container.querySelectorAll(".stl-sec .stw-head")];
     expect(
       heads.every((h) => h.getAttribute("aria-expanded") === "false"),
     ).toBe(true);
@@ -183,7 +183,7 @@ describe("the Tags and Presets panels", () => {
     const r = library();
     fireEvent.click(r.getByRole("button", { name: "Tags" }));
     const p = r.getByRole("complementary", { name: "Tags" });
-    expect(el(p, ".mls-list").textContent).toContain("visual1");
+    expect(el(p, ".sts-list").textContent).toContain("visual1");
     const name = within(p).getByRole("textbox", { name: "Name" });
     fireEvent.change(name, { target: { value: "looks" } });
     await opSent(r, { op: "tag.update", changes: { name: "looks" } });
@@ -251,13 +251,13 @@ describe("the selection's bar", () => {
   test("Select: count, All shown, None, Move to, Add to preset, Turn on in a world…", async () => {
     const r = library();
     fireEvent.click(r.getByRole("button", { name: "Select" }));
-    const bar = el(r.container, ".mls-selbar");
+    const bar = el(r.container, ".sts-selbar");
     expect(bar.textContent).toContain("None selected");
     fireEvent.click(within(bar).getByRole("button", { name: "All shown" }));
     expect(r.store.get().selection.length).toBe(5);
     fireEvent.click(within(bar).getByRole("button", { name: "None" }));
     fireEvent.click(
-      within(el(r.container, '.mll-card[data-module="b"]')).getByRole(
+      within(el(r.container, '.stl-card[data-module="b"]')).getByRole(
         "checkbox",
       ),
     );
@@ -289,10 +289,10 @@ describe("the selection's bar", () => {
   test("Tags for the selection: a click cycles all and none; Apply sends both", async () => {
     const r = library();
     fireEvent.click(r.getByRole("button", { name: "Select" }));
-    const bar = el(r.container, ".mls-selbar");
+    const bar = el(r.container, ".sts-selbar");
     for (const id of ["a", "b"])
       fireEvent.click(
-        within(el(r.container, `.mll-card[data-module="${id}"]`)).getByRole(
+        within(el(r.container, `.stl-card[data-module="${id}"]`)).getByRole(
           "checkbox",
         ),
       );
@@ -360,7 +360,7 @@ describe("a group's menu (6b3)", () => {
       }),
     );
     expect(r.store.get().selection).toEqual(["a"]);
-    expect(r.container.querySelector(".mls-selbar")).toBeTruthy();
+    expect(r.container.querySelector(".sts-selbar")).toBeTruthy();
     fireEvent.click(r.getByRole("button", { name: "Done" }));
     fireEvent.click(
       within(menu(r, "Combat")).getByRole("button", {
@@ -408,7 +408,7 @@ describe("a system's card and panel (6c)", () => {
     const p = r.getByRole("complementary", {
       name: "Dungeons & Dragons Fifth Edition",
     });
-    expect(el(p, ".mls-usedby").textContent).toContain("Used by 1 world");
+    expect(el(p, ".sts-usedby").textContent).toContain("Used by 1 world");
     fireEvent.click(within(p).getByRole("switch", { name: "Favourite" }));
     expect(r.page.foundryAction).toHaveBeenCalledWith({
       action: "favoritePackage",
@@ -447,9 +447,9 @@ describe("package 6 review fixes", () => {
   test("Tags for the selection: a tag cycled back to how it was sends nothing", async () => {
     const r = library();
     fireEvent.click(r.getByRole("button", { name: "Select" }));
-    const bar = el(r.container, ".mls-selbar");
+    const bar = el(r.container, ".sts-selbar");
     fireEvent.click(
-      within(el(r.container, '.mll-card[data-module="b"]')).getByRole(
+      within(el(r.container, '.stl-card[data-module="b"]')).getByRole(
         "checkbox",
       ),
     );
@@ -457,7 +457,7 @@ describe("package 6 review fixes", () => {
     const box = within(bar).getByRole("checkbox", { name: /visual/ });
     fireEvent.click(box);
     fireEvent.click(box);
-    expect(bar.querySelector(".ml-tagpop footer")?.textContent).toContain(
+    expect(bar.querySelector(".st-tagpop footer")?.textContent).toContain(
       "Click a tag",
     );
     const before = sent(r.send).length;
@@ -470,7 +470,7 @@ describe("package 6 review fixes", () => {
     const r = library();
     fireEvent.click(r.getByRole("button", { name: "Select" }));
     fireEvent.click(
-      within(el(r.container, '.mll-card[data-module="b"]')).getByRole(
+      within(el(r.container, '.stl-card[data-module="b"]')).getByRole(
         "checkbox",
       ),
     );
@@ -496,7 +496,7 @@ describe("package 6 review fixes", () => {
       key: "Escape",
     });
     await waitFor(() => {
-      expect(document.activeElement?.classList.contains("mlw-head")).toBe(true);
+      expect(document.activeElement?.classList.contains("stw-head")).toBe(true);
     });
   });
 });

@@ -5,22 +5,22 @@
    their controls. */
 
 /* One scroll for the whole page: the lists don't scroll on their own. */
-.mls-shell.mlp .mls-library .mls-body-main,
-.mls-shell.mlp .mll-sections,
-.mls-shell.mlp .mll-systems {
+.sts-shell.stp .sts-library .sts-body-main,
+.sts-shell.stp .stl-sections,
+.sts-shell.stp .stl-systems {
   display: block;
   overflow: visible;
   min-height: auto;
   max-height: none;
 }
 
-.mls-shell.mlp .mll-page {
+.sts-shell.stp .stl-page {
   flex: none;
   min-height: auto;
 }
 
 /* ---------- One row: the filter, View, ⋮ ---------- */
-.mls-shell.mlp .mll-controls.mlp-libhead {
+.sts-shell.stp .stl-controls.stp-libhead {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto auto;
   gap: 8px;
@@ -29,26 +29,26 @@
   padding: 10px 0 4px;
 }
 
-.mls-shell.mlp .mlp-libhead .filter {
+.sts-shell.stp .stp-libhead .filter {
   margin: 0;
   min-width: 0;
 }
 
-.mls-shell.mlp .mlp-libhead input[type="search"] {
+.sts-shell.stp .stp-libhead input[type="search"] {
   width: 100%;
-  height: var(--mlp-tap);
+  height: var(--stp-tap);
   font-size: 15px;
 }
 
-.mls-shell.mlp .mlp-libhead button.icon {
-  width: var(--mlp-tap);
-  height: var(--mlp-tap);
+.sts-shell.stp .stp-libhead button.icon {
+  width: var(--stp-tap);
+  height: var(--stp-tap);
   padding: 0;
   font-size: 16px;
 }
 
 /* ---------- New installs: one line ---------- */
-.mls-shell.mlp .mls-intake-band.mlp-intake {
+.sts-shell.stp .sts-intake-band.stp-intake {
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
@@ -58,44 +58,44 @@
   font-size: 14px;
 }
 
-.mls-shell.mlp .mlp-intake > span {
+.sts-shell.stp .stp-intake > span {
   flex: 1;
   min-width: 0;
 }
 
-.mls-shell.mlp .mlp-intake > button {
+.sts-shell.stp .stp-intake > button {
   flex: none;
   height: 36px;
   padding: 0 16px;
 }
 
-.mls-shell.mlp .mlp-intake > button.icon {
-  width: var(--mlp-tap);
-  height: var(--mlp-tap);
+.sts-shell.stp .stp-intake > button.icon {
+  width: var(--stp-tap);
+  height: var(--stp-tap);
   padding: 0;
   border-color: transparent;
   background: transparent;
 }
 
 /* ---------- Cards: one column, tags as coloured dots ---------- */
-.mls-shell.mlp .mll-card {
+.sts-shell.stp .stl-card {
   min-height: 60px;
 }
 
-.mls-shell.mlp .mll-card .t {
+.sts-shell.stp .stl-card .t {
   font-size: 15px;
 }
 
-.mls-shell.mlp .mll-card .l3 {
+.sts-shell.stp .stl-card .l3 {
   font-size: 12.5px;
 }
 
-.mls-shell.mlp .mll-card .l3 .tg {
+.sts-shell.stp .stl-card .l3 .tg {
   display: inline-flex;
   gap: 3px;
 }
 
-.mls-shell.mlp .mll-card .mll-tag {
+.sts-shell.stp .stl-card .stl-tag {
   min-width: 0;
   padding: 0;
   border: 0;
@@ -103,24 +103,24 @@
   font-size: 0;
 }
 
-.mls-shell.mlp .mll-card .mll-tag .ml-dot {
+.sts-shell.stp .stl-card .stl-tag .st-dot {
   margin: 0;
 }
 
 /* "+2" has no colour to show: it stays as text. */
-.mls-shell.mlp .mll-card .mll-tag:not(:has(.ml-dot)) {
+.sts-shell.stp .stl-card .stl-tag:not(:has(.st-dot)) {
   font-size: 11.5px;
   color: var(--color-text-subtle);
 }
 
-.mls-shell.mlp .mlw-headrow .ml-hbtn,
-.mls-shell.mlp .mls-gcheck {
-  min-width: var(--mlp-tap);
-  min-height: var(--mlp-tap);
+.sts-shell.stp .stw-headrow .st-hbtn,
+.sts-shell.stp .sts-gcheck {
+  min-width: var(--stp-tap);
+  min-height: var(--stp-tap);
 }
 
 /* ---------- Selecting: the count, All, None, Done and the actions, above the tabs ---------- */
-.mls-shell.mlp .mlp-dock > .mls-selbar {
+.sts-shell.stp .stp-dock > .sts-selbar {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   align-items: center;
@@ -131,40 +131,40 @@
   border: 0;
   border-top: 1px solid var(--color-cool-4);
   border-radius: 0;
-  background: var(--mlp-bar-bg);
+  background: var(--stp-bar-bg);
 }
 
-.mls-shell.mlp .mlp-dock > .mls-selbar > i,
-.mls-shell.mlp .mlp-dock > .mls-selbar > .mls-sep,
-.mls-shell.mlp .mlp-dock > .mls-selbar > .ml-spacer {
+.sts-shell.stp .stp-dock > .sts-selbar > i,
+.sts-shell.stp .stp-dock > .sts-selbar > .sts-sep,
+.sts-shell.stp .stp-dock > .sts-selbar > .st-spacer {
   display: none;
 }
 
-.mls-shell.mlp .mlp-dock > .mls-selbar > .mls-selcount {
+.sts-shell.stp .stp-dock > .sts-selbar > .sts-selcount {
   grid-column: 1;
   grid-row: 1;
   font-size: 14.5px;
 }
 
-.mls-shell.mlp .mlp-dock > .mls-selbar > button.bright {
+.sts-shell.stp .stp-dock > .sts-selbar > button.bright {
   grid-column: 4;
   grid-row: 1;
 }
 
-.mls-shell.mlp .mlp-dock > .mls-selbar button {
+.sts-shell.stp .stp-dock > .sts-selbar button {
   width: 100%;
-  height: var(--mlp-tap);
+  height: var(--stp-tap);
   padding: 0 4px;
   gap: 4px;
   font-size: 12.5px;
 }
 
-.mls-shell.mlp .mlp-dock > .mls-selbar .mls-popwrap {
+.sts-shell.stp .stp-dock > .sts-selbar .sts-popwrap {
   display: block;
   min-width: 0;
 }
 
-.mls-shell.mlp .mlp-dock > .mls-selbar .mls-popwrap > button {
+.sts-shell.stp .stp-dock > .sts-selbar .sts-popwrap > button {
   flex-direction: column;
   height: 52px;
   font-size: 11.5px;
@@ -173,16 +173,16 @@
 }
 
 /* ---------- The Sort sheet: labels above their controls ---------- */
-.mls-shell.mlp .mls-intake-item .mls-kv {
+.sts-shell.stp .sts-intake-item .sts-kv {
   grid-template-columns: minmax(0, 1fr);
   gap: 4px;
 }
 
-.mls-shell.mlp .mls-intake-item .mls-kv > :nth-child(odd) {
+.sts-shell.stp .sts-intake-item .sts-kv > :nth-child(odd) {
   margin-top: 6px;
 }
 
-.mls-shell.mlp .mls-panel .mls-kv :is(select, input[type="text"]) {
-  height: var(--mlp-tap);
+.sts-shell.stp .sts-panel .sts-kv :is(select, input[type="text"]) {
+  height: var(--stp-tap);
   font-size: 15px;
 }

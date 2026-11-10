@@ -214,7 +214,7 @@ importers:
 
   packages/extension:
     dependencies:
-      '@module-library/shared':
+      '@stagehand/shared':
         specifier: workspace:*
         version: link:../shared
       preact:
@@ -230,7 +230,7 @@ importers:
 
   packages/module:
     dependencies:
-      '@module-library/shared':
+      '@stagehand/shared':
         specifier: workspace:*
         version: link:../shared
       zod:

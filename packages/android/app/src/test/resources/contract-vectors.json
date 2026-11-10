@@ -314,97 +314,97 @@
    "allowed": false
   },
   {
-   "url": "https://raw.githubusercontent.com/Affid/module-library/main/config/setup-config.json",
+   "url": "https://raw.githubusercontent.com/Affid/stagehand/main/config/setup-config.json",
    "purpose": "release",
    "releaseHistory": true,
    "allowed": false
   },
   {
-   "url": "https://raw.githubusercontent.com/Affid/module-library/main/config/setup-config.json",
+   "url": "https://raw.githubusercontent.com/Affid/stagehand/main/config/setup-config.json",
    "purpose": "release",
    "releaseHistory": false,
    "allowed": false
   },
   {
-   "url": "https://raw.githubusercontent.com/Affid/module-library/main/config/setup-config.json",
+   "url": "https://raw.githubusercontent.com/Affid/stagehand/main/config/setup-config.json",
    "purpose": "config",
    "releaseHistory": true,
    "allowed": true
   },
   {
-   "url": "https://raw.githubusercontent.com/Affid/module-library/main/config/setup-config.json",
+   "url": "https://raw.githubusercontent.com/Affid/stagehand/main/config/setup-config.json",
    "purpose": "config",
    "releaseHistory": false,
    "allowed": true
   },
   {
-   "url": "https://raw.githubusercontent.com/Affid/module-library/main/config/setup-config.json?x",
+   "url": "https://raw.githubusercontent.com/Affid/stagehand/main/config/setup-config.json?x",
    "purpose": "release",
    "releaseHistory": true,
    "allowed": false
   },
   {
-   "url": "https://raw.githubusercontent.com/Affid/module-library/main/config/setup-config.json?x",
-   "purpose": "release",
-   "releaseHistory": false,
-   "allowed": false
-  },
-  {
-   "url": "https://raw.githubusercontent.com/Affid/module-library/main/config/setup-config.json?x",
-   "purpose": "config",
-   "releaseHistory": true,
-   "allowed": false
-  },
-  {
-   "url": "https://raw.githubusercontent.com/Affid/module-library/main/config/setup-config.json?x",
-   "purpose": "config",
-   "releaseHistory": false,
-   "allowed": false
-  },
-  {
-   "url": "https://raw.githubusercontent.com/Affid/module-library/main/config/setup-config.json\n",
-   "purpose": "release",
-   "releaseHistory": true,
-   "allowed": false
-  },
-  {
-   "url": "https://raw.githubusercontent.com/Affid/module-library/main/config/setup-config.json\n",
+   "url": "https://raw.githubusercontent.com/Affid/stagehand/main/config/setup-config.json?x",
    "purpose": "release",
    "releaseHistory": false,
    "allowed": false
   },
   {
-   "url": "https://raw.githubusercontent.com/Affid/module-library/main/config/setup-config.json\n",
+   "url": "https://raw.githubusercontent.com/Affid/stagehand/main/config/setup-config.json?x",
    "purpose": "config",
    "releaseHistory": true,
    "allowed": false
   },
   {
-   "url": "https://raw.githubusercontent.com/Affid/module-library/main/config/setup-config.json\n",
+   "url": "https://raw.githubusercontent.com/Affid/stagehand/main/config/setup-config.json?x",
    "purpose": "config",
    "releaseHistory": false,
    "allowed": false
   },
   {
-   "url": "HTTPS://RAW.GITHUBUSERCONTENT.COM/AFFID/MODULE-LIBRARY/MAIN/CONFIG/SETUP-CONFIG.JSON",
+   "url": "https://raw.githubusercontent.com/Affid/stagehand/main/config/setup-config.json\n",
    "purpose": "release",
    "releaseHistory": true,
    "allowed": false
   },
   {
-   "url": "HTTPS://RAW.GITHUBUSERCONTENT.COM/AFFID/MODULE-LIBRARY/MAIN/CONFIG/SETUP-CONFIG.JSON",
+   "url": "https://raw.githubusercontent.com/Affid/stagehand/main/config/setup-config.json\n",
    "purpose": "release",
    "releaseHistory": false,
    "allowed": false
   },
   {
-   "url": "HTTPS://RAW.GITHUBUSERCONTENT.COM/AFFID/MODULE-LIBRARY/MAIN/CONFIG/SETUP-CONFIG.JSON",
+   "url": "https://raw.githubusercontent.com/Affid/stagehand/main/config/setup-config.json\n",
    "purpose": "config",
    "releaseHistory": true,
    "allowed": false
   },
   {
-   "url": "HTTPS://RAW.GITHUBUSERCONTENT.COM/AFFID/MODULE-LIBRARY/MAIN/CONFIG/SETUP-CONFIG.JSON",
+   "url": "https://raw.githubusercontent.com/Affid/stagehand/main/config/setup-config.json\n",
+   "purpose": "config",
+   "releaseHistory": false,
+   "allowed": false
+  },
+  {
+   "url": "HTTPS://RAW.GITHUBUSERCONTENT.COM/AFFID/STAGEHAND/MAIN/CONFIG/SETUP-CONFIG.JSON",
+   "purpose": "release",
+   "releaseHistory": true,
+   "allowed": false
+  },
+  {
+   "url": "HTTPS://RAW.GITHUBUSERCONTENT.COM/AFFID/STAGEHAND/MAIN/CONFIG/SETUP-CONFIG.JSON",
+   "purpose": "release",
+   "releaseHistory": false,
+   "allowed": false
+  },
+  {
+   "url": "HTTPS://RAW.GITHUBUSERCONTENT.COM/AFFID/STAGEHAND/MAIN/CONFIG/SETUP-CONFIG.JSON",
+   "purpose": "config",
+   "releaseHistory": true,
+   "allowed": false
+  },
+  {
+   "url": "HTTPS://RAW.GITHUBUSERCONTENT.COM/AFFID/STAGEHAND/MAIN/CONFIG/SETUP-CONFIG.JSON",
    "purpose": "config",
    "releaseHistory": false,
    "allowed": false
@@ -2451,7 +2451,7 @@
    "type": "scripts.registered",
    "payload": {
     "ids": [
-     "ml-a"
+     "st-a"
     ]
    },
    "valid": true
@@ -2825,7 +2825,7 @@
   {
    "type": "fetch",
    "payload": {
-    "url": "https://raw.githubusercontent.com/Affid/module-library/main/config/setup-config.json",
+    "url": "https://raw.githubusercontent.com/Affid/stagehand/main/config/setup-config.json",
     "purpose": "config"
    },
    "valid": true
@@ -3232,24 +3232,24 @@
  ],
  "wrapForServer": [
   {
-   "script": "console.log(ML_APP_SERVER);",
+   "script": "console.log(ST_APP_SERVER);",
    "server": "http://localhost:30000",
-   "out": "(function (ML_APP_SERVER) {\nconsole.log(ML_APP_SERVER);\n})(\"http://localhost:30000\");\n"
+   "out": "(function (ST_APP_SERVER) {\nconsole.log(ST_APP_SERVER);\n})(\"http://localhost:30000\");\n"
   },
   {
    "script": "x",
    "server": "https://vtt.example.com/foundry",
-   "out": "(function (ML_APP_SERVER) {\nx\n})(\"https://vtt.example.com/foundry\");\n"
+   "out": "(function (ST_APP_SERVER) {\nx\n})(\"https://vtt.example.com/foundry\");\n"
   },
   {
    "script": "a\nb",
    "server": "http://h:1/p\"q\\r",
-   "out": "(function (ML_APP_SERVER) {\na\nb\n})(\"http://h:1/p\\\"q\\\\r\");\n"
+   "out": "(function (ST_APP_SERVER) {\na\nb\n})(\"http://h:1/p\\\"q\\\\r\");\n"
   },
   {
    "script": "",
    "server": "http://h/ é\u0001",
-   "out": "(function (ML_APP_SERVER) {\n\n})(\"http://h/ é\\u0001\");\n"
+   "out": "(function (ST_APP_SERVER) {\n\n})(\"http://h/ é\\u0001\");\n"
   }
  ]
 }

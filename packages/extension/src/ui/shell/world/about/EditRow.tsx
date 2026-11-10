@@ -27,7 +27,7 @@ function Editing<T>(props: {
   const { t } = useUi();
   const { edit } = props;
   return (
-    <div class="mlw-edit">
+    <div class="stw-edit">
       {edit.editor({ value: props.value, onValue: props.onValue })}
       <div class="bar">
         <button
@@ -59,7 +59,7 @@ export function SavedMark(props: { readonly on: boolean }) {
   return (
     <span role="status">
       {props.on ? (
-        <span class="mlw-saved">
+        <span class="stw-saved">
           <i class="fa-solid fa-check" aria-hidden="true" />
           {t("about.saved")}
         </span>
@@ -120,7 +120,7 @@ export function EditRow<T>(props: {
               <button
                 type="button"
                 ref={focus.link}
-                class="ml-link"
+                class="st-link"
                 aria-label={edit.linkLabel}
                 onClick={() => {
                   setSaved(false);

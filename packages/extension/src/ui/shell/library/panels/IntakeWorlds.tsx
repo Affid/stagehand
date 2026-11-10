@@ -1,7 +1,7 @@
 // Where a new module runs: a chip per world with the companion, ticked where
 // it is on after the next launch. With many worlds only those it is on in
 // show, and the rest are one click away (prototype intakeItem).
-import type { PackageInfo } from "@module-library/shared/package";
+import type { PackageInfo } from "@stagehand/shared/package";
 import { useState } from "preact/hooks";
 import { Icon } from "../../../common/widgets.tsx";
 import { useUi } from "../../../context.ts";
@@ -45,7 +45,7 @@ export function IntakeWorlds(props: {
         <button
           type="button"
           key={w.id}
-          class={`ml-chip mls-tchip${w.on ? " on" : ""}${!w.on && props.suggested.has(w.id) ? " sug" : ""}`}
+          class={`st-chip sts-tchip${w.on ? " on" : ""}${!w.on && props.suggested.has(w.id) ? " sug" : ""}`}
           aria-pressed={w.on}
           disabled={!canChange}
           onClick={() => void actions.flip(w.id, props.pkg.id, !w.on)}
@@ -55,12 +55,12 @@ export function IntakeWorlds(props: {
         </button>
       ))}
       {!open && !shown.length ? (
-        <span class="ml-muted">{t("intake.noWorld")}</span>
+        <span class="st-muted">{t("intake.noWorld")}</span>
       ) : null}
       {all.length > FEW ? (
         <button
           type="button"
-          class="ml-link mls-morew"
+          class="st-link sts-morew"
           onClick={() => setOpen(!open)}
         >
           {open

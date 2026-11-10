@@ -65,7 +65,7 @@ function Name(props: { readonly b: BackupInfo; readonly latest: boolean }) {
         {props.latest ? (
           <>
             {" "}
-            <span class="mlw-pill">{t("bk.latest")}</span>
+            <span class="stw-pill">{t("bk.latest")}</span>
           </>
         ) : null}
       </span>

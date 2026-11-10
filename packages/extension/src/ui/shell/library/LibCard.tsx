@@ -2,13 +2,13 @@
 // Foundry's star, lock and an update to install; one line (not verified,
 // note or description); up to three tags, version and how many worlds it is
 // on in. In select mode a checkbox picks it for the selection bar.
-import type { PackageInfo } from "@module-library/shared/package";
+import type { PackageInfo } from "@stagehand/shared/package";
 import {
   type CoreVersion,
   isCompatibilityRisk,
   shownVersion,
   testAvailability,
-} from "@module-library/shared/version";
+} from "@stagehand/shared/version";
 import { Icon } from "../../common/widgets.tsx";
 import { useUi } from "../../context.ts";
 import { plural } from "../../i18n.ts";
@@ -61,14 +61,14 @@ function Marks(props: { readonly pkg: PackageInfo }) {
     <>
       {pkg.favorite ? (
         <i
-          class="fa-solid fa-star mlw-fav"
+          class="fa-solid fa-star stw-fav"
           title={t("lib.favourite")}
           aria-label={t("lib.favourite")}
         />
       ) : null}
       {pkg.locked ? (
         <i
-          class="fa-solid fa-lock mlw-lock"
+          class="fa-solid fa-lock stw-lock"
           title={t("lib.locked")}
           aria-label={t("lib.locked")}
         />
@@ -76,7 +76,7 @@ function Marks(props: { readonly pkg: PackageInfo }) {
       {update ? (
         <button
           type="button"
-          class="mlw-upd"
+          class="stw-upd"
           disabled={!canChange}
           title={t("lib.updateFrom", { version: pkg.version })}
           aria-label={t("lib.updateTo", { title: pkg.title, version: update })}
@@ -105,13 +105,13 @@ function Tags(props: { readonly id: string }) {
   return (
     <span class="tg">
       {tags.slice(0, MAX_TAGS).map((tag) => (
-        <span key={tag.id} class="mll-tag" style={{ "--ml-c": tag.color }}>
-          <i class="ml-dot" aria-hidden="true" />
+        <span key={tag.id} class="stl-tag" style={{ "--st-c": tag.color }}>
+          <i class="st-dot" aria-hidden="true" />
           {tag.name}
         </span>
       ))}
       {more.length ? (
-        <span class="mll-tag" title={more.map((m) => m.name).join(", ")}>
+        <span class="stl-tag" title={more.map((m) => m.name).join(", ")}>
           {t("lib.moreTags", { n: more.length })}
         </span>
       ) : null}
@@ -174,7 +174,7 @@ export function LibCard(props: {
   };
   return (
     <li
-      class={`mll-card${selected ? " selected" : ""}${props.open ? " viewing" : ""}${isRisk(pkg, props.core) ? " risk" : ""}`}
+      class={`stl-card${selected ? " selected" : ""}${props.open ? " viewing" : ""}${isRisk(pkg, props.core) ? " risk" : ""}`}
       data-module={pkg.id}
     >
       <div class="l1">
@@ -193,7 +193,7 @@ export function LibCard(props: {
           onOpen={props.onOpen}
         />
         {state.data.fresh.includes(pkg.id) ? (
-          <span class="mls-newtag">{t("lib.new")}</span>
+          <span class="sts-newtag">{t("lib.new")}</span>
         ) : null}
         <Marks pkg={pkg} />
       </div>

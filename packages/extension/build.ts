@@ -103,8 +103,8 @@ async function buildEntry(
     logLevel: "warn",
     oxc: { jsx: { runtime: "automatic", importSource: "preact" } },
     define: {
-      __ML_BUILD__: JSON.stringify(BUILD),
-      __ML_DEV__: JSON.stringify(!RELEASE),
+      __ST_BUILD__: JSON.stringify(BUILD),
+      __ST_DEV__: JSON.stringify(!RELEASE),
       ...define,
     },
     build: {
@@ -116,7 +116,7 @@ async function buildEntry(
       lib: {
         entry: entryFile(name),
         formats: ["iife"],
-        name: `moduleLibrary_${name.replace(/-/g, "_")}`,
+        name: `stagehand_${name.replace(/-/g, "_")}`,
         fileName: () => `${name}.js`,
       },
     },
@@ -159,9 +159,9 @@ async function buildApp(): Promise<void> {
   const outDir = join(root, "dist-app");
   rmSync(outDir, { recursive: true, force: true });
   const define = {
-    __ML_VERSION__: JSON.stringify(VERSION),
-    __ML_SETUP_CSS__: JSON.stringify(setupCss()),
-    __ML_RUNNING_CSS__: JSON.stringify(
+    __ST_VERSION__: JSON.stringify(VERSION),
+    __ST_SETUP_CSS__: JSON.stringify(setupCss()),
+    __ST_RUNNING_CSS__: JSON.stringify(
       readFileSync(join(root, "src", "app", "running", "running.css"), "utf8"),
     ),
   };

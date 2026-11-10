@@ -10,7 +10,7 @@ import { plural } from "../../../i18n.ts";
 import { BackupRow } from "../../world/backups/BackupRow.tsx";
 import { backupAge, tip } from "../../world/backups/text.ts";
 import { versionTag } from "./version.ts";
-import { shownVersion } from "@module-library/shared/version";
+import { shownVersion } from "@stagehand/shared/version";
 
 export type RunPackage = (
   p: PackageBackups,
@@ -42,7 +42,7 @@ function Inner(props: {
 }) {
   const { p } = props;
   return (
-    <ol class="mlb-inner">
+    <ol class="stb-inner">
       {p.backups.map((b, k) => (
         <InnerRow key={b.id} {...props} b={b} latest={k === 0} />
       ))}
@@ -85,7 +85,7 @@ function Name(props: {
         {p.installed ? null : (
           <>
             {" "}
-            <span class="mlw-pill" title={t("sb.goneTip")}>
+            <span class="stw-pill" title={t("sb.goneTip")}>
               {t("sb.gone")}
             </span>
           </>
@@ -158,7 +158,7 @@ export function PackageRow(props: PackageProps) {
   const { p } = props;
   return (
     <li
-      class={`mlb-pkg${props.open ? " open" : ""}`}
+      class={`stb-pkg${props.open ? " open" : ""}`}
       data-package={`${p.type}:${p.id}`}
     >
       <RowHead {...props} />
@@ -166,7 +166,7 @@ export function PackageRow(props: PackageProps) {
       {props.open && p.type === "world" && p.installed ? (
         <button
           type="button"
-          class="ml-link mlb-open"
+          class="st-link stb-open"
           onClick={() => {
             store.set({
               route: { kind: "world", worldId: p.id, tab: "backups" },

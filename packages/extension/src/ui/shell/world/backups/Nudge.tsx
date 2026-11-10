@@ -1,5 +1,5 @@
 // While changes wait for the next launch: back up first, or it's done.
-import type { WorldInfo } from "@module-library/shared/world";
+import type { WorldInfo } from "@stagehand/shared/world";
 import type { BackupInfo } from "../../../../page-backups.ts";
 import { Icon } from "../../../common/widgets.tsx";
 import { useUi } from "../../../context.ts";
@@ -31,7 +31,7 @@ export function Nudge(props: {
   const done = backupForQueue(queuedAt, props.latest);
   if (done)
     return (
-      <div class="mlw-nudge done">
+      <div class="stw-nudge done">
         <Icon name="circle-check" />
         <span>
           {t("bk.nudgeDone", {
@@ -43,7 +43,7 @@ export function Nudge(props: {
       </div>
     );
   return (
-    <div class="mlw-nudge">
+    <div class="stw-nudge">
       <Icon name="shield-halved" />
       <span>
         <b>{plural(t, "bk.changes", n)}</b> {t("bk.nudge")}

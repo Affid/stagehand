@@ -3,9 +3,9 @@
 // Foundry's. Never breaks Setup: if the page can't start, Foundry's stays.
 // Started by the extension's setup-ui script and by the app's app-setup
 // script, each with its own channel, background and ports.
-import { logError } from "@module-library/shared/log";
-import { parseCoreVersion } from "@module-library/shared/version";
-import { type SetupData, SetupDataSchema } from "@module-library/shared/world";
+import { logError } from "@stagehand/shared/log";
+import { parseCoreVersion } from "@stagehand/shared/version";
+import { type SetupData, SetupDataSchema } from "@stagehand/shared/world";
 import { type Adapter, V14_SELECTORS } from "../adapters/config.ts";
 import { type AdapterChoice, selectAdapter } from "../adapters/select.ts";
 import type { SetupState } from "../messages.ts";

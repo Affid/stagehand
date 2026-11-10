@@ -82,7 +82,7 @@ test world's next session and restores it; the others only read and open dialogs
    the same names, so they're the safest base. The private flows and the
    unexported classes are internal and can change in any major version; the
    fallback (show Foundry's page again) covers that. Not checked on V13.
-6. **Server state touched by the spike:** none left changed. ml-fixture-b was
+6. **Server state touched by the spike:** none left changed. st-fixture-b was
    locked and unlocked again; favourites are empty as before; the test world
    was launched and shut down; no backup was taken.
 
@@ -114,7 +114,7 @@ read-only live check (`spike-about.ts`: opened windows and menus, confirmed noth
 - WorldConfig saves with `POST /setup {action: "editWorld", id, ...changes}` after
   `world.validate({changes, clean: true})`; the server's `World.update` calls
   `updateSource(changes)` (a partial merge), saves `world.json` and returns the world.
-- Live test (`spike-edit.ts`) on module-library-test: `game.post({action: "editWorld", id,
+- Live test (`spike-edit.ts`) on stagehand-test: `game.post({action: "editWorld", id,
 nextSession})` saved one field, `world.json` kept every other field; an empty title was
   rejected by `validate` before sending; the value was restored to null and checked on disk.
 - `foundry.applications.elements.HTMLProseMirrorElement.create(...)` renders on Setup, and

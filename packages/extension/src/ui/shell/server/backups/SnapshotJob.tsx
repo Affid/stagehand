@@ -35,7 +35,7 @@ export function SnapshotJob(props: { readonly task: Progress }) {
     .reverse()
     .find((x) => x.action === "createBackup" && x.title);
   return (
-    <div class="mlb-job" role="status" title={t("sb.jobTip")}>
+    <div class="stb-job" role="status" title={t("sb.jobTip")}>
       <div class="t">
         <strong>{t("sb.job", { pct: String(pct) })}</strong>
         <span>

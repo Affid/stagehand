@@ -4,7 +4,7 @@
 // what it saw in the launch note (the page reloads once on the way),
 // records the result for our running page and tells native, once. It gives
 // up shortly before native does.
-import { logError } from "@module-library/shared/log";
+import { logError } from "@stagehand/shared/log";
 import { watchStep } from "./apply-watch.ts";
 import {
   type ApplyResult,

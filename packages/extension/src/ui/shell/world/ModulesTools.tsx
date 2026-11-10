@@ -1,6 +1,6 @@
 // The Modules tab's tools, in the tab row as the prototype: the filter,
 // All / On / Changes, Add, and View options (group by, cards or list).
-import type { WorldInfo } from "@module-library/shared/world";
+import type { WorldInfo } from "@stagehand/shared/world";
 import { useDisclosure } from "../../common/disclosure.ts";
 import { Icon } from "../../common/widgets.tsx";
 import { useUi } from "../../context.ts";
@@ -29,9 +29,9 @@ function ViewBody(props: { readonly first: { current: HTMLElement | null } }) {
     store.set((s) => ({ worldView: { ...s.worldView, ...next } }));
   };
   return (
-    <div class="mlc-viewbody">
+    <div class="stc-viewbody">
       <label>
-        <span class="ml-label">{t("lib.groupBy")}</span>
+        <span class="st-label">{t("lib.groupBy")}</span>
         <select
           ref={(el) => {
             props.first.current = el;
@@ -46,8 +46,8 @@ function ViewBody(props: { readonly first: { current: HTMLElement | null } }) {
           ))}
         </select>
       </label>
-      <span class="ml-label">{t("wp.layout")}</span>
-      <span class="ml-seg2" role="group" aria-label={t("wp.layout")}>
+      <span class="st-label">{t("wp.layout")}</span>
+      <span class="st-seg2" role="group" aria-label={t("wp.layout")}>
         {LAYOUTS.map((l) => (
           <button
             type="button"
@@ -69,11 +69,11 @@ function ViewOptions() {
   const { t } = useUi();
   const d = useDisclosure<HTMLSpanElement>();
   return (
-    <span class="mlc-viewwrap" ref={d.wrap} onFocusOut={d.onFocusOut}>
+    <span class="stc-viewwrap" ref={d.wrap} onFocusOut={d.onFocusOut}>
       <button
         type="button"
         ref={d.trigger}
-        class={`icon${d.open ? " ml-on" : ""}`}
+        class={`icon${d.open ? " st-on" : ""}`}
         aria-label={t("wp.view")}
         title={t("wp.view")}
         aria-expanded={d.open}
@@ -84,7 +84,7 @@ function ViewOptions() {
       </button>
       {d.open ? (
         <section
-          class="ml-pop mlc-viewpop"
+          class="st-pop stc-viewpop"
           role="region"
           aria-label={t("wp.view")}
         >
@@ -112,7 +112,7 @@ export function ModulesTools(props: {
         ? props.model.nextCount
         : props.model.changes;
   return (
-    <div class="mlc-tools">
+    <div class="stc-tools">
       <input
         type="search"
         aria-label={t("wp.filter")}
@@ -120,7 +120,7 @@ export function ModulesTools(props: {
         value={filters.text}
         onInput={(e) => filters.onText(e.currentTarget.value)}
       />
-      <span class="ml-seg2" role="group" aria-label={t("wp.show")}>
+      <span class="st-seg2" role="group" aria-label={t("wp.show")}>
         {SHOWS.map((s) => (
           <button
             type="button"

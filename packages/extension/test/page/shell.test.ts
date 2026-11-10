@@ -20,13 +20,13 @@ describe("taking over Foundry's Setup layout", () => {
   test("on hides Foundry's layout with one style and a body class; off gives it back", () => {
     expect(setShell(document, true)).toEqual({ on: true });
     expect(document.body.classList.contains(SHELL_CLASS)).toBe(true);
-    expect(document.querySelectorAll("style#ml-shell-style")).toHaveLength(1);
+    expect(document.querySelectorAll("style#st-shell-style")).toHaveLength(1);
     // Only while our page is mounted: if the UI script dies, Foundry's page shows.
-    expect(document.getElementById("ml-shell-style")?.textContent).toContain(
-      ":has(#ml-shell-root)",
+    expect(document.getElementById("st-shell-style")?.textContent).toContain(
+      ":has(#st-shell-root)",
     );
     setShell(document, true);
-    expect(document.querySelectorAll("style#ml-shell-style")).toHaveLength(1);
+    expect(document.querySelectorAll("style#st-shell-style")).toHaveLength(1);
     expect(setShell(document, false)).toEqual({ on: false });
     expect(document.body.classList.contains(SHELL_CLASS)).toBe(false);
   });

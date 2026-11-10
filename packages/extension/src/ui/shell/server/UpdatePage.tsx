@@ -25,7 +25,7 @@ const VIEW_ICONS: Record<View, string> = {
   compat: "puzzle-piece",
   history: "clock-rotate-left",
 };
-const UPDATE_TABS = "ml-ut";
+const UPDATE_TABS = "st-ut";
 
 /** "You're on Foundry 14.370 (Stable). 14.371 is available." */
 function Summary(props: {
@@ -56,7 +56,7 @@ function UpToDate(props: { readonly u: UpdateState }) {
   const { state, t } = useUi();
   const version = state.data.setup?.core.version ?? "";
   return (
-    <div class="mlw-empty">
+    <div class="stw-empty">
       <Icon name="circle-check" />
       <h3>{t("up.upToDate")}</h3>
       <p>
@@ -69,7 +69,7 @@ function UpToDate(props: { readonly u: UpdateState }) {
         <Icon name="rotate" />
         {t("up.checkAgain")}
       </button>
-      <p class="ml-muted">{t("up.checksItself")}</p>
+      <p class="st-muted">{t("up.checksItself")}</p>
     </div>
   );
 }
@@ -77,10 +77,10 @@ function UpToDate(props: { readonly u: UpdateState }) {
 function Problem(props: { readonly u: UpdateState; readonly error: string }) {
   const { t } = useUi();
   return (
-    <div class="mlw-empty">
+    <div class="stw-empty">
       <Icon name="triangle-exclamation" />
       <h3>{t("up.unreachable")}</h3>
-      {props.error ? <p class="ml-muted">{props.error}</p> : null}
+      {props.error ? <p class="st-muted">{props.error}</p> : null}
       <button type="button" onClick={() => void props.u.check()}>
         <Icon name="rotate" />
         {t("up.checkAgain")}
@@ -92,7 +92,7 @@ function Problem(props: { readonly u: UpdateState; readonly error: string }) {
 function Checking() {
   const { t } = useUi();
   return (
-    <div class="mlw-empty" role="status">
+    <div class="stw-empty" role="status">
       <Icon name="spinner fa-spin-pulse" />
       <p>{t("up.checking")}</p>
     </div>
@@ -106,7 +106,7 @@ function Tabs(props: {
 }) {
   const { t } = useUi();
   return (
-    <nav class="mls-subtabs mlu-tabs">
+    <nav class="sts-subtabs stu-tabs">
       <TabList
         id={UPDATE_TABS}
         label={t("up.tabs")}
@@ -157,8 +157,8 @@ function LeftPanel(props: {
         c.data ? (
           <CompatView release={release} data={c.data} />
         ) : (
-          <div class="mlu-notes" role="status">
-            <p class="ml-muted">{c.error ?? t("up.previewing")}</p>
+          <div class="stu-notes" role="status">
+            <p class="st-muted">{c.error ?? t("up.previewing")}</p>
           </div>
         )
       ) : view === "history" ? (
@@ -186,8 +186,8 @@ function ReleaseView(props: {
     ? [...c.data.system, ...c.data.module].filter(toCheck).length
     : 0;
   return (
-    <div class="mlu-cols">
-      <div class="mlu-left">
+    <div class="stu-cols">
+      <div class="stu-left">
         <Tabs view={view} onView={setView} toCheck={bad} />
         <LeftPanel
           view={view}
@@ -197,7 +197,7 @@ function ReleaseView(props: {
           compat={c}
         />
       </div>
-      <div class="mlu-side">
+      <div class="stu-side">
         <ActionBox u={u} release={release} />
         {view === "compat" ? null : (
           <CompatBox
@@ -228,7 +228,7 @@ export function UpdatePage() {
   const u = useUpdate();
   const release = u.phase.kind === "release" ? u.phase.release : undefined;
   return (
-    <div class="mlb-page ml-app mlu-page">
+    <div class="stb-page st-app stu-page">
       <PageHead
         title={t("up.title")}
         summary={

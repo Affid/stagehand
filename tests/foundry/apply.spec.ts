@@ -78,13 +78,13 @@ const reported = async (p: Page, id: string): Promise<string | undefined> =>
 const lastChange = async (): Promise<string> =>
   (await commands()).at(-1)?.id ?? "";
 
-const shell = (): Locator => page.locator("#ml-shell-root");
-const banner = (): Locator => shell().locator(".mls-banner");
+const shell = (): Locator => page.locator("#st-shell-root");
+const banner = (): Locator => shell().locator(".sts-banner");
 const inWorldDialog = (p: Page): Locator =>
   p.locator("dialog.application", { hasText: "Stagehand" });
 const flip = (id: string): Promise<void> =>
   shell()
-    .locator(`.mlw-card[data-module="${id}"] input[role="switch"]`)
+    .locator(`.stw-card[data-module="${id}"] input[role="switch"]`)
     .click();
 
 async function backToSetup(): Promise<void> {
@@ -97,9 +97,9 @@ async function backToSetup(): Promise<void> {
     maxRedirects: 0,
   });
   await page.goto(`${env.url}/setup`);
-  await shell().locator(".mls-top").waitFor();
+  await shell().locator(".sts-top").waitFor();
   await exitTour(page);
-  await shell().locator(`.mls-world[data-world="${TEST_WORLD.id}"]`).click();
+  await shell().locator(`.sts-world[data-world="${TEST_WORLD.id}"]`).click();
 }
 
 /** A launch Setup didn't review: Foundry's own, from the admin API. */
@@ -154,20 +154,20 @@ test("the first launch reports the world; its modules show on Setup", async () =
   await expect(inWorldDialog(page)).toHaveCount(0);
   await backToSetup();
   await expect(
-    shell().locator('.mlw-card[data-module="ml-fixture-a"]'),
+    shell().locator('.stw-card[data-module="st-fixture-a"]'),
   ).toBeVisible();
 });
 
 test("Apply and launch: the review is the confirmation; dependencies come along; one reload", async () => {
-  await flip("ml-fixture-a");
+  await flip("st-fixture-a");
   // Fixture A brings its library along: two modules turn on.
-  await expect(banner().locator(".mlc-badge")).toHaveText("2");
+  await expect(banner().locator(".stc-badge")).toHaveText("2");
   await applyAndLaunch("2 changes");
   await joinAfterLaunch();
   // No dialog: the world applies at once and reloads once.
   await expect
     .poll(() => activeModules(page).catch(() => []), { timeout: 60_000 })
-    .toEqual(["ml-fixture-a", "ml-fixture-lib", COMPANION_ID].sort());
+    .toEqual(["st-fixture-a", "st-fixture-lib", COMPANION_ID].sort());
   await waitReady(page);
   await expect(inWorldDialog(page)).toHaveCount(0);
   // The companion's report in the world says so; Setup reads it next time.
@@ -185,13 +185,13 @@ test("Setup reads the world's report: the change applied, three modules on", asy
   await expect(banner()).toContainText("3 modules on now");
   await expect(
     shell().locator(
-      '.mlw-card[data-module="ml-fixture-a"] input[role="switch"]',
+      '.stw-card[data-module="st-fixture-a"] input[role="switch"]',
     ),
   ).toBeChecked();
 });
 
 test("a remove that others need still asks in the world (the live check differs)", async () => {
-  await flip("ml-fixture-lib");
+  await flip("st-fixture-lib");
   await applyAndLaunch("1 change");
   await joinAfterLaunch();
   const dialog = inWorldDialog(page);
@@ -208,8 +208,8 @@ test("a remove that others need still asks in the world (the live check differs)
 
 test("a launch Setup didn't review: the Assistant GM gets nothing; the GM can discard (PR-4)", async () => {
   await backToSetup();
-  await flip("ml-fixture-a");
-  await expect(banner().locator(".mlc-badge")).toHaveText("2");
+  await flip("st-fixture-a");
+  await expect(banner().locator(".stc-badge")).toHaveText("2");
   await launchWorld(admin, TEST_WORLD.id);
   await page.goto("about:blank");
   await joinWorld(page, env.url, "Assistant");
@@ -232,8 +232,8 @@ test("a launch Setup didn't review: the Assistant GM gets nothing; the GM can di
 test("Launch without changes holds the queue for that launch", async () => {
   await backToSetup();
   const before = (await commands()).length;
-  await flip("ml-fixture-a");
-  await expect(banner().locator(".mlc-badge")).toHaveText("2");
+  await flip("st-fixture-a");
+  await expect(banner().locator(".stc-badge")).toHaveText("2");
   await banner()
     .getByRole("button", { name: /^Launch/ })
     .click();
@@ -268,7 +268,7 @@ test("a Gamemaster in a browser without Stagehand applies the world's queue, and
     await gm.waitForEvent("load");
     await waitReady(gm);
     expect(await activeModules(gm)).toEqual(
-      ["ml-fixture-a", "ml-fixture-lib", COMPANION_ID].sort(),
+      ["st-fixture-a", "st-fixture-lib", COMPANION_ID].sort(),
     );
     await expect.poll(() => reported(gm, id)).toBe("applied");
   } finally {

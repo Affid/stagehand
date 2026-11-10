@@ -1,10 +1,7 @@
 // Saving a world's details from the new Setup page (build plan, Phase 4):
 // the UI asks with SAVE_WORLD and a request id; the page world answers
 // SAVE_DONE with the same id and an error if it failed. Checked both ways.
-import {
-  type ScheduleData,
-  ScheduleSchema,
-} from "@module-library/shared/world";
+import { type ScheduleData, ScheduleSchema } from "@stagehand/shared/world";
 
 type Loose = Readonly<Record<string, unknown>>;
 

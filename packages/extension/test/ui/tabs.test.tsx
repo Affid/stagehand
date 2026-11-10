@@ -15,14 +15,14 @@ function Harness(props: { readonly start?: K }) {
   return (
     <>
       <TabList
-        id="ml-t"
+        id="st-t"
         label="Sections"
         tabs={KEYS}
         current={tab}
         onTab={setTab}
         render={(k) => `Tab ${k}`}
       />
-      <TabPanel id="ml-t" tab={tab}>
+      <TabPanel id="st-t" tab={tab}>
         <p>Panel {tab}</p>
       </TabPanel>
     </>

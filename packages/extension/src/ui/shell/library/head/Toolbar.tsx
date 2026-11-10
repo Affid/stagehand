@@ -23,7 +23,7 @@ function PanelToggle(props: {
   return (
     <button
       type="button"
-      class={on ? "ml-on" : ""}
+      class={on ? "st-on" : ""}
       aria-pressed={on}
       onClick={() =>
         store.set({ side: on ? null : { kind: props.kind }, panel: null })
@@ -38,8 +38,8 @@ function PanelToggle(props: {
 export function Toolbar(props: ToolbarProps) {
   const { t, canChange } = useUi();
   return (
-    <div class="ml-row mll-toolbar">
-      <span class="ml-label">{t("lib.groupBy")}</span>
+    <div class="st-row stl-toolbar">
+      <span class="st-label">{t("lib.groupBy")}</span>
       <select
         aria-label={t("lib.groupBy")}
         value={props.by}
@@ -51,7 +51,7 @@ export function Toolbar(props: ToolbarProps) {
           </option>
         ))}
       </select>
-      <span class="ml-spacer" />
+      <span class="st-spacer" />
       {canChange ? (
         <button type="button" onClick={props.onSelect}>
           <Icon name="square-check" />

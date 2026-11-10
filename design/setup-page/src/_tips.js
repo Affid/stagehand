@@ -1,7 +1,7 @@
 
 // ---------- Tooltips, as Foundry's TooltipManager shows them on the real page ----------
 // Hover or keyboard focus on [data-tooltip] shows Foundry's #tooltip above the element after a short delay.
-// Disabled buttons get no pointer events, so their explanation sits on a wrapper (see .mlw-tipwrap).
+// Disabled buttons get no pointer events, so their explanation sits on a wrapper (see .stw-tipwrap).
 const TIP_DELAY = 400;
 let tipTimer = null, tipFor = null, tipStart = 0;
 function tipEl() {

@@ -117,7 +117,7 @@ describe("the password in the app's native sheet (phase 7)", () => {
 describe("the two ways on (owner, phase 7)", () => {
   test("Back to Setup first, Server list second; the game is never offered", () => {
     const r = screen(status(), vi.fn());
-    const body = r.container.querySelector(".mlr-body");
+    const body = r.container.querySelector(".str-body");
     const ways = body?.querySelectorAll("button, a") ?? [];
     expect(ways[0]?.textContent).toContain("Back to Setup");
     expect(ways[0]?.className).toContain("bright");
@@ -298,7 +298,7 @@ describe("startRunning", () => {
       d: {
         win,
         doc: document,
-        css: "#ml-run-root{}",
+        css: "#st-run-root{}",
         game,
         server: { fetch, route: (p: string) => `${SERVER}/${p}` },
         serversHref: "https://appassets.androidplatform.net/home.html",
@@ -314,15 +314,15 @@ describe("startRunning", () => {
       () => response(status()),
     );
     startRunning(d);
-    expect(document.documentElement.classList.contains("ml-run-wait")).toBe(
+    expect(document.documentElement.classList.contains("st-run-wait")).toBe(
       true,
     );
-    expect(document.getElementById("ml-run-style")).not.toBeNull();
+    expect(document.getElementById("st-run-style")).not.toBeNull();
     page.game = { view: "join", world: WORLD };
     await waitFor(() => {
-      expect(document.getElementById("ml-run-root")).not.toBeNull();
+      expect(document.getElementById("st-run-root")).not.toBeNull();
     });
-    expect(document.documentElement.classList.contains("ml-run-wait")).toBe(
+    expect(document.documentElement.classList.contains("st-run-wait")).toBe(
       false,
     );
     await waitFor(() => {
@@ -373,10 +373,10 @@ describe("startRunning", () => {
     );
     startRunning(d);
     await vi.advanceTimersByTimeAsync(31_000);
-    expect(document.documentElement.classList.contains("ml-run-wait")).toBe(
+    expect(document.documentElement.classList.contains("st-run-wait")).toBe(
       false,
     );
-    expect(document.getElementById("ml-run-root")).toBeNull();
+    expect(document.getElementById("st-run-root")).toBeNull();
   });
 });
 
@@ -403,7 +403,7 @@ describe("review fixes", () => {
       },
     });
     await waitFor(() => {
-      expect(document.getElementById("ml-run-root")).not.toBeNull();
+      expect(document.getElementById("st-run-root")).not.toBeNull();
     });
     expect(form.inert).toBe(true);
   });
@@ -431,10 +431,10 @@ describe("review fixes", () => {
       server: { fetch: vi.fn(), route: (p: string) => p },
       serversHref: "x",
     });
-    expect(document.documentElement.classList.contains("ml-run-wait")).toBe(
+    expect(document.documentElement.classList.contains("st-run-wait")).toBe(
       false,
     );
-    expect(document.getElementById("ml-run-root")).toBeNull();
+    expect(document.getElementById("st-run-root")).toBeNull();
     expect(form.inert).toBe(false);
   });
 
@@ -442,7 +442,7 @@ describe("review fixes", () => {
     const r = screen(status(), vi.fn());
     fireEvent.click(r.getByRole("button", { name: "Back to Setup" }));
     // happy-dom has no inert property: Preact sets the attribute instead.
-    const main = r.container.querySelector<HTMLElement>(".mlr-scroll");
+    const main = r.container.querySelector<HTMLElement>(".str-scroll");
     await waitFor(() => {
       expect(main?.inert === true || main?.hasAttribute("inert")).toBe(true);
     });

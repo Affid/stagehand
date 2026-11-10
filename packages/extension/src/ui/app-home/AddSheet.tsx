@@ -68,10 +68,10 @@ export function AddSheet(props: AddSheetProps) {
   };
   return (
     <Sheet title={t("home.addTitle")} onClose={props.onClose}>
-      <form class="mlh-form" onSubmit={submit}>
+      <form class="sth-form" onSubmit={submit}>
         <AddressField
           t={t}
-          id="mlh-add-addr"
+          id="sth-add-addr"
           value={typed}
           onChange={setTyped}
           focus
@@ -79,7 +79,7 @@ export function AddSheet(props: AddSheetProps) {
         />
         <CheckLine t={t} check={check} />
         <ErrorLine error={error} />
-        <button type="submit" class="mlh-btn mlh-bright" disabled={busy}>
+        <button type="submit" class="sth-btn sth-bright" disabled={busy}>
           {t("home.addOpen")}
         </button>
       </form>

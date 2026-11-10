@@ -30,9 +30,9 @@ JDK above.
 `spikes/android/`: AGP 9.4.1 (its built-in Kotlin), androidx.webkit 1.18.0,
 minSdk 26, target 36. One activity: a status line and a WebView that loads a
 server (`--es url ...`, default `http://10.0.2.2:30000/setup` for the
-emulator). For the server's origin it registers the `mlApp` message listener
+emulator). For the server's origin it registers the `stApp` message listener
 and adds `assets/probe.js` at document start; the probe reports to logcat
-under the tag `MLSPIKE`. Plain http allowed; WebView debugging on.
+under the tag `STSPIKE`. Plain http allowed; WebView debugging on.
 
 Build: `cd spikes/android && JAVA_HOME=~/opt/jdk-21.0.13+9 ./gradlew assembleDebug`
 (`local.properties` holds `sdk.dir`, git-ignored).
@@ -64,7 +64,7 @@ Build: `cd spikes/android && JAVA_HOME=~/opt/jdk-21.0.13+9 ./gradlew assembleDeb
 | 2   | Veil before the first paint                  | **Yes**: the script runs while the document is `loading` with no page script yet, and in the first animation frame Setup's body is still hidden by our style (a frame-by-frame screencast is left for phase 2)        |
 | 3   | Admin login survives an app restart          | **Yes**: logged in, Home, force-stop, start: the app opens `/setup` without the login page                                                                                                                            |
 | 4   | Main-world game-bridge meets the companion   | **The bridge side works** (a document-start listener on `/game` receives the module's messages), **but the companion never says HELLO on a plain-http address**: see finding 4                                        |
-| 5   | Bridge kept, global name removed             | **Yes**: `delete window.mlApp` succeeds, later page scripts see `undefined`, and the reference kept in the closure still sends and receives                                                                           |
+| 5   | Bridge kept, global name removed             | **Yes**: `delete window.stApp` succeeds, later page scripts see `undefined`, and the reference kept in the closure still sends and receives                                                                           |
 | 6   | Plain http                                   | **Yes** from the emulator; the phone check moved to phase 4                                                                                                                                                           |
 | 7   | Playwright drives the app's WebView from WSL | **Yes**, with Playwright's Android support through Windows' adb server on 127.0.0.1:5037 (`scripts/dev/android-spike.ts`). `connectOverCDP` on the forwarded DevTools socket fails: a WebView has no browser contexts |
 | 8   | Fonts                                        | **Yes**: Modesto Condensed, Amiri and Font Awesome 7 load from the server                                                                                                                                             |

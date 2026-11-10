@@ -6,7 +6,7 @@
 type Loose = Readonly<Record<string, unknown>>;
 
 /** Our host elements only: never another element on the page. */
-export const EDITOR_HOST = /^ml-pm-[a-z0-9-]{1,64}$/i;
+export const EDITOR_HOST = /^st-pm-[a-z0-9-]{1,64}$/i;
 const REQUEST_ID = /^[a-z0-9-]{1,64}$/i;
 /** As Setup reads it (MAX_DESCRIPTION in the shared world schema). */
 const MAX_VALUE = 20000;

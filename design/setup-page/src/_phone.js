@@ -9,7 +9,7 @@ const phWide = () => innerWidth >= 700 && innerHeight >= 600;
 const PH = { screen: Q.get("screen") || "home", from: null };
 
 if (PHONE) {
-  document.body.classList.add("mlp");
+  document.body.classList.add("stp");
   if (Q.get("page")) PH.screen = "page";
   const go = (name) => {
     const orig = A[name];
@@ -38,8 +38,8 @@ if (PHONE) {
   const popBefore = calmPop;
   // eslint-disable-next-line no-func-assign
   calmPop = function (p, x, y) {
-    if (p.kind === "phgrid") return pop(x, y, "View", `<div class="mlc-viewpop mlp-gridview"></div>`, 320);
-    if (p.kind === "phview") return pop(x, y, "View", `<div class="mlc-viewpop">${groupSelect()}</div>`, 320);
+    if (p.kind === "phgrid") return pop(x, y, "View", `<div class="stc-viewpop stp-gridview"></div>`, 320);
+    if (p.kind === "phview") return pop(x, y, "View", `<div class="stc-viewpop">${groupSelect()}</div>`, 320);
     if (p.kind !== "phlib") return popBefore(p, x, y);
     const updates = Object.keys(UPDATES).filter((id) => !ST.lock.has(id)).length;
     return menu(x, y, [
@@ -69,7 +69,7 @@ function phTitle() {
 function phVersionChip() {
   const upd = UPD_STATES[ST.upd.state];
   const open = ST.pop?.kind === "fmenu";
-  return `<button type="button" class="mlp-ver${open ? " ml-on" : ""}" data-act="fmenu" aria-expanded="${open}" aria-label="Foundry ${ST.upd.installed}${upd ? ", an update is available" : ""}">
+  return `<button type="button" class="stp-ver${open ? " st-on" : ""}" data-act="fmenu" aria-expanded="${open}" aria-label="Foundry ${ST.upd.installed}${upd ? ", an update is available" : ""}">
     <span>${ST.upd.installed.replace(".", " · ")}</span>${upd ? '<i class="fa-solid fa-arrow-up"></i>' : ""}</button>`;
 }
 
@@ -79,9 +79,9 @@ function phTopBar() {
   const tabRoot = !home && ["library", "backups", "config"].includes(ST.page) && !PH.from;
   const left = home || tabRoot
     ? `<span class="logo" aria-hidden="true"></span><h1>${home ? "Foundry VTT" : phTitle()}</h1>`
-    : `<button type="button" class="mlp-back" data-act="phback" aria-label="Back"><i class="fa-solid fa-arrow-left"></i></button><h1 class="pt">${phTitle()}</h1>`;
-  const right = home ? `${phVersionChip()}<button type="button" class="icon mlp-menu${ST.pop?.kind === "pmenu" ? " ml-on" : ""}" data-act="pmenu" aria-label="Log out or shut down"><i class="fa-solid fa-power-off"></i></button>` : "";
-  return `<header class="mlp-top">${left}<span class="ml-spacer"></span>${right}</header>`;
+    : `<button type="button" class="stp-back" data-act="phback" aria-label="Back"><i class="fa-solid fa-arrow-left"></i></button><h1 class="pt">${phTitle()}</h1>`;
+  const right = home ? `${phVersionChip()}<button type="button" class="icon stp-menu${ST.pop?.kind === "pmenu" ? " st-on" : ""}" data-act="pmenu" aria-label="Log out or shut down"><i class="fa-solid fa-power-off"></i></button>` : "";
+  return `<header class="stp-top">${left}<span class="st-spacer"></span>${right}</header>`;
 }
 
 /** Launch at the bottom of a world's page, where a thumb reaches it, with what will change. */
@@ -91,17 +91,17 @@ function phActionBar() {
   const n = w.noCompanion ? 0 : diff(w.id).length, probs = w.noCompanion ? [] : problems(w.id);
   const blocked = ST.wlock.has(w.id) || ST.backupJob?.wid === w.id || ST.serverJob || ST.upd?.job;
   const what = n || probs.length
-    ? `<button type="button" class="mlp-what${probs.length ? " warn" : ""}" data-act="phqueue" aria-haspopup="dialog"><strong>${n ? plural(n, "change") : "No changes"}${probs.length ? ` · ${plural(probs.length, "problem")}` : ""}</strong><span>See or undo <i class="fa-solid fa-chevron-up"></i></span></button>`
-    : `<span class="mlp-what"><strong>${w.noCompanion ? "Modules unknown" : "No changes"}</strong><span>${w.noCompanion ? "Set up on the first launch" : `${onCount(w.id, baseOn)} modules on`}</span></span>`;
-  const launch = `<button type="button" class="bright mlp-launch" data-act="launch"${blocked ? " disabled" : ""}><i class="fa-solid fa-play"></i>Launch${n ? `<span class="mlc-badge" aria-label="${plural(n, "change")} to review">${n}</span>` : ""}</button>`;
-  return `<div class="mlp-actbar">${what}${launch}</div>`;
+    ? `<button type="button" class="stp-what${probs.length ? " warn" : ""}" data-act="phqueue" aria-haspopup="dialog"><strong>${n ? plural(n, "change") : "No changes"}${probs.length ? ` · ${plural(probs.length, "problem")}` : ""}</strong><span>See or undo <i class="fa-solid fa-chevron-up"></i></span></button>`
+    : `<span class="stp-what"><strong>${w.noCompanion ? "Modules unknown" : "No changes"}</strong><span>${w.noCompanion ? "Set up on the first launch" : `${onCount(w.id, baseOn)} modules on`}</span></span>`;
+  const launch = `<button type="button" class="bright stp-launch" data-act="launch"${blocked ? " disabled" : ""}><i class="fa-solid fa-play"></i>Launch${n ? `<span class="stc-badge" aria-label="${plural(n, "change")} to review">${n}</span>` : ""}</button>`;
+  return `<div class="stp-actbar">${what}${launch}</div>`;
 }
 
 function phTabBar() {
   const on = phTab();
   const t = (id, icon, label, badge = "") => `<button type="button" class="${on === id ? "on" : ""}" data-act="phtab" data-id="${id}" aria-current="${on === id ? "page" : "false"}"><i class="fa-solid ${icon}"></i><span>${label}</span>${badge}</button>`;
   const queued = WORLDS_X.filter((w) => !w.noCompanion && diff(w.id).length).length;
-  return `<nav class="mlp-tabs" aria-label="Sections">${t("worlds", "fa-globe", "Worlds", queued ? `<b class="pip" aria-label="${plural(queued, "world")} with changes">${queued}</b>` : "")}${t("library", "fa-books", "Library", ST.fresh.size ? `<b class="pip" aria-label="${ST.fresh.size} new">${ST.fresh.size}</b>` : "")}${t("backups", "fa-floppy-disks", "Backups")}${t("config", "fa-gears", "Configuration")}</nav>`;
+  return `<nav class="stp-tabs" aria-label="Sections">${t("worlds", "fa-globe", "Worlds", queued ? `<b class="pip" aria-label="${plural(queued, "world")} with changes">${queued}</b>` : "")}${t("library", "fa-books", "Library", ST.fresh.size ? `<b class="pip" aria-label="${ST.fresh.size} new">${ST.fresh.size}</b>` : "")}${t("backups", "fa-floppy-disks", "Backups")}${t("config", "fa-gears", "Configuration")}</nav>`;
 }
 
 /** The queued-changes sheet: the desktop's "Next launch" panel, with its wording brought up to date. */
@@ -111,7 +111,7 @@ function phQueueSheet() {
   const box = Object.assign(document.createElement("div"), { innerHTML: html }).firstElementChild;
   const n = diff(w.id).length;
   box.querySelector(".lead").textContent = n ? `These ${plural(n, "change")} apply when ${w.title} next launches. Launch shows them once more before anything changes.` : `Nothing queued for ${w.title}.`;
-  [...box.querySelectorAll(".mls-chg")].find((c) => c.querySelector("h4")?.textContent.trim() === "World")?.remove();
+  [...box.querySelectorAll(".sts-chg")].find((c) => c.querySelector("h4")?.textContent.trim() === "World")?.remove();
   box.querySelector("h2.divider").textContent = "Next launch";
   return box.outerHTML;
 }
@@ -119,12 +119,12 @@ function phQueueSheet() {
 /** A sheet's bar: a handle to drag it down, its name and Close. */
 function phPanelBar(panel) {
   const title = panel.querySelector("h2.divider")?.textContent ?? "";
-  panel.insertAdjacentHTML("afterbegin", `<div class="mlp-sheetbar"><span class="grab" aria-hidden="true"></span><strong>${esc(title)}</strong><button type="button" class="icon" data-act="closepanel" aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>`);
+  panel.insertAdjacentHTML("afterbegin", `<div class="stp-sheetbar"><span class="grab" aria-hidden="true"></span><strong>${esc(title)}</strong><button type="button" class="icon" data-act="closepanel" aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>`);
 }
 
 /** Drag a sheet down by its bar to close it, as on Android. */
 function phSheetDrag(panel) {
-  const bar = panel.querySelector(".mlp-sheetbar");
+  const bar = panel.querySelector(".stp-sheetbar");
   if (!bar || phWide()) return;
   let y0 = null;
   bar.addEventListener("pointerdown", (e) => { if (e.target.closest("button")) return; y0 = e.clientY; bar.setPointerCapture(e.pointerId); panel.style.transition = "none"; });
@@ -139,32 +139,32 @@ function phSheetDrag(panel) {
 /** Library: one row (filter, Group by, ⋮) instead of four; a short "new modules" line; selecting works from a bar above the tabs. */
 function phLibrary() {
   if (ST.page !== "library") return;
-  const head = document.querySelector(".mls-main header.controls");
+  const head = document.querySelector(".sts-main header.controls");
   if (head && ST.lsub !== "grid") {
     head.querySelectorAll("button").forEach((el) => el.remove());
     const sys = ST.lsub === "systems";
     head.insertAdjacentHTML("beforeend", sys
-      ? `<button type="button" class="icon mlp-iconbtn" data-act="foundry" data-id="Install System" aria-label="Install a system"><i class="fa-solid fa-plus"></i></button>`
-      : `<button type="button" class="icon mlp-iconbtn${ST.pop?.kind === "phview" ? " ml-on" : ""}" data-act="phview" aria-label="Group by: ${esc(GROUPS[ST.group])}"><i class="fa-solid fa-sliders"></i></button>
-         <button type="button" class="icon mlp-iconbtn mlp-more${ST.pop?.kind === "phlib" ? " ml-on" : ""}" data-act="phlibmenu" aria-label="Select, install, update, tags, presets, folders"><i class="fa-solid fa-ellipsis-vertical"></i></button>`);
-    head.classList.add("mlp-libhead");
+      ? `<button type="button" class="icon stp-iconbtn" data-act="foundry" data-id="Install System" aria-label="Install a system"><i class="fa-solid fa-plus"></i></button>`
+      : `<button type="button" class="icon stp-iconbtn${ST.pop?.kind === "phview" ? " st-on" : ""}" data-act="phview" aria-label="Group by: ${esc(GROUPS[ST.group])}"><i class="fa-solid fa-sliders"></i></button>
+         <button type="button" class="icon stp-iconbtn stp-more${ST.pop?.kind === "phlib" ? " st-on" : ""}" data-act="phlibmenu" aria-label="Select, install, update, tags, presets, folders"><i class="fa-solid fa-ellipsis-vertical"></i></button>`);
+    head.classList.add("stp-libhead");
   }
   // By world: the filter and one View button; Group by and Show move into the View sheet.
-  const grow = ST.lsub === "grid" && document.querySelector(".mls-main .ml-row");
+  const grow = ST.lsub === "grid" && document.querySelector(".sts-main .st-row");
   if (grow) {
-    const search = grow.querySelector("input[type=search]"), view = document.querySelector(".mlp-gridview");
-    const showing = grow.querySelector(".mls-showing");
-    [...grow.children].filter((el) => el !== search && !(el === showing && showing.querySelector("a"))).forEach((el) => (view && !el.matches(".ml-spacer, .ml-muted") ? view.append(el) : el.remove()));
-    grow.classList.add("mlp-gridrow");
-    grow.insertAdjacentHTML("beforeend", `<button type="button" class="icon mlp-iconbtn${view ? " ml-on" : ""}" data-act="phgrid" aria-label="Group by and which worlds to show"><i class="fa-solid fa-sliders"></i></button>`);
+    const search = grow.querySelector("input[type=search]"), view = document.querySelector(".stp-gridview");
+    const showing = grow.querySelector(".sts-showing");
+    [...grow.children].filter((el) => el !== search && !(el === showing && showing.querySelector("a"))).forEach((el) => (view && !el.matches(".st-spacer, .st-muted") ? view.append(el) : el.remove()));
+    grow.classList.add("stp-gridrow");
+    grow.insertAdjacentHTML("beforeend", `<button type="button" class="icon stp-iconbtn${view ? " st-on" : ""}" data-act="phgrid" aria-label="Group by and which worlds to show"><i class="fa-solid fa-sliders"></i></button>`);
   }
-  const band = document.querySelector(".mls-main .mls-intake-band");
+  const band = document.querySelector(".sts-main .sts-intake-band");
   if (band) band.innerHTML = `<i class="fa-solid fa-box-open"></i><span><b>${plural(ST.fresh.size, "new module")}</b> to sort</span><button type="button" class="bright" data-act="intake">Sort</button><button type="button" class="icon" data-act="intakelater" aria-label="Later: leave them in Unfiled"><i class="fa-solid fa-xmark"></i></button>`;
-  const row = document.querySelector(".mls-main .ml-row:not(.mls-selbar)");
+  const row = document.querySelector(".sts-main .st-row:not(.sts-selbar)");
   if (row && ST.lsub === "modules") row.remove();
-  const sel = document.querySelector(".mls-main .mls-selbar");
+  const sel = document.querySelector(".sts-main .sts-selbar");
   sel?.querySelector('[data-act="bulk"][data-id="world"]')?.lastChild?.replaceWith("In a world…");
-  if (sel) { const bar = Object.assign(document.createElement("div"), { className: "mlp-actbar mlp-selbar" }); bar.append(sel); document.querySelector(".mlp-tabs")?.before(bar); }
+  if (sel) { const bar = Object.assign(document.createElement("div"), { className: "stp-actbar stp-selbar" }); bar.append(sel); document.querySelector(".stp-tabs")?.before(bar); }
 }
 
 /** Backups: the summary and "Create a snapshot" move to a bar above the tabs, as Launch on a world. */
@@ -174,64 +174,64 @@ function phBackupsBar() {
   const lock = ST.serverJob || ST.backupJob;
   const sel = tab === "snapshots" && ST.snapSel;
   if (sel) {
-    return `<div class="mlp-actbar mlp-bkbar"><span class="mlp-what"><strong>${sel.size ? `${sel.size} selected` : "Select snapshots"}</strong><span>to delete</span></span>
+    return `<div class="stp-actbar stp-bkbar"><span class="stp-what"><strong>${sel.size ? `${sel.size} selected` : "Select snapshots"}</strong><span>to delete</span></span>
       <button type="button" class="del" data-act="snapdel"${sel.size ? "" : " disabled"}><i class="fa-solid fa-trash"></i>Delete…</button><button type="button" data-act="snapselect">Done</button></div>`;
   }
   const [top, sub] = tab === "snapshots"
     ? [plural(SNAPSHOTS.length, "snapshot"), "48 GB of disk free"]
     : [plural(sbCount(tab), "backup"), `${fmtSize(sbTotal(tab))} · 48 GB free`];
-  return `<div class="mlp-actbar mlp-bkbar"><span class="mlp-what"><strong>${top}</strong><span>${sub}</span></span>
-    <button type="button" class="bright mlp-launch" data-act="snapnew"${lock ? " disabled" : ""}><i class="fa-solid fa-camera-retro"></i>New snapshot</button></div>`;
+  return `<div class="stp-actbar stp-bkbar"><span class="stp-what"><strong>${top}</strong><span>${sub}</span></span>
+    <button type="button" class="bright stp-launch" data-act="snapnew"${lock ? " disabled" : ""}><i class="fa-solid fa-camera-retro"></i>New snapshot</button></div>`;
 }
 
 /** Backups: one row of tabs (names and counts), a one-line note, and a filter row without the label and the count. */
 function phBackups() {
   if (ST.page !== "backups") return;
-  const head = document.querySelector(".mls-main .mlb-head");
-  const job = head?.querySelector(".mlb-job");
+  const head = document.querySelector(".sts-main .stb-head");
+  const job = head?.querySelector(".stb-job");
   if (job) head.replaceWith(job); else head?.remove();
-  document.querySelectorAll(".mls-main .mls-subtabs .c").forEach((c) => { c.textContent = c.textContent.split(" · ")[0]; });
-  document.querySelector(".mls-main .mlw-bhead.sel")?.remove();
-  document.querySelectorAll(".mls-main .mlb-snaps .nm span").forEach((el) => { el.textContent = el.textContent.replace(/^\w+day /, ""); });
-  const note = document.querySelector(".mls-main .mlw-bhead:not(.sel) > span:first-child");
+  document.querySelectorAll(".sts-main .sts-subtabs .c").forEach((c) => { c.textContent = c.textContent.split(" · ")[0]; });
+  document.querySelector(".sts-main .stw-bhead.sel")?.remove();
+  document.querySelectorAll(".sts-main .stb-snaps .nm span").forEach((el) => { el.textContent = el.textContent.replace(/^\w+day /, ""); });
+  const note = document.querySelector(".sts-main .stw-bhead:not(.sel) > span:first-child");
   if (note) note.textContent = "Restoring one rolls the whole server back.";
-  document.querySelectorAll(".mls-main .mlb-tools > .ml-label, .mls-main .mlb-tools > .ml-muted, .mls-main .mlb-tools > .ml-spacer").forEach((el) => el.remove());
+  document.querySelectorAll(".sts-main .stb-tools > .st-label, .sts-main .stb-tools > .st-muted, .sts-main .stb-tools > .st-spacer").forEach((el) => el.remove());
 }
 
-const phScrollers = () => [...document.querySelectorAll(".mls-rail, .mls-main, .mls-panel .scroll")];
+const phScrollers = () => [...document.querySelectorAll(".sts-rail, .sts-main, .sts-panel .scroll")];
 function phScrollTop() { phScrollers().forEach((el) => { el.scrollTop = 0; }); }
 
 if (PHONE) {
   const renderDesktop = render;
   // eslint-disable-next-line no-func-assign
   render = function () {
-    const keep = phScrollers().map((el) => [el.className.split(" ").find((c) => c.startsWith("mls-")), el.scrollTop]);
+    const keep = phScrollers().map((el) => [el.className.split(" ").find((c) => c.startsWith("sts-")), el.scrollTop]);
     renderDesktop();
     const b = document.body;
-    b.classList.toggle("mlp-wide", phWide());
+    b.classList.toggle("stp-wide", phWide());
     b.dataset.screen = phWide() ? "page" : PH.screen;
     b.dataset.page = ST.page;
-    document.querySelector("header.mls-top")?.replaceWith(Object.assign(document.createElement("div"), { innerHTML: phTopBar() }).firstElementChild);
+    document.querySelector("header.sts-top")?.replaceWith(Object.assign(document.createElement("div"), { innerHTML: phTopBar() }).firstElementChild);
     document.getElementById("setup")?.insertAdjacentHTML("afterend", phActionBar() + phBackupsBar() + phTabBar());
-    if (ST.panel?.kind === "queue" && ST.page === "world") document.querySelector(".mls-main")?.insertAdjacentHTML("afterend", phQueueSheet());
-    const panel = document.querySelector(".mls-panel");
-    if (panel) { phPanelBar(panel); phSheetDrag(panel); panel.insertAdjacentHTML("beforebegin", `<div class="mlp-scrim" data-act="closepanel"></div>`); }
-    if (ST.pop || document.querySelector("#context-menu.mls-menu-live")) b.insertAdjacentHTML("beforeend", `<div class="mlp-scrim pop" data-act="closepop"></div>`);
+    if (ST.panel?.kind === "queue" && ST.page === "world") document.querySelector(".sts-main")?.insertAdjacentHTML("afterend", phQueueSheet());
+    const panel = document.querySelector(".sts-panel");
+    if (panel) { phPanelBar(panel); phSheetDrag(panel); panel.insertAdjacentHTML("beforebegin", `<div class="stp-scrim" data-act="closepanel"></div>`); }
+    if (ST.pop || document.querySelector("#context-menu.sts-menu-live")) b.insertAdjacentHTML("beforeend", `<div class="stp-scrim pop" data-act="closepop"></div>`);
     phLibrary();
     phBackups();
     // Configuration's "not saved" and "apply after a restart" bars sit above the tabs, where Save stays in reach.
-    const cfgBar = ST.page === "config" && document.querySelector(".mls-main .mlc-pending, .mls-main .mlc-waiting");
-    if (cfgBar) { const wrap = Object.assign(document.createElement("div"), { className: "mlp-actbar mlp-cfgbar" }); wrap.append(cfgBar); document.querySelector(".mlp-tabs")?.before(wrap); }
+    const cfgBar = ST.page === "config" && document.querySelector(".sts-main .stc-pending, .sts-main .stc-waiting");
+    if (cfgBar) { const wrap = Object.assign(document.createElement("div"), { className: "stp-actbar stp-cfgbar" }); wrap.append(cfgBar); document.querySelector(".stp-tabs")?.before(wrap); }
     keep.forEach(([cls, top]) => { const el = cls && document.querySelector(`.${cls}`); if (el && phScrollers().includes(el)) el.scrollTop = top; });
     // Only the tab row stays pinned while the page scrolls; the filter row scrolls away under it.
-    const tools = document.querySelector(".mls-subtabs .mlc-tools");
+    const tools = document.querySelector(".sts-subtabs .stc-tools");
     if (tools) tools.parentElement.after(tools);
     // "14 after launch" is too long for a phone's tab row: "11 → 14" says the same.
-    const count = ST.page === "world" && document.querySelector('.mls-subtabs [data-id="modules"] .c');
+    const count = ST.page === "world" && document.querySelector('.sts-subtabs [data-id="modules"] .c');
     if (count && /after launch/.test(count.textContent)) count.textContent = `${onCount(ST.world, baseOn)} → ${onCount(ST.world)}`;
     // On a world's page the top bar lies over the banner and turns solid, with the name, once it scrolls away.
-    const main = document.querySelector(".mls-main"), banner = main?.querySelector(".mls-banner");
-    const scrolled = () => b.classList.toggle("mlp-scrolled", !!banner && main.scrollTop > banner.offsetHeight - 64);
+    const main = document.querySelector(".sts-main"), banner = main?.querySelector(".sts-banner");
+    const scrolled = () => b.classList.toggle("stp-scrolled", !!banner && main.scrollTop > banner.offsetHeight - 64);
     if (main) { scrolled(); main.addEventListener("scroll", scrolled, { passive: true }); }
   };
 }

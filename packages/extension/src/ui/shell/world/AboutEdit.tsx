@@ -2,7 +2,7 @@
 // About edited in place). They save through Foundry's own editWorld, only
 // when the remote config's `editWorld` flag allows it; otherwise the About
 // tab offers Foundry's World Configuration instead.
-import type { WorldInfo } from "@module-library/shared/world";
+import type { WorldInfo } from "@stagehand/shared/world";
 import { useState } from "preact/hooks";
 import type { WorldChanges } from "../../../page-save.ts";
 import { IconButton, InlineInput } from "../../common/widgets.tsx";
@@ -59,7 +59,7 @@ export function TitleField(props: { readonly world: WorldInfo }) {
       />
     );
   return (
-    <span class="mlw-editable">
+    <span class="stw-editable">
       {props.world.title}
       <IconButton
         icon="pen"

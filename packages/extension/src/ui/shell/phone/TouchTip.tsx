@@ -218,7 +218,7 @@ export function TipBubble(props: { readonly tip: Tip | null }) {
   return (
     <div
       ref={box}
-      class={`mlp-tip${tip.above ? " above" : ""}`}
+      class={`stp-tip${tip.above ? " above" : ""}`}
       role="tooltip"
       style={{ top: `${String(Math.round(tip.y))}px` }}
     >

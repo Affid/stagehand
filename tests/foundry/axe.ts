@@ -9,7 +9,7 @@ import { expect, type Page } from "@playwright/test";
 export async function audit(
   page: Page,
   name: string,
-  scope = "#ml-shell-root",
+  scope = "#st-shell-root",
 ): Promise<void> {
   await page.mouse.move(0, 0);
   // Let transitions (the News carousel, popovers) settle.

@@ -1,5 +1,5 @@
 import { describe, expect, test, vi } from "vitest";
-import type { SetupData } from "@module-library/shared/world";
+import type { SetupData } from "@stagehand/shared/world";
 import { BUNDLED_CONFIG } from "../../src/adapters/config.ts";
 import { memoryKeyValue, serialized } from "../../src/background/kv.ts";
 import type { ScriptingPlatform } from "../../src/background/registration.ts";
@@ -103,7 +103,7 @@ describe("router: registration (R-1)", () => {
     await route(d, { kind: "register-server", server: `${S}/` }, fromOptions);
     const asked = vi.mocked(d.scripting.registeredIds).mock.calls.flat(2);
     expect(asked.length).toBeGreaterThan(0);
-    expect(asked.every((id) => id.startsWith("ml-setup-"))).toBe(true);
+    expect(asked.every((id) => id.startsWith("st-setup-"))).toBe(true);
   });
 
   test("refuses without the host permission", async () => {
@@ -767,10 +767,10 @@ describe("router: the settings panel lists and removes servers", () => {
   test("removing unregisters its scripts and gives the host permission back", async () => {
     const d = deps();
     await registered(d);
-    vi.mocked(d.scripting.registeredIds).mockResolvedValue(["ml-setup-main-x"]);
+    vi.mocked(d.scripting.registeredIds).mockResolvedValue(["st-setup-main-x"]);
     await route(d, { kind: "remove-server", server: S }, fromOptions);
     expect(d.scripting.unregister).toHaveBeenLastCalledWith([
-      "ml-setup-main-x",
+      "st-setup-main-x",
     ]);
     expect(d.scripting.removePermission).toHaveBeenCalledWith(
       "http://localhost:30000/*",

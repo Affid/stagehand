@@ -111,7 +111,7 @@ const bridgeScript = (origin: string, asksAt?: string): string => `(() => {
     onmessage: null,
     postMessage(m) { send(String(m)).then(hand, () => undefined); },
   };
-  window.mlApp = port;
+  window.stApp = port;
   ${asksAt ? `if (location.pathname === ${JSON.stringify(asksAt)}) window.__mlHarnessDeliver = hand;` : ""}
 })();`;
 
@@ -229,7 +229,7 @@ export async function addServerAtHome(
   await home.getByLabel("Server address").fill(`${url}/`);
   await home.getByRole("button", { name: "Add", exact: true }).click();
   await home
-    .locator(".mlp-servers li")
+    .locator(".stp-servers li")
     .filter({ hasText: new URL(url).host })
     .waitFor();
 }
@@ -248,5 +248,5 @@ export async function openAppSetupAsAdmin(
     maxRedirects: 0,
   });
   await page.goto(`${url}/setup`);
-  await page.locator("#ml-shell-root .mls-top").waitFor();
+  await page.locator("#st-shell-root .sts-top").waitFor();
 }

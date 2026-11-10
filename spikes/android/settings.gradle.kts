@@ -14,5 +14,5 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "ml-android-spike"
+rootProject.name = "stagehand-android-spike"
 include(":app")

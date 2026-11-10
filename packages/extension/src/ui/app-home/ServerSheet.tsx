@@ -95,7 +95,7 @@ function EditView(props: ServerSheetProps & { readonly onRemove: () => void }) {
   const work = useSave(props, name, next);
   return (
     <Sheet title={server.name ?? hostOf(server.id)} onClose={props.onClose}>
-      <form class="mlh-form" onSubmit={work.save}>
+      <form class="sth-form" onSubmit={work.save}>
         <NameField
           t={t}
           value={name}
@@ -104,14 +104,14 @@ function EditView(props: ServerSheetProps & { readonly onRemove: () => void }) {
         />
         <AddressField
           t={t}
-          id="mlh-edit-addr"
+          id="sth-edit-addr"
           value={typed}
           onChange={setTyped}
           help={t("home.moveHelp")}
         />
         <CheckLine t={t} check={check} />
         <ErrorLine error={work.error} />
-        <button type="submit" class="mlh-btn mlh-bright" disabled={work.busy}>
+        <button type="submit" class="sth-btn sth-bright" disabled={work.busy}>
           {t("home.save")}
         </button>
         {server.active ? null : (
@@ -124,7 +124,7 @@ function EditView(props: ServerSheetProps & { readonly onRemove: () => void }) {
         )}
         <button
           type="button"
-          class="mlh-btn mlh-ghost mlh-danger"
+          class="sth-btn sth-ghost sth-danger"
           onClick={props.onRemove}
         >
           {t("home.removeAsk")}
@@ -141,11 +141,11 @@ function NameField(props: {
   readonly onChange: (name: string) => void;
 }) {
   return (
-    <div class="mlh-field">
-      <label for="mlh-name">{props.t("home.name")}</label>
+    <div class="sth-field">
+      <label for="sth-name">{props.t("home.name")}</label>
       <input
-        id="mlh-name"
-        class="mlh-input"
+        id="sth-name"
+        class="sth-input"
         value={props.value}
         placeholder={props.placeholder}
         maxLength={MAX_SERVER_NAME}
@@ -168,7 +168,7 @@ function TurnOn(props: {
   return (
     <button
       type="button"
-      class="mlh-btn"
+      class="sth-btn"
       disabled={props.disabled}
       onClick={() => {
         props.servers.add(props.server.id).catch(() => undefined);
@@ -194,19 +194,19 @@ function RemoveView(props: ServerSheetProps) {
       title={t("home.removeTitle", { server: label })}
       onClose={props.onClose}
     >
-      <p class="mlh-help">
+      <p class="sth-help">
         {t("home.removeText", { host: hostOf(server.id) })}
       </p>
       <ErrorLine error={work.error} />
       <button
         type="button"
-        class="mlh-btn mlh-danger"
+        class="sth-btn sth-danger"
         disabled={work.busy}
         onClick={remove}
       >
         {t("home.removeGo")}
       </button>
-      <button type="button" class="mlh-btn mlh-ghost" onClick={props.onClose}>
+      <button type="button" class="sth-btn sth-ghost" onClick={props.onClose}>
         {t("home.cancel")}
       </button>
     </Sheet>

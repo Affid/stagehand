@@ -14,5 +14,5 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "module-library-android"
+rootProject.name = "stagehand-android"
 include(":app")

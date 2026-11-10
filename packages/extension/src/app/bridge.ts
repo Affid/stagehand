@@ -9,8 +9,8 @@
 //
 // Strings only, JSON, at most MAX_MESSAGE_CHARS. What each page may ask is
 // in native-api.ts; native checks it again and attaches who asked.
-import { logError } from "@module-library/shared/log";
-import { newRequestId } from "@module-library/shared/protocol";
+import { logError } from "@stagehand/shared/log";
+import { newRequestId } from "@stagehand/shared/protocol";
 import { z } from "zod";
 
 /** The object WebView injects into the page. */

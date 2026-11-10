@@ -2,7 +2,7 @@
    row, and a world's page (Android plan, phase 3, package 3). */
 
 /* ---------- A page: one scroll for the whole page ---------- */
-.mls-shell.mlp .mls-main > .mls-body-main {
+.sts-shell.stp .sts-main > .sts-body-main {
   display: block;
   min-height: auto;
   overflow: visible;
@@ -11,42 +11,42 @@
 }
 
 /* Only the tab row stays pinned while the page scrolls. */
-.mls-shell.mlp .mls-main .mls-subtabs {
+.sts-shell.stp .sts-main .sts-subtabs {
   position: sticky;
   top: 0;
   z-index: 5;
   margin: 0 -12px;
   padding: 0 8px;
-  background: var(--mlp-solid);
+  background: var(--stp-solid);
   overflow-x: auto;
   scrollbar-width: none;
 }
 
-.mls-shell.mlp:not(.mlp-wide)[data-page="world"] .mls-main .mls-subtabs {
-  top: calc(var(--mlp-bar) + env(safe-area-inset-top, 0px));
+.sts-shell.stp:not(.stp-wide)[data-page="world"] .sts-main .sts-subtabs {
+  top: calc(var(--stp-bar) + env(safe-area-inset-top, 0px));
 }
 
-.mls-shell.mlp .mls-main .mls-subtabs .mls-tablist {
+.sts-shell.stp .sts-main .sts-subtabs .sts-tablist {
   flex-wrap: nowrap;
 }
 
-.mls-shell.mlp .mls-main .mls-subtabs button[role="tab"] {
+.sts-shell.stp .sts-main .sts-subtabs button[role="tab"] {
   flex: none;
-  min-height: var(--mlp-tap);
+  min-height: var(--stp-tap);
   padding: 12px 10px;
   font-size: 15px;
   white-space: nowrap;
 }
 
 @media (max-width: 380px) {
-  .mls-shell.mlp .mls-main .mls-subtabs button[role="tab"] {
+  .sts-shell.stp .sts-main .sts-subtabs button[role="tab"] {
     padding: 12px 7px;
     font-size: 14px;
   }
 }
 
 /* The tools row under it scrolls away: the filter, Show, Add and View. */
-.mls-shell.mlp .mls-body-main > .mlc-tools {
+.sts-shell.stp .sts-body-main > .stc-tools {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -54,30 +54,30 @@
   padding: 10px 0 6px;
 }
 
-.mls-shell.mlp .mls-body-main > .mlc-tools input[type="search"] {
+.sts-shell.stp .sts-body-main > .stc-tools input[type="search"] {
   flex: 1 1 100%;
   width: 100%;
-  height: var(--mlp-tap);
+  height: var(--stp-tap);
   font-size: 15px;
 }
 
-.mls-shell.mlp .mls-body-main > .mlc-tools .ml-seg2 {
+.sts-shell.stp .sts-body-main > .stc-tools .st-seg2 {
   height: 40px;
   margin-right: auto;
 }
 
-.mls-shell.mlp .mls-body-main > .mlc-tools button {
+.sts-shell.stp .sts-body-main > .stc-tools button {
   height: 40px;
   font-size: 14px;
 }
 
-.mls-shell.mlp .mls-body-main > .mlc-tools button.icon {
-  width: var(--mlp-tap);
-  height: var(--mlp-tap);
+.sts-shell.stp .sts-body-main > .stc-tools button.icon {
+  width: var(--stp-tap);
+  height: var(--stp-tap);
 }
 
 /* ---------- A world's banner ---------- */
-.mls-shell.mlp .mls-banner {
+.sts-shell.stp .sts-banner {
   height: auto;
   min-height: 132px;
   padding: 40px 14px 14px;
@@ -87,46 +87,46 @@
     var(--img, none) center / cover;
 }
 
-.mls-shell.mlp .mls-banner > div:first-child {
+.sts-shell.stp .sts-banner > div:first-child {
   min-width: 0;
 }
 
-.mls-shell.mlp .mls-banner h2 {
+.sts-shell.stp .sts-banner h2 {
   font-size: 34px;
   overflow-wrap: anywhere;
 }
 
-.mls-shell.mlp .mls-banner .mls-titlerow {
+.sts-shell.stp .sts-banner .sts-titlerow {
   flex-wrap: wrap;
   gap: 4px 10px;
 }
 
-.mls-shell.mlp .mls-banner .meta {
+.sts-shell.stp .sts-banner .meta {
   flex-wrap: wrap;
   gap: 4px 12px;
   font-size: 13px;
 }
 
 /* The bottom bar has the queued changes and Launch; About has the edits. */
-.mls-shell.mlp .mls-banner .acts,
-.mls-shell.mlp .mls-banner .mlc-pending,
-.mls-shell.mlp .mlw-empty button.bright {
+.sts-shell.stp .sts-banner .acts,
+.sts-shell.stp .sts-banner .stc-pending,
+.sts-shell.stp .stw-empty button.bright {
   display: none;
 }
 
-.mls-shell.mlp .mls-banner .mlw-star {
-  width: var(--mlp-tap);
-  height: var(--mlp-tap);
+.sts-shell.stp .sts-banner .stw-star {
+  width: var(--stp-tap);
+  height: var(--stp-tap);
 }
 
 /* A phone: the picture runs under the top bar, which turns solid with the
    world's name once the banner has scrolled away. */
-.mls-shell.mlp:not(.mlp-wide) .mls-banner {
+.sts-shell.stp:not(.stp-wide) .sts-banner {
   min-height: 190px;
-  padding-top: calc(var(--mlp-bar) + env(safe-area-inset-top, 0px) + 24px);
+  padding-top: calc(var(--stp-bar) + env(safe-area-inset-top, 0px) + 24px);
 }
 
-.mls-shell.mlp:not(.mlp-wide)[data-page="world"][data-screen="page"] .mlp-top {
+.sts-shell.stp:not(.stp-wide)[data-page="world"][data-screen="page"] .stp-top {
   position: absolute;
   z-index: 20;
   top: 0;
@@ -139,107 +139,107 @@
     border-color 0.15s;
 }
 
-.mls-shell.mlp.mlp-scrolled:not(
-    .mlp-wide
+.sts-shell.stp.stp-scrolled:not(
+    .stp-wide
   )[data-page="world"][data-screen="page"]
-  .mlp-top {
-  background: var(--mlp-bar-bg);
+  .stp-top {
+  background: var(--stp-bar-bg);
   border-bottom-color: var(--color-cool-4);
 }
 
-.mls-shell.mlp:not(.mlp-wide)[data-page="world"] .mlp-top h1.pt {
+.sts-shell.stp:not(.stp-wide)[data-page="world"] .stp-top h1.pt {
   opacity: 0;
   transition: opacity 0.15s;
 }
 
-.mls-shell.mlp.mlp-scrolled[data-page="world"] .mlp-top h1.pt {
+.sts-shell.stp.stp-scrolled[data-page="world"] .stp-top h1.pt {
   opacity: 1;
 }
 
 /* ---------- A world's modules: one column, bigger rows ---------- */
-.mls-shell.mlp .mlw-grid {
+.sts-shell.stp .stw-grid {
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
   gap: 8px;
 }
 
-.mls-shell.mlp .mlw-card {
+.sts-shell.stp .stw-card {
   min-height: 60px;
   padding: 10px 12px 10px 10px;
 }
 
-.mls-shell.mlp .mlw-card .t {
+.sts-shell.stp .stw-card .t {
   font-size: 15px;
 }
 
-.mls-shell.mlp .mlw-card .l2 {
+.sts-shell.stp .stw-card .l2 {
   font-size: 13px;
 }
 
-.mls-shell.mlp .mlw-head {
-  min-height: var(--mlp-tap);
+.sts-shell.stp .stw-head {
+  min-height: var(--stp-tap);
   font-size: 15px;
 }
 
 /* "Foundry's" card layout is a desktop choice. */
-.mls-shell.mlp .mlw-layout {
+.sts-shell.stp .stw-layout {
   display: none;
 }
 
 /* ---------- About, the next session, a world's backups: one column ---------- */
-.mls-shell.mlp:not(.mlp-wide) .mls-main .mlw-about,
-.mls-shell.mlp .mls-main .mlw-sched,
-.mls-shell.mlp .mls-main .mlw-sched .side {
+.sts-shell.stp:not(.stp-wide) .sts-main .stw-about,
+.sts-shell.stp .sts-main .stw-sched,
+.sts-shell.stp .sts-main .stw-sched .side {
   grid-template-columns: minmax(0, 1fr);
 }
 
-.mls-shell.mlp .mls-main .mlw-details {
+.sts-shell.stp .sts-main .stw-details {
   grid-template-columns: 104px minmax(0, 1fr);
   font-size: 14px;
 }
 
-.mls-shell.mlp
-  .mlw-box
+.sts-shell.stp
+  .stw-box
   :is(select, input:not([type="checkbox"], [type="radio"]), textarea) {
-  min-height: var(--mlp-tap);
+  min-height: var(--stp-tap);
   font-size: 15px;
 }
 
-.mls-shell.mlp .mlw-blist li {
+.sts-shell.stp .stw-blist li {
   grid-template-columns: 26px minmax(0, 1fr) auto auto auto;
   gap: 6px 10px;
   padding: 10px;
 }
 
-.mls-shell.mlp .mlw-blist li > :first-child {
+.sts-shell.stp .stw-blist li > :first-child {
   grid-row: span 2;
   align-self: start;
   margin-top: 2px;
 }
 
-.mls-shell.mlp .mlw-blist li > .nm {
+.sts-shell.stp .stw-blist li > .nm {
   grid-column: 2 / -1;
 }
 
-.mls-shell.mlp .mlw-blist li .nm :is(strong, span) {
+.sts-shell.stp .stw-blist li .nm :is(strong, span) {
   white-space: normal;
 }
 
-.mls-shell.mlp .mlw-blist li button {
+.sts-shell.stp .stw-blist li button {
   min-height: 40px;
 }
 
 /* ---------- The bottom bar: what changes, and Launch ---------- */
-.mls-shell.mlp .mlp-actbar {
+.sts-shell.stp .stp-actbar {
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 10px max(12px, env(safe-area-inset-right, 0px)) 10px
     max(12px, env(safe-area-inset-left, 0px));
-  background: var(--mlp-bar-bg);
+  background: var(--stp-bar-bg);
   border-top: 1px solid var(--color-cool-4);
 }
 
-.mls-shell.mlp .mlp-what {
+.sts-shell.stp .stp-what {
   flex: 1;
   min-width: 0;
   display: grid;
@@ -251,10 +251,10 @@
   text-align: left;
 }
 
-.mls-shell.mlp button.mlp-what {
+.sts-shell.stp button.stp-what {
   width: auto;
   height: auto;
-  min-height: var(--mlp-tap);
+  min-height: var(--stp-tap);
   margin-left: -6px;
   padding: 4px 6px;
   border: 0;
@@ -262,33 +262,33 @@
   box-shadow: none;
 }
 
-.mls-shell.mlp .mlp-what strong {
+.sts-shell.stp .stp-what strong {
   color: var(--color-light-1);
   font-size: 15px;
 }
 
-.mls-shell.mlp button.mlp-what strong {
+.sts-shell.stp button.stp-what strong {
   color: #f6d3a8;
 }
 
-.mls-shell.mlp button.mlp-what.warn strong {
+.sts-shell.stp button.stp-what.warn strong {
   color: #f3dca4;
 }
 
-.mls-shell.mlp .mlp-what span {
+.sts-shell.stp .stp-what span {
   color: var(--color-text-subtle);
 }
 
-.mls-shell.mlp button.mlp-what span {
+.sts-shell.stp button.stp-what span {
   color: var(--color-warm-1);
 }
 
-.mls-shell.mlp button.mlp-what span i {
+.sts-shell.stp button.stp-what span i {
   margin-left: 2px;
   font-size: 10px;
 }
 
-.mls-shell.mlp .mlp-launch {
+.sts-shell.stp .stp-launch {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -301,41 +301,41 @@
   font-weight: 700;
 }
 
-.mls-shell.mlp .mlp-launch .mlc-badge {
+.sts-shell.stp .stp-launch .stc-badge {
   position: static;
   margin-left: 2px;
 }
 
-.mls-shell.mlp .mlp-launch[disabled] {
+.sts-shell.stp .stp-launch[disabled] {
   opacity: 0.45;
 }
 
 /* ---------- The Next launch sheet ---------- */
-.mls-shell.mlp .mlp-next .mlp-lead {
+.sts-shell.stp .stp-next .stp-lead {
   margin: 0;
   color: var(--color-light-2);
 }
 
-.mls-shell.mlp .mlp-next .mlw-lr-cols {
+.sts-shell.stp .stp-next .stw-lr-cols {
   grid-template-columns: minmax(0, 1fr);
 }
 
-.mls-shell.mlp .mlp-next .mlw-lr-cols li {
-  min-height: var(--mlp-tap);
+.sts-shell.stp .stp-next .stw-lr-cols li {
+  min-height: var(--stp-tap);
 }
 
-.mls-shell.mlp .mlp-next .mlw-lr-cols button.x {
-  width: var(--mlp-tap);
-  height: var(--mlp-tap);
+.sts-shell.stp .stp-next .stw-lr-cols button.x {
+  width: var(--stp-tap);
+  height: var(--stp-tap);
 }
 
-.mls-shell.mlp .mlp-next footer {
+.sts-shell.stp .stp-next footer {
   display: flex;
   gap: 10px;
   border-top: 1px solid var(--color-cool-4);
 }
 
-.mls-shell.mlp .mlp-next footer button {
+.sts-shell.stp .stp-next footer button {
   flex: 1;
   min-height: 48px;
   font-size: 15px;
@@ -343,32 +343,32 @@
 
 /* ---------- A phone on its side: a compact banner and bars ---------- */
 @media (max-height: 500px) {
-  .mls-shell.mlp:not(.mlp-wide) .mls-banner {
+  .sts-shell.stp:not(.stp-wide) .sts-banner {
     min-height: 0;
-    padding-top: calc(var(--mlp-bar) + env(safe-area-inset-top, 0px) + 8px);
+    padding-top: calc(var(--stp-bar) + env(safe-area-inset-top, 0px) + 8px);
     padding-bottom: 10px;
   }
 
-  .mls-shell.mlp .mls-banner h2 {
+  .sts-shell.stp .sts-banner h2 {
     font-size: 28px;
   }
 
-  .mls-shell.mlp .mlp-actbar {
+  .sts-shell.stp .stp-actbar {
     padding-block: 6px;
   }
 
   /* Still a finger's size (the walk's 44 px). */
-  .mls-shell.mlp .mlp-launch {
-    height: var(--mlp-tap);
+  .sts-shell.stp .stp-launch {
+    height: var(--stp-tap);
   }
 }
 
 /* A long folder path wraps instead of pushing its copy button off screen. */
-.mls-shell.mlp .mls-main .mlw-details dd {
+.sts-shell.stp .sts-main .stw-details dd {
   flex-wrap: wrap;
 }
 
-.mls-shell.mlp .mls-main .mlw-details dd code {
+.sts-shell.stp .sts-main .stw-details dd code {
   min-width: 0;
   overflow-wrap: anywhere;
 }

@@ -1,34 +1,34 @@
 /* The next session: its view, the editor and the time zone search
    (prototype _sched.css). */
-.mls-shell .mlw-next {
+.sts-shell .stw-next {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.mls-shell .mlw-next > i {
+.sts-shell .stw-next > i {
   font-size: 22px;
   color: var(--color-warm-1);
   width: 26px;
   text-align: center;
 }
 
-.mls-shell .mlw-next > div {
+.sts-shell .stw-next > div {
   flex: 1;
   display: grid;
 }
 
-.mls-shell .mlw-next strong {
+.sts-shell .stw-next strong {
   font-size: 16px;
   color: var(--color-light-1);
 }
 
-.mls-shell .mlw-next span {
+.sts-shell .stw-next span {
   color: var(--color-text-subtle);
   font-size: 13px;
 }
 
-.mls-shell .mlw-next a {
+.sts-shell .stw-next a {
   color: var(--color-light-3);
   text-decoration: underline;
   text-decoration-color: var(--color-light-5);
@@ -36,15 +36,15 @@
   font-size: 13px;
 }
 
-.mls-shell .mlw-next.none > i {
+.sts-shell .stw-next.none > i {
   color: var(--color-light-4);
 }
 
-.mls-shell .mlw-sess .mlw-next span {
+.sts-shell .stw-sess .stw-next span {
   font-size: 12.5px;
 }
 
-.mls-shell .mlw-rule {
+.sts-shell .stw-rule {
   display: flex;
   gap: 8px;
   align-items: center;
@@ -53,13 +53,13 @@
   margin-top: 2px;
 }
 
-.mls-shell .mlw-rule i {
+.sts-shell .stw-rule i {
   color: var(--color-light-4);
   width: 26px;
   text-align: center;
 }
 
-.mls-shell .mlw-upcoming {
+.sts-shell .stw-upcoming {
   list-style: none;
   margin: 0 0 0 34px;
   padding: 0;
@@ -67,7 +67,7 @@
   gap: 2px;
 }
 
-.mls-shell .mlw-upcoming li {
+.sts-shell .stw-upcoming li {
   display: grid;
   grid-template-columns: 1fr auto 52px;
   gap: 10px;
@@ -79,17 +79,17 @@
   font-variant-numeric: tabular-nums;
 }
 
-.mls-shell .mlw-upcoming li.next {
+.sts-shell .stw-upcoming li.next {
   background: rgb(63 143 82 / 12%);
   color: var(--color-light-1);
 }
 
-.mls-shell .mlw-upcoming li.skipped .d {
+.sts-shell .stw-upcoming li.skipped .d {
   text-decoration: line-through;
   color: var(--color-light-5);
 }
 
-.mls-shell .mlw-upcoming li .ml-link {
+.sts-shell .stw-upcoming li .st-link {
   justify-self: end;
   font-size: 12px;
   color: var(--color-light-4);
@@ -97,60 +97,60 @@
   text-decoration-color: var(--color-light-5);
 }
 
-.mls-shell .mlw-upcoming li .ml-link:hover {
+.sts-shell .stw-upcoming li .st-link:hover {
   color: var(--color-warm-1);
 }
 
-.mls-shell .mlw-pill.ok {
+.sts-shell .stw-pill.ok {
   border-color: rgb(63 143 82 / 70%);
   color: #8fd49b;
 }
 
-.mls-shell .mlw-sched {
+.sts-shell .stw-sched {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   gap: 12px 18px;
 }
 
-.mls-shell .mlw-cal {
+.sts-shell .stw-cal {
   width: 252px;
   display: grid;
   gap: 4px;
 }
 
-.mls-shell .mlw-cal header {
+.sts-shell .stw-cal header {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.mls-shell .mlw-cal header strong {
+.sts-shell .stw-cal header strong {
   color: var(--color-light-1);
   font-size: 13.5px;
 }
 
-.mls-shell .mlw-cal header button {
+.sts-shell .stw-cal header button {
   width: 26px;
   height: 26px;
   padding: 0;
   font-size: 11px;
 }
 
-.mls-shell .mlw-cal .dow,
-.mls-shell .mlw-cal .days {
+.sts-shell .stw-cal .dow,
+.sts-shell .stw-cal .days {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 2px;
   text-align: center;
 }
 
-.mls-shell .mlw-cal .dow span {
+.sts-shell .stw-cal .dow span {
   font-size: 11px;
   color: var(--color-text-subtle);
   padding: 2px 0;
 }
 
-.mls-shell .mlw-cal .days button {
+.sts-shell .stw-cal .days button {
   height: 32px;
   width: auto;
   padding: 0;
@@ -163,22 +163,22 @@
   font-variant-numeric: tabular-nums;
 }
 
-.mls-shell .mlw-cal .days button:hover:not([disabled]) {
+.sts-shell .stw-cal .days button:hover:not([disabled]) {
   border-color: var(--color-cool-3);
   color: var(--color-light-1);
 }
 
-.mls-shell .mlw-cal .days button[disabled] {
+.sts-shell .stw-cal .days button[disabled] {
   opacity: 0.3;
   cursor: default;
   background: none;
 }
 
-.mls-shell .mlw-cal .days button.today {
+.sts-shell .stw-cal .days button.today {
   border-color: var(--color-cool-3);
 }
 
-.mls-shell .mlw-cal .days button.rep::after {
+.sts-shell .stw-cal .days button.rep::after {
   content: "";
   position: absolute;
   left: 50%;
@@ -190,14 +190,14 @@
   background: var(--color-warm-1);
 }
 
-.mls-shell .mlw-cal .days button.sel {
+.sts-shell .stw-cal .days button.sel {
   background: var(--color-warm-1);
   color: #1a1206;
   font-weight: 700;
   border-color: var(--color-warm-1);
 }
 
-.mls-shell .mlw-sched .side {
+.sts-shell .stw-sched .side {
   display: grid;
   grid-template-columns: 74px minmax(0, 1fr);
   gap: 10px 10px;
@@ -205,35 +205,35 @@
   align-items: start;
 }
 
-.mls-shell .mlw-sched .side label {
+.sts-shell .stw-sched .side label {
   color: var(--color-text-subtle);
   font-size: 12.5px;
   padding-top: 6px;
 }
 
-.mls-shell .mlw-sched .side > div {
+.sts-shell .stw-sched .side > div {
   display: grid;
   gap: 5px;
   min-width: 0;
 }
 
-.mls-shell .mlw-sched .side input,
-.mls-shell .mlw-sched .side select {
+.sts-shell .stw-sched .side input,
+.sts-shell .stw-sched .side select {
   height: 30px;
   font-size: 13.5px;
 }
 
-.mls-shell .mlw-sched .side input[type="time"] {
+.sts-shell .stw-sched .side input[type="time"] {
   width: 120px;
 }
 
-.mls-shell .mlw-sched .chips {
+.sts-shell .stw-sched .chips {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
 }
 
-.mls-shell .mlw-sched .chips button {
+.sts-shell .stw-sched .chips button {
   height: 24px;
   width: auto;
   flex: none;
@@ -242,18 +242,18 @@
   font-variant-numeric: tabular-nums;
 }
 
-.mls-shell .mlw-sched .chips button.on {
+.sts-shell .stw-sched .chips button.on {
   border-color: var(--color-warm-1);
   color: var(--color-light-1);
   background: rgb(238 155 58 / 14%);
 }
 
-.mls-shell .mlw-sched .tzl {
+.sts-shell .stw-sched .tzl {
   font-size: 12px;
   color: var(--color-text-subtle);
 }
 
-.mls-shell .mlw-sched .sum {
+.sts-shell .stw-sched .sum {
   grid-column: 1 / -1;
   display: flex;
   gap: 10px;
@@ -264,55 +264,55 @@
   background: rgb(238 155 58 / 8%);
 }
 
-.mls-shell .mlw-sched .sum > i {
+.sts-shell .stw-sched .sum > i {
   color: var(--color-warm-1);
   font-size: 18px;
   margin-top: 2px;
 }
 
-.mls-shell .mlw-sched .sum > div {
+.sts-shell .stw-sched .sum > div {
   display: grid;
   gap: 2px;
 }
 
-.mls-shell .mlw-sched .sum strong {
+.sts-shell .stw-sched .sum strong {
   color: var(--color-light-1);
   font-size: 14.5px;
 }
 
-.mls-shell .mlw-sched .sum strong span {
+.sts-shell .stw-sched .sum strong span {
   font-weight: 400;
   color: var(--color-text-subtle);
   font-size: 12.5px;
   margin-left: 4px;
 }
 
-.mls-shell .mlw-sched .sum .others {
+.sts-shell .stw-sched .sum .others {
   font-size: 12.5px;
   color: var(--color-light-3);
 }
 
-.mls-shell .mlw-sched .sum .others span + span::before {
+.sts-shell .stw-sched .sum .others span + span::before {
   content: " · ";
   color: var(--color-light-5);
 }
 
-.mls-shell .mlw-sched .sum .others b {
+.sts-shell .stw-sched .sum .others b {
   color: var(--color-light-1);
   font-weight: 600;
 }
 
-.mls-shell .mlw-sched .bar {
+.sts-shell .stw-sched .bar {
   grid-column: 1 / -1;
   display: flex;
   gap: 6px;
 }
 
-.mls-shell .mlw-sched .bar .ml-spacer {
+.sts-shell .stw-sched .bar .st-spacer {
   flex: 1;
 }
 
-.mls-shell .mlw-sched .bar button {
+.sts-shell .stw-sched .bar button {
   height: 28px;
   width: auto;
   flex: none;
@@ -320,44 +320,44 @@
   font-size: 13px;
 }
 
-.mls-shell .mlw-sched .hm {
+.sts-shell .stw-sched .hm {
   display: flex;
   align-items: center;
   gap: 4px;
 }
 
-.mls-shell .mlw-sched .hm select {
+.sts-shell .stw-sched .hm select {
   width: 64px;
   font-variant-numeric: tabular-nums;
 }
 
-.mls-shell .mlw-sched .hm .h24 {
+.sts-shell .stw-sched .hm .h24 {
   margin-left: 6px;
   font-size: 11.5px;
   color: var(--color-text-subtle);
 }
 
-.mls-shell .mlw-sess .mlw-next span b {
+.sts-shell .stw-sess .stw-next span b {
   color: var(--color-light-1);
   font-weight: 600;
 }
 
-.mls-shell .mlw-cal .days button.sel,
-.mls-shell .mlw-cal .days button.sel:hover {
+.sts-shell .stw-cal .days button.sel,
+.sts-shell .stw-cal .days button.sel:hover {
   color: #1a1206;
   border-color: var(--color-warm-1);
 }
 
-.mls-shell .mlw-upcoming li.more span {
+.sts-shell .stw-upcoming li.more span {
   color: var(--color-text-subtle);
 }
 
-.mls-shell .mlw-sched .bar button[disabled] {
+.sts-shell .stw-sched .bar button[disabled] {
   opacity: 0.45;
 }
 
 /* Chosen dates under the calendar, each with its own time (prototype). */
-.mls-shell .mlw-chosen {
+.sts-shell .stw-chosen {
   grid-column: 1 / -1;
   list-style: none;
   margin: 0;
@@ -367,7 +367,7 @@
   gap: 4px 10px;
 }
 
-.mls-shell .mlw-chosen li {
+.sts-shell .stw-chosen li {
   display: grid;
   grid-template-columns: 1fr 62px 24px;
   gap: 6px;
@@ -379,17 +379,17 @@
   color: var(--color-light-1);
 }
 
-.mls-shell .mlw-chosen li.past {
+.sts-shell .stw-chosen li.past {
   opacity: 0.5;
 }
 
-.mls-shell .mlw-chosen li.none {
+.sts-shell .stw-chosen li.none {
   display: block;
   color: var(--color-text-subtle);
   background: none;
 }
 
-.mls-shell .mlw-chosen .tt {
+.sts-shell .stw-chosen .tt {
   height: 24px;
   font-size: 12.5px;
   text-align: center;
@@ -397,7 +397,7 @@
   padding: 0 4px;
 }
 
-.mls-shell .mlw-chosen button {
+.sts-shell .stw-chosen button {
   width: 24px;
   height: 24px;
   padding: 0;
@@ -407,21 +407,21 @@
   color: var(--color-light-4);
 }
 
-.mls-shell .mlw-chosen button:hover {
+.sts-shell .stw-chosen button:hover {
   color: #ffb3a6;
 }
 
-.mls-shell .mlw-tzrow {
+.sts-shell .stw-tzrow {
   display: flex;
   gap: 6px;
 }
 
-.mls-shell .mlw-tzrow select {
+.sts-shell .stw-tzrow select {
   flex: 1;
   min-width: 0;
 }
 
-.mls-shell .mlw-tzrow button {
+.sts-shell .stw-tzrow button {
   height: 30px;
   width: auto;
   flex: none;
@@ -430,30 +430,30 @@
   font-size: 12.5px;
 }
 
-.mls-shell .mlw-tzfind {
+.sts-shell .stw-tzfind {
   display: grid;
   gap: 4px;
 }
 
-.mls-shell .mlw-tzfind .in {
+.sts-shell .stw-tzfind .in {
   display: flex;
   gap: 6px;
   align-items: center;
 }
 
-.mls-shell .mlw-tzfind .in i {
+.sts-shell .stw-tzfind .in i {
   color: var(--color-light-4);
   font-size: 12px;
   margin-left: 2px;
 }
 
-.mls-shell .mlw-tzfind .in input {
+.sts-shell .stw-tzfind .in input {
   flex: 1;
   min-width: 0;
   height: 30px;
 }
 
-.mls-shell .mlw-tzfind .in button {
+.sts-shell .stw-tzfind .in button {
   height: 30px;
   width: auto;
   flex: none;
@@ -461,7 +461,7 @@
   font-size: 12.5px;
 }
 
-.mls-shell .mlw-tzfind ul {
+.sts-shell .stw-tzfind ul {
   list-style: none;
   margin: 0;
   padding: 3px;
@@ -474,7 +474,7 @@
   overflow: auto;
 }
 
-.mls-shell .mlw-tzfind li {
+.sts-shell .stw-tzfind li {
   display: grid;
   grid-template-columns: 1fr auto 70px;
   gap: 8px;
@@ -486,25 +486,25 @@
   color: var(--color-light-2);
 }
 
-.mls-shell .mlw-tzfind li .r {
+.sts-shell .stw-tzfind li .r {
   font-size: 11.5px;
   color: var(--color-text-subtle);
 }
 
-.mls-shell .mlw-tzfind li .o {
+.sts-shell .stw-tzfind li .o {
   font-size: 12px;
   color: var(--color-light-3);
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-.mls-shell .mlw-tzfind li:hover,
-.mls-shell .mlw-tzfind li.on {
+.sts-shell .stw-tzfind li:hover,
+.sts-shell .stw-tzfind li.on {
   background: rgb(238 155 58 / 16%);
   color: var(--color-light-1);
 }
 
-.mls-shell .mlw-tzfind li.hint {
+.sts-shell .stw-tzfind li.hint {
   display: block;
   cursor: default;
   color: var(--color-text-subtle);
@@ -512,19 +512,19 @@
   background: none;
 }
 
-.mls-shell .mlw-sched {
+.sts-shell .stw-sched {
   align-items: start;
 }
 
-.mls-shell .mlw-cal {
+.sts-shell .stw-cal {
   align-content: start;
 }
 
-.mls-shell .mlw-tzfind {
+.sts-shell .stw-tzfind {
   position: relative;
 }
 
-.mls-shell .mlw-tzfind ul {
+.sts-shell .stw-tzfind ul {
   position: absolute;
   top: 34px;
   left: 0;
@@ -535,36 +535,36 @@
   background: rgb(17 15 25 / 98%);
 }
 
-.mls-shell .mlw-tzfind li.more {
+.sts-shell .stw-tzfind li.more {
   font-style: italic;
 }
 
-.mls-shell .mlw-sess {
+.sts-shell .stw-sess {
   gap: 6px;
 }
 
-.mls-shell .mlw-upcoming li {
+.sts-shell .stw-upcoming li {
   padding: 2px 8px;
 }
 
-.mls-shell .mlw-bg {
+.sts-shell .stw-bg {
   aspect-ratio: 2.39;
 }
 
-.mls-shell .mlw-box dl {
+.sts-shell .stw-box dl {
   gap: 5px 12px;
 }
 
-.mls-shell .mlw-about {
+.sts-shell .stw-about {
   gap: 14px;
 }
 
-.mls-shell .mlw-about .col {
+.sts-shell .stw-about .col {
   gap: 12px;
 }
 
-.mls-shell .mlw-upcoming li .ml-link,
-.mls-shell .mlw-sess h4 .ml-link {
+.sts-shell .stw-upcoming li .st-link,
+.sts-shell .stw-sess h4 .st-link {
   justify-self: end;
   width: auto;
   height: auto;
@@ -574,7 +574,7 @@
   box-shadow: none;
 }
 
-.mls-shell .mlw-tzfind ul {
+.sts-shell .stw-tzfind ul {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -582,7 +582,7 @@
   overflow: auto;
 }
 
-.mls-shell .mlw-tzfind li[role="option"] {
+.sts-shell .stw-tzfind li[role="option"] {
   display: grid;
   grid-template-columns: 1fr auto auto;
   gap: 8px;
@@ -592,21 +592,21 @@
   font-size: 12.5px;
 }
 
-.mls-shell .mlw-tzfind li[role="option"]:hover {
+.sts-shell .stw-tzfind li[role="option"]:hover {
   background: rgb(255 255 255 / 6%);
 }
 
-.mls-shell .mlw-tzfind li.hint {
+.sts-shell .stw-tzfind li.hint {
   padding: 3px 6px;
   font-size: 12px;
   color: var(--color-text-subtle);
 }
 
 /* At 1366 the side column narrows: the zone's name keeps its room. */
-.mls-shell .mlw-tzrow {
+.sts-shell .stw-tzrow {
   flex-wrap: wrap;
 }
 
-.mls-shell .mlw-tzrow select {
+.sts-shell .stw-tzrow select {
   min-width: 140px;
 }

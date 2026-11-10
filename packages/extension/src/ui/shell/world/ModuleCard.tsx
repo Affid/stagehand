@@ -27,7 +27,7 @@ function WhyRow(props: {
       {fix && canChange ? (
         <button
           type="button"
-          class="ml-link"
+          class="st-link"
           onClick={() => props.onFlip(fix.moduleId, fix.on)}
         >
           {fix.label}
@@ -59,7 +59,7 @@ export function ModuleCard(props: CardProps) {
   const line = whyLine(row, props.why);
   const locked = row.pkg.id === COMPANION_ID || !canChange;
   const cls = [
-    "mlw-card",
+    "stw-card",
     row.next ? "on" : "off",
     row.delta === "on" ? "plus" : row.delta === "off" ? "minus" : "",
     row.problem ? "prob" : "",
@@ -72,7 +72,7 @@ export function ModuleCard(props: CardProps) {
         <input
           type="checkbox"
           role="switch"
-          class="mls-switch"
+          class="sts-switch"
           checked={row.next}
           disabled={locked}
           aria-label={t("wp.switch", {
@@ -87,7 +87,7 @@ export function ModuleCard(props: CardProps) {
         />
         <OpenName id={row.pkg.id} title={row.pkg.title} />
         {row.delta ? (
-          <span class="mlw-delta">{t(`wp.delta.${row.delta}`)}</span>
+          <span class="stw-delta">{t(`wp.delta.${row.delta}`)}</span>
         ) : null}
       </div>
       <WhyRow line={line} onFlip={props.onFlip} />

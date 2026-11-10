@@ -2,7 +2,7 @@
 // Launching a world (Android plan, phase 7): our screen from the tap, with
 // Foundry's own launch steps as they come, its error in our words, and the
 // app's way back to the servers. Foundry draws all of it in its hidden Setup.
-import type { Snapshot } from "@module-library/shared/world";
+import type { Snapshot } from "@stagehand/shared/world";
 import { cleanup, fireEvent, screen, waitFor } from "@testing-library/preact";
 import { afterEach, describe, expect, test, vi } from "vitest";
 import { parseProgress } from "../../src/page-progress.ts";
@@ -189,7 +189,7 @@ describe("the launching screen", () => {
     const dialog = await screen.findByRole("dialog", {
       name: "Launching Strahd",
     });
-    expect(r.container.querySelector(".mls-shell")?.hasAttribute("inert")).toBe(
+    expect(r.container.querySelector(".sts-shell")?.hasAttribute("inert")).toBe(
       true,
     );
     fireEvent.keyDown(dialog, { key: "Escape" });
@@ -200,7 +200,7 @@ describe("the launching screen", () => {
     await waitFor(() => {
       expect(r.store.get().launching).toBeNull();
     });
-    expect(r.container.querySelector(".mls-shell")?.hasAttribute("inert")).toBe(
+    expect(r.container.querySelector(".sts-shell")?.hasAttribute("inert")).toBe(
       false,
     );
   });

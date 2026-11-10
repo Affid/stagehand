@@ -35,7 +35,7 @@ export interface ContentScript {
 }
 
 const scriptId = (kind: string, server: ServerId): string =>
-  `ml-${kind}-${server.replace(/[^a-z0-9]/gi, "_")}`;
+  `st-${kind}-${server.replace(/[^a-z0-9]/gi, "_")}`;
 
 export function contentScriptsFor(server: ServerId): readonly ContentScript[] {
   return [

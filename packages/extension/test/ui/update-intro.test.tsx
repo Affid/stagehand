@@ -27,7 +27,7 @@ describe("the notes' overview blocks (Phase 6, axe dlitem)", () => {
     expect(dl?.querySelector(":scope > dd")?.textContent).toBe(
       "Players set their own.",
     );
-    expect(container.querySelector("div.mlu-p")?.textContent).toBe(
+    expect(container.querySelector("div.stu-p")?.textContent).toBe(
       "Hello there",
     );
   });

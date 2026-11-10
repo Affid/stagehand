@@ -24,7 +24,7 @@ test.beforeAll(async () => {
   await admin.dispose();
 });
 
-const shell = (page: Page) => page.locator("#ml-shell-root .mls-shell");
+const shell = (page: Page) => page.locator("#st-shell-root .sts-shell");
 
 async function openLibrary(device: Device): Promise<[AppHarness, Page]> {
   const app = await launchApp({ device });
@@ -32,7 +32,7 @@ async function openLibrary(device: Device): Promise<[AppHarness, Page]> {
   await openAppSetupAsAdmin(app, page, env.url, env.adminPassword);
   await exitTour(page);
   await shell(page)
-    .locator(".mlp-tabs")
+    .locator(".stp-tabs")
     .getByRole("button", { name: /^Library/ })
     .click();
   return [app, page];
@@ -53,7 +53,7 @@ test.describe("on a phone", () => {
       /^Modules/,
       /^Systems/,
     ]);
-    const head = shell(page).locator(".mlp-libhead");
+    const head = shell(page).locator(".stp-libhead");
     await expect(head.getByRole("searchbox")).toBeVisible();
     await expect(
       head.getByRole("button", { name: /^Group by:/ }),
@@ -88,10 +88,10 @@ test.describe("on a phone", () => {
       .getByRole("button", { name: /^Select, install/ })
       .click();
     await shell(page).getByRole("button", { name: "Select modules" }).click();
-    const dock = shell(page).locator(".mlp-dock .mls-selbar");
+    const dock = shell(page).locator(".stp-dock .sts-selbar");
     await expect(dock).toBeVisible();
-    await shell(page).locator(".mll-card input[type=checkbox]").first().check();
-    await expect(dock.locator(".mls-selcount")).toHaveText("1 selected");
+    await shell(page).locator(".stl-card input[type=checkbox]").first().check();
+    await expect(dock.locator(".sts-selcount")).toHaveText("1 selected");
     await page.screenshot({ path: `${SCREENS}/phone-library-select.png` });
     await dock.getByRole("button", { name: "Done" }).click();
     await expect(dock).toHaveCount(0);

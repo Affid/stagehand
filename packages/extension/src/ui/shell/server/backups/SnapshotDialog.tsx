@@ -61,9 +61,9 @@ function SpaceLines(props: { readonly space: Space }) {
           free: formatSize(available),
         })}
       </span>
-      <span class="ml-muted">{t("snap.neededHint")}</span>
+      <span class="st-muted">{t("snap.neededHint")}</span>
       {required > available ? (
-        <span class="mlb-short">{t("snap.short")}</span>
+        <span class="stb-short">{t("snap.short")}</span>
       ) : null}
     </>
   );
@@ -119,16 +119,16 @@ export function SnapshotDialog(props: {
   );
   return (
     <Modal title={t("sb.create")} onClose={props.onClose} footer={footer}>
-      <div class="mls-launch-body mlb-snapdialog">
+      <div class="sts-launch-body stb-snapdialog">
         <p>{t("snap.lead")}</p>
-        <div class="mlb-facts">
+        <div class="stb-facts">
           <span>
             <Icon name="box-archive" />
             {counts}
           </span>
           <SpaceLines space={space} />
         </div>
-        <label class="mlb-note">
+        <label class="stb-note">
           <span>{t("snap.note")}</span>
           <input
             type="text"
@@ -138,7 +138,7 @@ export function SnapshotDialog(props: {
             onInput={(e) => setNote(e.currentTarget.value)}
           />
         </label>
-        <div class="mls-check warn">
+        <div class="sts-check warn">
           <Icon name="triangle-exclamation" />
           <span>{t("snap.warn")}</span>
         </div>

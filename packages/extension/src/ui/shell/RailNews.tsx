@@ -2,7 +2,7 @@
 // own names (prototype: design/setup-page/src/_calm.js railNews). News is a
 // carousel of Foundry's 2.39:1 banners, open while something is unread and
 // folded to its latest headline after; Featured Content is always open.
-import { type NewsItem, newsUrls } from "@module-library/shared/news";
+import { type NewsItem, newsUrls } from "@stagehand/shared/news";
 import { useEffect, useState } from "preact/hooks";
 import { Icon } from "../common/widgets.tsx";
 import { useUi } from "../context.ts";
@@ -69,7 +69,7 @@ function Banner(props: {
         <strong>{item.title}</strong>
         {props.isNew ? <span class="k new">{t("news.new")}</span> : null}
         <Icon name="arrow-up-right-from-square" />
-        <span class="ml-sr-only">{t("news.newTab")}</span>
+        <span class="st-sr-only">{t("news.newTab")}</span>
       </span>
     </a>
   );
@@ -111,7 +111,7 @@ function Carousel(props: {
           </button>
           <span class="c" aria-live="polite">
             {t("news.count", { i: at + 1, n })}
-            <span class="ml-sr-only">: {list[at]?.title}</span>
+            <span class="st-sr-only">: {list[at]?.title}</span>
           </span>
           <button
             type="button"
@@ -141,7 +141,7 @@ function News(props: {
   const toggle = () => props.onView({ ...view, folded: !folded });
   return (
     <section
-      class={`mlr-news${folded ? " folded" : ""}`}
+      class={`str-news${folded ? " folded" : ""}`}
       aria-label={t("news.aria")}
     >
       {/* The whole line folds by pointer; the button is its keyboard path. */}
@@ -198,7 +198,7 @@ export function RailNews() {
         />
       ) : null}
       {featured ? (
-        <section class="mlr-feat" aria-label={t("news.featured")}>
+        <section class="str-feat" aria-label={t("news.featured")}>
           <span class="lbl" aria-hidden="true">
             {t("news.featured")}
           </span>

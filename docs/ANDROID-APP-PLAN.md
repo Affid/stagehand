@@ -47,7 +47,7 @@ a commit per package, results with screenshots.
    |                                  in one closure, CSS before first paint)
    |                                  app-game.js on /game (game-bridge)
    |                                        |
-   |                     addWebMessageListener("mlApp"), origin-pinned
+   |                     addWebMessageListener("stApp"), origin-pinned
    v                                        v
  ------------------------- Native (Kotlin) --------------------------
  Bridge: size cap, JSON shape, sender = the WebView's current URL
@@ -420,7 +420,7 @@ through a global the harness leaves in place.
 Package 5 done. `tests/foundry/target.ts`: the live specs open Setup,
 read and seed storage, see the settings open and follow outside links
 through one `Target`, the extension (default) or the app
-(`pnpm test:foundry:app`, `ML_TARGET=app`); every Setup spec and
+(`pnpm test:foundry:app`, `ST_TARGET=app`); every Setup spec and
 `apply.spec.ts` moved to it with the same seeded data. Extension-only:
 the toolbar panel (`setup-settings.spec.ts`) and `companion-http.spec.ts`
 (neither build is involved, run once). App-only: `app-home.spec.ts` (list,
@@ -720,8 +720,8 @@ Kotlin tests, a check on the emulator, a code review and a security review:
    extension's (0.2.0, version code 200). Debug builds are
    `io.github.affid.stagehand.debug` beside the release's
    `io.github.affid.stagehand` (until 2026-11-10:
-   `dev.modulelibrary.app`). The release is minified and signed with a key
-   in `~/.config/module-library/` (`android-release.jks` and
+   `io.github.affid.stagehand`). The release is minified and signed with a key
+   in `~/.config/stagehand/` (`android-release.jks` and
    `android-signing.properties`, outside git; without it the release is
    built unsigned, with a warning). Manifest: the launcher activity only
    (no data filter, `taskAffinity` empty), no backup or device transfer of
@@ -853,11 +853,11 @@ Kotlin tests, a check on the emulator, a code review and a security review:
    and the companion, and back on Setup "3 modules on". **The phase's
    done condition holds.** Export and import, dialogs and outside links
    were checked in package 4. The signed, minified release APK
-   (`dev.modulelibrary.app`, 0.7 MB, no source maps) installed on the
+   (`io.github.affid.stagehand`, 0.7 MB, no source maps) installed on the
    emulator: home answers through the background, a server added and
    opened shows our running-world screen (a world ran then), so the
    release runs our injected scripts too; it is in the owner's Windows
-   folder as `C:\Users\fagot\ml-apk\module-library-0.2.0.apk`. Found on
+   folder as `C:\Users\fagot\st-apk\module-library-0.2.0.apk`. Found on
    the way and fixed: **the companion's HELLO waited 1 s, five times**,
    and in the app the first answer came after about 1.3 s, every run
    (the game page and our background share one renderer, which the game
@@ -884,7 +884,7 @@ Kotlin tests, a check on the emulator, a code review and a security review:
    a tap) were made without a design to follow; both are for you to
    approve or redesign. (Since replaced in phase 6: home A, and the owner's
    pick for the icon, Fly rope.)
-3. **The release key** in `~/.config/module-library/` signs every future
+3. **The release key** in `~/.config/stagehand/` signs every future
    APK: phones with this one installed take updates only from it. Keep a
    copy somewhere safe.
 4. **Accessibility trade-off:** outside links open only after a real tap
@@ -903,8 +903,8 @@ emulator, a code review and a security review:
 
 1. **The suite and its fixtures.** `tests/android/` with
    `playwright.android.config.ts` (`pnpm test:android`): the device by
-   `ML_ANDROID_SERIAL` (else the only one), the server as that device
-   reaches it (`ML_APP_SERVER`, else the emulator's `10.0.2.2`), the debug
+   `ST_ANDROID_SERIAL` (else the only one), the server as that device
+   reaches it (`ST_APP_SERVER`, else the emulator's `10.0.2.2`), the debug
    APK installed with no data, the WebView notice answered once per
    version, pages found again after the app's WebViews change, native UI
    through uiautomator, screenshots per device and theme; no traces (they
@@ -963,11 +963,11 @@ test:android`, no traces). First spec, `start.spec.ts`: a fresh install
 3. **Acceptance** (done 2026-11-09). The full suite on the emulator: 9 of
    9 pass. The signed release APK of `61457e0` installs and opens on home;
    it is in the owner's Windows folder as
-   `C:\Users\fagot\ml-apk\module-library-0.2.0.apk`. Results:
+   `C:\Users\fagot\st-apk\module-library-0.2.0.apk`. Results:
    https://claude.ai/artifact/Pj5rVD16GKovBGud9n8Zgx. **The phone run
    waits for the owner**: no phone was on adb (the firewall rule,
    WebView 146 and wireless debugging first, phase 4 "For the owner");
-   then `ML_ANDROID_SERIAL=<phone> ML_APP_SERVER=http://192.168.178.25:30000 pnpm test:android`.
+   then `ST_ANDROID_SERIAL=<phone> ST_APP_SERVER=http://192.168.178.25:30000 pnpm test:android`.
 
 ## Phase 6: the owner's first use (started 2026-11-09)
 

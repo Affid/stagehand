@@ -106,7 +106,7 @@ async function open(
     },
   });
   await waitFor(() => {
-    expect(r.container.querySelector(".mlu-page [role=status]")).toBe(null);
+    expect(r.container.querySelector(".stu-page [role=status]")).toBe(null);
   });
   return r;
 }
@@ -119,7 +119,7 @@ describe("the Update page", () => {
       channel: "stable",
       force: false,
     });
-    const head = el(r.container, ".mlu-page .mlb-head");
+    const head = el(r.container, ".stu-page .stb-head");
     expect(head.textContent).toContain("You're on Foundry 14.369 (Stable).");
     expect(head.textContent).toContain("14.371 is available.");
   });
@@ -146,7 +146,7 @@ describe("the Update page", () => {
 describe("What's new (the notes reader)", () => {
   test("title, sections, areas, issue numbers as links, and nothing unsafe", async () => {
     const r = await open();
-    const notes = el(r.container, ".mlu-notes");
+    const notes = el(r.container, ".stu-notes");
     expect(notes.querySelector("h3")?.textContent).toBe(
       "Release notes: Version 14 - Stable 13",
     );
@@ -175,7 +175,7 @@ describe("What's new (the notes reader)", () => {
 
   test("jump links count each section", async () => {
     const r = await open();
-    const jump = el(r.container, ".mlu-jump");
+    const jump = el(r.container, ".stu-jump");
     expect(jump.textContent).toContain("1 breaking change");
     expect(jump.textContent).toContain("2 new features");
     expect(jump.textContent).toContain("2 bug fixes");
@@ -186,7 +186,7 @@ describe("What's new (the notes reader)", () => {
     fireEvent.input(r.getByRole("searchbox", { name: "Search the notes" }), {
       target: { value: "14966" },
     });
-    const body = el(r.container, ".mlu-body");
+    const body = el(r.container, ".stu-body");
     expect(body.textContent).toContain("Fixed vision flicker");
     expect(body.textContent).not.toContain("Players set");
     fireEvent.input(r.getByRole("searchbox", { name: "Search the notes" }), {
@@ -200,7 +200,7 @@ describe("What's new (the notes reader)", () => {
     fireEvent.click(r.getByRole("checkbox", { name: "Developer notes" }));
     expect(r.queryByRole("button", { name: /^API Improvements/ })).toBe(null);
     expect(r.container.textContent).not.toContain("Hot reload");
-    expect(el(r.container, ".mlu-jump").textContent).toContain("1 new feature");
+    expect(el(r.container, ".stu-jump").textContent).toContain("1 new feature");
   });
 });
 
@@ -252,10 +252,10 @@ describe("the Update box", () => {
     await waitFor(() => {
       expect(r.container.textContent).toContain("Updating to 14.371");
     });
-    const box = el(r.container, ".mlu-act");
+    const box = el(r.container, ".stu-act");
     expect(box.textContent).toContain("60%");
-    expect(el(box, ".mlu-steps li.done").textContent).toBe("Downloading");
-    expect(el(box, ".mlu-steps li.now").textContent).toBe("Extracting");
+    expect(el(box, ".stu-steps li.done").textContent).toBe("Downloading");
+    expect(el(box, ".stu-steps li.now").textContent).toBe("Extracting");
   });
 
   test("a release to install by hand says why, with the download page", async () => {
@@ -276,7 +276,7 @@ describe("the Update box", () => {
       (r.getByRole("button", { name: "Updates disabled" }) as HTMLButtonElement)
         .disabled,
     ).toBe(true);
-    expect(el(r.container, ".mlu-why").textContent).toContain("--noupdate");
+    expect(el(r.container, ".stu-why").textContent).toContain("--noupdate");
   });
 
   test("the channel: Foundry's own three, a hint, and a new check on change", async () => {
@@ -288,7 +288,7 @@ describe("the Update box", () => {
       "stable",
       "testing",
     ]);
-    expect(el(r.container, ".mlu-chan").textContent).toContain(
+    expect(el(r.container, ".stu-chan").textContent).toContain(
       "recommended for live games",
     );
     fireEvent.change(select, { target: { value: "testing" } });
@@ -333,13 +333,13 @@ describe("Your packages (Foundry's compatibility preview)", () => {
       force: false,
       version: "14.371",
     });
-    const box = [...r.container.querySelectorAll(".mlu-side .mlw-box")].find(
+    const box = [...r.container.querySelectorAll(".stu-side .stw-box")].find(
       (b) => b.textContent.includes("Your packages on 14.371"),
     );
     expect(box?.textContent).toContain("2 compatible");
     expect(box?.textContent).toContain("1 risk");
     expect(box?.textContent).toContain("2 incompatible");
-    const names = [...(box?.querySelectorAll(".mlu-flag li .t") ?? [])].map(
+    const names = [...(box?.querySelectorAll(".stu-flag li .t") ?? [])].map(
       (b) => b.textContent,
     );
     expect(names).toEqual([
@@ -354,10 +354,10 @@ describe("Your packages (Foundry's compatibility preview)", () => {
   test("the tab: systems, modules, worlds; chips filter; rows say why and where", async () => {
     const r = await open();
     fireEvent.click(r.getByRole("tab", { name: /Your packages/ }));
-    const view = el(r.container, ".mlu-compat");
+    const view = el(r.container, ".stu-compat");
     fireEvent.click(within(view).getByRole("tab", { name: /^Modules/ }));
     const rows = () =>
-      [...view.querySelectorAll(".mlu-clist li")].map(
+      [...view.querySelectorAll(".stu-clist li")].map(
         (li) => li.querySelector(".t")?.textContent,
       );
     expect(rows()).toEqual([
@@ -388,7 +388,7 @@ describe("Your packages (Foundry's compatibility preview)", () => {
   test("links: the package page, and the changelog when there is a newer version", async () => {
     const r = await open();
     fireEvent.click(r.getByRole("tab", { name: /Your packages/ }));
-    const view = el(r.container, ".mlu-compat");
+    const view = el(r.container, ".stu-compat");
     fireEvent.click(within(view).getByRole("tab", { name: /^Modules/ }));
     expect(
       within(view)
@@ -414,7 +414,7 @@ describe("Your packages (Foundry's compatibility preview)", () => {
     expect(r2.store.get().side).toEqual({ kind: "system", id: "dnd5e" });
     await waitFor(() => {
       expect(
-        r2.container.querySelector('.mll-card.viewing[data-system="dnd5e"]'),
+        r2.container.querySelector('.stl-card.viewing[data-system="dnd5e"]'),
       ).toBeTruthy();
     });
   });
@@ -422,7 +422,7 @@ describe("Your packages (Foundry's compatibility preview)", () => {
   test("a world without the companion: its modules are unknown", async () => {
     const r = await open();
     fireEvent.click(r.getByRole("tab", { name: /Your packages/ }));
-    const view = el(r.container, ".mlu-compat");
+    const view = el(r.container, ".stu-compat");
     fireEvent.click(within(view).getByRole("tab", { name: /^Worlds/ }));
     expect(view.textContent).toContain(
       "Its system has a compatible version · modules unknown (no companion)",
@@ -445,7 +445,7 @@ describe("package 7 review", () => {
       },
     });
     await waitFor(() => {
-      expect(el(r.container, ".mlu-act").textContent).toContain(
+      expect(el(r.container, ".stu-act").textContent).toContain(
         "Updating to 14.371",
       );
     });
@@ -474,7 +474,7 @@ describe("the Update page's tab rows (ARIA tabs, Phase 6)", () => {
   test("Update sections and Package types: labelled, each naming its panel", async () => {
     const r = await open();
     fireEvent.click(r.getByRole("tab", { name: /Your packages/ }));
-    await waitFor(() => el(r.container, ".mlu-compat"));
+    await waitFor(() => el(r.container, ".stu-compat"));
     const lists = r.getAllByRole("tablist");
     expect(lists.map((l) => l.getAttribute("aria-label"))).toEqual([
       "Update sections",

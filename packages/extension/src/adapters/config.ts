@@ -70,4 +70,4 @@ export const BUNDLED_CONFIG: SetupConfig = {
 };
 
 export const REMOTE_CONFIG_URL =
-  "https://raw.githubusercontent.com/Affid/module-library/main/config/setup-config.json";
+  "https://raw.githubusercontent.com/Affid/stagehand/main/config/setup-config.json";

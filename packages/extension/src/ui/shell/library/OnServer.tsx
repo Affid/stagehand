@@ -1,6 +1,6 @@
 // "On this server": Foundry's own favourite and lock for the module, and
 // its own dialogs to edit the manifest, update, back up or uninstall it.
-import type { PackageInfo } from "@module-library/shared/package";
+import type { PackageInfo } from "@stagehand/shared/package";
 import type { FoundryAction } from "../../../page-protocol.ts";
 import { Icon } from "../../common/widgets.tsx";
 import { useUi } from "../../context.ts";
@@ -28,13 +28,13 @@ function Switch(props: {
       <span>
         {props.label}
         <br />
-        <span class="ml-muted mls-hint">{props.hint}</span>
+        <span class="st-muted sts-hint">{props.hint}</span>
       </span>
       <span />
       <input
         type="checkbox"
         role="switch"
-        class="mls-switch"
+        class="sts-switch"
         checked={props.on}
         disabled={props.disabled}
         aria-label={props.label}
@@ -57,7 +57,7 @@ function Acts(props: { readonly pkg: PackageInfo; readonly kind: Kind }) {
     </button>
   );
   return (
-    <div class="mls-foundry-acts">
+    <div class="sts-foundry-acts">
       {props.pkg.locked || props.kind === "system"
         ? null
         : btn("editPackage", "pen-to-square", "pk.edit")}
@@ -83,11 +83,11 @@ export function OnServer(props: {
     a.status !== "safe-mode" &&
     a.adapter.flags.lockPackage === true;
   return (
-    <div class="mls-chg">
+    <div class="sts-chg">
       <h4>
         <span>{t("pk.onServer")}</span>
       </h4>
-      <ul class="mls-wlist">
+      <ul class="sts-wlist">
         <Switch
           label={t("pk.favourite")}
           hint={t("pk.favouriteHint")}

@@ -29,7 +29,7 @@ function Badge(props: { readonly n: number; readonly label: string }) {
       <b class="pip" aria-hidden="true">
         {props.n}
       </b>
-      <span class="ml-sr-only">, {props.label}</span>
+      <span class="st-sr-only">, {props.label}</span>
     </>
   );
 }
@@ -42,8 +42,8 @@ function useBadges(): Readonly<Partial<Record<PhoneTab, [number, string]>>> {
   ).length;
   const fresh = state.data.fresh.length;
   return {
-    worlds: [queued, plural(t, "mlp.queuedWorlds", queued)],
-    library: [fresh, plural(t, "mlp.newModules", fresh)],
+    worlds: [queued, plural(t, "stp.queuedWorlds", queued)],
+    library: [fresh, plural(t, "stp.newModules", fresh)],
   };
 }
 
@@ -52,7 +52,7 @@ export function TabBar(props: { readonly layout: Layout }) {
   const on = currentTab(navOf(state), state.route);
   const badges = useBadges();
   return (
-    <nav class="mlp-tabs" aria-label={t("mlp.tabs")}>
+    <nav class="stp-tabs" aria-label={t("stp.tabs")}>
       {PHONE_TABS.map((tab) => {
         const badge = badges[tab];
         return (
@@ -64,7 +64,7 @@ export function TabBar(props: { readonly layout: Layout }) {
             onClick={() => store.set(tabPatch(tab, props.layout, store.get()))}
           >
             <Icon name={ICON[tab]} />
-            <span>{t(`mlp.tab.${tab}`)}</span>
+            <span>{t(`stp.tab.${tab}`)}</span>
             {badge ? <Badge n={badge[0]} label={badge[1]} /> : null}
           </button>
         );

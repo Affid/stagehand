@@ -24,7 +24,7 @@ import { isCompact, useLayout } from "../../phone/layout.ts";
 
 type Tab = "snapshots" | PackageType;
 const TABS: readonly Tab[] = ["snapshots", "world", "module", "system"];
-const BACKUP_TABS = "ml-sb";
+const BACKUP_TABS = "st-sb";
 const ICONS: Record<Tab, string> = {
   snapshots: "camera-retro",
   world: "globe",
@@ -87,20 +87,20 @@ function SummaryBar(props: {
   // A snapshot under way shows above the tabs; the button says why it waits.
   const why = props.off ?? (snapshotTask(state.tasks) ? t("bk.busy") : null);
   return (
-    <div class="mlp-actbar mlp-bkbar">
-      <span class="mlp-what">
+    <div class="stp-actbar stp-bkbar">
+      <span class="stp-what">
         <strong>{top}</strong>
         {sub ? <span>{sub}</span> : null}
       </span>
       <span class="nodel" title={tip(why)}>
         <button
           type="button"
-          class="bright mlp-launch"
+          class="bright stp-launch"
           disabled={why !== null}
           onClick={props.onCreate}
         >
           <Icon name="camera-retro" />
-          {t("mlp.newSnapshot")}
+          {t("stp.newSnapshot")}
         </button>
       </span>
     </div>
@@ -115,7 +115,7 @@ function Tabs(props: {
 }) {
   const { t } = useUi();
   return (
-    <nav class="mls-subtabs">
+    <nav class="sts-subtabs">
       <TabList
         id={BACKUP_TABS}
         label={t("sb.tabs")}
@@ -214,7 +214,7 @@ export function ServerBackupsPage() {
   const off =
     lockReason(t, state) ?? (data.busy ? t("bk.busy") : canChange ? null : "");
   return (
-    <div class="mlb-page ml-app">
+    <div class="stb-page st-app">
       {compact ? (
         // The top bar names the page and the bar above the tabs holds the
         // summary and New snapshot; a snapshot under way shows here.
@@ -227,7 +227,7 @@ export function ServerBackupsPage() {
           <Create off={off} onCreate={() => setAsking(true)} />
         </PageHead>
       )}
-      {view.error ? <p class="ml-banner ml-warn">{view.error}</p> : null}
+      {view.error ? <p class="st-banner st-warn">{view.error}</p> : null}
       {asking ? (
         <SnapshotDialog
           onClose={() => setAsking(false)}
@@ -247,7 +247,7 @@ export function ServerBackupsPage() {
           onCreate={() => setAsking(true)}
         />
       ) : view.error ? null : (
-        <p class="ml-empty">{t("sb.loading")}</p>
+        <p class="st-empty">{t("sb.loading")}</p>
       )}
     </div>
   );

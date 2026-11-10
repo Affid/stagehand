@@ -18,7 +18,7 @@ function Box(props: {
   readonly children?: ComponentChildren;
 }) {
   return (
-    <div class={`mlc-https ${props.ok ? "ok" : "warn"}`}>
+    <div class={`stc-https ${props.ok ? "ok" : "warn"}`}>
       <Icon name={props.icon} />
       <div>
         <strong>{props.title}</strong>
@@ -134,7 +134,7 @@ function OwnCert(props: {
     return (
       <button
         type="button"
-        class="ml-link mlc-more"
+        class="st-link stc-more"
         onClick={() => setOpen(true)}
       >
         {t("cfg.https.useOwn")}
@@ -167,7 +167,7 @@ function Advanced(props: { readonly c: Config }) {
     return (
       <button
         type="button"
-        class="ml-link mlc-more"
+        class="st-link stc-more"
         onClick={() => setOpen(true)}
       >
         {t("cfg.advanced")}
@@ -196,7 +196,7 @@ function Advanced(props: { readonly c: Config }) {
       />
       <button
         type="button"
-        class="ml-link mlc-more"
+        class="st-link stc-more"
         onClick={() => setOpen(false)}
       >
         {t("cfg.fewer")}
@@ -214,7 +214,7 @@ export function Network(props: {
   const port = useField(props.c, "port");
   const upnp = useField(props.c, "upnp");
   return (
-    <section class="mlw-box">
+    <section class="stw-box">
       <h4>
         <span>{t("cfg.network")}</span>
       </h4>
@@ -224,7 +224,7 @@ export function Network(props: {
         error={props.problems.has("port") ? t("cfg.portRange") : undefined}
         changed={port.changed || upnp.changed}
       >
-        <div class="mlc-port">
+        <div class="stc-port">
           <TextInput
             c={props.c}
             k="port"

@@ -33,9 +33,9 @@ let app: AppHarness;
 let admin: APIRequestContext;
 let page: Page;
 
-const shell = () => page.locator("#ml-shell-root .mls-shell");
-const bar = () => shell().locator(".mlp-dock .mlp-actbar");
-const card = (id: string) => shell().locator(`.mlw-card[data-module="${id}"]`);
+const shell = () => page.locator("#st-shell-root .sts-shell");
+const bar = () => shell().locator(".stp-dock .stp-actbar");
+const card = (id: string) => shell().locator(`.stw-card[data-module="${id}"]`);
 
 async function toSetup(): Promise<void> {
   await page.goto("about:blank");
@@ -48,9 +48,9 @@ async function toSetup(): Promise<void> {
   });
   await page.setViewportSize(PHONE);
   await page.goto(`${env.url}/setup`);
-  await shell().locator(".mlp-tabs").waitFor();
+  await shell().locator(".stp-tabs").waitFor();
   await exitTour(page);
-  await shell().locator(`.mls-world[data-world="${TEST_WORLD.id}"]`).click();
+  await shell().locator(`.sts-world[data-world="${TEST_WORLD.id}"]`).click();
 }
 
 test.describe.configure({ mode: "serial" });
@@ -101,12 +101,12 @@ test.afterAll(async () => {
 });
 
 test("the bottom bar: no changes yet, then what a switch queues", async () => {
-  await expect(card("ml-fixture-a")).toBeVisible();
+  await expect(card("st-fixture-a")).toBeVisible();
   await expect(bar()).toContainText("No changes");
   await expect(bar()).toContainText(/\d+ modules? on/);
-  await card("ml-fixture-a").locator('input[role="switch"]').click();
+  await card("st-fixture-a").locator('input[role="switch"]').click();
   // Fixture A brings its library along: two changes.
-  await expect(bar().locator(".mlp-what strong")).toHaveText("2 changes");
+  await expect(bar().locator(".stp-what strong")).toHaveText("2 changes");
   await expect(bar().getByRole("button", { name: /^Launch/ })).toContainText(
     "2",
   );
@@ -135,8 +135,8 @@ test("Next launch lists the changes; Discard all empties it", async () => {
 });
 
 test("a change's undo in Next launch takes it back", async () => {
-  await card("ml-fixture-a").locator('input[role="switch"]').click();
-  await expect(bar().locator(".mlp-what strong")).toHaveText("2 changes");
+  await card("st-fixture-a").locator('input[role="switch"]').click();
+  await expect(bar().locator(".stp-what strong")).toHaveText("2 changes");
   await bar()
     .getByRole("button", { name: /See or undo/ })
     .click();
@@ -150,8 +150,8 @@ test("a change's undo in Next launch takes it back", async () => {
 });
 
 test("Launch goes through the review, which comes up from the bottom", async () => {
-  await card("ml-fixture-a").locator('input[role="switch"]').click();
-  await expect(bar().locator(".mlp-what strong")).toHaveText("2 changes");
+  await card("st-fixture-a").locator('input[role="switch"]').click();
+  await expect(bar().locator(".stp-what strong")).toHaveText("2 changes");
   await bar()
     .getByRole("button", { name: /^Launch/ })
     .click();
@@ -180,18 +180,18 @@ test("Launch goes through the review, which comes up from the bottom", async () 
 });
 
 test("the top bar turns solid with the world's name once the banner scrolls away", async () => {
-  const name = shell().locator(".mlp-top h1");
+  const name = shell().locator(".stp-top h1");
   await expect(name).toHaveCSS("opacity", "0");
   await shell()
-    .locator(".mls-main")
+    .locator(".sts-main")
     .evaluate((el) => {
       el.scrollTop = 400;
     });
-  await expect(shell()).toHaveClass(/mlp-scrolled/);
+  await expect(shell()).toHaveClass(/stp-scrolled/);
   await expect(name).toHaveCSS("opacity", "1");
   // Only the tab row stays pinned, under the bar.
-  const top = await shell().locator(".mlp-top").boundingBox();
-  const tabs = await shell().locator(".mls-main .mls-subtabs").boundingBox();
+  const top = await shell().locator(".stp-top").boundingBox();
+  const tabs = await shell().locator(".sts-main .sts-subtabs").boundingBox();
   expect(Math.round(tabs?.y ?? 0)).toBe(
     Math.round((top?.y ?? 0) + (top?.height ?? 0)),
   );

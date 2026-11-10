@@ -2,8 +2,8 @@
 import type { WorldUser } from "./session.ts";
 
 export const TEST_WORLD = {
-  id: "module-library-test",
-  title: "Module Library test",
+  id: "stagehand-test",
+  title: "Stagehand test",
   system: "dnd5e",
   /** The system's title, as our pages show it. */
   systemTitle: "Dungeons & Dragons Fifth Edition",

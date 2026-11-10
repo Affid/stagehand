@@ -1,6 +1,6 @@
 // Which worlds the Library's By world grid shows (SETUP-REDESIGN.md: the
 // Show filter), always in Foundry's own order.
-import type { WorldInfo } from "@module-library/shared/world";
+import type { WorldInfo } from "@stagehand/shared/world";
 import type { SetupState } from "../../messages.ts";
 import { worldOrder } from "./order.ts";
 import { pendingFor } from "./preview.ts";

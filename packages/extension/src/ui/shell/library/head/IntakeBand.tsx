@@ -11,10 +11,10 @@ function Short(props: { readonly fresh: readonly string[] }) {
   const { store, actions, t, canChange } = useUi();
   const { fresh } = props;
   return (
-    <div class="mls-intake-band mlp-intake">
+    <div class="sts-intake-band stp-intake">
       <Icon name="box-open" />
       <span>
-        <b>{plural(t, "mlp.toSort", fresh.length)}</b>
+        <b>{plural(t, "stp.toSort", fresh.length)}</b>
       </span>
       <button
         type="button"
@@ -27,8 +27,8 @@ function Short(props: { readonly fresh: readonly string[] }) {
         <button
           type="button"
           class="icon"
-          aria-label={t("mlp.sortLater")}
-          title={t("mlp.sortLater")}
+          aria-label={t("stp.sortLater")}
+          title={t("stp.sortLater")}
           onClick={() => {
             void actions.markSorted([...fresh]);
             actions.notify("info", t("intake.laterDone"));
@@ -51,7 +51,7 @@ export function IntakeBand() {
     .filter((m) => fresh.includes(m.id))
     .map((m) => m.title);
   return (
-    <div class="mls-intake-band">
+    <div class="sts-intake-band">
       <Icon name="box-open" />
       <span>
         {plural(t, "intake.band", fresh.length)}{" "}

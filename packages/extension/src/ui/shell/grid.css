@@ -2,26 +2,26 @@
    _ideas.css): world columns with art and a menu, group counts, a module's
    name and tag dots, the bar and the legend. Appended to setup-ui.css. */
 
-.mls-shell .mll-gridbar.ml-row input[type="search"] {
+.sts-shell .stl-gridbar.st-row input[type="search"] {
   width: 190px;
   height: 28px;
   flex: none;
 }
 
-.mls-shell .mll-gridhelp {
+.sts-shell .stl-gridhelp {
   font-size: 13px;
   cursor: help;
 }
 
 /* A world's column head */
-.mls-shell .mll-grid .wh {
+.sts-shell .stl-grid .wh {
   display: flex;
   align-items: flex-start;
   justify-content: center;
   gap: 2px;
 }
 
-.mls-shell .mll-grid .wh .open {
+.sts-shell .stl-grid .wh .open {
   display: grid;
   justify-items: center;
   gap: 3px;
@@ -35,11 +35,11 @@
   color: var(--color-light-1);
 }
 
-.mls-shell .mll-grid .wh .open:hover .t {
+.sts-shell .stl-grid .wh .open:hover .t {
   color: var(--color-warm-1);
 }
 
-.mls-shell .mll-grid .wh .thumb {
+.sts-shell .stl-grid .wh .thumb {
   width: 56px;
   height: 30px;
   border-radius: 3px;
@@ -47,7 +47,7 @@
   border: 1px solid rgb(255 255 255 / 12%);
 }
 
-.mls-shell .mll-grid .wh .t {
+.sts-shell .stl-grid .wh .t {
   font-size: 12.5px;
   line-height: 1.2;
   display: -webkit-box;
@@ -61,54 +61,54 @@
   max-width: 100%;
 }
 
-.mls-shell .mll-grid .wh .open {
+.sts-shell .stl-grid .wh .open {
   max-width: 100%;
 }
 
-.mls-shell .mll-grid .wh .mlw-gmenu .ml-hbtn {
+.sts-shell .stl-grid .wh .stw-gmenu .st-hbtn {
   width: 20px;
   height: 20px;
   margin-top: 4px;
   opacity: 0.7;
 }
 
-.mls-shell .mll-grid th.w:hover .ml-hbtn {
+.sts-shell .stl-grid th.w:hover .st-hbtn {
   opacity: 1;
 }
 
 /* A column with its menu open sits above the pinned Module head (z-index
    3): with set-width columns the menu reaches over it (polish pass). */
-.mls-shell .mll-grid thead th.w:has(.mlh-menu) {
+.sts-shell .stl-grid thead th.w:has(.sth-menu) {
   z-index: 4;
 }
 
-.mls-shell .mll-grid .wh .mlh-menu {
+.sts-shell .stl-grid .wh .sth-menu {
   text-align: left;
   font-weight: 400;
 }
 
-.mls-shell .mll-grid th .sub .warn {
+.sts-shell .stl-grid th .sub .warn {
   color: #f5c45e;
 }
 
 /* A world without the companion: dimmed artwork, text still readable
    (4.5:1; the prototype dims the whole header to 60%). */
-.mls-shell .mll-grid th.w.na .thumb {
+.sts-shell .stl-grid th.w.na .thumb {
   opacity: 0.6;
 }
 
-.mls-shell .mll-grid th.w.na .t,
-.mls-shell .mll-grid th.w.na .sub {
+.sts-shell .stl-grid th.w.na .t,
+.sts-shell .stl-grid th.w.na .sub {
   color: var(--color-light-3);
 }
 
 /* Group rows: each world's count, which turns all on or off */
-.mls-shell .mll-grid tr.grp td {
+.sts-shell .stl-grid tr.grp td {
   background: rgb(11 10 19 / 92%);
   text-align: center;
 }
 
-.mls-shell .mls-gcount {
+.sts-shell .sts-gcount {
   height: 20px;
   width: auto;
   min-width: 44px;
@@ -121,24 +121,24 @@
   font-variant-numeric: tabular-nums;
 }
 
-.mls-shell .mls-gcount.some {
+.sts-shell .sts-gcount.some {
   color: var(--color-light-1);
 }
 
-.mls-shell .mls-gcount.full {
+.sts-shell .sts-gcount.full {
   color: #b9e3c1;
   border-color: rgb(63 143 82 / 60%);
 }
 
 /* A module's row: its name opens its details; New and tag dots follow */
-.mls-shell .mll-grid tbody th .mh {
+.sts-shell .stl-grid tbody th .mh {
   display: flex;
   align-items: center;
   gap: 6px;
   min-width: 0;
 }
 
-.mls-shell .mll-grid tbody th .mh .t {
+.sts-shell .stl-grid tbody th .mh .t {
   flex: 0 1 auto;
   min-width: 0;
   width: auto;
@@ -155,28 +155,28 @@
   white-space: nowrap;
 }
 
-.mls-shell .mll-grid tbody th .mh .t:hover {
+.sts-shell .stl-grid tbody th .mh .t:hover {
   color: var(--color-light-1);
 }
 
-.mls-shell .mll-grid tbody th .dots {
+.sts-shell .stl-grid tbody th .dots {
   display: inline-flex;
   gap: 2px;
   flex: none;
 }
 
-.mls-shell .mll-grid tbody th .dots .ml-dot {
+.sts-shell .stl-grid tbody th .dots .st-dot {
   width: 7px;
   height: 7px;
 }
 
-.mls-shell .mll-grid tbody tr.viewing th {
+.sts-shell .stl-grid tbody tr.viewing th {
   box-shadow: inset 3px 0 0 var(--color-warm-1);
   color: var(--color-light-1);
 }
 
 /* The legend */
-.mls-shell .mls-gridlegend {
+.sts-shell .sts-gridlegend {
   display: flex;
   flex-wrap: wrap;
   gap: 6px 16px;
@@ -187,11 +187,11 @@
   flex: none;
 }
 
-.mls-shell .mls-gridlegend .ml-spacer {
+.sts-shell .sts-gridlegend .st-spacer {
   flex: 1;
 }
 
-.mls-shell .mls-gridlegend .sw {
+.sts-shell .sts-gridlegend .sw {
   display: inline-block;
   width: 14px;
   height: 10px;
@@ -200,21 +200,21 @@
   vertical-align: -1px;
 }
 
-.mls-shell .mls-gridlegend .sw.plus {
+.sts-shell .sts-gridlegend .sw.plus {
   background: rgb(63 143 82 / 40%);
   border: 1px solid #3f8f52;
 }
 
-.mls-shell .mls-gridlegend .sw.minus {
+.sts-shell .sts-gridlegend .sw.minus {
   background: rgb(180 82 63 / 40%);
   border: 1px solid #b4523f;
 }
 
-.mls-shell .mls-gridlegend .sw.prob {
+.sts-shell .sts-gridlegend .sw.prob {
   border: 2px solid #f5c45e;
 }
 
-.mls-shell .mls-gridlegend .ml-link {
+.sts-shell .sts-gridlegend .st-link {
   display: inline;
   width: auto;
   height: auto;
@@ -224,18 +224,18 @@
 }
 
 /* As dense as the prototype: one line per module */
-.mls-shell .mll-grid tbody td,
-.mls-shell .mll-grid tbody th[scope="row"] {
+.sts-shell .stl-grid tbody td,
+.sts-shell .stl-grid tbody th[scope="row"] {
   padding-top: 3px;
   padding-bottom: 3px;
 }
 
-.mls-shell .mll-grid tbody th .mh .t {
+.sts-shell .stl-grid tbody th .mh .t {
   min-height: 0;
   line-height: 1.4;
 }
 
-.mls-shell .mll-gridbar .ml-label,
-.mls-shell .mll-gridbar .mll-showing {
+.sts-shell .stl-gridbar .st-label,
+.sts-shell .stl-gridbar .stl-showing {
   white-space: nowrap;
 }

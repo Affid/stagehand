@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace = "dev.modulelibrary.spike"
+    namespace = "io.github.affid.stagehand.spike"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "dev.modulelibrary.spike"
+        applicationId = "io.github.affid.stagehand.spike"
         minSdk = 26
         targetSdk = 36
         versionCode = 1

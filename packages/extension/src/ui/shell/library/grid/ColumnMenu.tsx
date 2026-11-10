@@ -1,8 +1,8 @@
 // A world column's menu (prototype gcolmenu): Open world, Copy this set to…
 // (a world, then match it or add only, as the world page's Add does), and
 // Discard its changes.
-import type { WorldInfo } from "@module-library/shared/world";
-import { MAX_PICKED } from "@module-library/shared/world";
+import type { WorldInfo } from "@stagehand/shared/world";
+import { MAX_PICKED } from "@stagehand/shared/world";
 import { useRef, useState } from "preact/hooks";
 import { useDisclosure, useFocusFirst } from "../../../common/disclosure.ts";
 import { Icon } from "../../../common/widgets.tsx";
@@ -161,11 +161,11 @@ export function ColumnMenu(props: { readonly world: WorldInfo }) {
     setStep({ kind: "main" });
   };
   return (
-    <span class="mlw-gmenu" ref={d.wrap} onFocusOut={d.onFocusOut}>
+    <span class="stw-gmenu" ref={d.wrap} onFocusOut={d.onFocusOut}>
       <button
         type="button"
         ref={d.trigger}
-        class="ml-hbtn"
+        class="st-hbtn"
         aria-label={t("grid.m.actions", { world: props.world.title })}
         title={t("grid.m.actions", { world: props.world.title })}
         aria-expanded={d.open}
@@ -179,7 +179,7 @@ export function ColumnMenu(props: { readonly world: WorldInfo }) {
       </button>
       {d.open ? (
         <div
-          class="mlh-menu"
+          class="sth-menu"
           role="group"
           aria-label={props.world.title}
           ref={menu}

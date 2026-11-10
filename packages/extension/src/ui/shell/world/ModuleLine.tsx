@@ -21,14 +21,14 @@ function Marks(props: { readonly row: WorldModuleRow }) {
     <>
       {row.risk ? (
         <i
-          class="fa-solid fa-code-branch mlc-warn"
+          class="fa-solid fa-code-branch stc-warn"
           title={t("wp.why.unverifiedAny")}
           aria-label={t("wp.why.unverifiedAny")}
         />
       ) : null}
       {note ? (
         <i
-          class="fa-solid fa-note-sticky mlc-note"
+          class="fa-solid fa-note-sticky stc-note"
           title={note}
           aria-label={note}
         />
@@ -36,7 +36,7 @@ function Marks(props: { readonly row: WorldModuleRow }) {
       {tags.length ? (
         <span class="dots" title={tags.map((x) => x.name).join(", ")}>
           {tags.slice(0, MAX_DOTS).map((x) => (
-            <i key={x.id} class="ml-dot" style={{ "--ml-c": x.color }} />
+            <i key={x.id} class="st-dot" style={{ "--st-c": x.color }} />
           ))}
         </span>
       ) : null}
@@ -53,7 +53,7 @@ export function ModuleLine(props: {
   const { pkg } = row;
   const viewing = state.panel === pkg.id;
   const cls = [
-    "mlc-row",
+    "stc-row",
     row.next ? "on" : "off",
     row.delta === "on" ? "plus" : row.delta === "off" ? "minus" : "",
     row.problem ? "prob" : "",
@@ -68,7 +68,7 @@ export function ModuleLine(props: {
       <input
         type="checkbox"
         role="switch"
-        class="mls-switch"
+        class="sts-switch"
         checked={row.next}
         disabled={pkg.id === COMPANION_ID || !canChange}
         aria-label={t("wp.switch", { module: pkg.title, world: p.world.title })}

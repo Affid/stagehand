@@ -14,7 +14,7 @@ const PHONE_TABS: readonly LibTab[] = ["modules", "systems"];
 export const shownTab = (tab: LibTab, layout: Layout): LibTab =>
   layout === "phone" && tab === "grid" ? "modules" : tab;
 /** The tabs' and panel's ids (LibraryPage draws the panel). */
-export const LIBRARY_TABS = "ml-lt";
+export const LIBRARY_TABS = "st-lt";
 const ICONS: Record<LibTab, string> = {
   modules: "plug",
   systems: "dice",
@@ -34,7 +34,7 @@ export function LibraryTabs(props: {
     grid: setup?.worlds.length ?? 0,
   };
   return (
-    <nav class="mls-subtabs">
+    <nav class="sts-subtabs">
       <TabList
         id={LIBRARY_TABS}
         label={t("lib.tab.label")}

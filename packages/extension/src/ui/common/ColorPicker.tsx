@@ -18,16 +18,16 @@ export function ColorPicker(props: {
     if (color.toLowerCase() !== current) props.onPick(color.toLowerCase());
   };
   return (
-    <details class="ml-color-picker" ref={ref}>
-      <summary class="ml-icon" title={props.label} aria-label={props.label}>
+    <details class="st-color-picker" ref={ref}>
+      <summary class="st-icon" title={props.label} aria-label={props.label}>
         <Icon name="palette" />
       </summary>
-      <div class="ml-swatches" role="group" aria-label={props.label}>
+      <div class="st-swatches" role="group" aria-label={props.label}>
         {PALETTE.map((color, i) => (
           <button
             key={color}
             type="button"
-            class={`ml-swatch${color === current ? " ml-on" : ""}`}
+            class={`st-swatch${color === current ? " st-on" : ""}`}
             style={{ background: color }}
             title={t(`color.${PALETTE_NAMES[i] ?? "grey"}`)}
             aria-label={t(`color.${PALETTE_NAMES[i] ?? "grey"}`)}
@@ -37,7 +37,7 @@ export function ColorPicker(props: {
             }}
           />
         ))}
-        <label class="ml-swatch-custom">
+        <label class="st-swatch-custom">
           <input
             type="color"
             value={current}

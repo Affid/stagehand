@@ -14,8 +14,8 @@ const ext = await loadExtension();
 const page = await ext.context.newPage();
 await page.setViewportSize({ width: 1366, height: 768 });
 await openSetupAsAdmin(ext, page, env.url, env.adminPassword);
-const root = page.locator("#ml-shell-root");
-const main = root.locator(".mls-main");
+const root = page.locator("#st-shell-root");
+const main = root.locator(".sts-main");
 
 const focused = () =>
   page.evaluate(() => {
@@ -24,7 +24,7 @@ const focused = () =>
     const name = (e.getAttribute("aria-label") ?? e.textContent)
       .trim()
       .slice(0, 30);
-    return `${e.tagName.toLowerCase()} "${name}"${e.closest("[role=dialog],.ml-pop,.mlh-menu,[role=menu]") ? " (inside)" : ""}`;
+    return `${e.tagName.toLowerCase()} "${name}"${e.closest("[role=dialog],.st-pop,.sth-menu,[role=menu]") ? " (inside)" : ""}`;
   });
 
 async function check(name: string, trigger: Locator): Promise<void> {
@@ -48,7 +48,7 @@ const snapshot = {
   title: TEST_WORLD.title,
   system: { id: TEST_WORLD.system, version: "1" },
   coreVersion: "14.370",
-  active: ["stagehand", "ml-fixture-lib"].map((id) => ({
+  active: ["stagehand", "st-fixture-lib"].map((id) => ({
     id,
     version: "1.0.0",
   })),
@@ -62,9 +62,9 @@ await ext.worker.evaluate(
   [`snapshots:${env.url}`, snapshot] as const,
 );
 await page.reload();
-await root.locator(`.mls-world[data-world="${TEST_WORLD.id}"]`).click();
-const top = root.locator(".mls-top");
-await check("version menu", top.locator(".mlh-ver"));
+await root.locator(`.sts-world[data-world="${TEST_WORLD.id}"]`).click();
+const top = root.locator(".sts-top");
+await check("version menu", top.locator(".sth-ver"));
 await check(
   "power menu",
   top.getByRole("button", { name: "Log out or shut down" }),
@@ -76,13 +76,13 @@ await check(
   main.getByRole("button", { name: /: actions$/ }).first(),
 );
 // Launch reviews only queued changes; with none it launches at once.
-await main.locator('.mlw-card input[role="switch"]').first().click();
+await main.locator('.stw-card input[role="switch"]').first().click();
 await check(
   "launch review",
   main.getByRole("button", { name: "Launch", exact: false }).first(),
 );
 await main.getByRole("button", { name: "Discard" }).click();
-await root.locator(".mls-lib").click();
+await root.locator(".sts-lib").click();
 await check(
   "Import and export",
   main.getByRole("button", { name: "Import and export" }),

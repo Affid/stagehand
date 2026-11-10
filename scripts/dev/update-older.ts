@@ -38,14 +38,14 @@ page.on("response", (r) => {
     .catch(() => undefined);
 });
 await openSetupAsAdmin(ext, page, env.url, env.adminPassword);
-const shell = page.locator("#ml-shell-root");
-await shell.locator(".mlh-ver").click();
+const shell = page.locator("#st-shell-root");
+await shell.locator(".sth-ver").click();
 await page.screenshot({ path: "test-results/screens/older-version-menu.png" });
 await shell
   .getByRole("region", { name: "Foundry Virtual Tabletop" })
   .getByRole("button", { name: /Update page|See what's new/ })
   .click();
-const upd = shell.locator(".mlu-page");
+const upd = shell.locator(".stu-page");
 await upd.waitFor();
 await page.waitForTimeout(15_000);
 console.log(`[page text] ${(await upd.innerText()).slice(0, 1500)}`);

@@ -23,10 +23,10 @@ export function AddressField(props: AddressFieldProps) {
     if (props.focus) input.current?.focus();
   }, [props.focus]);
   return (
-    <div class="mlh-field">
+    <div class="sth-field">
       <label for={id}>{t("home.address")}</label>
-      <div class="mlh-addr">
-        <span class="mlh-scheme" role="group" aria-label={t("home.protocol")}>
+      <div class="sth-addr">
+        <span class="sth-scheme" role="group" aria-label={t("home.protocol")}>
           {SCHEMES.map((s) => (
             <button
               key={s}
@@ -54,7 +54,7 @@ export function AddressField(props: AddressFieldProps) {
           }}
         />
       </div>
-      <p class="mlh-help">{props.help}</p>
+      <p class="sth-help">{props.help}</p>
     </div>
   );
 }

@@ -1,8 +1,8 @@
 // A module's Library tab: folder, tags, note, the presets that hold it, and
 // every world: a switch that queues a change for its next launch, or
 // "companion off" where Stagehand isn't set up.
-import type { PackageInfo } from "@module-library/shared/package";
-import type { WorldInfo } from "@module-library/shared/world";
+import type { PackageInfo } from "@stagehand/shared/package";
+import type { WorldInfo } from "@stagehand/shared/world";
 import { useState } from "preact/hooks";
 import { IconButton } from "../../common/widgets.tsx";
 import { useUi } from "../../context.ts";
@@ -18,7 +18,7 @@ export function FolderField(props: { readonly id: string }) {
   const { library } = state.data;
   const current = library.modules[props.id]?.folderId ?? "";
   return (
-    <label class="mll-field">
+    <label class="stl-field">
       <span>{t("mp.folder")}</span>
       <select
         aria-label={t("mp.folder")}
@@ -83,12 +83,12 @@ export function TagsField(props: { readonly id: string }) {
     });
   };
   return (
-    <div class="mll-field">
+    <div class="stl-field">
       <span>{t("mp.tags")}</span>
-      <div class="mll-chips">
+      <div class="stl-chips">
         {mine.map((tag) => (
-          <span key={tag.id} class="mll-tag" style={{ "--ml-c": tag.color }}>
-            <i class="ml-dot" aria-hidden="true" />
+          <span key={tag.id} class="stl-tag" style={{ "--st-c": tag.color }}>
+            <i class="st-dot" aria-hidden="true" />
             {tag.name}
             {canChange ? (
               <IconButton
@@ -113,7 +113,7 @@ function NoteField(props: { readonly id: string }) {
   const saved = state.data.library.modules[props.id]?.note ?? "";
   const [text, setText] = useState(saved);
   return (
-    <label class="mll-field">
+    <label class="stl-field">
       <span>{t("mp.note")}</span>
       <textarea
         aria-label={t("mp.note")}
@@ -149,11 +149,11 @@ function WorldItem(props: {
   const model = { tracked: props.where.tracked };
   const on = row?.next ?? false;
   return (
-    <li class={props.here ? "mls-here" : ""}>
+    <li class={props.here ? "sts-here" : ""}>
       <span>
         {world.title}
         {props.here ? (
-          <span class="ml-muted"> · {t("mp.thisWorld")}</span>
+          <span class="st-muted"> · {t("mp.thisWorld")}</span>
         ) : null}
       </span>
       {!model.tracked ? (
@@ -168,7 +168,7 @@ function WorldItem(props: {
       <input
         type="checkbox"
         role="switch"
-        class="mls-switch"
+        class="sts-switch"
         checked={on}
         disabled={!canChange || !model.tracked || pkg.id === COMPANION_ID}
         aria-label={t("wp.switch", { module: pkg.title, world: world.title })}
@@ -202,13 +202,13 @@ function Worlds(props: {
   });
   const onIn = where.filter((x) => x.row?.next).length;
   return (
-    <div class="mls-chg">
+    <div class="sts-chg">
       <h4>
         <span>
           {t("mp.onIn", { n: String(onIn), total: String(worlds.length) })}
         </span>
       </h4>
-      <ul class="mls-wlist">
+      <ul class="sts-wlist">
         {where.map((x) => (
           <WorldItem
             key={x.world.id}
@@ -232,7 +232,7 @@ export function LibraryTab(props: {
     p.modules.includes(pkg.id),
   );
   return (
-    <div class="mll-libtab">
+    <div class="stl-libtab">
       <FolderField id={pkg.id} />
       <TagsField id={pkg.id} />
       <NoteField
@@ -240,12 +240,12 @@ export function LibraryTab(props: {
         key={`${pkg.id}:${state.data.library.modules[pkg.id]?.note ?? ""}`}
         id={pkg.id}
       />
-      <div class="mll-field">
+      <div class="stl-field">
         <span>{t("mp.presets")}</span>
-        <span class="mll-chips">
+        <span class="stl-chips">
           {presets.length
             ? presets.map((p) => (
-                <span key={p.id} class="mll-tag mll-chip preset">
+                <span key={p.id} class="stl-tag stl-chip preset">
                   <i class="fa-solid fa-layer-group" aria-hidden="true" />
                   {p.name}
                 </span>

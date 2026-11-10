@@ -1,7 +1,7 @@
 // A world's About tab, as the prototype: description, next session and
 // details on the left; background, maintenance and the danger zone on the
 // right. Every edit goes through Foundry's own requests.
-import type { WorldInfo } from "@module-library/shared/world";
+import type { WorldInfo } from "@stagehand/shared/world";
 import { useUi } from "../../context.ts";
 import type { BackupInfo } from "../../../page-backups.ts";
 import { useCanEditWorld } from "./AboutEdit.tsx";
@@ -32,7 +32,7 @@ export function AboutTab(props: {
   const { canEdit, canLock } = useEditing(world);
   const side = { world, canEdit, canLock, backups };
   return (
-    <div class="mlw-about">
+    <div class="stw-about">
       <div class="col">
         <DescriptionBox world={world} canEdit={canEdit} />
         <SessionBox world={world} canEdit={canEdit} />

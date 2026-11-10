@@ -1,18 +1,18 @@
 // A module's details in their own column beside the Library or a world's
 // page: its Library tab (ours: folder, tags, note, presets, worlds) and its
 // Package tab (PackageTab.tsx: Foundry's manifest and its own actions).
-import type { PackageInfo } from "@module-library/shared/package";
+import type { PackageInfo } from "@stagehand/shared/package";
 import { useState } from "preact/hooks";
 import { TabList, TabPanel } from "../../common/tabs.tsx";
 import { Icon } from "../../common/widgets.tsx";
 import { useUi } from "../../context.ts";
 import { LibraryTab } from "./LibraryTab.tsx";
 import { PackageTab } from "./PackageTab.tsx";
-import { shownVersion } from "@module-library/shared/version";
+import { shownVersion } from "@stagehand/shared/version";
 
 type Tab = "library" | "package";
 const TABS: readonly Tab[] = ["library", "package"];
-const PANEL_TABS = "ml-mp";
+const PANEL_TABS = "st-mp";
 
 /** "modular-av · v0.11.0 · Andrei Fedorov". */
 function Sub(props: { readonly pkg: PackageInfo }) {
@@ -34,7 +34,7 @@ function PanelTabs(props: {
 }) {
   const { t } = useUi();
   return (
-    <nav class="mls-subtabs">
+    <nav class="sts-subtabs">
       <TabList
         id={PANEL_TABS}
         label={t("mp.tabs", { title: props.title })}
@@ -63,11 +63,11 @@ export function ModulePanel(props: {
   const [tab, setTab] = useState<Tab>("library");
   const { pkg } = props;
   return (
-    <aside class="application framed mls-panel ml-app" aria-label={pkg.title}>
+    <aside class="application framed sts-panel st-app" aria-label={pkg.title}>
       <h2 class="divider">{t("mp.title")}</h2>
       <button
         type="button"
-        class="icon mls-close"
+        class="icon sts-close"
         aria-label={t("mp.close")}
         title={t("mp.close")}
         onClick={props.onClose}
@@ -75,7 +75,7 @@ export function ModulePanel(props: {
         <Icon name="xmark" />
       </button>
       <div class="scroll">
-        <div class="mls-modhead">
+        <div class="sts-modhead">
           <h3>{pkg.title}</h3>
           <Sub pkg={pkg} />
         </div>

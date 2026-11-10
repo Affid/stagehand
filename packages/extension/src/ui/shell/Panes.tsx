@@ -1,6 +1,6 @@
 // The pages and panels both layouts show: the page the route names and the
 // details column beside it (a sheet in the phone and tablet layouts).
-import type { WorldInfo } from "@module-library/shared/world";
+import type { WorldInfo } from "@stagehand/shared/world";
 import { useEffect } from "preact/hooks";
 import { useUi } from "../context.ts";
 import { LibraryPage } from "./library/LibraryPage.tsx";
@@ -88,8 +88,8 @@ export function MainPane(props: {
   const { route, world } = props;
   if (route.kind === "server")
     return (
-      <section class="application framed mls-main">
-        <div class="mls-body-main">
+      <section class="application framed sts-main">
+        <div class="sts-body-main">
           {route.page === "config" ? (
             <ConfigPage />
           ) : route.page === "update" ? (
@@ -102,8 +102,8 @@ export function MainPane(props: {
     );
   if (world) return <WorldPage key={world.id} world={world} />;
   return (
-    <section class="application framed mls-main mls-library">
-      <div class="mls-body-main">
+    <section class="application framed sts-main sts-library">
+      <div class="sts-body-main">
         <LibraryPage />
       </div>
     </section>

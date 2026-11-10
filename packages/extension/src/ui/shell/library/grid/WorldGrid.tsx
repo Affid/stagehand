@@ -5,7 +5,7 @@
 // always WORLD_COL wide (the prototype stretched them across the pane; two
 // worlds at 2560 were 830 px each, polish pass): the table ends after the
 // last world, and past the pane it scrolls sideways, names pinned.
-import type { WorldInfo } from "@module-library/shared/world";
+import type { WorldInfo } from "@stagehand/shared/world";
 import { useMemo, useRef, useState } from "preact/hooks";
 import { useScrollFade } from "../../../common/scroll-fade.ts";
 import { useUi } from "../../../context.ts";
@@ -28,7 +28,7 @@ function Picker(props: {
 }) {
   const { state, t } = useUi();
   return (
-    <fieldset class="mll-pick">
+    <fieldset class="stl-pick">
       <legend>{t("grid.choose")}</legend>
       {(state.data.setup?.worlds ?? []).map((w) => (
         <label key={w.id}>
@@ -57,7 +57,7 @@ function Empty(props: {
 }) {
   const { t } = useUi();
   return (
-    <div class="mlw-empty">
+    <div class="stw-empty">
       <i class="fa-solid fa-filter" aria-hidden="true" />
       <h3>{t("grid.empty")}</h3>
       <p>{t(`grid.empty.${props.show}`)}</p>
@@ -102,9 +102,9 @@ function Table(props: {
   const wrap = useRef<HTMLDivElement>(null);
   const more = useScrollFade(wrap, "x");
   return (
-    <div class={`mll-gridwrap${more ? " more-right" : ""}`} ref={wrap}>
+    <div class={`stl-gridwrap${more ? " more-right" : ""}`} ref={wrap}>
       <table
-        class="mll-grid"
+        class="stl-grid"
         aria-label={t("lib.tab.grid")}
         style={{
           width: `${String(MOD_COL + props.shown.length * WORLD_COL)}px`,
@@ -148,7 +148,7 @@ export function WorldGrid(props: {
   const [picked, setPicked] = useState<readonly string[]>([]);
   const result = gridWorlds(state.data, show, picked, Date.now());
   return (
-    <div class="mll-gridpage">
+    <div class="stl-gridpage">
       <GridBar
         by={props.by}
         onBy={props.onBy}

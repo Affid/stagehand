@@ -7,10 +7,10 @@ await p.goto(`file://${dir}out/setup-shell.html?calm=1`); await p.evaluate(() =>
 const shot = (n) => p.screenshot({ path: `${dir}out/shots/${n}.png` });
 const act = async (sel) => { await p.evaluate((s) => document.querySelector(s).click(), sel); await p.waitForTimeout(120); };
 await shot("c-1-calm-world");
-await act('.mlw-card[data-id="modular-av-jitsi"] input'); await act('.mlw-card[data-id="modular-av"] input'); await shot("c-2-calm-problem");
+await act('.stw-card[data-id="modular-av-jitsi"] input'); await act('.stw-card[data-id="modular-av"] input'); await shot("c-2-calm-problem");
 await act('[data-act="viewpop"]'); await shot("c-3-viewpop");
 await act('[data-act="closepop"]').catch(() => {}); await p.keyboard.press("Escape"); await act('[data-act="addmenu"]'); await shot("c-4-addmenu");
-await p.keyboard.press("Escape"); await act('.mlw-card[data-id="modular-av-dock"]'); await shot("c-5-panel");
-await act('.mlh-ver'); await shot("c-6-news");
+await p.keyboard.press("Escape"); await act('.stw-card[data-id="modular-av-dock"]'); await shot("c-5-panel");
+await act('.sth-ver'); await shot("c-6-news");
 console.log(errs.length ? errs : "no errors");
 await b.close();

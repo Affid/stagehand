@@ -72,12 +72,12 @@ async function backups() {
     },
   });
   await waitFor(() => {
-    expect(r.container.querySelector(".mlb-page .mls-subtabs")).toBeTruthy();
+    expect(r.container.querySelector(".stb-page .sts-subtabs")).toBeTruthy();
   });
   return r;
 }
 
-const dock = (c: Element) => el(c, ".mlp-dock");
+const dock = (c: Element) => el(c, ".stp-dock");
 
 const SETTINGS: Settings & ReadOnly = {
   adminUsername: null,
@@ -118,8 +118,8 @@ const CHOICES: Choices = {
 describe("Backups on a phone", () => {
   test("the summary and New snapshot sit in the dock, not in a head", async () => {
     const r = await backups();
-    expect(r.container.querySelector(".mlb-page .mlb-head")).toBeNull();
-    const bar = el(r.container, ".mlp-dock .mlp-bkbar");
+    expect(r.container.querySelector(".stb-page .stb-head")).toBeNull();
+    const bar = el(r.container, ".stp-dock .stp-bkbar");
     expect(bar.textContent).toContain("2 snapshots");
     expect(bar.textContent).toContain("48.0 GB of disk free");
     fireEvent.click(within(bar).getByRole("button", { name: /New snapshot/ }));
@@ -131,7 +131,7 @@ describe("Backups on a phone", () => {
   test("a package tab's bar counts its backups and their size", async () => {
     const r = await backups();
     fireEvent.click(r.getByRole("tab", { name: /^Modules/ }));
-    const bar = el(r.container, ".mlp-dock .mlp-bkbar");
+    const bar = el(r.container, ".stp-dock .stp-bkbar");
     expect(bar.textContent).toContain("1 backup");
     expect(bar.textContent).toContain("9 MB");
   });
@@ -139,7 +139,7 @@ describe("Backups on a phone", () => {
   test("one row of tabs: names and counts, no sizes", async () => {
     const r = await backups();
     const names = [
-      ...r.container.querySelectorAll('.mls-main [role="tab"]'),
+      ...r.container.querySelectorAll('.sts-main [role="tab"]'),
     ].map((t) => t.textContent.replace(/\s+/g, " ").trim());
     expect(names).toEqual([
       "Snapshots 2",
@@ -151,13 +151,13 @@ describe("Backups on a phone", () => {
 
   test("the note is one line, and dates have no weekday", async () => {
     const r = await backups();
-    expect(el(r.container, ".mlw-bhead").textContent).toContain(
+    expect(el(r.container, ".stw-bhead").textContent).toContain(
       "Restoring one rolls the whole server back.",
     );
     const weekday = new Date(SNAP_AT).toLocaleDateString(undefined, {
       weekday: "long",
     });
-    expect(el(r.container, ".mlb-snaps .nm").textContent).not.toContain(
+    expect(el(r.container, ".stb-snaps .nm").textContent).not.toContain(
       weekday,
     );
   });
@@ -165,16 +165,16 @@ describe("Backups on a phone", () => {
   test("selecting snapshots: the count, Delete and Done take over the dock", async () => {
     const r = await backups();
     fireEvent.click(
-      within(el(r.container, ".mlw-bhead")).getByRole("button", {
+      within(el(r.container, ".stw-bhead")).getByRole("button", {
         name: /Select/,
       }),
     );
-    const sel = el(r.container, ".mlp-dock .mlp-bksel");
+    const sel = el(r.container, ".stp-dock .stp-bksel");
     expect(sel.textContent).toContain("to delete");
     expect(within(sel).getByRole("button", { name: /Delete/ })).toBeTruthy();
     fireEvent.click(within(sel).getByRole("button", { name: "Done" }));
     await waitFor(() => {
-      expect(r.container.querySelector(".mlp-dock .mlp-bksel")).toBeNull();
+      expect(r.container.querySelector(".stp-dock .stp-bksel")).toBeNull();
     });
   });
 });
@@ -195,8 +195,8 @@ describe("Configuration on a phone", () => {
     );
     fireEvent.input(field, { target: { value: "someone" } });
     await waitFor(() => {
-      expect(dock(r.container).querySelector(".mlc-bar")).not.toBeNull();
+      expect(dock(r.container).querySelector(".stc-bar")).not.toBeNull();
     });
-    expect(r.container.querySelector(".mls-main .mlc-bar")).toBeNull();
+    expect(r.container.querySelector(".sts-main .stc-bar")).toBeNull();
   });
 });

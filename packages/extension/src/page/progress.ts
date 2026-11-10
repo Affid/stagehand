@@ -9,7 +9,7 @@ interface SetupPackagesLike {
   onProgress?: (data: Record<string, unknown>) => unknown;
   toggleLock?: (locked: boolean, options?: { message?: string }) => unknown;
   /** Set once we have wrapped them. */
-  mlWatched?: boolean;
+  stWatched?: boolean;
 }
 
 /** Watching must never break Foundry's own call: an odd argument is skipped. */
@@ -26,8 +26,8 @@ export function watchProgress(
   post: (m: PageToUi) => void,
 ): void {
   const sp = page.ui?.setupPackages as SetupPackagesLike | undefined;
-  if (!sp || sp.mlWatched) return;
-  sp.mlWatched = true;
+  if (!sp || sp.stWatched) return;
+  sp.stWatched = true;
   const onProgress = sp.onProgress?.bind(sp);
   if (onProgress)
     sp.onProgress = (data) => {

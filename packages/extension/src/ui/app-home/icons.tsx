@@ -4,7 +4,7 @@ import type { ComponentChildren } from "preact";
 
 function Icon(props: { readonly children: ComponentChildren }) {
   return (
-    <svg class="mlh-icon" viewBox="0 0 24 24" aria-hidden="true">
+    <svg class="sth-icon" viewBox="0 0 24 24" aria-hidden="true">
       {props.children}
     </svg>
   );
@@ -54,7 +54,7 @@ export const History = () => (
  * and below: an open pulley, a thick rope and a big sandbag.
  */
 export const Mark = () => (
-  <span class="mlh-mark" aria-hidden="true">
+  <span class="sth-mark" aria-hidden="true">
     <svg viewBox="22 21 64 64" focusable="false">
       <rect x="33" y="26" width="42" height="4.5" fill="#6a5b8c" />
       <circle cx="54" cy="41" r="11" fill="#d9a441" />

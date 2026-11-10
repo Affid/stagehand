@@ -1,10 +1,10 @@
 // The new Library's groups (SETUP-REDESIGN.md, Library cards and group
 // headers): by folder, tag, author or smart group. Pure; titles sorted.
-import type { Library } from "@module-library/shared/library/schema";
-import type { AuthorEntry } from "@module-library/shared/organise/authors";
-import { authorsOf } from "@module-library/shared/organise/authors";
-import type { SmartGroup } from "@module-library/shared/organise/groups";
-import type { PackageInfo } from "@module-library/shared/package";
+import type { Library } from "@stagehand/shared/library/schema";
+import type { AuthorEntry } from "@stagehand/shared/organise/authors";
+import { authorsOf } from "@stagehand/shared/organise/authors";
+import type { SmartGroup } from "@stagehand/shared/organise/groups";
+import type { PackageInfo } from "@stagehand/shared/package";
 import { groupByFolder, orderedFolders, sortByTitle } from "./modules.ts";
 
 export type GroupBy = "folder" | "tag" | "author" | "smart";

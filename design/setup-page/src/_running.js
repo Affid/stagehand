@@ -13,17 +13,17 @@ function runScreen() {
   const n = RUN.people;
   const who = n ? `${runPeople(n)} in the game` : "Nobody in the game";
   const button = RUN.closing
-    ? `<button type="button" class="bright mlp-runbtn" disabled><i class="fa-solid fa-spinner fa-spin-pulse"></i>Closing ${esc(w.title)}…</button>`
-    : `<button type="button" class="bright mlp-runbtn" data-act="runreturn"><i class="fa-solid fa-door-open"></i>Return to Setup</button>`;
-  return `<div class="mlp-run">
-    <header class="mlp-top"><span class="logo" aria-hidden="true"></span><h1>Foundry VTT</h1><span class="ml-spacer"></span>${phVersionChip()}
-      <button type="button" class="icon mlp-menu${ST.pop?.kind === "pmenu" ? " ml-on" : ""}" data-act="pmenu" aria-label="Log out or shut down"><i class="fa-solid fa-power-off"></i></button></header>
-    <div class="mlp-runhero" style="--img:url(${IMG[w.img]});--pos:${w.pos}">
+    ? `<button type="button" class="bright stp-runbtn" disabled><i class="fa-solid fa-spinner fa-spin-pulse"></i>Closing ${esc(w.title)}…</button>`
+    : `<button type="button" class="bright stp-runbtn" data-act="runreturn"><i class="fa-solid fa-door-open"></i>Return to Setup</button>`;
+  return `<div class="stp-run">
+    <header class="stp-top"><span class="logo" aria-hidden="true"></span><h1>Foundry VTT</h1><span class="st-spacer"></span>${phVersionChip()}
+      <button type="button" class="icon stp-menu${ST.pop?.kind === "pmenu" ? " st-on" : ""}" data-act="pmenu" aria-label="Log out or shut down"><i class="fa-solid fa-power-off"></i></button></header>
+    <div class="stp-runhero" style="--img:url(${IMG[w.img]});--pos:${w.pos}">
       <span class="live"><i aria-hidden="true"></i>Running now</span>
       <h2>${esc(w.title)}</h2>
       <div class="meta"><span><i class="fa-solid fa-dice-d20"></i>${esc(w.system)}</span><span><i class="fa-solid fa-users"></i>${who}</span><span><i class="fa-solid fa-clock"></i>For ${RUN.uptime}</span></div>
     </div>
-    <div class="mlp-runbody">
+    <div class="stp-runbody">
       <p>Setup, the Library and backups come back once the world is closed.</p>
       ${button}
       <p class="hint">Foundry saves the world and closes it${n ? `; ${n === 1 ? "the person" : `the ${n} people`} in the game are disconnected` : ""}.</p>
@@ -35,9 +35,9 @@ function runScreen() {
 function runDialog() {
   if (ST.dialog !== "runreturn") return "";
   const w = WORLDS_X.find((x) => x.id === RUN.id) ?? WORLDS_X[0];
-  const body = `<div class="mls-launch-body"><p>${runPeople(RUN.people)} ${RUN.people === 1 ? "is" : "are"} in ${esc(w.title)}. Returning to Setup disconnects ${RUN.people === 1 ? "them" : "everyone"}; Foundry saves the world first.</p></div>`;
+  const body = `<div class="sts-launch-body"><p>${runPeople(RUN.people)} ${RUN.people === 1 ? "is" : "are"} in ${esc(w.title)}. Returning to Setup disconnects ${RUN.people === 1 ? "them" : "everyone"}; Foundry saves the world first.</p></div>`;
   const footer = `<button type="button" data-act="closedialog">Cancel</button><button type="button" class="bright" data-act="runclose"><i class="fa-solid fa-door-open"></i>Disconnect and return</button>`;
-  return `<div class="mls-backdrop" data-act="closedialog"></div>${fwindow({ title: "Return to Setup?", icon: "fa-solid fa-door-open", x: 0, y: 0, w: 420, body, footer, cls: "mls-dialog" })}`;
+  return `<div class="sts-backdrop" data-act="closedialog"></div>${fwindow({ title: "Return to Setup?", icon: "fa-solid fa-door-open", x: 0, y: 0, w: 420, body, footer, cls: "sts-dialog" })}`;
 }
 
 A.runreturn = () => { if (RUN.people) { ST.dialog = "runreturn"; render(); } else A.runclose(); };
@@ -55,7 +55,7 @@ if (PHONE && RUN.id) {
   // eslint-disable-next-line no-func-assign
   render = function () {
     renderPhone();
-    document.body.classList.toggle("mlp-running", !!RUN.id);
+    document.body.classList.toggle("stp-running", !!RUN.id);
     if (RUN.id) document.body.insertAdjacentHTML("beforeend", runScreen() + runDialog());
   };
 }

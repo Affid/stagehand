@@ -41,8 +41,8 @@ test.afterAll(async () => {
   await app.close();
 });
 
-const shell = () => page.locator("#ml-shell-root");
-const lib = () => shell().locator(".mll-page");
+const shell = () => page.locator("#st-shell-root");
+const lib = () => shell().locator(".stl-page");
 
 async function transfer(item: string): Promise<void> {
   await lib().getByRole("button", { name: "Import and export" }).click();
@@ -85,7 +85,7 @@ test("Delete tag waits for native's dialog", async () => {
   const name = panel.getByRole("textbox", { name: "Name" });
   await name.fill("app check");
   await name.press("Enter");
-  const listed = panel.locator(".mls-list li", { hasText: "app check" });
+  const listed = panel.locator(".sts-list li", { hasText: "app check" });
   await expect(listed).toBeVisible();
   app.native.confirmAnswer = false;
   await panel.getByRole("button", { name: "Delete tag" }).click();
@@ -101,7 +101,7 @@ test("Delete tag waits for native's dialog", async () => {
 
 test("a link to another site goes to native, not to a new window", async () => {
   const pages = app.context.pages().length;
-  await shell().locator(".mlh-ver").click();
+  await shell().locator(".sth-ver").click();
   await shell().getByRole("link", { name: "Knowledge base" }).click();
   await expect
     .poll(() => app.native.external)

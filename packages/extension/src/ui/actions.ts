@@ -1,9 +1,9 @@
 // UI actions: each one asks the background, then updates the store.
 // The background validates and decides; the UI never writes storage.
-import type { LibraryOp, OpResult } from "@module-library/shared/library/ops";
-import type { Library } from "@module-library/shared/library/schema";
-import type { ApplyMode } from "@module-library/shared/resolver";
-import { newRequestId } from "@module-library/shared/protocol";
+import type { LibraryOp, OpResult } from "@stagehand/shared/library/ops";
+import type { Library } from "@stagehand/shared/library/schema";
+import type { ApplyMode } from "@stagehand/shared/resolver";
+import { newRequestId } from "@stagehand/shared/protocol";
 import type { ExtensionMessage, SetupState } from "../messages.ts";
 import type { Translate } from "./i18n.ts";
 import { watchProblems } from "./broken.ts";
@@ -11,7 +11,7 @@ import { pendingFor } from "./model/preview.ts";
 import { flipModule } from "./model/world-modules.ts";
 import type { PageBridge } from "./page.ts";
 import type { LaunchAsk } from "../page-queue.ts";
-import type { QueueEntry } from "@module-library/shared/world-flags";
+import type { QueueEntry } from "@stagehand/shared/world-flags";
 import type { Store } from "./store.ts";
 
 export type Send = <T>(message: ExtensionMessage) => Promise<T>;

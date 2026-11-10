@@ -2,7 +2,7 @@
 // its package list (one request per type, as its installer makes) against
 // what is installed. Newer, and installable on this Foundry (availability 1
 // to 6; 7 to 10 need another core).
-import { logError } from "@module-library/shared/log";
+import { logError } from "@stagehand/shared/log";
 import type { Updates } from "../page-updates.ts";
 import type { PageGlobals } from "./globals.ts";
 

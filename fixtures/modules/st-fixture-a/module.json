@@ -1,0 +1,11 @@
+{
+  "id": "st-fixture-a",
+  "title": "Stagehand Fixture: A (requires library)",
+  "description": "Test fixture for Stagehand. Does nothing.",
+  "authors": [{ "name": "Stagehand tests" }],
+  "version": "1.0.0",
+  "compatibility": { "minimum": "13", "verified": "14" },
+  "relationships": {
+    "requires": [{ "id": "st-fixture-lib", "type": "module" }]
+  }
+}

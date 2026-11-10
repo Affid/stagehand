@@ -9,7 +9,7 @@
 // ever kept here).
 import { z } from "zod";
 
-const KEY = "ml-launch";
+const KEY = "st-launch";
 /** A note older than this belongs to an earlier launch. */
 const MAX_AGE_MS = 30 * 60_000;
 

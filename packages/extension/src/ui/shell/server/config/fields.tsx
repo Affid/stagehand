@@ -15,7 +15,7 @@ export function Row(props: {
   readonly children: ComponentChildren;
 }) {
   return (
-    <div class={`mlc-set${props.changed ? " changed" : ""}`}>
+    <div class={`stc-set${props.changed ? " changed" : ""}`}>
       <div class="l">
         <strong>{props.label}</strong>
         {props.hint ? <span>{props.hint}</span> : null}
@@ -57,7 +57,7 @@ export function SwitchRow(props: {
       <input
         type="checkbox"
         role="switch"
-        class="mls-switch"
+        class="sts-switch"
         checked={f.value === true}
         disabled={!canChange}
         aria-label={props.label}

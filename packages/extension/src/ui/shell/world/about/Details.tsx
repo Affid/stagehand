@@ -2,7 +2,7 @@
 // screen (each changed in place, saved through Foundry's editWorld), then
 // what Foundry knows: made for, last saved with, played for, size, folder
 // and last played.
-import type { WorldInfo } from "@module-library/shared/world";
+import type { WorldInfo } from "@stagehand/shared/world";
 import type { BackupInfo } from "../../../../page-backups.ts";
 import { IconButton } from "../../../common/widgets.tsx";
 import { useUi } from "../../../context.ts";
@@ -24,7 +24,7 @@ function SavedWith(props: { readonly world: WorldInfo }) {
     <>
       {t("about.savedWith", { version: props.world.coreVersion })}
       {isOlder(props.world.coreVersion, generation) ? (
-        <span class="mlw-pill warn">{t("about.older")}</span>
+        <span class="stw-pill warn">{t("about.older")}</span>
       ) : null}
     </>
   );
@@ -58,11 +58,11 @@ function Folder(props: { readonly id: string }) {
 function Size(props: { readonly backups: readonly BackupInfo[] | undefined }) {
   const { t } = useUi();
   const latest = latestBackup(props.backups);
-  if (!latest) return <span class="ml-muted">{t("about.sizeUnknown")}</span>;
+  if (!latest) return <span class="st-muted">{t("about.sizeUnknown")}</span>;
   return (
     <>
       {t("about.sizeAt", { size: formatSize(latest.size) })}{" "}
-      <span class="ml-muted">{t("about.sizeAtHint")}</span>
+      <span class="st-muted">{t("about.sizeAtHint")}</span>
     </>
   );
 }
@@ -182,11 +182,11 @@ export function Details(props: {
   const { world } = props;
   const lastPlayed = useLastPlayed();
   return (
-    <section class="mlw-box">
+    <section class="stw-box">
       <h4>
         <span>{t("about.details")}</span>
       </h4>
-      <dl class="mlw-details">
+      <dl class="stw-details">
         <TitleRow world={world} canEdit={props.canEdit} />
         <SystemRow world={world} canEdit={props.canEdit} />
         <ThemeRow world={world} canEdit={props.canEdit} />

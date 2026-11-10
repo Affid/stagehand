@@ -22,30 +22,30 @@ await load(html); await p.waitForTimeout(300);
 const got = await p.evaluate(() => {
   const n = notesFor(UPD_STATES.available);
   const all = n.sections.flatMap((s) => [...(s.items ?? []), ...(s.sub ?? []).flatMap((x) => x.items)]);
-  const lis = [...document.querySelectorAll(".mlu-sec li")];
+  const lis = [...document.querySelectorAll(".stu-sec li")];
   return {
     title: n.title, banner: !!n.banner, introParas: n.intro.length,
     sections: n.sections.map((s) => `${s.h} [${s.kind}]`),
     entries: all.length, withIssue: all.filter((i) => i.n).length, rendered: lis.length,
-    codeShown: document.querySelectorAll(".mlu-sec li code").length,
+    codeShown: document.querySelectorAll(".stu-sec li code").length,
     // Tag-like text outside code means markup leaked; inside code it is Foundry naming an element.
     rawTagsVisible: lis.filter((li) => { const c = li.cloneNode(true); c.querySelectorAll("code").forEach((x) => x.remove()); return /<\/?[a-z]+[\s>]/i.test(c.textContent); }).length,
-    issueChips: document.querySelectorAll(".mlu-sec .mlu-issue").length,
+    issueChips: document.querySelectorAll(".stu-sec .stu-issue").length,
     breakingFirst: n.sections[0]?.kind === "breaking", breakingIntro: n.sections[0]?.intro.length,
   };
 });
 await p.screenshot({ path: `${dir}out/shots/real-notes-1.png` });
 await p.fill('[data-filter="updq"]', "CalendarData"); await p.waitForTimeout(100);
-const search = await p.evaluate(() => [...document.querySelectorAll(".mlu-sec li")].map((l) => l.innerText.slice(0, 80)));
+const search = await p.evaluate(() => [...document.querySelectorAll(".stu-sec li")].map((l) => l.innerText.slice(0, 80)));
 await p.fill('[data-filter="updq"]', ""); await p.waitForTimeout(60);
 await p.click("[data-act=upddev]"); await p.waitForTimeout(80);
-const noDev = await p.evaluate(() => [...document.querySelectorAll(".mlu-jump a")].map((a) => a.textContent));
+const noDev = await p.evaluate(() => [...document.querySelectorAll(".stu-jump a")].map((a) => a.textContent));
 await p.click("[data-act=upddev]"); await p.waitForTimeout(60);
 await p.screenshot({ path: `${dir}out/shots/real-notes-2.png` });
 // A tampered copy: nothing unsafe may come through.
 const evil = html.replace("<ul>", '<ul><li>Bad <script>window.__pwned = 1</script><img src=x onerror="window.__pwned=2"> <a href="javascript:window.__pwned=3">click</a> <a href="https://github.com/foundryvtt/foundryvtt/issues/1">(1)</a></li>');
 await load(evil); await p.waitForTimeout(300);
-const safe = await p.evaluate(() => ({ pwned: window.__pwned ?? null, scripts: document.querySelectorAll(".mlu-notes script, .mlu-notes [onerror], .mlu-notes a[href^='javascript']").length, imgsInEntries: document.querySelectorAll(".mlu-sec li img").length }));
+const safe = await p.evaluate(() => ({ pwned: window.__pwned ?? null, scripts: document.querySelectorAll(".stu-notes script, .stu-notes [onerror], .stu-notes a[href^='javascript']").length, imgsInEntries: document.querySelectorAll(".stu-sec li img").length }));
 const ok = got.entries === want.entries && got.withIssue === want.issues && got.rendered === want.entries && got.codeShown === want.codeInEntries
   && got.rawTagsVisible === 0 && got.issueChips === want.issues && want.sections.every((h) => got.sections.some((s) => s.startsWith(h)))
   && got.banner && got.breakingFirst && search.length > 0 && !noDev.some((t) => /API|documentation/.test(t)) && !safe.pwned && !safe.scripts && !safe.imgsInEntries;

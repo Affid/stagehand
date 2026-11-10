@@ -12,13 +12,13 @@ await ext.context.request.post(`${env.url}/auth`, {
   maxRedirects: 0,
 });
 await page.goto(`${env.url}/setup`);
-await page.locator("#ml-modules-root").waitFor({ state: "attached" });
+await page.locator("#st-modules-root").waitFor({ state: "attached" });
 const info = await page.evaluate(() =>
   [
     "#setup-packages",
     "#setup-packages-modules",
     "#modules-list",
-    "#ml-modules-root",
+    "#st-modules-root",
   ].map((sel) => {
     const el = document.querySelector(sel);
     if (!el) return `${sel}: missing`;

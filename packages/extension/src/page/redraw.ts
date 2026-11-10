@@ -2,7 +2,7 @@
 // that screen, so the redraw is a courtesy: on WebViews older than Foundry
 // supports (Android's, before Chromium 146) its render throws on
 // `RegExp.escape`, and a change already saved must not read as failed.
-import { logError } from "@module-library/shared/log";
+import { logError } from "@stagehand/shared/log";
 
 interface RedrawGlobals {
   readonly ui?: { readonly setupPackages?: unknown } | undefined;

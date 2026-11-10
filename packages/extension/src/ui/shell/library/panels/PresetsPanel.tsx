@@ -1,7 +1,7 @@
 // Presets, as the prototype's panel: every preset with its size, New
 // preset, and the chosen preset's name, about, Add to a world…, its modules
 // and Delete preset.
-import type { Preset } from "@module-library/shared/library/schema";
+import type { Preset } from "@stagehand/shared/library/schema";
 import { useState } from "preact/hooks";
 import { newId } from "../../../actions.ts";
 import { Icon } from "../../../common/widgets.tsx";
@@ -30,7 +30,7 @@ function PresetList(props: { readonly current: Preset | undefined }) {
   const { state, store, t, canChange } = useUi();
   const create = useNewPreset();
   return (
-    <ul class="mls-list">
+    <ul class="sts-list">
       {state.data.library.presets.map((p) => (
         <li key={p.id} class={p.id === props.current?.id ? "active" : ""}>
           <button
@@ -82,7 +82,7 @@ function Fields(props: { readonly p: Preset }) {
   const update = useUpdate(p);
   const key = `${p.id}:${String(p.revision)}`;
   return (
-    <div class="mls-kv">
+    <div class="sts-kv">
       <span>{t("presets.name")}</span>
       <input
         type="text"
@@ -140,13 +140,13 @@ function PresetEdit(props: { readonly p: Preset }) {
         note={t("presets.toWorldNote")}
         onPick={(w) => void actions.queueApply(w, "add", [p.id])}
       />
-      <div class="mls-chg">
+      <div class="sts-chg">
         <h4>
           <span>{t("presets.modules", { n: String(p.modules.length) })}</span>
           {canChange ? (
             <button
               type="button"
-              class="ml-link"
+              class="st-link"
               onClick={() => void actions.guard(remove)}
             >
               {t("presets.delete")}

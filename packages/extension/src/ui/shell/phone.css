@@ -1,16 +1,16 @@
 /* The phone and tablet layouts (Android plan, phase 3; mockup:
    design/setup-page/src/_phone.css). One page at a time under a top bar,
    the dock and the tab bar at the foot; a tablet on its side keeps the
-   worlds list on the left. Everything is scoped to .mls-shell.mlp, which
+   worlds list on the left. Everything is scoped to .sts-shell.stp, which
    only phone/PhoneShell.tsx renders, so the desktop page is untouched. */
 
-.mls-shell.mlp {
-  --mlp-bar: 56px;
-  --mlp-tabs: 64px;
-  --mlp-tap: 44px;
-  --mlp-solid: #0e0d17;
-  --mlp-sheet: #100f1a;
-  --mlp-bar-bg: rgb(11 10 19 / 96%);
+.sts-shell.stp {
+  --stp-bar: 56px;
+  --stp-tabs: 64px;
+  --stp-tap: 44px;
+  --stp-solid: #0e0d17;
+  --stp-sheet: #100f1a;
+  --stp-bar-bg: rgb(11 10 19 / 96%);
   height: 100%;
   overflow: hidden;
 }
@@ -18,10 +18,10 @@
 /* ---------- Top bar ---------- */
 /* No z-index on the bars: the menus they open must share the shell's
    layer with the scrim (popups.ts). */
-.mls-shell.mlp .mlp-top {
+.sts-shell.stp .stp-top {
   position: relative;
   flex: none;
-  height: calc(var(--mlp-bar) + env(safe-area-inset-top, 0px));
+  height: calc(var(--stp-bar) + env(safe-area-inset-top, 0px));
   display: flex;
   align-items: center;
   gap: 8px;
@@ -30,16 +30,16 @@
     max(12px, env(safe-area-inset-left, 0px));
   /* Solid, not blurred: a backdrop-filter would make the menus it opens
      position against the bar instead of the screen. */
-  background: var(--mlp-bar-bg);
+  background: var(--stp-bar-bg);
   border-bottom: 1px solid var(--color-cool-4);
 }
 
-.mls-shell.mlp .mlp-top .logo {
+.sts-shell.stp .stp-top .logo {
   width: 32px;
   height: 32px;
 }
 
-.mls-shell.mlp .mlp-top h1 {
+.sts-shell.stp .stp-top h1 {
   min-width: 0;
   font-size: 26px;
   line-height: 1;
@@ -48,15 +48,15 @@
   text-overflow: ellipsis;
 }
 
-.mls-shell.mlp .mlp-top h1.pt {
+.sts-shell.stp .stp-top h1.pt {
   font-size: 24px;
 }
 
-.mls-shell.mlp .mlp-top button.icon,
-.mls-shell.mlp .mlp-back {
+.sts-shell.stp .stp-top button.icon,
+.sts-shell.stp .stp-back {
   flex: none;
-  width: var(--mlp-tap);
-  height: var(--mlp-tap);
+  width: var(--stp-tap);
+  height: var(--stp-tap);
   padding: 0;
   font-size: 18px;
   border-color: transparent;
@@ -64,31 +64,31 @@
   box-shadow: none;
 }
 
-.mls-shell.mlp .mlp-back {
+.sts-shell.stp .stp-back {
   margin-left: -6px;
   color: var(--color-light-1);
 }
 
-.mls-shell.mlp .mlp-top button.icon.ml-on {
+.sts-shell.stp .stp-top button.icon.st-on {
   border-color: var(--color-warm-1);
 }
 
 /* The version chip, short: "14 · 370", an arrow when an update waits. */
-.mls-shell.mlp .mlh-chipwrap {
+.sts-shell.stp .sth-chipwrap {
   margin-left: 0;
 }
 
 /* The button is a finger's height; the pill inside it keeps the
    mockup's 32 px look. */
-.mls-shell.mlp .mlh-ver {
-  height: var(--mlp-tap);
+.sts-shell.stp .sth-ver {
+  height: var(--stp-tap);
   gap: 0;
   padding: 0;
   border: 0;
   background: transparent;
 }
 
-.mls-shell.mlp .mlh-ver > .v {
+.sts-shell.stp .sth-ver > .v {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -99,24 +99,24 @@
   background: rgb(0 0 0 / 40%);
 }
 
-.mls-shell.mlp .mlh-ver:is(:hover, .ml-on) > .v {
+.sts-shell.stp .sth-ver:is(:hover, .st-on) > .v {
   border-color: var(--color-warm-1);
 }
 
-.mls-shell.mlp .mlh-ver > .v > i {
+.sts-shell.stp .sth-ver > .v > i {
   color: #6fcf7f;
   font-size: 12px;
 }
 
 /* ---------- The pages: one at a time ---------- */
-.mls-shell.mlp .mls {
+.sts-shell.stp .sts {
   position: relative;
   display: block;
   padding: 0;
   gap: 0;
 }
 
-.mls-shell.mlp .mls > .application {
+.sts-shell.stp .sts > .application {
   height: 100%;
   border-radius: 0;
   border-left: 0;
@@ -127,13 +127,13 @@
   margin: 0;
 }
 
-.mls-shell.mlp[data-screen="home"] .mls-main,
-.mls-shell.mlp:not(.mlp-wide)[data-screen="page"] .mls-rail {
+.sts-shell.stp[data-screen="home"] .sts-main,
+.sts-shell.stp:not(.stp-wide)[data-screen="page"] .sts-rail {
   display: none;
 }
 
 /* ---------- Worlds: the list fills the screen and scrolls ---------- */
-.mls-shell.mlp .mls-rail {
+.sts-shell.stp .sts-rail {
   width: 100%;
   overflow: auto;
   padding: 12px max(12px, env(safe-area-inset-right, 0px)) 20px
@@ -141,89 +141,89 @@
   gap: 10px;
 }
 
-.mls-shell.mlp .mls-rail .mls-worlds {
+.sts-shell.stp .sts-rail .sts-worlds {
   overflow: visible;
   flex: none;
   gap: 6px;
 }
 
-.mls-shell.mlp .mls-rail .mls-worlds.more {
+.sts-shell.stp .sts-rail .sts-worlds.more {
   mask-image: none;
 }
 
 /* The Library has its own tab. */
-.mls-shell.mlp .mls-lib {
+.sts-shell.stp .sts-lib {
   display: none;
 }
 
-.mls-shell.mlp .mls-rail h2.divider {
+.sts-shell.stp .sts-rail h2.divider {
   font-size: 20px;
 }
 
-.mls-shell.mlp .mls-railbar input {
-  height: var(--mlp-tap);
+.sts-shell.stp .sts-railbar input {
+  height: var(--stp-tap);
   font-size: 15px;
 }
 
-.mls-shell.mlp .mls-railbar button {
-  width: var(--mlp-tap);
-  height: var(--mlp-tap);
+.sts-shell.stp .sts-railbar button {
+  width: var(--stp-tap);
+  height: var(--stp-tap);
   font-size: 16px;
 }
 
-.mls-shell.mlp .mls-world {
+.sts-shell.stp .sts-world {
   grid-template-columns: 84px minmax(0, 1fr) auto;
   padding: 8px;
   gap: 3px 12px;
   min-height: 64px;
 }
 
-.mls-shell.mlp .mls-world .thumb {
+.sts-shell.stp .sts-world .thumb {
   width: 84px;
   height: 56px;
 }
 
-.mls-shell.mlp .mls-world strong {
+.sts-shell.stp .sts-world strong {
   font-size: 15.5px;
 }
 
-.mls-shell.mlp .mls-world .meta {
+.sts-shell.stp .sts-world .meta {
   font-size: 13px;
 }
 
 /* A phone's list has no "current" world: tapping one opens it. */
-.mls-shell.mlp:not(.mlp-wide) .mls-rail .mls-world.mls-on {
+.sts-shell.stp:not(.stp-wide) .sts-rail .sts-world.sts-on {
   background: transparent;
   border-color: transparent;
   box-shadow: none;
 }
 
 /* ---------- A page: the whole page scrolls ---------- */
-.mls-shell.mlp .mls-main {
+.sts-shell.stp .sts-main {
   width: 100%;
   overflow: auto;
   overscroll-behavior: contain;
 }
 
 /* ---------- The dock and the tab bar ---------- */
-.mls-shell.mlp .mlp-dock {
+.sts-shell.stp .stp-dock {
   position: relative;
   flex: none;
 }
 
-.mls-shell.mlp .mlp-dock:empty {
+.sts-shell.stp .stp-dock:empty {
   display: none;
 }
 
 /* At home the page behind the list is hidden, and so are its bars. */
-.mls-shell.mlp[data-screen="home"] .mlp-dock {
+.sts-shell.stp[data-screen="home"] .stp-dock {
   display: none;
 }
 
-.mls-shell.mlp .mlp-tabs {
+.sts-shell.stp .stp-tabs {
   position: relative;
   flex: none;
-  height: calc(var(--mlp-tabs) + env(safe-area-inset-bottom, 0px));
+  height: calc(var(--stp-tabs) + env(safe-area-inset-bottom, 0px));
   padding: 0 env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px)
     env(safe-area-inset-left, 0px);
   display: grid;
@@ -232,7 +232,7 @@
   border-top: 1px solid var(--color-cool-4);
 }
 
-.mls-shell.mlp .mlp-tabs button {
+.sts-shell.stp .stp-tabs button {
   position: relative;
   height: 100%;
   width: auto;
@@ -251,7 +251,7 @@
   padding: 0;
 }
 
-.mls-shell.mlp .mlp-tabs button > i {
+.sts-shell.stp .stp-tabs button > i {
   font-size: 19px;
   width: 56px;
   height: 28px;
@@ -260,23 +260,23 @@
   border-radius: 14px;
 }
 
-.mls-shell.mlp .mlp-tabs button > span:not(.ml-sr-only) {
+.sts-shell.stp .stp-tabs button > span:not(.st-sr-only) {
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.mls-shell.mlp .mlp-tabs button.on {
+.sts-shell.stp .stp-tabs button.on {
   color: var(--color-light-1);
 }
 
-.mls-shell.mlp .mlp-tabs button.on > i {
+.sts-shell.stp .stp-tabs button.on > i {
   background: rgb(238 155 58 / 22%);
   color: var(--color-warm-1);
 }
 
-.mls-shell.mlp .mlp-tabs .pip {
+.sts-shell.stp .stp-tabs .pip {
   position: absolute;
   top: 6px;
   left: calc(50% + 8px);
@@ -292,43 +292,43 @@
 }
 
 /* ---------- A tablet on its side: the worlds list stays on the left ---------- */
-.mls-shell.mlp.mlp-wide .mls {
+.sts-shell.stp.stp-wide .sts {
   display: flex;
 }
 
-.mls-shell.mlp.mlp-wide .mls-rail {
+.sts-shell.stp.stp-wide .sts-rail {
   flex: 0 0 300px;
   width: 300px;
   border-right: 1px solid var(--color-cool-4);
 }
 
-.mls-shell.mlp.mlp-wide .mls-main {
+.sts-shell.stp.stp-wide .sts-main {
   flex: 1;
   min-width: 0;
 }
 
-.mls-shell.mlp.mlp-wide .mls-world {
+.sts-shell.stp.stp-wide .sts-world {
   grid-template-columns: 64px minmax(0, 1fr) auto;
 }
 
-.mls-shell.mlp.mlp-wide .mls-world .thumb {
+.sts-shell.stp.stp-wide .sts-world .thumb {
   width: 64px;
   height: 44px;
 }
 
-.mls-shell.mlp.mlp-wide .mls-world strong {
+.sts-shell.stp.stp-wide .sts-world strong {
   font-size: 14.5px;
 }
 
 /* ---------- A phone on its side: short bars, icon-only tabs ---------- */
 @media (max-height: 500px) {
-  .mls-shell.mlp {
-    --mlp-bar: 48px;
-    --mlp-tabs: 48px;
+  .sts-shell.stp {
+    --stp-bar: 48px;
+    --stp-tabs: 48px;
   }
 
   /* Hidden from sight only: the label stays the tab's name. */
-  .mls-shell.mlp .mlp-tabs button > span:not(.ml-sr-only) {
+  .sts-shell.stp .stp-tabs button > span:not(.st-sr-only) {
     position: absolute;
     width: 1px;
     height: 1px;

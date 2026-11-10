@@ -2,7 +2,7 @@
 // Setup page with many of both (build plan, Phase 6), and takes them away.
 //   node scripts/foundry/many.ts add [worlds=30] [modules=120]
 //   node scripts/foundry/many.ts remove
-// Only ids starting with ml-many- (worlds) and ml-stub- (modules) are
+// Only ids starting with st-many- (worlds) and st-stub- (modules) are
 // touched. Foundry must be running on Setup; no world may be running.
 import {
   existsSync,
@@ -22,8 +22,8 @@ import {
 } from "./admin.ts";
 import { loadFoundryEnv } from "./env.ts";
 
-const WORLD = "ml-many-";
-const STUB = "ml-stub-";
+const WORLD = "st-many-";
+const STUB = "st-stub-";
 const DAY = 24 * 60 * 60 * 1000;
 const NAMES = [
   "Curse of the Sunken Crown",

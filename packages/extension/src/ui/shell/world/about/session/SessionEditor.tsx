@@ -1,7 +1,7 @@
 // Setting the next session, as the prototype: a calendar, Repeats (none,
 // weekly, every 2 weeks, monthly, chosen dates), a 24-hour time with quick
 // times, and the time zone named. Saved as our schedule in the world's flags.
-import type { WorldInfo } from "@module-library/shared/world";
+import type { WorldInfo } from "@stagehand/shared/world";
 import { useState } from "preact/hooks";
 import { useUi } from "../../../../context.ts";
 import {
@@ -195,7 +195,7 @@ function Bar(props: {
       </button>
       {props.world.schedule || props.world.nextSession ? (
         <>
-          <span class="ml-spacer" />
+          <span class="st-spacer" />
           <button type="button" onClick={() => run(null)}>
             {t("sched.clear")}
           </button>
@@ -284,7 +284,7 @@ export function SessionEditor(props: {
   // As the prototype: with no date still to come, the draft's own date.
   const firstMs = first ? Date.parse(first) : zonedToUtc(d.start, d.time, d.tz);
   return (
-    <div class={`mlw-sched${custom ? " custom" : ""}`}>
+    <div class={`stw-sched${custom ? " custom" : ""}`}>
       <Calendar
         month={d.month}
         picked={custom ? marked : new Set([d.start])}

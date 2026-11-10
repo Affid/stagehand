@@ -2,7 +2,7 @@
 // the extension does with chrome.* (platform/chrome.ts, platform/runtime.ts,
 // ui/settings/platform.ts, ui/ports.ts), the app asks native for. Request
 // names and payloads: native-api.ts.
-import { logError } from "@module-library/shared/log";
+import { logError } from "@stagehand/shared/log";
 import { z } from "zod";
 import type { KeyValue } from "../background/kv.ts";
 import type { ScriptingPlatform } from "../background/registration.ts";

@@ -1,6 +1,6 @@
 // A world whose companion isn't on yet: explain the one-time setup instead
 // of showing switches that can't work (SETUP-REDESIGN.md).
-import type { WorldInfo } from "@module-library/shared/world";
+import type { WorldInfo } from "@stagehand/shared/world";
 import { Icon } from "../../common/widgets.tsx";
 import { useUi } from "../../context.ts";
 import { startLaunch } from "../../launching.ts";
@@ -16,7 +16,7 @@ export function NotSetUp(props: { readonly world: WorldInfo }) {
   };
   const world = props.world.title;
   return (
-    <div class="mlw-empty">
+    <div class="stw-empty">
       <i class="fa-solid fa-puzzle-piece" aria-hidden="true" />
       <h3>{t("wp.setup.title", { world })}</h3>
       <p>{t("wp.setup.lead")}</p>

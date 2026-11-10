@@ -72,12 +72,12 @@ function Steps(props: { readonly l: Launching; readonly app: boolean }) {
   const order = STEP_ORDER.filter((s) => s !== "backup" || props.l.backup);
   const at = order.indexOf(view.stage);
   return (
-    <ol class="mll-steps" aria-live="polite">
+    <ol class="stl-steps" aria-live="polite">
       {order.map((stage, i) => {
         const state = i < at ? "done" : i === at ? "now" : "";
         return (
           <li key={stage} class={state}>
-            <span class="mll-dot">{i < at ? <Icon name="check" /> : null}</span>
+            <span class="stl-dot">{i < at ? <Icon name="check" /> : null}</span>
             <span>{t(`launch.step.${stage}`)}</span>
             {i === at ? (
               <small>{subFor(t, stage, view.detail, props.app)}</small>
@@ -93,11 +93,11 @@ function Steps(props: { readonly l: Launching; readonly app: boolean }) {
 function Dock(props: { readonly way: boolean; readonly app: boolean }) {
   const { t, actions, store } = useUi();
   return (
-    <div class="mll-dock">
+    <div class="stl-dock">
       {props.way ? (
         <button
           type="button"
-          class="mll-primary"
+          class="stl-primary"
           onClick={() => {
             stopLaunch(store);
           }}
@@ -123,11 +123,11 @@ function Body(props: { readonly l: Launching; readonly stalled: boolean }) {
   const app = ports.app === true;
   return (
     <>
-      <span class="mll-chip">{t("launch.chip")}</span>
+      <span class="stl-chip">{t("launch.chip")}</span>
       <h2>{l.title}</h2>
-      <p class="mll-lead">{t(app ? "launch.leadApp" : "launch.lead")}</p>
+      <p class="stl-lead">{t(app ? "launch.leadApp" : "launch.lead")}</p>
       <div
-        class="mll-bar"
+        class="stl-bar"
         role="progressbar"
         aria-label={t("launch.progress")}
         aria-valuemin={0}
@@ -137,14 +137,14 @@ function Body(props: { readonly l: Launching; readonly stalled: boolean }) {
         <i style={{ width: `${view.pct}%` }} />
       </div>
       {failed ? (
-        <p class="mll-error" role="alert">
+        <p class="stl-error" role="alert">
           {t("launch.failed", { error: l.error ?? t("launch.noReason") })}
         </p>
       ) : (
         <Steps l={l} app={app} />
       )}
       {stalled && !failed ? (
-        <p class="mll-note">
+        <p class="stl-note">
           {t(view.stage === "ask" ? "launch.stalled" : "launch.stalledLate")}
         </p>
       ) : null}
@@ -163,9 +163,9 @@ function Screen(props: { readonly l: Launching }) {
     box.current?.focus();
   }, []);
   return (
-    <div class="mll-launch">
+    <div class="stl-launch">
       <div
-        class="mll-box"
+        class="stl-box"
         role="dialog"
         aria-modal="true"
         aria-label={t("launch.title", { world: l.title })}

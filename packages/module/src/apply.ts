@@ -4,9 +4,9 @@
 // confirmation: it applies without asking again, unless the live result
 // differs from what was reviewed. Nothing is changed unless the record was
 // saved first: an unrecorded change would be applied again next time.
-import type { Plan } from "@module-library/shared/resolver";
-import type { WorldCommand } from "@module-library/shared/world";
-import { activeKey, type Result } from "@module-library/shared/world-flags";
+import type { Plan } from "@stagehand/shared/resolver";
+import type { WorldCommand } from "@stagehand/shared/world";
+import { activeKey, type Result } from "@stagehand/shared/world-flags";
 import { askGm, type Choice } from "./dialog.ts";
 import type { DialogV2, FoundryGame } from "./foundry.ts";
 import { moduleConfiguration, planFor } from "./world-state.ts";

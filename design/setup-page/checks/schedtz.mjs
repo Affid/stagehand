@@ -5,9 +5,9 @@ const p = await (await b.newContext({ viewport: { width: 1600, height: 1000 }, t
 p.on("pageerror", (e) => errs.push(e.message));
 await p.goto(`file://${dir}out/setup-shell.html?calm=1`); await p.waitForTimeout(800);
 await p.click('[data-act=wtab][data-id=about]'); await p.waitForTimeout(150);
-console.log(await p.evaluate(() => document.querySelector(".mlw-sess .mlw-next").innerText.replace(/\s+/g, " ")));
-await p.click('.mls-world[data-id="vaults"]'); await p.click('[data-act=wtab][data-id=about]'); await p.waitForTimeout(150);
-console.log(await p.evaluate(() => document.querySelector(".mlw-sess .mlw-next").innerText.replace(/\s+/g, " ")));
-await p.click('.mls-world[data-id="oneshot"]'); await p.click('[data-act=wtab][data-id=about]'); await p.waitForTimeout(150);
-console.log(await p.evaluate(() => document.querySelector(".mlw-sess").innerText.replace(/\s+/g, " ").slice(0, 120)));
+console.log(await p.evaluate(() => document.querySelector(".stw-sess .stw-next").innerText.replace(/\s+/g, " ")));
+await p.click('.sts-world[data-id="vaults"]'); await p.click('[data-act=wtab][data-id=about]'); await p.waitForTimeout(150);
+console.log(await p.evaluate(() => document.querySelector(".stw-sess .stw-next").innerText.replace(/\s+/g, " ")));
+await p.click('.sts-world[data-id="oneshot"]'); await p.click('[data-act=wtab][data-id=about]'); await p.waitForTimeout(150);
+console.log(await p.evaluate(() => document.querySelector(".stw-sess").innerText.replace(/\s+/g, " ").slice(0, 120)));
 console.log(errs.length ? errs : "no errors"); await b.close();

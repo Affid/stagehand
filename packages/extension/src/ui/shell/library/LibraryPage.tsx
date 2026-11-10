@@ -85,7 +85,7 @@ export function LibraryPage() {
   });
   const setup = state.data.setup;
   return (
-    <div class="mll-page ml-app">
+    <div class="stl-page st-app">
       <Banners />
       <LibraryTabs tab={page.tab} onTab={page.setTab} />
       <TabPanel id={LIBRARY_TABS} tab={shownTab(page.tab, layout)}>

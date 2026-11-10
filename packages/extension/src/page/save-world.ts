@@ -5,11 +5,11 @@
 // re-render Foundry's Setup so our UI gets fresh data. "editWorld" is an
 // internal request name: the UI only uses this behind the remote config's
 // `editWorld` flag. Returns an error message, or undefined when saved.
-import { FLAGS_KEY, type ScheduleData } from "@module-library/shared/world";
+import { FLAGS_KEY, type ScheduleData } from "@stagehand/shared/world";
 import type { WorldChanges } from "../page-save.ts";
 import type { PageGlobals } from "./globals.ts";
 import { redrawSetup } from "./redraw.ts";
-import { logError } from "@module-library/shared/log";
+import { logError } from "@stagehand/shared/log";
 
 interface EditableWorld {
   validate(options: { changes: object; clean: boolean }): void;

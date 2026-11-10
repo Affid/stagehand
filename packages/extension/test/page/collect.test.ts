@@ -1,4 +1,4 @@
-import { SetupDataSchema } from "@module-library/shared/world";
+import { SetupDataSchema } from "@stagehand/shared/world";
 import { describe, expect, test, vi } from "vitest";
 import { collect } from "../../src/page/collect.ts";
 

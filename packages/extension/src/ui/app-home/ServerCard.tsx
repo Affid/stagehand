@@ -34,27 +34,27 @@ export function ServerCard(props: ServerCardProps) {
   const host = hostOf(server.id);
   const label = server.name ?? host;
   return (
-    <div class="mlh-card mlh-server">
+    <div class="sth-card sth-server">
       <a
-        class="mlh-open"
+        class="sth-open"
         href={props.href}
         aria-label={t("set.openAria", { server: label })}
       >
-        <span class="mlh-letter" aria-hidden="true">
+        <span class="sth-letter" aria-hidden="true">
           {letterOf(label)}
         </span>
-        <span class="mlh-text">
-          <span class="mlh-name">{label}</span>
-          <span class="mlh-sub">
-            {server.name ? <span class="mlh-host">{host}</span> : null}
+        <span class="sth-text">
+          <span class="sth-name">{label}</span>
+          <span class="sth-sub">
+            {server.name ? <span class="sth-host">{host}</span> : null}
             {server.id.startsWith("http:") ? (
-              <span class="mlh-chip mlh-plain">
+              <span class="sth-chip sth-plain">
                 <Unlock />
                 {t("set.plain")}
               </span>
             ) : null}
             {server.active ? null : (
-              <span class="mlh-chip">{t("set.off")}</span>
+              <span class="sth-chip">{t("set.off")}</span>
             )}
             <Opened t={t} at={server.openedAt} now={props.now} />
           </span>
@@ -62,7 +62,7 @@ export function ServerCard(props: ServerCardProps) {
       </a>
       <button
         type="button"
-        class="mlh-ibtn"
+        class="sth-ibtn"
         aria-label={t("home.editAria", { server: label })}
         onClick={props.onEdit}
       >

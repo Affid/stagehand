@@ -11,20 +11,20 @@ export function CheckLine(props: {
   if (check.kind === "idle") return null;
   if (check.kind === "checking")
     return (
-      <p class="mlh-check mlh-wait" role="status">
+      <p class="sth-check sth-wait" role="status">
         {t("home.checking", { server: check.server })}
       </p>
     );
   if (check.kind === "ok")
     return (
-      <p class="mlh-check" role="status">
+      <p class="sth-check" role="status">
         <CheckIcon />
         {t("home.answers", { version: check.version, server: check.server })}
       </p>
     );
   const https = check.server.startsWith("https:");
   return (
-    <p class="mlh-check mlh-warn" role="status">
+    <p class="sth-check sth-warn" role="status">
       <Warn />
       {https
         ? t("home.noAnswerHttps")

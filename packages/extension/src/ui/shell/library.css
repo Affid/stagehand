@@ -2,7 +2,7 @@
    build. Cards share the world page's look (world.css); see
    design/setup-page/src/_calm.css for the mockup. */
 
-.mls-shell .mll-page {
+.sts-shell .stl-page {
   flex: 1;
   min-height: 0;
   display: flex;
@@ -11,7 +11,7 @@
   margin: 0;
 }
 
-.mls-shell .mll-sections {
+.sts-shell .stl-sections {
   list-style: none;
   margin: 0;
   padding: 0 0 16px;
@@ -21,11 +21,11 @@
 }
 
 /* The Modules and Systems lists scroll under the Library's head, as the
-   prototype's .ml-sections; the pane itself doesn't scroll (the By world
+   prototype's .st-sections; the pane itself doesn't scroll (the By world
    grid has its own box). They spilled past the window (owner, 2026-11-07).
    The padding keeps cards' focus rings clear of the scrolling edge. */
-.mls-shell .mll-sections,
-.mls-shell .mll-systems {
+.sts-shell .stl-sections,
+.sts-shell .stl-systems {
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
@@ -34,7 +34,7 @@
   margin-inline: -3px;
 }
 
-.mls-shell .mll-card {
+.sts-shell .stl-card {
   display: grid;
   gap: 4px;
   padding: 8px 10px;
@@ -44,27 +44,27 @@
   min-width: 0;
 }
 
-.mls-shell .mll-card.risk {
+.sts-shell .stl-card.risk {
   border-left: 3px solid #8a6a1f;
 }
 
-.mls-shell .mll-card .meta .uv {
+.sts-shell .stl-card .meta .uv {
   color: #f5c45e;
 }
 
-.mls-shell .mll-card.selected {
+.sts-shell .stl-card.selected {
   border-color: var(--color-warm-1);
   box-shadow: 0 0 6px rgb(238 155 58 / 35%);
 }
 
-.mls-shell .mll-card .l1 {
+.sts-shell .stl-card .l1 {
   display: flex;
   align-items: center;
   gap: 8px;
   min-width: 0;
 }
 
-.mls-shell .mll-card .t {
+.sts-shell .stl-card .t {
   flex: 1;
   min-width: 0;
   font-size: 14.5px;
@@ -75,7 +75,7 @@
   white-space: nowrap;
 }
 
-.mls-shell .mll-card .l2 {
+.sts-shell .stl-card .l2 {
   display: flex;
   align-items: baseline;
   gap: 6px;
@@ -84,32 +84,32 @@
   min-width: 0;
 }
 
-.mls-shell .mll-card .l2 span {
+.sts-shell .stl-card .l2 span {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.mls-shell .mll-card .l2 i {
+.sts-shell .stl-card .l2 i {
   font-size: 10.5px;
   color: var(--color-light-4);
 }
 
-.mls-shell .mll-card .l2.warn {
+.sts-shell .stl-card .l2.warn {
   color: #f3dca4;
 }
 
-.mls-shell .mll-card .l2.warn i {
+.sts-shell .stl-card .l2.warn i {
   color: #f5c45e;
 }
 
-.mls-shell .mll-card .l2.note {
+.sts-shell .stl-card .l2.note {
   color: var(--color-light-3);
   font-style: italic;
 }
 
-.mls-shell .mll-card .l3 {
+.sts-shell .stl-card .l3 {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -118,7 +118,7 @@
   color: var(--color-light-4);
 }
 
-.mls-shell .mll-card .l3 .tg {
+.sts-shell .stl-card .l3 .tg {
   display: flex;
   gap: 4px;
   min-width: 0;
@@ -126,32 +126,32 @@
   flex: 1;
 }
 
-.mls-shell .mll-card .l3 .meta {
+.sts-shell .stl-card .l3 .meta {
   flex: none;
   margin-left: auto;
   white-space: nowrap;
 }
 
-.mls-shell .mll-tag {
+.sts-shell .stl-tag {
   display: inline-flex;
   align-items: center;
   gap: 4px;
   padding: 0 6px;
   border-radius: 9px;
-  border: 1px solid color-mix(in srgb, var(--ml-c, #777) 55%, transparent);
+  border: 1px solid color-mix(in srgb, var(--st-c, #777) 55%, transparent);
   color: var(--color-light-2);
   white-space: nowrap;
 }
 
-.mls-shell .mll-tag .ml-dot {
+.sts-shell .stl-tag .st-dot {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--ml-c, #777);
+  background: var(--st-c, #777);
 }
 
 /* The card's name opens its details */
-.mls-shell .mll-card button.t {
+.sts-shell .stl-card button.t {
   width: auto;
   height: auto;
   padding: 0;
@@ -167,33 +167,33 @@
   cursor: pointer;
 }
 
-.mls-shell .mll-card button.t:focus:not(:focus-visible) {
+.sts-shell .stl-card button.t:focus:not(:focus-visible) {
   outline: none;
   box-shadow: none;
 }
 
-.mls-shell .mll-card button.t:focus-visible {
+.sts-shell .stl-card button.t:focus-visible {
   outline: 2px solid var(--color-warm-1);
   outline-offset: 2px;
   box-shadow: none;
 }
 
-.mls-shell .mll-card button.t:hover {
+.sts-shell .stl-card button.t:hover {
   color: var(--color-warm-1);
   text-decoration: underline;
 }
 
-.mls-shell .mll-card.viewing {
+.sts-shell .stl-card.viewing {
   border-color: var(--color-warm-1);
   box-shadow: 0 0 6px rgb(238 155 58 / 35%);
 }
 
-.mls-shell .mll-libtab {
+.sts-shell .stl-libtab {
   display: grid;
   gap: 10px;
 }
 
-.mls-shell .mll-libtab h4 {
+.sts-shell .stl-libtab h4 {
   margin: 6px 0 0;
   font-size: 11.5px;
   letter-spacing: 0.06em;
@@ -203,31 +203,31 @@
   padding-bottom: 3px;
 }
 
-.mls-shell .mll-field {
+.sts-shell .stl-field {
   display: grid;
   gap: 4px;
 }
 
-.mls-shell .mll-field > span:first-child {
+.sts-shell .stl-field > span:first-child {
   font-size: 12px;
   color: var(--color-text-subtle);
 }
 
-.mls-shell .mll-field textarea {
+.sts-shell .stl-field textarea {
   font-family: var(--font-body, Signika), sans-serif;
   font-size: 13px;
   min-height: 70px;
   resize: vertical;
 }
 
-.mls-shell .mll-chips {
+.sts-shell .stl-chips {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
   align-items: center;
 }
 
-.mls-shell .mll-chips .ml-icon {
+.sts-shell .stl-chips .st-icon {
   width: 16px;
   height: 16px;
   padding: 0;
@@ -236,21 +236,21 @@
   font-size: 10px;
 }
 
-.mls-shell .mll-chips select {
+.sts-shell .stl-chips select {
   height: 24px;
   width: auto;
   font-size: 12px;
 }
 
 /* The By world grid */
-.mls-shell .mll-gridpage {
+.sts-shell .stl-gridpage {
   display: flex;
   flex-direction: column;
   gap: 8px;
   min-height: 0;
 }
 
-.mls-shell .mll-gridbar {
+.sts-shell .stl-gridbar {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -258,7 +258,7 @@
   color: var(--color-text-subtle);
 }
 
-.mls-shell .mll-showing .ml-link {
+.sts-shell .stl-showing .st-link {
   width: auto;
   height: auto;
   padding: 0;
@@ -269,7 +269,7 @@
   font-size: inherit;
 }
 
-.mls-shell .mll-pick {
+.sts-shell .stl-pick {
   display: flex;
   flex-wrap: wrap;
   gap: 4px 14px;
@@ -280,13 +280,13 @@
   font-size: 13px;
 }
 
-.mls-shell .mll-pick label {
+.sts-shell .stl-pick label {
   display: inline-flex;
   align-items: center;
   gap: 6px;
 }
 
-.mls-shell .mll-gridwrap {
+.sts-shell .stl-gridwrap {
   overflow: auto;
   max-height: 100%;
   /* The frame ends with the table, whose columns have a set width
@@ -301,7 +301,7 @@
   border-radius: 4px;
 }
 
-.mls-shell .mll-grid {
+.sts-shell .stl-grid {
   border-collapse: separate;
   border-spacing: 0;
   table-layout: fixed;
@@ -310,18 +310,18 @@
   font-size: 13px;
   /* Foundry's tables clip, which pins the sticky names and headers to the
      table instead of the scrolling box: they scrolled away (Phase 6, as the
-     prototype's .mls-gridwrap .mls-grid). */
+     prototype's .sts-gridwrap .sts-grid). */
   overflow: visible;
 }
 
-.mls-shell .mll-grid th,
-.mls-shell .mll-grid td {
+.sts-shell .stl-grid th,
+.sts-shell .stl-grid td {
   padding: 4px 8px;
   border-bottom: 1px solid var(--color-cool-5, #1a1822);
   background: rgb(11 10 19 / 92%);
 }
 
-.mls-shell .mll-grid thead th {
+.sts-shell .stl-grid thead th {
   position: sticky;
   top: 0;
   z-index: 2;
@@ -330,8 +330,8 @@
   border-bottom: 1px solid var(--color-cool-3);
 }
 
-.mls-shell .mll-grid th.mod,
-.mls-shell .mll-grid tbody th[scope="row"] {
+.sts-shell .stl-grid th.mod,
+.sts-shell .stl-grid tbody th[scope="row"] {
   position: sticky;
   left: 0;
   z-index: 1;
@@ -344,11 +344,11 @@
   text-overflow: ellipsis;
 }
 
-.mls-shell .mll-grid thead th.mod {
+.sts-shell .stl-grid thead th.mod {
   z-index: 3;
 }
 
-.mls-shell .mll-grid th.w button {
+.sts-shell .stl-grid th.w button {
   width: 100%;
   height: auto;
   padding: 0;
@@ -360,38 +360,38 @@
   font-weight: 600;
 }
 
-.mls-shell .mll-grid th.w .sub {
+.sts-shell .stl-grid th.w .sub {
   font-size: 11px;
   font-weight: 400;
   color: var(--color-text-subtle);
 }
 
-.mls-shell .mll-grid th.w .q {
+.sts-shell .stl-grid th.w .q {
   color: #f3b36a;
   font-weight: 600;
 }
 
-.mls-shell .mll-grid td {
+.sts-shell .stl-grid td {
   text-align: center;
 }
 
-.mls-shell .mll-grid td.na {
+.sts-shell .stl-grid td.na {
   color: var(--color-light-5, #555);
 }
 
-.mls-shell .mll-grid td.plus {
+.sts-shell .stl-grid td.plus {
   background: rgb(63 143 82 / 22%);
 }
 
-.mls-shell .mll-grid td.minus {
+.sts-shell .stl-grid td.minus {
   background: rgb(180 82 63 / 22%);
 }
 
-.mls-shell .mll-grid td.prob {
+.sts-shell .stl-grid td.prob {
   box-shadow: inset 0 0 0 1px rgb(245 196 94 / 70%);
 }
 
-.mls-shell .mll-grid tr.grp th {
+.sts-shell .stl-grid tr.grp th {
   position: sticky;
   left: 0;
   text-align: left;
@@ -406,13 +406,13 @@
   color: var(--color-light-1);
 }
 
-.mls-shell .mll-grid tr.grp .n {
+.sts-shell .stl-grid tr.grp .n {
   margin-left: 8px;
   font-weight: 400;
   color: var(--color-text-subtle);
 }
 
-.mls-shell .mll-grid tr.grp th button {
+.sts-shell .stl-grid tr.grp th button {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -427,7 +427,7 @@
   font-weight: 600;
 }
 
-.mls-shell .mll-grid tr.grp th button > i {
+.sts-shell .stl-grid tr.grp th button > i {
   font-size: 11px;
   color: var(--color-light-4);
 }

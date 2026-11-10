@@ -1,0 +1,13 @@
+{
+  "id": "st-fixture-b",
+  "title": "Stagehand Fixture: B (conflicts with A)",
+  "description": "Test fixture for Stagehand. Does nothing.",
+  "authors": [{ "name": "Stagehand tests" }],
+  "version": "1.0.0",
+  "compatibility": { "minimum": "13", "verified": "14" },
+  "relationships": {
+    "conflicts": [
+      { "id": "st-fixture-a", "type": "module", "reason": "Fixture conflict." }
+    ]
+  }
+}

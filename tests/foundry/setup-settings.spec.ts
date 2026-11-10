@@ -45,11 +45,11 @@ test.afterAll(async () => {
   await ext.context.close();
 });
 
-const shell = () => page.locator("#ml-shell-root");
+const shell = () => page.locator("#st-shell-root");
 
 test("the panel lists the server, the Release history permission and the build", async () => {
   await panel.goto(settingsUrl(ext));
-  const row = panel.locator(".mlp-servers li").filter({ hasText: HOST });
+  const row = panel.locator(".stp-servers li").filter({ hasText: HOST });
   await expect(row).toBeVisible();
   await expect(
     row.getByRole("button", { name: `Remove ${HOST}` }),
@@ -59,7 +59,7 @@ test("the panel lists the server, the Release history permission and the build",
   ).toBeVisible();
   await expect(panel.locator("footer")).toContainText("Build 0.2.0");
   await panel.screenshot({ path: `${SCREENS}/settings-panel.png` });
-  await audit(panel, "settings panel", ".mlp");
+  await audit(panel, "settings panel", ".stp");
 });
 
 test("Remove takes Stagehand off the server: Setup is Foundry's own again", async () => {
@@ -73,7 +73,7 @@ test("Remove takes Stagehand off the server: Setup is Foundry's own again", asyn
 test("adding it back by address brings the new Setup page back", async () => {
   await addServer(ext, panel, env.url);
   await page.reload();
-  await expect(shell().locator(".mls-top")).toBeVisible();
+  await expect(shell().locator(".sts-top")).toBeVisible();
 });
 
 test("Setup's rail opens the settings panel", async () => {
@@ -91,7 +91,7 @@ async function dropScripts(): Promise<void> {
 test("scripts the browser dropped show as Off; Turn on brings Setup back (owner's bug)", async () => {
   await dropScripts();
   await panel.reload();
-  const row = panel.locator(".mlp-servers li").filter({ hasText: HOST });
+  const row = panel.locator(".stp-servers li").filter({ hasText: HOST });
   await expect(row.getByText("Off")).toBeVisible();
   await page.reload();
   await page.locator("#setup-packages").waitFor({ state: "attached" });
@@ -99,7 +99,7 @@ test("scripts the browser dropped show as Off; Turn on brings Setup back (owner'
   await row.getByRole("button", { name: `Turn ${HOST} back on` }).click();
   await expect(row.getByText("Off")).toHaveCount(0);
   await page.reload();
-  await expect(shell().locator(".mls-top")).toBeVisible();
+  await expect(shell().locator(".sts-top")).toBeVisible();
 });
 
 test("when the background starts again it puts the dropped scripts back by itself", async () => {
@@ -119,5 +119,5 @@ test("when the background starts again it puts the dropped scripts back by itsel
     )
     .toBeGreaterThanOrEqual(4);
   await page.reload();
-  await expect(shell().locator(".mls-top")).toBeVisible();
+  await expect(shell().locator(".sts-top")).toBeVisible();
 });

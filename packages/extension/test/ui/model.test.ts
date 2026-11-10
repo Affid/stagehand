@@ -1,10 +1,7 @@
 import { describe, expect, test } from "vitest";
-import {
-  emptyLibrary,
-  type Library,
-} from "@module-library/shared/library/schema";
-import type { PackageInfo } from "@module-library/shared/package";
-import type { Command, Snapshot } from "@module-library/shared/world";
+import { emptyLibrary, type Library } from "@stagehand/shared/library/schema";
+import type { PackageInfo } from "@stagehand/shared/package";
+import type { Command, Snapshot } from "@stagehand/shared/world";
 import { BUNDLED_CONFIG } from "../../src/adapters/config.ts";
 import type { SetupState } from "../../src/messages.ts";
 import { groupByFolder, scopeModules } from "../../src/ui/model/modules.ts";

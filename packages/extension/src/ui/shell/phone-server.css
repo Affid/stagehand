@@ -3,11 +3,11 @@
    Configuration, What's new: one column"). */
 
 /* The top bar names the page on a phone; the summary and buttons stay. */
-.mls-shell.mlp:not(.mlp-wide) .mls-main .mlb-head h2 {
+.sts-shell.stp:not(.stp-wide) .sts-main .stb-head h2 {
   display: none;
 }
 
-.mls-shell.mlp .mls-main .mlb-head {
+.sts-shell.stp .sts-main .stb-head {
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
@@ -15,84 +15,84 @@
   padding-top: 12px;
 }
 
-.mls-shell.mlp .mls-main .mlb-head > div {
+.sts-shell.stp .sts-main .stb-head > div {
   flex: 1 1 100%;
 }
 
-.mls-shell.mlp .mls-main .mlb-head button {
+.sts-shell.stp .sts-main .stb-head button {
   flex: 1 1 auto;
-  min-height: var(--mlp-tap);
+  min-height: var(--stp-tap);
 }
 
 /* ---------- Backups: one row of tabs; the summary and New snapshot in the dock ---------- */
-.mls-shell.mlp[data-page="backups"] .mls-main .mls-subtabs .mls-tablist {
+.sts-shell.stp[data-page="backups"] .sts-main .sts-subtabs .sts-tablist {
   width: 100%;
 }
 
-.mls-shell.mlp[data-page="backups"] .mls-main .mls-subtabs button[role="tab"] {
+.sts-shell.stp[data-page="backups"] .sts-main .sts-subtabs button[role="tab"] {
   flex: 1 1 auto;
   justify-content: center;
   padding-inline: 6px;
 }
 
-.mls-shell.mlp[data-page="backups"]
-  .mls-main
-  .mls-subtabs
+.sts-shell.stp[data-page="backups"]
+  .sts-main
+  .sts-subtabs
   button[role="tab"]
   > i {
   display: none;
 }
 
-.mls-shell.mlp .mlb-page > .mls-body-main > .mlb-job,
-.mls-shell.mlp .mlb-page > .mlb-job {
+.sts-shell.stp .stb-page > .sts-body-main > .stb-job,
+.sts-shell.stp .stb-page > .stb-job {
   margin-top: 12px;
 }
 
 /* A snapshot under way, in one column: what and where it is, the bar across
    the band, then the steps. The title carries the percent. */
-.mls-shell.mlp .mlb-job {
+.sts-shell.stp .stb-job {
   grid-template-columns: minmax(0, 1fr);
   gap: 8px;
   min-width: 0;
 }
 
-.mls-shell.mlp .mlb-job .bar {
+.sts-shell.stp .stb-job .bar {
   order: 1;
 }
 
-.mls-shell.mlp .mlb-job ol {
+.sts-shell.stp .stb-job ol {
   order: 2;
   flex-wrap: wrap;
   gap: 4px 14px;
 }
 
-.mls-shell.mlp .mlb-job .pct {
+.sts-shell.stp .stb-job .pct {
   display: none;
 }
 
-.mls-shell.mlp .mlp-bkbar .mlp-launch {
+.sts-shell.stp .stp-bkbar .stp-launch {
   padding: 0 16px;
   font-size: 15px;
 }
 
-.mls-shell.mlp .mlp-bkbar .nodel {
+.sts-shell.stp .stp-bkbar .nodel {
   flex: none;
 }
 
-.mls-shell.mlp .mlp-bksel > button,
-.mls-shell.mlp .mlp-bksel .nodel > button {
+.sts-shell.stp .stp-bksel > button,
+.sts-shell.stp .stp-bksel .nodel > button {
   width: auto;
   height: 48px;
   padding: 0 14px;
 }
 
 /* While selecting snapshots, their bar takes over the dock. */
-.mls-shell.mlp .mlp-dock:has(.mlp-bksel) > .mlp-bkbar:not(.mlp-bksel) {
+.sts-shell.stp .stp-dock:has(.stp-bksel) > .stp-bkbar:not(.stp-bksel) {
   display: none;
 }
 
 /* The explanation in one line beside Select; the filter and Sort by in one row. */
-.mls-shell.mlp .mlw-bhead:not(.sel) {
+.sts-shell.stp .stw-bhead:not(.sel) {
   flex-wrap: nowrap;
   align-items: center;
   gap: 10px;
@@ -101,173 +101,173 @@
   color: var(--color-text-subtle);
 }
 
-.mls-shell.mlp .mlw-bhead:not(.sel) > span:first-child {
+.sts-shell.stp .stw-bhead:not(.sel) > span:first-child {
   flex: 1;
   min-width: 0;
   font-weight: 400;
 }
 
-.mls-shell.mlp .mlw-bhead:not(.sel) > .ml-spacer {
+.sts-shell.stp .stw-bhead:not(.sel) > .st-spacer {
   display: none;
 }
 
-.mls-shell.mlp .mlw-bhead button {
+.sts-shell.stp .stw-bhead button {
   flex: none;
   width: auto;
   min-height: 40px;
   padding: 0 12px;
 }
 
-.mls-shell.mlp .mlb-tools {
+.sts-shell.stp .stb-tools {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 8px;
   padding-block: 10px;
 }
 
-.mls-shell.mlp .mlb-tools > :is(.ml-label, .ml-muted, .ml-spacer) {
+.sts-shell.stp .stb-tools > :is(.st-label, .st-muted, .st-spacer) {
   display: none;
 }
 
-.mls-shell.mlp .mlb-tools :is(input[type="search"], select) {
+.sts-shell.stp .stb-tools :is(input[type="search"], select) {
   width: 100%;
   min-width: 0;
-  height: var(--mlp-tap);
+  height: var(--stp-tap);
   font-size: 15px;
 }
 
-.mls-shell.mlp .mlb-tools select {
+.sts-shell.stp .stb-tools select {
   width: auto;
 }
 
-.mls-shell.mlp .mlb-scroll,
-.mls-shell.mlp .mlb-pkgs {
+.sts-shell.stp .stb-scroll,
+.sts-shell.stp .stb-pkgs {
   overflow: visible;
   max-height: none;
 }
 
 /* Rows: the name on top; version, size and buttons below. */
-.mls-shell.mlp .mlb-inner {
+.sts-shell.stp .stb-inner {
   margin-left: 0;
   padding-left: 0;
 }
 
-.mls-shell.mlp :is(.mlb-inner li, .mlb-pkg .row) {
+.sts-shell.stp :is(.stb-inner li, .stb-pkg .row) {
   grid-template-columns: 26px minmax(0, 1fr) auto auto auto;
   gap: 6px 10px;
   padding: 10px 8px;
 }
 
-.mls-shell.mlp :is(.mlb-inner li, .mlb-pkg .row) > :first-child {
+.sts-shell.stp :is(.stb-inner li, .stb-pkg .row) > :first-child {
   grid-row: span 2;
   align-self: start;
   margin-top: 2px;
 }
 
-.mls-shell.mlp :is(.mlb-inner li, .mlb-pkg .row) > .nm {
+.sts-shell.stp :is(.stb-inner li, .stb-pkg .row) > .nm {
   grid-column: 2 / -1;
 }
 
-.mls-shell.mlp .mlb-pkg .row .nm :is(strong, span) {
+.sts-shell.stp .stb-pkg .row .nm :is(strong, span) {
   white-space: normal;
 }
 
-.mls-shell.mlp :is(.mlb-inner li, .mlb-pkg .row) button {
+.sts-shell.stp :is(.stb-inner li, .stb-pkg .row) button {
   min-height: 40px;
 }
 
-.mls-shell.mlp .mlb-pkg .row button.tog {
-  width: var(--mlp-tap);
-  min-height: var(--mlp-tap);
+.sts-shell.stp .stb-pkg .row button.tog {
+  width: var(--stp-tap);
+  min-height: var(--stp-tap);
 }
 
 /* ---------- Configuration: one column; its bar in the dock ---------- */
-.mls-shell.mlp .mls-main .mlc-cols {
+.sts-shell.stp .sts-main .stc-cols {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   overflow: visible;
 }
 
-.mls-shell.mlp .mls-main .mlc-set {
+.sts-shell.stp .sts-main .stc-set {
   grid-template-columns: minmax(0, 1fr);
   padding: 12px 0;
 }
 
-.mls-shell.mlp .mls-main .mlc-set .c {
+.sts-shell.stp .sts-main .stc-set .c {
   justify-content: flex-start;
 }
 
-.mls-shell.mlp
-  .mls-main
-  .mlc-set
+.sts-shell.stp
+  .sts-main
+  .stc-set
   :is(select, input:not([type="checkbox"], [type="radio"])) {
   width: 100%;
-  height: var(--mlp-tap);
+  height: var(--stp-tap);
   font-size: 15px;
 }
 
-.mls-shell.mlp .mlp-dock > .mlc-bar {
+.sts-shell.stp .stp-dock > .stc-bar {
   position: static;
   padding: 8px max(12px, env(safe-area-inset-right, 0px)) 10px
     max(12px, env(safe-area-inset-left, 0px));
-  background: var(--mlp-bar-bg);
+  background: var(--stp-bar-bg);
   border-top: 1px solid var(--color-cool-4);
 }
 
-.mls-shell.mlp .mlp-dock > .mlc-bar > div {
+.sts-shell.stp .stp-dock > .stc-bar > div {
   flex-wrap: wrap;
   box-shadow: none;
   backdrop-filter: none;
   animation: none;
 }
 
-.mls-shell.mlp .mlp-dock > .mlc-bar > div > span:first-of-type {
+.sts-shell.stp .stp-dock > .stc-bar > div > span:first-of-type {
   flex: 1 1 calc(100% - 40px);
   font-size: 14px;
 }
 
-.mls-shell.mlp .mlp-dock > .mlc-bar button {
+.sts-shell.stp .stp-dock > .stc-bar button {
   flex: 1 1 40%;
-  min-height: var(--mlp-tap);
+  min-height: var(--stp-tap);
   font-size: 14px;
 }
 
-.mls-shell.mlp .mlp-dock > .mlc-bar .nodel {
+.sts-shell.stp .stp-dock > .stc-bar .nodel {
   display: contents;
 }
 
-.mls-shell.mlp .mls-main .mlc-diff li {
+.sts-shell.stp .sts-main .stc-diff li {
   grid-template-columns: minmax(0, 1fr);
   gap: 2px;
 }
 
 /* ---------- What's new: the update first, one column ---------- */
-.mls-shell.mlp .mls-main :is(.mlu-cols, .mlu-hcols) {
+.sts-shell.stp .sts-main :is(.stu-cols, .stu-hcols) {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   overflow: visible;
   min-height: auto;
 }
 
-.mls-shell.mlp .mls-main .mlu-side {
+.sts-shell.stp .sts-main .stu-side {
   order: -1;
 }
 
-.mls-shell.mlp .mls-main .mlu-tools {
+.sts-shell.stp .sts-main .stu-tools {
   flex-wrap: wrap;
   row-gap: 8px;
 }
 
-.mls-shell.mlp .mls-main .mlu-tools input[type="search"] {
+.sts-shell.stp .sts-main .stu-tools input[type="search"] {
   flex: 1 1 100%;
-  height: var(--mlp-tap);
+  height: var(--stp-tap);
   font-size: 15px;
 }
 
-.mls-shell.mlp .mls-main .mlu-clist li {
+.sts-shell.stp .sts-main .stu-clist li {
   grid-template-columns: 22px minmax(0, 1fr);
 }
 
-.mls-shell.mlp .mls-main .mlu-clist li > :nth-child(n + 3) {
+.sts-shell.stp .sts-main .stu-clist li > :nth-child(n + 3) {
   grid-column: 2;
 }

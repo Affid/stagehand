@@ -34,7 +34,7 @@ for (const device of ["desktop", "phone"] as const satisfies Device[]) {
       // Our page took over: Foundry's layout hidden, our header and rail on
       // (the phone's short version chip: "14 · 370").
       await expect(page.locator("#setup")).toBeHidden();
-      await expect(page.locator("#ml-shell-root .mlh-ver")).toContainText(
+      await expect(page.locator("#st-shell-root .sth-ver")).toContainText(
         device === "phone" ? /^14 · \d+/ : "Version 14",
       );
       // The background saw this Setup through native: an admin-verified server.
@@ -44,7 +44,7 @@ for (const device of ["desktop", "phone"] as const satisfies Device[]) {
       // Page scripts can't reach the bridge object.
       expect(
         await page.evaluate(
-          () => typeof (globalThis as { mlApp?: unknown }).mlApp,
+          () => typeof (globalThis as { stApp?: unknown }).stApp,
         ),
       ).toBe("undefined");
       await page.screenshot({ path: `${SCREENS}/app-setup-${device}.png` });
@@ -88,7 +88,7 @@ test.describe("native's rules, as a page script would try them", () => {
     await page.goto(`${env.url}/join`);
     expect(
       await page.evaluate(() => [
-        typeof (globalThis as { mlApp?: unknown }).mlApp,
+        typeof (globalThis as { stApp?: unknown }).stApp,
         typeof (globalThis as { __mlNativeSend?: unknown }).__mlNativeSend,
       ]),
     ).toEqual(["undefined", "undefined"]);
@@ -111,7 +111,7 @@ test.describe("native's rules, as a page script would try them", () => {
   test("a Setup page can't answer native's route in the background's place", async () => {
     const page = await app.context.newPage();
     await page.goto(`${env.url}/setup`);
-    await page.locator("#ml-shell-root .mls-top").waitFor();
+    await page.locator("#st-shell-root .sts-top").waitFor();
     // A forged reply for the next route id: dropped (not the background).
     expect(
       await answerTo(page, { v: 1, re: "native-999", ok: true, result: "x" }),

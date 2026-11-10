@@ -21,7 +21,7 @@ function Showing(props: BarProps) {
   const { t } = useUi();
   const { shown, total, hiddenQueued } = props.result;
   return (
-    <span class="mll-showing">
+    <span class="stl-showing">
       {shown.length === total
         ? plural(t, "grid.showing", total)
         : t("grid.showingSome", { n: shown.length, total })}
@@ -30,7 +30,7 @@ function Showing(props: BarProps) {
           {" · "}
           <button
             type="button"
-            class="ml-link"
+            class="st-link"
             title={hiddenQueued.map((w) => w.title).join(", ")}
             onClick={() => props.onShow("all")}
           >
@@ -46,7 +46,7 @@ function Selects(props: BarProps) {
   const { t } = useUi();
   return (
     <>
-      <span class="ml-label">{t("lib.groupBy")}</span>
+      <span class="st-label">{t("lib.groupBy")}</span>
       <select
         aria-label={t("lib.groupBy")}
         value={props.by}
@@ -58,7 +58,7 @@ function Selects(props: BarProps) {
           </option>
         ))}
       </select>
-      <span class="ml-label">{t("grid.show")}</span>
+      <span class="st-label">{t("grid.show")}</span>
       <select
         aria-label={t("grid.show")}
         value={props.show}
@@ -77,7 +77,7 @@ function Selects(props: BarProps) {
 export function GridBar(props: BarProps) {
   const { state, store, t } = useUi();
   return (
-    <div class="ml-row mll-gridbar">
+    <div class="st-row stl-gridbar">
       <Selects {...props} />
       <Showing {...props} />
       <input
@@ -90,9 +90,9 @@ export function GridBar(props: BarProps) {
           store.set((s) => ({ filter: { ...s.filter, text }, selection: [] }));
         }}
       />
-      <span class="ml-spacer" />
+      <span class="st-spacer" />
       <span
-        class="ml-muted mll-gridhelp"
+        class="st-muted stl-gridhelp"
         role="img"
         title={t("grid.help")}
         aria-label={t("grid.help")}
@@ -112,7 +112,7 @@ export function GridLegend() {
     ),
   );
   return (
-    <div class="mls-gridlegend">
+    <div class="sts-gridlegend">
       <span>
         <i class="sw plus" />
         {t("grid.legend.on")}
@@ -125,7 +125,7 @@ export function GridLegend() {
         <i class="sw prob" />
         {t("grid.legend.prob")}
       </span>
-      <span class="ml-spacer" />
+      <span class="st-spacer" />
       <span>
         {queued.length ? (
           <>
@@ -135,7 +135,7 @@ export function GridLegend() {
               <button
                 key={w.id}
                 type="button"
-                class="ml-link"
+                class="st-link"
                 onClick={() =>
                   store.set({ route: { kind: "world", worldId: w.id } })
                 }

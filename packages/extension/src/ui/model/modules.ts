@@ -1,7 +1,7 @@
 // View model for the organised module list (S-1, S-3, S-4, S-7, G-*).
-import type { Folder, Library } from "@module-library/shared/library/schema";
-import type { SmartGroup } from "@module-library/shared/organise/groups";
-import type { PackageInfo } from "@module-library/shared/package";
+import type { Folder, Library } from "@stagehand/shared/library/schema";
+import type { SmartGroup } from "@stagehand/shared/organise/groups";
+import type { PackageInfo } from "@stagehand/shared/package";
 
 /** What the list shows: everything, one folder (null: unfiled), or a group. */
 export type Scope =

@@ -15,8 +15,8 @@ const env = loadFoundryEnv();
 let ext: Target;
 let page: Page;
 
-const rail = (p: Page) => p.locator("#ml-shell-root .mls-rail");
-const news = (p: Page) => rail(p).locator(".mlr-news");
+const rail = (p: Page) => p.locator("#st-shell-root .sts-rail");
+const news = (p: Page) => rail(p).locator(".str-news");
 
 test.describe.configure({ mode: "serial" });
 

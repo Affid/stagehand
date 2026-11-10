@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import type { Snapshot, WorldInfo } from "@module-library/shared/world";
+import type { Snapshot, WorldInfo } from "@stagehand/shared/world";
 import { cleanup, fireEvent, waitFor, within } from "@testing-library/preact";
 import { afterEach, describe, expect, test } from "vitest";
 import type { ExtensionMessage, SetupState } from "../../src/messages.ts";
@@ -57,20 +57,20 @@ function grid(over: Partial<SetupState> = {}) {
 }
 
 const heads = (c: ParentNode): string[] =>
-  [...c.querySelectorAll(".mll-grid thead th.w .t")].map((n) => n.textContent);
+  [...c.querySelectorAll(".stl-grid thead th.w .t")].map((n) => n.textContent);
 
 describe("the By world grid", () => {
   test("a column per world in Foundry's order, a row per module", () => {
     const { container } = grid();
     expect(heads(container)).toEqual(["Strahd", "Untracked", "Vaults"]);
     expect(
-      container.querySelectorAll('.mll-grid tbody tr[data-module="a"]'),
+      container.querySelectorAll('.stl-grid tbody tr[data-module="a"]'),
     ).toHaveLength(1);
   });
 
   test("each cell is a switch that queues for that world's next launch", async () => {
     const { container, send } = grid();
-    const row = el(container, '.mll-grid tbody tr[data-module="a"]');
+    const row = el(container, '.stl-grid tbody tr[data-module="a"]');
     const sw = within(row).getByRole<HTMLInputElement>("switch", {
       name: "Title a on in Vaults",
     });
@@ -94,10 +94,10 @@ describe("the By world grid", () => {
 
   test("a world without the companion shows dashes, not switches", () => {
     const { container } = grid();
-    const row = el(container, '.mll-grid tbody tr[data-module="a"]');
+    const row = el(container, '.stl-grid tbody tr[data-module="a"]');
     expect(within(row).queryByRole("switch", { name: /Untracked/ })).toBe(null);
     expect(row.textContent).toContain("–");
-    const head = [...container.querySelectorAll(".mll-grid thead th.w")].find(
+    const head = [...container.querySelectorAll(".stl-grid thead th.w")].find(
       (th) => th.textContent.includes("Untracked"),
     );
     expect(head?.textContent).toContain("companion off");
@@ -105,16 +105,16 @@ describe("the By world grid", () => {
 
   test("group rows fold like every group header: arrow first", () => {
     const { container } = grid();
-    const head = el(container, ".mll-grid tr.grp button");
+    const head = el(container, ".stl-grid tr.grp button");
     expect(head.getAttribute("aria-expanded")).toBe("true");
     expect(head.querySelector(".fa-chevron-down")).toBeTruthy();
     const before = container.querySelectorAll(
-      ".mll-grid tbody tr[data-module]",
+      ".stl-grid tbody tr[data-module]",
     ).length;
     fireEvent.click(head);
     expect(head.getAttribute("aria-expanded")).toBe("false");
     expect(
-      container.querySelectorAll(".mll-grid tbody tr[data-module]").length,
+      container.querySelectorAll(".stl-grid tbody tr[data-module]").length,
     ).toBeLessThan(before);
   });
 
@@ -137,7 +137,7 @@ describe("the By world grid", () => {
       target: { value: "fav" },
     });
     expect(heads(container)).toEqual(["Strahd"]);
-    expect(el(container, ".mll-showing").textContent).toContain(
+    expect(el(container, ".stl-showing").textContent).toContain(
       "1 of 3 worlds",
     );
     fireEvent.click(
@@ -148,13 +148,13 @@ describe("the By world grid", () => {
 
   test("world columns keep a set width; the table ends after the last (polish)", () => {
     const { container, getByRole } = grid();
-    const table = el(container, ".mll-grid");
+    const table = el(container, ".stl-grid");
     // 250 px for the module names, 92 px per world: never stretched.
     expect(table.style.width).toBe(`${String(250 + 3 * 92)}px`);
     fireEvent.change(getByRole("combobox", { name: "Show" }), {
       target: { value: "fav" },
     });
-    expect(el(container, ".mll-grid").style.width).toBe(
+    expect(el(container, ".stl-grid").style.width).toBe(
       `${String(250 + 92)}px`,
     );
   });
@@ -198,8 +198,8 @@ describe("the grid's extras (6c2)", () => {
 
   test("a module's name opens its details; its tags show as dots", () => {
     const r = grid();
-    const row = el(r.container, '.mll-grid tr[data-module="a"]');
-    expect(row.querySelectorAll(".dots .ml-dot")).toHaveLength(1);
+    const row = el(r.container, '.stl-grid tr[data-module="a"]');
+    expect(row.querySelectorAll(".dots .st-dot")).toHaveLength(1);
     fireEvent.click(within(row).getByRole("button", { name: "Title a" }));
     expect(r.store.get().panel).toBe("a");
   });
@@ -243,14 +243,14 @@ describe("the grid's extras (6c2)", () => {
 
   test("the legend explains the colours; the filter narrows the modules", () => {
     const r = grid();
-    expect(el(r.container, ".mls-gridlegend").textContent).toContain(
+    expect(el(r.container, ".sts-gridlegend").textContent).toContain(
       "turns on at the next launch",
     );
     fireEvent.input(r.getByRole("searchbox", { name: "Filter modules" }), {
       target: { value: "stageh" },
     });
     const rows = [
-      ...r.container.querySelectorAll(".mll-grid tbody tr[data-module]"),
+      ...r.container.querySelectorAll(".stl-grid tbody tr[data-module]"),
     ];
     expect(new Set(rows.map((x) => x.getAttribute("data-module")))).toEqual(
       new Set(["stagehand"]),
@@ -274,7 +274,7 @@ describe("group counts (package 6 review)", () => {
     });
     const [count] = r
       .getAllByRole("button", { name: /Vaults/ })
-      .filter((b) => b.classList.contains("mls-gcount"));
+      .filter((b) => b.classList.contains("sts-gcount"));
     expect((count as HTMLButtonElement).disabled).toBe(true);
     expect(count?.getAttribute("title")).toMatch(/can't/);
   });

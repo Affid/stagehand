@@ -2,7 +2,7 @@
 // page (ui/start.ts), with window messages to Foundry's half, the
 // background through chrome.runtime, and the browser's files, confirm and
 // tabs.
-import "@module-library/shared/zod-config";
+import "@stagehand/shared/zod-config";
 import { windowChannel } from "../page-channel.ts";
 import { send } from "../platform/runtime.ts";
 import { browserPorts } from "../ui/ports.ts";

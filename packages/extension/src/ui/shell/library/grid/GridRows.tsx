@@ -1,8 +1,8 @@
 // The grid's body: a row per group, with how many of its modules each world
 // has on (a click turns them all on or off there), then a row per module:
 // its name (opens its details), New, its tag colours, and a switch per world.
-import type { PackageInfo } from "@module-library/shared/package";
-import type { WorldInfo } from "@module-library/shared/world";
+import type { PackageInfo } from "@stagehand/shared/package";
+import type { WorldInfo } from "@stagehand/shared/world";
 import { useUi } from "../../../context.ts";
 import type { LibGroup } from "../../../model/library-groups.ts";
 import { COMPANION_ID } from "../../../model/preview.ts";
@@ -31,7 +31,7 @@ function Cell(props: {
       <input
         type="checkbox"
         role="switch"
-        class="mls-switch"
+        class="sts-switch"
         checked={row.next}
         disabled={!canChange || props.pkg.id === COMPANION_ID}
         aria-label={t("wp.switch", {
@@ -71,7 +71,7 @@ function GroupCount(props: {
     <td>
       <button
         type="button"
-        class={`mls-gcount${all ? " full" : on ? " some" : ""}`}
+        class={`sts-gcount${all ? " full" : on ? " some" : ""}`}
         disabled={!canChange || !can}
         title={label}
         // The count it shows comes first (label in content, WCAG 2.5.3).
@@ -109,14 +109,14 @@ function ModuleHead(props: { readonly pkg: PackageInfo }) {
           {pkg.title}
         </button>
         {state.data.fresh.includes(pkg.id) ? (
-          <span class="mls-newtag">{t("lib.new")}</span>
+          <span class="sts-newtag">{t("lib.new")}</span>
         ) : null}
         <span class="dots">
           {tags.map((x) => (
             <i
               key={x.id}
-              class="ml-dot"
-              style={{ "--ml-c": x.color }}
+              class="st-dot"
+              style={{ "--st-c": x.color }}
               title={t("grid.tag", { name: x.name })}
               aria-label={t("grid.tag", { name: x.name })}
             />

@@ -47,7 +47,7 @@ const library = (over: Parameters<typeof renderUi>[1] = {}) =>
   });
 
 const tabNames = (c: Element): string[] =>
-  [...c.querySelectorAll('.mls-main [role="tab"]')].map((b) =>
+  [...c.querySelectorAll('.sts-main [role="tab"]')].map((b) =>
     b.textContent.replace(/\s+/g, " ").trim(),
   );
 
@@ -71,7 +71,7 @@ describe("the Library's tabs", () => {
 describe("one row: the filter, View and ⋮", () => {
   test("the desktop's toolbar and Foundry's buttons give way to it", () => {
     const { container, getByRole } = library();
-    expect(container.querySelector(".mll-toolbar")).toBeNull();
+    expect(container.querySelector(".stl-toolbar")).toBeNull();
     expect(getByRole("searchbox", { name: "Filter Modules (5)" })).toBeTruthy();
     expect(getByRole("button", { name: "Group by: Folder" })).toBeTruthy();
   });
@@ -79,7 +79,7 @@ describe("one row: the filter, View and ⋮", () => {
   test("View picks how modules are grouped, the current one ticked", () => {
     const { getByRole, container } = library();
     fireEvent.click(getByRole("button", { name: "Group by: Folder" }));
-    const pop = el(container, ".ml-pop");
+    const pop = el(container, ".st-pop");
     expect(
       within(pop)
         .getByRole("button", { name: "Folder" })
@@ -92,7 +92,7 @@ describe("one row: the filter, View and ⋮", () => {
   test("⋮ holds Select, Install, Tags, Presets, folders and import and export", () => {
     const { getByRole, container, page, store } = library();
     fireEvent.click(getByRole("button", { name: /^Select, install/ }));
-    const pop = el(container, ".ml-pop");
+    const pop = el(container, ".st-pop");
     const names = within(pop)
       .getAllByRole("button")
       .map((b) => b.textContent.trim());
@@ -115,7 +115,7 @@ describe("one row: the filter, View and ⋮", () => {
     ]);
     fireEvent.click(getByRole("button", { name: /^Select, install/ }));
     fireEvent.click(
-      within(el(container, ".ml-pop")).getByRole("button", { name: "Tags…" }),
+      within(el(container, ".st-pop")).getByRole("button", { name: "Tags…" }),
     );
     expect(store.get().side).toEqual({ kind: "tags" });
   });
@@ -126,7 +126,7 @@ describe("one row: the filter, View and ⋮", () => {
     });
     fireEvent.click(getByRole("button", { name: /^Select, install/ }));
     expect(
-      within(el(container, ".ml-pop")).getByRole("button", {
+      within(el(container, ".st-pop")).getByRole("button", {
         name: "Update all · 1",
       }),
     ).toBeTruthy();
@@ -136,19 +136,19 @@ describe("one row: the filter, View and ⋮", () => {
     const { getByRole, container } = library();
     fireEvent.click(getByRole("button", { name: /^Select, install/ }));
     fireEvent.click(
-      within(el(container, ".ml-pop")).getByRole("button", {
+      within(el(container, ".st-pop")).getByRole("button", {
         name: "Select modules",
       }),
     );
     await waitFor(() => {
-      expect(container.querySelector(".mlp-dock .mls-selbar")).not.toBeNull();
+      expect(container.querySelector(".stp-dock .sts-selbar")).not.toBeNull();
     });
-    expect(container.querySelector(".mls-main .mls-selbar")).toBeNull();
+    expect(container.querySelector(".sts-main .sts-selbar")).toBeNull();
     fireEvent.click(
-      within(el(container, ".mlp-dock")).getByRole("button", { name: "Done" }),
+      within(el(container, ".stp-dock")).getByRole("button", { name: "Done" }),
     );
     await waitFor(() => {
-      expect(container.querySelector(".mlp-dock .mls-selbar")).toBeNull();
+      expect(container.querySelector(".stp-dock .sts-selbar")).toBeNull();
     });
   });
 
@@ -167,7 +167,7 @@ describe("new installs on a phone", () => {
     const { container, store, getByRole } = library({
       data: { fresh: ["a", "b"] },
     });
-    const band = el(container, ".mlp-intake");
+    const band = el(container, ".stp-intake");
     expect(band.textContent).toContain("2 new modules to sort");
     fireEvent.click(within(band).getByRole("button", { name: "Sort them" }));
     expect(store.get().side).toEqual({ kind: "intake" });

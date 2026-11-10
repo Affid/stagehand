@@ -5,7 +5,7 @@
 // background (served in this same page), and a small relay between them.
 // Storage lives in this origin's localStorage. Added at document start on
 // the server's pages by the spike's MainActivity.
-import "@module-library/shared/zod-config";
+import "@stagehand/shared/zod-config";
 import {
   nativeRouterDeps,
   serveBackground,
@@ -26,11 +26,11 @@ import {
 } from "../../../packages/extension/src/app/page.ts";
 import { NativeSim } from "../../../tests/app/native.ts";
 
-declare const __ML_SETUP_CSS__: string;
-declare const __ML_RUNNING_CSS__: string;
+declare const __ST_SETUP_CSS__: string;
+declare const __ST_RUNNING_CSS__: string;
 
 const SERVER = location.origin;
-const STORE = "ml-preview-kv";
+const STORE = "st-preview-kv";
 
 interface Wire {
   readonly v: 1;
@@ -188,13 +188,13 @@ if (!native.kv.has("servers"))
   });
 
 // Our scripts on the server's pages, as native adds them.
-(window as { mlApp?: NativePort }).mlApp = page;
+(window as { stApp?: NativePort }).stApp = page;
 const onSetup = startAppSetup({
   win: window,
   doc: document,
   href: location.href,
   server: SERVER,
-  css: __ML_SETUP_CSS__,
+  css: __ST_SETUP_CSS__,
 });
 if (!onSetup) {
   startAppGame({
@@ -202,6 +202,6 @@ if (!onSetup) {
     href: location.href,
     server: SERVER,
     referrer: document.referrer,
-    runningCss: __ML_RUNNING_CSS__,
+    runningCss: __ST_RUNNING_CSS__,
   });
 }

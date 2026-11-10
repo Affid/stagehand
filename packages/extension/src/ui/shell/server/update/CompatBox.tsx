@@ -31,10 +31,10 @@ function Tags(props: { readonly all: readonly CompatRow[] }) {
     props.all.filter((x) => s.includes(x.status)).length;
   const tag = (count: number, tone: string, key: string) =>
     count ? (
-      <span class={`mlu-tag ${tone}`}>{plural(t, key, count)}</span>
+      <span class={`stu-tag ${tone}`}>{plural(t, key, count)}</span>
     ) : null;
   return (
-    <div class="mlu-tags">
+    <div class="stu-tags">
       {tag(n("ok"), "ok", "up.tag.ok")}
       {tag(n("unv"), "unv", "up.tag.unv")}
       {tag(n("risk"), "unv", "up.tag.risk")}
@@ -49,7 +49,7 @@ function Flagged(props: { readonly rows: readonly CompatRow[] }) {
   const top = props.rows.slice(0, SHOWN);
   const more = props.rows.length - top.length;
   return (
-    <ul class="mlu-flag">
+    <ul class="stu-flag">
       {top.map((x) => (
         <li key={`${x.kind}:${x.id}`} class={TONE[x.status]}>
           <button
@@ -81,15 +81,15 @@ export function CompatBox(props: {
   const flagged = all.filter((x) => x.status !== "ok").sort(byConcern);
   const updates = data ? updatesNeeded(data) : 0;
   return (
-    <section class="mlw-box">
+    <section class="stw-box">
       <h4>
         <span>{t("up.yours", { version: props.release.version })}</span>
-        <button type="button" class="ml-link" onClick={props.onFull}>
+        <button type="button" class="st-link" onClick={props.onFull}>
           {t("up.fullList")}
         </button>
       </h4>
       {!data ? (
-        <p class="ml-muted" role="status">
+        <p class="st-muted" role="status">
           {props.error ?? (
             <>
               <Icon name="spinner fa-spin-pulse" /> {t("up.previewing")}
@@ -102,7 +102,7 @@ export function CompatBox(props: {
           {flagged.length ? (
             <Flagged rows={flagged} />
           ) : (
-            <p class="ml-muted">{t("up.allCompatible")}</p>
+            <p class="st-muted">{t("up.allCompatible")}</p>
           )}
           {updates ? (
             <p class="hint">{plural(t, "up.needUpdating", updates)}</p>

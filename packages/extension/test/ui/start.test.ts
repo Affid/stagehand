@@ -59,7 +59,7 @@ describe("setup-ui: our half of the Setup page", () => {
     await flush();
     expect(s.send).not.toHaveBeenCalled();
     // Not started: Foundry's page comes back at once.
-    expect(document.documentElement.classList.contains("ml-shell-off")).toBe(
+    expect(document.documentElement.classList.contains("st-shell-off")).toBe(
       true,
     );
   });
@@ -110,13 +110,13 @@ describe("both halves in one closure over the private channel (the app)", () => 
       doc: document,
     });
     await vi.waitFor(() => {
-      expect(document.querySelector("#ml-shell-root .mls-top")).toBeTruthy();
+      expect(document.querySelector("#st-shell-root .sts-top")).toBeTruthy();
     });
     expect(send.mock.calls[0]?.[0]).toMatchObject({
       kind: "setup-seen",
       data: { isAdmin: true, core: { version: "14.370" } },
     });
-    expect(document.body.classList.contains("ml-shell-on")).toBe(true);
+    expect(document.body.classList.contains("st-shell-on")).toBe(true);
   });
 
   test("a background that fails leaves Foundry's page alone", async () => {
@@ -135,9 +135,9 @@ describe("both halves in one closure over the private channel (the app)", () => 
     await vi.waitFor(() => {
       expect(logged).toHaveBeenCalled();
     });
-    expect(document.getElementById("ml-shell-root")).toBe(null);
+    expect(document.getElementById("st-shell-root")).toBe(null);
     // Foundry's page comes back at once, not after the veil's 15 s.
-    expect(document.documentElement.classList.contains("ml-shell-off")).toBe(
+    expect(document.documentElement.classList.contains("st-shell-off")).toBe(
       true,
     );
   });

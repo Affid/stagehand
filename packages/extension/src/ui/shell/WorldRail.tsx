@@ -1,6 +1,6 @@
 // The rail on the left: the Library, then the worlds in Foundry's order
 // with a filter, Create World and each world's flags.
-import type { WorldInfo } from "@module-library/shared/world";
+import type { WorldInfo } from "@stagehand/shared/world";
 import { useMemo, useRef, useState } from "preact/hooks";
 import { useScrollFade } from "../common/scroll-fade.ts";
 import { BUILD, IS_DEV_BUILD } from "../../build-info.ts";
@@ -50,14 +50,14 @@ function Marks(props: { readonly row: WorldRow; readonly problems: number }) {
     <span class="marks">
       {world.favorite ? (
         <i
-          class="fa-solid fa-star mls-wfav"
+          class="fa-solid fa-star sts-wfav"
           role="img"
           aria-label={t("shell.favorite")}
         />
       ) : null}
       {world.locked ? (
         <i
-          class="fa-solid fa-lock mls-wlock"
+          class="fa-solid fa-lock sts-wlock"
           role="img"
           aria-label={t("shell.locked")}
         />
@@ -96,10 +96,10 @@ function WorldItem(props: {
   const problems = model.tracked ? model.problems : 0;
   const image = cssImage(world.background, location.origin);
   return (
-    <li class="mls-world-item">
+    <li class="sts-world-item">
       <button
         type="button"
-        class={`mls-world${props.current ? " mls-on" : ""}`}
+        class={`sts-world${props.current ? " sts-on" : ""}`}
         data-world={world.id}
         aria-current={props.current ? "page" : undefined}
         onClick={() =>
@@ -142,7 +142,7 @@ function LibraryEntry(props: { readonly current: boolean }) {
   return (
     <button
       type="button"
-      class={`mls-lib${props.current ? " mls-on" : ""}`}
+      class={`sts-lib${props.current ? " sts-on" : ""}`}
       aria-current={props.current ? "page" : undefined}
       onClick={() => store.set({ route: { kind: "library" } })}
     >
@@ -150,7 +150,7 @@ function LibraryEntry(props: { readonly current: boolean }) {
       <strong>
         {t("shell.library")}
         {fresh ? (
-          <span class="mls-newtag" title={t("shell.newHint")}>
+          <span class="sts-newtag" title={t("shell.newHint")}>
             {t("shell.newCount", { n: String(fresh) })}
           </span>
         ) : null}
@@ -168,7 +168,7 @@ function RailBar(props: {
 }) {
   const { page, t } = useUi();
   return (
-    <div class="mls-railbar">
+    <div class="sts-railbar">
       <input
         type="search"
         aria-label={t("shell.filter", { n: props.count })}
@@ -193,17 +193,17 @@ function RailBar(props: {
 function RailFoot() {
   const { t, actions } = useUi();
   return (
-    <footer class="mls-foot">
+    <footer class="sts-foot">
       <button
         type="button"
-        class="mls-settings"
+        class="sts-settings"
         onClick={() => void actions.openSettings()}
       >
         <Icon name="gear" />
         {t("shell.settings")}
       </button>
       {IS_DEV_BUILD ? (
-        <p class="mls-build">{t("app.build", { build: BUILD })}</p>
+        <p class="sts-build">{t("app.build", { build: BUILD })}</p>
       ) : null}
     </footer>
   );
@@ -220,11 +220,11 @@ export function WorldRail(props: { readonly route: Route }) {
   const more = useScrollFade(list, "y");
   const { route } = props;
   return (
-    <aside class="application framed mls-rail" aria-label={t("shell.rail")}>
+    <aside class="application framed sts-rail" aria-label={t("shell.rail")}>
       <LibraryEntry current={route.kind === "library"} />
       <h2 class="divider">{t("shell.worlds")}</h2>
       <RailBar count={worlds.length} text={text} onText={setText} />
-      <ol class={`mls-worlds${more ? " more" : ""}`} ref={list}>
+      <ol class={`sts-worlds${more ? " more" : ""}`} ref={list}>
         {shown.map((w) => (
           <WorldItem
             key={w.id}
@@ -234,7 +234,7 @@ export function WorldRail(props: { readonly route: Route }) {
         ))}
       </ol>
       {shown.length === 0 && worlds.length > 0 ? (
-        <p class="ml-empty">{t("shell.noMatch")}</p>
+        <p class="st-empty">{t("shell.noMatch")}</p>
       ) : null}
       <RailNews />
       <RailFoot />

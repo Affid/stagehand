@@ -1,7 +1,7 @@
 // Your packages on a release (package 7): Foundry's availability codes as
 // the prototype's statuses, where each package is used, what to update, and
 // a world judged by its system with its modules to check.
-import type { Snapshot } from "@module-library/shared/world";
+import type { Snapshot } from "@stagehand/shared/world";
 import { describe, expect, test } from "vitest";
 import type { CompatEntry, Preview } from "../../src/page-compat.ts";
 import {

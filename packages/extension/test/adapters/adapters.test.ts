@@ -1,5 +1,5 @@
 import { describe, expect, test, vi } from "vitest";
-import { parseCoreVersion } from "@module-library/shared/version";
+import { parseCoreVersion } from "@stagehand/shared/version";
 import { BUNDLED_CONFIG, type SetupConfig } from "../../src/adapters/config.ts";
 import {
   CONFIG_MAX_AGE_MS,

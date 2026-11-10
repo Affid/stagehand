@@ -1,7 +1,7 @@
 // Tags for the selected modules (prototype tagsPop): each tag is on for all,
 // some or none of them; a click cycles all, none, then back; Apply sends the
 // adds and removes at once.
-import type { Tag } from "@module-library/shared/library/schema";
+import type { Tag } from "@stagehand/shared/library/schema";
 import { useState } from "preact/hooks";
 import { useDisclosure } from "../../../common/disclosure.ts";
 import { Icon } from "../../../common/widgets.tsx";
@@ -44,7 +44,7 @@ function TagRow(props: {
           })
         : "";
   return (
-    <li class={st === was ? "" : "ml-changed"}>
+    <li class={st === was ? "" : "st-changed"}>
       <label>
         <input
           type="checkbox"
@@ -58,12 +58,12 @@ function TagRow(props: {
             props.onStage(next === was ? null : next);
           }}
         />
-        <i class="ml-dot" style={{ "--ml-c": tag.color }} aria-hidden="true" />
-        <span class="ml-name">{tag.name}</span>
+        <i class="st-dot" style={{ "--st-c": tag.color }} aria-hidden="true" />
+        <span class="st-name">{tag.name}</span>
         {st === was ? (
-          <span class="ml-muted">{note}</span>
+          <span class="st-muted">{note}</span>
         ) : (
-          <span class={`ml-delta ${st === "all" ? "ml-plus" : "ml-minus"}`}>
+          <span class={`st-delta ${st === "all" ? "st-plus" : "st-minus"}`}>
             {t(st === "all" ? "sel.add" : "sel.remove")}
           </span>
         )}
@@ -87,11 +87,11 @@ function Body(props: {
   const add = vals.filter((v) => v === "all").length;
   const remove = vals.filter((v) => v === "none").length;
   return (
-    <section class="ml-pop ml-tagpop" role="region" aria-label={title}>
+    <section class="st-pop st-tagpop" role="region" aria-label={title}>
       <header>
         <strong>{title}</strong>
       </header>
-      <ul class="ml-checklist">
+      <ul class="st-checklist">
         {state.data.library.tags.map((tag) => (
           <TagRow
             key={tag.id}
@@ -103,17 +103,17 @@ function Body(props: {
         ))}
       </ul>
       <footer>
-        <span class="ml-muted">
+        <span class="st-muted">
           {add || remove
             ? t("sel.pending", { add: String(add), remove: String(remove) })
             : t("sel.cycleHint")}
         </span>
-        <button type="button" class="ml-small-btn" onClick={props.onCancel}>
+        <button type="button" class="st-small-btn" onClick={props.onCancel}>
           {t("about.cancel")}
         </button>
         <button
           type="button"
-          class="ml-small-btn bright"
+          class="st-small-btn bright"
           onClick={props.onApply}
         >
           {t("sel.apply")}
@@ -146,7 +146,7 @@ export function TagsPop(props: { readonly ids: readonly string[] }) {
     d.close(true);
   };
   return (
-    <span class="mls-popwrap" ref={d.wrap} onFocusOut={d.onFocusOut}>
+    <span class="sts-popwrap" ref={d.wrap} onFocusOut={d.onFocusOut}>
       <button
         type="button"
         ref={d.trigger}

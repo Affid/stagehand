@@ -13,8 +13,8 @@ describe("the build label", () => {
   });
 
   test("a release build is not a dev build", async () => {
-    vi.stubGlobal("__ML_DEV__", false);
-    vi.stubGlobal("__ML_BUILD__", "0.2.0 · abc1234 · 2026-11-06 17:00");
+    vi.stubGlobal("__ST_DEV__", false);
+    vi.stubGlobal("__ST_BUILD__", "0.2.0 · abc1234 · 2026-11-06 17:00");
     vi.resetModules();
     const info = await import("../src/build-info.ts");
     expect(info.IS_DEV_BUILD).toBe(false);

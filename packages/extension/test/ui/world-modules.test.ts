@@ -1,4 +1,4 @@
-import type { Command, Snapshot } from "@module-library/shared/world";
+import type { Command, Snapshot } from "@stagehand/shared/world";
 import { describe, expect, test } from "vitest";
 import type { SetupState } from "../../src/messages.ts";
 import { flipModule, worldModules } from "../../src/ui/model/world-modules.ts";

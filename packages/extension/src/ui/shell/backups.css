@@ -2,20 +2,20 @@
    prototype (design/setup-page/src/_calm.css). Appended to setup-ui.css. */
 
 /* The Backups tab */
-.mls-shell .mlw-backups {
+.sts-shell .stw-backups {
   display: grid;
   gap: 12px;
   align-content: start;
   padding: 4px 2px 16px;
 }
 
-.mls-shell .mlw-backups .hint {
+.sts-shell .stw-backups .hint {
   margin: 0;
   color: var(--color-text-subtle);
   font-size: 12px;
 }
 
-.mls-shell .mlw-backups .hint .ml-link {
+.sts-shell .stw-backups .hint .st-link {
   display: inline;
   width: auto;
   height: auto;
@@ -23,7 +23,7 @@
   font-size: inherit;
 }
 
-.mls-shell .mlw-nudge {
+.sts-shell .stw-nudge {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -35,27 +35,27 @@
   font-size: 13px;
 }
 
-.mls-shell .mlw-nudge > i {
+.sts-shell .stw-nudge > i {
   color: var(--color-warm-1);
   font-size: 16px;
 }
 
-.mls-shell .mlw-nudge > span:not(.nodel) {
+.sts-shell .stw-nudge > span:not(.nodel) {
   flex: 1;
 }
 
-.mls-shell .mlw-nudge.done {
+.sts-shell .stw-nudge.done {
   border-color: rgb(63 143 82 / 60%);
   background: rgb(63 143 82 / 10%);
   color: #d5eedb;
 }
 
-.mls-shell .mlw-nudge.done > i {
+.sts-shell .stw-nudge.done > i {
   color: #8fd49b;
 }
 
-.mls-shell .mlw-nudge button,
-.mls-shell .mlw-bhead button {
+.sts-shell .stw-nudge button,
+.sts-shell .stw-bhead button {
   height: 30px;
   width: auto;
   flex: none;
@@ -64,11 +64,11 @@
   font-size: 13px;
 }
 
-.mls-shell .mlw-nudge button[disabled] {
+.sts-shell .stw-nudge button[disabled] {
   opacity: 0.5;
 }
 
-.mls-shell .mlw-bhead {
+.sts-shell .stw-bhead {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -77,22 +77,22 @@
   font-size: 13.5px;
 }
 
-.mls-shell .mlw-bhead .ml-spacer {
+.sts-shell .stw-bhead .st-spacer {
   flex: 1;
 }
 
-.mls-shell .mlw-bhead.sel {
+.sts-shell .stw-bhead.sel {
   padding: 4px 8px;
   border: 1px solid rgb(180 82 63 / 55%);
   border-radius: 4px;
   background: rgb(180 82 63 / 8%);
 }
 
-.mls-shell .mlw-bhead.sel > i {
+.sts-shell .stw-bhead.sel > i {
   color: #e39a8c;
 }
 
-.mls-shell .mlw-blist {
+.sts-shell .stw-blist {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -100,7 +100,7 @@
   gap: 6px;
 }
 
-.mls-shell .mlw-blist li {
+.sts-shell .stw-blist li {
   display: grid;
   grid-template-columns: 22px minmax(0, 1fr) 90px 80px 96px 30px;
   align-items: center;
@@ -111,31 +111,31 @@
   background: rgb(11 10 19 / 55%);
 }
 
-.mls-shell .mlw-blist li.latest {
+.sts-shell .stw-blist li.latest {
   border-color: rgb(63 143 82 / 55%);
 }
 
-.mls-shell .mlw-blist li.picked {
+.sts-shell .stw-blist li.picked {
   border-color: rgb(180 82 63 / 60%);
   background: rgb(180 82 63 / 10%);
 }
 
-.mls-shell .mlw-blist li > i {
+.sts-shell .stw-blist li > i {
   color: var(--color-light-4);
   text-align: center;
 }
 
-.mls-shell .mlw-blist li > input[type="checkbox"],
-.mls-shell .mlw-blist li > .nodel input {
+.sts-shell .stw-blist li > input[type="checkbox"],
+.sts-shell .stw-blist li > .nodel input {
   margin: 0 auto;
 }
 
-.mls-shell .mlw-blist .nm {
+.sts-shell .stw-blist .nm {
   display: grid;
   min-width: 0;
 }
 
-.mls-shell .mlw-blist .nm strong {
+.sts-shell .stw-blist .nm strong {
   color: var(--color-light-1);
   font-size: 14px;
   white-space: nowrap;
@@ -143,35 +143,35 @@
   text-overflow: ellipsis;
 }
 
-.mls-shell .mlw-blist .nm span {
+.sts-shell .stw-blist .nm span {
   color: var(--color-text-subtle);
   font-size: 12.5px;
 }
 
-.mls-shell .mlw-blist .core {
+.sts-shell .stw-blist .core {
   font-size: 12px;
   color: var(--color-light-3);
   white-space: nowrap;
   cursor: help;
 }
 
-.mls-shell .mlw-blist .core.warn {
+.sts-shell .stw-blist .core.warn {
   color: #f5c45e;
 }
 
-.mls-shell .mlw-blist .core i {
+.sts-shell .stw-blist .core i {
   font-size: 10px;
   margin-right: 2px;
 }
 
-.mls-shell .mlw-blist .sz {
+.sts-shell .stw-blist .sz {
   font-size: 12.5px;
   color: var(--color-light-3);
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-.mls-shell .mlw-blist button {
+.sts-shell .stw-blist button {
   height: 28px;
   width: auto;
   flex: none;
@@ -179,57 +179,57 @@
   font-size: 13px;
 }
 
-.mls-shell .mlw-blist button.icon {
+.sts-shell .stw-blist button.icon {
   width: 30px;
   padding: 0;
   color: var(--color-light-4);
 }
 
-.mls-shell .mlw-blist button.icon:hover {
+.sts-shell .stw-blist button.icon:hover {
   color: #ffb3a6;
 }
 
-.mls-shell .mlw-blist button[disabled] {
+.sts-shell .stw-blist button[disabled] {
   opacity: 0.4;
   cursor: not-allowed;
 }
 
-.mls-shell .mlw-blist button.icon[disabled] {
+.sts-shell .stw-blist button.icon[disabled] {
   opacity: 0.35;
 }
 
 /* Disabled buttons get no hover: the reason sits on this wrapper. */
-.mls-shell .nodel {
+.sts-shell .nodel {
   display: inline-flex;
 }
 
-.mls-shell .nodel[title] {
+.sts-shell .nodel[title] {
   cursor: help;
 }
 
-.mls-shell .nodel > button[disabled],
-.mls-shell .nodel > input[disabled] {
+.sts-shell .nodel > button[disabled],
+.sts-shell .nodel > input[disabled] {
   pointer-events: none;
 }
 
-.mls-shell .mlw-blist li.busy {
+.sts-shell .stw-blist li.busy {
   border-color: rgb(238 155 58 / 55%);
   background: rgb(238 155 58 / 8%);
   grid-template-columns: 22px minmax(0, 1fr) 200px 70px;
 }
 
-.mls-shell .mlw-blist li.busy > i {
+.sts-shell .stw-blist li.busy > i {
   color: var(--color-warm-1);
 }
 
-.mls-shell .mlw-blist li.busy .bar {
+.sts-shell .stw-blist li.busy .bar {
   height: 6px;
   border-radius: 3px;
   background: rgb(255 255 255 / 10%);
   overflow: hidden;
 }
 
-.mls-shell .mlw-blist li.busy .bar span {
+.sts-shell .stw-blist li.busy .bar span {
   display: block;
   height: 100%;
   background: var(--color-warm-1);
@@ -237,14 +237,14 @@
 }
 
 /* The server Backups page */
-.mls-shell .mlb-page {
+.sts-shell .stb-page {
   display: flex;
   flex-direction: column;
   gap: 10px;
   min-height: 0;
 }
 
-.mls-shell .mlb-page .mlb-head button {
+.sts-shell .stb-page .stb-head button {
   height: 34px;
   width: auto;
   flex: none;
@@ -253,7 +253,7 @@
   font-size: 13.5px;
 }
 
-.mls-shell .mlb-scroll {
+.sts-shell .stb-scroll {
   flex: 1;
   min-height: 0;
   overflow: auto;
@@ -263,13 +263,13 @@
   padding-bottom: 16px;
 }
 
-.mls-shell .mlb-page .mls-subtabs .c {
+.sts-shell .stb-page .sts-subtabs .c {
   color: var(--color-light-4);
   font-size: 12px;
 }
 
 /* A snapshot under way, in place of Create a snapshot */
-.mls-shell .mlb-job {
+.sts-shell .stb-job {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto 220px 44px;
   gap: 14px;
@@ -282,17 +282,17 @@
   cursor: help;
 }
 
-.mls-shell .mlb-job .t {
+.sts-shell .stb-job .t {
   display: grid;
   gap: 2px;
   min-width: 0;
 }
 
-.mls-shell .mlb-job .t strong {
+.sts-shell .stb-job .t strong {
   color: var(--color-light-1);
 }
 
-.mls-shell .mlb-job .t span {
+.sts-shell .stb-job .t span {
   font-size: 12.5px;
   color: var(--color-text-subtle);
   white-space: nowrap;
@@ -300,7 +300,7 @@
   text-overflow: ellipsis;
 }
 
-.mls-shell .mlb-job ol {
+.sts-shell .stb-job ol {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -310,84 +310,84 @@
   color: var(--color-light-4);
 }
 
-.mls-shell .mlb-job ol li {
+.sts-shell .stb-job ol li {
   display: inline-flex;
   gap: 5px;
   align-items: center;
 }
 
-.mls-shell .mlb-job ol li.done {
+.sts-shell .stb-job ol li.done {
   color: #8fd49b;
 }
 
-.mls-shell .mlb-job ol li.now {
+.sts-shell .stb-job ol li.now {
   color: var(--color-light-1);
 }
 
-.mls-shell .mlb-job ol li .fa-circle {
+.sts-shell .stb-job ol li .fa-circle {
   font-size: 6px;
 }
 
-.mls-shell .mlb-job .bar {
+.sts-shell .stb-job .bar {
   height: 6px;
   border-radius: 3px;
   background: rgb(255 255 255 / 10%);
   overflow: hidden;
 }
 
-.mls-shell .mlb-job .bar span {
+.sts-shell .stb-job .bar span {
   display: block;
   height: 100%;
   background: var(--color-warm-1);
   transition: width 0.2s;
 }
 
-.mls-shell .mlb-job .pct {
+.sts-shell .stb-job .pct {
   font-size: 12.5px;
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
 /* Snapshots */
-.mls-shell .mlb-snaps li {
+.sts-shell .stb-snaps li {
   grid-template-columns: 22px minmax(0, 1fr) 90px 80px 96px 30px;
 }
 
-.mls-shell .mlw-blist .core.bad,
-.mls-shell .mlb-pkg .core.bad {
+.sts-shell .stw-blist .core.bad,
+.sts-shell .stb-pkg .core.bad {
   color: #ff9c8f;
 }
 
 /* Worlds, Modules and Systems */
-.mls-shell .mlb-tools {
+.sts-shell .stb-tools {
   display: flex;
   align-items: center;
   gap: 8px;
   flex: none;
 }
 
-.mls-shell .mlb-tools input[type="search"] {
+.sts-shell .stb-tools input[type="search"] {
   width: 240px;
   height: 28px;
 }
 
-.mls-shell .mlb-tools select {
+.sts-shell .stb-tools select {
   height: 28px;
   width: auto;
 }
 
-.mls-shell .mlb-tools .ml-label,
-.mls-shell .mlb-tools .ml-muted {
+.sts-shell .stb-tools .st-label,
+.sts-shell .stb-tools .st-muted {
   font-size: 12.5px;
   color: var(--color-text-subtle);
 }
 
-.mls-shell .mlb-none {
+.sts-shell .stb-none {
   padding: 12px 2px;
   margin: 0;
 }
 
-.mls-shell .mlb-pkgs {
+.sts-shell .stb-pkgs {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -395,17 +395,17 @@
   gap: 6px;
 }
 
-.mls-shell .mlb-pkg {
+.sts-shell .stb-pkg {
   border: 1px solid var(--color-cool-4);
   border-radius: 4px;
   background: rgb(11 10 19 / 55%);
 }
 
-.mls-shell .mlb-pkg.open {
+.sts-shell .stb-pkg.open {
   border-color: var(--color-cool-3);
 }
 
-.mls-shell .mlb-pkg .row {
+.sts-shell .stb-pkg .row {
   display: grid;
   grid-template-columns: 26px minmax(0, 1fr) 150px 80px 128px;
   gap: 12px;
@@ -413,7 +413,7 @@
   padding: 8px 10px 8px 6px;
 }
 
-.mls-shell .mlb-pkg .row .tog {
+.sts-shell .stb-pkg .row .tog {
   width: 26px;
   height: 26px;
   padding: 0;
@@ -424,13 +424,13 @@
   color: var(--color-light-3);
 }
 
-.mls-shell .mlb-pkg .nm {
+.sts-shell .stb-pkg .nm {
   display: grid;
   min-width: 0;
   cursor: pointer;
 }
 
-.mls-shell .mlb-pkg .nm strong {
+.sts-shell .stb-pkg .nm strong {
   color: var(--color-light-1);
   font-size: 14px;
   white-space: nowrap;
@@ -438,34 +438,34 @@
   text-overflow: ellipsis;
 }
 
-.mls-shell .mlb-pkg .nm span {
+.sts-shell .stb-pkg .nm span {
   color: var(--color-text-subtle);
   font-size: 12.5px;
 }
 
-.mls-shell .mlb-pkg .core {
+.sts-shell .stb-pkg .core {
   font-size: 12px;
   color: var(--color-light-3);
   white-space: nowrap;
 }
 
-.mls-shell .mlb-pkg .core.warn {
+.sts-shell .stb-pkg .core.warn {
   color: #f5c45e;
 }
 
-.mls-shell .mlb-pkg .core i {
+.sts-shell .stb-pkg .core i {
   font-size: 10px;
   margin-right: 2px;
 }
 
-.mls-shell .mlb-pkg .sz {
+.sts-shell .stb-pkg .sz {
   font-size: 12.5px;
   color: var(--color-light-3);
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-.mls-shell .mlb-pkg .row button:not(.tog) {
+.sts-shell .stb-pkg .row button:not(.tog) {
   height: 28px;
   width: auto;
   flex: none;
@@ -473,11 +473,11 @@
   font-size: 13px;
 }
 
-.mls-shell .mlb-pkg button[disabled] {
+.sts-shell .stb-pkg button[disabled] {
   opacity: 0.45;
 }
 
-.mls-shell .mlb-inner {
+.sts-shell .stb-inner {
   list-style: none;
   margin: 0 10px 8px 38px;
   padding: 0;
@@ -485,7 +485,7 @@
   gap: 4px;
 }
 
-.mls-shell .mlb-inner li {
+.sts-shell .stb-inner li {
   display: grid;
   grid-template-columns: 18px minmax(0, 1fr) 90px 80px 96px 30px;
   gap: 12px;
@@ -495,23 +495,23 @@
   background: rgb(255 255 255 / 3%);
 }
 
-.mls-shell .mlb-inner li > i {
+.sts-shell .stb-inner li > i {
   color: var(--color-light-4);
   text-align: center;
   font-size: 12px;
 }
 
-.mls-shell .mlb-inner .nm strong {
+.sts-shell .stb-inner .nm strong {
   font-size: 13px;
 }
 
-.mls-shell .mlb-inner .core {
+.sts-shell .stb-inner .core {
   font-size: 12px;
   color: var(--color-light-3);
   white-space: nowrap;
 }
 
-.mls-shell .mlb-inner button {
+.sts-shell .stb-inner button {
   height: 26px;
   width: auto;
   flex: none;
@@ -519,13 +519,13 @@
   font-size: 12.5px;
 }
 
-.mls-shell .mlb-inner button.icon {
+.sts-shell .stb-inner button.icon {
   width: 28px;
   padding: 0;
   color: var(--color-light-4);
 }
 
-.mls-shell .mlb-open {
+.sts-shell .stb-open {
   display: inline-block;
   width: auto;
   height: auto;
@@ -537,53 +537,53 @@
   text-decoration-color: var(--color-light-5);
 }
 
-.mls-shell .mlb-open:hover {
+.sts-shell .stb-open:hover {
   color: var(--color-warm-1);
 }
 
 /* "Create a snapshot", our dialog (prototype _server.css). */
-.mls-shell .mlb-snapdialog {
+.sts-shell .stb-snapdialog {
   display: grid;
   gap: 12px;
   max-width: 480px;
 }
 
-.mls-shell .mlb-snapdialog p {
+.sts-shell .stb-snapdialog p {
   margin: 0;
 }
 
-.mls-shell .mlb-facts {
+.sts-shell .stb-facts {
   display: grid;
   gap: 6px;
   font-size: 13px;
   color: var(--color-light-2);
 }
 
-.mls-shell .mlb-facts i {
+.sts-shell .stb-facts i {
   width: 20px;
   color: var(--color-light-4);
 }
 
-.mls-shell .mlb-facts .ml-muted {
+.sts-shell .stb-facts .st-muted {
   font-size: 12px;
 }
 
-.mls-shell .mlb-note {
+.sts-shell .stb-note {
   display: grid;
   grid-template-columns: 50px 1fr;
   gap: 8px;
   align-items: center;
 }
 
-.mls-shell .mlb-note span {
+.sts-shell .stb-note span {
   color: var(--color-text-subtle);
   font-size: 13px;
 }
 
-.mls-shell .mlb-note input {
+.sts-shell .stb-note input {
   height: 30px;
 }
 
-.mls-shell .mlb-facts .mlb-short {
+.sts-shell .stb-facts .stb-short {
   color: #f5c45e;
 }

@@ -1,6 +1,6 @@
 // A world's column: its art and name (open its page), its menu, how many
 // modules are on, what is queued, and a mark when something needs attention.
-import type { WorldInfo } from "@module-library/shared/world";
+import type { WorldInfo } from "@stagehand/shared/world";
 import { Icon } from "../../../common/widgets.tsx";
 import { useUi } from "../../../context.ts";
 import { plural } from "../../../i18n.ts";

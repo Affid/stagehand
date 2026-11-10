@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { makeEnvelope } from "@module-library/shared/protocol";
+import { makeEnvelope } from "@stagehand/shared/protocol";
 import { describe, expect, test, vi } from "vitest";
 import { windowChannel } from "../../src/page-channel.ts";
 import { createPageBridge } from "../../src/ui/page.ts";

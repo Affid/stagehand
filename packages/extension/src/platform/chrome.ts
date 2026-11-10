@@ -1,6 +1,6 @@
 // Chrome/Firefox extension APIs behind the background's interfaces.
 // Thin glue, exercised by the end-to-end suite (pnpm test:foundry).
-import { logError } from "@module-library/shared/log";
+import { logError } from "@stagehand/shared/log";
 import type { KeyValue } from "../background/kv.ts";
 import type { ScriptingPlatform } from "../background/registration.ts";
 

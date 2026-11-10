@@ -2,28 +2,28 @@
    (Android plan, phase 3, package 2; phone.css has the frame). */
 
 /* ---------- Sheets: details, Tags, Presets, New modules, a system ---------- */
-@keyframes mlp-up {
+@keyframes stp-up {
   from {
     transform: translateY(40px);
     opacity: 0.4;
   }
 }
 
-@keyframes mlp-in {
+@keyframes stp-in {
   from {
     transform: translateX(24px);
     opacity: 0.4;
   }
 }
 
-.mls-shell.mlp .mlp-scrim {
+.sts-shell.stp .stp-scrim {
   position: fixed;
   inset: 0;
   z-index: 115;
   background: rgb(0 0 0 / 55%);
 }
 
-.mls-shell.mlp .mlp-sheet {
+.sts-shell.stp .stp-sheet {
   position: fixed;
   z-index: 120;
   left: 0;
@@ -32,18 +32,18 @@
   height: 88%;
   display: flex;
   flex-direction: column;
-  background: var(--mlp-sheet);
+  background: var(--stp-sheet);
   border: 1px solid var(--color-cool-3);
   border-bottom: 0;
   border-radius: 14px 14px 0 0;
   box-shadow: 0 -10px 30px rgb(0 0 0 / 60%);
   padding-bottom: env(safe-area-inset-bottom, 0px);
-  animation: mlp-up 0.18s ease-out;
+  animation: stp-up 0.18s ease-out;
   transition: transform 0.18s ease-out;
   outline: none;
 }
 
-.mls-shell.mlp .mlp-sheet > .mls-panel {
+.sts-shell.stp .stp-sheet > .sts-panel {
   position: relative;
   z-index: auto;
   flex: 1;
@@ -60,7 +60,7 @@
 }
 
 /* The panel's name and Close make the sheet's bar; its top drags it. */
-.mls-shell.mlp .mlp-sheet > .mls-panel > h2.divider {
+.sts-shell.stp .stp-sheet > .sts-panel > h2.divider {
   display: block;
   margin: 0;
   padding: 18px 60px 10px 16px;
@@ -71,22 +71,22 @@
   cursor: grab;
 }
 
-.mls-shell.mlp .mlp-sheet > .mls-panel > h2.divider::before,
-.mls-shell.mlp .mlp-sheet > .mls-panel > h2.divider::after {
+.sts-shell.stp .stp-sheet > .sts-panel > h2.divider::before,
+.sts-shell.stp .stp-sheet > .sts-panel > h2.divider::after {
   display: none;
 }
 
-.mls-shell.mlp .mlp-sheet > .mls-panel > .mls-close {
+.sts-shell.stp .stp-sheet > .sts-panel > .sts-close {
   top: 8px;
   right: 8px;
-  width: var(--mlp-tap);
-  height: var(--mlp-tap);
+  width: var(--stp-tap);
+  height: var(--stp-tap);
   font-size: 18px;
   border-color: transparent;
   background: transparent;
 }
 
-.mls-shell.mlp .mlp-grab {
+.sts-shell.stp .stp-grab {
   position: absolute;
   z-index: 3;
   top: 0;
@@ -97,7 +97,7 @@
   cursor: grab;
 }
 
-.mls-shell.mlp .mlp-grab::after {
+.sts-shell.stp .stp-grab::after {
   content: "";
   position: absolute;
   top: 6px;
@@ -109,48 +109,48 @@
   background: var(--color-light-5);
 }
 
-.mls-shell.mlp .mlp-sheet .scroll {
+.sts-shell.stp .stp-sheet .scroll {
   padding: 12px 16px 24px;
   font-size: 14px;
 }
 
-.mls-shell.mlp .mlp-sheet .mls-panel footer {
+.sts-shell.stp .stp-sheet .sts-panel footer {
   padding: 10px 12px 14px;
 }
 
-.mls-shell.mlp .mlp-sheet .mls-panel footer button {
-  min-height: var(--mlp-tap);
+.sts-shell.stp .stp-sheet .sts-panel footer button {
+  min-height: var(--stp-tap);
 }
 
 /* The sheet's own scrim, under the menus opened inside it. */
-.mls-shell.mlp .mlp-sheet > .mlp-scrim.pop {
+.sts-shell.stp .stp-sheet > .stp-scrim.pop {
   position: absolute;
   z-index: 125;
   border-radius: inherit;
 }
 
 /* A tablet: sheets come in from the right, under the top bar. */
-.mls-shell.mlp.mlp-wide .mlp-sheet {
-  top: calc(var(--mlp-bar) + env(safe-area-inset-top, 0px));
+.sts-shell.stp.stp-wide .stp-sheet {
+  top: calc(var(--stp-bar) + env(safe-area-inset-top, 0px));
   left: auto;
   width: min(440px, 60vw);
   height: auto;
   border-radius: 0;
   border-bottom: 1px solid var(--color-cool-3);
-  animation-name: mlp-in;
+  animation-name: stp-in;
 }
 
-.mls-shell.mlp.mlp-wide .mlp-sheet > .mls-panel > h2.divider {
+.sts-shell.stp.stp-wide .stp-sheet > .sts-panel > h2.divider {
   padding-top: 12px;
   cursor: default;
 }
 
 /* ---------- Menus and popovers: from the bottom, over a scrim ---------- */
-.mls-shell.mlp > .mlp-scrim.pop {
+.sts-shell.stp > .stp-scrim.pop {
   z-index: 125;
 }
 
-.mls-shell.mlp :is(.ml-pop, .mlh-menu, .mlw-addmenu) {
+.sts-shell.stp :is(.st-pop, .sth-menu, .stw-addmenu) {
   position: fixed;
   z-index: 130;
   left: 0;
@@ -165,79 +165,79 @@
   margin: 0;
   padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
   border-radius: 14px 14px 0 0;
-  animation: mlp-up 0.16s ease-out;
+  animation: stp-up 0.16s ease-out;
 }
 
 /* A menu inside a sticky cell (the By world grid's column menus): the cell
    is a layer of its own, so it rises above the scrim while its menu is open
    (review). */
-.mls-shell.mlp .mll-grid th:has(:is(.ml-pop, .mlh-menu)) {
+.sts-shell.stp .stl-grid th:has(:is(.st-pop, .sth-menu)) {
   z-index: 130;
 }
 
 /* Inside a panel, Library popovers are placed right-aligned: the full width
    here (review). */
-.mls-shell.mlp .mls-panel .mls-popwrap > .ml-pop {
+.sts-shell.stp .sts-panel .sts-popwrap > .st-pop {
   left: 0;
   right: 0;
 }
 
-.mls-shell.mlp .ml-pop header {
+.sts-shell.stp .st-pop header {
   padding: 14px 16px 10px;
 }
 
-.mls-shell.mlp :is(.ml-pop, .mlh-menu, .mlw-addmenu) :is(button, a[href]) {
+.sts-shell.stp :is(.st-pop, .sth-menu, .stw-addmenu) :is(button, a[href]) {
   min-height: 48px;
   font-size: 15px;
 }
 
-.mls-shell.mlp
-  :is(.ml-pop, .mlh-menu, .mlw-addmenu)
+.sts-shell.stp
+  :is(.st-pop, .sth-menu, .stw-addmenu)
   :is(select, input:not([type="checkbox"], [type="radio"], [type="color"])) {
-  min-height: var(--mlp-tap);
+  min-height: var(--stp-tap);
   font-size: 15px;
 }
 
-.mls-shell.mlp .ml-pop ul.mls-pick {
+.sts-shell.stp .st-pop ul.sts-pick {
   max-height: none;
 }
 
 /* ---------- Dialogs: full width, from the bottom ---------- */
-body:has(.mls-shell.mlp) .ml-backdrop {
+body:has(.sts-shell.stp) .st-backdrop {
   align-items: flex-end;
 }
 
-body:has(.mls-shell.mlp) .ml-modal {
+body:has(.sts-shell.stp) .st-modal {
   width: 100%;
   max-height: 92%;
   border-bottom: 0;
   border-radius: 14px 14px 0 0;
   padding-bottom: env(safe-area-inset-bottom, 0px);
-  animation: mlp-up 0.18s ease-out;
+  animation: stp-up 0.18s ease-out;
 }
 
-body:has(.mls-shell.mlp.mlp-wide) .ml-modal {
+body:has(.sts-shell.stp.stp-wide) .st-modal {
   width: min(42rem, 92vw);
 }
 
-body:has(.mls-shell.mlp) .ml-modal-footer {
+body:has(.sts-shell.stp) .st-modal-footer {
   flex-wrap: wrap;
   padding: 10px 12px 14px;
 }
 
-body:has(.mls-shell.mlp) .ml-modal-footer button {
-  min-height: var(--mlp-tap, 44px);
+body:has(.sts-shell.stp) .st-modal-footer button {
+  min-height: var(--stp-tap, 44px);
   flex: 1 1 40%;
   font-size: 14px;
 }
 
-body:has(.mls-shell.mlp) .ml-modal-header button {
+body:has(.sts-shell.stp) .st-modal-header button {
   width: 44px;
   height: 44px;
 }
 
 /* ---------- Notices: under the top bar, the width of the screen ---------- */
-body:has(.mls-shell.mlp) #notifications {
+body:has(.sts-shell.stp) #notifications {
   top: calc(64px + env(safe-area-inset-top, 0px));
   left: 12px;
   right: 12px;
@@ -249,22 +249,22 @@ body:has(.mls-shell.mlp) #notifications {
 
 /* ---------- Touch: controls a desktop shows on hover, at a finger's size ---------- */
 @media (hover: none) {
-  .mls-shell.mlp .mlw-gmenu .ml-hbtn {
-    width: var(--mlp-tap);
-    height: var(--mlp-tap);
+  .sts-shell.stp .stw-gmenu .st-hbtn {
+    width: var(--stp-tap);
+    height: var(--stp-tap);
     font-size: 15px;
     opacity: 1;
   }
 
-  .mls-shell.mlp .ml-icon,
-  .mls-shell.mlp button.icon {
+  .sts-shell.stp .st-icon,
+  .sts-shell.stp button.icon {
     min-width: 40px;
     min-height: 40px;
   }
 }
 
 /* ---------- A tooltip shown by a tap or a long press (TouchTip.tsx) ---------- */
-.mls-shell.mlp .mlp-tip {
+.sts-shell.stp .stp-tip {
   position: fixed;
   z-index: 140;
   left: 12px;
@@ -283,35 +283,35 @@ body:has(.mls-shell.mlp) #notifications {
   pointer-events: none;
 }
 
-.mls-shell.mlp .mlp-tip.above {
+.sts-shell.stp .stp-tip.above {
   transform: translateY(-100%);
 }
 
 /* ---------- Switches at a finger's size (mockup: 40 × 24) ---------- */
-.mls-shell.mlp .mls-switch {
+.sts-shell.stp .sts-switch {
   width: 40px;
   height: 24px;
   border-radius: 12px;
 }
 
-.mls-shell.mlp .mls-switch::after {
+.sts-shell.stp .sts-switch::after {
   top: 3px;
   left: 3px;
   width: 18px;
   height: 18px;
 }
 
-.mls-shell.mlp .mls-switch:checked::after {
+.sts-shell.stp .sts-switch:checked::after {
   left: 19px;
 }
 
 /* The launch review on a phone: one column; its main button first, the
-   width of the screen (mockup: .mls-dialog footer .bright). */
-body:has(.mls-shell.mlp) .ml-modal .mlw-lr-cols {
+   width of the screen (mockup: .sts-dialog footer .bright). */
+body:has(.sts-shell.stp) .st-modal .stw-lr-cols {
   grid-template-columns: minmax(0, 1fr);
 }
 
-body:has(.mls-shell.mlp) .ml-modal-footer button.ml-primary {
+body:has(.sts-shell.stp) .st-modal-footer button.st-primary {
   flex-basis: 100%;
   order: -1;
 }

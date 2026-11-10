@@ -26,20 +26,20 @@ export const APP_ORIGIN = "https://appassets.androidplatform.net";
 /** RouterDeps.extensionUrl: messages from pages under it are the app's own. */
 export const APP_URL = `${APP_ORIGIN}/`;
 /** RouterDeps.extensionId; native attaches it to every message it relays. */
-export const APP_ID = "module-library-app";
+export const APP_ID = "stagehand-app";
 export const BACKGROUND_PAGE = `${APP_URL}background.html`;
 export const HOME_PAGE = `${APP_URL}home.html`;
 
 /** The name WebView gives the bridge object (`addWebMessageListener`). */
-export const BRIDGE_NAME = "mlApp";
+export const BRIDGE_NAME = "stApp";
 
 /**
  * A page script as native adds it for one server: wrapped in a function
- * whose parameter ML_APP_SERVER is the server's address, so the script
+ * whose parameter ST_APP_SERVER is the server's address, so the script
  * knows the route prefix and its own names stay out of the page.
  */
 export function wrapForServer(script: string, server: string): string {
-  return `(function (ML_APP_SERVER) {\n${script}\n})(${JSON.stringify(server)});\n`;
+  return `(function (ST_APP_SERVER) {\n${script}\n})(${JSON.stringify(server)});\n`;
 }
 
 /**

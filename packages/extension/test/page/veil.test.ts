@@ -36,7 +36,7 @@ describe("the veil", () => {
   test("once the new page is on, the timer leaves it alone", () => {
     const later: (() => void)[] = [];
     startVeil(document, (fn) => later.push(fn));
-    document.body.classList.add("ml-shell-on");
+    document.body.classList.add("st-shell-on");
     later.forEach((fn) => {
       fn();
     });

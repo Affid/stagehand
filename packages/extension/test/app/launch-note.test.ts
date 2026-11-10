@@ -28,10 +28,10 @@ describe("the launch note", () => {
     expect(
       readLaunchNote(sessionStorage, "strahd", 1_000 + 31 * 60_000),
     ).toBeUndefined();
-    sessionStorage.setItem("ml-launch", "{broken");
+    sessionStorage.setItem("st-launch", "{broken");
     expect(readLaunchNote(sessionStorage, "strahd", 2_000)).toBeUndefined();
     sessionStorage.setItem(
-      "ml-launch",
+      "st-launch",
       JSON.stringify({ world: "strahd", changes: -1, at: 1_000 }),
     );
     expect(readLaunchNote(sessionStorage, "strahd", 2_000)).toBeUndefined();

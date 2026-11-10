@@ -14,7 +14,7 @@ function Body(props: { readonly notes: Notes }) {
     <>
       <Intro blocks={notes.intro} />
       {notes.sections.map((s) => (
-        <section key={s.h} class={`mlu-sec ${s.kind}`}>
+        <section key={s.h} class={`stu-sec ${s.kind}`}>
           <h3 class="plain">
             {s.h} <span class="c">{entriesOf(s).length}</span>
           </h3>
@@ -37,7 +37,7 @@ function Failed(props: {
 }) {
   const { t } = useUi();
   return (
-    <div class="mlu-hask">
+    <div class="stu-hask">
       <p>{t("up.hist.failed", { error: props.error || "?" })}</p>
       <button type="button" onClick={props.onRetry}>
         {t("up.hist.again")}
@@ -58,8 +58,8 @@ export function HistoryNotes(props: {
   const count = notes.sections.reduce((n, s) => n + entriesOf(s).length, 0);
   const title = notes.title;
   return (
-    <div class="mlu-hnotes">
-      <div class="mlu-hhead">
+    <div class="stu-hnotes">
+      <div class="stu-hhead">
         <strong>{title || t("up.hist.release", { version: r.version })}</strong>
         <span>
           {r.date}
@@ -81,7 +81,7 @@ export function HistoryNotes(props: {
       ) : state?.kind === "error" ? (
         <Failed error={state.error} onRetry={props.onRetry} />
       ) : (
-        <p class="ml-muted" role="status">
+        <p class="st-muted" role="status">
           {t("up.hist.loading")}
         </p>
       )}

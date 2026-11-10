@@ -1,8 +1,8 @@
 // Phase 0 spike probe (docs/ANDROID-APP-PLAN.md, spike questions). Added by
 // the app at document start for the server's origin; reports to the native
-// side through the `mlApp` bridge object. Throwaway code.
+// side through the `stApp` bridge object. Throwaway code.
 (() => {
-  const bridge = window.mlApp;
+  const bridge = window.stApp;
   const report = (o) => {
     try {
       bridge?.postMessage(
@@ -16,14 +16,14 @@
   // Q2: a veil before the first paint.
   const style = document.createElement("style");
   style.textContent =
-    "html.ml-probe-wait body { visibility: hidden !important; }";
-  document.documentElement.classList.add("ml-probe-wait");
+    "html.st-probe-wait body { visibility: hidden !important; }";
+  document.documentElement.classList.add("st-probe-wait");
   document.documentElement.appendChild(style);
 
   // Q5: keep the bridge, try to take its global name away.
   let deleted;
   try {
-    deleted = delete window.mlApp;
+    deleted = delete window.stApp;
   } catch (e) {
     deleted = `throws: ${String(e)}`;
   }
@@ -34,7 +34,7 @@
     scriptsBefore: document.scripts.length,
     bridge: Boolean(bridge),
     deleted,
-    afterDelete: typeof window.mlApp,
+    afterDelete: typeof window.stApp,
   });
   if (bridge)
     bridge.onmessage = (e) => report({ kind: "reply", data: String(e.data) });
@@ -49,14 +49,14 @@
     }),
   );
   setTimeout(() => {
-    document.documentElement.classList.remove("ml-probe-wait");
+    document.documentElement.classList.remove("st-probe-wait");
     report({ kind: "veil-lifted" });
   }, 1500);
 
   addEventListener("load", () => {
     // Q5: what a later page script sees.
     const s = document.createElement("script");
-    s.textContent = "window.__mlProbeSees = typeof window.mlApp;";
+    s.textContent = "window.__mlProbeSees = typeof window.stApp;";
     document.head.appendChild(s);
     report({
       kind: "page-sees",

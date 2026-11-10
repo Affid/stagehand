@@ -41,7 +41,7 @@ export function Announcer() {
     // Only when the counts change.
   }, [key]);
   return (
-    <p class="ml-sr-only mls-announce" aria-live="polite">
+    <p class="st-sr-only sts-announce" aria-live="polite">
       {said}
     </p>
   );

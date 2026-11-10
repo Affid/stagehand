@@ -51,7 +51,7 @@ export function TabList<K extends string>(props: TabListProps<K>) {
   };
   return (
     <span
-      class={props.class ?? "mls-tablist"}
+      class={props.class ?? "sts-tablist"}
       role="tablist"
       aria-label={props.label}
     >
@@ -83,7 +83,7 @@ export function TabList<K extends string>(props: TabListProps<K>) {
 }
 
 /**
- * The selected tab's panel. It has no box (`.mls-tabpanel` is
+ * The selected tab's panel. It has no box (`.sts-tabpanel` is
  * `display: contents`), so wrapping a tab's content changes no layout; every
  * panel starts with or holds controls, so it needs no Tab stop of its own.
  */
@@ -98,7 +98,7 @@ export function TabPanel(props: {
       role="tabpanel"
       id={panelId(props.id, props.tab)}
       aria-labelledby={tabId(props.id, props.tab)}
-      class={`mls-tabpanel${props.class ? ` ${props.class}` : ""}`}
+      class={`sts-tabpanel${props.class ? ` ${props.class}` : ""}`}
     >
       {props.children}
     </div>

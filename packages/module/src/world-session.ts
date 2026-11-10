@@ -15,7 +15,7 @@ import {
   type StagehandFlags,
   byteSize,
   MAX_QUEUE,
-} from "@module-library/shared/world-flags";
+} from "@stagehand/shared/world-flags";
 import { type ApplyDeps, applyCommands, type Outcome } from "./apply.ts";
 import type { FoundryGame } from "./foundry.ts";
 import type { ServerClock, WorldIo } from "./world-io.ts";

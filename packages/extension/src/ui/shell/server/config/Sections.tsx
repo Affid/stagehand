@@ -9,7 +9,7 @@ export function Startup(props: { readonly c: Config }) {
   const loaded = props.c.loaded;
   if (!loaded) return null;
   return (
-    <section class="mlw-box">
+    <section class="stw-box">
       <h4>
         <span>{t("cfg.startup")}</span>
       </h4>
@@ -53,19 +53,19 @@ function BackupsRow(props: { readonly off: boolean }) {
   return (
     <Row label={t("cfg.backups")} hint={t("cfg.backupsHint")}>
       {props.off ? (
-        <span class="mlc-state warn">
+        <span class="stc-state warn">
           <Icon name="ban" />
           {t("cfg.backupsOff")}
         </span>
       ) : (
         <>
-          <span class="mlc-state ok">
+          <span class="stc-state ok">
             <Icon name="check" />
             {t("cfg.backupsOn")}
           </span>
           <button
             type="button"
-            class="ml-link"
+            class="st-link"
             onClick={() =>
               store.set({ route: { kind: "server", page: "backups" } })
             }
@@ -86,7 +86,7 @@ export function Storage(props: {
   const s = props.c.loaded?.settings;
   if (!s) return null;
   return (
-    <section class="mlw-box">
+    <section class="stw-box">
       <h4>
         <span>{t("cfg.data")}</span>
       </h4>
@@ -114,7 +114,7 @@ export function Storage(props: {
 export function Other(props: { readonly c: Config }) {
   const { t } = useUi();
   return (
-    <section class="mlw-box">
+    <section class="stw-box">
       <h4>
         <span>{t("cfg.other")}</span>
       </h4>

@@ -11,18 +11,18 @@ import { adb, adbWithInput, deviceSerial, sleep } from "./native-ui.ts";
 
 const ROOT = join(import.meta.dirname, "..", "..");
 export const PKG = "io.github.affid.stagehand.debug";
-const ACTIVITY = `${PKG}/dev.modulelibrary.app.MainActivity`;
+const ACTIVITY = `${PKG}/io.github.affid.stagehand.MainActivity`;
 const APK = join(
   ROOT,
   "packages/android/app/build/outputs/apk/debug/app-debug.apk",
 );
 /** Where Windows' adb reads the APK: the same folder seen from WSL and from Windows. */
-const APK_DIR = process.env.ML_APK_DIR ?? "/mnt/c/Users/fagot/ml-apk";
+const APK_DIR = process.env.ST_APK_DIR ?? "/mnt/c/Users/fagot/st-apk";
 const APK_WIN =
-  process.env.ML_APK_WIN ?? "C:\\Users\\fagot\\ml-apk\\app-debug.apk";
+  process.env.ST_APK_WIN ?? "C:\\Users\\fagot\\st-apk\\app-debug.apk";
 
 /** The local Foundry as the device reaches it (the emulator: the host). */
-export const SERVER = process.env.ML_APP_SERVER ?? "http://10.0.2.2:30000";
+export const SERVER = process.env.ST_APP_SERVER ?? "http://10.0.2.2:30000";
 export const HOME = "https://appassets.androidplatform.net/home.html";
 export const SCREENS = join(ROOT, "test-results/screens/android");
 

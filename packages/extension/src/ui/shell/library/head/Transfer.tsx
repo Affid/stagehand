@@ -1,6 +1,6 @@
 // Import and export (the toolbar's last icon): the whole library to a file,
 // a library file back, or a shared preset file as a new preset.
-import { parsePresetImport } from "@module-library/shared/library/transfer";
+import { parsePresetImport } from "@stagehand/shared/library/transfer";
 import { newId } from "../../../actions.ts";
 import { fileStamp } from "../../../common/files.ts";
 import { Icon } from "../../../common/widgets.tsx";

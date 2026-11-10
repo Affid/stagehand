@@ -1,5 +1,5 @@
 // Picks the Setup adapter for a core version (V-2), or safe mode (V-3).
-import type { CoreVersion } from "@module-library/shared/version";
+import type { CoreVersion } from "@stagehand/shared/version";
 import type { Adapter, SetupConfig } from "./config.ts";
 
 export type AdapterChoice =

@@ -129,14 +129,14 @@ describe("useTouchTips", () => {
     touch(flag, "pointerdown");
     touch(flag, "pointerup");
     await vi.waitFor(() => {
-      expect(r.container.querySelector(".mlp-tip")?.textContent).toBe(
+      expect(r.container.querySelector(".stp-tip")?.textContent).toBe(
         "Not tracked",
       );
     });
     expect(r.getByRole("tooltip")).toBeTruthy();
     touch(flag, "pointerdown");
     await vi.waitFor(() => {
-      expect(r.container.querySelector(".mlp-tip")).toBeNull();
+      expect(r.container.querySelector(".stp-tip")).toBeNull();
     });
   });
 
@@ -149,7 +149,7 @@ describe("useTouchTips", () => {
     fireEvent.click(button);
     expect(clicked).toHaveBeenCalledTimes(1);
     await new Promise((res) => setTimeout(res, 10));
-    expect(r.container.querySelector(".mlp-tip")).toBeNull();
+    expect(r.container.querySelector(".stp-tip")).toBeNull();
   });
 
   test("a long press on a button shows its tip, and its click doesn't act", async () => {
@@ -165,7 +165,7 @@ describe("useTouchTips", () => {
     fireEvent.click(button);
     expect(clicked).not.toHaveBeenCalled();
     await vi.waitFor(() => {
-      expect(r.container.querySelector(".mlp-tip")?.textContent).toBe(
+      expect(r.container.querySelector(".stp-tip")?.textContent).toBe(
         "Edit World",
       );
     });
@@ -192,7 +192,7 @@ describe("useTouchTips", () => {
       new PointerEvent("pointerup", { bubbles: true, pointerType: "mouse" }),
     );
     await new Promise((res) => setTimeout(res, 10));
-    expect(r.container.querySelector(".mlp-tip")).toBeNull();
+    expect(r.container.querySelector(".stp-tip")).toBeNull();
   });
 
   test("a tip goes by itself after a few seconds", async () => {
@@ -202,15 +202,15 @@ describe("useTouchTips", () => {
     touch(flag, "pointerdown");
     touch(flag, "pointerup");
     await vi.advanceTimersByTimeAsync(100);
-    expect(r.container.querySelector(".mlp-tip")).not.toBeNull();
+    expect(r.container.querySelector(".stp-tip")).not.toBeNull();
     await vi.advanceTimersByTimeAsync(4100);
-    expect(r.container.querySelector(".mlp-tip")).toBeNull();
+    expect(r.container.querySelector(".stp-tip")).toBeNull();
   });
 });
 
 describe("Sheet", () => {
   const panel = (
-    <aside class="mls-panel" aria-label="ML Fixture">
+    <aside class="sts-panel" aria-label="Stagehand Fixture">
       <h2 class="divider">Module</h2>
       <button type="button">Inside</button>
     </aside>
@@ -227,7 +227,7 @@ describe("Sheet", () => {
     );
     const dialog = r.getByRole("dialog");
     await vi.waitFor(() => {
-      expect(dialog.getAttribute("aria-label")).toBe("ML Fixture");
+      expect(dialog.getAttribute("aria-label")).toBe("Stagehand Fixture");
     });
     expect(document.activeElement).toBe(dialog);
     r.unmount();
@@ -244,7 +244,7 @@ describe("Sheet", () => {
         {panel}
       </Sheet>,
     );
-    fireEvent.click(must(r.container.querySelector(".mlp-scrim")));
+    fireEvent.click(must(r.container.querySelector(".stp-scrim")));
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
@@ -287,7 +287,7 @@ describe("Sheet", () => {
         {panel}
       </Sheet>,
     );
-    expect(r.container.querySelector(".mlp-grab")).toBeNull();
+    expect(r.container.querySelector(".stp-grab")).toBeNull();
     const top = must(r.container.querySelector("h2"));
     drag(top, "pointerdown", 100);
     drag(top, "pointerup", 400);
@@ -297,12 +297,12 @@ describe("Sheet", () => {
 
 function Popups(props: { readonly open: boolean; readonly inSheet: boolean }) {
   const root = useRef<HTMLDivElement>(null);
-  const open = usePopupOpen(root, ".mlp-sheet");
-  const pop = props.open ? <section class="ml-pop">Menu</section> : null;
+  const open = usePopupOpen(root, ".stp-sheet");
+  const pop = props.open ? <section class="st-pop">Menu</section> : null;
   return (
     <div ref={root}>
       <span data-open={String(open)} />
-      {props.inSheet ? <div class="mlp-sheet">{pop}</div> : pop}
+      {props.inSheet ? <div class="stp-sheet">{pop}</div> : pop}
     </div>
   );
 }
@@ -363,17 +363,17 @@ describe("code review fixes", () => {
     const onClose = vi.fn();
     const r = render(
       <Sheet layout="phone" onClose={onClose}>
-        <aside class="mls-panel" aria-label="Tags">
-          <section class="ml-pop">Menu</section>
+        <aside class="sts-panel" aria-label="Tags">
+          <section class="st-pop">Menu</section>
         </aside>
       </Sheet>,
     );
     await vi.waitFor(() => {
       expect(
-        r.container.querySelector(".mlp-sheet > .mlp-scrim.pop"),
+        r.container.querySelector(".stp-sheet > .stp-scrim.pop"),
       ).not.toBeNull();
     });
-    fireEvent.click(must(r.container.querySelector(":scope > .mlp-scrim")));
+    fireEvent.click(must(r.container.querySelector(":scope > .stp-scrim")));
     expect(onClose).not.toHaveBeenCalled();
   });
 

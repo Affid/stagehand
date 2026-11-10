@@ -1,7 +1,7 @@
-import type { WorldCommand } from "@module-library/shared/world";
+import type { WorldCommand } from "@stagehand/shared/world";
 import { describe, expect, test, vi } from "vitest";
-import type { Result } from "@module-library/shared/world-flags";
-import { activeKey } from "@module-library/shared/world-flags";
+import type { Result } from "@stagehand/shared/world-flags";
+import { activeKey } from "@stagehand/shared/world-flags";
 import { type ApplyDeps, applyCommands } from "../src/apply.ts";
 import { diffHtml, escapeHtml } from "../src/dialog.ts";
 import {

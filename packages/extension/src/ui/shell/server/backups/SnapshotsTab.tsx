@@ -138,14 +138,14 @@ function PhoneSelect(props: {
   const n = props.ids.filter((id) => props.picked.has(id)).length;
   return (
     <Docked>
-      <div class="mlp-actbar mlp-bkbar mlp-bksel">
-        <span class="mlp-what" role="status">
+      <div class="stp-actbar stp-bkbar stp-bksel">
+        <span class="stp-what" role="status">
           <strong>
             {n
               ? t("bk.selected", { count: plural(t, "sb.snapCount", n) })
               : t("sb.selectHint")}
           </strong>
-          <span>{t("mlp.toDelete")}</span>
+          <span>{t("stp.toDelete")}</span>
         </span>
         <DeleteSome n={n} off={props.off} onDelete={props.onDelete} />
         <button type="button" onClick={props.onSelect}>
@@ -169,9 +169,9 @@ function Bar(props: {
   if (picked && compact) return <PhoneSelect {...props} picked={picked} />;
   if (!picked)
     return (
-      <div class="mlw-bhead">
-        <span>{t(compact ? "mlp.snapLead" : "sb.lead")}</span>
-        <span class="ml-spacer" />
+      <div class="stw-bhead">
+        <span>{t(compact ? "stp.snapLead" : "sb.lead")}</span>
+        <span class="st-spacer" />
         {props.ids.length > 1 && props.off === null ? (
           <button type="button" onClick={props.onSelect}>
             <Icon name="square-check" />
@@ -182,7 +182,7 @@ function Bar(props: {
     );
   const n = props.ids.filter((id) => picked.has(id)).length;
   return (
-    <div class="mlw-bhead sel">
+    <div class="stw-bhead sel">
       <Icon name="square-check" />
       <span>
         <b>
@@ -191,7 +191,7 @@ function Bar(props: {
             : t("sb.selectHint")}
         </b>
       </span>
-      <span class="ml-spacer" />
+      <span class="st-spacer" />
       <DeleteSome n={n} off={props.off} onDelete={props.onDelete} />
       <button type="button" onClick={props.onSelect}>
         {t("bk.done")}
@@ -226,7 +226,7 @@ export function SnapshotsTab(props: {
   const { snapshots } = props;
   if (!snapshots.length)
     return (
-      <div class="mlw-empty">
+      <div class="stw-empty">
         <Icon name="camera-retro" />
         <h3>{t("sb.noneTitle")}</h3>
         <p>{t("sb.noneText")}</p>
@@ -238,7 +238,7 @@ export function SnapshotsTab(props: {
     props.run("deleteSnapshots", ids);
   };
   return (
-    <div class="mlb-scroll">
+    <div class="stb-scroll">
       <Bar
         ids={snapshots.map((s) => s.id)}
         picked={picked}
@@ -246,7 +246,7 @@ export function SnapshotsTab(props: {
         onSelect={flip}
         onDelete={del}
       />
-      <ol class="mlw-blist mlb-snaps">
+      <ol class="stw-blist stb-snaps">
         {snapshots.map((s) => (
           <SnapRow
             key={s.id}

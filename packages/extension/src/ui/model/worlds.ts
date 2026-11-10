@@ -1,11 +1,7 @@
 // View model for the Game Worlds tab (W-1 to W-3, P-5, P-6): each world's
 // status, its queue and what its next launch will change.
-import type { Plan } from "@module-library/shared/resolver";
-import type {
-  Command,
-  Snapshot,
-  WorldInfo,
-} from "@module-library/shared/world";
+import type { Plan } from "@stagehand/shared/resolver";
+import type { Command, Snapshot, WorldInfo } from "@stagehand/shared/world";
 import type { SetupState } from "../../messages.ts";
 import { pendingFor, previewApply } from "./preview.ts";
 

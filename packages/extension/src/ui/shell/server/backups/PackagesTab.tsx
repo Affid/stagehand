@@ -35,7 +35,7 @@ function Tools(props: {
   const backups = all.reduce((n, p) => n + p.backups.length, 0);
   const label = t(`sb.filter.${type}`);
   return (
-    <div class="ml-row mlb-tools">
+    <div class="st-row stb-tools">
       <input
         type="search"
         value={props.q}
@@ -43,7 +43,7 @@ function Tools(props: {
         aria-label={label}
         onInput={(e) => props.onQ(e.currentTarget.value)}
       />
-      <span class="ml-label">{t("sb.sortBy")}</span>
+      <span class="st-label">{t("sb.sortBy")}</span>
       <select
         aria-label={t("sb.sortBy")}
         value={props.sort}
@@ -55,8 +55,8 @@ function Tools(props: {
           </option>
         ))}
       </select>
-      <span class="ml-spacer" />
-      <span class="ml-muted">
+      <span class="st-spacer" />
+      <span class="st-muted">
         {t("sb.ofPackages", {
           backups: plural(t, "bk.count", backups),
           packages: plural(t, `sb.noun.${type}`, all.length),
@@ -103,8 +103,8 @@ export function PackagesTab(props: {
         onSort={setSort}
       />
       {shown.length ? (
-        <div class="mlb-scroll">
-          <ol class="mlb-pkgs">
+        <div class="stb-scroll">
+          <ol class="stb-pkgs">
             {shown.map((p) => (
               <PackageRow
                 key={p.id}
@@ -118,7 +118,7 @@ export function PackagesTab(props: {
           </ol>
         </div>
       ) : (
-        <p class="ml-muted mlb-none">
+        <p class="st-muted stb-none">
           {t(text ? `sb.noMatch.${props.type}` : `sb.noneOf.${props.type}`)}
         </p>
       )}

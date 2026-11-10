@@ -1,7 +1,7 @@
 // The About tab's right column, as the prototype: Background (Foundry's
 // file picker), Maintenance (data, safe mode, reset passwords, lock) and the
 // Danger zone (Foundry's own delete dialog).
-import type { WorldInfo } from "@module-library/shared/world";
+import type { WorldInfo } from "@stagehand/shared/world";
 import { useState } from "preact/hooks";
 import type { BackupInfo } from "../../../../page-backups.ts";
 import { Icon } from "../../../common/widgets.tsx";
@@ -25,7 +25,7 @@ function Why(props: {
   readonly children: preact.ComponentChildren;
 }) {
   return props.why ? (
-    <span class="mlw-tipwrap" title={props.why}>
+    <span class="stw-tipwrap" title={props.why}>
       {props.children}
     </span>
   ) : (
@@ -37,13 +37,13 @@ export function Background(props: SideProps) {
   const { page, t } = useUi();
   const image = cssImage(props.world.background, location.origin);
   return (
-    <section class="mlw-box">
+    <section class="stw-box">
       <h4>
         <span>{t("about.background")}</span>
         {props.canEdit ? (
           <button
             type="button"
-            class="ml-link"
+            class="st-link"
             aria-label={t("about.changeBackground")}
             onClick={() =>
               page.foundryAction({
@@ -57,9 +57,9 @@ export function Background(props: SideProps) {
         ) : null}
       </h4>
       {image ? (
-        <div class="mlw-bg" style={{ "--img": image }} />
+        <div class="stw-bg" style={{ "--img": image }} />
       ) : (
-        <p class="ml-muted">{t("about.noBackground")}</p>
+        <p class="st-muted">{t("about.noBackground")}</p>
       )}
       <p class="hint">{t("about.backgroundHint")}</p>
     </section>
@@ -171,7 +171,7 @@ function Switch(props: {
         <input
           type="checkbox"
           role="switch"
-          class="mls-switch"
+          class="sts-switch"
           aria-label={props.label}
           checked={props.on}
           disabled={props.disabled}
@@ -192,11 +192,11 @@ export function Maintenance(props: SideProps) {
   const locked = world.locked === true;
   const safe = world.safeMode === true;
   return (
-    <section class="mlw-box">
+    <section class="stw-box">
       <h4>
         <span>{t("about.maintenance")}</span>
       </h4>
-      <ul class="mlw-acts">
+      <ul class="stw-acts">
         <DataRow world={world} />
         <Switch
           label={t("about.safe")}
@@ -229,11 +229,11 @@ export function DangerZone(props: SideProps) {
   const locked = props.world.locked === true;
   const hasBackups = (props.backups?.length ?? 0) > 0;
   return (
-    <section class="mlw-box danger">
+    <section class="stw-box danger">
       <h4>
         <span>{t("about.danger")}</span>
       </h4>
-      <ul class="mlw-acts">
+      <ul class="stw-acts">
         <li>
           <div>
             <strong>{t("about.delete")}</strong>

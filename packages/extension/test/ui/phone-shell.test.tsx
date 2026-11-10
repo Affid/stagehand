@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 // The phone and tablet layouts' frame (Android plan, phase 3): the worlds
 // list as home, the tab bar, Back and Escape, the dock, Foundry's notice.
-import type { WorldInfo } from "@module-library/shared/world";
+import type { WorldInfo } from "@stagehand/shared/world";
 import {
   act,
   cleanup,
@@ -57,9 +57,9 @@ function viewport(width: number, height: number, coarse = false): void {
 const phone = (over: Parameters<typeof renderUi>[1] = {}) =>
   renderUi("shell", { data: withWorlds, ...over });
 
-const root = (c: Element) => el(c, ".mls-shell");
+const root = (c: Element) => el(c, ".sts-shell");
 const tab = (c: Element, name: RegExp) =>
-  within(el(c, ".mlp-tabs")).getByRole("button", { name });
+  within(el(c, ".stp-tabs")).getByRole("button", { name });
 const escape = (): boolean =>
   document.dispatchEvent(
     new KeyboardEvent("keydown", { key: "Escape", cancelable: true }),
@@ -78,25 +78,25 @@ afterEach(() => {
 describe("which layout", () => {
   test("a mouse window narrower than 700 px is a phone", () => {
     const { container } = phone();
-    expect(root(container).classList.contains("mlp")).toBe(true);
-    expect(container.querySelector("header.mlh")).toBeNull();
+    expect(root(container).classList.contains("stp")).toBe(true);
+    expect(container.querySelector("header.sth")).toBeNull();
   });
 
   test("a touch screen on its side is a tablet; rotating switches", async () => {
     viewport(1024, 768, true);
     const { container } = phone();
-    expect(root(container).classList.contains("mlp-wide")).toBe(true);
+    expect(root(container).classList.contains("stp-wide")).toBe(true);
     viewport(768, 1024, true);
     window.dispatchEvent(new Event("resize"));
     await waitFor(() => {
-      expect(root(container).classList.contains("mlp-wide")).toBe(false);
+      expect(root(container).classList.contains("stp-wide")).toBe(false);
     });
     viewport(1366, 768);
     window.dispatchEvent(new Event("resize"));
     await waitFor(() => {
-      expect(container.querySelector("header.mlh")).not.toBeNull();
+      expect(container.querySelector("header.sth")).not.toBeNull();
     });
-    expect(container.querySelector(".mlp")).toBeNull();
+    expect(container.querySelector(".stp")).toBeNull();
   });
 
   test("Foundry's window-size notice is asked away while the layout is on", () => {
@@ -113,15 +113,15 @@ describe("review fixes", () => {
   test("the layout stays while a text field has focus (Android's keyboard)", async () => {
     viewport(1024, 800, true);
     const { container } = phone();
-    const field = el(container, ".mls-railbar input");
+    const field = el(container, ".sts-railbar input");
     field.focus();
     viewport(1024, 450, true);
     window.dispatchEvent(new Event("resize"));
     await new Promise((r) => setTimeout(r, 20));
-    expect(root(container).classList.contains("mlp-wide")).toBe(true);
+    expect(root(container).classList.contains("stp-wide")).toBe(true);
     field.blur();
     await waitFor(() => {
-      expect(root(container).classList.contains("mlp-wide")).toBe(false);
+      expect(root(container).classList.contains("stp-wide")).toBe(false);
     });
   });
 
@@ -140,7 +140,7 @@ describe("review fixes", () => {
     viewport(412, 915);
     window.dispatchEvent(new Event("resize"));
     await waitFor(() => {
-      expect(container.querySelector(".mlp")).not.toBeNull();
+      expect(container.querySelector(".stp")).not.toBeNull();
     });
     await waitFor(() => {
       expect(store.get().phone.at).toEqual({ kind: "library" });
@@ -153,7 +153,7 @@ describe("review fixes", () => {
 
   test("after Back, focus goes to the list's heading", async () => {
     const { container, getByRole } = phone();
-    fireEvent.click(el(container, '.mls-world[data-world="w1"]'));
+    fireEvent.click(el(container, '.sts-world[data-world="w1"]'));
     const back = getByRole("button", { name: "Back" });
     back.focus();
     fireEvent.click(back);
@@ -168,14 +168,14 @@ describe("the phone's home and pages", () => {
     const { container, getByRole } = phone();
     expect(root(container).dataset.screen).toBe("home");
     expect(getByRole("heading", { name: "Foundry VTT" })).toBeTruthy();
-    expect(el(container, ".mlh-ver").textContent).toBe("14 · 369");
+    expect(el(container, ".sth-ver").textContent).toBe("14 · 369");
     expect(getByRole("button", { name: "Log out or shut down" })).toBeTruthy();
     expect(tab(container, /^Worlds/).getAttribute("aria-current")).toBe("page");
   });
 
   test("a world opens its page with Back; Back returns to the list", () => {
     const { container, getByRole, queryByRole } = phone();
-    fireEvent.click(el(container, '.mls-world[data-world="w2"]'));
+    fireEvent.click(el(container, '.sts-world[data-world="w2"]'));
     expect(root(container).dataset.screen).toBe("page");
     expect(root(container).dataset.page).toBe("world");
     expect(getByRole("heading", { name: "World w2", level: 1 })).toBeTruthy();
@@ -225,7 +225,7 @@ describe("the phone's home and pages", () => {
 describe("Escape as Android's Back", () => {
   test("goes back a page, and is left alone at home", () => {
     const { container } = phone();
-    fireEvent.click(el(container, '.mls-world[data-world="w1"]'));
+    fireEvent.click(el(container, '.sts-world[data-world="w1"]'));
     let handled = false;
     void act(() => {
       handled = !escape();
@@ -240,13 +240,13 @@ describe("Escape as Android's Back", () => {
 
   test("an open menu takes it first", () => {
     const { container, getByRole } = phone();
-    fireEvent.click(el(container, '.mls-world[data-world="w1"]'));
+    fireEvent.click(el(container, '.sts-world[data-world="w1"]'));
     fireEvent.click(tab(container, /^Worlds/));
     fireEvent.click(getByRole("button", { name: "Log out or shut down" }));
     void act(() => {
       escape();
     });
-    expect(container.querySelector(".mlh-menu")).toBeNull();
+    expect(container.querySelector(".sth-menu")).toBeNull();
     expect(root(container).dataset.screen).toBe("home");
   });
 
@@ -254,7 +254,7 @@ describe("Escape as Android's Back", () => {
     const { container } = phone();
     fireEvent.click(tab(container, /^Library/));
     const field = document.createElement("input");
-    el(container, ".mls-main").append(field);
+    el(container, ".sts-main").append(field);
     field.focus();
     let handled = false;
     void act(() => {
@@ -295,7 +295,7 @@ describe("Escape as Android's Back", () => {
     const { container } = phone();
     fireEvent.click(tab(container, /^Library/));
     const field = document.createElement("input");
-    el(container, ".mls-main").append(field);
+    el(container, ".sts-main").append(field);
     void act(() => {
       field.dispatchEvent(
         new KeyboardEvent("keydown", {
@@ -310,14 +310,14 @@ describe("Escape as Android's Back", () => {
 
   test("native Back closes an open menu first", () => {
     const { container, getByRole } = phone();
-    fireEvent.click(el(container, '.mls-world[data-world="w1"]'));
+    fireEvent.click(el(container, '.sts-world[data-world="w1"]'));
     fireEvent.click(tab(container, /^Worlds/));
     const menuButton = getByRole("button", { name: "Log out or shut down" });
     fireEvent.click(menuButton);
     void act(() => {
       pressBack(document);
     });
-    expect(container.querySelector(".mlh-menu")).toBeNull();
+    expect(container.querySelector(".sth-menu")).toBeNull();
     expect(root(container).dataset.screen).toBe("home");
   });
 
@@ -386,7 +386,7 @@ describe("a popover opened after the shell", () => {
 
   test("takes Escape first: it closes, the page stays", () => {
     const { container } = phone();
-    fireEvent.click(el(container, '.mls-world[data-world="w1"]'));
+    fireEvent.click(el(container, '.sts-world[data-world="w1"]'));
     // Mounted after the shell: its listener comes later on the document.
     const pop = render(<Pop />);
     let handled = false;

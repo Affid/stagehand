@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 // The About tab's next session, as the prototype: a date with its time zone
 // named, a repeating rule or chosen dates, Skip, and moving the date on.
-import type { WorldInfo } from "@module-library/shared/world";
+import type { WorldInfo } from "@stagehand/shared/world";
 import { cleanup, fireEvent, waitFor, within } from "@testing-library/preact";
 import { afterEach, describe, expect, test } from "vitest";
 import {
@@ -39,7 +39,7 @@ function about(over: Partial<WorldInfo> = {}, more: readonly WorldInfo[] = []) {
     state: { route: { kind: "world", worldId: "w1" } },
   });
   fireEvent.click(r.getByRole("tab", { name: /^About/ }));
-  const box = (): HTMLElement => el(r.container, ".mlw-sess");
+  const box = (): HTMLElement => el(r.container, ".stw-sess");
   return { ...r, box };
 }
 
@@ -68,7 +68,7 @@ describe("the next session", () => {
     expect(text).toContain("19:00");
     expect(text).toContain("UTC+");
     expect(text).toMatch(/Every \w+day at 19:00/);
-    expect(box().querySelectorAll(".mlw-upcoming li")).toHaveLength(3);
+    expect(box().querySelectorAll(".stw-upcoming li")).toHaveLength(3);
   });
 
   test("Skip saves the schedule with that date skipped, and moves the next session", async () => {
@@ -307,7 +307,7 @@ describe("the editor's summary", () => {
 describe("chosen dates in the editor", () => {
   test("list each date in order with its own time", () => {
     const { box } = edit({ schedule: chosen });
-    const items = [...box().querySelectorAll(".mlw-chosen li")];
+    const items = [...box().querySelectorAll(".stw-chosen li")];
     expect(items.map((li) => li.querySelector(".d")?.textContent)).toEqual([
       label(soon),
       label(later),
@@ -362,7 +362,7 @@ describe("chosen dates in the editor", () => {
       fireEvent.click(
         within(box()).getByRole("button", { name: `Remove ${label(date)}` }),
       );
-    expect(el(box(), ".mlw-chosen").textContent).toBe("No dates yet.");
+    expect(el(box(), ".stw-chosen").textContent).toBe("No dates yet.");
     expect(
       within(box()).getByRole<HTMLButtonElement>("button", { name: "Save" })
         .disabled,
@@ -374,7 +374,7 @@ describe("chosen dates in the editor", () => {
     const { box } = edit({
       schedule: { ...chosen, dates: { ...chosen.dates, [past]: "19:00" } },
     });
-    const first = box().querySelector(".mlw-chosen li");
+    const first = box().querySelector(".stw-chosen li");
     expect(first?.querySelector(".d")?.textContent).toBe(label(past));
     expect(first?.classList.contains("past")).toBe(true);
   });
@@ -401,7 +401,7 @@ describe("the Repeats row and switching to chosen dates (Phase 6)", () => {
     fireEvent.change(within(box()).getByRole("combobox", { name: "Repeats" }), {
       target: { value: "dates" },
     });
-    const items = box().querySelectorAll(".mlw-chosen li:not(.none)");
+    const items = box().querySelectorAll(".stw-chosen li:not(.none)");
     expect(items.length).toBe(4);
   });
 

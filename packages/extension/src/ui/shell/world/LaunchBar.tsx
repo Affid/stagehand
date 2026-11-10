@@ -2,7 +2,7 @@
 // phActionBar): what the next launch changes, which opens the Next launch
 // sheet, and Launch, where a thumb reaches it. It replaces the banner's
 // pending line with Review and Discard, and its Launch.
-import type { WorldInfo } from "@module-library/shared/world";
+import type { WorldInfo } from "@stagehand/shared/world";
 import { Icon } from "../../common/widgets.tsx";
 import { useUi } from "../../context.ts";
 import { plural } from "../../i18n.ts";
@@ -17,34 +17,34 @@ function What(props: {
   const { model } = props;
   if (!model.tracked)
     return (
-      <span class="mlp-what">
+      <span class="stp-what">
         <strong>{t("wp.modulesUnknown")}</strong>
-        <span>{t("mlp.setUpFirst")}</span>
+        <span>{t("stp.setUpFirst")}</span>
       </span>
     );
   if (!model.queued && !model.problems)
     return (
-      <span class="mlp-what">
-        <strong>{t("mlp.noChanges")}</strong>
-        <span>{plural(t, "mlp.modulesOn", model.nowCount)}</span>
+      <span class="stp-what">
+        <strong>{t("stp.noChanges")}</strong>
+        <span>{plural(t, "stp.modulesOn", model.nowCount)}</span>
       </span>
     );
   const parts = [
     model.changes
-      ? plural(t, "mlp.changes", model.changes)
-      : t("mlp.noChanges"),
+      ? plural(t, "stp.changes", model.changes)
+      : t("stp.noChanges"),
     model.problems ? plural(t, "wp.pending.problems", model.problems) : "",
   ].filter(Boolean);
   return (
     <button
       type="button"
-      class={`mlp-what${model.problems ? " warn" : ""}`}
+      class={`stp-what${model.problems ? " warn" : ""}`}
       aria-haspopup="dialog"
       onClick={props.onQueue}
     >
       <strong>{parts.join(" · ")}</strong>
       <span>
-        {t("mlp.seeOrUndo")} <Icon name="chevron-up" />
+        {t("stp.seeOrUndo")} <Icon name="chevron-up" />
       </span>
     </button>
   );
@@ -62,15 +62,15 @@ export function LaunchBar(props: {
   const off = launchOff(t, state, world);
   const n = model.tracked ? model.changes : 0;
   return (
-    <div class="mlp-actbar">
+    <div class="stp-actbar">
       <What model={model} onQueue={props.onQueue} />
       <span
-        class={off === null ? "mls-launchwrap" : "mlw-tipwrap"}
+        class={off === null ? "sts-launchwrap" : "stw-tipwrap"}
         title={off ?? undefined}
       >
         <button
           type="button"
-          class="bright mlp-launch"
+          class="bright stp-launch"
           disabled={off !== null}
           aria-busy={props.busy || undefined}
           onClick={props.onLaunch}
@@ -78,7 +78,7 @@ export function LaunchBar(props: {
           <Icon name="play" />
           {t("shell.launch")}
           {n ? (
-            <span class="mlc-badge" aria-label={plural(t, "wp.launchBadge", n)}>
+            <span class="stc-badge" aria-label={plural(t, "wp.launchBadge", n)}>
               {n}
             </span>
           ) : null}

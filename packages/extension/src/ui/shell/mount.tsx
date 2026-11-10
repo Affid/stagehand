@@ -3,7 +3,7 @@
 // Order: ask the page world to hide Foundry's layout, wait for its answer,
 // then render. A refusal or a render error leaves Foundry's page and says
 // why, once.
-import { logError } from "@module-library/shared/log";
+import { logError } from "@stagehand/shared/log";
 import { render } from "preact";
 import { allowsChanges } from "../../adapters/select.ts";
 import { liftVeil } from "../../page/veil.ts";
@@ -11,7 +11,7 @@ import { ShellRoot } from "../App.tsx";
 import type { UiDeps } from "../context.ts";
 import { watchExternalLinks } from "../ports.ts";
 
-export const SHELL_HOST = "ml-shell-root";
+export const SHELL_HOST = "st-shell-root";
 
 type Phase = "off" | "asking" | "on" | "failed";
 

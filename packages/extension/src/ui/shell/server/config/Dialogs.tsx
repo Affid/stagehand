@@ -57,7 +57,7 @@ function Diff(props: { readonly c: Config }) {
   const label = (k: ChangeKey): string =>
     t(k === "password" ? "cfg.password" : `cfg.${k}`);
   return (
-    <ul class="mlc-diff">
+    <ul class="stc-diff">
       {c.keys.map((k) => (
         <li key={k}>
           <strong>{label(k)}</strong>
@@ -93,12 +93,12 @@ export function SaveDialog(props: {
   return (
     <Modal title={t("cfg.saveTitle")} onClose={props.onClose} footer={footer}>
       <Diff c={c} />
-      <div class="mls-check warn">
+      <div class="sts-check warn">
         <Icon name="rotate" />
         <span>{t("cfg.saveWarn")}</span>
       </div>
-      {moved ? <p class="ml-muted">{t("cfg.newAddress")}</p> : null}
-      {c.error ? <p class="ml-banner ml-warn">{c.error}</p> : null}
+      {moved ? <p class="st-muted">{t("cfg.newAddress")}</p> : null}
+      {c.error ? <p class="st-banner st-warn">{c.error}</p> : null}
     </Modal>
   );
 }
@@ -134,7 +134,7 @@ export function StopDialog(props: {
       ) : (
         <>
           <p>{t("cfg.stop.lead")}</p>
-          <ul class="mlc-how">
+          <ul class="stc-how">
             <li>
               <Icon name="rotate" />
               <span>{t("cfg.stop.service")}</span>
@@ -144,7 +144,7 @@ export function StopDialog(props: {
               <span>{t("cfg.stop.hand")}</span>
             </li>
           </ul>
-          <p class="ml-muted">{t("cfg.stop.cant")}</p>
+          <p class="st-muted">{t("cfg.stop.cant")}</p>
         </>
       )}
     </Modal>
@@ -185,7 +185,7 @@ export function CertDialog(props: {
         <>
           <p>{t("cfg.https.getLead")}</p>
           <p>{t("cfg.https.getFallback")}</p>
-          <p class="ml-muted">{t("cfg.https.getTerms")}</p>
+          <p class="st-muted">{t("cfg.https.getTerms")}</p>
         </>
       ) : (
         <p>{t("cfg.https.releaseLead")}</p>

@@ -2,11 +2,11 @@
    mockup: design/setup-page/src/_running.*). Shown over Foundry's /join,
    whose fonts and colours it uses. */
 
-html.ml-run-wait body > :not(#ml-run-root) {
+html.st-run-wait body > :not(#st-run-root) {
   visibility: hidden;
 }
 
-#ml-run-root {
+#st-run-root {
   position: fixed;
   inset: 0;
   z-index: 10000;
@@ -17,11 +17,11 @@ html.ml-run-wait body > :not(#ml-run-root) {
   font-family: var(--font-body, "Signika", sans-serif);
 }
 
-#ml-run-root button {
+#st-run-root button {
   cursor: pointer;
 }
 
-.mlr-top {
+.str-top {
   flex: none;
   display: flex;
   align-items: center;
@@ -31,13 +31,13 @@ html.ml-run-wait body > :not(#ml-run-root) {
   border-bottom: 1px solid var(--color-cool-4, #302831);
 }
 
-.mlr-top .logo {
+.str-top .logo {
   width: 32px;
   height: 32px;
   background: url("icons/vtt-512.png") center / contain no-repeat;
 }
 
-.mlr-top h1 {
+.str-top h1 {
   flex: 1;
   margin: 0;
   border: 0;
@@ -46,7 +46,7 @@ html.ml-run-wait body > :not(#ml-run-root) {
   color: var(--color-light-1, #e7e1d5);
 }
 
-.mlr-ver {
+.str-ver {
   padding: 6px 10px;
   border: 1px solid rgb(255 255 255 / 16%);
   border-radius: 16px;
@@ -54,12 +54,12 @@ html.ml-run-wait body > :not(#ml-run-root) {
   font-size: 13px;
 }
 
-.mlr-scroll {
+.str-scroll {
   flex: 1;
   overflow: auto;
 }
 
-.mlr-hero {
+.str-hero {
   display: grid;
   gap: 8px;
   align-content: end;
@@ -70,7 +70,7 @@ html.ml-run-wait body > :not(#ml-run-root) {
     var(--img, none) center / cover;
 }
 
-.mlr-hero .live {
+.str-hero .live {
   justify-self: start;
   display: inline-flex;
   align-items: center;
@@ -82,14 +82,14 @@ html.ml-run-wait body > :not(#ml-run-root) {
   font-size: 13px;
 }
 
-.mlr-hero .live i {
+.str-hero .live i {
   width: 8px;
   height: 8px;
   border-radius: 50%;
   background: #6fcf7f;
 }
 
-.mlr-hero h2 {
+.str-hero h2 {
   margin: 0;
   border: 0;
   font-family: "Modesto Condensed", serif;
@@ -97,7 +97,7 @@ html.ml-run-wait body > :not(#ml-run-root) {
   overflow-wrap: anywhere;
 }
 
-.mlr-hero .meta {
+.str-hero .meta {
   display: flex;
   flex-wrap: wrap;
   gap: 4px 14px;
@@ -105,27 +105,27 @@ html.ml-run-wait body > :not(#ml-run-root) {
   font-size: 14px;
 }
 
-.mlr-hero .meta i {
+.str-hero .meta i {
   margin-right: 6px;
 }
 
-.mlr-body {
+.str-body {
   display: grid;
   gap: 14px;
   padding: 18px 16px calc(24px + env(safe-area-inset-bottom, 0px));
   font-size: 15px;
 }
 
-.mlr-body p {
+.str-body p {
   margin: 0;
 }
 
-.mlr-body .hint {
+.str-body .hint {
   color: var(--color-text-subtle, #a9a39a);
   font-size: 13.5px;
 }
 
-.mlr-go {
+.str-go {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -135,13 +135,13 @@ html.ml-run-wait body > :not(#ml-run-root) {
   font-weight: 700;
 }
 
-.mlr-go[disabled] {
+.str-go[disabled] {
   opacity: 0.6;
 }
 
 /* The launch's changes (phase 7): applying or applied, why not, the password Foundry wants. */
-.mlr-ok,
-.mlr-bad {
+.str-ok,
+.str-bad {
   display: flex;
   align-items: flex-start;
   gap: 8px;
@@ -150,19 +150,19 @@ html.ml-run-wait body > :not(#ml-run-root) {
   font-size: 14px;
 }
 
-.mlr-ok {
+.str-ok {
   border: 1px solid rgb(111 220 140 / 30%);
   background: #13261a;
   color: #c4f0cf;
 }
 
-.mlr-bad {
+.str-bad {
   border: 1px solid rgb(232 138 106 / 35%);
   background: #2c1d16;
   color: #f3c7b5;
 }
 
-.mlr-ask {
+.str-ask {
   display: grid;
   gap: 10px;
   padding: 12px;
@@ -171,17 +171,17 @@ html.ml-run-wait body > :not(#ml-run-root) {
   background: rgb(255 255 255 / 3%);
 }
 
-.mlr-ask p {
+.str-ask p {
   margin: 0;
 }
 
-.mlr-quiet {
+.str-quiet {
   background: transparent;
   font-weight: 600;
 }
 
 /* Server list: a link to the app's home, drawn as the button above it. */
-a.mlr-servers {
+a.str-servers {
   border: 1px solid var(--color-cool-3, #4b4a44);
   border-radius: 6px;
   background: rgb(255 255 255 / 4%);
@@ -189,19 +189,19 @@ a.mlr-servers {
   text-decoration: none;
 }
 
-a.mlr-servers:focus-visible {
+a.str-servers:focus-visible {
   outline: 2px solid #ee9b3a;
   outline-offset: 2px;
 }
 
 /* The question, and the password: a sheet from the bottom. */
-.mlr-scrim {
+.str-scrim {
   position: fixed;
   inset: 0;
   background: rgb(0 0 0 / 55%);
 }
 
-.mlr-sheet {
+.str-sheet {
   position: fixed;
   left: 0;
   right: 0;
@@ -216,30 +216,30 @@ a.mlr-servers:focus-visible {
   outline: none;
 }
 
-.mlr-sheet h3 {
+.str-sheet h3 {
   margin: 0;
   font-size: 18px;
 }
 
-.mlr-sheet p {
+.str-sheet p {
   margin: 0;
 }
 
-.mlr-sheet input[type="password"] {
+.str-sheet input[type="password"] {
   height: 44px;
   font-size: 15px;
 }
 
-.mlr-sheet .err {
+.str-sheet .err {
   color: #f08a7a;
 }
 
-.mlr-sheet .row {
+.str-sheet .row {
   display: flex;
   gap: 10px;
 }
 
-.mlr-sheet .row button {
+.str-sheet .row button {
   flex: 1;
   min-height: 48px;
   font-size: 15px;

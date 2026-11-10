@@ -1,4 +1,4 @@
-// Dev aid: the colour of every visible text link (`.ml-link`) on the main
+// Dev aid: the colour of every visible text link (`.st-link`) on the main
 // pages and its contrast against the panes behind it (tests/foundry/
 // contrast.ts). Run under with-theme.ts for each Setup theme. Foundry must
 // be running on Setup.
@@ -14,27 +14,27 @@ const ext = await loadExtension();
 const page = await ext.context.newPage();
 await page.setViewportSize({ width: 1920, height: 1080 });
 await openSetupAsAdmin(ext, page, env.url, env.adminPassword);
-const root = page.locator("#ml-shell-root");
+const root = page.locator("#st-shell-root");
 
 async function links(name: string): Promise<void> {
   await page.waitForTimeout(600);
   console.log(`== ${name}`);
-  for (const c of await contrasts(root.locator(".ml-link")))
+  for (const c of await contrasts(root.locator(".st-link")))
     console.log(`  ${c.text} | ${c.color} | ${c.ratio.toFixed(2)}`);
 }
 
 const tab = (name: string) =>
-  root.locator(".mls-main").getByRole("tab", { name: new RegExp(name) });
-await root.locator(".mls-world").first().click();
+  root.locator(".sts-main").getByRole("tab", { name: new RegExp(name) });
+await root.locator(".sts-world").first().click();
 await links("world modules");
 await tab("About").click();
 await links("world about");
 await tab("Backups").click();
 await links("world backups");
-await root.locator(".mls-lib").click();
+await root.locator(".sts-lib").click();
 await tab("By world").click();
 await links("library by world");
-const top = root.locator(".mls-top");
+const top = root.locator(".sts-top");
 await top.getByRole("button", { name: "Backups" }).click();
 await links("server backups");
 await top.getByRole("button", { name: "Configuration" }).click();

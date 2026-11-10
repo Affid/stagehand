@@ -11,7 +11,7 @@ const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<
 
 const CAPTURED = /*MODULES_JSON*/[];
 
-const AUTHOR_OF = (id) => (id.startsWith("ml-fixture") ? "Stagehand tests" : id === "module-library" ? "Stagehand" : "Andrei Fedorov");
+const AUTHOR_OF = (id) => (id.startsWith("st-fixture") ? "Stagehand tests" : id === "stagehand" ? "Stagehand" : "Andrei Fedorov");
 
 const EXTRA = [
   ["lib-wrapper", "libWrapper", "Rui Pinheiro", "Library for wrapping core Foundry VTT methods.", { lib: 1 }],
@@ -71,7 +71,7 @@ function foundryTags(m) {
 // Jitsi is shown as not verified for this core build, as Foundry would badge it.
 const unverify = (html) => html.replace("badge success", "badge warning").replace("Package is verified", "Package is not verified");
 const BASE = CAPTURED.map((c) => ({
-  ...c, author: AUTHOR_OF(c.id), lib: c.id === "ml-fixture-lib", unverified: c.id === "modular-av-jitsi",
+  ...c, author: AUTHOR_OF(c.id), lib: c.id === "st-fixture-lib", unverified: c.id === "modular-av-jitsi",
   tagsRight: c.id === "modular-av-jitsi" ? unverify(c.tagsRight) : c.tagsRight,
 }));
 const EXTRA_MODULES = EXTRA.map(([id, title, author, desc, f], i) => ({
@@ -108,7 +108,7 @@ const FOLDER_OF = FIRST_RUN ? {} : {
   "modular-av-p2p": "voice", "modular-av-dock": "voice", "modular-av-starter-set": "voice",
   "modular-av-audio-mixer": "audio", "modular-av-audio-echo": "audio", "modular-av-audio-eq": "audio",
   "modular-av-audio-radio": "audio", "modular-av-audio-reverb": "audio", "modular-av-mic-denoise": "audio",
-  "ml-fixture-a": "fixtures", "ml-fixture-b": "fixtures", "ml-fixture-lib": "fixtures",
+  "st-fixture-a": "fixtures", "st-fixture-b": "fixtures", "st-fixture-lib": "fixtures",
   "dice-so-nice": "combat", "combat-carousel": "combat", "health-estimate": "combat", "dfreds-convenient-effects": "combat",
   "token-action-hud-core": "combat", "monks-tokenbar": "combat", "drag-ruler": "combat",
   "df-curvy-walls": "maps", "dungeon-draw": "maps", "levels-3d-preview": "maps", "perfect-vision": "maps", "fxmaster": "maps", "dnd5e-srd-maps": "maps",
@@ -121,12 +121,12 @@ const TAGS_OF = FIRST_RUN ? {} : {
   "modular-av-audio-radio": ["audio", "beta"], "modular-av-audio-reverb": ["audio"], "modular-av-mic-denoise": ["audio", "essential"],
   "modular-av-cam-background": ["video", "beta"], "modular-av-livekit-krisp": ["audio", "beta"], "modular-av-dock-vines": ["ui"],
   "modular-av-jitsi": ["video"], "modular-av-p2p": ["video"],
-  "ml-fixture-a": ["test"], "ml-fixture-b": ["test"], "ml-fixture-lib": ["test"], "module-library": ["essential"],
+  "st-fixture-a": ["test"], "st-fixture-b": ["test"], "st-fixture-lib": ["test"], "stagehand": ["essential"],
   "dice-so-nice": ["essential"], "lib-wrapper": ["essential"], "socketlib": ["essential"], "tidy5e-sheet": ["ui"], "pf2e-dorako-ux": ["ui"],
   "levels-3d-preview": ["beta"], "chat-portrait": ["ui"], "popout": ["ui"],
 };
 const NOTES = FIRST_RUN ? {} : {
-  "ml-fixture-a": "Installed for the Strahd campaign",
+  "st-fixture-a": "Installed for the Strahd campaign",
   "modular-av-livekit": "LiveKit Cloud project: table-night. Server URL lives in each world's settings.",
   "modular-av-audio-radio": "Sounds odd above 3 people, check after 0.12",
   "perfect-vision": "Conflicts with 3D Canvas lighting",
@@ -134,13 +134,13 @@ const NOTES = FIRST_RUN ? {} : {
 const USAGE = {
   "modular-av": 4, "modular-av-livekit": 3, "modular-av-dock": 4, "modular-av-audio-mixer": 2, "modular-av-mic-denoise": 3,
   "modular-av-audio-echo": 1, "modular-av-audio-reverb": 1, "modular-av-starter-set": 0, "modular-av-jitsi": 0, "modular-av-p2p": 1,
-  "ml-fixture-a": 1, "ml-fixture-lib": 1, "ml-fixture-b": 0, "module-library": 5, "modular-av-cam-background": 2,
+  "st-fixture-a": 1, "st-fixture-lib": 1, "st-fixture-b": 0, "stagehand": 5, "modular-av-cam-background": 2,
   "modular-av-audio-eq": 1, "modular-av-audio-radio": 0, "modular-av-livekit-krisp": 1, "modular-av-dock-vines": 2,
 };
 const PRESETS = FIRST_RUN ? [] : [
   { id: "av", name: "A/V essentials", desc: "Voice and video for a normal table night", modules: ["modular-av", "modular-av-livekit", "modular-av-dock", "modular-av-mic-denoise", "modular-av-audio-mixer"] },
   { id: "rack", name: "Full audio rack", desc: "Every audio effect, for horror one-shots", modules: ["modular-av-audio-mixer", "modular-av-audio-echo", "modular-av-audio-eq", "modular-av-audio-radio", "modular-av-audio-reverb"] },
-  { id: "bench", name: "Fixture test bench", desc: "Dependency and conflict checks", modules: ["ml-fixture-a", "ml-fixture-lib", "module-library"] },
+  { id: "bench", name: "Fixture test bench", desc: "Dependency and conflict checks", modules: ["st-fixture-a", "st-fixture-lib", "stagehand"] },
 ];
 const WORLDS = ["Curse of Strahd", "Stagehand test", "Dragon Heist", "Abomination Vaults", "One-shot: Heist Night"];
 

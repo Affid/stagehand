@@ -40,8 +40,8 @@ let page: Page;
 /** The version Foundry's package list offers. */
 let latest = "";
 
-const shell = (): Locator => page.locator("#ml-shell-root");
-const card = (): Locator => shell().locator(`.mll-card[data-module="${ID}"]`);
+const shell = (): Locator => page.locator("#st-shell-root");
+const card = (): Locator => shell().locator(`.stl-card[data-module="${ID}"]`);
 /** The installed version; "" while missing or still being written. */
 function installedVersion(): string {
   try {
@@ -123,7 +123,7 @@ test("Update runs Foundry's own update; the card then shows the new version", as
   await waitFor(`${ID} to update to ${latest}`, 2 * 60_000, () =>
     Promise.resolve(bareVersion(installedVersion()) === bareVersion(latest)),
   );
-  await expect(card().locator(".mlw-upd")).toHaveCount(0, { timeout: 60_000 });
+  await expect(card().locator(".stw-upd")).toHaveCount(0, { timeout: 60_000 });
   // One "v", however the release spells its version.
   await expect(card()).toContainText(`v${bareVersion(latest)}`);
   await expect(card()).not.toContainText("vv");

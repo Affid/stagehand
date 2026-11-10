@@ -29,7 +29,7 @@ let admin: APIRequestContext | undefined;
 let page: Page;
 let before = "";
 
-const shell = (): Locator => page.locator("#ml-shell-root");
+const shell = (): Locator => page.locator("#st-shell-root");
 
 test.describe.configure({ mode: "serial" });
 
@@ -77,7 +77,7 @@ async function useTheme(theme: string): Promise<void> {
   });
   await page.goto(`${env.url}/setup`);
   await expect(page.locator("body")).toHaveClass(new RegExp(`theme-${theme}`));
-  await shell().locator(".mls-rail").waitFor();
+  await shell().locator(".sts-rail").waitFor();
 }
 
 const background = (l: Locator): Promise<string> =>
@@ -86,9 +86,9 @@ const background = (l: Locator): Promise<string> =>
 for (const theme of THEMES) {
   test(`${theme}: the Note box looks like the other fields`, async () => {
     await useTheme(theme);
-    await shell().locator(".mls-lib").click();
-    await shell().locator(".mls-main button.t").first().click();
-    const panel = shell().locator(".mls-panel");
+    await shell().locator(".sts-lib").click();
+    await shell().locator(".sts-main button.t").first().click();
+    const panel = shell().locator(".sts-panel");
     const note = panel.locator("textarea").first();
     await expect(note).toBeVisible();
     const bg = await background(note);
@@ -99,21 +99,21 @@ for (const theme of THEMES) {
 
   test(`${theme}: text links on About and Configuration reach 4.5:1`, async () => {
     await useTheme(theme);
-    await shell().locator(".mls-world").first().click();
+    await shell().locator(".sts-world").first().click();
     await shell()
-      .locator(".mls-main")
+      .locator(".sts-main")
       .getByRole("tab", { name: /About/ })
       .click();
-    const about = await contrasts(shell().locator(".mls-main .ml-link"));
+    const about = await contrasts(shell().locator(".sts-main .st-link"));
     await shell()
-      .locator(".mls-top")
+      .locator(".sts-top")
       .getByRole("button", { name: "Configuration" })
       .click();
     const backups = shell()
-      .locator(".mls-main")
+      .locator(".sts-main")
       .getByRole("button", { name: "Backups", exact: true });
     await expect(backups).toBeVisible();
-    const config = await contrasts(shell().locator(".mls-main .ml-link"));
+    const config = await contrasts(shell().locator(".sts-main .st-link"));
     await page.screenshot({ path: `${SCREENS}/themes-${theme}-config.png` });
     expect(about.length).toBeGreaterThan(0);
     expect(config.map((c) => c.text)).toContain("Backups");

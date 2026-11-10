@@ -2,7 +2,7 @@
 // phQueueSheet): what the world's next launch changes, each change with its
 // undo, the problems, Discard all and Launch. Launch goes through the review,
 // as the banner's does on the desktop.
-import type { WorldInfo } from "@module-library/shared/world";
+import type { WorldInfo } from "@stagehand/shared/world";
 import { Icon } from "../../common/widgets.tsx";
 import { useUi } from "../../context.ts";
 import { plural } from "../../i18n.ts";
@@ -20,10 +20,10 @@ function Lead(props: {
   const { t } = useUi();
   const n = props.model.changes;
   return (
-    <p class="mlp-lead">
+    <p class="stp-lead">
       {n
-        ? plural(t, "mlp.queueLead", n, { world: props.world.title })
-        : t("mlp.queueNone", { world: props.world.title })}
+        ? plural(t, "stp.queueLead", n, { world: props.world.title })
+        : t("stp.queueNone", { world: props.world.title })}
     </p>
   );
 }
@@ -48,12 +48,12 @@ function Footer(props: {
           }}
         >
           <Icon name="trash" />
-          {t("mlp.discardAll")}
+          {t("stp.discardAll")}
         </button>
       ) : null}
       {/* The same rule as the bar's Launch; the wrapper says why. */}
       <span
-        class={off === null ? "mls-launchwrap" : "mlw-tipwrap"}
+        class={off === null ? "sts-launchwrap" : "stw-tipwrap"}
         title={off ?? undefined}
       >
         <button
@@ -83,13 +83,13 @@ export function NextLaunch(props: {
   return (
     <Sheet layout={props.layout} onClose={props.onClose}>
       <aside
-        class="application framed mls-panel ml-app mlp-next"
-        aria-label={t("mlp.nextLaunch")}
+        class="application framed sts-panel st-app stp-next"
+        aria-label={t("stp.nextLaunch")}
       >
-        <h2 class="divider">{t("mlp.nextLaunch")}</h2>
+        <h2 class="divider">{t("stp.nextLaunch")}</h2>
         <button
           type="button"
-          class="icon mls-close"
+          class="icon sts-close"
           aria-label={t("mp.close")}
           onClick={props.onClose}
         >

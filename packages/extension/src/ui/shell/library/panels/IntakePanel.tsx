@@ -1,7 +1,7 @@
 // New modules since the Library was last sorted, as the prototype's panel:
 // each with its folder, tags and worlds, a suggestion from its family, and
 // Done; Later closes, Done with all marks every one sorted.
-import type { PackageInfo } from "@module-library/shared/package";
+import type { PackageInfo } from "@stagehand/shared/package";
 import { Icon } from "../../../common/widgets.tsx";
 import { useUi } from "../../../context.ts";
 import { plural } from "../../../i18n.ts";
@@ -51,7 +51,7 @@ function Tags(props: { readonly pkg: PackageInfo; readonly s?: Suggestion }) {
           <button
             type="button"
             key={tag.id}
-            class={`ml-chip mls-tchip${on ? " on" : ""}${sug ? " sug" : ""}`}
+            class={`st-chip sts-tchip${on ? " on" : ""}${sug ? " sug" : ""}`}
             aria-pressed={on}
             disabled={!canChange}
             onClick={() =>
@@ -64,8 +64,8 @@ function Tags(props: { readonly pkg: PackageInfo; readonly s?: Suggestion }) {
             }
           >
             <i
-              class="ml-dot"
-              style={{ "--ml-c": tag.color }}
+              class="st-dot"
+              style={{ "--st-c": tag.color }}
               aria-hidden="true"
             />
             {tag.name}
@@ -98,14 +98,14 @@ function Hint(props: { readonly pkg: PackageInfo; readonly s: Suggestion }) {
     for (const w of near) void actions.flip(w.id, pkg.id, true);
   };
   return (
-    <div class="mls-sug">
+    <div class="sts-sug">
       <Icon name="lightbulb" />
       <span>
         {t(`intake.why.${s.why}`, { title: s.from.title })}{" "}
         {plural(t, "intake.onIn", near.length, { title: s.from.title })}
       </span>
       {canChange ? (
-        <button type="button" class="ml-link" onClick={use}>
+        <button type="button" class="st-link" onClick={use}>
           {t("intake.use")}
         </button>
       ) : null}
@@ -119,15 +119,15 @@ function Item(props: { readonly pkg: PackageInfo; readonly s?: Suggestion }) {
   const near = useWorldsOn(s?.from.id ?? "").filter((w) => w.on);
   const author = pkg.authors.map((a) => a.name).join(", ");
   return (
-    <div class="mls-intake-item" data-module={pkg.id}>
+    <div class="sts-intake-item" data-module={pkg.id}>
       <div class="hd">
         <strong>{pkg.title}</strong>
-        <span class="ml-muted">
+        <span class="st-muted">
           {author ? `${author} · ` : ""}v{pkg.version}
         </span>
       </div>
       {s ? <Hint pkg={pkg} s={s} /> : null}
-      <div class="mls-kv">
+      <div class="sts-kv">
         <span>{t("mp.folder")}</span>
         <Folder pkg={pkg} {...(s ? { s } : {})} />
         <span>{t("mp.tags")}</span>
@@ -138,7 +138,7 @@ function Item(props: { readonly pkg: PackageInfo; readonly s?: Suggestion }) {
       <div class="acts">
         <button
           type="button"
-          class="ml-link"
+          class="st-link"
           onClick={() => store.set({ panel: pkg.id, side: null })}
         >
           {t("intake.details")}

@@ -26,10 +26,10 @@ let ext: Target;
 let admin: APIRequestContext;
 let page: Page;
 
-const lib = (): Locator => page.locator("#ml-shell-root .mll-page");
-const shell = (): Locator => page.locator("#ml-shell-root");
+const lib = (): Locator => page.locator("#st-shell-root .stl-page");
+const shell = (): Locator => page.locator("#st-shell-root");
 const card = (id: string): Locator =>
-  lib().locator(`.mll-card[data-module="${id}"]`);
+  lib().locator(`.stl-card[data-module="${id}"]`);
 
 test.describe.configure({ mode: "serial" });
 
@@ -40,7 +40,7 @@ test.beforeAll(async () => {
   page = await ext.context.newPage();
   await openSetupAsAdmin(ext, page, env.url, env.adminPassword);
   await page
-    .locator("#ml-shell-root")
+    .locator("#st-shell-root")
     .getByRole("button", { name: /^Library/ })
     .click();
 });
@@ -51,7 +51,7 @@ test.afterAll(async () => {
 });
 
 test("every installed module shows as a card", async () => {
-  await expect(card("ml-fixture-a")).toBeVisible();
+  await expect(card("st-fixture-a")).toBeVisible();
   await expect(card("stagehand")).toContainText("in no world");
   await page.screenshot({ path: `${SCREENS}/library-cards.png` });
 });
@@ -60,11 +60,11 @@ test("Group by author and the filter", async () => {
   await lib()
     .getByRole("combobox", { name: "Group by" })
     .selectOption("author");
-  await expect(lib().locator(".mll-sec .name").first()).toBeVisible();
+  await expect(lib().locator(".stl-sec .name").first()).toBeVisible();
   await lib()
     .getByRole("searchbox", { name: /Filter Modules/ })
     .fill("fixture");
-  await expect(lib().locator(".mll-card")).toHaveCount(3);
+  await expect(lib().locator(".stl-card")).toHaveCount(3);
   await lib()
     .getByRole("searchbox", { name: /Filter Modules/ })
     .fill("");
@@ -75,16 +75,16 @@ test("Group by author and the filter", async () => {
 
 test("Select picks cards; the selection bar moves them to Unfiled and back", async () => {
   await lib().getByRole("button", { name: "Select" }).click();
-  await card("ml-fixture-a").getByRole("checkbox").check();
-  await card("ml-fixture-b").getByRole("checkbox").check();
-  const bar = lib().locator(".mls-selbar");
+  await card("st-fixture-a").getByRole("checkbox").check();
+  await card("st-fixture-b").getByRole("checkbox").check();
+  const bar = lib().locator(".sts-selbar");
   await expect(bar).toContainText("2 selected");
   await bar.getByRole("button", { name: "Tags" }).click();
-  await expect(bar.locator(".ml-tagpop")).toBeVisible();
+  await expect(bar.locator(".st-tagpop")).toBeVisible();
   await page.screenshot({ path: `${SCREENS}/library-select.png` });
   await page.keyboard.press("Escape");
   await bar.getByRole("button", { name: "Done" }).click();
-  await expect(lib().locator(".mls-selbar")).toHaveCount(0);
+  await expect(lib().locator(".sts-selbar")).toHaveCount(0);
 });
 
 test("Tags: a new tag, renamed, put on a module, then deleted", async () => {
@@ -95,15 +95,17 @@ test("Tags: a new tag, renamed, put on a module, then deleted", async () => {
   await expect(name).toHaveValue("New tag");
   await name.fill("live check");
   await name.press("Enter");
-  await expect(panel.locator(".mls-list li.active")).toContainText(
+  await expect(panel.locator(".sts-list li.active")).toContainText(
     "live check",
   );
-  await panel.getByRole("checkbox", { name: "ML Fixture: library" }).check();
-  await expect(card("ml-fixture-lib")).toContainText("live check");
+  await panel
+    .getByRole("checkbox", { name: "Stagehand Fixture: library" })
+    .check();
+  await expect(card("st-fixture-lib")).toContainText("live check");
   await page.screenshot({ path: `${SCREENS}/library-tags.png` });
   page.once("dialog", (d) => void d.accept());
   await panel.getByRole("button", { name: "Delete tag" }).click();
-  await expect(card("ml-fixture-lib")).not.toContainText("live check");
+  await expect(card("st-fixture-lib")).not.toContainText("live check");
   await panel.getByRole("button", { name: "Close" }).click();
 });
 
@@ -114,13 +116,15 @@ test("Presets: a new preset with a module, then deleted", async () => {
   await expect(panel.getByRole("textbox", { name: "Name" })).toHaveValue(
     "New preset",
   );
-  await panel.getByRole("checkbox", { name: "ML Fixture: library" }).check();
-  await expect(panel.locator(".mls-list li.active")).toContainText("1");
+  await panel
+    .getByRole("checkbox", { name: "Stagehand Fixture: library" })
+    .check();
+  await expect(panel.locator(".sts-list li.active")).toContainText("1");
   await page.screenshot({ path: `${SCREENS}/library-presets.png` });
   page.once("dialog", (d) => void d.accept());
   await panel.getByRole("button", { name: "Delete preset" }).click();
   await expect(
-    panel.locator(".mls-list li:not(.new)", { hasText: "New preset" }),
+    panel.locator(".sts-list li:not(.new)", { hasText: "New preset" }),
   ).toHaveCount(0);
   await panel.getByRole("button", { name: "Close" }).click();
 });
@@ -130,25 +134,25 @@ test("New folder: named in place, a module moved in, then deleted", async () => 
   const name = lib().getByRole("textbox", { name: "Rename" });
   await name.fill("Live folder");
   await name.press("Enter");
-  const head = lib().locator(".mll-sec", { hasText: "Live folder" });
+  const head = lib().locator(".stl-sec", { hasText: "Live folder" });
   await expect(head).toBeVisible();
   await lib().getByRole("button", { name: "Select" }).click();
-  await card("ml-fixture-b").getByRole("checkbox").check();
-  const bar = lib().locator(".mls-selbar");
+  await card("st-fixture-b").getByRole("checkbox").check();
+  const bar = lib().locator(".sts-selbar");
   await bar.getByRole("button", { name: "Move to" }).click();
   await bar.getByRole("button", { name: /Live folder/ }).click();
   await bar.getByRole("button", { name: "Done" }).click();
   await expect(
-    head.locator('.mll-card[data-module="ml-fixture-b"]'),
+    head.locator('.stl-card[data-module="st-fixture-b"]'),
   ).toBeVisible();
   await page.screenshot({ path: `${SCREENS}/library-folder.png` });
   await lib().getByRole("button", { name: "Live folder: actions" }).click();
   page.once("dialog", (d) => void d.accept());
   await lib().getByRole("button", { name: "Delete folder" }).click();
   await expect(
-    lib().locator(".mll-sec", { hasText: "Live folder" }),
+    lib().locator(".stl-sec", { hasText: "Live folder" }),
   ).toHaveCount(0);
-  await expect(card("ml-fixture-b")).toBeVisible();
+  await expect(card("st-fixture-b")).toBeVisible();
 });
 
 test("Install Module opens Foundry's own installer above our page", async () => {
@@ -160,24 +164,24 @@ test("Install Module opens Foundry's own installer above our page", async () => 
 });
 
 test("a module's name opens its details; the Package tab shows its manifest", async () => {
-  await card("ml-fixture-a")
-    .getByRole("button", { name: /ML Fixture: A/ })
+  await card("st-fixture-a")
+    .getByRole("button", { name: /Stagehand Fixture: A/ })
     .click();
   // Its own column beside the Library, as the prototype.
   const panel = page
-    .locator("#ml-shell-root")
-    .getByRole("complementary", { name: /ML Fixture: A/ });
+    .locator("#st-shell-root")
+    .getByRole("complementary", { name: /Stagehand Fixture: A/ });
   await expect(panel.getByRole("combobox", { name: "Folder" })).toBeVisible();
   await page.screenshot({ path: `${SCREENS}/library-details.png` });
   await panel.getByRole("tab", { name: "Package" }).click();
-  await expect(panel.locator(".mls-pkgtab")).toContainText(
-    "Needs ML Fixture: library",
+  await expect(panel.locator(".sts-pkgtab")).toContainText(
+    "Needs Stagehand Fixture: library",
   );
   // Foundry's own favourite: the star shows on the card, then goes again.
   await panel.getByRole("switch", { name: "Favourite" }).click();
-  await expect(card("ml-fixture-a").locator(".mlw-fav")).toBeVisible();
+  await expect(card("st-fixture-a").locator(".stw-fav")).toBeVisible();
   await panel.getByRole("switch", { name: "Favourite" }).click();
-  await expect(card("ml-fixture-a").locator(".mlw-fav")).toHaveCount(0);
+  await expect(card("st-fixture-a").locator(".stw-fav")).toHaveCount(0);
   // Edit manifest opens Foundry's own module editor; closed unsaved.
   await panel.getByRole("button", { name: "Edit manifest…" }).click();
   const editor = page.locator("#module-config");
@@ -195,14 +199,14 @@ test("By world shows every module in every world", async () => {
   await lib()
     .getByRole("tab", { name: /^By world/ })
     .click();
-  const grid = lib().locator(".mll-grid");
+  const grid = lib().locator(".stl-grid");
   await expect(grid.locator("thead th.w")).toHaveCount(2);
   await expect(
-    grid.locator('tbody tr[data-module="ml-fixture-a"]'),
+    grid.locator('tbody tr[data-module="st-fixture-a"]'),
   ).toBeVisible();
   await page.screenshot({ path: `${SCREENS}/library-by-world.png` });
   await lib().getByRole("combobox", { name: "Show" }).selectOption("fav");
-  await expect(lib().locator(".mlw-empty h3")).toHaveText("No worlds to show");
+  await expect(lib().locator(".stw-empty h3")).toHaveText("No worlds to show");
   await lib()
     .getByRole("button", { name: /Show all 2 worlds/ })
     .click();
@@ -210,24 +214,24 @@ test("By world shows every module in every world", async () => {
 });
 
 test("a module installed since the last sort is offered for intake", async () => {
-  // As if ml-fixture-a was installed after the last visit.
+  // As if st-fixture-a was installed after the last visit.
   const key = `sorted:${env.url}`;
   await updateStored<string[]>(ext, key, (all) =>
-    (all ?? []).filter((id) => id !== "ml-fixture-a"),
+    (all ?? []).filter((id) => id !== "st-fixture-a"),
   );
   await page.reload();
   await page
-    .locator("#ml-shell-root")
+    .locator("#st-shell-root")
     .getByRole("button", { name: /^Library/ })
     .click();
-  await expect(lib().locator(".mls-intake-band")).toContainText(
+  await expect(lib().locator(".sts-intake-band")).toContainText(
     "1 new module since you last sorted",
   );
-  await expect(card("ml-fixture-a")).toContainText("New");
+  await expect(card("st-fixture-a")).toContainText("New");
   await lib().getByRole("button", { name: "Sort them" }).click();
   const panel = shell().getByRole("complementary", { name: "New modules" });
-  await expect(panel.locator(".mls-intake-item")).toHaveCount(1);
+  await expect(panel.locator(".sts-intake-item")).toHaveCount(1);
   await page.screenshot({ path: `${SCREENS}/library-intake.png` });
   await panel.getByRole("button", { name: "Done with all" }).click();
-  await expect(lib().locator(".mls-intake-band")).toHaveCount(0);
+  await expect(lib().locator(".sts-intake-band")).toHaveCount(0);
 });

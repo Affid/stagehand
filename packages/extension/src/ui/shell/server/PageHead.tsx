@@ -8,12 +8,12 @@ export function PageHead(props: {
   readonly children?: ComponentChildren;
 }) {
   return (
-    <div class="mlb-head">
+    <div class="stb-head">
       <div>
         <h2>{props.title}</h2>
         {props.summary ? <p>{props.summary}</p> : null}
       </div>
-      <span class="ml-spacer" />
+      <span class="st-spacer" />
       {props.children}
     </div>
   );

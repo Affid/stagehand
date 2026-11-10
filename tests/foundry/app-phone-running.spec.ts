@@ -31,7 +31,7 @@ let app: AppHarness;
 let admin: APIRequestContext;
 let page: Page;
 
-const run = () => page.locator("#ml-run-root");
+const run = () => page.locator("#st-run-root");
 
 test.describe.configure({ mode: "serial" });
 
@@ -103,7 +103,7 @@ test("with the admin's session, Back to Setup closes the world and lands on our 
   await expect(run()).toBeVisible();
   await run().getByRole("button", { name: "Back to Setup" }).click();
   await expect(page).toHaveURL(/\/setup$/, { timeout: 60_000 });
-  await expect(page.locator("#ml-shell-root .mlp-tabs")).toBeVisible({
+  await expect(page.locator("#st-shell-root .stp-tabs")).toBeVisible({
     timeout: 30_000,
   });
 });
@@ -111,10 +111,10 @@ test("with the admin's session, Back to Setup closes the world and lands on our 
 test("after a launch from our Setup: our launching screen, then our running page, no game", async () => {
   await exitTour(page);
   await page
-    .locator(`#ml-shell-root .mls-world[data-world="${TEST_WORLD.id}"]`)
+    .locator(`#st-shell-root .sts-world[data-world="${TEST_WORLD.id}"]`)
     .click();
   await page
-    .locator("#ml-shell-root .mlp-dock")
+    .locator("#st-shell-root .stp-dock")
     .getByRole("button", { name: /^Launch/ })
     .click();
   await expect(

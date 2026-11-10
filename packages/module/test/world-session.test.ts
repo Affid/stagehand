@@ -3,7 +3,7 @@ import {
   FORMAT,
   type QueueEntry,
   type Report,
-} from "@module-library/shared/world-flags";
+} from "@stagehand/shared/world-flags";
 import { describe, expect, test, vi } from "vitest";
 import type { ServerClock, WorldIo } from "../src/world-io.ts";
 import { runWorldSession, settle } from "../src/world-session.ts";

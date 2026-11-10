@@ -1,7 +1,7 @@
 // The in-world confirmation (UX 11): a short diff with warnings and the
 // buttons "Apply & reload", "Not now" and "Discard". Escapes every value.
-import type { Plan } from "@module-library/shared/resolver";
-import type { WorldCommand } from "@module-library/shared/world";
+import type { Plan } from "@stagehand/shared/resolver";
+import type { WorldCommand } from "@stagehand/shared/world";
 import type { DialogV2, FoundryGame } from "./foundry.ts";
 
 export type Choice =

@@ -6,7 +6,7 @@ p.on("pageerror", (e) => errs.push(e.message));
 await p.goto(`file://${dir}out/setup-shell.html?calm=1`); await p.evaluate(() => document.fonts.ready); await p.waitForTimeout(800);
 const act = async (sel) => { await p.evaluate((s) => document.querySelector(s).click(), sel); await p.waitForTimeout(150); };
 const shot = (n) => p.screenshot({ path: `${dir}out/shots/${n}.png` });
-await act(".mls-lib"); await shot("h-1-library-heads");
+await act(".sts-lib"); await shot("h-1-library-heads");
 await act('[data-act="select"]'); await shot("h-2-select-heads");
 await act('[data-act="select"]'); await p.selectOption('select[data-change="group"]', "tag"); await p.waitForTimeout(150); await shot("h-3-tag-heads");
 await act('[data-act="lsub"][data-id="grid"]'); await shot("h-4-grid-heads");

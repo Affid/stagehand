@@ -1,7 +1,7 @@
 // Worlds in Foundry's own order (SetupPackages#sortWorlds in V14): favourites first,
 // then the most recently played, then worlds never played (or with an unreadable date),
 // then by title in the page's language. Used everywhere the new Setup page lists worlds.
-import type { WorldInfo } from "@module-library/shared/world";
+import type { WorldInfo } from "@stagehand/shared/world";
 
 const playedAt = (w: WorldInfo): number | undefined => {
   const t = Date.parse(w.lastPlayed ?? "");

@@ -1,12 +1,12 @@
 // Routes background messages after checking who sent them (PRD 7.11, 8.6):
 // the server comes from the sender's page URL, never from the message.
-import { logError } from "@module-library/shared/log";
+import { logError } from "@stagehand/shared/log";
 import {
   exportLibrary,
   parseLibraryImport,
-} from "@module-library/shared/library/transfer";
-import { newsUrls } from "@module-library/shared/news";
-import { parseCoreVersion } from "@module-library/shared/version";
+} from "@stagehand/shared/library/transfer";
+import { newsUrls } from "@stagehand/shared/news";
+import { parseCoreVersion } from "@stagehand/shared/version";
 import type { SetupConfig } from "../adapters/config.ts";
 import { allowsChanges, selectAdapter } from "../adapters/select.ts";
 import {

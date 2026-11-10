@@ -3,7 +3,7 @@
    and a control, the HTTPS box, and the bar at the bottom in space that is
    always kept free. Appended to setup-ui.css. */
 
-.mls-shell .mlc-page {
+.sts-shell .stc-page {
   position: relative;
   flex: 1;
   min-height: 0;
@@ -12,13 +12,13 @@
   gap: 10px;
 }
 
-.mls-shell .mlc-page .mlb-head code {
+.sts-shell .stc-page .stb-head code {
   margin-left: 4px;
   font-size: 12px;
   color: var(--color-light-3);
 }
 
-.mls-shell .mlc-cols {
+.sts-shell .stc-cols {
   flex: 1;
   min-height: 0;
   overflow: auto;
@@ -29,14 +29,14 @@
   padding-bottom: 76px;
 }
 
-.mls-shell .mlc-cols .col {
+.sts-shell .stc-cols .col {
   display: grid;
   gap: 14px;
   min-width: 0;
 }
 
 /* A setting row */
-.mls-shell .mlc-set {
+.sts-shell .stc-set {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(180px, 46%);
   gap: 12px;
@@ -45,36 +45,36 @@
   border-top: 1px solid rgb(255 255 255 / 5%);
 }
 
-.mls-shell .mlw-box h4 + .mlc-set {
+.sts-shell .stw-box h4 + .stc-set {
   border-top: 0;
   padding-top: 2px;
 }
 
-.mls-shell .mlc-set .l {
+.sts-shell .stc-set .l {
   display: grid;
   gap: 2px;
   min-width: 0;
 }
 
-.mls-shell .mlc-set .l strong {
+.sts-shell .stc-set .l strong {
   color: var(--color-light-1);
   font-size: 13.5px;
 }
 
-.mls-shell .mlc-set .l span {
+.sts-shell .stc-set .l span {
   color: var(--color-text-subtle);
   font-size: 12.5px;
   line-height: 1.35;
 }
 
-.mls-shell .mlc-set .l .err {
+.sts-shell .stc-set .l .err {
   display: flex;
   gap: 6px;
   align-items: baseline;
   color: #ffb3a6;
 }
 
-.mls-shell .mlc-set .c {
+.sts-shell .stc-set .c {
   display: flex;
   gap: 8px;
   align-items: center;
@@ -83,14 +83,14 @@
   min-width: 0;
 }
 
-.mls-shell .mlc-set .c input[type="text"],
-.mls-shell .mlc-set .c input[type="number"],
-.mls-shell .mlc-set .c select {
+.sts-shell .stc-set .c input[type="text"],
+.sts-shell .stc-set .c input[type="number"],
+.sts-shell .stc-set .c select {
   width: 100%;
   height: 30px;
 }
 
-.mls-shell .mlc-set .c > button {
+.sts-shell .stc-set .c > button {
   height: 28px;
   width: auto;
   flex: none;
@@ -98,13 +98,13 @@
   font-size: 13px;
 }
 
-.mls-shell .mlc-set .c > .ml-link {
+.sts-shell .stc-set .c > .st-link {
   height: auto;
   padding: 0;
   font-size: 12.5px;
 }
 
-.mls-shell .mlc-set.changed .l strong::after {
+.sts-shell .stc-set.changed .l strong::after {
   content: "changed";
   margin-left: 8px;
   font-size: 10.5px;
@@ -114,68 +114,68 @@
   color: var(--color-warm-1);
 }
 
-.mls-shell .mlc-state {
+.sts-shell .stc-state {
   display: inline-flex;
   gap: 6px;
   align-items: center;
   font-size: 12.5px;
 }
 
-.mls-shell .mlc-state.ok {
+.sts-shell .stc-state.ok {
   color: #8fd49b;
 }
 
-.mls-shell .mlc-state.warn {
+.sts-shell .stc-state.warn {
   color: #f5c45e;
 }
 
-.mls-shell .mlc-state.bad {
+.sts-shell .stc-state.bad {
   color: #ffb3a6;
 }
 
 /* The password flow */
-.mls-shell .mlc-pw {
+.sts-shell .stc-pw {
   display: grid;
   gap: 6px;
   width: 100%;
   grid-template-columns: 1fr auto auto;
 }
 
-.mls-shell .mlc-pw input {
+.sts-shell .stc-pw input {
   height: 30px;
   grid-column: 1 / -1;
 }
 
-.mls-shell .mlc-pw button {
+.sts-shell .stc-pw button {
   height: 28px;
   width: auto;
   padding: 0 12px;
   font-size: 13px;
 }
 
-.mls-shell .mlc-pw button.bright {
+.sts-shell .stc-pw button.bright {
   grid-column: 2;
 }
 
-.mls-shell .mlc-pw .err {
+.sts-shell .stc-pw .err {
   grid-column: 1 / -1;
   color: #ffb3a6;
   font-size: 12.5px;
 }
 
 /* Network and HTTPS */
-.mls-shell .mlc-port {
+.sts-shell .stc-port {
   display: flex;
   gap: 10px;
   align-items: center;
   width: 100%;
 }
 
-.mls-shell .mlc-port input[type="number"] {
+.sts-shell .stc-port input[type="number"] {
   flex: 1;
 }
 
-.mls-shell .mlc-port label {
+.sts-shell .stc-port label {
   display: inline-flex;
   gap: 5px;
   align-items: center;
@@ -184,7 +184,7 @@
   white-space: nowrap;
 }
 
-.mls-shell .mlc-https {
+.sts-shell .stc-https {
   display: flex;
   gap: 10px;
   align-items: center;
@@ -194,27 +194,27 @@
   border-radius: 4px;
 }
 
-.mls-shell .mlc-https > i {
+.sts-shell .stc-https > i {
   font-size: 18px;
 }
 
-.mls-shell .mlc-https > div {
+.sts-shell .stc-https > div {
   flex: 1;
   display: grid;
   gap: 2px;
 }
 
-.mls-shell .mlc-https strong {
+.sts-shell .stc-https strong {
   color: var(--color-light-1);
   font-size: 13.5px;
 }
 
-.mls-shell .mlc-https span {
+.sts-shell .stc-https span {
   font-size: 12.5px;
   color: var(--color-light-3);
 }
 
-.mls-shell .mlc-https button {
+.sts-shell .stc-https button {
   height: 30px;
   width: auto;
   flex: none;
@@ -222,26 +222,26 @@
   font-size: 13px;
 }
 
-.mls-shell .mlc-https.warn {
+.sts-shell .stc-https.warn {
   border-color: rgb(245 196 94 / 55%);
   background: rgb(245 196 94 / 8%);
 }
 
-.mls-shell .mlc-https.warn > i {
+.sts-shell .stc-https.warn > i {
   color: #f5c45e;
 }
 
-.mls-shell .mlc-https.ok {
+.sts-shell .stc-https.ok {
   border-color: rgb(63 143 82 / 55%);
   background: rgb(63 143 82 / 8%);
 }
 
-.mls-shell .mlc-https.ok > i {
+.sts-shell .stc-https.ok > i {
   color: #8fd49b;
 }
 
-.mls-shell .mlc-more,
-.mls-shell .mlc-more.ml-link {
+.sts-shell .stc-more,
+.sts-shell .stc-more.st-link {
   display: inline-block;
   justify-self: start;
   width: auto;
@@ -255,12 +255,12 @@
   text-decoration-color: var(--color-light-5);
 }
 
-.mls-shell .mlc-more:hover {
+.sts-shell .stc-more:hover {
   color: var(--color-warm-1);
 }
 
 /* The bar: unsaved changes, or what waits for a restart */
-.mls-shell .mlc-bar {
+.sts-shell .stc-bar {
   position: absolute;
   left: 0;
   right: 0;
@@ -268,8 +268,8 @@
   z-index: 5;
 }
 
-.mls-shell .mlc-unsaved,
-.mls-shell .mlc-waiting {
+.sts-shell .stc-unsaved,
+.sts-shell .stc-waiting {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -278,37 +278,37 @@
   font-size: 13px;
   box-shadow: 0 6px 22px rgb(0 0 0 / 75%);
   backdrop-filter: blur(4px);
-  animation: mlc-up 0.16s ease-out;
+  animation: stc-up 0.16s ease-out;
 }
 
-.mls-shell .mlc-unsaved {
+.sts-shell .stc-unsaved {
   border: 1px solid rgb(238 155 58 / 60%);
   background-color: rgb(30 22 14 / 96%);
   color: #f6d3a8;
 }
 
-.mls-shell .mlc-unsaved > i {
+.sts-shell .stc-unsaved > i {
   color: var(--color-warm-1);
 }
 
-.mls-shell .mlc-waiting {
+.sts-shell .stc-waiting {
   border: 1px solid rgb(79 143 214 / 60%);
   background-color: rgb(16 24 38 / 96%);
   color: #cfe0f5;
 }
 
-.mls-shell .mlc-waiting > i {
+.sts-shell .stc-waiting > i {
   color: #7fb0e6;
 }
 
-.mls-shell .mlc-unsaved > span:not(.nodel),
-.mls-shell .mlc-waiting > span {
+.sts-shell .stc-unsaved > span:not(.nodel),
+.sts-shell .stc-waiting > span {
   flex: 1;
   min-width: 0;
 }
 
-.mls-shell .mlc-unsaved button,
-.mls-shell .mlc-waiting button {
+.sts-shell .stc-unsaved button,
+.sts-shell .stc-waiting button {
   height: 30px;
   width: auto;
   flex: none;
@@ -316,11 +316,11 @@
   font-size: 13px;
 }
 
-.mls-shell .mlc-unsaved button[disabled] {
+.sts-shell .stc-unsaved button[disabled] {
   opacity: 0.45;
 }
 
-@keyframes mlc-up {
+@keyframes stc-up {
   from {
     transform: translateY(8px);
     opacity: 0;
@@ -333,15 +333,15 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .mls-shell .mlc-unsaved,
-  .mls-shell .mlc-waiting {
+  .sts-shell .stc-unsaved,
+  .sts-shell .stc-waiting {
     animation: none;
   }
 }
 
 /* The dialogs */
-.mls-shell .mlc-diff,
-.mls-shell .mlc-how {
+.sts-shell .stc-diff,
+.sts-shell .stc-how {
   list-style: none;
   margin: 0 0 10px;
   padding: 0;
@@ -349,23 +349,23 @@
   gap: 6px;
 }
 
-.mls-shell .mlc-diff li {
+.sts-shell .stc-diff li {
   display: grid;
   grid-template-columns: 170px 1fr;
   gap: 10px;
   font-size: 13px;
 }
 
-.mls-shell .mlc-diff li span {
+.sts-shell .stc-diff li span {
   color: var(--color-light-3);
   overflow-wrap: anywhere;
 }
 
-.mls-shell .mlc-diff li b {
+.sts-shell .stc-diff li b {
   color: var(--color-light-1);
 }
 
-.mls-shell .mlc-how li {
+.sts-shell .stc-how li {
   display: grid;
   grid-template-columns: 22px 1fr;
   gap: 8px;
@@ -373,22 +373,22 @@
   color: var(--color-light-2);
 }
 
-.mls-shell .mlc-how li i {
+.sts-shell .stc-how li i {
   margin-top: 3px;
   color: var(--color-light-4);
 }
 
 @media (max-width: 1280px) {
-  .mls-shell .mlc-set {
+  .sts-shell .stc-set {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .mls-shell .mlc-set .c {
+  .sts-shell .stc-set .c {
     justify-content: flex-start;
   }
 }
 
-.mls-shell .mls-check {
+.sts-shell .sts-check {
   display: flex;
   gap: 8px;
   align-items: baseline;
@@ -398,21 +398,21 @@
   font-size: 12.5px;
 }
 
-.mls-shell .mls-check.warn {
+.sts-shell .sts-check.warn {
   border-color: rgb(245 196 94 / 50%);
   background: rgb(245 196 94 / 8%);
   color: #f3dca4;
 }
 
 /* The link beside a state ("On · Backups"), as the prototype
-   (_config.css `.mlc-state + a`): the bare link accent is the theme's
+   (_config.css `.stc-state + a`): the bare link accent is the theme's
    `--color-warm-2`, too dark in Fantasy and Sci-Fi (1.9:1 and 1.7:1,
-   polish pass). Size and padding come from `.mlc-set .c > .ml-link`. */
-.mls-shell .mlc-state + .ml-link {
+   polish pass). Size and padding come from `.stc-set .c > .st-link`. */
+.sts-shell .stc-state + .st-link {
   color: var(--color-light-3);
   text-decoration: underline;
 }
 
-.mls-shell .mlc-state + .ml-link:hover {
+.sts-shell .stc-state + .st-link:hover {
   color: var(--color-light-1);
 }

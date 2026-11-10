@@ -36,7 +36,7 @@ function useUse(
 
 function Problem(props: { readonly text: string }) {
   return (
-    <p class="mlp-err" role="alert">
+    <p class="stp-err" role="alert">
       {props.text}
     </p>
   );
@@ -59,17 +59,17 @@ export function ThisSite(props: {
   );
   const on = props.on || status === "added";
   return (
-    <section class="mlp-site" aria-labelledby="mlp-site-h">
-      <h2 id="mlp-site-h">{t("set.thisSite")}</h2>
-      <p class="mlp-addr">{serverLabel(props.server)}</p>
+    <section class="stp-site" aria-labelledby="stp-site-h">
+      <h2 id="stp-site-h">{t("set.thisSite")}</h2>
+      <p class="stp-addr">{serverLabel(props.server)}</p>
       {on ? (
-        <p class="mlp-ok" role="status">
+        <p class="stp-ok" role="status">
           {status === "added" ? t("set.reloading") : t("set.on")}
         </p>
       ) : (
         <button
           type="button"
-          class="mlp-primary"
+          class="stp-primary"
           disabled={status === "busy"}
           onClick={use}
         >

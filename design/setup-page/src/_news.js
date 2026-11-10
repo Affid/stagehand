@@ -10,7 +10,7 @@ const NEWS_ITEMS = [
 ];
 function newsNote(n, withAll) {
   const li = document.createElement("li");
-  li.className = "notification info active mls-newsnote";
+  li.className = "notification info active sts-newsnote";
   li.dataset.act = "newsclose"; li.dataset.tooltip = "Click to dismiss";
   const label = n.featured ? "Featured content" : n.isNew && !ST.newsSeen ? "New on foundryvtt.com" : "foundryvtt.com news";
   li.innerHTML = `<img src="fvtt/news/${n.img}" alt=""><div class="nb"><span class="k">${label}</span><strong>${esc(n.title)}</strong></div>
@@ -19,12 +19,12 @@ function newsNote(n, withAll) {
 }
 function newsBox() {
   let box = document.getElementById("notifications");
-  if (!box) { box = document.createElement("ol"); box.id = "notifications"; box.className = "mls-toasts"; document.body.append(box); }
+  if (!box) { box = document.createElement("ol"); box.id = "notifications"; box.className = "sts-toasts"; document.body.append(box); }
   return box;
 }
 function newsList() {
   const li = document.createElement("li");
-  li.className = "notification info active mls-newsnote mls-newslist";
+  li.className = "notification info active sts-newsnote sts-newslist";
   li.dataset.act = "newsclose";
   const rows = NEWS_ITEMS.map((n) => `<li data-act="foundry" data-what="Open “${esc(n.title)}” on foundryvtt.com"><img src="fvtt/news/${n.img}" alt=""><span>${esc(n.title)}</span>${n.featured ? '<span class="k">Featured</span>' : n.isNew ? '<span class="k new">New</span>' : ""}</li>`).join("");
   li.innerHTML = `<div class="nb"><span class="k">foundryvtt.com news</span><ul>${rows}</ul></div>`;
@@ -33,11 +33,11 @@ function newsList() {
 /** "new": one notification for the unread article. "all": one notification listing every article. "none": clear. */
 function showNews(which) {
   const box = newsBox();
-  box.querySelectorAll(".mls-newsnote").forEach((li) => li.remove());
+  box.querySelectorAll(".sts-newsnote").forEach((li) => li.remove());
   if (which === "all") box.prepend(newsList());
   if (which === "new" && !ST.newsSeen) NEWS_ITEMS.filter((n) => n.isNew).forEach((n) => box.prepend(newsNote(n, true)));
 }
 A.newsclose = (_id, el) => {
   el.closest("li.notification")?.remove();
-  if (!document.querySelector(".mls-newsnote")) { ST.news = false; ST.newsSeen = true; render(); }
+  if (!document.querySelector(".sts-newsnote")) { ST.news = false; ST.newsSeen = true; render(); }
 };

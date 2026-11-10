@@ -12,26 +12,26 @@ export function ReleaseSwitch(props: {
   const { t } = props;
   const a = useAccess(props.platform);
   return (
-    <div class="mlh-card">
-      <div class="mlh-row">
-        <span class="mlh-row-icon">
+    <div class="sth-card">
+      <div class="sth-row">
+        <span class="sth-row-icon">
           <History />
         </span>
-        <span class="mlh-row-text">
-          <b id="mlh-release">{t("home.release")}</b>
+        <span class="sth-row-text">
+          <b id="sth-release">{t("home.release")}</b>
           <span>{t("home.releaseText")}</span>
           {a.error ? (
-            <span class="mlh-err" role="alert">
+            <span class="sth-err" role="alert">
               {a.error}
             </span>
           ) : null}
         </span>
         <button
           type="button"
-          class="mlh-switch"
+          class="sth-switch"
           role="switch"
           aria-checked={a.granted === true}
-          aria-labelledby="mlh-release"
+          aria-labelledby="sth-release"
           disabled={a.granted === null}
           onClick={a.granted ? a.remove : a.allow}
         />

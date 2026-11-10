@@ -5,48 +5,48 @@
    page's host exists, which is also when page/shell.ts's take-over rule
    starts hiding them (no frame in between; code review).
    Safety: shown again at once when the new page gives up or won't start
-   (html.ml-shell-off); after 15 s when the early script ran but nothing took
-   over (it sets ml-shell-off); and after 4 s by CSS alone if even that
-   script never ran (no html.ml-shell-wait). */
-body.setup:not(:has(#ml-shell-root))
+   (html.st-shell-off); after 15 s when the early script ran but nothing took
+   over (it sets st-shell-off); and after 4 s by CSS alone if even that
+   script never ran (no html.st-shell-wait). */
+body.setup:not(:has(#st-shell-root))
   :is(#setup, #setup-menu, #main-header, #watermark) {
   visibility: hidden;
-  animation: ml-veil-lift 0s 4s forwards;
+  animation: st-veil-lift 0s 4s forwards;
 }
 
-html.ml-shell-wait
-  body.setup:not(:has(#ml-shell-root))
+html.st-shell-wait
+  body.setup:not(:has(#st-shell-root))
   :is(#setup, #setup-menu, #main-header, #watermark) {
   animation: none;
 }
 
 /* The lift carries the veil's own conditions, so it always outweighs it. */
-html.ml-shell-off
-  body.setup:not(:has(#ml-shell-root))
+html.st-shell-off
+  body.setup:not(:has(#st-shell-root))
   :is(#setup, #setup-menu, #main-header, #watermark) {
   visibility: visible;
   animation: none;
 }
 
-@keyframes ml-veil-lift {
+@keyframes st-veil-lift {
   to {
     visibility: visible;
   }
 }
 
 /* The new page arrives softly where Foundry's was. */
-#ml-shell-root {
-  animation: ml-shell-in 160ms ease-out;
+#st-shell-root {
+  animation: st-shell-in 160ms ease-out;
 }
 
-@keyframes ml-shell-in {
+@keyframes st-shell-in {
   from {
     opacity: 0;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  #ml-shell-root {
+  #st-shell-root {
     animation: none;
   }
 }

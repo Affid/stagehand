@@ -1,9 +1,9 @@
 // Reads package data from Foundry's `game` on Setup (V-1). Reads package data
 // and the UI language only; of game.data.options only the update channel and
 // whether a password is set; never the licence or certificate (8.6).
-import { logError } from "@module-library/shared/log";
-import { MAX_NEWS, toNewsItem } from "@module-library/shared/news";
-import { toPackageInfo } from "@module-library/shared/package-read";
+import { logError } from "@stagehand/shared/log";
+import { MAX_NEWS, toNewsItem } from "@stagehand/shared/news";
+import { toPackageInfo } from "@stagehand/shared/package-read";
 import {
   MAX_DESCRIPTION,
   MAX_ID,
@@ -13,8 +13,8 @@ import {
   type SetupData,
   type WorldInfo,
   FLAGS_KEY,
-} from "@module-library/shared/world";
-import { readStagehand } from "@module-library/shared/world-flags";
+} from "@stagehand/shared/world";
+import { readStagehand } from "@stagehand/shared/world-flags";
 import type { Collection, SetupGame } from "./globals.ts";
 
 type Loose = Record<string, unknown>;

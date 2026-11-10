@@ -34,7 +34,7 @@ function AddServer(props: { readonly t: Translate; readonly s: Servers }) {
       });
   };
   return (
-    <form class="mlp-add" onSubmit={submit}>
+    <form class="stp-add" onSubmit={submit}>
       <input
         aria-label={t("set.address")}
         placeholder="http://localhost:30000"
@@ -45,7 +45,7 @@ function AddServer(props: { readonly t: Translate; readonly s: Servers }) {
       />
       <button type="submit">{t("set.add")}</button>
       {error ? (
-        <p class="mlp-err" role="alert">
+        <p class="stp-err" role="alert">
           {error}
         </p>
       ) : null}
@@ -61,8 +61,8 @@ function Off(props: {
 }) {
   const { t, id } = props;
   return (
-    <span class="mlp-off">
-      <span class="mlp-tag">{t("set.off")}</span>
+    <span class="stp-off">
+      <span class="stp-tag">{t("set.off")}</span>
       <button
         type="button"
         aria-label={t("set.turnOnAria", { server: serverLabel(id) })}
@@ -84,18 +84,18 @@ function Address(props: {
 }) {
   const { t, id, app } = props;
   const label = serverLabel(id);
-  if (!app) return <span class="mlp-addr">{label}</span>;
+  if (!app) return <span class="stp-addr">{label}</span>;
   return (
     <>
       <a
-        class="mlp-addr mlp-open"
+        class="stp-addr stp-open"
         href={app.serverHref(id)}
         aria-label={t("set.openAria", { server: label })}
       >
         {label}
       </a>
       {id.startsWith("http:") ? (
-        <span class="mlp-tag mlp-plain">{t("set.plain")}</span>
+        <span class="stp-tag stp-plain">{t("set.plain")}</span>
       ) : null}
     </>
   );
@@ -126,7 +126,7 @@ function ServerRow(props: {
       {props.active ? null : <Off t={t} id={id} s={s} />}
       <button
         type="button"
-        class="mlp-quiet"
+        class="stp-quiet"
         disabled={busy}
         aria-label={t("set.removeAria", { server: serverLabel(id) })}
         onClick={remove}
@@ -134,7 +134,7 @@ function ServerRow(props: {
         {t("set.remove")}
       </button>
       {error ? (
-        <p class="mlp-err" role="alert">
+        <p class="stp-err" role="alert">
           {error}
         </p>
       ) : null}
@@ -149,12 +149,12 @@ export function ServerList(props: {
 }) {
   const { t, s, app } = props;
   return (
-    <section aria-labelledby="mlp-servers-h">
-      <h2 id="mlp-servers-h">{t("set.servers")}</h2>
+    <section aria-labelledby="stp-servers-h">
+      <h2 id="stp-servers-h">{t("set.servers")}</h2>
       {s.list?.length === 0 ? (
-        <p class="mlp-muted">{t(app ? "set.noneApp" : "set.none")}</p>
+        <p class="stp-muted">{t(app ? "set.noneApp" : "set.none")}</p>
       ) : null}
-      <ul class="mlp-servers">
+      <ul class="stp-servers">
         {(s.list ?? []).map((r) => (
           <ServerRow
             key={r.id}
@@ -168,7 +168,7 @@ export function ServerList(props: {
       </ul>
       <AddServer t={t} s={s} />
       {s.list?.length ? (
-        <p class="mlp-muted mlp-small">
+        <p class="stp-muted stp-small">
           {t(app ? "set.removeNoteApp" : "set.removeNote")}
         </p>
       ) : null}

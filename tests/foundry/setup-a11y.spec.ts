@@ -16,7 +16,7 @@ const env = loadFoundryEnv();
 let ext: Target;
 let page: Page;
 
-const shell = (p: Page) => p.locator("#ml-shell-root");
+const shell = (p: Page) => p.locator("#st-shell-root");
 
 test.describe.configure({ mode: "serial" });
 
@@ -63,7 +63,7 @@ async function walkTabs(list: Locator, names: readonly string[]) {
 }
 
 test("a world's tabs by keyboard", async () => {
-  await shell(page).locator(".mls-world").first().click();
+  await shell(page).locator(".sts-world").first().click();
   await walkTabs(shell(page).getByRole("tablist", { name: "World sections" }), [
     "Modules",
     "About",
@@ -72,13 +72,13 @@ test("a world's tabs by keyboard", async () => {
 });
 
 test("the Library's tabs and a module's details by keyboard", async () => {
-  await shell(page).locator(".mls-lib").click();
+  await shell(page).locator(".sts-lib").click();
   await walkTabs(
     shell(page).getByRole("tablist", { name: "Library sections" }),
     ["Modules", "Systems", "By world"],
   );
-  await shell(page).locator(".mls-main button.t").first().click();
-  await walkTabs(shell(page).locator(".mls-panel").getByRole("tablist"), [
+  await shell(page).locator(".sts-main button.t").first().click();
+  await walkTabs(shell(page).locator(".sts-panel").getByRole("tablist"), [
     "Library",
     "Package",
   ]);
@@ -86,7 +86,7 @@ test("the Library's tabs and a module's details by keyboard", async () => {
 
 test("the server Backups page's tabs by keyboard", async () => {
   await shell(page)
-    .locator(".mls-top")
+    .locator(".sts-top")
     .getByRole("button", { name: "Backups" })
     .click();
   await walkTabs(
@@ -114,18 +114,18 @@ async function seedSnapshot(active: readonly string[]): Promise<void> {
   );
 }
 
-const main = () => shell(page).locator(".mls-main");
-const top = () => shell(page).locator(".mls-top");
+const main = () => shell(page).locator(".sts-main");
+const top = () => shell(page).locator(".sts-top");
 
 test("axe: a world's page, its menus and the launch review", async () => {
-  await seedSnapshot(["stagehand", "ml-fixture-lib", "ml-fixture-a"]);
+  await seedSnapshot(["stagehand", "st-fixture-lib", "st-fixture-a"]);
   await page.reload();
   await shell(page)
-    .locator(`.mls-world[data-world="${TEST_WORLD.id}"]`)
+    .locator(`.sts-world[data-world="${TEST_WORLD.id}"]`)
     .click();
-  await expect(main().locator(".mlw-card").first()).toBeVisible();
+  await expect(main().locator(".stw-card").first()).toBeVisible();
   await audit("world modules");
-  await main().locator('.mlw-card input[role="switch"]').first().click();
+  await main().locator('.stw-card input[role="switch"]').first().click();
   await audit("world modules with a queued change");
   await main().getByRole("button", { name: "View options" }).click();
   await audit("View options");
@@ -147,7 +147,7 @@ test("axe: a world's page, its menus and the launch review", async () => {
   await audit("launch review");
   await review.getByRole("button", { name: "Cancel" }).click();
   await main()
-    .locator(".mls-banner")
+    .locator(".sts-banner")
     .getByRole("button", { name: "Discard" })
     .click();
 });
@@ -163,7 +163,7 @@ test("axe: About with its editors, and Backups", async () => {
     .click();
   await audit("about: next session editor");
   await main()
-    .locator(".mlw-sess")
+    .locator(".stw-sess")
     .getByRole("button", { name: "Cancel" })
     .click();
   await main()
@@ -173,19 +173,19 @@ test("axe: About with its editors, and Backups", async () => {
 });
 
 test("axe: the Library, its panels, a module's details and By world", async () => {
-  await shell(page).locator(".mls-lib").click();
+  await shell(page).locator(".sts-lib").click();
   await audit("library");
   await main().getByRole("button", { name: "Tags" }).click();
   await audit("tags panel");
   await main().getByRole("button", { name: "Presets" }).click();
   await audit("presets panel");
   await shell(page)
-    .locator(".mls-panel")
+    .locator(".sts-panel")
     .getByRole("button", { name: "Close" })
     .click();
   await main().getByRole("button", { name: "Select" }).click();
   await main()
-    .locator(".ml-card input[type=checkbox], .mll-card input[type=checkbox]")
+    .locator(".st-card input[type=checkbox], .stl-card input[type=checkbox]")
     .first()
     .check();
   await audit("library selecting");
@@ -194,7 +194,7 @@ test("axe: the Library, its panels, a module's details and By world", async () =
   await main().locator("button.t").first().click();
   await audit("module details");
   await shell(page)
-    .locator(".mls-panel")
+    .locator(".sts-panel")
     .getByRole("tab", { name: /Package/ })
     .click();
   await audit("module package tab");
@@ -215,12 +215,12 @@ test("axe: the Library, its panels, a module's details and By world", async () =
   // can't be used while it is open; axe's target-size counts that against
   // them. The grid at rest is audited above.
   await expect(
-    shell(page).locator(".mll-grid thead th.w:has(.mlh-menu)"),
+    shell(page).locator(".stl-grid thead th.w:has(.sth-menu)"),
   ).toHaveCount(1);
   await auditPage(
     page,
     "by world: a world's menu",
-    "#ml-shell-root .mll-grid thead th.w:has(.mlh-menu)",
+    "#st-shell-root .stl-grid thead th.w:has(.sth-menu)",
   );
   await page.keyboard.press("Escape");
 });
@@ -232,12 +232,12 @@ test("axe: server pages, the header's menus and News", async () => {
   await top().getByRole("button", { name: "Configuration" }).click();
   await expect(main().locator("input").first()).toBeVisible();
   await audit("configuration");
-  await top().locator(".mlh-ver").click();
+  await top().locator(".sth-ver").click();
   await audit("version menu");
   await page.keyboard.press("Escape");
   await top().getByRole("button", { name: "Log out or shut down" }).click();
   await audit("power menu");
   await page.keyboard.press("Escape");
-  await shell(page).locator(".mlr-news header button").click();
+  await shell(page).locator(".str-news header button").click();
   await audit("news open");
 });

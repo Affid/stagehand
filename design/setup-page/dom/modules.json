@@ -1,21 +1,21 @@
 [
  {
-  "id": "ml-fixture-a",
-  "title": "ML Fixture: A (requires library)",
+  "id": "st-fixture-a",
+  "title": "Stagehand Fixture: A (requires library)",
   "shortDesc": "Test fixture for Stagehand. Does nothing.",
   "description": "Test fixture for Stagehand. Does nothing.",
   "tagsRight": "<span class=\"tag flexrow\" data-tooltip-html=\"Stagehand tests\" data-locked=\"\"><i class=\"fa-solid fa-user fa-fw\" inert=\"\"></i></span> <span class=\"tag flexrow badge success\" data-tooltip-html=\"Package is verified for this version of Foundry\"> <i class=\"fa-solid fa-code-branch fa-fw\" inert=\"\"></i> 1.0.0 </span>"
  },
  {
-  "id": "ml-fixture-b",
-  "title": "ML Fixture: B (conflicts with A)",
+  "id": "st-fixture-b",
+  "title": "Stagehand Fixture: B (conflicts with A)",
   "shortDesc": "Test fixture for Stagehand. Does nothing.",
   "description": "Test fixture for Stagehand. Does nothing.",
   "tagsRight": "<span class=\"tag flexrow\" data-tooltip-html=\"Stagehand tests\" data-locked=\"\"><i class=\"fa-solid fa-user fa-fw\" inert=\"\"></i></span> <span class=\"tag flexrow badge success\" data-tooltip-html=\"Package is verified for this version of Foundry\"> <i class=\"fa-solid fa-code-branch fa-fw\" inert=\"\"></i> 1.0.0 </span>"
  },
  {
-  "id": "ml-fixture-lib",
-  "title": "ML Fixture: library",
+  "id": "st-fixture-lib",
+  "title": "Stagehand Fixture: library",
   "shortDesc": "Test fixture for Stagehand. Does nothing.",
   "description": "Test fixture for Stagehand. Does nothing.",
   "tagsRight": "<span class=\"tag flexrow\" data-tooltip-html=\"Stagehand tests\" data-locked=\"\"><i class=\"fa-solid fa-user fa-fw\" inert=\"\"></i></span> <span class=\"tag flexrow badge success\" data-tooltip-html=\"Package is verified for this version of Foundry\"> <i class=\"fa-solid fa-code-branch fa-fw\" inert=\"\"></i> 1.0.0 </span>"
@@ -126,7 +126,7 @@
   "tagsRight": "<span class=\"tag flexrow\" data-tooltip-html=\"&lt;a href='https://github.com/Affid/modular-av' target='_blank'&gt;https://github.com/Affid/modular-av&lt;/a&gt;\" data-locked=\"\"><i class=\"fa-solid fa-circle-info fa-fw\" inert=\"\"></i></span> <span class=\"tag flexrow\" data-tooltip-html=\"&lt;a href=&quot;https://github.com/Affid&quot; target=&quot;_blank&quot;&gt;Andrei Fedorov&lt;/a&gt;\" data-locked=\"\"><i class=\"fa-solid fa-user fa-fw\" inert=\"\"></i></span> <span class=\"tag flexrow languages\" data-tooltip=\"\" aria-label=\"Localization\"><i class=\"fa-solid fa-language fa-fw\" inert=\"\"></i></span> <span class=\"tag flexrow badge success\" data-tooltip-html=\"Package is verified for this version of Foundry\"> <i class=\"fa-solid fa-code-branch fa-fw\" inert=\"\"></i> 0.11.0 </span>"
  },
  {
-  "id": "module-library",
+  "id": "stagehand",
   "title": "Stagehand",
   "shortDesc": "Companion for the Stagehand browser extension.",
   "description": "Companion for the Stagehand browser extension.",

@@ -2,7 +2,7 @@
 // A world's page in the phone layout (Android plan, phase 3, package 3):
 // the bottom bar, the Next launch sheet, the short tab count, the tools
 // outside the pinned row.
-import type { Command, Snapshot } from "@module-library/shared/world";
+import type { Command, Snapshot } from "@stagehand/shared/world";
 import { cleanup, fireEvent, waitFor, within } from "@testing-library/preact";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import type { ExtensionMessage, SetupState } from "../../src/messages.ts";
@@ -63,7 +63,7 @@ function world(over: Partial<SetupState> = {}) {
   return r;
 }
 
-const dock = (c: Element) => el(c, ".mlp-dock");
+const dock = (c: Element) => el(c, ".stp-dock");
 
 describe("a world's bottom bar on a phone", () => {
   test("no changes: what's on now, and Launch; the banner's own are gone", () => {
@@ -80,10 +80,10 @@ describe("a world's bottom bar on a phone", () => {
   test("queued changes: the count opens Next launch; Launch has a badge", () => {
     const { container, store } = world({ commands: [cmd(["b"])] });
     const bar = dock(container);
-    expect(bar.querySelector(".mlp-what strong")?.textContent).toContain(
+    expect(bar.querySelector(".stp-what strong")?.textContent).toContain(
       "1 change",
     );
-    expect(bar.querySelector(".mlc-badge")?.textContent).toBe("1");
+    expect(bar.querySelector(".stc-badge")?.textContent).toBe("1");
     fireEvent.click(within(bar).getByRole("button", { name: /See or undo/ }));
     expect(store.get().nextLaunch).toBe("w1");
   });
@@ -162,16 +162,16 @@ describe("the tab row on a phone", () => {
     const { container } = world({ commands: [cmd(["b"])] });
     await waitFor(() => {
       expect(
-        container.querySelector('.mls-subtabs [role="tab"] .c')?.textContent,
+        container.querySelector('.sts-subtabs [role="tab"] .c')?.textContent,
       ).toBe("2 → 3");
     });
   });
 
   test("the tools sit under the pinned row, not in it", () => {
     const { container } = world();
-    expect(container.querySelector(".mls-subtabs .mlc-tools")).toBeNull();
+    expect(container.querySelector(".sts-subtabs .stc-tools")).toBeNull();
     expect(
-      container.querySelector(".mls-body-main > .mlc-tools"),
+      container.querySelector(".sts-body-main > .stc-tools"),
     ).not.toBeNull();
   });
 });
@@ -204,7 +204,7 @@ describe("review fixes", () => {
     await waitFor(() => {
       expect(r.store.get().nextLaunch).toBeNull();
     });
-    expect(r.container.querySelector<HTMLElement>(".mls-main")?.inert).toBe(
+    expect(r.container.querySelector<HTMLElement>(".sts-main")?.inert).toBe(
       false,
     );
   });
@@ -213,7 +213,7 @@ describe("review fixes", () => {
     const { container } = world({ commands: [cmd(["b"])] });
     await waitFor(() => {
       expect(
-        container.querySelector('.mls-subtabs [role="tab"] .ml-sr-only')
+        container.querySelector('.sts-subtabs [role="tab"] .st-sr-only')
           ?.textContent,
       ).toBe("2 now, 3 after launch");
     });

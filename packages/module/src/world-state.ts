@@ -1,10 +1,10 @@
 // What the module reads from the running world: its active modules (C-2)
 // and the resolver input for a set of commands (C-4, C-6), from the live state.
-import { toPackageInfo } from "@module-library/shared/package-read";
-import { type Plan, resolvePlan } from "@module-library/shared/resolver";
-import { parseCoreVersion } from "@module-library/shared/version";
-import type { WorldCommand } from "@module-library/shared/world";
-import type { ActiveModule } from "@module-library/shared/world-flags";
+import { toPackageInfo } from "@stagehand/shared/package-read";
+import { type Plan, resolvePlan } from "@stagehand/shared/resolver";
+import { parseCoreVersion } from "@stagehand/shared/version";
+import type { WorldCommand } from "@stagehand/shared/world";
+import type { ActiveModule } from "@stagehand/shared/world-flags";
 import { type FoundryGame, MODULE_ID } from "./foundry.ts";
 
 export const coreVersionOf = (game: FoundryGame): string =>
