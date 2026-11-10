@@ -1,13 +1,18 @@
-# A version tag (v0.1.0) publishes the companion module: the checks, then a
-# GitHub release with stagehand.zip and module.json. Foundry's installer
-# follows module.json's manifest URL (releases/latest/download/module.json)
-# and downloads this version's zip; the package listing registers each
-# release by its own module.json (releases/download/<tag>/module.json).
-name: Release
+# A companion tag (stagehand-v0.2.0, pushed by `pnpm release:companion`)
+# publishes the companion module, in this order so no manifest ever points
+# at a zip that isn't there yet:
+#   1. the checks (pnpm verify) and the tag matching module.json's version;
+#   2. a GitHub release with stagehand.zip and this version's module.json;
+#   3. module.json on the `manifests` branch, the fixed URL Foundry's
+#      installer checks (a part's own "latest" release can't be: another
+#      part's release would take it over);
+#   4. the version sent to foundryvtt.com for those who installed from
+#      Foundry's package list (only with the FOUNDRY_RELEASE_TOKEN secret).
+name: Release companion
 
 on:
   push:
-    tags: ["v*"]
+    tags: ["stagehand-v*"]
 
 permissions:
   contents: write
@@ -27,7 +32,7 @@ jobs:
       - name: The tag is the companion's version
         run: |
           version=$(node -p "require('./packages/module/static/module.json').version")
-          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+          if [ "stagehand-v$version" != "$GITHUB_REF_NAME" ]; then
             echo "Tag $GITHUB_REF_NAME does not match module.json version $version" >&2
             exit 1
           fi
@@ -35,11 +40,31 @@ jobs:
         run: |
           cd packages/module/dist
           zip -r "$GITHUB_WORKSPACE/stagehand.zip" . -x "*.map"
-      - name: Publish the release
+      - name: Publish the GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release create "$GITHUB_REF_NAME" \
             stagehand.zip packages/module/dist/module.json \
-            --title "Stagehand $GITHUB_REF_NAME" \
-            --notes "Changes: see CHANGELOG.md. Install the companion in Foundry with the manifest URL https://github.com/Affid/stagehand/releases/latest/download/module.json"
+            --title "Stagehand companion ${GITHUB_REF_NAME#stagehand-v}" \
+            --notes "Changes: see CHANGELOG.md. Install the companion in Foundry with the manifest URL https://raw.githubusercontent.com/Affid/stagehand/manifests/stagehand/module.json"
+      - name: Publish the manifest on the manifests branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git ls-remote --exit-code --heads origin manifests > /dev/null; then
+            git fetch --depth 1 origin manifests:manifests
+            git worktree add ../manifests manifests
+          else
+            git worktree add --orphan -b manifests ../manifests
+          fi
+          mkdir -p ../manifests/stagehand
+          cp packages/module/dist/module.json ../manifests/stagehand/module.json
+          cd ../manifests
+          git add stagehand/module.json
+          git commit -m "stagehand ${GITHUB_REF_NAME#stagehand-v}"
+          git push origin manifests
+      - name: Send the version to foundryvtt.com
+        env:
+          FOUNDRY_RELEASE_TOKEN: ${{ secrets.FOUNDRY_RELEASE_TOKEN }}
+        run: node scripts/release/listing.ts

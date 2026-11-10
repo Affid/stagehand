@@ -27,7 +27,8 @@ Status: in development, not yet released. Foundry VTT 13 and 14.
 Releases are not published yet. When they are:
 
 - Companion module: in Foundry's Install Module window, paste the manifest
-  URL `https://github.com/Affid/stagehand/releases/latest/download/module.json`.
+  URL
+  `https://raw.githubusercontent.com/Affid/stagehand/manifests/stagehand/module.json`.
 - Extension and app: from the releases page of this repository.
 
 Until then, build from source (see Development) and load the extension

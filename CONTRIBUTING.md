@@ -44,6 +44,18 @@ submit.
 
 ## Releases
 
-The companion module is released by tagging its version (`v0.1.0`, the
-`version` in `packages/module/static/module.json`); the release workflow
-builds and publishes it. Add the release's changes to CHANGELOG.md first.
+The companion module:
+
+1. Add a `### Companion module <version>` section to CHANGELOG.md and
+   commit it.
+2. Run `pnpm release:companion <version>` (add `--dry-run` to see the
+   checks first). It bumps the version in the module's manifest and
+   package, runs `pnpm verify`, commits, tags `stagehand-v<version>` and
+   pushes.
+3. The release workflow (Actions tab) builds the zip, creates the GitHub
+   release, publishes `module.json` on the `manifests` branch (the URL
+   Foundry checks for updates) and, with the `FOUNDRY_RELEASE_TOKEN`
+   secret set, sends the version to foundryvtt.com.
+
+The extension and the app will release under their own tags, so they never
+change where Foundry looks for the companion's updates.

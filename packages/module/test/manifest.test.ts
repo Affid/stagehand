@@ -15,12 +15,14 @@ describe("the companion's manifest", () => {
     expect(manifest.version).toMatch(/^\d+\.\d+\.\d+$/);
   });
 
-  test("updates from the latest release and installs this version's zip", () => {
+  test("updates from the manifests branch and installs this version's zip", () => {
+    // A fixed file on the manifests branch, not GitHub's "latest" release,
+    // which other parts' releases would take over (scripts/release).
     expect(manifest.manifest).toBe(
-      `${REPO}/releases/latest/download/module.json`,
+      "https://raw.githubusercontent.com/Affid/stagehand/manifests/stagehand/module.json",
     );
     expect(manifest.download).toBe(
-      `${REPO}/releases/download/v${String(manifest.version)}/stagehand.zip`,
+      `${REPO}/releases/download/stagehand-v${String(manifest.version)}/stagehand.zip`,
     );
   });
 

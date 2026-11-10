@@ -3,7 +3,7 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   oxc: { jsx: { runtime: "automatic", importSource: "preact" } },
   test: {
-    include: ["packages/*/test/**/*.test.{ts,tsx}"],
+    include: ["packages/*/test/**/*.test.{ts,tsx}", "scripts/**/*.test.ts"],
     environment: "node",
     restoreMocks: true,
     coverage: {
