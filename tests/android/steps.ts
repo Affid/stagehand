@@ -36,9 +36,20 @@ const shownPage = (page: Page): Promise<string> =>
     })
     .catch(() => "");
 
-/** Android's Back, as the system sends it. */
-export function back(): void {
+/**
+ * The app takes a second Back within 2 s as "get me out" even when Setup
+ * used the first (MainActivity's BACK_AGAIN_MS): a person stepping through
+ * screens is slower than that, so the suite is too.
+ */
+const BACK_PACE_MS = 2_500;
+let lastBackAt = 0;
+
+/** Android's Back, as the system sends it, one step at a person's pace. */
+export async function back(): Promise<void> {
+  const wait = lastBackAt + BACK_PACE_MS - Date.now();
+  if (wait > 0) await sleep(wait);
   adb("shell", "input", "keyevent", "4");
+  lastBackAt = Date.now();
 }
 
 /** On home: the server added by its address and opened; logged in. */
@@ -63,12 +74,20 @@ export async function openWorld(page: Page): Promise<void> {
 /** Back until our page says home (a menu or sheet closes first). */
 export async function backHome(page: Page): Promise<void> {
   for (let i = 0; i < 3; i++) {
-    if ((await screen(page)) === "home") return;
-    back();
-    // Setup has up to 1.5 s to answer the app's Back.
+    const before = await screen(page);
+    if (before === "home") return;
+    await back();
+    // Setup has up to 1.5 s to answer the app's Back; the next Back waits
+    // until this one has moved the screen, or two would step past home.
     await expect
-      .poll(() => screen(page), { timeout: 5_000 })
-      .not.toBe("")
+      .poll(
+        async () => {
+          const now = await screen(page);
+          return now !== "" && now !== before;
+        },
+        { timeout: 5_000 },
+      )
+      .toBe(true)
       .catch(() => undefined);
   }
   await expectHome(page);
@@ -97,7 +116,7 @@ export async function library(app: App, page: Page): Promise<void> {
   ).toBeVisible();
   await app.shot("library-menu");
   // Android's Back closes the menu first, and only the menu.
-  back();
+  await back();
   await expect(
     shell(page).getByRole("button", { name: "Export the library" }),
   ).toBeHidden();
@@ -295,7 +314,7 @@ export async function allowReleaseHistory(app: App, page: Page): Promise<Page> {
   await expect(release).toHaveAttribute("aria-checked", "false");
   await release.click();
   await expect(release).toHaveAttribute("aria-checked", "true");
-  back();
+  await back();
   const server = await app.pageAt(SERVER);
   await expect(shell(server).locator(".mlp-top")).toBeVisible();
   return server;

@@ -100,7 +100,7 @@ test("a server added on home; our Setup page takes over", async () => {
 test("a world opens; Android's Back steps out to the list", async () => {
   await openWorld(page);
   await app.shot("world");
-  back();
+  await back();
   await expectHome(page);
 });
 
@@ -184,7 +184,7 @@ test("home: a server renamed, given a new address, opened, removed", async () =>
     .click({ noWaitAfter: true });
   page = await app.pageAt(SERVER);
   await expectHome(page);
-  back();
+  await back();
   home = await app.pageAt(HOME);
   await removeFromHome(app, home);
 });
