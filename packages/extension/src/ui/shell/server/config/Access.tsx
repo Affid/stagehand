@@ -4,6 +4,7 @@
 import { useState } from "preact/hooks";
 import { Icon } from "../../../common/widgets.tsx";
 import { useUi } from "../../../context.ts";
+import { useQuirks } from "../../../quirks.ts";
 import { Row, TextRow } from "./fields.tsx";
 import type { Config } from "./useConfig.ts";
 
@@ -146,6 +147,8 @@ function PasswordFlow(props: { readonly c: Config }) {
 
 export function Access(props: { readonly c: Config }) {
   const { t } = useUi();
+  // Settings the running Foundry doesn't have (13: compat/quirks.ts).
+  const missing = new Set<string>(useQuirks().missingSettings);
   return (
     <section class="stw-box">
       <h4>
@@ -158,13 +161,15 @@ export function Access(props: { readonly c: Config }) {
       >
         <PasswordFlow c={props.c} />
       </Row>
-      <TextRow
-        c={props.c}
-        k="adminUsername"
-        label={t("cfg.adminUsername")}
-        hint={t("cfg.adminUsernameHint")}
-        placeholder={t("cfg.optional")}
-      />
+      {missing.has("adminUsername") ? null : (
+        <TextRow
+          c={props.c}
+          k="adminUsername"
+          label={t("cfg.adminUsername")}
+          hint={t("cfg.adminUsernameHint")}
+          placeholder={t("cfg.optional")}
+        />
+      )}
     </section>
   );
 }

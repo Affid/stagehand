@@ -237,4 +237,36 @@ describe("setup-main: Foundry's half of the Setup page", () => {
     expect(f.notifications.error).toHaveBeenCalled();
     vi.unstubAllGlobals();
   });
+
+  test("when Foundry stops at once (13), Foundry's notices clear and our page is told", async () => {
+    vi.useFakeTimers();
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((url: string) =>
+        url === "/quit"
+          ? Promise.resolve(Response.json({ status: "failed" }))
+          : Promise.reject(new TypeError("Failed to fetch")),
+      ),
+    );
+    const f = foundry(true);
+    const clear = vi.fn();
+    const page = {
+      ...f.page,
+      game: { ...f.page.game, release: { generation: 13, build: 351 } },
+      ui: { ...f.page.ui, notifications: { ...f.notifications, clear } },
+    };
+    const s = start(page);
+    await vi.advanceTimersByTimeAsync(1);
+    s.ui.send("FOUNDRY_ACTION", { action: "quit" });
+    await vi.advanceTimersByTimeAsync(10);
+    expect(clear).toHaveBeenCalledTimes(1);
+    expect(s.heard).toContainEqual(["SERVER_STOPPED", {}]);
+    // Nothing more is asked of Foundry, or shown through it.
+    s.ui.send("NOTIFY", { kind: "error", text: "Foundry did not answer" });
+    s.ui.send("LIBRARY_FILE", { requestId: "r9", op: "read" });
+    await vi.advanceTimersByTimeAsync(10);
+    expect(f.notifications.error).not.toHaveBeenCalled();
+    expect(s.heard.map((h) => h[0])).not.toContain("LIBRARY_FILE_DONE");
+    vi.unstubAllGlobals();
+  });
 });

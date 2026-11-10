@@ -59,6 +59,8 @@ interface Ctx extends SetupMainDeps {
   updates?: Promise<Updates | undefined>;
   /** Stops taking Foundry's window-size notice away (phone layout off). */
   showNotice?: (() => void) | undefined;
+  /** Foundry stopped (13's quit): nothing more is asked of it or shown. */
+  stopped?: boolean;
 }
 
 const clipError = (error: string): string => error.slice(0, MAX_ERROR);
@@ -297,6 +299,8 @@ function failed(ctx: Ctx, action: FoundryAction, error: string): void {
 }
 
 function handle(ctx: Ctx, m: UiToPage): void {
+  // Foundry is gone: a request would only fail with Foundry's own error.
+  if (ctx.stopped === true) return;
   if (WRITES.has(m.type) && ctx.page.game?.data?.isAdmin !== true) {
     ctx.notify(
       "error",
@@ -318,7 +322,12 @@ function handle(ctx: Ctx, m: UiToPage): void {
       setCompact(ctx, m.payload.on);
       break;
     case "FOUNDRY_ACTION":
-      void runFoundryAction(ctx.doc, ctx.page, m.payload).then((error) => {
+      void runFoundryAction(ctx.doc, ctx.page, m.payload, () => {
+        // Foundry's failed requests and lost connection: our page says it.
+        ctx.stopped = true;
+        ctx.page.ui?.notifications?.clear?.();
+        ctx.postToUi({ type: "SERVER_STOPPED", payload: {} });
+      }).then((error) => {
         if (error) failed(ctx, m.payload, error);
       });
       break;

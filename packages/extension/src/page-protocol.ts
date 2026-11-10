@@ -171,6 +171,11 @@ export type PageToUi =
     }
   | { readonly type: "CONFIG_DONE"; readonly payload: ConfigReply }
   | { readonly type: "UPDATE_DONE"; readonly payload: UpdateReply }
+  /** Foundry stopped and sent the browser nowhere (Foundry 13's quit). */
+  | {
+      readonly type: "SERVER_STOPPED";
+      readonly payload: Record<string, never>;
+    }
   | { readonly type: "LIBRARY_FILE_DONE"; readonly payload: LibraryFileDone };
 
 const MAX_TEXT = 2000;
@@ -261,12 +266,6 @@ function libraryFileRequest(p: Loose): UiToPage | undefined {
   return payload ? { type: "LIBRARY_FILE", payload } : undefined;
 }
 
-/** Library sync's file answer (page-library-file.ts). */
-function libraryFileDone(p: Loose): PageToUi | undefined {
-  const payload = parseLibraryFileDone(p);
-  return payload ? { type: "LIBRARY_FILE_DONE", payload } : undefined;
-}
-
 /** A message from the UI, checked; undefined when malformed. */
 export function parseUiToPage(type: string, p: unknown): UiToPage | undefined {
   if (!isObject(p)) return undefined;
@@ -319,54 +318,48 @@ export function parseUiToPage(type: string, p: unknown): UiToPage | undefined {
   }
 }
 
+/** Page events checked by their own payload checker (the rest below). */
+type CheckedEvent = Exclude<PageToUi["type"], "SHELL_STATE" | "SERVER_STOPPED">;
+
+/** Each checker answers its own event's payload: the table is type-checked. */
+type Checkers = {
+  readonly [K in CheckedEvent]: (
+    p: Loose,
+  ) => Extract<PageToUi, { type: K }>["payload"] | undefined;
+};
+
+const PAGE_EVENTS: Checkers = {
+  PROGRESS: parseProgress,
+  UPDATES: parseUpdates,
+  LOCK: parseLock,
+  SAVE_DONE: parseSaveDone,
+  QUEUE_DONE: parseQueueDone,
+  BACKUPS_DONE: parseBackupsReply,
+  SERVER_BACKUPS_DONE: parseServerBackupsReply,
+  CONFIG_DONE: parseConfigReply,
+  UPDATE_DONE: parseUpdateReply,
+  LIBRARY_FILE_DONE: parseLibraryFileDone,
+};
+
+function shellState(p: Loose): PageToUi | undefined {
+  if (typeof p.on !== "boolean") return undefined;
+  if (p.error === undefined)
+    return { type: "SHELL_STATE", payload: { on: p.on } };
+  return isText(p.error)
+    ? { type: "SHELL_STATE", payload: { on: p.on, error: p.error } }
+    : undefined;
+}
+
 /** A message from the page world, checked; undefined when malformed. */
 export function parsePageToUi(type: string, p: unknown): PageToUi | undefined {
   if (!isObject(p)) return undefined;
-  if (type === "LIBRARY_FILE_DONE") return libraryFileDone(p);
-  if (type === "PROGRESS") {
-    const payload = parseProgress(p);
-    return payload ? { type, payload } : undefined;
-  }
-  if (type === "UPDATES") {
-    const payload = parseUpdates(p);
-    return payload ? { type, payload } : undefined;
-  }
-  if (type === "LOCK") {
-    const payload = parseLock(p);
-    return payload ? { type, payload } : undefined;
-  }
-  switch (type) {
-    case "SHELL_STATE":
-      if (typeof p.on !== "boolean") return undefined;
-      if (p.error === undefined) return { type, payload: { on: p.on } };
-      return isText(p.error)
-        ? { type, payload: { on: p.on, error: p.error } }
-        : undefined;
-    case "SAVE_DONE": {
-      const payload = parseSaveDone(p);
-      return payload ? { type, payload } : undefined;
-    }
-    case "QUEUE_DONE": {
-      const payload = parseQueueDone(p);
-      return payload ? { type, payload } : undefined;
-    }
-    case "BACKUPS_DONE": {
-      const payload = parseBackupsReply(p);
-      return payload ? { type, payload } : undefined;
-    }
-    case "SERVER_BACKUPS_DONE": {
-      const payload = parseServerBackupsReply(p);
-      return payload ? { type, payload } : undefined;
-    }
-    case "CONFIG_DONE": {
-      const payload = parseConfigReply(p);
-      return payload ? { type, payload } : undefined;
-    }
-    case "UPDATE_DONE": {
-      const payload = parseUpdateReply(p);
-      return payload ? { type, payload } : undefined;
-    }
-    default:
-      return undefined;
-  }
+  if (type === "SHELL_STATE") return shellState(p);
+  if (type === "SERVER_STOPPED")
+    return Object.keys(p).length === 0 ? { type, payload: {} } : undefined;
+  const check = Object.hasOwn(PAGE_EVENTS, type)
+    ? PAGE_EVENTS[type as CheckedEvent]
+    : undefined;
+  const payload = check?.(p);
+  // Each checker answers the payload of its own type, or undefined.
+  return payload ? ({ type, payload } as PageToUi) : undefined;
 }

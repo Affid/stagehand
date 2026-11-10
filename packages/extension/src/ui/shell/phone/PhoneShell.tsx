@@ -174,7 +174,7 @@ export function PhoneShell(props: { readonly layout: Layout }) {
           class={`sts-shell stp${layout === "tablet" ? " stp-wide" : ""}${bannerGone ? " stp-scrolled" : ""}`}
           data-screen={home ? "home" : "page"}
           data-page={pageName(route)}
-          inert={state.launching !== null}
+          inert={state.launching !== null || state.serverStopped === true}
         >
           <PhoneTop layout={layout} route={route} world={world} />
           <div class="sts">

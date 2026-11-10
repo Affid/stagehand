@@ -50,11 +50,13 @@ export interface SetupGame {
   readonly socket?: { readonly connected?: boolean };
   /** Foundry's own POST to the Setup route; resolves with the server's answer. */
   readonly post?: (data: object) => Promise<unknown>;
-  /** Resolves once the backup is done: true if it was created. */
+  /** Foundry's backups, asked fresh from the server each time. */
+  readonly listBackups?: () => Promise<unknown>;
+  /** Resolves once the backup is done: true if it was created (14; 13 answers nothing). */
   readonly createBackup?: (
     pkg: unknown,
     options?: { readonly note?: string },
-  ) => Promise<boolean>;
+  ) => Promise<boolean | undefined>;
 }
 
 export interface PageGlobals {
@@ -72,7 +74,11 @@ export interface PageGlobals {
         "info" | "warn" | "error",
         (message: string, o?: object) => unknown
       >
-    > & { readonly remove?: (id: number) => void };
+    > & {
+      readonly remove?: (id: number) => void;
+      /** Takes every notice away (13 and 14). */
+      readonly clear?: () => void;
+    };
   };
   readonly foundry?: {
     readonly applications?: {

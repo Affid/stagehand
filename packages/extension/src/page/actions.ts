@@ -14,6 +14,7 @@ import {
 } from "./package-actions.ts";
 import { saveWorld } from "./save-world.ts";
 import { placeInView } from "./place.ts";
+import { quirksFor } from "../compat/quirks.ts";
 
 const MENU_ACTION: Record<string, string> = {
   warnings: "viewWarnings",
@@ -66,8 +67,11 @@ async function backupThenLaunch(
   const world = worldOf(page, id);
   const game = page.game;
   if (!world || !game?.createBackup) return `No world ${id}`;
-  const done = await game.createBackup(world, note ? { note } : {});
-  if (!done) return `The backup didn't finish, so ${id} was not launched`;
+  const since = Date.now();
+  const result = await game.createBackup(world, note ? { note } : {});
+  const quirks = quirksFor(game.release?.generation);
+  if (!(await quirks.backupFinished(game, result, id, since)))
+    return `The backup didn't finish, so ${id} was not launched`;
   return launch(doc, id);
 }
 
@@ -122,10 +126,27 @@ function openWarnings(doc: Document, page: ActionGlobals): string | undefined {
 
 /**
  * As Setup's Shut down (#onClickShutDownServer) after our own confirm: its
- * deferred /quit, then the page Foundry sends us to.
+ * deferred /quit, then the page Foundry sends us to. Where Foundry stops at
+ * once and has no such page (13), `stopped` tells our page instead.
  */
-async function quit(page: ActionGlobals): Promise<string | undefined> {
+async function quit(
+  page: ActionGlobals,
+  stopped: () => void,
+): Promise<string | undefined> {
   const route = page.foundry?.utils?.getRoute?.("quit") ?? "/quit";
+  const atOnce = quirksFor(page.game?.release?.generation).quitAtOnce;
+  if (atOnce)
+    return atOnce(
+      {
+        fetch: (url, init) => fetch(url, init),
+        route: (path) => page.foundry?.utils?.getRoute?.(path) ?? `/${path}`,
+        sleep: (ms) =>
+          new Promise((resolve) => {
+            setTimeout(resolve, ms);
+          }),
+      },
+      stopped,
+    );
   const response = await fetch(route, {
     method: "POST",
     body: JSON.stringify({ defer: true }),
@@ -134,6 +155,18 @@ async function quit(page: ActionGlobals): Promise<string | undefined> {
   if (!response.ok) return "Foundry did not accept the shutdown";
   window.location.href = response.url;
   return undefined;
+}
+
+/** Foundry's Create World; where it opens a window inside Setup, in view. */
+function createWorld(doc: Document, page: ActionGlobals): string | undefined {
+  const error = click(
+    doc,
+    '#setup-packages [data-action="worldCreate"]',
+    "create world",
+  );
+  const window = quirksFor(page.game?.release?.generation).createWorldWindow;
+  if (!error && window) void placeInView(page, window);
+  return error;
 }
 
 /** Foundry's installer (public), or its own Update All button (private flow). */
@@ -186,6 +219,8 @@ export async function runFoundryAction(
   doc: Document,
   page: ActionGlobals,
   a: FoundryAction,
+  /** Foundry stopped and won't send the browser anywhere (13's quit). */
+  stopped: () => void = () => undefined,
 ): Promise<string | undefined> {
   try {
     switch (a.action) {
@@ -199,13 +234,9 @@ export async function runFoundryAction(
           a.action,
         );
       case "quit":
-        return await quit(page);
+        return await quit(page, stopped);
       case "createWorld":
-        return click(
-          doc,
-          '#setup-packages [data-action="worldCreate"]',
-          "create world",
-        );
+        return createWorld(doc, page);
       case "launch":
         return launch(doc, a.worldId);
       case "backupLaunch":

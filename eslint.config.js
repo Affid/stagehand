@@ -62,6 +62,30 @@ export default tseslint.config(
     },
   },
   {
+    // Foundry 13 stays in one folder (docs/FOUNDRY-13-PLAN.md): only the
+    // quirks module and the bundled adapter config may import it, so
+    // dropping 13 is deleting compat/v13/ and those two imports.
+    files: ["packages/*/src/**/*.{ts,tsx}"],
+    ignores: [
+      "packages/extension/src/compat/**",
+      "packages/extension/src/adapters/config.ts",
+    ],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["**/compat/v13/**"],
+              message:
+                "Foundry 13 code is reached through compat/quirks.ts only.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
     // JSX event handlers are idiomatically arrow shorthands.
     files: ["**/*.tsx"],
     rules: {

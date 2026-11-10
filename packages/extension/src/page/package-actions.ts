@@ -3,6 +3,7 @@
 // internal lockPackage request (behind the lockPackage flag), its update,
 // backup and uninstall flows with their own dialogs.
 import type { PageGlobals } from "./globals.ts";
+import { quirksFor } from "../compat/quirks.ts";
 import { redrawSetup } from "./redraw.ts";
 import { placeInView } from "./place.ts";
 
@@ -155,7 +156,9 @@ export async function edit(
   );
   for (let i = 0; i < MENU_TRIES; i++) {
     const item = doc
-      .querySelector("#context-menu .context-item .fa-edit")
+      .querySelector(
+        `#context-menu .context-item ${quirksFor(page.game?.release?.generation).editModuleIcon}`,
+      )
       ?.closest<HTMLElement>(".context-item");
     if (item) {
       item.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));

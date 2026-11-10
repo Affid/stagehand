@@ -8,6 +8,7 @@
 // answers with /join again, even for an administrator's session (checked
 // live; a server without an admin password needs none).
 import { z } from "zod";
+import { closeRefusedWorld } from "../../compat/quirks.ts";
 
 const StatusSchema = z.object({
   active: z.boolean(),
@@ -94,32 +95,24 @@ export type CloseResult = "closing" | "password" | "failed";
 
 const FORBIDDEN = 403;
 
-/**
- * Foundry 13's way to close the world: POST /join "shutdown" with the admin
- * password (or an admin session). It answers JSON with status "success",
- * or its message as text when the password didn't do.
- */
-async function closeOn13(
+/** Foundry 13 closes the world through its join page (compat/v13). */
+const closeOn13 = async (
   deps: ServerDeps,
   password: string | undefined,
-): Promise<CloseResult> {
-  const res = await deps.fetch(deps.route("join"), {
-    method: "POST",
-    credentials: "same-origin",
-    signal: AbortSignal.timeout(REQUEST_MS),
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      action: "shutdown",
-      ...(password === undefined ? {} : { adminPassword: password }),
-    }),
-  });
-  if (!res.ok) return "failed";
-  const raw = (await res.text()).slice(0, MAX_ANSWER).trim();
-  if (jsonOf(raw).status === "success") return "closing";
-  // The password's refusal is Foundry's message as plain text; JSON, a
-  // page or nothing at all is some other failure (review).
-  return raw && !/^[{[<]/.test(raw) ? "password" : "failed";
-}
+): Promise<CloseResult> =>
+  closeRefusedWorld === null
+    ? "failed"
+    : closeRefusedWorld(
+        (body) =>
+          deps.fetch(deps.route("join"), {
+            method: "POST",
+            credentials: "same-origin",
+            signal: AbortSignal.timeout(REQUEST_MS),
+            headers: { "Content-Type": "application/json" },
+            body,
+          }),
+        password,
+      );
 
 /**
  * Asks Foundry to close the world. "password": Foundry wants the admin

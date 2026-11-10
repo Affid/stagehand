@@ -1,6 +1,7 @@
 # Foundry 13 support
 
-Status: proposal, 2026-11-10, for the owner's approval. Nothing built yet.
+Status: built 2026-11-10 (see "Built"). The owner approved the plan: our own
+"Foundry has stopped" message, and no separate Foundry 13 note.
 
 ## Why Setup doesn't run on 13 today
 
@@ -62,9 +63,13 @@ packages/extension/test/compat/v13/
 - The app's existing 13 branch for closing a running world moves into the
   same folder.
 
-To drop 13 later: delete `compat/v13/` and its tests, remove the import
-from `compat/quirks.ts` and the adapter entry, and the lint rule keeps
-anything from being left behind.
+To drop 13 later: delete `compat/v13/` and `test/compat/v13/`; in
+`compat/quirks.ts` remove the three v13 imports, the `generation === 13`
+branch and set `closeRefusedWorld` to null; remove the adapter entry from
+`adapters/config.ts`. Everything else keeps working on 14. What stays
+behind is general and harmless (the quirk fields with 14's values, the
+"Foundry has stopped" screen); `tests/foundry/core.ts`'s ON_13 skips and
+`setup-quit-13.spec.ts` can go too.
 
 ## Testing
 
@@ -74,9 +79,38 @@ anything from being left behind.
   13 already exist; the Setup suites would run there for the first time.
 - Library sync's live specs run on 13 too.
 
-## Decisions for the owner
+## Owner's decisions (2026-11-10)
 
-1. Shut down on 13 (item 4): our own short "Foundry has stopped" message,
-   since 13 has no quit page. Or hide Shut down on 13.
-2. Whether a 13 server shows any sign that it is on the older version (for
-   example a quiet "Foundry 13" note), or looks exactly like 14.
+1. Shut down on 13: our own confirm, then our own "Foundry has stopped"
+   screen with a Reload button.
+2. No separate Foundry 13 note: the version shows in Setup's header, and
+   what 13 lacks is simply not offered.
+
+## Built
+
+- `compat/quirks.ts` (14's behaviour, `quirksFor`), `compat/v13/quirks.ts`,
+  `compat/v13/adapter.ts`, `compat/v13/close-world.ts` (the app's 13 way of
+  closing a running world, moved here); `adapters/selectors.ts` holds the
+  selectors both adapters share, so the config and the 13 adapter don't
+  import each other.
+- Lint: only `compat/` and `adapters/config.ts` may import `compat/v13/`.
+- Our page: Shut down opens our confirm on 13. Our quit counts Foundry as
+  stopped only once its status route stops answering (a request that failed
+  while Foundry still answers is not a stop); then the page world clears
+  Foundry's notices, asks nothing more of it, and our page shows "Foundry
+  has stopped" with a Reload button (`ui/shell/Stopped.tsx`, general, not
+  13-only). Configuration hides Admin username and Unix socket, and the
+  Advanced section reads "Advanced: compression".
+- Live, opt-in: `tests/foundry/setup-quit-13.spec.ts` stops a private 13
+  server for real (`ST_QUIT_13=1`; start the server again afterwards).
+- Tests: `test/compat/v13/` (19). Live: the extension suite runs on 13.351;
+  `tests/foundry/core.ts` reads the server's version so the specs expect
+  the version they run against, and the three update tests that fake a newer
+  14 build are skipped on 13 (13 is offered 14 itself). On 13.351 every
+  spec passes except the same server-state failures 14 has (test world
+  report, fixture counts). The changed specs pass on 14.370 too.
+- Known Foundry 13 behaviour: right after a world is shut down through its
+  join page, 13 is back on Setup before its databases have closed, and an
+  immediate launch fails ("Database is not open"). The test scripts wait 5 s
+  (`scripts/foundry/admin.ts`); a person relaunching within seconds of
+  closing a world from the app could see Foundry's launch error once.

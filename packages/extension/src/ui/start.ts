@@ -75,6 +75,9 @@ function createUi(
     launching: null,
   });
   trackProgress(store, page);
+  page.subscribe((e) => {
+    if (e.type === "SERVER_STOPPED") store.set({ serverStopped: true });
+  });
   let sync: LibrarySync | undefined;
   const send = sendNotingChanges(deps.send, () => sync);
   const actions = createActions(store, send, t, page);

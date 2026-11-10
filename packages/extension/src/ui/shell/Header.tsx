@@ -1,15 +1,37 @@
 // The new Setup page's header bar: Foundry's name, the Version chip and its
 // menu, Backups and Configuration (our pages), and the power menu.
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
+import { useQuirks } from "../quirks.ts";
+import { StopDialog } from "./server/config/Dialogs.tsx";
 import type { FoundryAction } from "../../page-protocol.ts";
 import { useDismiss } from "../common/dismiss.ts";
 import { Icon } from "../common/widgets.tsx";
 import { useUi } from "../context.ts";
 import { VersionMenu } from "./VersionMenu.tsx";
 
-/** Log out and Shut down: a disclosure of two plain buttons. */
-export function PowerMenu() {
-  const { page, t } = useUi();
+/** The power menu's two buttons: Log out, and Shut down. */
+function PowerItems(props: {
+  readonly first: { current: HTMLButtonElement | null };
+  readonly onLogout: () => void;
+  readonly onShutDown: () => void;
+}) {
+  const { t } = useUi();
+  return (
+    <div class="sth-menu">
+      <button type="button" ref={props.first} onClick={props.onLogout}>
+        <Icon name="door-open" />
+        {t("shell.logout")}
+      </button>
+      <button type="button" onClick={props.onShutDown}>
+        <Icon name="power-off" />
+        {t("shell.shutdown")}
+      </button>
+    </div>
+  );
+}
+
+/** A disclosure: open, focus its first item, close on a click away. */
+function useDisclosure() {
   const [open, setOpen] = useState(false);
   const wrap = useRef<HTMLDivElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
@@ -22,9 +44,26 @@ export function PowerMenu() {
   useEffect(() => {
     if (open) first.current?.focus();
   }, [open]);
+  return { open, setOpen, wrap, trigger, first, close };
+}
+
+/** Log out and Shut down: a disclosure of two plain buttons. */
+export function PowerMenu() {
+  const { page, t } = useUi();
+  const quirks = useQuirks();
+  const [stopping, setStopping] = useState(false);
+  const { open, setOpen, wrap, trigger, first, close } = useDisclosure();
   const run = (action: FoundryAction): void => {
     close(true);
     page.foundryAction(action);
+  };
+  // Foundry's own Shut down where its menu has one; else our confirm (13).
+  const shutDown = (): void => {
+    if (quirks.menuShutdown) run({ action: "shutdown" });
+    else {
+      close(false);
+      setStopping(true);
+    }
   };
   return (
     <div class="sth-power" ref={wrap}>
@@ -40,20 +79,14 @@ export function PowerMenu() {
         <Icon name="power-off" />
       </button>
       {open ? (
-        <div class="sth-menu">
-          <button
-            type="button"
-            ref={first}
-            onClick={() => run({ action: "logout" })}
-          >
-            <Icon name="door-open" />
-            {t("shell.logout")}
-          </button>
-          <button type="button" onClick={() => run({ action: "shutdown" })}>
-            <Icon name="power-off" />
-            {t("shell.shutdown")}
-          </button>
-        </div>
+        <PowerItems
+          first={first}
+          onLogout={() => run({ action: "logout" })}
+          onShutDown={shutDown}
+        />
+      ) : null}
+      {stopping ? (
+        <StopDialog electron={false} onClose={() => setStopping(false)} />
       ) : null}
     </div>
   );

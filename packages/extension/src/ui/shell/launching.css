@@ -215,3 +215,31 @@
     transition: none;
   }
 }
+
+/* "Foundry has stopped" (Stopped.tsx): the launching screen's box, with the
+   Configuration dialog's two ways back as a plain list. */
+.sts-stopped h2 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sts-stopped .stc-how {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sts-stopped .stc-how li {
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  gap: 10px;
+  align-items: start;
+  color: var(--color-text-subtle, #b5aec2);
+}
+
+.sts-stopped .stc-how li i {
+  padding-top: 3px;
+}

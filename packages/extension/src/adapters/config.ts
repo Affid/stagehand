@@ -1,6 +1,8 @@
 // Setup adapter configuration: data only (selectors, flags), never code
 // (R-4). Bundled here; a newer copy may come from the project repository.
 import { z } from "zod";
+import { V13_ADAPTER } from "../compat/v13/adapter.ts";
+import { V14_SELECTORS } from "./selectors.ts";
 
 const Selector = z.string().min(1).max(200);
 /** The lists hidden or mounted next to must be named by id: never `body`. */
@@ -32,20 +34,12 @@ export const SetupConfigSchema = z.object({
 export type Adapter = z.infer<typeof AdapterSchema>;
 export type SetupConfig = z.infer<typeof SetupConfigSchema>;
 
-/** Setup markup of V14 builds 369 and 370; also the best guess in safe mode. */
-export const V14_SELECTORS: Adapter["selectors"] = {
-  worldsTab: "#setup-packages-worlds",
-  modulesTab: "#setup-packages-modules",
-  modulesList: "#modules-list",
-  worldsList: "#worlds-list",
-  worldCard: "#worlds-list > li.package.world[data-package-id]",
-  worldTags: ".tags.right",
-};
+export { V14_SELECTORS } from "./selectors.ts";
 
 /** Verified against V14 build 369 in the M0 spike (docs/M0-FINDINGS.md) and again on build 370. */
 export const BUNDLED_CONFIG: SetupConfig = {
   configVersion: 1,
-  revision: 2,
+  revision: 3,
   adapters: [
     {
       id: "v14",
@@ -66,6 +60,7 @@ export const BUNDLED_CONFIG: SetupConfig = {
         certificates: true,
       },
     },
+    V13_ADAPTER,
   ],
 };
 

@@ -107,7 +107,9 @@ export function StopDialog(props: {
   readonly electron: boolean;
   readonly onClose: () => void;
 }) {
-  const { page, t } = useUi();
+  const { page, t, state } = useUi();
+  // Done: "Foundry has stopped" takes over (Stopped.tsx).
+  if (state.serverStopped === true) return null;
   const footer = (
     <>
       <button type="button" onClick={props.onClose}>

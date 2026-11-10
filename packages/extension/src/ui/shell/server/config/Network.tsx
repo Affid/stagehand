@@ -6,6 +6,7 @@ import type { ComponentChildren } from "preact";
 import { useState } from "preact/hooks";
 import { Icon } from "../../../common/widgets.tsx";
 import { useUi } from "../../../context.ts";
+import { useQuirks } from "../../../quirks.ts";
 import { clean, shown } from "./model.ts";
 import { Row, SwitchRow, TextInput, TextRow, useField } from "./fields.tsx";
 import type { Config } from "./useConfig.ts";
@@ -163,6 +164,8 @@ function OwnCert(props: {
 function Advanced(props: { readonly c: Config }) {
   const { t } = useUi();
   const [open, setOpen] = useState(false);
+  // Settings the running Foundry doesn't have (13: compat/quirks.ts).
+  const missing = new Set<string>(useQuirks().missingSettings);
   if (!open)
     return (
       <button
@@ -170,18 +173,20 @@ function Advanced(props: { readonly c: Config }) {
         class="st-link stc-more"
         onClick={() => setOpen(true)}
       >
-        {t("cfg.advanced")}
+        {t(missing.has("unixSocket") ? "cfg.advancedNoSocket" : "cfg.advanced")}
       </button>
     );
   return (
     <>
-      <TextRow
-        c={props.c}
-        k="unixSocket"
-        label={t("cfg.unixSocket")}
-        hint={t("cfg.unixSocketHint")}
-        placeholder={t("cfg.unixSocketPh")}
-      />
+      {missing.has("unixSocket") ? null : (
+        <TextRow
+          c={props.c}
+          k="unixSocket"
+          label={t("cfg.unixSocket")}
+          hint={t("cfg.unixSocketHint")}
+          placeholder={t("cfg.unixSocketPh")}
+        />
+      )}
       <SwitchRow
         c={props.c}
         k="compressStatic"

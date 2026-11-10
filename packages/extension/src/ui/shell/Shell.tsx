@@ -6,6 +6,7 @@ import { useUi } from "../context.ts";
 import { Announcer } from "./Announcer.tsx";
 import { Header } from "./Header.tsx";
 import { LaunchingScreen } from "./Launching.tsx";
+import { StoppedScreen } from "./Stopped.tsx";
 import { MainPane, PanelColumn, useShownRoute } from "./Panes.tsx";
 import { LayoutContext, useViewportLayout } from "./phone/layout.ts";
 import { PhoneShell } from "./phone/PhoneShell.tsx";
@@ -26,7 +27,10 @@ function DesktopShell() {
   const { route, world } = useShownRoute();
   const { state } = useUi();
   return (
-    <div class="sts-shell" inert={state.launching !== null}>
+    <div
+      class="sts-shell"
+      inert={state.launching !== null || state.serverStopped === true}
+    >
       <Header />
       <div class="sts">
         <WorldRail route={route} />
@@ -46,6 +50,7 @@ export function Shell() {
     <LayoutContext.Provider value={layout}>
       {layout === "desktop" ? <DesktopShell /> : <PhoneShell layout={layout} />}
       <LaunchingScreen />
+      <StoppedScreen />
     </LayoutContext.Provider>
   );
 }

@@ -44,6 +44,8 @@ export interface UiState {
   readonly nextLaunch: string | null;
   /** The world being launched, from the tap until Foundry leaves Setup. */
   readonly launching: Launching | null;
+  /** Foundry stopped and sent the browser nowhere (Foundry 13's quit). */
+  readonly serverStopped?: boolean;
   /** Library sync with the server; unset until it first runs (library-sync.ts). */
   readonly librarySync?: SyncStatus;
 }
