@@ -17,6 +17,7 @@
     "test:coverage": "vitest run --coverage",
     "test:foundry": "playwright test -c playwright.foundry.config.ts",
     "test:foundry:app": "ST_TARGET=app playwright test -c playwright.foundry.config.ts",
+    "config:write": "node scripts/config/write-setup-config.ts && prettier --write config/setup-config.json",
     "foundry:start": "scripts/foundry/start.sh",
     "foundry:link": "node scripts/foundry/link-modules.ts",
     "foundry:setup": "node scripts/foundry/setup-world.ts",
