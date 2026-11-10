@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="packages/extension/static/icons/icon-128.png" width="96" alt="">
+</p>
+
 # Stagehand for Foundry VTT
 
 Stagehand replaces Foundry VTT's Setup screen with a calmer one built
@@ -8,6 +12,10 @@ rest of Setup: launching worlds, backups, configuration and Foundry's own
 updates.
 
 Stagehand is not affiliated with or endorsed by Foundry Gaming LLC.
+
+![The Library: modules in folders, with tags, notes and the worlds each one is on](docs/store/screenshots/1-library.png)
+
+![A world's queued module change, reviewed before launch](docs/store/screenshots/5-launch-review.png)
 
 ## Parts
 
@@ -20,19 +28,40 @@ Stagehand is not affiliated with or endorsed by Foundry Gaming LLC.
   changes you queued, after showing them in a dialog. On its own it does
   nothing; it needs the extension or the app.
 
-Status: in development, not yet released. Foundry VTT 13 and 14.
+How they fit together. Everything stays on your device and your own
+Foundry server:
+
+```mermaid
+flowchart LR
+  subgraph device["Your browser or phone"]
+    page["Stagehand<br/>extension or app"]
+  end
+  subgraph server["Your Foundry server"]
+    setup["Foundry's Setup page"]
+    library[("Data/stagehand/library.json<br/>your library")]
+    flags[("each world's world.json<br/>queued changes, reports")]
+    companion["Companion module<br/>inside the world, Gamemaster only"]
+  end
+  page -->|"shows its own page over"| setup
+  page <-->|"syncs"| library
+  page -->|"queues changes,<br/>reads reports"| flags
+  companion -->|"applies the queue,<br/>reports modules"| flags
+```
+
+Status: first public release (companion 0.1.0, extension and app 0.2.0).
+Foundry VTT 13 and 14.
 
 ## Install
-
-Releases are not published yet. When they are:
 
 - Companion module: in Foundry's Install Module window, paste the manifest
   URL
   `https://raw.githubusercontent.com/Affid/stagehand/manifests/stagehand/module.json`.
-- Extension and app: from the releases page of this repository.
-
-Until then, build from source (see Development) and load the extension
-unpacked from `packages/extension/dist`.
+- Extension: the Chrome Web Store listing is on its way; until then,
+  download the zip from the
+  [releases](https://github.com/Affid/stagehand/releases) and load it
+  unpacked (`chrome://extensions`, Developer mode, Load unpacked).
+- Android app: the APK from the
+  [releases](https://github.com/Affid/stagehand/releases), sideloaded.
 
 ## Your data
 
