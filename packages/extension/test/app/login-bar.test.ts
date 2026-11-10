@@ -13,12 +13,12 @@ afterEach(() => {
 
 describe("addLoginBar", () => {
   test("a link to the servers and which server this is", () => {
-    addLoginBar(document, "http://192.168.178.25:30000", HOME);
+    addLoginBar(document, "http://192.168.1.20:30000", HOME);
     const bar = document.getElementById("st-login-bar");
     const link = bar?.querySelector("a");
     expect(link?.getAttribute("href")).toBe(HOME);
     expect(link?.textContent).toContain("Servers");
-    expect(bar?.textContent).toContain("192.168.178.25:30000");
+    expect(bar?.textContent).toContain("192.168.1.20:30000");
     expect(bar?.querySelector(".st-plain")).not.toBeNull();
     expect(document.getElementById("st-login-style")).not.toBeNull();
   });

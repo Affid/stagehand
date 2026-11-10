@@ -40,9 +40,9 @@ Build: `cd spikes/android && JAVA_HOME=~/opt/jdk-21.0.13+9 ./gradlew assembleDeb
 ## Devices and network
 
 - **Emulator** (owner's Windows, set up from WSL without Android Studio): the
-  Windows SDK in `C:\Users\fagot\Android\Sdk` (emulator, adb, system
+  Windows SDK in `C:\Users\<you>\Android\Sdk` (emulator, adb, system
   images) installed by WSL's `sdkmanager` with `REPO_OS_OVERRIDE=windows`;
-  two virtual phones written by hand in `C:\Users\fagot\.android\avd`
+  two virtual phones written by hand in `C:\Users\<you>\.android\avd`
   (`MLPixel`: Android 16, API 36; `MLPixel37`: Android 17, API 37), Pixel 8
   screen (412×894 CSS px at 2.625). Windows' hypervisor (WHPX) is usable,
   although `Win32_OptionalFeature` lists `HypervisorPlatform` as off.
@@ -52,7 +52,7 @@ Build: `cd spikes/android && JAVA_HOME=~/opt/jdk-21.0.13+9 ./gradlew assembleDeb
   Use Windows' `adb.exe` from WSL; APKs are installed from a Windows path.
 - **The emulator reaches the WSL Foundry** at `http://10.0.2.2:30000`.
 - **Phone** (wireless debugging, same Wi-Fi): set up at the start of phase 4.
-  It needs `http://192.168.178.25:30000` let in by a Hyper-V firewall rule
+  It needs `http://192.168.1.20:30000` let in by a Hyper-V firewall rule
   (owner, admin PowerShell):
   `New-NetFirewallHyperVRule -Name FoundryDev30000 -DisplayName "Foundry dev (WSL) 30000" -Direction Inbound -VMCreatorId '{40E0AC32-46A5-438A-A0B2-2B479E8F2E90}' -Protocol TCP -LocalPorts 30000`
 
@@ -87,7 +87,7 @@ Build: `cd spikes/android && JAVA_HOME=~/opt/jdk-21.0.13+9 ./gradlew assembleDeb
 4. **The companion module fails on any plain-http address other than
    localhost, on desktop too.** `packages/module/src/channel.ts` makes its
    request ids with `crypto.randomUUID()`, which browsers offer only in
-   secure contexts (https or localhost). At `http://192.168.178.25:30000`
+   secure contexts (https or localhost). At `http://192.168.1.20:30000`
    (checked in desktop Chromium as well as the WebView) it is missing, the
    call throws before anything is sent, the handshake treats that as "no
    extension yet" five times and gives up: queued changes never apply at

@@ -7,7 +7,15 @@
 import { copyFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 import { _android, type AndroidDevice, type Page } from "@playwright/test";
-import { adb, adbWithInput, deviceSerial, sleep } from "./native-ui.ts";
+import { readEnv } from "../../scripts/foundry/env.ts";
+import {
+  adb,
+  adbWithInput,
+  deviceSerial,
+  sleep,
+  WIN_HOME,
+  windowsPath,
+} from "./native-ui.ts";
 
 const ROOT = join(import.meta.dirname, "..", "..");
 export const PKG = "io.github.affid.stagehand.debug";
@@ -17,9 +25,8 @@ const APK = join(
   "packages/android/app/build/outputs/apk/debug/app-debug.apk",
 );
 /** Where Windows' adb reads the APK: the same folder seen from WSL and from Windows. */
-const APK_DIR = process.env.ST_APK_DIR ?? "/mnt/c/Users/fagot/st-apk";
-const APK_WIN =
-  process.env.ST_APK_WIN ?? "C:\\Users\\fagot\\st-apk\\app-debug.apk";
+const APK_DIR = readEnv("ST_APK_DIR", `${WIN_HOME}/st-apk`);
+const APK_WIN = readEnv("ST_APK_WIN", `${windowsPath(APK_DIR)}\\app-debug.apk`);
 
 /** The local Foundry as the device reaches it (the emulator: the host). */
 export const SERVER = process.env.ST_APP_SERVER ?? "http://10.0.2.2:30000";

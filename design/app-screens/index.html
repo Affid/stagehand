@@ -235,10 +235,10 @@ const ICON = {
 };
 const MARK = '<span class="mark" aria-hidden="true" style="background:#2a2340;overflow:hidden;display:block"><svg viewBox="22 21 64 64" style="width:100%;height:100%;display:block;fill:revert;stroke:none"><rect x="33" y="26" width="42" height="4.5" fill="#6a5b8c"/><circle cx="54" cy="41" r="11" fill="#d9a441"/><circle cx="54" cy="41" r="4.5" fill="#2a2340"/><path d="M43,77 V41 A11,11 0 0 1 65,41 V60" fill="none" stroke="#efe3c8" stroke-width="4.6"/><path fill="#c0584a" d="M65,58 C58.5,62.5 56.5,71 57.5,76 Q65,82.5 72.5,76 C73.5,71 71.5,62.5 65,58 Z"/></svg></span>';
 const SERVERS = [
-  { name: "Home server", addr: "http://192.168.178.25:30000", last: "Opened today", plain: true, letter: "H" },
+  { name: "Home server", addr: "http://192.168.1.20:30000", last: "Opened today", plain: true, letter: "H" },
   { name: "Friday group", addr: "https://vtt.example.com/foundry", last: "Opened 5 days ago", plain: false, letter: "F" },
 ];
-const S = { s: "home", hv: "a", lgv: "ready", lnv: "review", rv: "applied", step: 0, closing: false, sheet: null, edit: null, removing: false, scheme: "http", typed: "192.168.178.25:30000", history: false, join: false, toast: "" };
+const S = { s: "home", hv: "a", lgv: "ready", lnv: "review", rv: "applied", step: 0, closing: false, sheet: null, edit: null, removing: false, scheme: "http", typed: "192.168.1.20:30000", history: false, join: false, toast: "" };
 const app = document.getElementById("app"), notes = document.getElementById("notes");
 const host = (a) => a.replace(/^https?:\/\//, "");
 
@@ -322,10 +322,10 @@ function login() {
     <div class="card logincard">
       <span class="ico">H</span>
       <h2>Log in to Setup</h2>
-      <p class="where"><span>192.168.178.25:30000</span><span class="chip plain">${ICON.unlock}Not encrypted</span></p>
+      <p class="where"><span>192.168.1.20:30000</span><span class="chip plain">${ICON.unlock}Not encrypted</span></p>
       <div class="field"><label for="pw">Administrator password</label>
         <div class="pw ${wrong ? "bad" : "focus"}">${ICON.key}<input id="pw" type="password" value="${wrong ? "hunter2" : ""}" placeholder="Password" autocomplete="current-password"><button class="ibtn" aria-label="Show password">${ICON.eye}</button></div></div>
-      ${wrong ? `<div class="err">${ICON.warn}That isn't this server's administrator password.</div>` : `<button class="suggest" data-act="filled">${ICON.shield}<span><b>Home server</b><span>From your password manager · 192.168.178.25</span></span></button>`}
+      ${wrong ? `<div class="err">${ICON.warn}That isn't this server's administrator password.</div>` : `<button class="suggest" data-act="filled">${ICON.shield}<span><b>Home server</b><span>From your password manager · 192.168.1.20</span></span></button>`}
       <button class="btn bright wide" data-act="loggedin">Log in</button>
     </div>
     <p class="loginhint">Foundry asks for the administrator password set in its configuration. A server without one opens Setup straight away; one with a world running opens the running page.</p>

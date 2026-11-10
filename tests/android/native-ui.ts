@@ -3,9 +3,18 @@
 // what isn't in a WebView: system pickers, the app's dialogs, taps that
 // must be real (outside links). Every adb call names the device.
 import { execFileSync } from "node:child_process";
+import { readEnv } from "../../scripts/foundry/env.ts";
 
-const ADB =
-  process.env.ST_ADB ?? "/mnt/c/Users/fagot/Android/Sdk/platform-tools/adb.exe";
+/** Windows' home folder as WSL sees it (ST_WIN_HOME in .env.local). */
+export const WIN_HOME = readEnv("ST_WIN_HOME", "/mnt/c/Users/me");
+
+/** A WSL path under /mnt/c as Windows names it (C:\\...). */
+export const windowsPath = (wsl: string): string =>
+  wsl
+    .replace(/^\/mnt\/([a-z])\//, (_m, d: string) => `${d.toUpperCase()}:\\`)
+    .replaceAll("/", "\\");
+
+const ADB = readEnv("ST_ADB", `${WIN_HOME}/Android/Sdk/platform-tools/adb.exe`);
 
 /** The device every call goes to: ST_ANDROID_SERIAL, else the only one. */
 function serial(): string {

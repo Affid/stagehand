@@ -26,7 +26,7 @@ export const VECTORS_PATH =
 
 const SERVER = "http://localhost:30000";
 const PREFIXED = "https://vtt.example.com/foundry";
-const LAN = "http://192.168.178.25:30000";
+const LAN = "http://192.168.1.20:30000";
 
 const FETCH_URLS = [
   `${RELEASES_URL}14.370`,
@@ -123,7 +123,7 @@ const PATTERNS = [
   "https://VTT.Example.com/*",
   "https://vtt.example.com:443/*",
   "http://vtt.example.com:80/*",
-  "http://192.168.178.25:30000/*",
+  "http://192.168.1.20:30000/*",
   "http://[::1]:30000/*",
   "https://appassets.androidplatform.net/*",
   "https://foundryvtt.com/*",
@@ -215,7 +215,7 @@ const PAYLOADS: readonly (readonly [RequestType, unknown])[] = [
   ["permissions.contains", { origin: "http://local﻿host/*" }],
   ["permissions.contains", { origin: "http://local\u0085host/*" }],
   ["permissions.contains", { origin: "http://local host/*" }],
-  ["permissions.request", { origin: "http://192.168.178.25:30000/*" }],
+  ["permissions.request", { origin: "http://192.168.1.20:30000/*" }],
   ["permissions.request", { origin: "localhost:30000/*" }],
   ["permissions.remove", { origin: "http://localhost:30000/*" }],
   ["permissions.remove", { origin: 1 }],
@@ -227,7 +227,7 @@ const PAYLOADS: readonly (readonly [RequestType, unknown])[] = [
   ["server.check", { server: LAN }],
   ["server.check", { server: PREFIXED }],
   ["server.check", { server: `${SERVER}/` }],
-  ["server.check", { server: "192.168.178.25:30000" }],
+  ["server.check", { server: "192.168.1.20:30000" }],
   ["server.check", { server: "http://u@localhost" }],
   ["server.check", {}],
   [

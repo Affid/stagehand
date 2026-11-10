@@ -857,7 +857,7 @@ Kotlin tests, a check on the emulator, a code review and a security review:
    emulator: home answers through the background, a server added and
    opened shows our running-world screen (a world ran then), so the
    release runs our injected scripts too; it is in the owner's Windows
-   folder as `C:\Users\fagot\st-apk\module-library-0.2.0.apk`. Found on
+   folder as `C:\Users\<you>\st-apk\module-library-0.2.0.apk`. Found on
    the way and fixed: **the companion's HELLO waited 1 s, five times**,
    and in the app the first answer came after about 1.3 s, every run
    (the game page and our background share one renderer, which the game
@@ -878,7 +878,7 @@ Kotlin tests, a check on the emulator, a code review and a security review:
    paired with Windows' adb, the Hyper-V firewall rule for port 30000
    (`docs/ANDROID-SPIKE.md`, "Devices and network", admin PowerShell),
    Android System WebView 146 or newer from the Play Store, then the APK
-   above installed and the server added as `http://192.168.178.25:30000`.
+   above installed and the server added as `http://192.168.1.20:30000`.
 2. **The icon** (books on a shelf) and **the home screen** (the
    extension's settings panel with the app's words, servers that open on
    a tap) were made without a design to follow; both are for you to
@@ -963,11 +963,11 @@ test:android`, no traces). First spec, `start.spec.ts`: a fresh install
 3. **Acceptance** (done 2026-11-09). The full suite on the emulator: 9 of
    9 pass. The signed release APK of `61457e0` installs and opens on home;
    it is in the owner's Windows folder as
-   `C:\Users\fagot\st-apk\module-library-0.2.0.apk`. Results:
+   `C:\Users\<you>\st-apk\module-library-0.2.0.apk`. Results:
    https://claude.ai/artifact/Pj5rVD16GKovBGud9n8Zgx. **The phone run
    waits for the owner**: no phone was on adb (the firewall rule,
    WebView 146 and wireless debugging first, phase 4 "For the owner");
-   then `ST_ANDROID_SERIAL=<phone> ST_APP_SERVER=http://192.168.178.25:30000 pnpm test:android`.
+   then `ST_ANDROID_SERIAL=<phone> ST_APP_SERVER=http://192.168.1.20:30000 pnpm test:android`.
 
 ## Phase 6: the owner's first use (started 2026-11-09)
 
