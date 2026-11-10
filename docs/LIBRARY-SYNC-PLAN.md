@@ -39,10 +39,11 @@ Spike: `spikes/library-sync/upload-spike.ts`.
 - The file is served at once with `Cache-Control: no-cache` and
   `application/json`, to anyone, logged in or not.
 - No delete request exists; we never need one.
-- Open: the first run right after a server start did not create the folder
-  (later runs did, from a clean state). Likely the Setup socket was not yet
-  connected. The client waits for the socket and retries once; phase 1
-  checks this on a freshly started server.
+- Right after a server start, Setup's `game.socket` does not exist yet and
+  `createDirectory` fails ("reading 'emit'"). Waiting for
+  `game.socket.connected` fixes it: 0.7 s on 14, 7 ms on 13 (phase 1, both
+  servers cold-started). The client waits for the socket before creating
+  the folder.
 
 ## Design
 
@@ -81,9 +82,25 @@ union.
 - Changed on one side only: that side wins.
 - Added on either side: kept. Deleted on one side and unchanged on the other:
   deleted.
-- Changed on both sides: the item goes to the existing merge prompt
-  (`entities.ts` conflict); until answered the local copy stays and nothing
-  is pushed for that item.
+- Changed on both sides: merged field by field. A field changed on one side
+  takes that side's value; tag lists and preset modules merge as sets.
+- The same field changed on both sides: this device's value wins; two notes
+  or preset descriptions are both kept, joined (cut at the note limit).
+- Edited on one side, deleted on the other: the edit wins.
+- Each clash is reported, so the page can name the item in a notice.
+- After the merge, references are repaired (`integrity.ts`): no module in a
+  missing folder or with a missing tag, folders at most two levels deep and
+  without loops, folder order renumbered.
+- Revisions: an item unchanged on this device keeps its revision; a changed
+  one gets one newer than both copies, so an open editor's stale save is
+  still a conflict (D-2). Revision-only differences never count as changes,
+  so two devices don't push back and forth.
+
+Correction (phase 1): the plan first sent clashes to "the existing merge
+prompt", but there is none: a stale save only reloads the library with a
+notice (`ui/actions.ts`). A prompt would be a new screen needing a design, so
+clashes resolve as above, without losing anything, and a prompt can come
+later if clashes turn out to matter.
 
 After a push the client reads the file back; if another device wrote in
 between, it merges again (a small window remains: Foundry has no
@@ -95,7 +112,7 @@ compare-and-swap; acceptable for one admin on a few devices).
 - Device has an empty library: take the server's.
 - Both have content (the usual case right after this ships, with libraries
   moved by export/import): merge with an empty base, so everything is kept;
-  same-id items that differ go to the merge prompt.
+  same-id items that differ clash as above.
 
 ### Where it runs
 
@@ -117,11 +134,13 @@ it off in v1.
 
 1. Merge core in shared (TDD): `merge.ts`, file wrapper schema, tests for
    every rule above, first-sync cases. Spike re-run on freshly started 13
-   and 14 servers.
+   and 14 servers. Done 2026-11-10: `merge.ts`, `merge-fields.ts`,
+   `integrity.ts`, `sync-file.ts`; tests `library-merge.test.ts`,
+   `library-sync-file.test.ts`.
 2. Page side: read, ensure folder, upload, read-back; extension and app.
    Unit tests with a fake Foundry; live test on a private 14 server.
-3. Background: base copy, pull and push scheduling, conflict hand-off to the
-   merge prompt; status line.
+3. Background: base copy, pull and push scheduling, clash notices; status
+   line.
 4. Live suites: two browser contexts on one server edit offline, both sync,
    no change lost; app plus extension on the same server; invalid file is
    ignored. 13 and 14.

@@ -28,6 +28,17 @@ async function main(): Promise<void> {
   const page = await context.newPage();
   await page.goto(`${url}/setup`);
   await page.waitForFunction(() => "game" in globalThis);
+  // Right after a server start the page's socket is not up yet; folder
+  // creation goes through it (cold-start run, 2026-11-10).
+  const started = Date.now();
+  await page.waitForFunction(
+    () =>
+      (globalThis as { game?: { socket?: { connected?: boolean } } }).game
+        ?.socket?.connected === true,
+    undefined,
+    { timeout: 30_000 },
+  );
+  console.log("socket connected after ms", Date.now() - started);
 
   const steps = await page.evaluate(
     async ({ folder, name }) => {
@@ -54,30 +65,52 @@ async function main(): Promise<void> {
           text: response.ok ? await response.text() : null,
         };
       };
-      out.push({ step: "upload to missing folder", result: await upload(folder, { n: 0 }) });
+      out.push({
+        step: "upload to missing folder",
+        result: await upload(folder, { n: 0 }),
+      });
       const g = globalThis as unknown as {
-        foundry?: { applications?: { apps?: { FilePicker?: { implementation?: unknown } } } };
+        foundry?: {
+          applications?: {
+            apps?: { FilePicker?: { implementation?: unknown } };
+          };
+        };
         FilePicker?: unknown;
       };
-      const picker = (g.foundry?.applications?.apps?.FilePicker?.implementation ??
-        g.FilePicker) as
+      const picker = (g.foundry?.applications?.apps?.FilePicker
+        ?.implementation ?? g.FilePicker) as
         | { createDirectory: (s: string, t: string) => Promise<unknown> }
         | undefined;
       out.push({ step: "FilePicker on Setup", result: Boolean(picker) });
       try {
-        out.push({ step: "create folder", result: await picker?.createDirectory("data", folder) });
+        out.push({
+          step: "create folder",
+          result: await picker?.createDirectory("data", folder),
+        });
       } catch (error) {
         out.push({ step: "create folder", result: String(error) });
       }
       try {
-        out.push({ step: "create folder again", result: await picker?.createDirectory("data", folder) });
+        out.push({
+          step: "create folder again",
+          result: await picker?.createDirectory("data", folder),
+        });
       } catch (error) {
         out.push({ step: "create folder again", result: String(error) });
       }
-      out.push({ step: "first upload", result: await upload(folder, { n: 1 }) });
-      out.push({ step: "read, no cookies", result: await read(`${folder}/${name}`) });
+      out.push({
+        step: "first upload",
+        result: await upload(folder, { n: 1 }),
+      });
+      out.push({
+        step: "read, no cookies",
+        result: await read(`${folder}/${name}`),
+      });
       out.push({ step: "overwrite", result: await upload(folder, { n: 2 }) });
-      out.push({ step: "read after overwrite", result: await read(`${folder}/${name}`) });
+      out.push({
+        step: "read after overwrite",
+        result: await read(`${folder}/${name}`),
+      });
       return out;
     },
     { folder: FOLDER, name: NAME },
