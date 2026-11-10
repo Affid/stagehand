@@ -1,35 +1,57 @@
 # Stagehand for Foundry VTT
 
-Named Stagehand on 2026-11-09 (before: Module Library, a working name),
-everywhere since 2026-11-10: the `@stagehand/*` workspace packages, the
-Kotlin package and app id `io.github.affid.stagehand`, the Firefox add-on
-id `stagehand@affid.github.io`, the test world `stagehand-test`, and the
-`st` prefix on CSS classes, script ids and `ST_*` environment variables.
-The app and add-on ids are fixed once a release is installed. Nothing was
-released under the old name, so nothing old is read or migrated.
+Stagehand replaces Foundry VTT's Setup screen with a calmer one built
+around your modules: a library with folders, tags and notes, presets you
+can apply to any world, a view of which modules each world uses, and
+queued module changes you review before they happen. It also covers the
+rest of Setup: launching worlds, backups, configuration and Foundry's own
+updates.
 
-Organise installed Foundry VTT modules on the Setup screen (folders, tags,
-notes, smart groups, authors), see which modules each world uses, and apply
-presets to a world in **add**, **replace** or **remove** mode with a diff
-preview. The design is in [docs/PRD.md](docs/PRD.md).
+Stagehand is not affiliated with or endorsed by Foundry Gaming LLC.
 
-Two parts, as the PRD describes:
+## Parts
 
-- **Browser extension** (`packages/extension`): enhances the Setup page and
-  holds the library, world snapshots and the command queue. The admin's
-  Setup also keeps the library on the server, in
-  `Data/stagehand/library.json`, so it follows the admin to every device
-  ([docs/LIBRARY-SYNC-PLAN.md](docs/LIBRARY-SYNC-PLAN.md)). Like everything
-  in Foundry's Data folder, that file can be read by anyone who knows its
-  path.
-- **Companion module** (`packages/module`, id `stagehand`): runs inside
-  each world for the full Gamemaster, reports the world's modules and applies
-  queued changes after confirmation.
-- **Shared logic** (`packages/shared`): protocol, schemas, the library model
-  and the apply resolver, used by both.
+- **Browser extension** (Chrome; Firefox add-on built from the same code):
+  the new Setup page, shown on the servers you allow it on.
+- **Android app**: the same Setup page on a phone or tablet, for servers you
+  add in the app.
+- **Companion module** (`stagehand`): runs inside a world for the full
+  Gamemaster only. It reports the world's modules to Setup and applies the
+  changes you queued, after showing them in a dialog. On its own it does
+  nothing; it needs the extension or the app.
 
-Status: M0 spike and M1 (MVP) on Foundry V14. See
-[docs/M1-STATUS.md](docs/M1-STATUS.md) for what is done and what is open.
+Status: in development, not yet released. Foundry VTT 13 and 14.
+
+## Install
+
+Releases are not published yet. When they are:
+
+- Companion module: in Foundry's Install Module window, paste the manifest
+  URL `https://github.com/Affid/stagehand/releases/latest/download/module.json`.
+- Extension and app: from the releases page of this repository.
+
+Until then, build from source (see Development) and load the extension
+unpacked from `packages/extension/dist`.
+
+## Your data
+
+- The library (folders, tags, notes, saved views, presets) is kept in the
+  browser or app, and in `Data/stagehand/library.json` on your Foundry
+  server so it follows you to every device. Like everything in Foundry's
+  Data folder, that file can be read by anyone who knows its path; don't
+  put secrets in module notes.
+- Queued changes and the companion's reports live in each world's own
+  flags (`world.json`).
+- Stagehand talks to your Foundry server. Beyond it, the extension and the
+  app read their Setup page configuration (selectors and switches, never
+  code) from this repository once a day, and, only if you allow it,
+  Foundry's release notes on foundryvtt.com. They collect nothing and send
+  nothing elsewhere.
+- The companion module talks to nothing but your Foundry server.
+
+## License
+
+MIT, see [LICENSE](LICENSE). Design notes and plans are in [docs](docs).
 
 ## Development
 
@@ -76,8 +98,7 @@ the native rules' answers the Kotlin tests check, after a change to
 ## Local Foundry
 
 Settings come from `.env.local` (copy `.env.example`): Foundry's app and data
-folders, port and administrator password. The same Foundry install serves the
-ModularAV project.
+folders, port and administrator password.
 
 ```bash
 pnpm foundry:start    # runs Foundry (V14 Node build) in the foreground
@@ -119,5 +140,5 @@ packages/android     Android app: WebViews, native bridge (Kotlin, Gradle)
 scripts/foundry      local Foundry helpers (admin API, world setup, linking)
 tests/foundry        Playwright end-to-end suites (Setup UI, in-world apply)
 tests/android        the on-device suite for the Android app
-docs                 PRD, M0 findings, M1 status
+docs                 product requirements, plans and findings
 ```
