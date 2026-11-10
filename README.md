@@ -2,8 +2,11 @@
 
 Named Stagehand on 2026-11-09 (before: Module Library, a working name). Code
 names keep the old one: the `@module-library/*` workspace packages, the
-Android package `dev.modulelibrary.app` and the test world
-`module-library-test`.
+Kotlin package `dev.modulelibrary.app` and the test world
+`module-library-test`. The app's id on a device is
+`io.github.affid.stagehand` and the Firefox add-on id
+`stagehand@affid.github.io`; both are fixed once a release is installed.
+Nothing was released under the old name, so nothing old is read or migrated.
 
 Organise installed Foundry VTT modules on the Setup screen (folders, tags,
 notes, smart groups, authors), see which modules each world uses, and apply

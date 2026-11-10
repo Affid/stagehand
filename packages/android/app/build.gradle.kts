@@ -88,7 +88,8 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "dev.modulelibrary.app"
+        // The app's identity on a device; fixed once anyone installs a release.
+        applicationId = "io.github.affid.stagehand"
         minSdk = 26
         targetSdk = 36
         versionCode = versionCodeOf(appVersion)

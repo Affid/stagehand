@@ -29,7 +29,7 @@
   },
   "browser_specific_settings": {
     "gecko": {
-      "id": "module-library@spike.local",
+      "id": "stagehand@affid.github.io",
       "strict_min_version": "128.0",
       "data_collection_permissions": {
         "required": ["none"]

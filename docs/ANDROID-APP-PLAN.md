@@ -718,8 +718,9 @@ Kotlin tests, a check on the emulator, a code review and a security review:
    coverage report. The APK's assets are `dist-app/` without source maps
    (a missing build says to run `pnpm build`); the version is the
    extension's (0.2.0, version code 200). Debug builds are
-   `dev.modulelibrary.app.debug` beside the release's
-   `dev.modulelibrary.app`. The release is minified and signed with a key
+   `io.github.affid.stagehand.debug` beside the release's
+   `io.github.affid.stagehand` (until 2026-11-10:
+   `dev.modulelibrary.app`). The release is minified and signed with a key
    in `~/.config/module-library/` (`android-release.jks` and
    `android-signing.properties`, outside git; without it the release is
    built unsigned, with a warning). Manifest: the launcher activity only
@@ -1115,17 +1116,15 @@ Packages:
    list; one name for the extension, "Stagehand for Foundry VTT", the
    app, "Stagehand" under its icon, and the companion, id `stagehand`):
    the visible names, the companion's id, the page channel and the
-   export format. Worlds' schedules saved under `flags["module-library"]`
-   are read until the next save moves them; library exports from before
-   still import. Code names, the Android package and the test world keep
-   the old name. The icon follows the name: a stage curtain or a rope on
-   a pulley.
-   Open after the rename: a live check, with Foundry free, that `editWorld`
-   drops `flags["module-library"]` on a schedule save (read in Foundry's
-   code: the same `updateSource` merge as the `-=schedule` already checked
-   live), the suites against Foundry (`pnpm foundry:setup` first, so the
-   test world turns on `stagehand`), and on any server that ran the old
-   companion: install `stagehand` and turn it on in each world in place of
+   export format. Code names, the Kotlin package and the test world keep
+   the old name. Nothing was released before the rename, so on 2026-11-10
+   (the owner: "no data to preserve") the old flags key, the old export
+   format and the retired bridge's cleanup were dropped, and the app's id
+   became `io.github.affid.stagehand` (Firefox:
+   `stagehand@affid.github.io`). The icon follows the name: a stage
+   curtain or a rope on a pulley.
+   Open after the rename: on any server that ran the old companion,
+   install `stagehand` and turn it on in each world in place of
    `module-library`.
    The icon: the owner picked **Fly rope** (a rope over a pulley with a
    sandbag, as stagehands fly scenery) from five marks in

@@ -10,7 +10,7 @@ import { _android, type AndroidDevice, type Page } from "@playwright/test";
 import { adb, adbWithInput, deviceSerial, sleep } from "./native-ui.ts";
 
 const ROOT = join(import.meta.dirname, "..", "..");
-export const PKG = "dev.modulelibrary.app.debug";
+export const PKG = "io.github.affid.stagehand.debug";
 const ACTIVITY = `${PKG}/dev.modulelibrary.app.MainActivity`;
 const APK = join(
   ROOT,
