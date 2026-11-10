@@ -20,16 +20,16 @@ the editor element, the file picker, notifications, editWorld, lockPackage,
 update check and download, disk space checks, and the CSS variables our
 page uses. The differences that matter:
 
-| # | Where | 14.370 | 13.351 | Adjustment on 13 |
-|---|---|---|---|---|
-| 1 | Adapter | `v14` entry | none, so safe mode | Add a `v13` entry (generation 13, builds up to 351), same selectors |
-| 2 | Certificates | adminGenerateCertificates, adminReleaseCertificate | missing ("Unsupported setup configuration action") | Flag `certificates: false`; Configuration hides the certificate part, as it already can |
-| 3 | Back up, then launch | `game.createBackup` returns true when done | returns nothing, even on success (foundry.mjs 13:177344) | Count the backup as done when Foundry's backup progress finishes without an error |
-| 4 | Shut down | Setup menu has Shut down; `/quit` with `defer` answers, then Foundry's "shutting down" page | no menu button; `/quit` ignores `defer`, answers `failed` and stops at once; no quit page | Our confirm, then `/quit`, then our own "Foundry has stopped" message once `/api/status` stops answering |
-| 5 | Edit module (context menu) | icon `fa-edit` | icon `fa-pen-to-square` | Find the item by either icon |
-| 6 | Create world | goes to the /create page | opens Foundry's world window inside Setup | Bring that window into view above our page, as we do for Install |
-| 7 | Configuration | has Admin username and Unix socket | settings model has neither | Hide those two fields |
-| 8 | Update check | "site unreachable" is its own answer | an unreachable site reads as "no update" | Accept: a known, minor difference |
+| #   | Where                      | 14.370                                                                                      | 13.351                                                                                    | Adjustment on 13                                                                                         |
+| --- | -------------------------- | ------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| 1   | Adapter                    | `v14` entry                                                                                 | none, so safe mode                                                                        | Add a `v13` entry (generation 13, builds up to 351), same selectors                                      |
+| 2   | Certificates               | adminGenerateCertificates, adminReleaseCertificate                                          | missing ("Unsupported setup configuration action")                                        | Flag `certificates: false`; Configuration hides the certificate part, as it already can                  |
+| 3   | Back up, then launch       | `game.createBackup` returns true when done                                                  | returns nothing, even on success (foundry.mjs 13:177344)                                  | Count the backup as done when Foundry's backup progress finishes without an error                        |
+| 4   | Shut down                  | Setup menu has Shut down; `/quit` with `defer` answers, then Foundry's "shutting down" page | no menu button; `/quit` ignores `defer`, answers `failed` and stops at once; no quit page | Our confirm, then `/quit`, then our own "Foundry has stopped" message once `/api/status` stops answering |
+| 5   | Edit module (context menu) | icon `fa-edit`                                                                              | icon `fa-pen-to-square`                                                                   | Find the item by either icon                                                                             |
+| 6   | Create world               | goes to the /create page                                                                    | opens Foundry's world window inside Setup                                                 | Bring that window into view above our page, as we do for Install                                         |
+| 7   | Configuration              | has Admin username and Unix socket                                                          | settings model has neither                                                                | Hide those two fields                                                                                    |
+| 8   | Update check               | "site unreachable" is its own answer                                                        | an unreachable site reads as "no update"                                                  | Accept: a known, minor difference                                                                        |
 
 Already handled elsewhere: closing a running world (13 refuses
 `worldShutdown`; the app's running page already uses `/join` shutdown,
