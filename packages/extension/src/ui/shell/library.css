@@ -431,3 +431,28 @@
   font-size: 11px;
   color: var(--color-light-4);
 }
+
+/* Library sync's state in the toolbar (SyncState.tsx) */
+.sts-shell .stl-sync {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 4px;
+  color: var(--color-text-subtle);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.sts-shell .stl-sync.failed {
+  color: #f3dca4;
+}
+
+.sts-shell .stl-sync.failed i {
+  color: #f5c45e;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sts-shell .stl-sync .fa-spin {
+    animation: none;
+  }
+}

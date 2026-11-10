@@ -1,6 +1,7 @@
 // A small store for the Setup UI. State survives Setup re-renders, which
 // remount the components.
 import type { Launching } from "./launching.ts";
+import type { SyncStatus } from "./library-sync.ts";
 import type { ModuleFilterSpec } from "@stagehand/shared/library/schema";
 import { useEffect, useState } from "preact/hooks";
 import type { SetupState } from "../messages.ts";
@@ -43,6 +44,8 @@ export interface UiState {
   readonly nextLaunch: string | null;
   /** The world being launched, from the tap until Foundry leaves Setup. */
   readonly launching: Launching | null;
+  /** Library sync with the server; unset until it first runs (library-sync.ts). */
+  readonly librarySync?: SyncStatus;
 }
 
 /** The Library's side panels; tags and presets remember the one chosen. */

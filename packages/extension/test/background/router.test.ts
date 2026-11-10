@@ -1057,3 +1057,49 @@ describe("router: a server's name and address on the app's home (owner, 2026-11-
     );
   });
 });
+
+describe("router: library sync", () => {
+  test("merges the server's file and records what was written, once verified", async () => {
+    const d = deps();
+    await registered(d);
+    await route(d, { kind: "setup-seen", data: setupData(true) }, fromSetup);
+    const reply = (await route(
+      d,
+      { kind: "library-sync", text: null },
+      fromSetup,
+    )) as { ok: boolean; push: string | null };
+    expect(reply.ok).toBe(true);
+    expect(reply.push).toContain('"format":"stagehand-library"');
+    await route(
+      d,
+      { kind: "library-synced", text: reply.push ?? "" },
+      fromSetup,
+    );
+    expect(await d.state.syncBase(S)).not.toBeNull();
+  });
+
+  test("is refused without admin verification", async () => {
+    const d = deps();
+    await registered(d);
+    await route(d, { kind: "setup-seen", data: setupData(false) }, fromSetup);
+    await expect(
+      route(d, { kind: "library-sync", text: null }, fromSetup),
+    ).rejects.toThrow(/admin/);
+    await expect(
+      route(d, { kind: "library-synced", text: "{}" }, fromSetup),
+    ).rejects.toThrow(/admin/);
+  });
+
+  test("an oversized file is refused at the door", async () => {
+    const d = deps();
+    await registered(d);
+    await route(d, { kind: "setup-seen", data: setupData(true) }, fromSetup);
+    await expect(
+      route(
+        d,
+        { kind: "library-sync", text: "x".repeat(8_000_001) },
+        fromSetup,
+      ),
+    ).rejects.toThrow();
+  });
+});

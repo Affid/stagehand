@@ -7,7 +7,13 @@ import { logError } from "@stagehand/shared/log";
 import { parseCoreVersion } from "@stagehand/shared/version";
 import { type SetupData, SetupDataSchema } from "@stagehand/shared/world";
 import { type Adapter, V14_SELECTORS } from "../adapters/config.ts";
-import { type AdapterChoice, selectAdapter } from "../adapters/select.ts";
+import {
+  type AdapterChoice,
+  allowsChanges,
+  selectAdapter,
+} from "../adapters/select.ts";
+import type { LibrarySync } from "./library-sync.ts";
+import { sendNotingChanges, startLibrarySync } from "./library-sync-start.ts";
 import type { SetupState } from "../messages.ts";
 import type { PageChannel } from "../page-channel.ts";
 import { NO_UPDATES } from "../page-updates.ts";
@@ -69,7 +75,26 @@ function createUi(
     launching: null,
   });
   trackProgress(store, page);
-  const actions = createActions(store, deps.send, t, page);
+  let sync: LibrarySync | undefined;
+  const send = sendNotingChanges(deps.send, () => sync);
+  const actions = createActions(store, send, t, page);
+  // Only where the library can change: an admin-verified, supported Setup,
+  // as soon as it is one (verification may come with a later Setup render).
+  const startSync = (): void => {
+    const { data, adapter } = store.get();
+    if (sync || !data.adminVerified || !allowsChanges(adapter)) return;
+    sync = startLibrarySync({
+      store,
+      page,
+      send: deps.send,
+      t,
+      doc: deps.doc,
+      refresh: () => actions.refresh(),
+    });
+    void sync.sync();
+  };
+  store.subscribe(startSync);
+  startSync();
   return { store, actions, t, page, ports: deps.ports };
 }
 

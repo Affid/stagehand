@@ -1,11 +1,17 @@
 import { describe, expect, test } from "vitest";
+import type { SyncSide } from "../src/library/merge.ts";
 import { emptyLibrary, type Library } from "../src/library/schema.ts";
 import {
+  descendsFrom,
+  MAX_HISTORY,
   MAX_SYNC_FILE_CHARS,
+  nextSyncFile,
   parseSyncFile,
   SYNC_FILE_PATH,
   serializeSyncFile,
 } from "../src/library/sync-file.ts";
+
+const save = (side: SyncSide) => nextSyncFile(side, "f1", null);
 
 const library: Library = {
   ...emptyLibrary("http://a:1"),
@@ -21,7 +27,7 @@ describe("library sync file", () => {
 
   test("round-trips, rebound to the reading device's server id", () => {
     const text = serializeSyncFile(
-      { library, sorted: ["dice"] },
+      save({ library, sorted: ["dice"] }),
       "2026-11-10T12:00:00Z",
     );
     expect(JSON.parse(text)).toMatchObject({
@@ -31,18 +37,22 @@ describe("library sync file", () => {
     });
     expect(parseSyncFile(text, "http://b:2")).toEqual({
       ok: true,
-      side: {
-        library: { ...library, serverId: "http://b:2" },
-        sorted: ["dice"],
+      file: {
+        id: "f1",
+        history: [],
+        side: {
+          library: { ...library, serverId: "http://b:2" },
+          sorted: ["dice"],
+        },
       },
     });
   });
 
   test("keeps unseeded sorted modules as null", () => {
-    const text = serializeSyncFile({ library, sorted: null }, "t");
+    const text = serializeSyncFile(save({ library, sorted: null }), "t");
     expect(parseSyncFile(text, "s")).toMatchObject({
       ok: true,
-      side: { sorted: null },
+      file: { side: { sorted: null } },
     });
   });
 
@@ -61,7 +71,7 @@ describe("library sync file", () => {
 
   test("rejects a file from a newer Stagehand", () => {
     const text = JSON.stringify({
-      ...JSON.parse(serializeSyncFile({ library, sorted: null }, "t")),
+      ...JSON.parse(serializeSyncFile(save({ library, sorted: null }), "t")),
       version: 2,
     });
     expect(parseSyncFile(text, "s")).toEqual({ ok: false, error: "newer" });
@@ -69,7 +79,7 @@ describe("library sync file", () => {
 
   test("rejects a damaged library", () => {
     const text = JSON.stringify({
-      ...JSON.parse(serializeSyncFile({ library, sorted: null }, "t")),
+      ...JSON.parse(serializeSyncFile(save({ library, sorted: null }), "t")),
       library: { ...library, tags: [{ id: "t1" }] },
     });
     expect(parseSyncFile(text, "s")).toEqual({ ok: false, error: "invalid" });
@@ -86,11 +96,14 @@ describe("library sync file", () => {
       ...library,
       views: [{ id: "v1", name: "Combat", filter: { ...filter, authors: [] } }],
     };
-    const text = serializeSyncFile({ library: withView, sorted: null }, "t");
+    const text = serializeSyncFile(
+      save({ library: withView, sorted: null }),
+      "t",
+    );
     const result = parseSyncFile(text, "s");
-    expect(result.ok && result.side.library.views[0]?.filter.tags).toEqual([
-      "t1",
-    ]);
+    expect(result.ok && result.file.side.library.views[0]?.filter.tags).toEqual(
+      ["t1"],
+    );
   });
 
   test("repairs references a hand-edited file leaves dangling", () => {
@@ -98,9 +111,12 @@ describe("library sync file", () => {
       ...library,
       modules: { dice: { folderId: "nope", tags: ["t1", "gone"], note: "" } },
     };
-    const text = serializeSyncFile({ library: broken, sorted: null }, "t");
+    const text = serializeSyncFile(
+      save({ library: broken, sorted: null }),
+      "t",
+    );
     const result = parseSyncFile(text, "s");
-    expect(result.ok && result.side.library.modules.dice).toEqual({
+    expect(result.ok && result.file.side.library.modules.dice).toEqual({
       folderId: null,
       tags: ["t1"],
       note: "",
@@ -117,9 +133,41 @@ describe("library sync file limits (review)", () => {
       revision: 1,
     }));
     const text = serializeSyncFile(
-      { library: { ...library, tags, modules: {} }, sorted: null },
+      save({ library: { ...library, tags, modules: {} }, sorted: null }),
       "t",
     );
     expect(parseSyncFile(text, "s")).toEqual({ ok: false, error: "invalid" });
+  });
+});
+
+describe("library sync file ancestry (review)", () => {
+  const side = { library, sorted: null };
+
+  test("each save remembers the saves it came from, up to a limit", () => {
+    const first = nextSyncFile(side, "a", null);
+    const second = nextSyncFile(side, "b", first);
+    expect(second.history).toEqual(["a"]);
+    expect(descendsFrom(second, "a")).toBe(true);
+    expect(descendsFrom(second, "b")).toBe(true);
+    expect(descendsFrom(first, "b")).toBe(false);
+    let last = first;
+    for (let i = 0; i < MAX_HISTORY + 5; i++)
+      last = nextSyncFile(side, `s${String(i)}`, last);
+    expect(last.history).toHaveLength(MAX_HISTORY);
+    expect(descendsFrom(last, "a")).toBe(false);
+  });
+
+  test("a file without its id and history is not ours", () => {
+    const text = JSON.parse(serializeSyncFile(save(side), "t")) as Record<
+      string,
+      unknown
+    >;
+    const rest = Object.fromEntries(
+      Object.entries(text).filter(([k]) => k !== "id"),
+    );
+    expect(parseSyncFile(JSON.stringify(rest), "s")).toEqual({
+      ok: false,
+      error: "invalid",
+    });
   });
 });

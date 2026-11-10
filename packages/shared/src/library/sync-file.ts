@@ -33,7 +33,13 @@ const withinLimits = (l: z.infer<typeof LibrarySchema>): boolean =>
   l.presets.every((p) => p.modules.length <= MAX_SYNC_MODULES) &&
   Object.values(l.modules).every((m) => m.tags.length <= MAX_SYNC_ITEMS);
 
+/** Ancestors a file remembers: far more saves than happen between two syncs. */
+export const MAX_HISTORY = 50;
+const FileId = z.string().min(1).max(64);
+
 const SyncFileSchema = Head.extend({
+  id: FileId,
+  history: z.array(FileId).max(MAX_HISTORY),
   savedAt: z.string().max(100),
   library: LibrarySchema.refine(withinLimits),
   sorted: z.array(IdSchema).max(MAX_SYNC_MODULES).nullable(),
@@ -41,17 +47,48 @@ const SyncFileSchema = Head.extend({
 
 export type SyncFileError = "too-big" | "not-json" | "invalid" | "newer";
 
+/**
+ * One save of the file: what it holds, a fresh id, and the ids of the saves
+ * it was merged from (oldest first). A device merges three-way only against
+ * a copy in that line; any other copy (a replaced file, two devices saving
+ * at once) is merged as a union, so nothing is deleted by mistake.
+ */
+export interface SyncFile {
+  readonly side: SyncSide;
+  readonly id: string;
+  readonly history: readonly string[];
+}
+
 export type SyncFileRead =
-  | { readonly ok: true; readonly side: SyncSide }
+  | { readonly ok: true; readonly file: SyncFile }
   | { readonly ok: false; readonly error: SyncFileError };
 
-export function serializeSyncFile(side: SyncSide, savedAt: string): string {
+/** The next save after `previous` (none: a new line of saves). */
+export const nextSyncFile = (
+  side: SyncSide,
+  id: string,
+  previous: SyncFile | null,
+): SyncFile => ({
+  side,
+  id,
+  history: previous
+    ? [...previous.history, previous.id].slice(-MAX_HISTORY)
+    : [],
+});
+
+/** `file` is the save `id`, or was merged from it. */
+export const descendsFrom = (file: SyncFile, id: string): boolean =>
+  file.id === id || file.history.includes(id);
+
+export function serializeSyncFile(file: SyncFile, savedAt: string): string {
   return JSON.stringify({
     format: FORMAT,
     version: VERSION,
+    id: file.id,
+    history: file.history,
     savedAt,
-    library: side.library,
-    sorted: side.sorted,
+    library: file.side.library,
+    sorted: file.side.sorted,
   });
 }
 
@@ -72,6 +109,7 @@ export function parseSyncFile(text: string, serverId: string): SyncFileRead {
   if (head.data.version > VERSION) return { ok: false, error: "newer" };
   const file = SyncFileSchema.safeParse(json);
   if (!file.success) return { ok: false, error: "invalid" };
+  const { id, history, sorted } = file.data;
   const library = repairReferences({ ...file.data.library, serverId });
-  return { ok: true, side: { library, sorted: file.data.sorted } };
+  return { ok: true, file: { side: { library, sorted }, id, history } };
 }

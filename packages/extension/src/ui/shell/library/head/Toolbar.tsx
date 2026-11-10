@@ -3,6 +3,7 @@
 import { GROUP_BYS, type GroupBy } from "../../../model/library-groups.ts";
 import { Icon } from "../../../common/widgets.tsx";
 import { useUi } from "../../../context.ts";
+import { SyncState } from "./SyncState.tsx";
 import { Transfer } from "./Transfer.tsx";
 
 export interface ToolbarProps {
@@ -80,6 +81,7 @@ export function Toolbar(props: ToolbarProps) {
       ) : null}
       <PanelToggle kind="tags" icon="tags" />
       <PanelToggle kind="presets" icon="layer-group" />
+      <SyncState />
       <Transfer />
     </div>
   );

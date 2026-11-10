@@ -42,6 +42,7 @@ import {
   serverIdOfPage,
 } from "./servers.ts";
 import type { ServerState } from "./state.ts";
+import { librarySynced, syncLibrary } from "./library-sync.ts";
 import { syncWorlds } from "./world-sync.ts";
 
 export interface SenderInfo {
@@ -271,6 +272,8 @@ const SETUP_WRITES: ReadonlySet<string> = new Set([
   "library-op",
   "library-import",
   "library-export",
+  "library-sync",
+  "library-synced",
   "queue-apply",
   "cancel-command",
   "world-queue",
@@ -306,6 +309,10 @@ async function fromSetup(
       return {
         text: exportLibrary(await deps.state.library(server), deps.now()),
       };
+    case "library-sync":
+      return syncLibrary(deps.state, server, m.text, deps.now(), deps.uuid);
+    case "library-synced":
+      return librarySynced(deps.state, server, m.text);
     case "queue-apply":
       return queueApply(deps, server, m);
     case "cancel-command":

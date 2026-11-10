@@ -7,23 +7,50 @@ import { startSetupMain } from "../../src/page/main.ts";
 import { startSetupUi } from "../../src/ui/start.ts";
 import { fakePorts, setupState } from "./harness.tsx";
 
-afterEach(() => {
-  document.body.replaceChildren();
-  document.documentElement.className = "";
-});
-
 const flush = (): Promise<void> =>
   new Promise((resolve) => {
     setTimeout(resolve, 0);
   });
 
-function start() {
+afterEach(async () => {
+  // Library sync runs on after each test's checks: let its last status
+  // render before the page goes, not after the environment is gone.
+  for (let i = 0; i < 10; i++) await flush();
+  vi.unstubAllGlobals();
+  document.body.replaceChildren();
+  document.documentElement.className = "";
+});
+
+/** Library sync's answer when there is nothing to do. */
+const QUIET = {
+  ok: true,
+  changedLocal: false,
+  push: null,
+  clashes: [],
+  repaired: false,
+};
+
+function start(states = [setupState()]) {
   const [main, ui] = localChannelPair();
   const atMain: [string, unknown][] = [];
-  main.listen((type, payload) => atMain.push([type, payload]));
-  const state = setupState();
+  main.listen((type, payload) => {
+    atMain.push([type, payload]);
+    // Library sync: no file on this server, so nothing waits on a timer.
+    if (type === "LIBRARY_FILE") {
+      const { requestId } = payload as { requestId: string };
+      main.send("LIBRARY_FILE_DONE", { requestId, missing: true });
+    }
+  });
+  const state = states[0] ?? setupState();
+  let seen = 0;
   const send = vi.fn((m: ExtensionMessage) =>
-    Promise.resolve(m.kind === "setup-seen" ? state : {}),
+    Promise.resolve(
+      m.kind === "setup-seen"
+        ? (states[seen++] ?? states.at(-1))
+        : m.kind === "library-sync"
+          ? QUIET
+          : {},
+    ),
   );
   startSetupUi({
     channel: ui,
@@ -66,13 +93,15 @@ describe("setup-ui: our half of the Setup page", () => {
 
   test("a second report updates the page it already started", async () => {
     const s = start();
+    const seen = () =>
+      s.send.mock.calls.filter(([m]) => m.kind === "setup-seen").length;
     s.main.send("SETUP_DATA", s.state.setup);
     await vi.waitFor(() => {
-      expect(s.send).toHaveBeenCalledTimes(1);
+      expect(seen()).toBe(1);
     });
     s.main.send("SETUP_DATA", s.state.setup);
     await vi.waitFor(() => {
-      expect(s.send).toHaveBeenCalledTimes(2);
+      expect(seen()).toBe(2);
     });
     await flush();
     expect(s.atMain.filter((m) => m[0] === "SHELL")).toHaveLength(1);
@@ -82,6 +111,11 @@ describe("setup-ui: our half of the Setup page", () => {
 describe("both halves in one closure over the private channel (the app)", () => {
   test("Foundry's Setup data reaches our page, which takes over Foundry's layout", async () => {
     document.body.innerHTML = `<div id="setup"></div><nav id="setup-menu"></nav>`;
+    // Library sync reads the server's file: there is none.
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(() => Promise.resolve(new Response("", { status: 404 }))),
+    );
     const [mainEnd, uiEnd] = localChannelPair();
     const empty = { values: () => [].values() };
     startSetupMain({
@@ -101,7 +135,13 @@ describe("both halves in one closure over the private channel (the app)", () => 
     });
     const state = setupState();
     const send = vi.fn((m: ExtensionMessage) =>
-      Promise.resolve(m.kind === "setup-seen" ? state : {}),
+      Promise.resolve(
+        m.kind === "setup-seen"
+          ? state
+          : m.kind === "library-sync"
+            ? QUIET
+            : {},
+      ),
     );
     startSetupUi({
       channel: uiEnd,
@@ -140,5 +180,30 @@ describe("both halves in one closure over the private channel (the app)", () => 
     expect(document.documentElement.classList.contains("st-shell-off")).toBe(
       true,
     );
+  });
+
+  test("library sync starts on an admin's Setup, and only there", async () => {
+    const s = start();
+    s.main.send("SETUP_DATA", s.state.setup);
+    await vi.waitFor(() => {
+      expect(s.atMain.map((m) => m[0])).toContain("LIBRARY_FILE");
+    });
+  });
+
+  test("library sync starts once a later Setup report is verified", async () => {
+    const s = start([
+      setupState({ adminVerified: false }),
+      setupState({ adminVerified: true }),
+    ]);
+    s.main.send("SETUP_DATA", s.state.setup);
+    await vi.waitFor(() => {
+      expect(s.atMain.map((m) => m[0])).toContain("SHELL");
+    });
+    await flush();
+    expect(s.atMain.map((m) => m[0])).not.toContain("LIBRARY_FILE");
+    s.main.send("SETUP_DATA", s.state.setup);
+    await vi.waitFor(() => {
+      expect(s.atMain.map((m) => m[0])).toContain("LIBRARY_FILE");
+    });
   });
 });

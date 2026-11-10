@@ -6,6 +6,8 @@ import {
   type OpResult,
 } from "@stagehand/shared/library/ops";
 import { emptyLibrary, type Library } from "@stagehand/shared/library/schema";
+import type { SyncSide } from "@stagehand/shared/library/merge";
+
 import { rebaseRevisions } from "@stagehand/shared/library/transfer";
 import {
   type Command,
@@ -15,6 +17,13 @@ import {
 } from "@stagehand/shared/world";
 import { type SerializedKeyValue, type Updated, withResult } from "./kv.ts";
 import type { ServerId } from "./servers.ts";
+
+/** The server's file as this browser last saw it: the merge's base. */
+export interface SyncBase {
+  readonly side: SyncSide;
+  /** The save's id: a base counts only for files saved from it. */
+  readonly id: string;
+}
 
 export interface ServerRecord {
   readonly id: ServerId;
@@ -63,6 +72,7 @@ const MOVED_KINDS: Readonly<Record<string, (to: ServerId) => unknown>> = {
   setup: () => null,
   snapshots: () => ({}),
   sorted: () => null,
+  "sync-base": () => null,
 };
 
 async function copyKey(
@@ -189,6 +199,40 @@ function libraryStore(kv: SerializedKeyValue) {
   };
 }
 
+/**
+ * Library sync: the server's file as this browser last saw it (the merge's
+ * base), and the merge itself, run inside the library's serialised update so
+ * an edit made meanwhile is never lost.
+ */
+function syncStore(kv: SerializedKeyValue) {
+  const baseKey = (id: ServerId): string => key("sync-base", id);
+  const sortedKey = (id: ServerId): string => key("sorted", id);
+  return {
+    syncBase: async (id: ServerId): Promise<SyncBase | null> =>
+      (await kv.get<SyncBase | null>(baseKey(id))) ?? null,
+    async putSyncBase(id: ServerId, base: SyncBase): Promise<void> {
+      await kv.update<SyncBase | null>(baseKey(id), null, () => base);
+    },
+    /** The merge, given the library and the sorted modules as they are now. */
+    mergeIntoLibrary<R>(
+      id: ServerId,
+      fn: (current: Library, sorted: string[] | null) => Updated<Library, R>,
+    ): Promise<R> {
+      return kv.update<Library, R>(
+        key("library", id),
+        emptyLibrary(id),
+        async (lib) => fn(lib, (await kv.get<string[]>(sortedKey(id))) ?? null),
+      );
+    },
+    /** Adds merged sorted modules; one sorted meanwhile stays sorted. */
+    async putSorted(id: ServerId, ids: readonly string[]): Promise<void> {
+      await kv.update<string[] | null>(sortedKey(id), null, (cur) =>
+        [...new Set([...(cur ?? []), ...ids])].slice(-MAX_PACKAGES),
+      );
+    },
+  };
+}
+
 /** What the worlds report: Setup data and the companions' snapshots. */
 function worldStore(kv: SerializedKeyValue) {
   const read = reader(kv);
@@ -273,6 +317,7 @@ export function createState(kv: SerializedKeyValue) {
   return {
     ...serverStore(kv),
     ...libraryStore(kv),
+    ...syncStore(kv),
     ...worldStore(kv),
     ...commandStore(kv),
     ...intakeStore(kv),

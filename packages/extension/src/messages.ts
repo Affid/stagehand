@@ -2,6 +2,7 @@
 // Validated with Zod in the background: content scripts run on web pages.
 import { LibraryOpSchema } from "@stagehand/shared/library/ops";
 import type { Library } from "@stagehand/shared/library/schema";
+import { MAX_SYNC_FILE_CHARS } from "@stagehand/shared/library/sync-file";
 import { MAX_NEWS, MAX_NEWS_URL } from "@stagehand/shared/news";
 import {
   ApplyModeSchema,
@@ -51,6 +52,16 @@ export const ExtensionMessageSchema = z.discriminatedUnion("kind", [
     text: z.string().max(MAX_IMPORT_BYTES),
   }),
   z.object({ kind: z.literal("library-export") }),
+  /** Library sync: the server's file as read (null: none), to merge. */
+  z.object({
+    kind: z.literal("library-sync"),
+    text: z.string().max(MAX_SYNC_FILE_CHARS).nullable(),
+  }),
+  /** Library sync: this text is now on the server. */
+  z.object({
+    kind: z.literal("library-synced"),
+    text: z.string().max(MAX_SYNC_FILE_CHARS),
+  }),
   z
     .object({
       kind: z.literal("queue-apply"),
