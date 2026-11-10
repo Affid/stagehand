@@ -208,3 +208,45 @@ describe("configuration through the bridge", () => {
     spy.mockRestore();
   });
 });
+
+describe("the library file through the bridge", () => {
+  test("reads, and settles on the matching answer without its id", async () => {
+    const spy = vi.spyOn(window, "postMessage");
+    const bridge = createPageBridge(
+      windowChannel(window, "setup-ui", "setup-main"),
+    );
+    const done = bridge.libraryFile({ op: "read" });
+    const sent = spy.mock.calls.at(-1)?.[0] as {
+      type: string;
+      payload: { requestId: string; op: string };
+    };
+    expect(sent).toMatchObject({
+      type: "LIBRARY_FILE",
+      payload: { op: "read" },
+    });
+    window.dispatchEvent(
+      fromPage("LIBRARY_FILE_DONE", { requestId: "other", missing: true }),
+    );
+    window.dispatchEvent(
+      fromPage("LIBRARY_FILE_DONE", {
+        requestId: sent.payload.requestId,
+        text: "{}",
+      }),
+    );
+    await expect(done).resolves.toEqual({ text: "{}" });
+    spy.mockRestore();
+  });
+
+  test("a write that gets no answer in time is an error", async () => {
+    vi.useFakeTimers();
+    const bridge = createPageBridge(
+      windowChannel(window, "setup-ui", "setup-main"),
+    );
+    const done = bridge.libraryFile({ op: "write", text: "{}" });
+    vi.advanceTimersByTime(30_000);
+    await expect(done).resolves.toEqual({
+      error: "Foundry did not answer in time.",
+    });
+    vi.useRealTimers();
+  });
+});

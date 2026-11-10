@@ -28,6 +28,7 @@ import type {
 } from "../page-server-backups.ts";
 import type { Preview } from "../page-compat.ts";
 import type { Release, UpdateOp, UpdateReply } from "../page-update.ts";
+import type { LibraryFileReply } from "../page-library-file.ts";
 
 export interface BackupsResult {
   readonly backups?: readonly BackupInfo[];
@@ -67,6 +68,9 @@ export interface UpdateAsk {
   /** download: the version it installs; preview: the release checked. */
   readonly version?: string;
 }
+
+export type LibraryFileAsk =
+  { readonly op: "read" } | { readonly op: "write"; readonly text: string };
 
 export interface PageBridge {
   notify(kind: NoticeKind, text: string): void;
@@ -122,6 +126,8 @@ export interface PageBridge {
   ): Promise<ConfigResult>;
   /** Foundry's own update: check a channel, or download and install. */
   update(ask: UpdateAsk): Promise<UpdateResult>;
+  /** The library file on the server (library sync): read it, or write new text. */
+  libraryFile(ask: LibraryFileAsk): Promise<LibraryFileReply>;
   subscribe(fn: (event: PageToUi) => void): () => void;
 }
 
@@ -297,6 +303,32 @@ function updateRequest(
   );
 }
 
+/** The library file on the server: the reply without its request id. */
+function libraryFileRequest(
+  send: (m: UiToPage) => void,
+  listeners: Set<(event: PageToUi) => void>,
+  ask: LibraryFileAsk,
+): Promise<LibraryFileReply> {
+  return request<LibraryFileReply>(
+    send,
+    listeners,
+    (requestId) => ({ type: "LIBRARY_FILE", payload: { requestId, ...ask } }),
+    (e, id) => {
+      if (e.type !== "LIBRARY_FILE_DONE" || e.payload.requestId !== id)
+        return undefined;
+      const { text, missing, error } = e.payload;
+      return {
+        ...(text === undefined ? {} : { text }),
+        ...(missing ? { missing } : {}),
+        ...(error === undefined ? {} : { error }),
+      };
+    },
+    // A first write may wait for Foundry's socket (about 10 s at most).
+    SAVE_TIMEOUT_MS,
+    { error: "Foundry did not answer in time." },
+  );
+}
+
 /** A queue save's answer, without the request id. */
 const queueSaved = (p: QueueDone): QueueSaved => ({
   ...(p.error === undefined ? {} : { error: p.error }),
@@ -357,6 +389,7 @@ function requests(
   | "serverBackups"
   | "config"
   | "update"
+  | "libraryFile"
 > {
   return {
     ...saves(send, listeners),
@@ -382,6 +415,7 @@ function requests(
         { error: "Foundry did not answer in time." },
       ),
     update: (ask) => updateRequest(send, listeners, ask),
+    libraryFile: (ask) => libraryFileRequest(send, listeners, ask),
     ...backupRequests(send, listeners),
   };
 }

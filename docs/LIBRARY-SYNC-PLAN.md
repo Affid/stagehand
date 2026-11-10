@@ -138,17 +138,25 @@ it off in v1.
    `integrity.ts`, `sync-file.ts`; tests `library-merge.test.ts`,
    `library-sync-file.test.ts`.
 2. Page side: read, ensure folder, upload, read-back; extension and app.
-   Unit tests with a fake Foundry; live test on a private 14 server.
+   Unit tests with a fake Foundry; live test on a private 14 server. Done
+   2026-11-10: LIBRARY_FILE / LIBRARY_FILE_DONE (`page-library-file.ts`),
+   `page/library-file.ts` (upload first; on "does not exist", wait for the
+   socket, create the folder, upload again), `PageBridge.libraryFile`; live
+   `tests/foundry/setup-library-sync.spec.ts` passes on 14.370. On 13.351
+   our Setup page does not open (remote config has 14 adapters only), so
+   the spec cannot run there.
 3. Background: base copy, pull and push scheduling, clash notices; status
    line.
 4. Live suites: two browser contexts on one server edit offline, both sync,
    no change lost; app plus extension on the same server; invalid file is
-   ignored. 13 and 14.
+   ignored. On 14 (13 once our Setup page runs there).
 5. Docs: PRD D-3 and D-4 updated, README, privacy note (the library is stored
    on the admin's own server, readable by URL).
 
 ## Not in v1
 
+- Foundry 13: sync runs where our Setup page runs, and that is 14 only for
+  now. Foundry 13 itself allows everything sync needs (spike).
 - Syncing the server list between devices.
 - Hosts without a writable Data folder (The Forge): sync shows as
   unavailable there.

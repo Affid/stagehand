@@ -34,6 +34,12 @@ import {
   type UpdateRequest,
 } from "./page-update.ts";
 import {
+  type LibraryFileDone,
+  type LibraryFileRequest,
+  parseLibraryFileDone,
+  parseLibraryFileRequest,
+} from "./page-library-file.ts";
+import {
   parseServerBackupsReply,
   parseServerBackupsRequest,
   type ServerBackupsReply,
@@ -140,7 +146,9 @@ export type UiToPage =
   /** Foundry's own update: check a channel, or download and install (answered by UPDATE_DONE). */
   | { readonly type: "UPDATE"; readonly payload: UpdateRequest }
   /** Check Foundry's package list for updates (answered by UPDATES). */
-  | { readonly type: "CHECK_UPDATES"; readonly payload: Record<string, never> };
+  | { readonly type: "CHECK_UPDATES"; readonly payload: Record<string, never> }
+  /** Read or write the library file on the server (answered by LIBRARY_FILE_DONE). */
+  | { readonly type: "LIBRARY_FILE"; readonly payload: LibraryFileRequest };
 
 export type PageToUi =
   /** Newer versions Foundry would install (page-updates.ts). */
@@ -162,7 +170,8 @@ export type PageToUi =
       readonly payload: ServerBackupsReply;
     }
   | { readonly type: "CONFIG_DONE"; readonly payload: ConfigReply }
-  | { readonly type: "UPDATE_DONE"; readonly payload: UpdateReply };
+  | { readonly type: "UPDATE_DONE"; readonly payload: UpdateReply }
+  | { readonly type: "LIBRARY_FILE_DONE"; readonly payload: LibraryFileDone };
 
 const MAX_TEXT = 2000;
 const KINDS: readonly string[] = ["info", "warning", "error"];
@@ -246,10 +255,23 @@ function parseEditor(type: string, p: Loose): UiToPage | undefined {
   return undefined;
 }
 
+/** Library sync's file request (page-library-file.ts). */
+function libraryFileRequest(p: Loose): UiToPage | undefined {
+  const payload = parseLibraryFileRequest(p);
+  return payload ? { type: "LIBRARY_FILE", payload } : undefined;
+}
+
+/** Library sync's file answer (page-library-file.ts). */
+function libraryFileDone(p: Loose): PageToUi | undefined {
+  const payload = parseLibraryFileDone(p);
+  return payload ? { type: "LIBRARY_FILE_DONE", payload } : undefined;
+}
+
 /** A message from the UI, checked; undefined when malformed. */
 export function parseUiToPage(type: string, p: unknown): UiToPage | undefined {
   if (!isObject(p)) return undefined;
   if (type.startsWith("EDITOR_")) return parseEditor(type, p);
+  if (type === "LIBRARY_FILE") return libraryFileRequest(p);
   switch (type) {
     case "CHECK_UPDATES":
       return Object.keys(p).length === 0 ? { type, payload: {} } : undefined;
@@ -300,6 +322,7 @@ export function parseUiToPage(type: string, p: unknown): UiToPage | undefined {
 /** A message from the page world, checked; undefined when malformed. */
 export function parsePageToUi(type: string, p: unknown): PageToUi | undefined {
   if (!isObject(p)) return undefined;
+  if (type === "LIBRARY_FILE_DONE") return libraryFileDone(p);
   if (type === "PROGRESS") {
     const payload = parseProgress(p);
     return payload ? { type, payload } : undefined;

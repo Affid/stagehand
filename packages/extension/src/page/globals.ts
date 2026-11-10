@@ -46,6 +46,8 @@ export interface SetupGame {
   readonly worlds?: Collection;
   readonly systems?: Collection;
   readonly settings?: ClientSettings;
+  /** Foundry's socket: not there yet right after a server start. */
+  readonly socket?: { readonly connected?: boolean };
   /** Foundry's own POST to the Setup route; resolves with the server's answer. */
   readonly post?: (data: object) => Promise<unknown>;
   /** Resolves once the backup is done: true if it was created. */
@@ -78,6 +80,10 @@ export interface PageGlobals {
       readonly instances?: ReadonlyMap<string, OpenWindow>;
       /** Foundry's custom elements (prose-mirror and the rest). */
       readonly elements?: Readonly<Record<string, unknown>>;
+      /** Foundry's applications; the file picker creates folders in Data. */
+      readonly apps?: {
+        readonly FilePicker?: { readonly implementation?: unknown };
+      };
     };
     readonly utils?: {
       readonly escapeHTML?: (text: string) => string;

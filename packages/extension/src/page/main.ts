@@ -19,6 +19,7 @@ import type { ConfigRequest } from "../page-config.ts";
 import type { UpdateRequest } from "../page-update.ts";
 import type { ServerBackupsRequest } from "../page-server-backups.ts";
 import type { Updates } from "../page-updates.ts";
+import type { LibraryFileRequest } from "../page-library-file.ts";
 import { runFoundryAction } from "./actions.ts";
 import { runBackups } from "./backups.ts";
 import { runServerBackups } from "./server-backups.ts";
@@ -27,6 +28,11 @@ import { runUpdate } from "./update.ts";
 import { closeEditor, openEditor, saveFromEditor } from "./editor.ts";
 import { saveWorld } from "./save-world.ts";
 import { saveQueue } from "./save-queue.ts";
+import {
+  libraryFileDeps,
+  readLibraryFile,
+  writeLibraryFile,
+} from "./library-file.ts";
 import { collect } from "./collect.ts";
 import { watchProgress } from "./progress.ts";
 import { checkUpdates } from "./updates.ts";
@@ -159,6 +165,21 @@ function answerSave(ctx: Ctx, req: SaveWorld): void {
   );
 }
 
+/** Reads or writes the library file on the server, and answers with its id. */
+function answerLibraryFile(ctx: Ctx, req: LibraryFileRequest): void {
+  const deps = libraryFileDeps(ctx.page);
+  const run =
+    req.op === "read"
+      ? readLibraryFile(deps)
+      : writeLibraryFile(deps, req.text);
+  void run.then((reply) => {
+    const payload = reply.error
+      ? { requestId: req.requestId, error: clipError(reply.error) }
+      : { requestId: req.requestId, ...reply };
+    ctx.postToUi({ type: "LIBRARY_FILE_DONE", payload });
+  });
+}
+
 /** Saves a world's queue and launch's intent, and answers with its id. */
 function answerQueue(ctx: Ctx, req: SaveQueue): void {
   const deps = {
@@ -215,6 +236,7 @@ const WRITES: ReadonlySet<string> = new Set([
   "SERVER_BACKUPS",
   "CONFIG",
   "UPDATE",
+  "LIBRARY_FILE",
 ]);
 
 /** The requests that run Foundry's work and answer by id. */
@@ -234,6 +256,9 @@ function handleRequest(ctx: Ctx, m: UiToPage): void {
       break;
     case "SAVE_WORLD":
       answerSave(ctx, m.payload);
+      break;
+    case "LIBRARY_FILE":
+      answerLibraryFile(ctx, m.payload);
       break;
     case "SAVE_QUEUE":
       answerQueue(ctx, m.payload);

@@ -185,4 +185,56 @@ describe("setup-main: Foundry's half of the Setup page", () => {
     expect(s.heard.length).toBe(before);
     expect(f.notifications.error).not.toHaveBeenCalled();
   });
+
+  test("reads the library file for the administrator's Setup", async () => {
+    vi.useFakeTimers();
+    const fetch = vi.fn(() => Promise.resolve(new Response('{"x":1}')));
+    vi.stubGlobal("fetch", fetch);
+    const f = foundry(true);
+    const s = start(f.page);
+    await vi.advanceTimersByTimeAsync(1);
+    s.ui.send("LIBRARY_FILE", { requestId: "r1", op: "read" });
+    await vi.advanceTimersByTimeAsync(1);
+    expect(fetch).toHaveBeenCalledWith("/stagehand/library.json", {
+      cache: "no-store",
+      credentials: "same-origin",
+    });
+    expect(s.heard).toContainEqual([
+      "LIBRARY_FILE_DONE",
+      { requestId: "r1", text: '{"x":1}' },
+    ]);
+    vi.unstubAllGlobals();
+  });
+
+  test("passes on a failed write as an error", async () => {
+    vi.useFakeTimers();
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(() => Promise.resolve(Response.json({ error: "No permission." }))),
+    );
+    const f = foundry(true);
+    const s = start(f.page);
+    await vi.advanceTimersByTimeAsync(1);
+    s.ui.send("LIBRARY_FILE", { requestId: "r2", op: "write", text: "{}" });
+    await vi.advanceTimersByTimeAsync(1);
+    expect(s.heard).toContainEqual([
+      "LIBRARY_FILE_DONE",
+      { requestId: "r2", error: "No permission." },
+    ]);
+    vi.unstubAllGlobals();
+  });
+
+  test("keeps the library file away from a Setup that is not the administrator's", async () => {
+    vi.useFakeTimers();
+    const fetch = vi.fn();
+    vi.stubGlobal("fetch", fetch);
+    const f = foundry(false);
+    const s = start(f.page);
+    await vi.advanceTimersByTimeAsync(1);
+    s.ui.send("LIBRARY_FILE", { requestId: "r3", op: "read" });
+    await vi.advanceTimersByTimeAsync(1);
+    expect(fetch).not.toHaveBeenCalled();
+    expect(f.notifications.error).toHaveBeenCalled();
+    vi.unstubAllGlobals();
+  });
 });

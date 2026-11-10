@@ -1,4 +1,5 @@
 // Renders the Setup UI roots against a fake background for component tests.
+import type { LibraryFileReply } from "../../src/page-library-file.ts";
 import type { QueueSaved } from "../../src/page-queue.ts";
 import { render } from "@testing-library/preact";
 import { emptyLibrary, type Library } from "@stagehand/shared/library/schema";
@@ -18,6 +19,7 @@ import { trackProgress, UNLOCKED } from "../../src/ui/tasks.ts";
 import type {
   BackupsResult,
   ConfigResult,
+  LibraryFileAsk,
   UpdateAsk,
   UpdateResult,
   PageBridge,
@@ -158,6 +160,9 @@ export function fakePage() {
         }),
     ),
     backups: vi.fn(() => Promise.resolve<BackupsResult>({ backups: [] })),
+    libraryFile: vi.fn((_ask: LibraryFileAsk) =>
+      Promise.resolve<LibraryFileReply>({ missing: true }),
+    ),
     subscribe(fn: (e: PageToUi) => void) {
       listeners.add(fn);
       return () => listeners.delete(fn);
