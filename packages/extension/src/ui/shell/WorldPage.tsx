@@ -210,8 +210,6 @@ function useLaunch(world: WorldInfo, model: WorldModules) {
   const [review, setReview] = useState(false);
   const [busy, setBusy] = useState(false);
   const running = useRef(false);
-  /** The changes counted when Launch was pressed, for the launch note. */
-  const counted = useRef(0);
   // A change still saving must be reviewed too, not launched past (Phase 6):
   // wait for it, read the queue as it now is, and never twice at once.
   const start = async (): Promise<void> => {
@@ -228,7 +226,6 @@ function useLaunch(world: WorldInfo, model: WorldModules) {
       const queued = await actions.queuedFor(world.id);
       // Unreadable: the notice says why, and nothing launches past it.
       if (queued === undefined) return;
-      counted.current = queued;
       if (queued > 0) setReview(true);
       else {
         // The world's queue as we have it, and no intent: whatever anyone
@@ -254,8 +251,8 @@ function useLaunch(world: WorldInfo, model: WorldModules) {
       if (!r) return;
       if (!plain && r.launchId) written = { launchId: r.launchId, ids: r.ids };
     }
-    // For the app's running screen (counted when Launch was pressed).
-    const changes = choice.kind === "plain" ? 0 : counted.current;
+    // For the app's running screen: the changes as the review counted them.
+    const changes = choice.kind === "plain" ? 0 : model.changes;
     const backup = choice.kind === "apply" && choice.backup;
     launchNow({ page, store, t, ports }, world, changes, backup, written);
   };

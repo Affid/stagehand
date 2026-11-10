@@ -43,6 +43,30 @@ export interface ApplyFlowDeps {
   ) => Promise<void>;
   /** Goes where Foundry sent the joined user. */
   readonly go: (path: string) => void;
+  /** Waits this long (tests: no wait). */
+  readonly sleep?: (ms: number) => Promise<void>;
+}
+
+/**
+ * Foundry's join page knows its world before its users (seen on the
+ * emulator): the users get this long to arrive before the page says the
+ * world has no Gamemaster to apply as.
+ */
+export const USERS_WAIT_MS = 15_000;
+export const USERS_EVERY_MS = 250;
+
+const pause = (ms: number): Promise<void> =>
+  new Promise((resolve) => setTimeout(resolve, ms));
+
+/** The world's full Gamemaster, once the join page has its users. */
+async function fullGamemaster(deps: ApplyFlowDeps) {
+  const sleep = deps.sleep ?? pause;
+  for (let waited = 0; ; waited += USERS_EVERY_MS) {
+    const users = joinUsers(deps.game());
+    if (users.length > 0 || waited >= USERS_WAIT_MS)
+      return users.find((u) => u.full);
+    await sleep(USERS_EVERY_MS);
+  }
 }
 
 const QUEUED = "They stay queued for the next launch.";
@@ -104,7 +128,7 @@ export async function joinAndHandOver(
   n: number,
   password: string,
 ): Promise<ApplyView> {
-  const gm = joinUsers(deps.game()).find((u) => u.full);
+  const gm = await fullGamemaster(deps);
   if (!gm) return failApply(deps, n, NO_GM);
   const result = await deps.join(gm.id, password);
   if (result.kind === "password")

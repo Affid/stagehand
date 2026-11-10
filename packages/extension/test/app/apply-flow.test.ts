@@ -16,6 +16,10 @@ import {
   writeLaunchNote,
 } from "../../src/app/launch-note.ts";
 import type { JoinResult } from "../../src/app/running/server.ts";
+import {
+  USERS_EVERY_MS,
+  USERS_WAIT_MS,
+} from "../../src/app/running/apply-flow.ts";
 
 afterEach(() => {
   sessionStorage.clear();
@@ -98,6 +102,41 @@ describe("beginApply: only for a launch native has on record (security review)",
 });
 
 describe("joinAndHandOver", () => {
+  test("waits for the join page's users before choosing (they come after its world)", async () => {
+    let calls = 0;
+    const sleep = vi.fn(() => Promise.resolve());
+    const d = deps({
+      game: () => (++calls < 3 ? { users: new Map() } : game),
+      sleep,
+    });
+    writeLaunchNote(sessionStorage, "w", 2);
+    const view = await joinAndHandOver(d, 2, "");
+    expect(view).toEqual({ kind: "applying", n: 2 });
+    expect(d.join).toHaveBeenCalledWith("g", "");
+    expect(sleep).toHaveBeenCalledTimes(2);
+  });
+
+  test("no users in time, or no full Gamemaster: said, nothing joined", async () => {
+    const sleep = vi.fn(() => Promise.resolve());
+    writeLaunchNote(sessionStorage, "w", 2);
+    const none = deps({ game: () => ({ users: new Map() }), sleep });
+    expect(await joinAndHandOver(none, 2, "")).toMatchObject({
+      kind: "failed",
+      reason: expect.stringContaining("no Gamemaster") as unknown,
+    });
+    expect(sleep.mock.calls.length).toBe(USERS_WAIT_MS / USERS_EVERY_MS);
+    const assistants = deps({
+      game: () => ({
+        users: new Map([["a", { id: "a", name: "Assistant", role: 3 }]]),
+      }),
+      sleep,
+    });
+    expect(await joinAndHandOver(assistants, 2, "")).toMatchObject({
+      kind: "failed",
+    });
+    expect(assistants.join).not.toHaveBeenCalled();
+  });
+
   test("joins as the full Gamemaster with no password, then hands over to native", async () => {
     writeLaunchNote(sessionStorage, "w", 2);
     const d = deps();
@@ -143,7 +182,10 @@ describe("joinAndHandOver", () => {
 
   test("no full Gamemaster, or no answer: why, and the result kept for the next visit", async () => {
     writeLaunchNote(sessionStorage, "w", 2);
-    const none = deps({ game: () => ({ users: new Map() }) });
+    const none = deps({
+      game: () => ({ users: new Map() }),
+      sleep: () => Promise.resolve(),
+    });
     expect(await joinAndHandOver(none, 2, "")).toMatchObject({
       kind: "failed",
     });
