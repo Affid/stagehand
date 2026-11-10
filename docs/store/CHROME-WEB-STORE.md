@@ -38,9 +38,13 @@ Package: `stagehand-extension-<version>.zip` from the GitHub release
 > Not affiliated with or endorsed by Foundry Gaming LLC.
 
 - **Icon:** 128 x 128, `packages/extension/static/icons/icon-128.png`.
-- **Screenshots:** 1280 x 800 (up to five). Still to make: they need a demo
-  server with realistic modules and set-up worlds, not the test fixtures,
-  and no third-party artwork in world backgrounds.
+- **Screenshots:** the five 1280 x 800 PNGs in `docs/store/screenshots/`, in
+  their numbered order. Made on the demo server (`scripts/demo/setup-demo.ts`,
+  free modules, the Simple Worldbuilding system, generated backgrounds) with
+  `ST_STORE_SHOTS=1 pnpm test:foundry store-screenshots` against it, from a
+  release build (`pnpm --filter @stagehand/extension build:release`).
+- **Promo images (optional):** small 440 x 280, marquee 1400 x 560. Not made
+  yet.
 - **Homepage URL:** https://github.com/Affid/stagehand
 - **Support URL:** https://github.com/Affid/stagehand/issues
 
