@@ -25,10 +25,11 @@ export interface LoadedExtension {
  * page's permission request resolves without Chrome's (native) prompt; and
  * any other hosts a suite needs (foundryvtt.com for Release history).
  */
-function prepareCopy(hosts: readonly string[]): string {
-  rmSync(UNDER_TEST, { recursive: true, force: true });
-  cpSync(DIST, UNDER_TEST, { recursive: true });
-  const path = join(UNDER_TEST, "manifest.json");
+function prepareCopy(hosts: readonly string[], copy?: string): string {
+  const dir = copy ? join(ROOT, "test-results", copy) : UNDER_TEST;
+  rmSync(dir, { recursive: true, force: true });
+  cpSync(DIST, dir, { recursive: true });
+  const path = join(dir, "manifest.json");
   const manifest = JSON.parse(readFileSync(path, "utf8")) as object;
   writeFileSync(
     path,
@@ -37,20 +38,22 @@ function prepareCopy(hosts: readonly string[]): string {
       host_permissions: ["http://localhost/*", ...hosts],
     }),
   );
-  return UNDER_TEST;
+  return dir;
 }
 
 export interface LoadOptions {
   /** Classic scrollbars that take room, as a desktop Chrome draws them
    * (Playwright hides them by default). */
   readonly scrollbars?: boolean;
+  /** A copy of its own, so two browsers can run at once (two devices). */
+  readonly copy?: string;
 }
 
 export async function loadExtension(
   hosts: readonly string[] = [],
   options: LoadOptions = {},
 ): Promise<LoadedExtension> {
-  const dir = prepareCopy(hosts);
+  const dir = prepareCopy(hosts, options.copy);
   const context = await chromium.launchPersistentContext("", {
     channel: "chromium",
     viewport: { width: 1600, height: 1000 },

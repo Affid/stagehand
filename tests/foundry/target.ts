@@ -99,7 +99,17 @@ export async function loadTarget(
   hosts: readonly string[] = [],
   options: LoadOptions = {},
 ): Promise<Target> {
-  if (!ON_APP) return extensionTarget(await loadExtension(hosts, options));
+  return loadTargetOf(TARGET, hosts, options);
+}
+
+/** A given target, whatever ST_TARGET says (library sync's two devices). */
+export async function loadTargetOf(
+  kind: TargetKind,
+  hosts: readonly string[] = [],
+  options: LoadOptions = {},
+): Promise<Target> {
+  if (kind === "extension")
+    return extensionTarget(await loadExtension(hosts, options));
   const app = await launchApp(options);
   // The app can grant only Release history's site; any other host is a
   // suite asking for something the app can't give.

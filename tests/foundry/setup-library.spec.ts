@@ -1,6 +1,8 @@
 // The new Setup page's Library on the local Foundry (Phases 3 and 5b): cards
 // in groups, Group by, the filter, Select with the selection bar, the Tags
 // and Presets panels, Foundry's installer, By world, and intake.
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import {
   type APIRequestContext,
   expect,
@@ -22,6 +24,17 @@ import {
 } from "./target.ts";
 
 const env = loadFoundryEnv();
+const SYNC_FILE = join(env.dataDir, "Data", "stagehand", "library.json");
+
+/** Takes a module out of the sorted ones in the server's library file. */
+function unsortOnServer(id: string): void {
+  if (!existsSync(SYNC_FILE)) return;
+  const file = JSON.parse(readFileSync(SYNC_FILE, "utf8")) as {
+    sorted: string[] | null;
+  };
+  const sorted = file.sorted?.filter((s) => s !== id) ?? null;
+  writeFileSync(SYNC_FILE, JSON.stringify({ ...file, sorted }));
+}
 let ext: Target;
 let admin: APIRequestContext;
 let page: Page;
@@ -214,11 +227,13 @@ test("By world shows every module in every world", async () => {
 });
 
 test("a module installed since the last sort is offered for intake", async () => {
-  // As if st-fixture-a was installed after the last visit.
+  // As if st-fixture-a was installed after the last visit: unsorted here
+  // and in the library file on the server, which library sync reads.
   const key = `sorted:${env.url}`;
   await updateStored<string[]>(ext, key, (all) =>
     (all ?? []).filter((id) => id !== "st-fixture-a"),
   );
+  unsortOnServer("st-fixture-a");
   await page.reload();
   await page
     .locator("#st-shell-root")
