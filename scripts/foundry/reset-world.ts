@@ -1,7 +1,7 @@
 // Puts the test world back to "only the companion enabled", with none of
 // our flags (no queue, launch or report left from an earlier run), and
 // returns Foundry to Setup. Used by setup-world.ts and the end-to-end suites.
-import { type APIRequestContext, chromium } from "@playwright/test";
+import { type APIRequestContext, chromium, type Page } from "@playwright/test";
 import {
   createAdminClient,
   launchWorld,
@@ -31,7 +31,31 @@ export async function clearOurFlags(api: APIRequestContext): Promise<void> {
     throw new Error("Clearing our flags: Foundry kept them");
 }
 
-export async function resetWorldModules(env: FoundryEnv): Promise<void> {
+/** Waits until the companion has reported only itself active. */
+async function reportedOnlyCompanion(gm: Page): Promise<void> {
+  await gm.waitForFunction(
+    (companion) => {
+      const g = globalThis as unknown as {
+        game: {
+          world: { flags: Record<string, { report?: { active?: string[] } }> };
+        };
+      };
+      const active = g.game.world.flags[companion]?.report?.active ?? [];
+      return active.length === 1 && active[0]?.startsWith(companion);
+    },
+    COMPANION_ID,
+    { timeout: 30_000 },
+  );
+}
+
+/**
+ * `keepReport`: the companion's report of the reset world stays, as a world
+ * has once any Gamemaster played in it (the app's suite, where nobody joins).
+ */
+export async function resetWorldModules(
+  env: FoundryEnv,
+  options: { readonly keepReport?: boolean } = {},
+): Promise<void> {
   const api = await createAdminClient(env.url);
   try {
     await shutdownWorld(api, env.adminPassword);
@@ -54,12 +78,13 @@ export async function resetWorldModules(env: FoundryEnv): Promise<void> {
         });
       }, COMPANION_ID);
       await reloadWorld(gm);
+      if (options.keepReport) await reportedOnlyCompanion(gm);
     } finally {
       await browser.close();
     }
     await shutdownWorld(api, env.adminPassword);
     // The joins above let the companion write a report: none is left.
-    await clearOurFlags(api);
+    if (!options.keepReport) await clearOurFlags(api);
   } finally {
     await api.dispose();
   }

@@ -186,7 +186,13 @@ export async function waitRunning(
   await expect(page.getByRole("dialog", { name: /^Launching / })).toBeVisible();
   await app.shot("launching");
   if (changes) {
-    await page.waitForURL(/\/game$/, { timeout: 120_000 });
+    try {
+      await page.waitForURL(/\/game$/, { timeout: 120_000 });
+    } catch (error: unknown) {
+      // What the phone showed instead of the out-of-sight join.
+      await app.shot("applying-never").catch(() => undefined);
+      throw error;
+    }
     await app.shot("applying");
   }
   await page.waitForURL(/\/join$/, { timeout: 240_000 });

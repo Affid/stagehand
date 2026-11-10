@@ -46,7 +46,13 @@ let worldReset = false;
 async function setupAgain(): Promise<void> {
   await closeWorld();
   page = await app.pageAt(SERVER);
-  await page.goto(`${SERVER}/setup`);
+  // Our running page may be on its own way to Setup as the world closes:
+  // a load it interrupts is tried again.
+  await page.goto(`${SERVER}/setup`).catch(async (error: unknown) => {
+    if (!String(error).includes("ERR_ABORTED")) throw error;
+    await page.waitForLoadState().catch(() => undefined);
+    await page.goto(`${SERVER}/setup`);
+  });
   page = await adminLogin(app, SERVER);
 }
 
@@ -54,7 +60,8 @@ test.beforeAll(async () => {
   // Foundry takes the admin login only with no world running.
   await closeWorld();
   themeBefore = await currentTheme();
-  await resetWorldModules(env);
+  // The world as after someone played in it: its modules reported.
+  await resetWorldModules(env, { keepReport: true });
   worldReset = true;
   await waitClosed();
   installFresh();

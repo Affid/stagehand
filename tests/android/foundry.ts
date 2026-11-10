@@ -71,7 +71,8 @@ export async function adminLogin(
     await typeAndLogIn(env.adminPassword);
   }
   const page = await app.pageAt(`${server}/setup`, 60_000);
-  await page.locator("#ml-shell-root .mlp-top").waitFor({ timeout: 60_000 });
+  // A slow emulator can take over a minute to bring our page up.
+  await page.locator("#ml-shell-root .mlp-top").waitFor({ timeout: 120_000 });
   // Foundry's first-run tour covers the page in a fresh WebView.
   await page.evaluate(async () => {
     const g = globalThis as unknown as {
