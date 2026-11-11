@@ -7,6 +7,10 @@ and the Android app (`stagehand-app-v<version>`, the extension's version).
 
 ## 2026-11-11
 
+### Companion module 0.1.2
+
+- The description links to the extension's Chrome Web Store listing.
+
 ### Companion module 0.1.1
 
 - The manifest's readme link opens the companion's own README, which says
