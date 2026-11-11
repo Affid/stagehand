@@ -162,6 +162,10 @@ start the usual server again.
 
 ## Layout
 
+Each package has its own README: [module](packages/module/README.md),
+[extension](packages/extension/README.md),
+[android](packages/android/README.md), [shared](packages/shared/README.md).
+
 ```
 packages/shared            protocol, schemas, version logic, resolver, library model and sync
 packages/extension         the Setup page, its background and Foundry adapters (Preact)
