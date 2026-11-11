@@ -8,6 +8,11 @@ import {
   shutdownWorld,
 } from "../../scripts/foundry/admin.ts";
 import { loadFoundryEnv } from "../../scripts/foundry/env.ts";
+import {
+  contentScriptsFor,
+  normalizeServerUrl,
+} from "../../packages/extension/src/background/servers.ts";
+import extensionPackage from "../../packages/extension/package.json" with { type: "json" };
 import { audit } from "./axe.ts";
 import {
   addServer,
@@ -21,6 +26,7 @@ import {
 import { ON_APP } from "./target.ts";
 
 const env = loadFoundryEnv();
+const extensionVersion = extensionPackage.version;
 const HOST = new URL(env.url).host;
 let ext: LoadedExtension;
 let page: Page;
@@ -57,7 +63,9 @@ test("the panel lists the server, the Release history permission and the build",
   await expect(
     panel.getByRole("button", { name: "Allow foundryvtt.com" }),
   ).toBeVisible();
-  await expect(panel.locator("footer")).toContainText("Build 0.2.0");
+  await expect(panel.locator("footer")).toContainText(
+    `Build ${extensionVersion}`,
+  );
   await panel.screenshot({ path: `${SCREENS}/settings-panel.png` });
   await audit(panel, "settings panel", ".stp");
 });
@@ -117,7 +125,7 @@ test("when the background starts again it puts the dropped scripts back by itsel
           (await chrome.scripting.getRegisteredContentScripts()).length,
       ),
     )
-    .toBeGreaterThanOrEqual(4);
+    .toBe(contentScriptsFor(normalizeServerUrl(env.url)).length);
   await page.reload();
   await expect(shell().locator(".sts-top")).toBeVisible();
 });
