@@ -7,6 +7,21 @@ and the Android app (`stagehand-app-v<version>`, the extension's version).
 
 ## 2026-11-11
 
+### Extension 0.3.0
+
+- On a server without the companion module, the Library says so and
+  installs it with Foundry's own installer; a world's setup steps start
+  with the install. An out-of-date companion is offered the update the
+  same way.
+- Foundry's backups tour could still appear over the Setup page on a first
+  open, when Foundry had started it before Stagehand came up. It is now
+  taken away once Foundry has drawn it.
+
+### Android app 0.3.0
+
+- The same: the companion's install offer, and the backups tour kept off
+  the app's pages.
+
 ### Extension 0.2.1
 
 - Foundry's backups tour no longer starts by itself over the new Setup
