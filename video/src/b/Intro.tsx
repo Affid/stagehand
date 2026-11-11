@@ -117,10 +117,7 @@ const Name: FC = () => {
   );
 };
 
-const FOLDS =
-  "repeating-linear-gradient(90deg, #7a2636 0px, #3a0f18 46px, #8a3040 92px, #4a1520 138px)";
-
-/** The house curtain: it closes over the list and opens on the name. */
+/** A wipe in two halves: it closes over the list and opens on the name. */
 const Curtain: FC = () => {
   const frame = useCurrentFrame();
   const closed = snap(frame, NAME_AT - 13, 11) * (1 - snap(frame, NAME_AT, 16));
@@ -134,9 +131,7 @@ const Curtain: FC = () => {
         width: 1000,
         [side === 1 ? "left" : "right"]: 0,
         transform: `translateX(${side * (closed - 1) * 1000}px)`,
-        background: FOLDS,
-        boxShadow: "0 0 80px rgba(0,0,0,0.8)",
-        borderBottom: "16px solid #d9a441",
+        background: "#2a2340",
       }}
     />
   );

@@ -13,7 +13,7 @@ import { HAUL } from "./timeline";
 const BAR = BEAT * 2;
 const PHONE_SHOT = shot("phone/library.png");
 const DESKTOP = { left: 110, top: 150, width: 1060 } as const;
-const PHONE = { left: 1310, top: 140, width: 350 } as const;
+const PHONE = { left: 1300, top: 140, width: 380 } as const;
 const BEZEL = 14;
 /** 14.0 s: both light up. 15.0 s: a pulse goes across and comes back. */
 const LIGHT = BAR * 2;

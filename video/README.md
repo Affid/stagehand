@@ -103,14 +103,13 @@ Cut B is made from the same captures and stages more:
 - Cards, the queued-change note and the review dialog are cut out of the
   captured pages and shown on their own, enlarged.
 - The recap is eight quarter-second crops of the captured pages.
-- Panels fly in on ropes from pipe battens and are hauled up again, with a
-  canvas sandbag on a pulley going the other way, a grid beam with turning
-  pulleys, a bank of levers thrown at each change, a curtain that closes
-  and opens on the name, and the recap sliding in like flats from the
-  wings: stage machinery after Stagehand's mark, all drawn. There is no
-  pointer; a light steps down the worlds in the rail and stops on the one
-  the capture really clicked, and the switch flips on its beat to the
-  page's real state after the real click.
+- Panels come down on thin lines and go back up, a small amber weight on
+  its own line moves the other way, a flat two-panel wipe closes and opens
+  on the name, and the recap slides in from the sides: stage rigging
+  reduced to lines, after Stagehand's mark, all drawn. There is no pointer;
+  a light steps down the worlds in the rail and stops on the one the
+  capture really clicked, and the switch flips on its beat to the page's
+  real state after the real click.
 - The Library's cards are dealt into the panel one by one, and the review's
   rows are covered until their beat. The cards and rows are the page's own.
 - The phone is the Android app's own screenshot from the emulator, in a
