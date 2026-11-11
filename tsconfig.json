@@ -9,6 +9,7 @@
     "*.ts",
     "*.config.ts",
     "eslint.config.js",
-    "tests/**/*.ts"
+    "tests/**/*.ts",
+    "video/capture/**/*.ts"
   ]
 }

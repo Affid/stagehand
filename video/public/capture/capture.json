@@ -1,0 +1,2006 @@
+{
+ "viewport": {
+  "width": 1280,
+  "height": 720
+ },
+ "pageScale": 3,
+ "cardScale": 2,
+ "world": "lighthouse-greywater",
+ "module": "healthEstimate",
+ "noted": "dice-so-nice",
+ "stock": {
+  "chrome": {
+   "title": [
+    312.5,
+    14,
+    655,
+    83
+   ],
+   "panel": [
+    32,
+    160,
+    1216,
+    720
+   ],
+   "worldsHeading": [
+    57,
+    185,
+    378,
+    24
+   ],
+   "systemsHeading": [
+    451,
+    185,
+    378,
+    24
+   ],
+   "modulesHeading": [
+    845,
+    185,
+    378,
+    24
+   ],
+   "filter": [
+    57,
+    233,
+    545,
+    40
+   ],
+   "install": [
+    618,
+    233,
+    202.5,
+    40
+   ],
+   "update": [
+    836.5,
+    233,
+    202.5,
+    40
+   ],
+   "list": [
+    57,
+    289,
+    1178,
+    566
+   ]
+  },
+  "cards": [
+   {
+    "id": "raise-my-hand",
+    "rect": [
+     57,
+     293,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "about-time-next",
+    "rect": [
+     350,
+     293,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "advanced-macros",
+    "rect": [
+     643,
+     293,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "afk-ready-check",
+    "rect": [
+     936,
+     293,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "pause-icon",
+    "rect": [
+     57,
+     381,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "always-hp",
+    "rect": [
+     350,
+     381,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "enhancedcombathud",
+    "rect": [
+     643,
+     381,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "arms-reach",
+    "rect": [
+     936,
+     381,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "babele",
+    "rect": [
+     57,
+     469,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "betterroofs",
+    "rect": [
+     350,
+     469,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "campaign-codex",
+    "rect": [
+     643,
+     469,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "combat-tracker-dock",
+    "rect": [
+     936,
+     469,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "_chatcommands",
+    "rect": [
+     57,
+     557,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "color-picker",
+    "rect": [
+     350,
+     557,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "custom-css",
+    "rect": [
+     643,
+     557,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "dfreds-convenient-effects",
+    "rect": [
+     936,
+     557,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "dice-so-nice",
+    "rect": [
+     57,
+     645,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "dice-calculator",
+    "rect": [
+     350,
+     645,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "dungeon-draw",
+    "rect": [
+     643,
+     645,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "easy-regions",
+    "rect": [
+     936,
+     645,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "fxmaster",
+    "rect": [
+     57,
+     733,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "gm-notes",
+    "rect": [
+     350,
+     733,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "gm-screen",
+    "rect": [
+     643,
+     733,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "gm-vision",
+    "rect": [
+     936,
+     733,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "healthEstimate",
+    "rect": [
+     57,
+     821,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "hurry-up",
+    "rect": [
+     350,
+     821,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "item-piles",
+    "rect": [
+     643,
+     821,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "levels",
+    "rect": [
+     936,
+     821,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "scene-packer",
+    "rect": [
+     57,
+     909,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "lib-wrapper",
+    "rect": [
+     350,
+     909,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "loading-screen",
+    "rect": [
+     643,
+     909,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "modular-av",
+    "rect": [
+     936,
+     909,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "monks-active-tiles",
+    "rect": [
+     57,
+     997,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "monks-bloodsplats",
+    "rect": [
+     350,
+     997,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "monks-chat-timer",
+    "rect": [
+     643,
+     997,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "monks-combat-details",
+    "rect": [
+     936,
+     997,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "monks-common-display",
+    "rect": [
+     57,
+     1085,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "monks-enhanced-journal",
+    "rect": [
+     350,
+     1085,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "monks-hotbar-expansion",
+    "rect": [
+     643,
+     1085,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "monks-little-details",
+    "rect": [
+     936,
+     1085,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "monks-player-settings",
+    "rect": [
+     57,
+     1173,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "monks-scene-navigation",
+    "rect": [
+     350,
+     1173,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "monks-sound-enhancements",
+    "rect": [
+     643,
+     1173,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "monks-tokenbar",
+    "rect": [
+     936,
+     1173,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "monks-wall-enhancement",
+    "rect": [
+     57,
+     1261,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "multilevel-tokens",
+    "rect": [
+     350,
+     1261,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "narrator-tools",
+    "rect": [
+     643,
+     1261,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "notelicker",
+    "rect": [
+     936,
+     1261,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "permission_viewer",
+    "rect": [
+     57,
+     1349,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "particule-fx",
+    "rect": [
+     350,
+     1349,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "party-overview",
+    "rect": [
+     643,
+     1349,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "fvtt-party-resources",
+    "rect": [
+     936,
+     1349,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "pdf-pager",
+    "rect": [
+     57,
+     1437,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "polyglot",
+    "rect": [
+     350,
+     1437,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "portal-lib",
+    "rect": [
+     643,
+     1437,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "quick-insert",
+    "rect": [
+     936,
+     1437,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "scene-tracks",
+    "rect": [
+     57,
+     1525,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "scene-transitions",
+    "rect": [
+     350,
+     1525,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "sequencer",
+    "rect": [
+     643,
+     1525,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "share-media",
+    "rect": [
+     936,
+     1525,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "simple-dice-roller",
+    "rect": [
+     57,
+     1613,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "simplefog",
+    "rect": [
+     350,
+     1613,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "smalltime",
+    "rect": [
+     643,
+     1613,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "smart-doors",
+    "rect": [
+     936,
+     1613,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "socketlib",
+    "rect": [
+     57,
+     1701,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "splatter",
+    "rect": [
+     350,
+     1701,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "stagehand",
+    "rect": [
+     643,
+     1701,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "stairways",
+    "rect": [
+     936,
+     1701,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "tagger",
+    "rect": [
+     57,
+     1789,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "terrainmapper",
+    "rect": [
+     350,
+     1789,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "theatre",
+    "rect": [
+     643,
+     1789,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "tile-scroll",
+    "rect": [
+     936,
+     1789,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "token-action-hud-core",
+    "rect": [
+     57,
+     1877,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "token-sounds",
+    "rect": [
+     350,
+     1877,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "token-hud-wildcard",
+    "rect": [
+     643,
+     1877,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "tokenmagic",
+    "rect": [
+     936,
+     1877,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "token-mold",
+    "rect": [
+     57,
+     1965,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "vtta-tokenizer",
+    "rect": [
+     350,
+     1965,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "torch",
+    "rect": [
+     643,
+     1965,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "visual-active-effects",
+    "rect": [
+     936,
+     1965,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "walls-have-ears",
+    "rect": [
+     57,
+     2053,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "window-controls",
+    "rect": [
+     350,
+     2053,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "world-explorer",
+    "rect": [
+     643,
+     2053,
+     277,
+     68
+    ]
+   },
+   {
+    "id": "zoom-pan-options",
+    "rect": [
+     936,
+     2053,
+     277,
+     68
+    ]
+   }
+  ]
+ },
+ "library": {
+  "chrome": {
+   "title": [
+    84,
+    19,
+    260.3,
+    30
+   ],
+   "logo": [
+    24,
+    12,
+    44,
+    44
+   ],
+   "rail": [
+    24,
+    68,
+    240,
+    636
+   ],
+   "railLibrary": [
+    35,
+    81,
+    218,
+    53.75
+   ],
+   "worldsHeading": [
+    35,
+    148.75,
+    218,
+    18
+   ],
+   "worlds": [
+    35,
+    214.75,
+    218,
+    408.25
+   ],
+   "main": [
+    280,
+    68,
+    976,
+    636
+   ],
+   "modulesTab": [
+    297,
+    81,
+    121.63,
+    31
+   ],
+   "systemsTab": [
+    420.63,
+    81,
+    113.61,
+    31
+   ],
+   "byWorldTab": [
+    536.23,
+    81,
+    116.08,
+    31
+   ],
+   "filter": [
+    297,
+    122,
+    616,
+    34
+   ],
+   "install": [
+    921,
+    122,
+    150,
+    34
+   ],
+   "update": [
+    1079,
+    122,
+    150,
+    34
+   ],
+   "toolbar": [
+    297,
+    166,
+    932,
+    30
+   ],
+   "groupBy": [
+    350.66,
+    167,
+    120,
+    28
+   ],
+   "list": [
+    294,
+    206,
+    938,
+    481
+   ]
+  },
+  "cards": [
+   {
+    "id": "raise-my-hand",
+    "rect": [
+     297,
+     240,
+     302,
+     86.375
+    ],
+    "group": 0
+   },
+   {
+    "id": "always-hp",
+    "rect": [
+     607,
+     240,
+     302,
+     86.375
+    ],
+    "group": 0
+   },
+   {
+    "id": "enhancedcombathud",
+    "rect": [
+     917,
+     240,
+     302,
+     86.375
+    ],
+    "group": 0
+   },
+   {
+    "id": "combat-tracker-dock",
+    "rect": [
+     297,
+     334.375,
+     302,
+     86.375
+    ],
+    "group": 0
+   },
+   {
+    "id": "dfreds-convenient-effects",
+    "rect": [
+     607,
+     334.375,
+     302,
+     86.375
+    ],
+    "group": 0
+   },
+   {
+    "id": "dice-so-nice",
+    "rect": [
+     917,
+     334.375,
+     302,
+     86.375
+    ],
+    "group": 0
+   },
+   {
+    "id": "dice-calculator",
+    "rect": [
+     297,
+     428.75,
+     302,
+     86.375
+    ],
+    "group": 0
+   },
+   {
+    "id": "healthEstimate",
+    "rect": [
+     607,
+     428.75,
+     302,
+     86.375
+    ],
+    "group": 0
+   },
+   {
+    "id": "monks-chat-timer",
+    "rect": [
+     917,
+     428.75,
+     302,
+     86.375
+    ],
+    "group": 0
+   },
+   {
+    "id": "monks-combat-details",
+    "rect": [
+     297,
+     523.125,
+     302,
+     86.375
+    ],
+    "group": 0
+   },
+   {
+    "id": "monks-hotbar-expansion",
+    "rect": [
+     607,
+     523.125,
+     302,
+     86.375
+    ],
+    "group": 0
+   },
+   {
+    "id": "monks-tokenbar",
+    "rect": [
+     917,
+     523.125,
+     302,
+     86.375
+    ],
+    "group": 0
+   },
+   {
+    "id": "polyglot",
+    "rect": [
+     297,
+     617.5,
+     302,
+     86.375
+    ],
+    "group": 0
+   },
+   {
+    "id": "simple-dice-roller",
+    "rect": [
+     607,
+     617.5,
+     302,
+     86.375
+    ],
+    "group": 0
+   },
+   {
+    "id": "token-action-hud-core",
+    "rect": [
+     917,
+     617.5,
+     302,
+     86.375
+    ],
+    "group": 0
+   },
+   {
+    "id": "visual-active-effects",
+    "rect": [
+     297,
+     711.875,
+     302,
+     84.375
+    ],
+    "group": 0
+   },
+   {
+    "id": "fxmaster",
+    "rect": [
+     297,
+     848.25,
+     302,
+     86.375
+    ],
+    "group": 1
+   },
+   {
+    "id": "monks-active-tiles",
+    "rect": [
+     607,
+     848.25,
+     302,
+     86.375
+    ],
+    "group": 1
+   },
+   {
+    "id": "monks-bloodsplats",
+    "rect": [
+     917,
+     848.25,
+     302,
+     86.375
+    ],
+    "group": 1
+   },
+   {
+    "id": "particule-fx",
+    "rect": [
+     297,
+     942.625,
+     302,
+     86.375
+    ],
+    "group": 1
+   },
+   {
+    "id": "sequencer",
+    "rect": [
+     607,
+     942.625,
+     302,
+     86.375
+    ],
+    "group": 1
+   },
+   {
+    "id": "splatter",
+    "rect": [
+     917,
+     942.625,
+     302,
+     86.375
+    ],
+    "group": 1
+   },
+   {
+    "id": "tile-scroll",
+    "rect": [
+     297,
+     1037,
+     302,
+     86.375
+    ],
+    "group": 1
+   },
+   {
+    "id": "tokenmagic",
+    "rect": [
+     607,
+     1037,
+     302,
+     86.375
+    ],
+    "group": 1
+   },
+   {
+    "id": "arms-reach",
+    "rect": [
+     297,
+     1175.375,
+     302,
+     86.375
+    ],
+    "group": 2
+   },
+   {
+    "id": "betterroofs",
+    "rect": [
+     607,
+     1175.375,
+     302,
+     86.375
+    ],
+    "group": 2
+   },
+   {
+    "id": "dungeon-draw",
+    "rect": [
+     917,
+     1175.375,
+     302,
+     86.375
+    ],
+    "group": 2
+   },
+   {
+    "id": "gm-vision",
+    "rect": [
+     297,
+     1269.75,
+     302,
+     86.375
+    ],
+    "group": 2
+   },
+   {
+    "id": "levels",
+    "rect": [
+     607,
+     1269.75,
+     302,
+     86.375
+    ],
+    "group": 2
+   },
+   {
+    "id": "scene-packer",
+    "rect": [
+     917,
+     1269.75,
+     302,
+     86.375
+    ],
+    "group": 2
+   },
+   {
+    "id": "monks-scene-navigation",
+    "rect": [
+     297,
+     1364.125,
+     302,
+     86.375
+    ],
+    "group": 2
+   },
+   {
+    "id": "monks-wall-enhancement",
+    "rect": [
+     607,
+     1364.125,
+     302,
+     86.375
+    ],
+    "group": 2
+   },
+   {
+    "id": "multilevel-tokens",
+    "rect": [
+     917,
+     1364.125,
+     302,
+     86.375
+    ],
+    "group": 2
+   },
+   {
+    "id": "scene-transitions",
+    "rect": [
+     297,
+     1458.5,
+     302,
+     86.375
+    ],
+    "group": 2
+   },
+   {
+    "id": "simplefog",
+    "rect": [
+     607,
+     1458.5,
+     302,
+     86.375
+    ],
+    "group": 2
+   },
+   {
+    "id": "smart-doors",
+    "rect": [
+     917,
+     1458.5,
+     302,
+     86.375
+    ],
+    "group": 2
+   },
+   {
+    "id": "stairways",
+    "rect": [
+     297,
+     1552.875,
+     302,
+     84.375
+    ],
+    "group": 2
+   },
+   {
+    "id": "terrainmapper",
+    "rect": [
+     607,
+     1552.875,
+     302,
+     84.375
+    ],
+    "group": 2
+   },
+   {
+    "id": "torch",
+    "rect": [
+     917,
+     1552.875,
+     302,
+     84.375
+    ],
+    "group": 2
+   },
+   {
+    "id": "about-time-next",
+    "rect": [
+     297,
+     1689.25,
+     302,
+     84.375
+    ],
+    "group": 3
+   },
+   {
+    "id": "advanced-macros",
+    "rect": [
+     607,
+     1689.25,
+     302,
+     84.375
+    ],
+    "group": 3
+   },
+   {
+    "id": "afk-ready-check",
+    "rect": [
+     917,
+     1689.25,
+     302,
+     84.375
+    ],
+    "group": 3
+   },
+   {
+    "id": "_chatcommands",
+    "rect": [
+     297,
+     1781.625,
+     302,
+     86.375
+    ],
+    "group": 3
+   },
+   {
+    "id": "easy-regions",
+    "rect": [
+     607,
+     1781.625,
+     302,
+     86.375
+    ],
+    "group": 3
+   },
+   {
+    "id": "gm-notes",
+    "rect": [
+     917,
+     1781.625,
+     302,
+     86.375
+    ],
+    "group": 3
+   },
+   {
+    "id": "hurry-up",
+    "rect": [
+     297,
+     1876,
+     302,
+     86.375
+    ],
+    "group": 3
+   },
+   {
+    "id": "item-piles",
+    "rect": [
+     607,
+     1876,
+     302,
+     86.375
+    ],
+    "group": 3
+   },
+   {
+    "id": "monks-common-display",
+    "rect": [
+     917,
+     1876,
+     302,
+     86.375
+    ],
+    "group": 3
+   },
+   {
+    "id": "monks-little-details",
+    "rect": [
+     297,
+     1970.375,
+     302,
+     86.375
+    ],
+    "group": 3
+   },
+   {
+    "id": "monks-player-settings",
+    "rect": [
+     607,
+     1970.375,
+     302,
+     86.375
+    ],
+    "group": 3
+   },
+   {
+    "id": "permission_viewer",
+    "rect": [
+     917,
+     1970.375,
+     302,
+     86.375
+    ],
+    "group": 3
+   },
+   {
+    "id": "party-overview",
+    "rect": [
+     297,
+     2064.75,
+     302,
+     86.375
+    ],
+    "group": 3
+   },
+   {
+    "id": "fvtt-party-resources",
+    "rect": [
+     607,
+     2064.75,
+     302,
+     86.375
+    ],
+    "group": 3
+   },
+   {
+    "id": "quick-insert",
+    "rect": [
+     917,
+     2064.75,
+     302,
+     86.375
+    ],
+    "group": 3
+   },
+   {
+    "id": "smalltime",
+    "rect": [
+     297,
+     2159.125,
+     302,
+     86.375
+    ],
+    "group": 3
+   },
+   {
+    "id": "token-mold",
+    "rect": [
+     607,
+     2159.125,
+     302,
+     86.375
+    ],
+    "group": 3
+   },
+   {
+    "id": "campaign-codex",
+    "rect": [
+     297,
+     2297.5,
+     302,
+     84.375
+    ],
+    "group": 4
+   },
+   {
+    "id": "gm-screen",
+    "rect": [
+     607,
+     2297.5,
+     302,
+     84.375
+    ],
+    "group": 4
+   },
+   {
+    "id": "monks-enhanced-journal",
+    "rect": [
+     917,
+     2297.5,
+     302,
+     84.375
+    ],
+    "group": 4
+   },
+   {
+    "id": "narrator-tools",
+    "rect": [
+     297,
+     2389.875,
+     302,
+     84.375
+    ],
+    "group": 4
+   },
+   {
+    "id": "notelicker",
+    "rect": [
+     607,
+     2389.875,
+     302,
+     84.375
+    ],
+    "group": 4
+   },
+   {
+    "id": "pdf-pager",
+    "rect": [
+     917,
+     2389.875,
+     302,
+     84.375
+    ],
+    "group": 4
+   },
+   {
+    "id": "share-media",
+    "rect": [
+     297,
+     2482.25,
+     302,
+     86.375
+    ],
+    "group": 4
+   },
+   {
+    "id": "theatre",
+    "rect": [
+     607,
+     2482.25,
+     302,
+     86.375
+    ],
+    "group": 4
+   },
+   {
+    "id": "vtta-tokenizer",
+    "rect": [
+     917,
+     2482.25,
+     302,
+     86.375
+    ],
+    "group": 4
+   },
+   {
+    "id": "world-explorer",
+    "rect": [
+     297,
+     2576.625,
+     302,
+     84.375
+    ],
+    "group": 4
+   },
+   {
+    "id": "modular-av",
+    "rect": [
+     297,
+     2713,
+     302,
+     86.375
+    ],
+    "group": 5
+   },
+   {
+    "id": "monks-sound-enhancements",
+    "rect": [
+     607,
+     2713,
+     302,
+     86.375
+    ],
+    "group": 5
+   },
+   {
+    "id": "scene-tracks",
+    "rect": [
+     917,
+     2713,
+     302,
+     86.375
+    ],
+    "group": 5
+   },
+   {
+    "id": "token-sounds",
+    "rect": [
+     297,
+     2807.375,
+     302,
+     84.375
+    ],
+    "group": 5
+   },
+   {
+    "id": "walls-have-ears",
+    "rect": [
+     607,
+     2807.375,
+     302,
+     84.375
+    ],
+    "group": 5
+   },
+   {
+    "id": "pause-icon",
+    "rect": [
+     297,
+     2943.75,
+     302,
+     84.375
+    ],
+    "group": 6
+   },
+   {
+    "id": "custom-css",
+    "rect": [
+     607,
+     2943.75,
+     302,
+     84.375
+    ],
+    "group": 6
+   },
+   {
+    "id": "loading-screen",
+    "rect": [
+     917,
+     2943.75,
+     302,
+     84.375
+    ],
+    "group": 6
+   },
+   {
+    "id": "token-hud-wildcard",
+    "rect": [
+     297,
+     3036.125,
+     302,
+     86.375
+    ],
+    "group": 6
+   },
+   {
+    "id": "window-controls",
+    "rect": [
+     607,
+     3036.125,
+     302,
+     86.375
+    ],
+    "group": 6
+   },
+   {
+    "id": "zoom-pan-options",
+    "rect": [
+     917,
+     3036.125,
+     302,
+     86.375
+    ],
+    "group": 6
+   },
+   {
+    "id": "babele",
+    "rect": [
+     297,
+     3174.5,
+     302,
+     84.375
+    ],
+    "group": 7
+   },
+   {
+    "id": "lib-wrapper",
+    "rect": [
+     607,
+     3174.5,
+     302,
+     84.375
+    ],
+    "group": 7
+   },
+   {
+    "id": "portal-lib",
+    "rect": [
+     917,
+     3174.5,
+     302,
+     84.375
+    ],
+    "group": 7
+   },
+   {
+    "id": "socketlib",
+    "rect": [
+     297,
+     3266.875,
+     302,
+     84.375
+    ],
+    "group": 7
+   },
+   {
+    "id": "tagger",
+    "rect": [
+     607,
+     3266.875,
+     302,
+     84.375
+    ],
+    "group": 7
+   },
+   {
+    "id": "color-picker",
+    "rect": [
+     297,
+     3403.25,
+     302,
+     84.375
+    ],
+    "group": 8
+   },
+   {
+    "id": "stagehand",
+    "rect": [
+     607,
+     3403.25,
+     302,
+     84.375
+    ],
+    "group": 8
+   }
+  ],
+  "folders": [
+   {
+    "id": "0",
+    "rect": [
+     297,
+     206,
+     922,
+     28
+    ]
+   },
+   {
+    "id": "1",
+    "rect": [
+     297,
+     814.25,
+     922,
+     28
+    ]
+   },
+   {
+    "id": "2",
+    "rect": [
+     297,
+     1141.375,
+     922,
+     28
+    ]
+   },
+   {
+    "id": "3",
+    "rect": [
+     297,
+     1655.25,
+     922,
+     28
+    ]
+   },
+   {
+    "id": "4",
+    "rect": [
+     297,
+     2263.5,
+     922,
+     28
+    ]
+   },
+   {
+    "id": "5",
+    "rect": [
+     297,
+     2679,
+     922,
+     28
+    ]
+   },
+   {
+    "id": "6",
+    "rect": [
+     297,
+     2909.75,
+     922,
+     28
+    ]
+   },
+   {
+    "id": "7",
+    "rect": [
+     297,
+     3140.5,
+     922,
+     28
+    ]
+   },
+   {
+    "id": "8",
+    "rect": [
+     297,
+     3369.25,
+     922,
+     28
+    ]
+   }
+  ],
+  "labels": [
+   {
+    "name": "At the table",
+    "color": "#c0843d"
+   },
+   {
+    "name": "Effects",
+    "color": "#8a4f9e"
+   },
+   {
+    "name": "Maps and scenes",
+    "color": "#4f8a5b"
+   },
+   {
+    "name": "GM tools",
+    "color": "#3f7f8c"
+   },
+   {
+    "name": "Story and handouts",
+    "color": "#b0596b"
+   },
+   {
+    "name": "Sound",
+    "color": "#c0a23d"
+   },
+   {
+    "name": "Interface",
+    "color": "#5a6fc0"
+   },
+   {
+    "name": "Libraries",
+    "color": "#6b6f7a"
+   },
+   {
+    "name": "Unfiled",
+    "color": ""
+   }
+  ]
+ },
+ "walk": {
+  "noted": {
+   "card": [
+    917,
+    334.38,
+    302,
+    86.38
+   ],
+   "note": [
+    928,
+    376.38,
+    280,
+    15
+   ],
+   "tags": [
+    928,
+    395.38,
+    165.25,
+    16.38
+   ]
+  },
+  "byWorld": {
+   "table": [
+    297,
+    160,
+    528,
+    488
+   ],
+   "columns": [
+    [
+     548,
+     177,
+     92,
+     85.75
+    ],
+    [
+     640,
+     177,
+     92,
+     85.75
+    ],
+    [
+     732,
+     177,
+     92,
+     85.75
+    ]
+   ]
+  },
+  "world": {
+   "railItem": [
+    35,
+    346.75,
+    218,
+    58
+   ],
+   "card": [
+    610.33,
+    448,
+    305.33,
+    66
+   ],
+   "toggle": [
+    622.33,
+    464,
+    26,
+    15
+   ],
+   "launch": [
+    1111.09,
+    152,
+    125.91,
+    40
+   ],
+   "banner": [
+    281,
+    69,
+    974,
+    140
+   ]
+  },
+  "queued": {
+   "card": [
+    610.33,
+    448,
+    305.33,
+    66
+   ],
+   "waits": [
+    299,
+    159,
+    328.08,
+    33
+   ],
+   "launch": [
+    1079.09,
+    152,
+    157.91,
+    40
+   ]
+  },
+  "review": {
+   "dialog": [
+    304,
+    222.16,
+    672,
+    275.67
+   ],
+   "apply": [
+    759.97,
+    459.23,
+    200.64,
+    28
+   ]
+  }
+ }
+}

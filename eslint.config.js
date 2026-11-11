@@ -14,6 +14,14 @@ export default tseslint.config(
       "test-results/**",
       "playwright-report/**",
       "design/**",
+      // The promo video: its own package and tools (video/README.md). Only
+      // its capture scripts, which drive the product, are linted here.
+      "video/src/**",
+      "video/music/**",
+      "video/public/**",
+      "video/out/**",
+      "video/node_modules/**",
+      "video/remotion.config.ts",
       "spikes/**",
       "packages/android/**/build/**",
     ],
@@ -47,7 +55,7 @@ export default tseslint.config(
   },
   {
     // Command-line tools report to the terminal.
-    files: ["tools/**/cli.ts", "scripts/**/*.ts"],
+    files: ["tools/**/cli.ts", "scripts/**/*.ts", "video/capture/**/*.ts"],
     languageOptions: { globals: globals.node },
     rules: { "no-console": "off" },
   },

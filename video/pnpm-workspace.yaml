@@ -1,0 +1,6 @@
+# The video has its own install, outside the product's workspace.
+packages: []
+allowBuilds:
+  esbuild: true
+onlyBuiltDependencies:
+  - esbuild

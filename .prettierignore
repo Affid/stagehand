@@ -14,3 +14,10 @@ packages/android/app/build/
 # The phase 3 preview bundle (built)
 spikes/android/app/src/main/assets/preview.js
 packages/android/app/src/test/resources/contract-vectors.json
+
+# The promo video: captured data, audio and the music tools' own lockfile
+video/public/
+video/out/
+video/music/package-lock.json
+video/music/.cache/
+video/music/out/
