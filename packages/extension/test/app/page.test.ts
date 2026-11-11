@@ -85,6 +85,26 @@ describe("app-setup on a server's Setup page", () => {
     expect((window as { stApp?: unknown }).stApp).toBeUndefined();
   });
 
+  test("starts on a document that has no root element yet", () => {
+    // A script run before the page's first element exists (the live
+    // suites' app harness runs ours that early) finds no <html> to read.
+    const early = document.implementation.createHTMLDocument("");
+    early.documentElement.remove();
+    expect(early.documentElement).toBeNull();
+    const native = fakeNative();
+    native.on("runtime.send", () => ({}));
+    Object.assign(window, { stApp: native.port });
+    expect(() =>
+      startAppSetup({
+        win: window,
+        doc: early,
+        href: `${SERVER}/setup`,
+        server: SERVER,
+        css: "",
+      }),
+    ).not.toThrow();
+  });
+
   test("answers native's Back: nothing to go back to on a bare page", async () => {
     const native = fakeNative();
     native.on("runtime.send", () => ({}));

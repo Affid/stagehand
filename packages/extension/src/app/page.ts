@@ -73,6 +73,10 @@ const touchScreen = (win: Window): boolean =>
  * may not yet (Chromium), and a mutation callback still runs before the
  * first paint.
  */
+/** The page's language, or none while the page has no root element yet. */
+const rootLanguage = (doc: Document): string =>
+  (doc.documentElement as HTMLElement | null)?.lang ?? "";
+
 export function whenRoot(doc: Document, fn: (root: HTMLElement) => void): void {
   const root = doc.documentElement as HTMLElement | null;
   if (root) {
@@ -129,7 +133,7 @@ export function startAppSetup(deps: AppSetupDeps): boolean {
     doc,
     win: deps.win,
     label: createTranslator(
-      pickLanguage(doc.documentElement.lang, deps.win.navigator.language),
+      pickLanguage(rootLanguage(doc), deps.win.navigator.language),
     )("app.reconnecting"),
   });
   // The phone and tablet layouts are made for the small window: Foundry's

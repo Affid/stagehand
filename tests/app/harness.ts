@@ -220,17 +220,32 @@ async function startApp(
   };
 }
 
-/** Adds a server by its address on the app's home screen, as a user would. */
+/**
+ * Adds a server on the app's home screen, as a user would: Add a server,
+ * its address, Add and open. The app opens the server in the same view;
+ * the harness keeps home as a page of its own, so home is shown again.
+ */
 export async function addServerAtHome(
   app: AppHarness,
   url: string,
 ): Promise<void> {
   const home = await app.home();
-  await home.getByLabel("Server address").fill(`${url}/`);
-  await home.getByRole("button", { name: "Add", exact: true }).click();
+  const target = new URL(url);
+  await home.getByRole("button", { name: "Add a server" }).click();
+  if (target.protocol === "https:")
+    await home.getByRole("button", { name: "https" }).click();
   await home
-    .locator(".stp-servers li")
-    .filter({ hasText: new URL(url).host })
+    .getByLabel("Address")
+    .fill(`${target.host}${target.pathname.replace(/\/$/, "")}`);
+  await home
+    .getByRole("button", { name: "Add and open" })
+    .click({ noWaitAfter: true });
+  await home.waitForURL((opened) => opened.origin === target.origin);
+  await home.goto(HOME_PAGE);
+  await home
+    .locator(".sth-card")
+    .filter({ hasText: target.host })
+    .first()
     .waitFor();
 }
 
