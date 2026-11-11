@@ -93,12 +93,6 @@ export interface PageGlobals {
         readonly FilePicker?: { readonly implementation?: unknown };
       };
     };
-    /** Foundry's new-user experience: the tour on screen, if any. */
-    readonly nue?: {
-      readonly Tour?: {
-        readonly activeTour?: { exit(): unknown } | null;
-      };
-    };
     readonly utils?: {
       readonly escapeHTML?: (text: string) => string;
       readonly isNewerVersion?: (v1: string, v0: string) => boolean;

@@ -38,7 +38,7 @@ import { watchProgress } from "./progress.ts";
 import { checkUpdates } from "./updates.ts";
 import type { PageGlobals } from "./globals.ts";
 import { hideResolutionNotice } from "./resolution.ts";
-import { exitActiveTour, quietSetupTours } from "./tours.ts";
+import { closeStartedTours, quietSetupTours } from "./tours.ts";
 import { setShell } from "./shell.ts";
 
 export interface SetupMainDeps {
@@ -352,7 +352,7 @@ function begin(ctx: Ctx): void {
   });
   // Foundry's own Setup tour stays off our page (page/tours.ts).
   quietSetupTours(ctx.page);
-  exitActiveTour(ctx.page);
+  closeStartedTours(ctx.page);
   watchProgress(ctx.page, ctx.postToUi);
   postSetupData(ctx);
   ctx.page.Hooks?.on("renderSetupPackages", () => {

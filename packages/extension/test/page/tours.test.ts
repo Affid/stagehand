@@ -3,7 +3,7 @@
 // steps point at Foundry's own Setup, which ours covers.
 import { describe, expect, test, vi } from "vitest";
 import type { PageGlobals } from "../../src/page/globals.ts";
-import { exitActiveTour, quietSetupTours } from "../../src/page/tours.ts";
+import { closeStartedTours, quietSetupTours } from "../../src/page/tours.ts";
 
 function tours(ids: readonly string[]) {
   const all = new Map(ids.map((id) => [id, { start: vi.fn() }]));
@@ -29,28 +29,60 @@ describe("quietSetupTours", () => {
   });
 });
 
-describe("exitActiveTour", () => {
-  test("a tour already on screen is closed, on Foundry's own object", () => {
+describe("closeStartedTours", () => {
+  /** Foundry's tour: `overlayElement` is there once its step is drawn. */
+  function started(drawn: boolean) {
     const tour = {
-      exited: 0,
-      exit(this: { exited: number }) {
-        this.exited += 1;
+      start: vi.fn(),
+      overlayElement: drawn ? {} : undefined,
+      resets: 0,
+      reset(this: { resets: number; overlayElement: unknown }) {
+        this.resets += 1;
+        this.overlayElement = undefined;
+        return Promise.resolve();
       },
     };
     const page = {
-      foundry: { nue: { Tour: { activeTour: tour } } },
+      game: { tours: new Map([["core.backupsOverview", tour]]) },
     } as unknown as PageGlobals;
-    exitActiveTour(page);
-    expect(tour.exited).toBe(1);
+    return { tour, page };
+  }
+
+  test("a tour already on screen is taken away and left unstarted, on Foundry's own object", () => {
+    vi.useFakeTimers();
+    const { tour, page } = started(true);
+    closeStartedTours(page);
+    expect(tour.resets).toBe(1);
+    vi.advanceTimersByTime(60_000);
+    expect(tour.resets).toBe(1);
+    vi.useRealTimers();
   });
 
-  test("does nothing with no tour on screen, or no Foundry", () => {
-    const page = {
-      foundry: { nue: { Tour: { activeTour: null } } },
-    } as unknown as PageGlobals;
+  test("a tour Foundry is still starting is taken away once its step is drawn", () => {
+    // Exiting it sooner leaves the step on screen: Foundry draws it after.
+    vi.useFakeTimers();
+    const { tour, page } = started(false);
+    closeStartedTours(page);
+    vi.advanceTimersByTime(500);
+    expect(tour.resets).toBe(0);
+    tour.overlayElement = {};
+    vi.advanceTimersByTime(200);
+    expect(tour.resets).toBe(1);
+    vi.useRealTimers();
+  });
+
+  test("gives up watching after a while; nothing happens without Foundry", () => {
+    vi.useFakeTimers();
+    const { tour, page } = started(false);
+    closeStartedTours(page);
+    vi.advanceTimersByTime(60_000);
+    expect(vi.getTimerCount()).toBe(0);
+    tour.overlayElement = {};
+    vi.advanceTimersByTime(1000);
+    expect(tour.resets).toBe(0);
     expect(() => {
-      exitActiveTour(page);
-      exitActiveTour({});
+      closeStartedTours({});
     }).not.toThrow();
+    vi.useRealTimers();
   });
 });
