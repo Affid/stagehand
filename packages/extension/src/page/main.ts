@@ -38,6 +38,7 @@ import { watchProgress } from "./progress.ts";
 import { checkUpdates } from "./updates.ts";
 import type { PageGlobals } from "./globals.ts";
 import { hideResolutionNotice } from "./resolution.ts";
+import { exitActiveTour, quietSetupTours } from "./tours.ts";
 import { setShell } from "./shell.ts";
 
 export interface SetupMainDeps {
@@ -349,6 +350,9 @@ function begin(ctx: Ctx): void {
     const m = parseUiToPage(type, payload);
     if (m) handle(ctx, m);
   });
+  // Foundry's own Setup tour stays off our page (page/tours.ts).
+  quietSetupTours(ctx.page);
+  exitActiveTour(ctx.page);
   watchProgress(ctx.page, ctx.postToUi);
   postSetupData(ctx);
   ctx.page.Hooks?.on("renderSetupPackages", () => {
@@ -366,6 +370,8 @@ export function startSetupMain(deps: SetupMainDeps): void {
     notify: notifier(deps.page),
   };
   const poll = (polls: number): void => {
+    // As early as Foundry has its tours: it starts one right after Setup.
+    quietSetupTours(deps.page);
     if (deps.page.game?.view === "setup" && deps.page.ui?.setupPackages) {
       begin(ctx);
       return;

@@ -19,6 +19,7 @@ import { BACK, BRIDGE_NAME, HOME_PAGE, isServerPage } from "./native-api.ts";
 import { pressBack } from "../ui/shell/phone/back.ts";
 import { createTranslator, pickLanguage } from "../ui/i18n.ts";
 import { showReconnecting } from "./reconnecting.ts";
+import { hideBrowserNotice } from "../page/browser-notice.ts";
 import { hideResolutionNotice } from "../page/resolution.ts";
 import { allowTextMenus, hintPasswords } from "../page/text-fields.ts";
 import { addLoginBar } from "./login-bar.ts";
@@ -121,6 +122,8 @@ export function startAppSetup(deps: AppSetupDeps): boolean {
   // Foundry's own talk about its connection stays out of the app: our
   // small sign while it tries again; it reloads the page once back, or
   // native says the server is out of reach.
+  // Nor its notice about an old Chromium: the app says that itself at start.
+  hideBrowserNotice(pageGlobals(), doc);
   showReconnecting({
     page: pageGlobals(),
     doc,

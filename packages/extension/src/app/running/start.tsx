@@ -8,6 +8,7 @@ import { render } from "preact";
 import { useEffect, useState } from "preact/hooks";
 import type { PageGlobals } from "../../page/globals.ts";
 import { showReconnecting } from "../reconnecting.ts";
+import { hideBrowserNotice } from "../../page/browser-notice.ts";
 import { hideResolutionNotice } from "../../page/resolution.ts";
 import { isServerPage } from "../native-api.ts";
 import { createTranslator } from "../../ui/i18n.ts";
@@ -181,6 +182,8 @@ function mount(deps: RunningDeps, world: RunningWorld): void {
   // Foundry's "window smaller than 1024×768" notice: this screen is made
   // for the small window, as the phone layout is (page/resolution.ts).
   hideResolutionNotice(deps.win as PageGlobals, deps.doc);
+  // Nor its notice about an old Chromium: the app says that itself at start.
+  hideBrowserNotice(deps.win as PageGlobals, deps.doc);
   // Nor its talk about its connection: our small sign instead.
   showReconnecting({
     page: deps.win as PageGlobals,

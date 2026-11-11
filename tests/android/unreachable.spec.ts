@@ -2,7 +2,9 @@
 // Chromium's "Web page not available". Foundry's page leaves for /no once
 // it gives up reconnecting; a page can fail to load with the device
 // offline. Try again asks for Setup, Android's Back is the server list,
-// and a server opened from home while offline says so too.
+// and a server opened from home while offline says so too. With it,
+// Foundry's own noise that stays off our pages: its Setup tour, its
+// old-Chromium notice, its connection notices (our Reconnecting sign).
 import { expect, test, type Page } from "@playwright/test";
 import { App, HOME, installFresh, SERVER } from "./app.ts";
 import { adminLogin, closeWorld } from "./foundry.ts";
@@ -49,8 +51,35 @@ test.afterAll(async () => {
   await app.close();
 });
 
-test("Foundry's dead end after a lost connection is our screen; Try again reloads Setup", async () => {
+test("Foundry's own tour and its old-Chromium notice stay off our Setup page", async () => {
   page = await addServer(app);
+  // Foundry starts its backups tour right after Setup comes up, and raises
+  // the notice at load: both given time to show.
+  await sleep(4_000);
+  const state = await page.evaluate(() => {
+    const g = globalThis as unknown as {
+      game: { tours: { get(id: string): { status: string } } };
+      foundry: { nue: { Tour: { activeTour: unknown } } };
+    };
+    return {
+      // "unstarted": a tour that had started would be "in-progress" for good.
+      tour: g.game.tours.get("core.backupsOverview").status,
+      active: g.foundry.nue.Tour.activeTour !== null,
+      notices: [...document.querySelectorAll("#notifications li")]
+        .map((li) => li.textContent)
+        .filter((text) => /Chromium|browser/i.test(text)),
+      // Whether this WebView is one Foundry complains about.
+      old: Number(/Chrome\/(\d+)/.exec(navigator.userAgent)?.[1]) < 146,
+    };
+  });
+  expect(state.tour).toBe("unstarted");
+  expect(state.active).toBe(false);
+  expect(state.notices).toEqual([]);
+  expect(state.old).toBe(true);
+  await app.shot("setup-quiet");
+});
+
+test("Foundry's dead end after a lost connection is our screen; Try again reloads Setup", async () => {
   // What Foundry's page does once it gives up reconnecting (client/game.mjs).
   await page
     .evaluate((no) => {

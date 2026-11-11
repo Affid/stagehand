@@ -46,6 +46,8 @@ export interface SetupGame {
   readonly worlds?: Collection;
   readonly systems?: Collection;
   readonly settings?: ClientSettings;
+  /** Foundry's tours, by "namespace.id". */
+  readonly tours?: { readonly get?: (id: string) => unknown };
   /** Foundry's socket: not there yet right after a server start. */
   readonly socket?: { readonly connected?: boolean };
   /** Foundry's own POST to the Setup route; resolves with the server's answer. */
@@ -89,6 +91,12 @@ export interface PageGlobals {
       /** Foundry's applications; the file picker creates folders in Data. */
       readonly apps?: {
         readonly FilePicker?: { readonly implementation?: unknown };
+      };
+    };
+    /** Foundry's new-user experience: the tour on screen, if any. */
+    readonly nue?: {
+      readonly Tour?: {
+        readonly activeTour?: { exit(): unknown } | null;
       };
     };
     readonly utils?: {
