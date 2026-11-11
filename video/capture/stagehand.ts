@@ -3,7 +3,7 @@
 // the video walks through, each reached by the real clicks. The queued
 // change is discarded again at the end and nothing is launched.
 import type { Locator, Page } from "@playwright/test";
-import { openStagehand } from "./browser.ts";
+import { openStagehand, VIEWPORT } from "./browser.ts";
 import { type Piece, piecesOf, type Rect, rectOf, rectsOf } from "./rects.ts";
 import { shootEach, shootPage } from "./shots.ts";
 
@@ -92,9 +92,25 @@ function folderLabels(page: Page): Promise<FolderLabel[]> {
   }, SECTION);
 }
 
+/** What one pass over the Library takes: a pass has one pixel density. */
+export type LibraryPass = "pieces" | "page" | "tall";
+
+/** Tall enough that the Library and the By world table show every row. */
+const TALL = { width: VIEWPORT.width, height: 3600 } as const;
+
+/** The whole Library and the whole By world table, in a very tall window. */
+async function shootTall(page: Page): Promise<void> {
+  await page.setViewportSize(TALL);
+  await page.waitForTimeout(800);
+  await shootPage(page, "sh/library-tall.png");
+  await page.locator(CHROME.byWorldTab).click();
+  await page.locator(`${SHELL} .stl-grid`).waitFor();
+  await shootPage(page, "sh/by-world-tall.png");
+}
+
 export async function captureLibrary(
   scale: number,
-  withPage: boolean,
+  pass: LibraryPass,
 ): Promise<LibraryCapture> {
   const { page, close } = await openStagehand(scale);
   try {
@@ -104,12 +120,14 @@ export async function captureLibrary(
     const chrome = await rectsOf(page, CHROME);
     const cards = await piecesOf(page, CARD, "data-module", SECTION);
     const folders = await piecesOf(page, heads, "data-video-folder");
-    if (withPage) await shootPage(page, "sh/library.png");
-    else {
+    const labels = await folderLabels(page);
+    if (pass === "page") await shootPage(page, "sh/library.png");
+    if (pass === "tall") await shootTall(page);
+    if (pass === "pieces") {
       await shootEach(page.locator(CARD), "data-module", "sh/cards");
       await shootEach(page.locator(heads), "data-video-folder", "sh/folders");
     }
-    return { chrome, cards, folders, labels: await folderLabels(page) };
+    return { chrome, cards, folders, labels };
   } finally {
     await close();
   }
@@ -193,9 +211,15 @@ async function queueAndReview(
   const dialog = page.getByRole("dialog");
   await dialog.waitFor();
   await shootPage(page, "sh/review.png");
+  const block = "xpath=ancestor-or-self::*[self::div or self::label][1]";
   const review = {
     dialog: await rectOf(dialog),
     apply: await rectOf(dialog.getByRole("button", { name: /^Apply/ })),
+    verdict: await rectOf(
+      dialog.getByText(/Dependencies are met/).locator(block),
+    ),
+    turnsOn: await rectOf(dialog.getByText(/^Turns on/).locator("xpath=..")),
+    backup: await rectOf(dialog.getByText(/^Back up .* first$/).locator(block)),
   };
   await dialog.getByRole("button", { name: "Cancel" }).click();
   await discardQueued(page);

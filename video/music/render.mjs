@@ -1,25 +1,27 @@
-// node render.mjs [synth] [simple] [sampled]: renders the named versions
-// (all three when none is named) to video/public/audio as WAV and M4A.
+// node render.mjs [synth] [simple] [sampled]   renders cut A (all three when
+//                                              none is named)
+// node render.mjs b [synth] [sampled]          renders cut B
+// Files go to video/public/audio as WAV and M4A.
 
 import { mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { CUTS, parseCutArgs } from "./cuts.mjs";
 import { peakDb, rmsDb } from "./dsp/buffers.mjs";
 import { finish } from "./finish.mjs";
 import { master, mixStems } from "./mix.mjs";
-import { NOTES, notesFor, SIMPLE_INSTRUMENTS } from "./score.mjs";
 import { synthStems } from "./synth/stems.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const AUDIO_DIR = join(HERE, "..", "public", "audio");
 
-const VERSIONS = {
-  synth: async () => synthStems(NOTES),
-  simple: async () => synthStems(notesFor(SIMPLE_INSTRUMENTS)),
+export async function stemsFor(cut, name) {
+  const { engine, notes } = cut.versions[name];
+  if (engine === "synth") return synthStems(notes, cut.seconds);
   // Loaded only when asked for, so the synth versions need no npm install.
-  sampled: async () =>
-    (await import("./sampled/stems.mjs")).sampledStems(NOTES),
-};
+  const { sampledStems } = await import("./sampled/stems.mjs");
+  return sampledStems(notes, cut.seconds, cut.patches);
+}
 
 function describeStems(stems) {
   return Object.entries(stems)
@@ -30,29 +32,33 @@ function describeStems(stems) {
     .join("; ");
 }
 
-async function renderVersion(name) {
+async function renderVersion(cut, name) {
   const started = performance.now();
-  const stems = await VERSIONS[name]();
-  console.log(`${name}: stems as rendered (dB): ${describeStems(stems)}`);
+  const label = cut === CUTS.a ? name : `${cut.id}-${name}`;
+  const stems = await stemsFor(cut, name);
+  console.log(`${label}: stems as rendered (dB): ${describeStems(stems)}`);
+  const wavPath = join(AUDIO_DIR, `${cut.filePrefix}-${name}.wav`);
   const result = finish(
-    master(mixStems(stems)),
-    join(AUDIO_DIR, `music-${name}.wav`),
+    master(mixStems(stems, cut), cut),
+    wavPath,
+    cut.loudness,
   );
   const seconds = ((performance.now() - started) / 1000).toFixed(1);
   console.log(
-    `${name}: ${result.integrated} LUFS, LRA ${result.range} LU, true peak ${result.truePeak} dBFS, ` +
-      `gain ${result.gainDb.toFixed(2)} dB, ${result.limitedSamples} samples limited, ${seconds} s`,
+    `${label}: ${result.integrated} LUFS, LRA ${result.range} LU, true peak ${result.truePeak} dBFS, ` +
+      `gain ${result.gainDb.toFixed(2)} dB, ${result.limitedSamples} samples limited (deepest ${result.deepestLimitDb.toFixed(1)} dB), ${seconds} s`,
   );
 }
 
-const asked = process.argv.slice(2);
-const names = asked.length > 0 ? asked : Object.keys(VERSIONS);
-const unknown = names.filter((name) => !(name in VERSIONS));
-if (unknown.length > 0) {
-  console.error(
-    `Unknown version: ${unknown.join(", ")}. Choose from ${Object.keys(VERSIONS).join(", ")}.`,
-  );
-  process.exit(1);
+async function main() {
+  const { cut, names } = parseCutArgs(process.argv.slice(2));
+  mkdirSync(AUDIO_DIR, { recursive: true });
+  for (const name of names) await renderVersion(cut, name);
 }
-mkdirSync(AUDIO_DIR, { recursive: true });
-for (const name of names) await renderVersion(name);
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  main().catch((error) => {
+    console.error(error.message);
+    process.exit(1);
+  });
+}

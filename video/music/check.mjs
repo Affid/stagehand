@@ -1,11 +1,13 @@
-// node check.mjs: measures every rendered version, since nobody making this
-// can listen to it. Prints format, loudness, the level of the first and last
-// moments, a level-per-second strip, the largest sample-to-sample jump (a
-// click would show as a large one), and writes a spectrogram to out/.
+// node check.mjs: measures every rendered file of both cuts, since nobody
+// making this can listen to it. Prints format, loudness, the level of the
+// first and last moments, a level-per-second strip, the largest
+// sample-to-sample jump (a click would show as a large one), and writes a
+// spectrogram to out/.
 
 import { existsSync, mkdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { CUTS } from "./cuts.mjs";
 import { measureLoudness, probe, spectrogram } from "./io/ffmpeg.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -45,16 +47,19 @@ function meanOffset(samples) {
 }
 
 function report(name) {
-  const path = join(AUDIO_DIR, `music-${name}.wav`);
+  const path = join(AUDIO_DIR, `${name}.wav`);
   if (!existsSync(path)) return;
   const samples = readSamples(path);
-  const seconds = samples.length / 2 / RATE;
+  const end = samples.length / 2 / RATE;
   const format = probe(path);
   const loudness = measureLoudness(path);
-  const strip = Array.from({ length: Math.floor(seconds) }, (_, s) =>
+  const strip = Array.from({ length: Math.floor(end) }, (_, s) =>
     Math.round(rmsDb(samples, s, s + 1)),
   );
-  spectrogram(path, join(OUT_DIR, `spectrogram-${name}.png`));
+  spectrogram(
+    path,
+    join(OUT_DIR, `spectrogram-${name.replace(/^music-/, "")}.png`),
+  );
   console.log(
     `\n${name}: ${format.codec_name}, ${format.sample_rate} Hz, ${format.channels} ch, ${format.duration} s`,
   );
@@ -65,7 +70,7 @@ function report(name) {
     `  first 50 ms ${rmsDb(samples, 0, 0.05).toFixed(1)} dB, first 250 ms ${rmsDb(samples, 0, 0.25).toFixed(1)} dB`,
   );
   console.log(
-    `  40.0-40.5 s ${rmsDb(samples, 40, 40.5).toFixed(1)} dB, last 100 ms ${rmsDb(samples, seconds - 0.1, seconds).toFixed(1)} dB`,
+    `  1.0-0.5 s before the end ${rmsDb(samples, end - 1, end - 0.5).toFixed(1)} dB, last 100 ms ${rmsDb(samples, end - 0.1, end).toFixed(1)} dB`,
   );
   console.log(
     `  DC offset ${meanOffset(samples).toExponential(1)}, largest jump ${largestJump(samples)}`,
@@ -74,4 +79,7 @@ function report(name) {
 }
 
 mkdirSync(OUT_DIR, { recursive: true });
-for (const name of ["synth", "sampled", "simple"]) report(name);
+for (const cut of Object.values(CUTS)) {
+  for (const version of Object.keys(cut.versions))
+    report(`${cut.filePrefix}-${version}`);
+}

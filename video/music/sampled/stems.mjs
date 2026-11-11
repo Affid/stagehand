@@ -1,4 +1,4 @@
-// Renders one stereo stem per instrument from the score with sampled
+// Renders one stereo stem per instrument from a score with sampled
 // instruments: spessasynth_core (a SoundFont synthesizer in plain JavaScript)
 // playing GeneralUser GS, offline. Its own reverb and chorus are switched
 // off; the shared mix adds the same reverb the synth version gets.
@@ -6,23 +6,12 @@
 import { SoundBankLoader, SpessaSynthProcessor } from "spessasynth_core";
 import { createStereo, SAMPLE_RATE } from "../dsp/buffers.mjs";
 import { riseAt } from "../dsp/shapes.mjs";
-import { DURATION_SECONDS } from "../score.mjs";
+import { synthStems } from "../synth/stems.mjs";
 import { readSoundFont } from "./soundfont.mjs";
 
 const DRUM_CHANNEL = 9;
-// General MIDI programs (numbered from 0) and drum keys. minSeconds lets
-// struck instruments ring instead of being cut at the written note length.
-const PATCHES = {
-  piano: { program: 0 },
-  mallet: { program: 12, minSeconds: 0.5 },
-  bell: { program: 8, minSeconds: 1 },
-  pad: { program: 89 },
-  bass: { program: 32 },
-  kick: { drumKey: 36 },
-  shaker: { drumKey: 82 },
-};
 const BLOCK = 128;
-// Pad notes with an attack this long are the written swell; the sampled pad
+// Pad notes with an attack this long are a written swell; the sampled pad
 // cannot be told how slowly to open, so the swell is shaped after rendering.
 const SWELL_ATTACK_SECONDS = 0.8;
 
@@ -45,7 +34,7 @@ function eventsFor(notes, patch) {
     .sort((a, b) => a.at - b.at || a.velocity - b.velocity);
 }
 
-async function renderPatch(soundBank, patch, notes) {
+async function createSynth(soundBank, patch) {
   const synth = new SpessaSynthProcessor(SAMPLE_RATE, {
     effectsEnabled: false,
     eventsEnabled: false,
@@ -55,8 +44,14 @@ async function renderPatch(soundBank, patch, notes) {
   synth.setSystemParameter("autoAllocateVoices", true);
   const channel = patch.drumKey === undefined ? 0 : DRUM_CHANNEL;
   if (patch.program !== undefined) synth.programChange(channel, patch.program);
+  if (patch.kit !== undefined) synth.programChange(channel, patch.kit);
+  return { synth, channel };
+}
+
+async function renderPatch(soundBank, patch, notes, seconds) {
+  const { synth, channel } = await createSynth(soundBank, patch);
   const events = eventsFor(notes, patch);
-  const total = Math.round(DURATION_SECONDS * SAMPLE_RATE);
+  const total = Math.round(seconds * SAMPLE_RATE);
   const left = new Float32Array(total);
   const right = new Float32Array(total);
   let next = 0;
@@ -92,8 +87,8 @@ function shapeSwell(stem, notes) {
   return stem;
 }
 
-function sum(a, b) {
-  const out = createStereo(DURATION_SECONDS);
+function sum(a, b, seconds) {
+  const out = createStereo(seconds);
   for (let i = 0; i < out.left.length; i += 1) {
     out.left[i] = a.left[i] + b.left[i];
     out.right[i] = a.right[i] + b.right[i];
@@ -101,30 +96,34 @@ function sum(a, b) {
   return out;
 }
 
-export async function sampledStems(notes) {
+async function sampledStem(soundBank, inst, patch, own, seconds) {
+  const isSwell = (note) =>
+    inst === "pad" && (note.attack ?? 0) >= SWELL_ATTACK_SECONDS;
+  const steady = await renderPatch(
+    soundBank,
+    patch,
+    own.filter((note) => !isSwell(note)),
+    seconds,
+  );
+  const swellNotes = own.filter(isSwell);
+  if (swellNotes.length === 0) return steady;
+  const swell = shapeSwell(
+    await renderPatch(soundBank, patch, swellNotes, seconds),
+    swellNotes,
+  );
+  return sum(steady, swell, seconds);
+}
+
+export async function sampledStems(notes, seconds, patches) {
   const soundBank = SoundBankLoader.fromArrayBuffer(readSoundFont());
   const stems = {};
-  for (const [inst, patch] of Object.entries(PATCHES)) {
+  for (const [inst, patch] of Object.entries(patches)) {
     const own = notes.filter((note) => note.inst === inst);
     if (own.length === 0) continue;
-    const isSwell = (note) =>
-      inst === "pad" && (note.attack ?? 0) >= SWELL_ATTACK_SECONDS;
-    const steady = await renderPatch(
-      soundBank,
-      patch,
-      own.filter((note) => !isSwell(note)),
-    );
-    const swellNotes = own.filter(isSwell);
     stems[inst] =
-      swellNotes.length === 0
-        ? steady
-        : sum(
-            steady,
-            shapeSwell(
-              await renderPatch(soundBank, patch, swellNotes),
-              swellNotes,
-            ),
-          );
+      patch.engine === "synth"
+        ? synthStems(own, seconds)[inst]
+        : await sampledStem(soundBank, inst, patch, own, seconds);
   }
   return stems;
 }

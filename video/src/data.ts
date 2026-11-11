@@ -32,7 +32,9 @@ interface Capture {
     readonly byWorld: { readonly table: Rect; readonly columns: Rect[] };
     readonly world: Readonly<Record<"railItem" | "card" | "toggle", Rect>>;
     readonly queued: Readonly<Record<"waits" | "launch", Rect>>;
-    readonly review: Readonly<Record<"dialog" | "apply", Rect>>;
+    readonly review: Readonly<
+      Record<"dialog" | "apply" | "verdict" | "turnsOn" | "backup", Rect>
+    >;
   };
 }
 

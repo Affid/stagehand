@@ -3,8 +3,8 @@
 //   FOUNDRY_PORT=30015 FOUNDRY_DATA_DIR=~/foundry/data-demo \
 //     node video/capture/capture.ts
 // Needs the release build of the extension (packages/extension:
-// pnpm build:release). Pages are taken at 3x so the video can move in on
-// them; single cards at 2x, since they are shown small.
+// pnpm build:release). Pages and Stagehand's cards are taken at 3x so the
+// video can move in on them; the two very tall pages at 2x.
 import { writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { VIEWPORT } from "./browser.ts";
@@ -19,12 +19,16 @@ import {
 import { captureStock } from "./stock.ts";
 
 const PAGE_SCALE = 3;
-const CARD_SCALE = 2;
+/** Foundry's cards are only ever shown small; Stagehand's also step forward. */
+const STOCK_CARD_SCALE = 2;
+const CARD_SCALE = 3;
+const TALL_SCALE = 2;
 
-const stock = await captureStock(CARD_SCALE, false);
+const stock = await captureStock(STOCK_CARD_SCALE, false);
 await captureStock(PAGE_SCALE, true);
-const library = await captureLibrary(CARD_SCALE, false);
-await captureLibrary(PAGE_SCALE, true);
+const library = await captureLibrary(CARD_SCALE, "pieces");
+await captureLibrary(PAGE_SCALE, "page");
+await captureLibrary(TALL_SCALE, "tall");
 const walk = await captureWalk(PAGE_SCALE);
 
 writeFileSync(
@@ -34,6 +38,7 @@ writeFileSync(
       viewport: VIEWPORT,
       pageScale: PAGE_SCALE,
       cardScale: CARD_SCALE,
+      tallScale: TALL_SCALE,
       world: WORLD,
       module: MODULE,
       noted: NOTED,

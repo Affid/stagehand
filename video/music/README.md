@@ -50,7 +50,7 @@ mastering (`mix.mjs`, `finish.mjs`); only the instruments differ.
   bass. The sorting run (3.0-6.5 s) and all bell accents are absent from it.
 
 Shared by all: each instrument's stem is scaled to a fixed RMS level
-(`MIX` in `mix.mjs`) so both engines are balanced alike; reverb is an
+(the `MIX_A` and `MIX_B` tables in `cuts.mjs`) so both engines are balanced alike; reverb is an
 eight-line feedback delay network (Householder feedback, 1.7 s decay, damped
 above 4.2 kHz, fed through all-pass diffusers, sends high-passed at 180 Hz);
 mastering is a 28 Hz high-pass, a 10.5 kHz low-pass, a 20 ms fade-in, a fade
@@ -106,3 +106,68 @@ deterministic (seeded noise). After changing notes, edit `score/*.mjs` and run
   is exactly on the grid.
 - The chord landings (7.0, 34.5 and 38.0 s) measure 3-5 dB above the groove in
   plain RMS; much of that is low D in the bass.
+
+## Cut B (upbeat, 30 s)
+
+A second, separate piece for the beat-cut alternative video. Cut A's score,
+settings and files are untouched: `node render.mjs` with no cut named still
+renders cut A, and its outputs are byte-identical to before cut B was added
+(checked by SHA-256).
+
+- Score: `score-b.mjs` and `score-b/`. Original, E major, 120 BPM, 15 bars,
+  exactly 30.0 s. `node print-score.mjs b` prints it, and ends with a list of
+  what sounds on each of the film's hit times (`HIT_TIMES` in `score-b.mjs`).
+- How it differs from cut A: a kick on every beat with claps on two and
+  four and off-beat hi-hats, a syncopated bass (root, pushed root, octave),
+  staccato piano chord stabs on the cut points, and a two-bar hook on a
+  plucked voice in place of cut A's long piano theme. A tighter reverb
+  (1.2 s), more top (13 kHz low-pass), louder (-18 LUFS, true peak under
+  -2 dBFS).
+
+| Time (s)  | Film              | Music                                                                                                             |
+| --------- | ----------------- | ----------------------------------------------------------------------------------------------------------------- |
+| 0.0, 1.0  | Two type slams    | Kick, bass and a bare-fifth piano stab on E, then Bsus4; quiet riser                                              |
+| 2.0-4.0   | Name reveal       | Eadd9 held (piano, pad, bell, kick and clap); riser and a mallet pickup into 4.0                                  |
+| 4.0-8.0   | Folder piles land | Groove starts; eight rising notes (mallet and pluck) on 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.25, 7.5; clap fill        |
+| 8.0-12.0  | Library           | Hook over E, C#m7, A, B; piano stabs and bell on 8, 9, 10, 11                                                     |
+| 12.0-16.0 | By world          | Hook a third higher over C#m7, B, A, B, doubled by the mallet                                                     |
+| 16.0-20.0 | Queue a change    | Sparser kick, no clap, mallet eighths; a click alone on 17.0; stab, bell and clap on 18.5                         |
+| 20.0-24.0 | Review            | B pedal in eighths; rising stabs with claps on 20.5, 21.5, 22.5; drums out at 23.0 under a riser and a mallet run |
+| 24.0-26.0 | Recap             | Groove back; stab and pluck every 0.25 s from 24.0 to 25.25; four-note fill                                       |
+| 26.0-30.0 | Logo              | E major hit, left to ring; the hook's first five notes quietly from 27.0, last note 28.0; silent from 29.9        |
+
+- **b-synth** (`music-b-synth.wav`): the synth engine, with voices added in
+  `synth/pluck.mjs` and `synth/beat.mjs`: a Karplus-Strong plucked string for
+  the hook, a bass of sawtooth harmonics that close quickly, a sine-sweep
+  kick (160 to 50 Hz), a clap of four band-passed noise bursts, a high-passed
+  noise hi-hat, a two-ping click, and risers of noise through a band-pass
+  that climbs from 300 Hz to 5 kHz. Piano, mallet, bell and pad are cut A's.
+- **b-sampled** (`music-b-sampled.wav`): GeneralUser GS presets Grand Piano
+  (0), Pizzicato Strings (45) for the hook, Marimba (12), Celeste (8), Warm
+  Pad (89), Finger Bass (33); kick (36), hand clap (39) and side stick (37,
+  the click) from the Standard 1 kit and the closed hi-hat (42) from the
+  Electronic kit. The kits were chosen by measuring every kit's kick and
+  hi-hat decay (see `sampled/patches.mjs`). The risers have no good General
+  MIDI match and come from the synth engine in this version too.
+
+```bash
+cd video/music
+node render.mjs b                 # both cut B versions
+node render.mjs b synth           # or one
+node print-score.mjs b            # the score and the hit-time list
+node stems-report.mjs b           # loudness of each instrument per section
+node check.mjs                    # measures every file of both cuts
+```
+
+What will sound synthetic in cut B, and what is not known:
+
+- Nothing has been heard. Whether the groove feels good, and whether the
+  hook is catchy, cannot be measured.
+- b-synth: the drums are plainly drum-machine sounds (the clap most of all)
+  and the plucked hook is closer to a harpsichord or koto than to a guitar.
+  The piano stabs share cut A's weak piano.
+- b-sampled: acoustic General MIDI drums and pizzicato strings; the same
+  sample on every repeated hit, so the kick and clap do not vary.
+- Both: a look-ahead limiter trims the loudest hits by up to 3-4 dB for a few
+  milliseconds each (about 0.15-0.2 s in total); this is ordinary for music
+  with drums but its audibility was not judged.

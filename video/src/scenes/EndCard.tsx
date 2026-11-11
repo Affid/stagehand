@@ -17,7 +17,7 @@ const LINE_IN = 46;
 const FOOT_IN = 84;
 
 /** The bag hangs from the rope's right end and swings to rest. */
-const Mark: FC<{ readonly frame: number }> = ({ frame }) => {
+export const Mark: FC<{ readonly frame: number }> = ({ frame }) => {
   const settle = Math.exp(-Math.max(0, frame - MARK_IN) / 22);
   const swing = 9 * settle * Math.sin((frame - MARK_IN) / 4.2);
   return (

@@ -10,6 +10,8 @@
     "simple": "node render.mjs simple",
     "sampled": "node render.mjs sampled",
     "all": "node render.mjs synth simple sampled",
+    "b": "node render.mjs b",
+    "score-b": "node print-score.mjs b",
     "check": "node check.mjs"
   },
   "dependencies": {

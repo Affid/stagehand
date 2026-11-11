@@ -1,7 +1,8 @@
 # Promo video
 
-A 41-second video of Stagehand (1920 x 1080, 30 fps), built in code so it
-can be rendered again when the page changes. It is not part of any shipped
+Two cuts of a video of Stagehand (1920 x 1080, 30 fps), built in code so
+they can be rendered again when the page changes: `Promo`, 41 seconds and
+calm, and `PromoB` (src/b), 30 seconds, cut on the beat with big type. It is not part of any shipped
 package and has its own install, outside the product's pnpm workspace.
 
 ```
@@ -21,10 +22,12 @@ pnpm render                                  # out/stagehand-promo.mp4
 pnpm render --props='{"music":"synth"}'      # another rendering of the score
 pnpm render --props='{"music":"none"}'       # no sound
 pnpm still out/thumbnail.png --frame=0
+pnpm render:b                                # out/stagehand-promo-b.mp4 (cut B)
 pnpm studio                                  # scrub through it in the browser
 ```
 
-`music` is `sampled` (the default), `synth`, `simple` or `none`; see
+`music` is `sampled` (the default), `synth`, `simple` or `none` (cut B:
+`b-sampled`, `b-synth` or `none`); see
 [music/README.md](music/README.md) for what each is and how it is made.
 
 ## Capture again (after the page changes)
@@ -73,6 +76,20 @@ Everything on screen is the product as captured, except:
   companion's own dialog inside the world is not shown.
 - The demo server's worlds, folders, tags and notes are invented for the
   demo; its modules are real ones from Foundry's package list.
+
+Cut B is made from the same captures and stages more:
+
+- Foundry's list rushing past under the opening lines is its real cards,
+  laid back and scrolled by the video; the page itself is not shown whole.
+- The cards scatter and drop into folder piles as animation, as in the
+  first cut.
+- The pages appear in tilted, rounded windows the video draws around them,
+  scrolled a step per beat. The Library and the By world table come from
+  one capture each in a very tall browser window, so every row is the
+  page's own rendering.
+- Cards, the queued-change note and the review dialog are cut out of the
+  captured pages and shown on their own, enlarged.
+- The recap is eight quarter-second crops of the captured pages.
 
 ## Notes
 

@@ -31,21 +31,27 @@ function lookAheadMinimum(need) {
   return out;
 }
 
-/** Returns { buffer, reducedSamples }; the input is left untouched. */
+/** Returns { buffer, reducedSamples, deepestDb }; the input is left untouched. */
 export function limit(buffer, ceiling) {
   const need = neededGains(buffer, ceiling);
-  if (!need) return { buffer, reducedSamples: 0 };
+  if (!need) return { buffer, reducedSamples: 0, deepestDb: 0 };
   const minimum = lookAheadMinimum(need);
   const left = new Float64Array(need.length);
   const right = new Float64Array(need.length);
   let sum = 0;
   let reducedSamples = 0;
+  let deepest = 1;
   for (let i = 0; i < need.length; i += 1) {
     sum += minimum[i] - (i >= WINDOW ? minimum[i - WINDOW] : 1);
     const gain = 1 + sum / WINDOW;
     if (gain < 0.9999) reducedSamples += 1;
+    if (gain < deepest) deepest = gain;
     left[i] = buffer.left[i] * gain;
     right[i] = buffer.right[i] * gain;
   }
-  return { buffer: { left, right }, reducedSamples };
+  return {
+    buffer: { left, right },
+    reducedSamples,
+    deepestDb: 20 * Math.log10(deepest),
+  };
 }
