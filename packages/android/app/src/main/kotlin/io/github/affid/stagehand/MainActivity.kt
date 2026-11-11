@@ -82,7 +82,7 @@ private object Crash {
  * Foundry with our scripts on its Setup and game pages. Native's work is in
  * core/ (plain Kotlin); this class wires it to the WebViews.
  */
-class MainActivity : ComponentActivity(), AppHost, LoginHost, ApplyHost {
+class MainActivity : ComponentActivity(), AppHost, LoginHost, ApplyHost, UnreachableHost {
     private lateinit var root: FrameLayout
     private lateinit var handlers: NativeHandlers
     private lateinit var relay: Relay
@@ -106,6 +106,9 @@ class MainActivity : ComponentActivity(), AppHost, LoginHost, ApplyHost {
     private var certDialog: AlertDialog? = null
     private lateinit var login: LoginController
     private lateinit var apply: ApplyController
+    private lateinit var unreachable: UnreachableController
+    /** A server page failed while home was in front: our screen shows when the server does. */
+    private var pendingUnreachable: String? = null
     /** A server page reached Foundry's login while home was in front: ours shows when the server does. */
     private var pendingLogin: String? = null
     private var activeOrigins: Set<String> = emptySet()
@@ -180,6 +183,7 @@ class MainActivity : ComponentActivity(), AppHost, LoginHost, ApplyHost {
         listen(home, setOf(APP_ORIGIN), Caller.HOME, homePage, relay)
         login = LoginController(this, root, lifecycleScope, this)
         apply = ApplyController(this, root, lifecycleScope, this)
+        unreachable = UnreachableController(this, root, lifecycleScope, this)
         injection = Injection(server, assets)
         serversChanged(handlers.state)
         onBackPressedDispatcher.addCallback(this, backCallback)
@@ -216,6 +220,7 @@ class MainActivity : ComponentActivity(), AppHost, LoginHost, ApplyHost {
         showing = screen
         if (screen == Screen.SERVER) homeOverServer = false
         if (screen == Screen.SERVER) pendingLogin?.let { pendingLogin = null; login.show(it) }
+        if (screen == Screen.SERVER) pendingUnreachable?.let { pendingUnreachable = null; unreachable.show(it) }
         home.visibility = if (screen == Screen.HOME) View.VISIBLE else View.INVISIBLE
         server.visibility = if (screen == Screen.SERVER) View.VISIBLE else View.INVISIBLE
         // Password managers fill the WebView in front, never the hidden ones
@@ -225,12 +230,33 @@ class MainActivity : ComponentActivity(), AppHost, LoginHost, ApplyHost {
     }
 
     override fun showLogin(server: String) {
+        // The server answered: it asks for the password.
+        leaveUnreachable()
         // Not over home: the server page may be out of sight (review).
         if (showing != Screen.SERVER) {
             pendingLogin = server
             return
         }
         login.show(server)
+    }
+
+    override fun serverUnreachable(server: String) {
+        // Not over home, as our login.
+        if (showing != Screen.SERVER) {
+            pendingUnreachable = server
+            return
+        }
+        login.hide()
+        unreachable.show(server)
+    }
+
+    override fun tryServerAgain(server: String) {
+        this.server.loadUrl("$server/setup")
+    }
+
+    private fun leaveUnreachable() {
+        pendingUnreachable = null
+        unreachable.hide()
     }
 
     override fun gameAllowed(url: String): Boolean = apply.allowsGame(url)
@@ -271,6 +297,7 @@ class MainActivity : ComponentActivity(), AppHost, LoginHost, ApplyHost {
     fun showHome() {
         if (!started) return
         login.hide()
+        leaveUnreachable()
         pendingLogin = null
         homeOverServer = false
         // Loaded again each time: the list is read when the page starts.
@@ -288,6 +315,7 @@ class MainActivity : ComponentActivity(), AppHost, LoginHost, ApplyHost {
         val full = WebUrl.parse(url)?.let { it.origin + it.rawPath } ?: return
         val id = activeServers().firstOrNull { full == it || full.startsWith("$it/") } ?: return
         login.hide()
+        leaveUnreachable()
         apply.cancel()
         clearHistoryOnFinish = true
         server.loadUrl(url)
@@ -324,7 +352,8 @@ class MainActivity : ComponentActivity(), AppHost, LoginHost, ApplyHost {
 
     override fun backgroundStarting() = relay.backgroundReloading()
 
-    override fun serverPageFinished() {
+    override fun serverPageFinished(loaded: Boolean) {
+        if (loaded) leaveUnreachable()
         // A server opened from home starts its own history.
         if (clearHistoryOnFinish) {
             clearHistoryOnFinish = false
@@ -353,6 +382,10 @@ class MainActivity : ComponentActivity(), AppHost, LoginHost, ApplyHost {
         // Our login: Back is its ‹, to the servers; applying: our running page.
         if (showing == Screen.SERVER && login.showing) {
             login.back()
+            return
+        }
+        if (showing == Screen.SERVER && unreachable.showing) {
+            unreachable.back()
             return
         }
         if (showing == Screen.SERVER && apply.showing) {
@@ -430,6 +463,12 @@ class MainActivity : ComponentActivity(), AppHost, LoginHost, ApplyHost {
             debugLog("Home's answer to Back failed", e)
             false
         }
+    }
+
+    /** Back in front with the server unreachable: one try by itself (the phone was away, or offline). */
+    override fun onResume() {
+        super.onResume()
+        if (started && showing == Screen.SERVER) unreachable.retry()
     }
 
     override fun onPause() {

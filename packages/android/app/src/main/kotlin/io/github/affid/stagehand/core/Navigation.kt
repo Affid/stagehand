@@ -21,3 +21,29 @@ fun isRunningPage(url: String, servers: Collection<String>): Boolean =
 /** The saved server whose Foundry login (/auth) this is: native shows our login instead. */
 fun loginServerOf(url: String, servers: Collection<String>): String? =
     servers.firstOrNull { isServerPage(url, it, "/auth") }
+
+/**
+ * Foundry's dead end: its page goes to /no once it gives up reconnecting
+ * (client/game.mjs, "reconnect_failed"). The saved server whose /no this
+ * is: native shows our unreachable screen instead (owner, 2026-11-11).
+ */
+fun lostServerOf(url: String, servers: Collection<String>): String? =
+    servers.firstOrNull { isServerPage(url, it, "/no") }
+
+/**
+ * The saved server a page is on: the longest one it is under, else one on
+ * its origin (a page beside the route prefix), so a failed load always has
+ * a Setup to try again.
+ */
+fun serverOf(url: String, servers: Collection<String>): String? {
+    val parsed = WebUrl.parse(url) ?: return null
+    val full = parsed.origin + parsed.rawPath.removeSuffix("/")
+    return servers.filter { full == it || full.startsWith("$it/") }.maxByOrNull { it.length }
+        ?: servers.firstOrNull { WebUrl.parse(it)?.origin == parsed.origin }
+}
+
+/** A reverse proxy's answers when Foundry behind it is down or restarting. */
+private val GATEWAY_DOWN = setOf(502, 503, 504)
+
+/** Whether a page's HTTP status says the server isn't there (Foundry's own errors don't). */
+fun gatewayDown(status: Int): Boolean = status in GATEWAY_DOWN

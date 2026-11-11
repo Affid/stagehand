@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.net.http.SslError
 import android.webkit.RenderProcessGoneDetail
 import android.webkit.SslErrorHandler
+import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebView
@@ -13,9 +14,12 @@ import io.github.affid.stagehand.core.APP_HOST
 import io.github.affid.stagehand.core.HOME_PAGE
 import io.github.affid.stagehand.core.WebUrl
 import io.github.affid.stagehand.core.externalAllowed
+import io.github.affid.stagehand.core.gatewayDown
 import io.github.affid.stagehand.core.loginServerOf
+import io.github.affid.stagehand.core.lostServerOf
 import io.github.affid.stagehand.core.mayAskAsServer
 import io.github.affid.stagehand.core.runningInsteadOf
+import io.github.affid.stagehand.core.serverOf
 import java.io.ByteArrayInputStream
 
 /** What the WebView clients ask of the app. */
@@ -42,7 +46,11 @@ interface AppHost {
 
     fun backgroundStarting()
 
-    fun serverPageFinished()
+    /** A server page finished loading; `loaded` is false when it failed. */
+    fun serverPageFinished(loaded: Boolean)
+
+    /** A saved server's page didn't load, or Foundry gave up reconnecting: our screen shows instead. */
+    fun serverUnreachable(server: String)
 
     /** A saved server's Foundry login was reached: ours shows instead (phase 7). */
     fun showLogin(server: String)
@@ -104,12 +112,20 @@ class AssetPageClient(
  * error is refused (v1: no self-signed servers).
  */
 class ServerPageClient(private val page: PageState, private val host: AppHost) : WebViewClient() {
+    /** The page being loaded failed: Chromium's error page is under our screen. */
+    private var failed = false
+
     /**
-     * Foundry's game and login never show (owner, phase 7): the server's
-     * /join, our running page, or our native login instead.
+     * Foundry's game, login and dead end never show (owner, phase 7): the
+     * server's /join, our running page, our native login or our
+     * unreachable screen instead.
      */
     private fun ourInstead(view: WebView, url: String): Boolean {
         val servers = host.activeServers()
+        lostServerOf(url, servers)?.let {
+            host.serverUnreachable(it)
+            return true
+        }
         loginServerOf(url, servers)?.let {
             host.showLogin(it)
             return true
@@ -153,17 +169,34 @@ class ServerPageClient(private val page: PageState, private val host: AppHost) :
         // A redirect (after a form's POST too) isn't always asked about above.
         val servers = host.activeServers()
         val game = runningInsteadOf(url, servers) != null && !host.gameAllowed(url)
-        if (loginServerOf(url, servers) != null || game) {
+        if (loginServerOf(url, servers) != null || lostServerOf(url, servers) != null || game) {
             view.stopLoading()
             ourInstead(view, url)
             return
         }
+        failed = false
         // The committed address, after redirects (checked on the emulator).
         page.commit(url)
     }
 
     override fun onPageFinished(view: WebView, url: String) {
-        host.serverPageFinished()
+        host.serverPageFinished(loaded = !failed)
+    }
+
+    /** The server didn't answer (no network, no such name, refused): our screen, not Chromium's page. */
+    override fun onReceivedError(view: WebView, request: WebResourceRequest, error: WebResourceError) {
+        if (request.isForMainFrame) unreachable(request)
+    }
+
+    /** A proxy answering for a server that is down, as above. */
+    override fun onReceivedHttpError(view: WebView, request: WebResourceRequest, response: WebResourceResponse) {
+        if (request.isForMainFrame && gatewayDown(response.statusCode)) unreachable(request)
+    }
+
+    private fun unreachable(request: WebResourceRequest) {
+        val server = serverOf(request.url.toString(), host.activeServers()) ?: return
+        failed = true
+        host.serverUnreachable(server)
     }
 
     override fun onReceivedSslError(view: WebView, handler: SslErrorHandler, error: SslError) {

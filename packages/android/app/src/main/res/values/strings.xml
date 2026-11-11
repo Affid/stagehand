@@ -24,6 +24,11 @@
     <string name="login_wrong_user">Foundry didn\'t accept that name and password.</string>
     <string name="login_failed">Foundry didn\'t answer. Check that the server runs, then try again.</string>
     <string name="login_hint">Foundry asks for the administrator password set in its configuration. A server without one opens Setup straight away; one with a world running opens the running page.</string>
+    <!-- Our screen in place of Chromium's error page: a server's page didn't load. -->
+    <string name="lost_title">Can\'t reach this server</string>
+    <string name="lost_body">The connection to Foundry was lost, or its page didn\'t load. Check that this phone is online and that Foundry is running, then try again.</string>
+    <string name="lost_again">Try again</string>
+    <string name="lost_busy">Trying…</string>
     <!-- A page's password question, as a native sheet: the words are native's. -->
     <string name="pw_close_title">Close %1$s?</string>
     <string name="pw_close_text">Foundry saves the world and closes it. Then our Setup opens.</string>

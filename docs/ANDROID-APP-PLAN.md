@@ -806,7 +806,10 @@ Kotlin tests, a check on the emulator, a code review and a security review:
    checked and not so: `onPageStarted` reports the address after a
    redirect. Left: pages already open keep the scripts and bridge they
    started with until reloaded; Foundry's unreachable-server page is
-   Chromium's own; the background keeps running while the app is in the
+   Chromium's own (until 2026-11-11: our own screen with Try again, for
+   a page that doesn't load, a proxy's 502 to 504, and Foundry's /no
+   after it gives up reconnecting; `Unreachable.kt`, device suite
+   `unreachable.spec.ts`); the background keeps running while the app is in the
    background; a saved server's page can navigate to another saved server
    without a tap (both the user's).
 4. **Files, dialogs and links** (done 2026-11-08). `Pickers.kt` (the
