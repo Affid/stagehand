@@ -53,6 +53,19 @@ launch review), then discards the queued change. Nothing is launched.
 Foundry's notices and its Featured Content advert are hidden, as in the
 store screenshots.
 
+The phone pictures (`public/capture/phone`) are the Android app's own
+screenshots from a device. With the emulator running (the device suite's
+setup, `tests/android`) and the demo server up:
+
+```bash
+(cd packages/extension && pnpm build:release) && node scripts/android/gradle.ts assembleDebug
+ST_APP_SERVER=http://10.0.2.2:30015 FOUNDRY_PORT=30015 FOUNDRY_DATA_DIR=~/foundry/data-demo \
+  node video/capture/phone.ts
+```
+
+It installs the debug app fresh, adds the server on the app's home screen,
+logs in and takes the worlds, the Library and one world's page.
+
 To make the demo look different, change `scripts/demo` and capture again;
 the pictures are never edited.
 
