@@ -10,7 +10,7 @@ import {
 } from "remotion";
 import { ease } from "../motion";
 import { QueueB, ReviewB } from "./Change";
-import { ByWorldB, LibraryB } from "./Features";
+import { LibraryB, WorldB } from "./Features";
 import { Intro } from "./Intro";
 import { Bug } from "./kit";
 import { Lockup, Recap } from "./Outro";
@@ -29,7 +29,7 @@ const SCENES = [
   [B_SCENES.intro, Intro],
   [B_SCENES.sort, Sort],
   [B_SCENES.library, LibraryB],
-  [B_SCENES.byWorld, ByWorldB],
+  [B_SCENES.world, WorldB],
   [B_SCENES.queue, QueueB],
   [B_SCENES.review, ReviewB],
   [B_SCENES.recap, Recap],

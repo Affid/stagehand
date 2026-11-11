@@ -18,7 +18,7 @@ interface Capture {
   };
   readonly library: {
     readonly chrome: Readonly<
-      Record<"title" | "list" | "byWorldTab" | "main" | "rail", Rect>
+      Record<"title" | "list" | "byWorldTab" | "main" | "rail" | "worlds", Rect>
     >;
     readonly cards: readonly Piece[];
     readonly folders: readonly Piece[];

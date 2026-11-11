@@ -13,11 +13,8 @@ const FLASH = 7.5;
 const LOOKS: readonly { readonly src: string; readonly view: View }[] = [
   { src: SHOTS.library, view: FULL },
   { src: shot("sh/library-tall.png"), view: { ...FULL, y: 780 } },
-  { src: SHOTS.byWorld, view: { x: 230, y: 110, w: 800, h: 450 } },
-  {
-    src: shot("sh/by-world-tall.png"),
-    view: { x: 230, y: 1500, w: 800, h: 450 },
-  },
+  { src: SHOTS.library, view: { x: 280, y: 190, w: 800, h: 450 } },
+  { src: shot("sh/library-tall.png"), view: { ...FULL, y: 2380 } },
   { src: SHOTS.world, view: FULL },
   { src: SHOTS.queued, view: { x: 270, y: 60, w: 1000, h: 562.5 } },
   { src: SHOTS.review, view: { x: 220, y: 130, w: 840, h: 472.5 } },

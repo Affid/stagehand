@@ -7,7 +7,7 @@ export const B_SCENES = {
   intro: { from: sec(0), frames: sec(4) },
   sort: { from: sec(4), frames: sec(4) },
   library: { from: sec(8), frames: sec(4) },
-  byWorld: { from: sec(12), frames: sec(4) },
+  world: { from: sec(12), frames: sec(4) },
   queue: { from: sec(16), frames: sec(4) },
   review: { from: sec(20), frames: sec(4) },
   recap: { from: sec(24), frames: sec(2) },

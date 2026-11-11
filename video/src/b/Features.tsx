@@ -1,14 +1,24 @@
-// Bars 5 to 8: the Library and the By world table, each as the real page in
-// a floating window that scrolls a step per beat, with one word per beat.
+// Bars 5 to 8: the Library, then one world's own page, each as the real
+// page in a floating window, with one line per beat or two.
 import type { FC } from "react";
 import { AbsoluteFill, Img, useCurrentFrame } from "remotion";
-import { capture, shot } from "../data";
+import { capture, shot, SHOTS } from "../data";
 import { lerp } from "../motion";
 import { COLOR } from "../theme";
-import { Backdrop, BEAT, BigType, hit, rush, snap, Window } from "./kit";
+import {
+  Backdrop,
+  BEAT,
+  BigType,
+  Burst,
+  hit,
+  Pointer,
+  rush,
+  snap,
+  type View,
+  Window,
+} from "./kit";
 
 const TALL_LIBRARY = shot("sh/library-tall.png");
-const TALL_TABLE = shot("sh/by-world-tall.png");
 const BAR = BEAT * 2;
 const LEAVE = 113;
 
@@ -136,60 +146,101 @@ export const LibraryB: FC = () => {
   );
 };
 
-// ---- By world ----
+// ---- A world ----
 
-const { columns } = capture.walk.byWorld;
-const TABLE_VIEW = { x: 290, w: 545, h: 520 } as const;
-const TABLE_WIDTH = 920;
-const TABLE_SCALE = TABLE_WIDTH / TABLE_VIEW.w;
+const RAIL = capture.library.chrome.worlds;
+const PICK = capture.walk.world.railItem;
+const MAIN = capture.library.chrome.main;
+const SWITCHED = capture.walk.world.card;
+/** The three worlds in the rail, without the empty room under them. */
+const RAIL_VIEW: View = { x: RAIL[0], y: RAIL[1], w: RAIL[2], h: 190 };
+const RAIL_AT = { left: 130, top: 320, width: 580 } as const;
+const RAIL_SCALE = RAIL_AT.width / RAIL_VIEW.w;
+const PICKED = {
+  x: RAIL_AT.left + (PICK[0] + PICK[2] * 0.6 - RAIL_VIEW.x) * RAIL_SCALE,
+  y: RAIL_AT.top + (PICK[1] + PICK[3] / 2 - RAIL_VIEW.y) * RAIL_SCALE,
+} as const;
+const CLICK = 26;
+const PAGE_IN = BAR;
+const WHOLE: View = { x: MAIN[0], y: MAIN[1], w: MAIN[2], h: MAIN[3] };
+/** The same shape, closed in on the card the next scene switches on. */
+const CLOSE: View = {
+  x: SWITCHED[0] + SWITCHED[2] / 2 - 300,
+  y: SWITCHED[1] + SWITCHED[3] / 2 - 300 * (MAIN[3] / MAIN[2]),
+  w: 600,
+  h: 600 * (MAIN[3] / MAIN[2]),
+};
 
-const WORLD_WORDS = ["Every world.", "Every module.", "One table."] as const;
-
-export const ByWorldB: FC = () => {
+/** One world picked in the rail, then its own page: the way into a change. */
+export const WorldB: FC = () => {
   const frame = useCurrentFrame();
-  const y = stepped(frame, [150, 150, 980, 2060]);
+  const railGone = rush(frame, PAGE_IN, 8);
+  const page = snap(frame, PAGE_IN, 14);
+  const close = snap(frame, BAR * 2, 50);
+  const leave = rush(frame, LEAVE, 7);
+  const travel = snap(frame, 4, 20);
   return (
     <AbsoluteFill>
       <Backdrop />
       <Window
-        src={TALL_TABLE}
-        view={{ ...TABLE_VIEW, y }}
-        width={TABLE_WIDTH}
+        src={SHOTS.library}
+        view={RAIL_VIEW}
+        width={RAIL_AT.width}
         style={{
-          left: 110,
-          top: 110,
-          opacity: presence(frame),
-          transform: tilt(frame, 1),
+          left: RAIL_AT.left - railGone * 200,
+          top: RAIL_AT.top,
+          opacity: snap(frame, 0, 8) * (1 - railGone),
+          transform: `scale(${lerp(1.3, 1, snap(frame, 0, 14)) + 0.04 * hit(frame, CLICK, 9)})`,
         }}
-      >
-        {columns.map((column, i) => (
-          <div
-            key={column[0]}
-            style={{
-              position: "absolute",
-              left: (column[0] - TABLE_VIEW.x + 6) * TABLE_SCALE,
-              top: 0,
-              bottom: 0,
-              width: (column[2] - 12) * TABLE_SCALE,
-              background: COLOR.warm,
-              opacity: 0.3 * hit(frame, BAR * 3 + i * 7.5, 16),
-            }}
-          />
-        ))}
-      </Window>
-      {WORLD_WORDS.map((text, i) => (
-        <BigType
-          key={text}
-          line={{
-            text,
-            at: i * BAR,
-            until: i === 2 ? LEAVE + 4 : (i + 1) * BAR,
-            accent: ["table"],
-          }}
-          size={160}
-          style={{ left: 1110, top: 360, width: 760 }}
-        />
-      ))}
+      />
+      <Burst
+        x={PICKED.x}
+        y={PICKED.y}
+        amount={(frame - CLICK) / 14}
+        size={420}
+      />
+      <Pointer
+        x={lerp(1150, PICKED.x, travel)}
+        y={lerp(960, PICKED.y, travel)}
+        opacity={snap(frame, 4, 6) * (1 - railGone)}
+        press={hit(frame, CLICK, 8)}
+      />
+      <Window
+        src={SHOTS.world}
+        view={{
+          x: lerp(WHOLE.x, CLOSE.x, close),
+          y: lerp(WHOLE.y, CLOSE.y, close),
+          w: lerp(WHOLE.w, CLOSE.w, close),
+          h: lerp(WHOLE.h, CLOSE.h, close),
+        }}
+        width={1080}
+        style={{
+          left: 760,
+          top: 180,
+          opacity: page * (1 - leave),
+          transform: `perspective(2200px) rotateY(${-12 * (1 - close * 0.6)}deg) rotateX(3deg) scale(${lerp(1.4, 1, page) + leave * 0.5})`,
+        }}
+      />
+      <BigType
+        line={{
+          text: "Pick a world.",
+          at: 0,
+          until: PAGE_IN,
+          accent: ["world"],
+        }}
+        size={190}
+        style={{ left: 820, top: 420 }}
+      />
+      <BigType
+        line={{
+          text: "Its own modules.",
+          at: PAGE_IN,
+          until: LEAVE + 4,
+          accent: ["own"],
+        }}
+        size={150}
+        style={{ left: 110, top: 360, width: 620 }}
+      />
     </AbsoluteFill>
   );
 };

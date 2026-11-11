@@ -95,17 +95,14 @@ function folderLabels(page: Page): Promise<FolderLabel[]> {
 /** What one pass over the Library takes: a pass has one pixel density. */
 export type LibraryPass = "pieces" | "page" | "tall";
 
-/** Tall enough that the Library and the By world table show every row. */
+/** Tall enough that the Library shows every row. */
 const TALL = { width: VIEWPORT.width, height: 3600 } as const;
 
-/** The whole Library and the whole By world table, in a very tall window. */
+/** The whole Library, in a very tall window. */
 async function shootTall(page: Page): Promise<void> {
   await page.setViewportSize(TALL);
   await page.waitForTimeout(800);
   await shootPage(page, "sh/library-tall.png");
-  await page.locator(CHROME.byWorldTab).click();
-  await page.locator(`${SHELL} .stl-grid`).waitFor();
-  await shootPage(page, "sh/by-world-tall.png");
 }
 
 export async function captureLibrary(

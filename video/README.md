@@ -84,9 +84,9 @@ Cut B is made from the same captures and stages more:
 - The cards scatter and drop into folder piles as animation, as in the
   first cut.
 - The pages appear in tilted, rounded windows the video draws around them,
-  scrolled a step per beat. The Library and the By world table come from
-  one capture each in a very tall browser window, so every row is the
-  page's own rendering.
+  scrolled or closed in on by the video. The Library comes from one
+  capture in a very tall browser window, so every row is the page's own
+  rendering.
 - Cards, the queued-change note and the review dialog are cut out of the
   captured pages and shown on their own, enlarged.
 - The recap is eight quarter-second crops of the captured pages.
