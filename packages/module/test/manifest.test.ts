@@ -35,6 +35,10 @@ describe("the companion's manifest", () => {
       expect(String(manifest[key])).toMatch(new RegExp(`^${REPO}`));
   });
 
+  test("links the companion's own readme, the one Foundry's listing shows", () => {
+    expect(manifest.readme).toBe(`${REPO}/blob/main/packages/module/README.md`);
+  });
+
   test("declares the Foundry versions it was checked on", () => {
     expect(manifest.compatibility).toEqual({
       minimum: "13",

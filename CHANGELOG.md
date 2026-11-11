@@ -5,6 +5,13 @@ the companion module (`stagehand-v<version>`, its `module.json`), the
 browser extension (`stagehand-extension-v<version>`, its `manifest.json`)
 and the Android app (`stagehand-app-v<version>`, the extension's version).
 
+## 2026-11-11
+
+### Companion module 0.1.1
+
+- The manifest's readme link opens the companion's own README, which says
+  what it does, who it runs for and what it touches.
+
 ## 2026-11-10: first public release
 
 ### Companion module 0.1.0

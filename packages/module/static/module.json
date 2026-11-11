@@ -7,7 +7,7 @@
   "manifest": "https://raw.githubusercontent.com/Affid/stagehand/manifests/stagehand/module.json",
   "download": "https://github.com/Affid/stagehand/releases/download/stagehand-v0.1.0/stagehand.zip",
   "bugs": "https://github.com/Affid/stagehand/issues",
-  "readme": "https://github.com/Affid/stagehand/blob/main/README.md",
+  "readme": "https://github.com/Affid/stagehand/blob/main/packages/module/README.md",
   "changelog": "https://github.com/Affid/stagehand/blob/main/CHANGELOG.md",
   "license": "https://github.com/Affid/stagehand/blob/main/LICENSE",
   "version": "0.1.0",
