@@ -13,9 +13,7 @@ updates.
 
 Stagehand is not affiliated with or endorsed by Foundry Gaming LLC.
 
-
 https://github.com/user-attachments/assets/95aa1de2-6b0b-400c-8874-ff722e6487b8
-
 
 ![The Library: modules in folders, with tags, notes and the worlds each one is on](docs/store/screenshots/1-library.png)
 
