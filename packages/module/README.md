@@ -12,7 +12,8 @@ or the Android app too (see the [main README](../../README.md)).
 
 ## Install
 
-In Foundry's Install Module window, paste the manifest URL:
+Stagehand's Setup page offers to install it on a server that doesn't have
+it. By hand: in Foundry's Install Module window, paste the manifest URL:
 
 ```
 https://raw.githubusercontent.com/Affid/stagehand/manifests/stagehand/module.json

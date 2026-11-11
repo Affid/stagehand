@@ -15,9 +15,12 @@ it, and load it in `chrome://extensions` (Developer mode, Load unpacked).
 Firefox uses the same build (Firefox 128 or newer) but hasn't been tested
 in a real Firefox yet.
 
-Then open your Foundry server, click the toolbar button and choose Use
-Stagehand here, and allow the site. For the world's module list, install
-the [companion module](../module/README.md) in Foundry too.
+Then open your Foundry server's Setup as the administrator, click the
+toolbar button and choose Use Stagehand here, and allow the site. For each
+world's module list the server needs the
+[companion module](../module/README.md): Stagehand offers to install it
+where it's missing. The steps are in the main README's
+[First run](../../README.md#first-run).
 
 ## Permissions
 

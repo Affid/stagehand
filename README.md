@@ -53,8 +53,9 @@ Foundry VTT 13 and 14.
 
 ## Install
 
-- Companion module: in Foundry's Install Module window, paste the manifest
-  URL
+- Companion module: Stagehand offers to install it on a server that
+  doesn't have it (see First run). By hand: in Foundry's Install Module
+  window, paste the manifest URL
   `https://raw.githubusercontent.com/Affid/stagehand/manifests/stagehand/module.json`.
 - Extension: install
   [Stagehand for Foundry VTT](https://chromewebstore.google.com/detail/iilpkngpgiiocbmnnjkhmehaadnpknac)
@@ -63,6 +64,30 @@ Foundry VTT 13 and 14.
   load it unpacked (`chrome://extensions`, Developer mode, Load unpacked).
 - Android app: the APK from the
   [releases](https://github.com/Affid/stagehand/releases), sideloaded.
+
+## First run
+
+Installing the extension changes nothing by itself: Stagehand only works on
+the Foundry servers you turn it on for.
+
+1. Open your Foundry server in the browser and log in to Setup as the
+   administrator.
+2. Click Stagehand's toolbar button (under Chrome's puzzle-piece menu until
+   you pin it), choose **Use Stagehand here** and allow the site when Chrome
+   asks. The page reloads as Stagehand's Setup. In the Android app, add the
+   server's address on the home screen instead.
+3. If the companion module isn't on the server yet, Stagehand says so at
+   the top of the Library and on each world's page. Press **Install**: it
+   runs Foundry's own installer with the manifest URL above.
+4. Once for each world: launch it, open Manage Modules, turn on
+   **Stagehand** and save. Back on Setup, the world's modules show up,
+   ready to change. Until then the Library, presets, backups, configuration
+   and updates all work; only that world's module list is missing.
+
+To get Foundry's own Setup back, remove the server under Stagehand
+settings (the same toolbar button, or the link at the foot of the world
+list). Its library stays in the browser for when you add the server again,
+and nothing on the server changes.
 
 ## Your data
 
