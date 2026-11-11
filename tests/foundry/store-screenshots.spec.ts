@@ -46,14 +46,12 @@ test.afterAll(async () => {
 });
 
 test("the library: folders, tags and notes", async () => {
-  await shell()
-    .getByRole("button", { name: /^Library/ })
-    .click();
+  // By class: a module titled "Library: ..." is a button of that name too.
+  await shell().locator(".sts-lib").click();
   await expect(lib().locator(".stl-sync.synced")).toBeVisible();
   await page.reload();
-  await shell()
-    .getByRole("button", { name: /^Library/ })
-    .click();
+  // By class: a module titled "Library: ..." is a button of that name too.
+  await shell().locator(".sts-lib").click();
   await expect(lib().locator(".stl-card").first()).toBeVisible();
   await shot("1-library");
 });

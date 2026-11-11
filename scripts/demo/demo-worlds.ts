@@ -1,26 +1,7 @@
-// The demo's system, modules and worlds (scripts/demo/setup-demo.ts): free
-// modules from Foundry's package list, verified for Foundry 14, each world
-// with what its modules require.
+// The demo's system and worlds (scripts/demo/setup-demo.ts), each world with
+// what its modules require. The modules themselves: demo-modules.ts.
 
 export const DEMO_SYSTEM = "worldbuilding";
-
-export const DEMO_MODULES = [
-  "dice-so-nice",
-  "lib-wrapper",
-  "socketlib",
-  "sequencer",
-  "tokenmagic",
-  "monks-tokenbar",
-  "monks-little-details",
-  "monks-enhanced-journal",
-  "smalltime",
-  "dice-calculator",
-  "token-action-hud-core",
-  "quick-insert",
-  "monks-active-tiles",
-  "monks-sound-enhancements",
-  "color-picker",
-] as const;
 
 export interface DemoWorld {
   readonly id: string;
@@ -45,6 +26,20 @@ export const DEMO_WORLDS: readonly DemoWorld[] = [
       "monks-enhanced-journal",
       "monks-little-details",
       "smalltime",
+      "polyglot",
+      "monks-combat-details",
+      "levels",
+      "simplefog",
+      "smart-doors",
+      "stairways",
+      "torch",
+      "theatre",
+      "narrator-tools",
+      "gm-notes",
+      "pdf-pager",
+      "walls-have-ears",
+      "scene-transitions",
+      "monks-scene-navigation",
     ],
   },
   {
@@ -59,6 +54,20 @@ export const DEMO_WORLDS: readonly DemoWorld[] = [
       "monks-tokenbar",
       "dice-calculator",
       "token-action-hud-core",
+      "enhancedcombathud",
+      "combat-tracker-dock",
+      "healthEstimate",
+      "fxmaster",
+      "particule-fx",
+      "sequencer",
+      "tokenmagic",
+      "dungeon-draw",
+      "multilevel-tokens",
+      "item-piles",
+      "party-overview",
+      "token-sounds",
+      "window-controls",
+      "always-hp",
     ],
   },
   {
@@ -71,6 +80,14 @@ export const DEMO_WORLDS: readonly DemoWorld[] = [
       "quick-insert",
       "monks-active-tiles",
       "monks-sound-enhancements",
+      "raise-my-hand",
+      "simple-dice-roller",
+      "monks-chat-timer",
+      "hurry-up",
+      "share-media",
+      "loading-screen",
+      "socketlib",
+      "_chatcommands",
     ],
   },
 ];

@@ -11,28 +11,17 @@ import {
   type ModuleMeta,
   SCHEMA_VERSION,
 } from "../../packages/shared/src/library/schema.ts";
+import { DEMO_FOLDERS } from "./demo-modules.ts";
 
-const folder = (
-  id: string,
-  name: string,
-  color: string,
-  order: number,
-): Folder => ({
-  id,
-  name,
-  color,
+const FOLDERS: Folder[] = DEMO_FOLDERS.map((f, order) => ({
+  id: f.id,
+  name: f.name,
+  color: f.color,
   parentId: null,
   order,
   collapsed: false,
   revision: 1,
-});
-
-const FOLDERS: Folder[] = [
-  folder("f-table", "At the table", "#c0843d", 0),
-  folder("f-fx", "Effects", "#8a4f9e", 1),
-  folder("f-gm", "GM tools", "#3f7f8c", 2),
-  folder("f-lib", "Libraries", "#6b6f7a", 3),
-];
+}));
 
 const TAGS = [
   { id: "t-players", name: "players see it", color: "#4f9e6b", revision: 1 },
@@ -40,36 +29,70 @@ const TAGS = [
   { id: "t-qol", name: "quality of life", color: "#3d7fc0", revision: 1 },
 ];
 
-const meta = (
-  folderId: string,
-  tags: string[] = [],
-  note = "",
-): ModuleMeta => ({
-  folderId,
-  tags,
-  note,
-});
-
-const MODULES: Record<string, ModuleMeta> = {
-  "dice-so-nice": meta(
-    "f-table",
-    ["t-players"],
-    "Players love it; turn off for slow laptops.",
-  ),
-  "dice-calculator": meta("f-table", ["t-qol"]),
-  "monks-tokenbar": meta("f-table", ["t-qol"]),
-  "token-action-hud-core": meta("f-table", ["t-players", "t-qol"]),
-  sequencer: meta("f-fx", ["t-heavy"]),
-  tokenmagic: meta("f-fx", ["t-heavy"], "Keep effects short on big maps."),
-  "monks-enhanced-journal": meta("f-gm"),
-  "monks-little-details": meta("f-gm", ["t-qol"]),
-  smalltime: meta("f-gm", ["t-players"]),
-  "monks-active-tiles": meta("f-fx"),
-  "quick-insert": meta("f-gm", ["t-qol"], "Ctrl+Space finds anything."),
-  "monks-sound-enhancements": meta("f-table", ["t-players"]),
-  "lib-wrapper": meta("f-lib"),
-  socketlib: meta("f-lib"),
+const TAGGED: Readonly<Record<string, readonly string[]>> = {
+  "t-players": [
+    "dice-so-nice",
+    "token-action-hud-core",
+    "smalltime",
+    "monks-sound-enhancements",
+    "polyglot",
+    "healthEstimate",
+    "raise-my-hand",
+    "theatre",
+    "combat-tracker-dock",
+    "share-media",
+    "scene-transitions",
+  ],
+  "t-heavy": [
+    "sequencer",
+    "tokenmagic",
+    "fxmaster",
+    "splatter",
+    "particule-fx",
+    "levels",
+    "multilevel-tokens",
+  ],
+  "t-qol": [
+    "dice-calculator",
+    "monks-tokenbar",
+    "token-action-hud-core",
+    "monks-little-details",
+    "quick-insert",
+    "monks-hotbar-expansion",
+    "always-hp",
+    "window-controls",
+    "zoom-pan-options",
+    "smart-doors",
+    "arms-reach",
+    "hurry-up",
+    "monks-scene-navigation",
+    "gm-notes",
+  ],
 };
+
+const NOTES: Readonly<Record<string, string>> = {
+  "dice-so-nice": "Players love it; turn off for slow laptops.",
+  tokenmagic: "Keep effects short on big maps.",
+  "quick-insert": "Ctrl+Space finds anything.",
+  polyglot: "Set each character's languages first.",
+  simplefog: "Reset the fog after every session.",
+  fxmaster: "Rain is fine; heavy snow slows the old laptop.",
+  "hurry-up": "Two minutes a turn, agreed at session zero.",
+  levels: "Only for the lighthouse maps.",
+  "modular-av": "Voice and video for the remote players.",
+};
+
+const tagsOf = (id: string): string[] =>
+  TAGS.filter((t) => TAGGED[t.id]?.includes(id)).map((t) => t.id);
+
+const MODULES: Record<string, ModuleMeta> = Object.fromEntries(
+  DEMO_FOLDERS.flatMap((f) =>
+    f.modules.map((id): [string, ModuleMeta] => [
+      id,
+      { folderId: f.id, tags: tagsOf(id), note: NOTES[id] ?? "" },
+    ]),
+  ),
+);
 
 const PRESETS = [
   {

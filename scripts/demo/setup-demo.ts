@@ -23,12 +23,8 @@ import {
 import { loadFoundryEnv } from "../foundry/env.ts";
 import { joinAs, reloadWorld } from "../foundry/session.ts";
 import { DEMO_LIBRARY } from "./demo-library.ts";
-import {
-  DEMO_MODULES,
-  DEMO_SYSTEM,
-  DEMO_WORLDS,
-  type DemoWorld,
-} from "./demo-worlds.ts";
+import { DEMO_MODULES } from "./demo-modules.ts";
+import { DEMO_SYSTEM, DEMO_WORLDS, type DemoWorld } from "./demo-worlds.ts";
 
 const env = loadFoundryEnv();
 const DATA = join(env.dataDir, "Data");
