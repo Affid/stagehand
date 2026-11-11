@@ -44,7 +44,7 @@ function bugOpacity(frame: number): number {
   const intro = 1 - ease(frame, 54, 60);
   const working =
     ease(frame, B_SCENES.library.from, B_SCENES.library.from + 8) *
-    (1 - ease(frame, B_SCENES.lockup.from - 4, B_SCENES.lockup.from));
+    (1 - ease(frame, B_SCENES.recap.from - 4, B_SCENES.recap.from));
   return Math.max(intro, working);
 }
 

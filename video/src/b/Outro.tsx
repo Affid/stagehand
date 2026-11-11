@@ -1,5 +1,5 @@
-// The last bars: eight quick looks back at the real pages, each sliding in
-// from a wing like a flat on a track, then the name.
+// The last bars: four looks back at the real pages, each gliding in from a
+// side on the beat, then the name.
 import type { FC } from "react";
 import { AbsoluteFill, Img, useCurrentFrame } from "remotion";
 import { shot, SHOTS } from "../data";
@@ -10,28 +10,30 @@ import { Backdrop, Burst, hit, snap, type View } from "./kit";
 import { BagIntoMark } from "./rig";
 
 const FULL: View = { x: 0, y: 0, w: 1280, h: 720 };
-/** A quarter of a second each: the score hits on every one. */
-const FLASH = 7.5;
+/** Half a second each, on the beat: four looks, not eight. */
+const FLASH = 15;
 const LOOKS: readonly { readonly src: string; readonly view: View }[] = [
   { src: SHOTS.library, view: FULL },
-  { src: shot("sh/library-tall.png"), view: { ...FULL, y: 780 } },
-  { src: SHOTS.library, view: { x: 280, y: 190, w: 800, h: 450 } },
-  { src: shot("sh/library-tall.png"), view: { ...FULL, y: 2380 } },
   { src: SHOTS.world, view: FULL },
   { src: SHOTS.queued, view: { x: 270, y: 60, w: 1000, h: 562.5 } },
   { src: SHOTS.review, view: { x: 220, y: 130, w: 840, h: 472.5 } },
-  { src: shot("sh/library-tall.png"), view: { ...FULL, y: 1600 } },
 ];
+/** How far a look travels as it arrives: a short glide, not a whip. */
+const GLIDE = 420;
 
 export const Recap: FC = () => {
   const frame = useCurrentFrame();
   const index = Math.min(LOOKS.length - 1, Math.floor(frame / FLASH));
   const look = LOOKS[index];
   if (!look) return null;
-  const arrive = snap(frame, index * FLASH, FLASH - 1);
+  const arrive = snap(frame, index * FLASH, 12);
   const side = index % 2 === 0 ? 1 : -1;
   const before = LOOKS[index - 1];
-  const flat = (shown: (typeof LOOKS)[number], shift: number) => {
+  const flat = (
+    shown: (typeof LOOKS)[number],
+    shift: number,
+    opacity: number,
+  ) => {
     const s = 1920 / shown.view.w;
     return (
       <div
@@ -39,6 +41,7 @@ export const Recap: FC = () => {
           position: "absolute",
           inset: 0,
           overflow: "hidden",
+          opacity,
           transform: `translateX(${shift}px)`,
           boxShadow: "0 0 60px rgba(0,0,0,0.8)",
         }}
@@ -58,8 +61,8 @@ export const Recap: FC = () => {
   };
   return (
     <AbsoluteFill style={{ background: COLOR.bg, overflow: "hidden" }}>
-      {before && flat(before, 0)}
-      {flat(look, side * (1 - arrive) * 1920)}
+      {before && flat(before, 0, 1)}
+      {flat(look, side * (1 - arrive) * GLIDE, arrive)}
     </AbsoluteFill>
   );
 };

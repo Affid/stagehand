@@ -102,7 +102,7 @@ Cut B is made from the same captures and stages more:
   rendering.
 - Cards, the queued-change note and the review dialog are cut out of the
   captured pages and shown on their own, enlarged.
-- The recap is eight quarter-second crops of the captured pages.
+- The recap is four half-second crops of the captured pages.
 - Panels come down on thin lines and go back up, a small amber weight on
   its own line moves the other way, a flat two-panel wipe closes and opens
   on the name, and the recap slides in from the sides: stage rigging
