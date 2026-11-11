@@ -10,12 +10,12 @@
   ],
   "url": "https://github.com/Affid/stagehand",
   "manifest": "https://raw.githubusercontent.com/Affid/stagehand/manifests/stagehand/module.json",
-  "download": "https://github.com/Affid/stagehand/releases/download/stagehand-v0.1.1/stagehand.zip",
+  "download": "https://github.com/Affid/stagehand/releases/download/stagehand-v0.1.2/stagehand.zip",
   "bugs": "https://github.com/Affid/stagehand/issues",
   "readme": "https://github.com/Affid/stagehand/blob/main/packages/module/README.md",
   "changelog": "https://github.com/Affid/stagehand/blob/main/CHANGELOG.md",
   "license": "https://github.com/Affid/stagehand/blob/main/LICENSE",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "compatibility": {
     "minimum": "13",
     "verified": "14.370"
