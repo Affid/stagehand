@@ -1,0 +1,35 @@
+# Sends the companion's current version to foundryvtt.com by hand, for a
+# release whose workflow ran before the FOUNDRY_RELEASE_TOKEN secret was
+# there, or whose send failed. The release workflow does this itself on a
+# companion tag. Run it from the Actions tab or with
+#   gh workflow run listing.yml -f dry_run=true
+name: Send companion version to foundryvtt.com
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Ask foundryvtt.com to check the request without publishing
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  listing:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - name: Send the version to foundryvtt.com
+        env:
+          FOUNDRY_RELEASE_TOKEN: ${{ secrets.FOUNDRY_RELEASE_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run && '--dry-run' || '' }}
+        run: node scripts/release/listing.ts $DRY_RUN
