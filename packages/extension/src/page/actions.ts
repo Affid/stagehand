@@ -2,7 +2,7 @@
 // a world's launch control) are reached by clicking its own hidden controls, so its
 // prompts, locks and migration checks still run; the rest uses public API.
 // Returns an error message, or undefined when the action was started.
-import type { FoundryAction } from "../page-protocol.ts";
+import type { FoundryAction, PageToUi } from "../page-protocol.ts";
 import type { PageGlobals } from "./globals.ts";
 import {
   backup,
@@ -12,6 +12,7 @@ import {
   uninstall,
   update,
 } from "./package-actions.ts";
+import { installCompanion } from "./companion.ts";
 import { saveWorld } from "./save-world.ts";
 import { placeInView } from "./place.ts";
 import { quirksFor } from "../compat/quirks.ts";
@@ -221,6 +222,8 @@ export async function runFoundryAction(
   a: FoundryAction,
   /** Foundry stopped and won't send the browser anywhere (13's quit). */
   stopped: () => void = () => undefined,
+  /** Tells our page what Foundry's own progress doesn't (a task's start and end). */
+  post: (m: PageToUi) => void = () => undefined,
 ): Promise<string | undefined> {
   try {
     switch (a.action) {
@@ -237,6 +240,8 @@ export async function runFoundryAction(
         return await quit(page, stopped);
       case "createWorld":
         return createWorld(doc, page);
+      case "installCompanion":
+        return await installCompanion(page, post);
       case "launch":
         return launch(doc, a.worldId);
       case "backupLaunch":

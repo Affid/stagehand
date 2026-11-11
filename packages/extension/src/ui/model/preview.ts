@@ -8,11 +8,12 @@ import {
   type Plan,
   resolvePlan,
 } from "@stagehand/shared/resolver";
+import { COMPANION_ID } from "@stagehand/shared/companion";
 import { parseCoreVersion } from "@stagehand/shared/version";
 import { type Command, changeModules } from "@stagehand/shared/world";
 import type { SetupState } from "../../messages.ts";
 
-export const COMPANION_ID = "stagehand";
+export { COMPANION_ID };
 
 export interface NewChange {
   readonly presetIds: readonly string[];

@@ -323,12 +323,18 @@ function handle(ctx: Ctx, m: UiToPage): void {
       setCompact(ctx, m.payload.on);
       break;
     case "FOUNDRY_ACTION":
-      void runFoundryAction(ctx.doc, ctx.page, m.payload, () => {
-        // Foundry's failed requests and lost connection: our page says it.
-        ctx.stopped = true;
-        ctx.page.ui?.notifications?.clear?.();
-        ctx.postToUi({ type: "SERVER_STOPPED", payload: {} });
-      }).then((error) => {
+      void runFoundryAction(
+        ctx.doc,
+        ctx.page,
+        m.payload,
+        () => {
+          // Foundry's failed requests and lost connection: our page says it.
+          ctx.stopped = true;
+          ctx.page.ui?.notifications?.clear?.();
+          ctx.postToUi({ type: "SERVER_STOPPED", payload: {} });
+        },
+        ctx.postToUi,
+      ).then((error) => {
         if (error) failed(ctx, m.payload, error);
       });
       break;

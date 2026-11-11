@@ -67,6 +67,8 @@ export const SERVER_ACTIONS = [
   "shutdown",
   "createWorld",
   "quit",
+  // Foundry's installer, for our companion module only (page/companion.ts).
+  "installCompanion",
 ] as const;
 export const WORLD_ACTIONS = [
   "launch",

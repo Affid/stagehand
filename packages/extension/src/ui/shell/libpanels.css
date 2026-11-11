@@ -112,6 +112,17 @@
   font-size: 13px;
 }
 
+/* The companion module is missing or out of date: the same band, in amber */
+.sts-shell .sts-intake-band.sts-companion-band {
+  border-color: rgb(201 148 60 / 60%);
+  background: rgb(201 148 60 / 10%);
+  color: #f0e2c8;
+}
+
+.sts-shell .sts-intake-band.sts-companion-band > i {
+  color: #e0b060;
+}
+
 .sts-shell .sts-newtag {
   margin-left: 6px;
   padding: 0 5px;

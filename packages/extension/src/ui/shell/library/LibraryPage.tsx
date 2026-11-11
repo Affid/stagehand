@@ -5,6 +5,7 @@
 import { useUi } from "../../context.ts";
 import { groupLibrary, type LibGroup } from "../../model/library-groups.ts";
 import { Banners } from "../../modules/banners.tsx";
+import { CompanionBand } from "../CompanionBand.tsx";
 import { type ModulesModel, useModulesModel } from "../../modules/derived.ts";
 import { FilterRow } from "./head/FilterRow.tsx";
 import { IntakeBand } from "./head/IntakeBand.tsx";
@@ -87,6 +88,7 @@ export function LibraryPage() {
   return (
     <div class="stl-page st-app">
       <Banners />
+      <CompanionBand />
       <LibraryTabs tab={page.tab} onTab={page.setTab} />
       <TabPanel id={LIBRARY_TABS} tab={shownTab(page.tab, layout)}>
         {shownTab(page.tab, layout) === "grid" ? (

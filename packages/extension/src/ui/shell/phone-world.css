@@ -110,7 +110,7 @@
 /* The bottom bar has the queued changes and Launch; About has the edits. */
 .sts-shell.stp .sts-banner .acts,
 .sts-shell.stp .sts-banner .stc-pending,
-.sts-shell.stp .stw-empty button.bright {
+.sts-shell.stp .stw-empty button.bright:not(.stw-install) {
   display: none;
 }
 
