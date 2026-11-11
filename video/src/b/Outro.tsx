@@ -125,6 +125,17 @@ export const Lockup: FC = () => {
         </div>
         <div
           style={{
+            fontSize: 40,
+            fontWeight: 500,
+            marginTop: 40,
+            color: COLOR.warm,
+            opacity: snap(frame, 46, 12),
+          }}
+        >
+          Chrome extension · Android app · one library on both
+        </div>
+        <div
+          style={{
             position: "absolute",
             bottom: 70,
             fontSize: 30,

@@ -11,7 +11,6 @@ import {
   BigType,
   Burst,
   hit,
-  Pointer,
   rush,
   snap,
   type View,
@@ -52,7 +51,7 @@ const INSIDE = {
 const CARD_WIDTH = 820;
 const CARD_SCALE = CARD_WIDTH / NOTED[2];
 
-const HEROES = [
+export const HEROES = [
   { id: "dice-so-nice", at: BAR, x: 900, y: 330, turn: -4, ring: "tags" },
   { id: "polyglot", at: BAR * 2, x: 990, y: 520, turn: 3, ring: "note" },
   { id: "fxmaster", at: BAR * 3, x: 860, y: 720, turn: -2, ring: null },
@@ -154,13 +153,13 @@ const MAIN = capture.library.chrome.main;
 const SWITCHED = capture.walk.world.card;
 /** The three worlds in the rail, without the empty room under them. */
 const RAIL_VIEW: View = { x: RAIL[0], y: RAIL[1], w: RAIL[2], h: 190 };
-const RAIL_AT = { left: 130, top: 320, width: 580 } as const;
-const RAIL_SCALE = RAIL_AT.width / RAIL_VIEW.w;
-const PICKED = {
+export const RAIL_AT = { left: 130, top: 320, width: 580 } as const;
+export const RAIL_SCALE = RAIL_AT.width / RAIL_VIEW.w;
+export const PICKED = {
   x: RAIL_AT.left + (PICK[0] + PICK[2] * 0.6 - RAIL_VIEW.x) * RAIL_SCALE,
   y: RAIL_AT.top + (PICK[1] + PICK[3] / 2 - RAIL_VIEW.y) * RAIL_SCALE,
 } as const;
-const CLICK = 26;
+export const CLICK = 26;
 const PAGE_IN = BAR;
 const WHOLE: View = { x: MAIN[0], y: MAIN[1], w: MAIN[2], h: MAIN[3] };
 /** The same shape, closed in on the card the next scene switches on. */
@@ -178,7 +177,6 @@ export const WorldB: FC = () => {
   const page = snap(frame, PAGE_IN, 14);
   const close = snap(frame, BAR * 2, 50);
   const leave = rush(frame, LEAVE, 7);
-  const travel = snap(frame, 4, 20);
   return (
     <AbsoluteFill>
       <Backdrop />
@@ -198,12 +196,6 @@ export const WorldB: FC = () => {
         y={PICKED.y}
         amount={(frame - CLICK) / 14}
         size={420}
-      />
-      <Pointer
-        x={lerp(1150, PICKED.x, travel)}
-        y={lerp(960, PICKED.y, travel)}
-        opacity={snap(frame, 4, 6) * (1 - railGone)}
-        press={hit(frame, CLICK, 8)}
       />
       <Window
         src={SHOTS.world}

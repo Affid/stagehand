@@ -11,7 +11,6 @@ import {
   BigType,
   Burst,
   hit,
-  Pointer,
   rush,
   snap,
   type View,
@@ -28,20 +27,19 @@ const TOGGLE = capture.walk.world.toggle;
 const WAITS = capture.walk.queued.waits;
 const CARD_AT = { x: 330, y: 450, width: 1260 } as const;
 const CARD_SCALE = CARD_AT.width / CARD[2];
-const SWITCH = {
+export const SWITCH = {
   x: CARD_AT.x + (TOGGLE[0] + TOGGLE[2] / 2 - CARD[0]) * CARD_SCALE,
   y: CARD_AT.y + (TOGGLE[1] + TOGGLE[3] / 2 - CARD[1]) * CARD_SCALE,
 } as const;
 /** 17.0 s: the score clicks here. */
-const FLIP = 30;
+export const FLIP = 30;
 /** 18.5 s. */
-const WAIT_IN = 75;
+export const WAIT_IN = 75;
 
 export const QueueB: FC = () => {
   const frame = useCurrentFrame();
   const enter = snap(frame, 0, 14);
   const leave = rush(frame, LEAVE, 7);
-  const travel = snap(frame, 6, 22);
   const note = snap(frame, WAIT_IN, 11);
   return (
     <AbsoluteFill>
@@ -70,12 +68,6 @@ export const QueueB: FC = () => {
           boxShadow: `0 30px 80px rgba(0,0,0,0.6), 0 0 0 3px ${COLOR.warm}`,
         }}
       />
-      <Pointer
-        x={lerp(1500, SWITCH.x, travel)}
-        y={lerp(980, SWITCH.y, travel)}
-        opacity={snap(frame, 6, 6) * (1 - snap(frame, FLIP + 20, 8))}
-        press={hit(frame, FLIP, 8)}
-      />
       <BigType
         line={{
           text: "Flip a switch.",
@@ -102,12 +94,8 @@ export const QueueB: FC = () => {
 
 // ---- Review ----
 
-const {
-  dialog: DIALOG,
-  turnsOn: TURNS_ON,
-  backup: BACKUP,
-  verdict,
-} = capture.walk.review;
+export const DIALOG = capture.walk.review.dialog;
+const { turnsOn: TURNS_ON, backup: BACKUP, verdict } = capture.walk.review;
 /** The verdict line ends where the list under it begins. */
 const VERDICT: Rect = [
   verdict[0],
@@ -115,11 +103,12 @@ const VERDICT: Rect = [
   verdict[2],
   TURNS_ON[1] - verdict[1] - 12,
 ];
-const DIALOG_WIDTH = 1500;
-const DIALOG_SCALE = DIALOG_WIDTH / DIALOG[2];
+export const DIALOG_WIDTH = 1500;
+export const DIALOG_AT = { left: 210, top: 370 } as const;
+export const DIALOG_SCALE = DIALOG_WIDTH / DIALOG[2];
 /** 20.5, 21.5 and 22.5 s: the score marks each. */
 const OPEN = 15;
-const ROWS = [
+export const ROWS = [
   { rect: VERDICT, at: 45 },
   { rect: TURNS_ON, at: 60 },
   { rect: BACKUP, at: 75 },
@@ -138,8 +127,7 @@ export const ReviewB: FC = () => {
         view={view(DIALOG)}
         width={DIALOG_WIDTH}
         style={{
-          left: 210,
-          top: 370,
+          ...DIALOG_AT,
           opacity: open * (1 - leave),
           transformOrigin: "50% 100%",
           transform: `perspective(1600px) rotateX(${lerp(38, 0, open)}deg) scale(${lerp(0.8, 1, open) * swell + leave * 0.5})`,

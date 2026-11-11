@@ -90,6 +90,10 @@ Cut B is made from the same captures and stages more:
 - Cards, the queued-change note and the review dialog are cut out of the
   captured pages and shown on their own, enlarged.
 - The recap is eight quarter-second crops of the captured pages.
+- A gold ball (the pulley wheel of Stagehand's mark) bounces from one thing
+  to the next in place of a pointer. It is drawn; where it lands on the
+  world in the rail and on the switch, the page's state after it is the
+  real state after the real click.
 
 ## Notes
 

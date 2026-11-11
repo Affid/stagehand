@@ -10,7 +10,6 @@ import { Backdrop, BigType, Burst, hit, rush, snap } from "./kit";
 
 const { cards, chrome } = capture.stock;
 const LIST = chrome.list;
-const COUNT = cards.length;
 const NAME_AT = 60;
 
 /** Foundry's module list, laid back like a floor and running under the type. */
@@ -103,6 +102,17 @@ const Name: FC = () => {
           style={{ left: 0, right: 0, textAlign: "center" }}
         />
       </div>
+      <div
+        style={{
+          fontSize: 56,
+          fontWeight: 500,
+          color: COLOR.dim,
+          opacity: snap(frame, NAME_AT + 16, 12),
+          transform: `translateY(${lerp(30, 0, snap(frame, NAME_AT + 16, 12))}px)`,
+        }}
+      >
+        A calmer Setup for Foundry VTT, in your browser and on your phone.
+      </div>
     </AbsoluteFill>
   );
 };
@@ -115,7 +125,7 @@ export const Intro: FC = () => {
       <Backdrop />
       <RushingList />
       <BigType
-        line={{ text: `${COUNT} modules.`, at: 0, until: 30, still: true }}
+        line={{ text: "So many modules.", at: 0, until: 30, still: true }}
         size={250}
         style={TYPE}
       />

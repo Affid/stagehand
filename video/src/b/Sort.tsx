@@ -16,7 +16,7 @@ import { COLOR, fontFamily, K, PAGE } from "../theme";
 import { Backdrop, hit, rush, snap } from "./kit";
 
 /** The frame each folder's pile lands on: the score plays a note on each. */
-const LAND = [15, 30, 45, 60, 75, 90, 97, 105, 105] as const;
+export const LAND = [15, 30, 45, 60, 75, 90, 97, 105, 105] as const;
 const landOf = (group: number): number => LAND[group] ?? 105;
 const DIVE_AT = 110;
 

@@ -9,6 +9,7 @@ import {
   useCurrentFrame,
 } from "remotion";
 import { ease } from "../motion";
+import { Ball } from "./Ball";
 import { QueueB, ReviewB } from "./Change";
 import { LibraryB, WorldB } from "./Features";
 import { Intro } from "./Intro";
@@ -61,6 +62,7 @@ export const PromoB: FC<PromoBProps> = ({ music }) => {
           <Scene />
         </Sequence>
       ))}
+      <Ball />
       <Bug opacity={bugOpacity(frame)} />
     </AbsoluteFill>
   );
