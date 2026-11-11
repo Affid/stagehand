@@ -117,6 +117,37 @@ const Name: FC = () => {
   );
 };
 
+const FOLDS =
+  "repeating-linear-gradient(90deg, #7a2636 0px, #3a0f18 46px, #8a3040 92px, #4a1520 138px)";
+
+/** The house curtain: it closes over the list and opens on the name. */
+const Curtain: FC = () => {
+  const frame = useCurrentFrame();
+  const closed = snap(frame, NAME_AT - 13, 11) * (1 - snap(frame, NAME_AT, 16));
+  if (closed <= 0) return null;
+  const half = (side: 1 | -1) => (
+    <div
+      style={{
+        position: "absolute",
+        top: 0,
+        bottom: 0,
+        width: 1000,
+        [side === 1 ? "left" : "right"]: 0,
+        transform: `translateX(${side * (closed - 1) * 1000}px)`,
+        background: FOLDS,
+        boxShadow: "0 0 80px rgba(0,0,0,0.8)",
+        borderBottom: "16px solid #d9a441",
+      }}
+    />
+  );
+  return (
+    <AbsoluteFill>
+      {half(1)}
+      {half(-1)}
+    </AbsoluteFill>
+  );
+};
+
 export const Intro: FC = () => {
   const frame = useCurrentFrame();
   const TYPE = { left: 120, top: 380 } as const;
@@ -140,6 +171,7 @@ export const Intro: FC = () => {
         style={TYPE}
       />
       <Name />
+      <Curtain />
       <AbsoluteFill
         style={{ background: "#fff", opacity: 0.1 * hit(frame, NAME_AT, 8) }}
       />

@@ -28,7 +28,7 @@ const { cards, folders, chrome } = capture.library;
 const LIST = chrome.list;
 const MAIN = chrome.main;
 /** The panel shows the page from its tabs down, at this width. */
-const PANEL = { left: 770, top: 150, width: 990, height: 850 } as const;
+const PANEL = { left: 770, top: 150, width: 990, height: 760 } as const;
 const SCALE = PANEL.width / (MAIN[2] + 10);
 const HEAD: View = {
   x: MAIN[0],

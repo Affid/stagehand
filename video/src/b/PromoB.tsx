@@ -15,7 +15,7 @@ import { LibraryB, WorldB } from "./Features";
 import { Intro } from "./Intro";
 import { Bug } from "./kit";
 import { Lockup, Recap } from "./Outro";
-import { Sandbag } from "./rig";
+import { Levers, Sandbag } from "./rig";
 import { Sort } from "./Sort";
 import { B_SCENES } from "./timeline";
 
@@ -65,6 +65,7 @@ export const PromoB: FC<PromoBProps> = ({ music }) => {
         </Sequence>
       ))}
       <Sandbag />
+      <Levers />
       <Bug opacity={bugOpacity(frame)} />
     </AbsoluteFill>
   );

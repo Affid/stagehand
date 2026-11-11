@@ -115,23 +115,33 @@ export const Hung: FC<{
   const { y, swing, here } = flight(frame, inAt, outAt);
   if (!here) return null;
   return (
-    <div
-      style={{
-        position: "absolute",
-        left,
-        top,
-        width,
-        transformOrigin: "50% -600px",
-        transform: `translateY(${y}px) rotate(${swing}deg)`,
-        ...style,
-      }}
-    >
+    <>
       {ropes.map((x) => (
-        <Rope key={x} x={x} />
+        <Pulley
+          key={x}
+          x={left + (width * Number.parseFloat(x)) / 100}
+          turn={y * 1.4}
+          size={58}
+        />
       ))}
-      <Batten />
-      {children}
-    </div>
+      <div
+        style={{
+          position: "absolute",
+          left,
+          top,
+          width,
+          transformOrigin: "50% -600px",
+          transform: `translateY(${y}px) rotate(${swing}deg)`,
+          ...style,
+        }}
+      >
+        {ropes.map((x) => (
+          <Rope key={x} x={x} />
+        ))}
+        <Batten />
+        {children}
+      </div>
+    </>
   );
 };
 
@@ -291,16 +301,22 @@ const Bag: FC<{
   );
 };
 
-/** The block the bag's rope runs over: the wheel from Stagehand's mark. */
-const Pulley: FC<{ readonly x: number; readonly turn: number }> = ({
-  x,
-  turn,
-}) => (
+/** A block on the grid: the wheel from Stagehand's mark, turning. */
+const Pulley: FC<{
+  readonly x: number;
+  readonly turn: number;
+  readonly size?: number;
+}> = ({ x, turn, size = 84 }) => (
   <svg
-    width={84}
-    height={84}
+    width={size}
+    height={size}
     viewBox="-12 -12 24 24"
-    style={{ position: "absolute", left: x - 42, top: PULLEY_Y - 42 }}
+    style={{
+      position: "absolute",
+      left: x - size / 2,
+      top: PULLEY_Y - size / 2,
+      zIndex: 2,
+    }}
   >
     <rect x="-2" y="-14" width="4" height="8" fill="#8f86a0" />
     <circle r="9.6" fill="#d9a441" />
@@ -312,7 +328,113 @@ const Pulley: FC<{ readonly x: number; readonly turn: number }> = ({
   </svg>
 );
 
-/** The counterweight at the side of the stage through the working scenes. */
+/** The grid over the stage: a steel beam, and the rope that runs along it
+ * from the flown pieces to the counterweight. */
+const Grid: FC<{ readonly run: number; readonly opacity: number }> = ({
+  run,
+  opacity,
+}) => (
+  <div style={{ opacity }}>
+    <div
+      style={{
+        position: "absolute",
+        left: 0,
+        top: PULLEY_Y - 34,
+        width: REST.x,
+        height: 8,
+        borderRadius: 4,
+        background:
+          "repeating-linear-gradient(45deg, #e3d5b0 0 5px, #b49f6c 5px 10px)",
+        backgroundPositionX: run,
+        boxShadow: "0 0 0 1px rgba(20,14,6,0.55)",
+      }}
+    />
+    <div
+      style={{
+        position: "absolute",
+        left: 0,
+        right: 0,
+        top: 0,
+        height: 14,
+        background:
+          "linear-gradient(180deg, #6f6a86 0%, #37324a 55%, #1a1726 100%)",
+        boxShadow: "0 6px 16px rgba(0,0,0,0.6)",
+      }}
+    />
+  </div>
+);
+
+// ---- The lever bank ----
+
+const BANK = { left: 1500, top: 1012, width: 384, height: 24 } as const;
+const LEVER = { length: 82, lean: 27 } as const;
+
+/** One lever per change of scene, thrown as the change happens. */
+export const Levers: FC = () => {
+  const frame = useCurrentFrame();
+  if (frame < FIRST || frame >= GONE + 10) return null;
+  const shown = snap(frame, FIRST, 14) * (1 - rush(frame, GONE, 9));
+  const gap = BANK.width / (CHANGES.length + 1);
+  return (
+    <div
+      style={{
+        opacity: shown,
+        transform: `translateY(${(1 - shown) * 120}px)`,
+      }}
+    >
+      <div
+        style={{
+          position: "absolute",
+          ...BANK,
+          borderRadius: 8,
+          background: "linear-gradient(180deg, #6a5236 0%, #3b2c1d 100%)",
+          boxShadow:
+            "0 8px 20px rgba(0,0,0,0.6), inset 0 2px 0 rgba(255,220,160,0.18)",
+        }}
+      />
+      {CHANGES.map((change, i) => {
+        const thrown = spring({
+          frame: frame - (change - 6),
+          fps: FPS,
+          config: { damping: 9, stiffness: 190, mass: 0.6 },
+        });
+        const lit = hit(frame, change - 2, 16);
+        return (
+          <div
+            key={change}
+            style={{
+              position: "absolute",
+              left: BANK.left + gap * (i + 1) - 6,
+              top: BANK.top - LEVER.length + 8,
+              width: 12,
+              height: LEVER.length,
+              borderRadius: 6,
+              background: "linear-gradient(90deg, #9b96ae 0%, #57526b 100%)",
+              transformOrigin: "50% 100%",
+              transform: `rotate(${lerp(-LEVER.lean, LEVER.lean, thrown)}deg)`,
+              boxShadow: "2px 2px 6px rgba(0,0,0,0.5)",
+            }}
+          >
+            <div
+              style={{
+                position: "absolute",
+                left: -8,
+                top: -14,
+                width: 28,
+                height: 28,
+                borderRadius: 14,
+                background:
+                  "radial-gradient(circle at 35% 30%, #e88474 0%, #c0584a 55%, #7d2f25 100%)",
+                boxShadow: `0 0 ${30 * lit}px rgba(238,155,58,${lit})`,
+              }}
+            />
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
 export const Sandbag: FC = () => {
   const frame = useCurrentFrame();
   if (frame < FIRST || frame >= GONE + 10) return null;
@@ -322,6 +444,7 @@ export const Sandbag: FC = () => {
   const sway = 1.4 * Math.sin(frame / 9) + 3 * hit(frame, FIRST + 10, 30);
   return (
     <>
+      <Grid run={y} opacity={arrive * (1 - leave)} />
       <Bag x={REST.x} y={y} scale={SACK.scale} sway={sway} />
       <div style={{ opacity: arrive * (1 - leave) }}>
         <Pulley x={REST.x} turn={y * 1.2} />

@@ -1,4 +1,5 @@
-// Bars 13 to 15: eight quick looks back at the real pages, then the name.
+// The last bars: eight quick looks back at the real pages, each sliding in
+// from a wing like a flat on a track, then the name.
 import type { FC } from "react";
 import { AbsoluteFill, Img, useCurrentFrame } from "remotion";
 import { shot, SHOTS } from "../data";
@@ -27,31 +28,38 @@ export const Recap: FC = () => {
   const index = Math.min(LOOKS.length - 1, Math.floor(frame / FLASH));
   const look = LOOKS[index];
   if (!look) return null;
-  const local = (frame - index * FLASH) / FLASH;
-  const scale = 1920 / look.view.w;
-  return (
-    <AbsoluteFill style={{ background: COLOR.bg, overflow: "hidden" }}>
+  const arrive = snap(frame, index * FLASH, FLASH - 1);
+  const side = index % 2 === 0 ? 1 : -1;
+  const before = LOOKS[index - 1];
+  const flat = (shown: (typeof LOOKS)[number], shift: number) => {
+    const s = 1920 / shown.view.w;
+    return (
       <div
         style={{
           position: "absolute",
           inset: 0,
-          transform: `scale(${lerp(1.14, 1.02, local)})`,
+          overflow: "hidden",
+          transform: `translateX(${shift}px)`,
+          boxShadow: "0 0 60px rgba(0,0,0,0.8)",
         }}
       >
         <Img
-          src={look.src}
+          src={shown.src}
           style={{
             position: "absolute",
-            left: -look.view.x * scale,
-            top: -look.view.y * scale,
-            width: 1280 * scale,
+            left: -shown.view.x * s,
+            top: -shown.view.y * s,
+            width: 1280 * s,
             maxWidth: "none",
           }}
         />
       </div>
-      <AbsoluteFill
-        style={{ background: "#fff", opacity: 0.12 * (1 - local) }}
-      />
+    );
+  };
+  return (
+    <AbsoluteFill style={{ background: COLOR.bg, overflow: "hidden" }}>
+      {before && flat(before, 0)}
+      {flat(look, side * (1 - arrive) * 1920)}
     </AbsoluteFill>
   );
 };

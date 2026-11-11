@@ -104,8 +104,10 @@ Cut B is made from the same captures and stages more:
   captured pages and shown on their own, enlarged.
 - The recap is eight quarter-second crops of the captured pages.
 - Panels fly in on ropes from pipe battens and are hauled up again, with a
-  canvas sandbag on a pulley going the other way: stage rigging after
-  Stagehand's mark, all drawn. There is no
+  canvas sandbag on a pulley going the other way, a grid beam with turning
+  pulleys, a bank of levers thrown at each change, a curtain that closes
+  and opens on the name, and the recap sliding in like flats from the
+  wings: stage machinery after Stagehand's mark, all drawn. There is no
   pointer; a light steps down the worlds in the rail and stops on the one
   the capture really clicked, and the switch flips on its beat to the
   page's real state after the real click.
