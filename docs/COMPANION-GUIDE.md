@@ -240,7 +240,7 @@ Coverage must stay at 80% or more (`pnpm test:coverage`).
 `stagehand.zip`, publishes the release, updates the `manifests` branch that
 the manifest URL points to, and sends the version to foundryvtt.com.
 
-## Questions a reviewer might ask
+## Expected Questions
 
 - **Why `editWorld` instead of a world setting?** Setup can't read world
   settings: they live in the world's database. It can read `world.json`.
