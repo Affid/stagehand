@@ -68,7 +68,7 @@ export const CUTS = {
     // A shorter room and a little more top than cut A: tighter and brighter.
     reverbSeconds: 1.2,
     topHz: 13000,
-    fadeOutFrom: 28.9,
+    fadeOutFrom: 32.9,
     fadeOutSeconds: 1.0,
     loudness: { targetLufs: -18, truePeakLimitDb: -2, sampleCeilingDb: -3 },
     versions: {

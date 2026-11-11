@@ -9,12 +9,13 @@ import {
   useCurrentFrame,
 } from "remotion";
 import { ease } from "../motion";
-import { Ball } from "./Ball";
 import { QueueB, ReviewB } from "./Change";
+import { DevicesB } from "./Devices";
 import { LibraryB, WorldB } from "./Features";
 import { Intro } from "./Intro";
 import { Bug } from "./kit";
 import { Lockup, Recap } from "./Outro";
+import { Sandbag } from "./rig";
 import { Sort } from "./Sort";
 import { B_SCENES } from "./timeline";
 
@@ -30,6 +31,7 @@ const SCENES = [
   [B_SCENES.intro, Intro],
   [B_SCENES.sort, Sort],
   [B_SCENES.library, LibraryB],
+  [B_SCENES.devices, DevicesB],
   [B_SCENES.world, WorldB],
   [B_SCENES.queue, QueueB],
   [B_SCENES.review, ReviewB],
@@ -62,7 +64,7 @@ export const PromoB: FC<PromoBProps> = ({ music }) => {
           <Scene />
         </Sequence>
       ))}
-      <Ball />
+      <Sandbag />
       <Bug opacity={bugOpacity(frame)} />
     </AbsoluteFill>
   );

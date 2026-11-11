@@ -17,7 +17,11 @@ const LINE_IN = 46;
 const FOOT_IN = 84;
 
 /** The bag hangs from the rope's right end and swings to rest. */
-export const Mark: FC<{ readonly frame: number }> = ({ frame }) => {
+export const Mark: FC<{
+  readonly frame: number;
+  /** Cut B hangs the bag in itself, on a rope. */
+  readonly withoutBag?: boolean;
+}> = ({ frame, withoutBag = false }) => {
   const settle = Math.exp(-Math.max(0, frame - MARK_IN) / 22);
   const swing = 9 * settle * Math.sin((frame - MARK_IN) / 4.2);
   return (
@@ -42,13 +46,15 @@ export const Mark: FC<{ readonly frame: number }> = ({ frame }) => {
         stroke="#efe3c8"
         strokeWidth="2.2"
       />
-      <g transform={`rotate(${swing} 63.6 60)`}>
-        <path
-          fill="#c0584a"
-          d="M63.6,60 C58,64 56,72 57,76.5 Q63.6,82 70.2,76.5 C71.2,72 69.2,64 63.6,60 Z"
-        />
-        <rect x="60" y="63.2" width="7.2" height="2.2" fill="#8e3329" />
-      </g>
+      {!withoutBag && (
+        <g transform={`rotate(${swing} 63.6 60)`}>
+          <path
+            fill="#c0584a"
+            d="M63.6,60 C58,64 56,72 57,76.5 Q63.6,82 70.2,76.5 C71.2,72 69.2,64 63.6,60 Z"
+          />
+          <rect x="60" y="63.2" width="7.2" height="2.2" fill="#8e3329" />
+        </g>
+      )}
     </svg>
   );
 };

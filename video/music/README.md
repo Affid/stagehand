@@ -107,15 +107,15 @@ deterministic (seeded noise). After changing notes, edit `score/*.mjs` and run
 - The chord landings (7.0, 34.5 and 38.0 s) measure 3-5 dB above the groove in
   plain RMS; much of that is low D in the bass.
 
-## Cut B (upbeat, 30 s)
+## Cut B (upbeat, 34 s)
 
 A second, separate piece for the beat-cut alternative video. Cut A's score,
 settings and files are untouched: `node render.mjs` with no cut named still
 renders cut A, and its outputs are byte-identical to before cut B was added
 (checked by SHA-256).
 
-- Score: `score-b.mjs` and `score-b/`. Original, E major, 120 BPM, 15 bars,
-  exactly 30.0 s. `node print-score.mjs b` prints it, and ends with a list of
+- Score: `score-b.mjs` and `score-b/`. Original, E major, 120 BPM, 17 bars,
+  exactly 34.0 s. `node print-score.mjs b` prints it, and ends with a list of
   what sounds on each of the film's hit times (`HIT_TIMES` in `score-b.mjs`).
 - How it differs from cut A: a kick on every beat with claps on two and
   four and off-beat hi-hats, a syncopated bass (root, pushed root, octave),
@@ -124,17 +124,22 @@ renders cut A, and its outputs are byte-identical to before cut B was added
   (1.2 s), more top (13 kHz low-pass), louder (-18 LUFS, true peak under
   -2 dBFS).
 
-| Time (s)  | Film              | Music                                                                                                             |
-| --------- | ----------------- | ----------------------------------------------------------------------------------------------------------------- |
-| 0.0, 1.0  | Two type slams    | Kick, bass and a bare-fifth piano stab on E, then Bsus4; quiet riser                                              |
-| 2.0-4.0   | Name reveal       | Eadd9 held (piano, pad, bell, kick and clap); riser and a mallet pickup into 4.0                                  |
-| 4.0-8.0   | Folder piles land | Groove starts; eight rising notes (mallet and pluck) on 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.25, 7.5; clap fill        |
-| 8.0-12.0  | Library           | Hook over E, C#m7, A, B; piano stabs and bell on 8, 9, 10, 11                                                     |
-| 12.0-16.0 | By world          | Hook a third higher over C#m7, B, A, B, doubled by the mallet                                                     |
-| 16.0-20.0 | Queue a change    | Sparser kick, no clap, mallet eighths; a click alone on 17.0; stab, bell and clap on 18.5                         |
-| 20.0-24.0 | Review            | B pedal in eighths; rising stabs with claps on 20.5, 21.5, 22.5; drums out at 23.0 under a riser and a mallet run |
-| 24.0-26.0 | Recap             | Groove back; stab and pluck every 0.25 s from 24.0 to 25.25; four-note fill                                       |
-| 26.0-30.0 | Logo              | E major hit, left to ring; the hook's first five notes quietly from 27.0, last note 28.0; silent from 29.9        |
+| Time (s)  | Film              | Music                                                                                                                                                                                            |
+| --------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 0.0, 1.0  | Two type slams    | Kick, bass and a bare-fifth piano stab on E, then Bsus4; quiet riser                                                                                                                             |
+| 2.0-4.0   | Name reveal       | Eadd9 held (piano, pad, bell, kick and clap); riser and a mallet pickup into 4.0                                                                                                                 |
+| 4.0-8.0   | Folder piles land | Groove starts; eight rising notes (mallet and pluck) on 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.25, 7.5; clap fill                                                                                       |
+| 8.0-12.0  | Library           | Hook over E, C#m7, A, B; piano stabs and bell on 8, 9, 10, 11                                                                                                                                    |
+| 12.0-16.0 | Devices           | A new turn of the hook, coming down from its top note, over A, E/G#, F#m7, B; stabs and bell on 12, 13, 14; at 15.0 and 15.25 a low B answered by the B an octave up with a bell; four-note fill |
+| 16.0-20.0 | By world          | Hook a third higher over C#m7, B, A, B, doubled by the mallet                                                                                                                                    |
+| 20.0-24.0 | Queue a change    | Sparser kick, no clap, mallet eighths; a click alone on 21.0; stab, bell and clap on 22.5                                                                                                        |
+| 24.0-28.0 | Review            | B pedal in eighths; rising stabs with claps on 24.5, 25.5, 26.5; drums out at 27.0 under a riser and a mallet run                                                                                |
+| 28.0-30.0 | Recap             | Groove back; stab and pluck every 0.25 s from 28.0 to 29.25; four-note fill                                                                                                                      |
+| 30.0-34.0 | Logo              | E major hit, left to ring; the hook's first five notes quietly from 31.0, last note 32.0; silent from 33.9                                                                                       |
+
+A quiet 0.3 s upward whoosh (the riser voice at a third of the big risers'
+strength) ends exactly on each scene change: 8.0, 12.0, 16.0, 20.0 and 24.0 s
+(`SCENE_CHANGE_BEATS` in `score-b.mjs`).
 
 - **b-synth** (`music-b-synth.wav`): the synth engine, with voices added in
   `synth/pluck.mjs` and `synth/beat.mjs`: a Karplus-Strong plucked string for

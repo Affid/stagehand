@@ -2,7 +2,7 @@
 
 Two cuts of a video of Stagehand (1920 x 1080, 30 fps), built in code so
 they can be rendered again when the page changes: `Promo`, 41 seconds and
-calm, and `PromoB` (src/b), 30 seconds, cut on the beat with big type. It is not part of any shipped
+calm, and `PromoB` (src/b), 34 seconds, cut on the beat with big type. It is not part of any shipped
 package and has its own install, outside the product's pnpm workspace.
 
 ```
@@ -103,10 +103,16 @@ Cut B is made from the same captures and stages more:
 - Cards, the queued-change note and the review dialog are cut out of the
   captured pages and shown on their own, enlarged.
 - The recap is eight quarter-second crops of the captured pages.
-- A gold ball (the pulley wheel of Stagehand's mark) bounces from one thing
-  to the next in place of a pointer. It is drawn; where it lands on the
-  world in the rail and on the switch, the page's state after it is the
-  real state after the real click.
+- Panels fly in on ropes and are hauled up again, with a sandbag going the
+  other way: stage rigging after Stagehand's mark, all drawn. There is no
+  pointer; a light steps down the worlds in the rail and stops on the one
+  the capture really clicked, and the switch flips on its beat to the
+  page's real state after the real click.
+- The Library's cards are dealt into the panel one by one, and the review's
+  rows are covered until their beat. The cards and rows are the page's own.
+- The phone is the Android app's own screenshot from the emulator, in a
+  phone frame the video draws. The pulse between computer and phone is
+  drawn; the library really is kept on the server and read by both.
 
 ## Notes
 
