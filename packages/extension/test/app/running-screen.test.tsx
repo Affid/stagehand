@@ -418,7 +418,7 @@ describe("review fixes", () => {
           setTimeout: window.setTimeout.bind(window),
         }),
         // Breaks the start-up itself (Foundry's globals read while mounting).
-        "game",
+        "ui",
         {
           get() {
             throw new Error("broken");

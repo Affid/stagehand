@@ -4,11 +4,7 @@
 // again after each resize (client-issues.mjs, ERROR.RESOLUTION.*); it is the
 // permanent notification whose text is the formatted issue.
 import type { PageGlobals } from "./globals.ts";
-
-const AREA = "notifications";
-const PERMANENT = "li.notification.permanent";
-
-const plain = (text: string): string => text.replace(/\s+/g, " ").trim();
+import { hideNotices, plainText } from "./notices.ts";
 
 const isRecord = (v: unknown): v is Readonly<Record<string, unknown>> =>
   typeof v === "object" && v !== null;
@@ -19,63 +15,21 @@ function noticeText(page: PageGlobals): string | undefined {
   if (!isRecord(issue) || typeof issue.message !== "string") return undefined;
   const params = isRecord(issue.params) ? issue.params : {};
   const text = page.game?.i18n?.format?.(issue.message, params);
-  return typeof text === "string" && text ? plain(text) : undefined;
-}
-
-function removeNotice(page: PageGlobals, doc: Document): void {
-  const text = noticeText(page);
-  // Called on Foundry's object: remove reads its private queue through `this`.
-  const notifications = page.ui?.notifications;
-  if (!text || !notifications?.remove) return;
-  const shown = doc.getElementById(AREA)?.querySelectorAll(PERMANENT) ?? [];
-  for (const li of shown) {
-    const id = Number((li as HTMLElement).dataset.id);
-    if (id > 0 && plain(li.textContent) === text) notifications.remove(id);
-  }
-}
-
-/** Watches the notification area: the notice goes whenever it comes back. */
-function watchArea(page: PageGlobals, area: HTMLElement, doc: Document) {
-  // One check per burst of changes, whatever the page does to the list.
-  let queued = false;
-  const watch = new MutationObserver(() => {
-    if (queued) return;
-    queued = true;
-    queueMicrotask(() => {
-      queued = false;
-      removeNotice(page, doc);
-    });
-  });
-  watch.observe(area, { childList: true });
-  return () => {
-    watch.disconnect();
-  };
+  return typeof text === "string" && text ? plainText(text) : undefined;
 }
 
 /**
- * Removes the notice now and whenever it comes back; returns the stop.
- * Where Foundry adds its notification area later (its login page), it
- * waits for the area first.
+ * Removes the notice now and whenever it comes back; returns the stop
+ * (notices.ts).
  */
 export function hideResolutionNotice(
   page: PageGlobals,
   doc: Document,
 ): () => void {
-  removeNotice(page, doc);
-  const area = doc.getElementById(AREA);
-  if (area) return watchArea(page, area, doc);
-  let stopArea = (): void => undefined;
-  const wait = new MutationObserver(() => {
-    const found = doc.getElementById(AREA);
-    if (!found) return;
-    wait.disconnect();
-    removeNotice(page, doc);
-    stopArea = watchArea(page, found, doc);
-  });
-  // The document itself: at document start it may have no root yet (review).
-  wait.observe(doc, { childList: true, subtree: true });
-  return () => {
-    wait.disconnect();
-    stopArea();
-  };
+  return hideNotices(
+    page,
+    doc,
+    (li, text) =>
+      li.classList.contains("permanent") && text === noticeText(page),
+  );
 }

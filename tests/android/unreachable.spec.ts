@@ -65,6 +65,44 @@ test("Foundry's dead end after a lost connection is our screen; Try again reload
   expect(onScreen(LOST)).toBe(false);
 });
 
+test("Foundry's notices about its own connection stay off our page", async () => {
+  // The socket's transport closed under Foundry, as Android does to an app
+  // in the background: Foundry says lost, reconnects, says re-established.
+  const said = await page.evaluate(async () => {
+    interface Notices {
+      error(m: string): unknown;
+      info(m: string): unknown;
+    }
+    const g = globalThis as unknown as {
+      ui: { notifications: Notices };
+      game: { socket: { io: { engine: { close(): void } } } };
+    };
+    const raised: string[] = [];
+    const shown: string[] = [];
+    const n = g.ui.notifications;
+    for (const kind of ["error", "info"] as const) {
+      const real = n[kind].bind(n);
+      n[kind] = (m: string) => {
+        raised.push(m);
+        return real(m);
+      };
+    }
+    const end = Date.now() + 6_000;
+    g.game.socket.io.engine.close();
+    // Each frame, as it is about to be drawn (closing raises the first
+    // notice at once, in this very task: looked at only from the next frame).
+    while (Date.now() < end) {
+      await new Promise((r) => requestAnimationFrame(r));
+      for (const li of document.querySelectorAll("#notifications li"))
+        if (/connection/i.test(li.textContent)) shown.push(li.textContent);
+    }
+    return { raised, shown };
+  });
+  expect(said.raised.join("\n")).toMatch(/lost connection to the server/);
+  expect(said.raised.join("\n")).toMatch(/Server connection re-established/);
+  expect(said.shown).toEqual([]);
+});
+
 test("offline, a page that doesn't load is our screen, and stays until the server answers", async () => {
   airplane(true);
   await sleep(3_000);
