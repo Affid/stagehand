@@ -8,8 +8,9 @@ is the way it is.
 
 - [PRD.md](PRD.md): what Stagehand is for, who it serves, and the
   requirements the code refers to by id (D-1, PR-4, C-6...).
-- [COMPANION-WALKTHROUGH.md](COMPANION-WALKTHROUGH.md): the companion module
-  file by file, for reviewers and before submitting it to Foundry.
+- [COMPANION-GUIDE.md](COMPANION-GUIDE.md): the companion module for
+  developers and reviewers: running it, the code, the flags, making
+  changes, tests.
 
 ## How it works now
 

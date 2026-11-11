@@ -67,8 +67,9 @@ pnpm foundry:link                       # links dist into a local Foundry's Data
 `static` holds `module.json` and `lang/en.json`, copied into `dist` as
 they are.
 
-- [docs/COMPANION-WALKTHROUGH.md](../../docs/COMPANION-WALKTHROUGH.md): the
-  module file by file, step by step through one join.
+- [docs/COMPANION-GUIDE.md](../../docs/COMPANION-GUIDE.md): the developer
+  guide: running it, the code, one join step by step, making changes,
+  tests.
 - [docs/COMPANION-WORLD-PROTOCOL.md](../../docs/COMPANION-WORLD-PROTOCOL.md):
   what Setup and the companion leave each other in the world's flags.
 - Releases: `pnpm release:companion <version>`, see
