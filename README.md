@@ -56,10 +56,11 @@ Foundry VTT 13 and 14.
 - Companion module: in Foundry's Install Module window, paste the manifest
   URL
   `https://raw.githubusercontent.com/Affid/stagehand/manifests/stagehand/module.json`.
-- Extension: the Chrome Web Store listing is on its way; until then,
-  download the zip from the
-  [releases](https://github.com/Affid/stagehand/releases) and load it
-  unpacked (`chrome://extensions`, Developer mode, Load unpacked).
+- Extension: install
+  [Stagehand for Foundry VTT](https://chromewebstore.google.com/detail/iilpkngpgiiocbmnnjkhmehaadnpknac)
+  from the Chrome Web Store. To load it by hand instead, download the zip
+  from the [releases](https://github.com/Affid/stagehand/releases) and
+  load it unpacked (`chrome://extensions`, Developer mode, Load unpacked).
 - Android app: the APK from the
   [releases](https://github.com/Affid/stagehand/releases), sideloaded.
 

@@ -7,7 +7,9 @@ same code, built a second way, is the web part of the
 
 ## Install
 
-The Chrome Web Store listing is on its way. Until then, download the zip
+Install
+[Stagehand for Foundry VTT](https://chromewebstore.google.com/detail/iilpkngpgiiocbmnnjkhmehaadnpknac)
+from the Chrome Web Store. To load it by hand instead, download the zip
 from the [releases](https://github.com/Affid/stagehand/releases), unpack
 it, and load it in `chrome://extensions` (Developer mode, Load unpacked).
 Firefox uses the same build (Firefox 128 or newer) but hasn't been tested

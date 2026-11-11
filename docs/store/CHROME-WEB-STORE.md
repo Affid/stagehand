@@ -1,6 +1,7 @@
 # Chrome Web Store submission
 
 Everything the Chrome Web Store dashboard asks for, ready to paste.
+Published listing: <https://chromewebstore.google.com/detail/iilpkngpgiiocbmnnjkhmehaadnpknac>.
 Package: `stagehand-extension-<version>.zip` from the GitHub release
 (`stagehand-extension-v<version>`), built with `pnpm --filter
 @stagehand/extension build:release` and zipped without source maps.

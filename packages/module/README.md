@@ -6,8 +6,9 @@ can't see inside a world. The companion runs inside the world, reports the
 world's active modules to Setup and applies the module changes you queued
 there, after showing them to you.
 
-On its own it does nothing. Install the Stagehand extension or app too
-(see the [main README](../../README.md)).
+On its own it does nothing. Install the Stagehand extension from the
+[Chrome Web Store](https://chromewebstore.google.com/detail/iilpkngpgiiocbmnnjkhmehaadnpknac)
+or the Android app too (see the [main README](../../README.md)).
 
 ## Install
 
