@@ -103,6 +103,43 @@ test("Foundry's notices about its own connection stay off our page", async () =>
   expect(said.shown).toEqual([]);
 });
 
+test("a loss that lasts shows our small Reconnecting sign until Foundry is back", async () => {
+  // Foundry waits three seconds before trying again (under the five after
+  // which it would reload the page), then as before.
+  const watching = page.evaluate(async () => {
+    interface Manager {
+      reconnectionDelay(ms: number): unknown;
+      reconnectionDelayMax(ms: number): unknown;
+      engine: { close(): void };
+    }
+    const io = (globalThis as unknown as { game: { socket: { io: Manager } } })
+      .game.socket.io;
+    const delay = (ms: number): void => {
+      io.reconnectionDelay(ms);
+      io.reconnectionDelayMax(ms);
+    };
+    const seen: boolean[] = [];
+    const start = Date.now();
+    delay(3_000);
+    io.engine.close();
+    // One look every half second: at 0.5 s not yet, then there, then gone.
+    while (Date.now() - start < 7_000) {
+      await new Promise((r) => setTimeout(r, 500));
+      const sign = document.getElementById("st-reconnecting");
+      seen.push(sign?.textContent === "Reconnecting…");
+    }
+    delay(500);
+    return seen;
+  });
+  await sleep(2_000);
+  await app.shot("reconnecting");
+  const seen = await watching;
+  expect(seen[0]).toBe(false);
+  expect(seen.slice(1, 4)).toContain(true);
+  expect(seen.at(-1)).toBe(false);
+  expect(page.url()).toBe(`${SERVER}/setup`);
+});
+
 test("offline, a page that doesn't load is our screen, and stays until the server answers", async () => {
   airplane(true);
   await sleep(3_000);

@@ -7,7 +7,7 @@ import { logError } from "@stagehand/shared/log";
 import { render } from "preact";
 import { useEffect, useState } from "preact/hooks";
 import type { PageGlobals } from "../../page/globals.ts";
-import { hideConnectionNotices } from "../../page/connection.ts";
+import { showReconnecting } from "../reconnecting.ts";
 import { hideResolutionNotice } from "../../page/resolution.ts";
 import { isServerPage } from "../native-api.ts";
 import { createTranslator } from "../../ui/i18n.ts";
@@ -181,8 +181,13 @@ function mount(deps: RunningDeps, world: RunningWorld): void {
   // Foundry's "window smaller than 1024×768" notice: this screen is made
   // for the small window, as the phone layout is (page/resolution.ts).
   hideResolutionNotice(deps.win as PageGlobals, deps.doc);
-  // Nor its talk about its connection (page/connection.ts).
-  hideConnectionNotices(deps.win as PageGlobals, deps.doc);
+  // Nor its talk about its connection: our small sign instead.
+  showReconnecting({
+    page: deps.win as PageGlobals,
+    doc: deps.doc,
+    win: deps.win,
+    label: createTranslator("en")("app.reconnecting"),
+  });
   const host = deps.doc.createElement("div");
   host.id = HOST;
   deps.doc.body.append(host);

@@ -13,14 +13,28 @@ const LOST =
 /** After Foundry's name (CONST.vtt) and a bar. */
 const NAMED = /^[^|]{1,60} \| Server connection (re-established|lost)\.$/;
 
-/** Removes them now and whenever Foundry raises them; returns the stop. */
+/** What Foundry said: trying again, connected again, or given up. */
+export type ConnectionNews = "lost" | "back" | "gone";
+
+function newsOf(text: string): ConnectionNews | undefined {
+  if (text === LOST) return "lost";
+  const named = NAMED.exec(text);
+  if (!named) return undefined;
+  return named[1] === "lost" ? "gone" : "back";
+}
+
+/**
+ * Removes them now and whenever Foundry raises them; returns the stop.
+ * `heard` is told what each one said, in Foundry's order.
+ */
 export function hideConnectionNotices(
   page: PageGlobals,
   doc: Document,
+  heard?: (news: ConnectionNews) => void,
 ): () => void {
-  return hideNotices(
-    page,
-    doc,
-    (_li, text) => text === LOST || NAMED.test(text),
-  );
+  return hideNotices(page, doc, (_li, text) => {
+    const news = newsOf(text);
+    if (news) heard?.(news);
+    return news !== undefined;
+  });
 }

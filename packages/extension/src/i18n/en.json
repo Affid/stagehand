@@ -1081,6 +1081,7 @@
   "stp.newSnapshot": "New snapshot",
   "stp.snapLead": "Restoring one rolls the whole server back.",
   "stp.toDelete": "to delete",
+  "app.reconnecting": "Reconnecting…",
   "run.live": "Running now",
   "run.people.one": "{n} person in the game",
   "run.people.other": "{n} people in the game",

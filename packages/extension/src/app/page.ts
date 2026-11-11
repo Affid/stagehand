@@ -17,7 +17,8 @@ import {
 } from "./bridge.ts";
 import { BACK, BRIDGE_NAME, HOME_PAGE, isServerPage } from "./native-api.ts";
 import { pressBack } from "../ui/shell/phone/back.ts";
-import { hideConnectionNotices } from "../page/connection.ts";
+import { createTranslator, pickLanguage } from "../ui/i18n.ts";
+import { showReconnecting } from "./reconnecting.ts";
 import { hideResolutionNotice } from "../page/resolution.ts";
 import { allowTextMenus, hintPasswords } from "../page/text-fields.ts";
 import { addLoginBar } from "./login-bar.ts";
@@ -117,9 +118,17 @@ export function startAppSetup(deps: AppSetupDeps): boolean {
   if (!port) return false;
   const { doc } = deps;
   allowTextMenus(deps.win);
-  // Foundry's own talk about its connection stays out of the app: it
-  // reloads the page once back, or native says the server is out of reach.
-  hideConnectionNotices(pageGlobals(), doc);
+  // Foundry's own talk about its connection stays out of the app: our
+  // small sign while it tries again; it reloads the page once back, or
+  // native says the server is out of reach.
+  showReconnecting({
+    page: pageGlobals(),
+    doc,
+    win: deps.win,
+    label: createTranslator(
+      pickLanguage(doc.documentElement.lang, deps.win.navigator.language),
+    )("app.reconnecting"),
+  });
   // The phone and tablet layouts are made for the small window: Foundry's
   // notice goes from the start, not once our page is up (owner, 2026-11-09).
   if (touchScreen(deps.win)) (deps.clearNotice ?? clearSizeNotice)(deps.win);
