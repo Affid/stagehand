@@ -7,6 +7,22 @@ and the Android app (`stagehand-app-v<version>`, the extension's version).
 
 ## 2026-11-11
 
+### Extension 0.2.1
+
+- Foundry's backups tour no longer starts by itself over the new Setup
+  page on the first open.
+
+### Android app 0.2.1
+
+- A server out of reach shows the app's own screen with Try again, in place
+  of the browser's "Web page not available"; coming back to the app tries
+  once by itself.
+- Foundry's "lost connection" and "re-established" notices no longer show
+  on returning to the app; a small Reconnecting sign shows while a loss
+  lasts.
+- Foundry's backups tour and its old-Chromium notice stay off the app's
+  pages.
+
 ### Companion module 0.1.2
 
 - The description links to the extension's Chrome Web Store listing.
