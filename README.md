@@ -13,17 +13,9 @@ updates.
 
 Stagehand is not affiliated with or endorsed by Foundry Gaming LLC.
 
-<!-- VIDEO GOES HERE. Edit this file on github.com, put the cursor on the
-     empty line below this comment and drag the MP4 onto the editor
-     (docs/media/stagehand-promo.mp4, 4.5 MB; or the full-size
-     video/out/stagehand-promo-b.mp4 if your plan allows files over 10 MB).
-     GitHub inserts a github.com/user-attachments link, which plays inline.
-     Then delete the poster image and the "watch the video" line under it. -->
 
-[![Stagehand's Library on a computer and in the Android app: one library](docs/media/stagehand-promo-poster.jpg)](docs/media/stagehand-promo.mp4)
+https://github.com/user-attachments/assets/95aa1de2-6b0b-400c-8874-ff722e6487b8
 
-A 34-second look at it: [watch the video](docs/media/stagehand-promo.mp4)
-(made in code from the real pages; see [video](video/README.md)).
 
 ![The Library: modules in folders, with tags, notes and the worlds each one is on](docs/store/screenshots/1-library.png)
 
