@@ -13,6 +13,11 @@ updates.
 
 Stagehand is not affiliated with or endorsed by Foundry Gaming LLC.
 
+[![Stagehand's Library on a computer and in the Android app: one library](docs/media/stagehand-promo-poster.jpg)](docs/media/stagehand-promo.mp4)
+
+A 34-second look at it: [watch the video](docs/media/stagehand-promo.mp4)
+(made in code from the real pages; see [video](video/README.md)).
+
 ![The Library: modules in folders, with tags, notes and the worlds each one is on](docs/store/screenshots/1-library.png)
 
 ![A world's queued module change, reviewed before launch](docs/store/screenshots/5-launch-review.png)

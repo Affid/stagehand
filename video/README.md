@@ -26,6 +26,16 @@ pnpm render:b                                # out/stagehand-promo-b.mp4 (cut B)
 pnpm studio                                  # scrub through it in the browser
 ```
 
+The repository's README links a smaller copy of cut B and a poster frame
+(`docs/media`). After a new render, from the repository root:
+
+```bash
+ffmpeg -y -i video/out/stagehand-promo-b.mp4 -vf scale=1280:720 -c:v libx264 -preset slow -crf 25 \
+  -pix_fmt yuv420p -movflags +faststart -c:a aac -b:a 128k docs/media/stagehand-promo.mp4
+ffmpeg -y -ss 14.6 -i video/out/stagehand-promo-b.mp4 -frames:v 1 -vf scale=1280:720 -q:v 3 \
+  docs/media/stagehand-promo-poster.jpg
+```
+
 `music` is `sampled` (the default), `synth`, `simple` or `none` (cut B:
 `b-sampled`, `b-synth` or `none`); see
 [music/README.md](music/README.md) for what each is and how it is made.
