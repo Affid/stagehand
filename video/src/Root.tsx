@@ -1,15 +1,11 @@
 import type { FC } from "react";
 import { Composition } from "remotion";
-import { Recap, type RecapProps } from "./b/Outro";
 import { LISTING, LISTING_FRAMES, ListingGif } from "./listing/ListingGif";
 import { PromoB, type PromoBProps } from "./b/PromoB";
 import { B_TOTAL_FRAMES } from "./b/timeline";
 import { FPS } from "./motion";
 import { Promo, type PromoProps } from "./Promo";
 import { TOTAL_FRAMES } from "./timeline";
-
-/** Frames each page holds in the listing loop. */
-const LISTING_HOLD = 3 * FPS;
 
 export const Root: FC = () => (
   <>
@@ -31,18 +27,8 @@ export const Root: FC = () => (
       height={1080}
       defaultProps={{ music: "none" } satisfies PromoBProps}
     />
-    {/* The real pages on a silent loop, for the companion's foundryvtt.com
-        page (a GIF): cut B's recap, three seconds a look. */}
-    <Composition
-      id="ListingLoop"
-      component={Recap}
-      durationInFrames={LISTING_HOLD * 4}
-      fps={FPS}
-      width={1920}
-      height={1080}
-      defaultProps={{ hold: LISTING_HOLD, loop: true } satisfies RecapProps}
-    />
-    {/* Made for a GIF: flat, hard cuts, only small things moving. */}
+    {/* The companion's foundryvtt.com GIF: flat, hard cuts, only small
+        things moving. */}
     <Composition
       id="ListingGif"
       component={ListingGif}

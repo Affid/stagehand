@@ -36,17 +36,6 @@ ffmpeg -y -ss 14.6 -i video/out/stagehand-promo-b.mp4 -frames:v 1 -vf scale=1280
   docs/media/stagehand-promo-poster.jpg
 ```
 
-The companion's foundryvtt.com page shows a silent loop of the real pages
-(`ListingLoop`: cut B's recap, three seconds a page: the Library, a world,
-its queued change, the launch review), 900 px wide at 12 fps, about 4.3 MB.
-From the repository root:
-
-```bash
-(cd video && pnpm render:listing)                                   # out/listing-loop.mp4
-ffmpeg -y -i video/out/listing-loop.mp4 -vf "fps=12,scale=900:-1:flags=lanczos,split[a][b];[a]palettegen=max_colors=256:stats_mode=diff[p];[b][p]paletteuse=dither=none:diff_mode=rectangle" \
-  -loop 0 docs/media/stagehand-setup.gif
-```
-
 `ListingGif` is the companion's foundryvtt.com GIF, made for a GIF from the
 start: 960 x 600, flat colours, hard cuts, only the pointer, a ring and the
 caption move, about 900 KB for 37 seconds. Its script is
