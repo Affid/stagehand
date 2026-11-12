@@ -8,6 +8,7 @@
     "studio": "remotion studio src/index.ts",
     "render": "remotion render src/index.ts Promo out/stagehand-promo.mp4",
     "render:b": "remotion render src/index.ts PromoB out/stagehand-promo-b.mp4 --props='{\"music\":\"b-sampled\"}'",
+    "render:listing": "remotion render src/index.ts ListingLoop out/listing-loop.mp4",
     "still": "remotion still src/index.ts Promo",
     "typecheck": "tsc --noEmit"
   },

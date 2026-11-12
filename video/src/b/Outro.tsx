@@ -21,14 +21,22 @@ const LOOKS: readonly { readonly src: string; readonly view: View }[] = [
 /** How far a look travels as it arrives: a short glide, not a whip. */
 const GLIDE = 420;
 
-export const Recap: FC = () => {
+export type RecapProps = {
+  /** Frames each look holds; the video's recap uses half a second. */
+  readonly hold?: number;
+  /** The first look glides in over the last, so the recap can loop. */
+  readonly loop?: boolean;
+};
+
+export const Recap: FC<RecapProps> = ({ hold = FLASH, loop = false }) => {
   const frame = useCurrentFrame();
-  const index = Math.min(LOOKS.length - 1, Math.floor(frame / FLASH));
+  const index = Math.min(LOOKS.length - 1, Math.floor(frame / hold));
   const look = LOOKS[index];
   if (!look) return null;
-  const arrive = snap(frame, index * FLASH, 12);
+  const arrive = snap(frame, index * hold, 12);
   const side = index % 2 === 0 ? 1 : -1;
-  const before = LOOKS[index - 1];
+  const before =
+    index === 0 && loop ? LOOKS[LOOKS.length - 1] : LOOKS[index - 1];
   const flat = (
     shown: (typeof LOOKS)[number],
     shift: number,
