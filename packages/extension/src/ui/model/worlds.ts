@@ -5,7 +5,9 @@ import type { Command, Snapshot, WorldInfo } from "@stagehand/shared/world";
 import type { SetupState } from "../../messages.ts";
 import { pendingFor, previewApply } from "./preview.ts";
 
-export type WorldStatus = "ok" | "no-companion" | "stale" | "outdated";
+// No "stale": Foundry stamps lastPlayed when a world closes as well as at
+// launch, so a report older than lastPlayed only means a long session.
+export type WorldStatus = "ok" | "no-companion" | "outdated";
 /** Why a world is listed under "needs attention". */
 export type Attention = Exclude<WorldStatus, "ok"> | "failed";
 
@@ -23,8 +25,6 @@ export interface WorldRow {
 
 const RECENT = new Set(["applied", "failed", "declined"]);
 const RECENT_LIMIT = 5;
-/** Foundry updates lastPlayed on launch, just before the snapshot. */
-const STALE_MARGIN_MS = 10 * 60 * 1000;
 
 export function worldStatus(
   world: WorldInfo,
@@ -32,18 +32,12 @@ export function worldStatus(
 ): WorldStatus {
   // Left by a newer Stagehand: this one leaves the world's queue alone.
   if (world.stagehand?.newer === true) return "outdated";
-  if (!snapshot) return "no-companion";
-  const played = Date.parse(world.lastPlayed ?? "");
-  const taken = Date.parse(snapshot.takenAt);
-  if (Number.isFinite(played) && taken + STALE_MARGIN_MS < played)
-    return "stale";
-  return "ok";
+  return snapshot ? "ok" : "no-companion";
 }
 
 const ATTENTION_ORDER: readonly Attention[] = [
   "outdated",
   "failed",
-  "stale",
   "no-companion",
 ];
 

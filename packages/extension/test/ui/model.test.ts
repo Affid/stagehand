@@ -177,13 +177,16 @@ describe("worldRows (W-1, W-2)", () => {
     ]);
   });
 
-  test("a snapshot older than the last play is stale", () => {
+  test("a snapshot older than the last play is still current", () => {
+    // Foundry stamps lastPlayed when a world closes too, so a long session
+    // leaves the report well before it; that is no reason for attention.
     const rows = worldRows(
       state({
         snapshots: { w1: snapshot({ takenAt: "2026-11-01T00:00:00.000Z" }) },
       }),
     );
-    expect(rows[0]?.status).toBe("stale");
+    expect(rows[0]?.status).toBe("ok");
+    expect(rows[0]?.attention).toBeUndefined();
   });
 
   test("flags left by a newer Stagehand mark the world outdated", () => {

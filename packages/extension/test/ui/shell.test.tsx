@@ -247,13 +247,16 @@ describe("the worlds rail", () => {
       );
     });
 
-    test("played since the last report", () => {
-      // Played 2026-11-01; the report is a month older.
-      expect(
-        flagTitle({ snapshots: { new: snapshot("2026-10-01T00:00:00Z") } }),
-      ).toBe(
-        "Played since Stagehand last heard from it, so its module list may be out of date. Launch it once with Stagehand on.",
-      );
+    test("no flag for a report older than the last play", () => {
+      // Foundry stamps lastPlayed at close: a long session, nothing wrong.
+      const { container } = shell({
+        data: {
+          ...withWorlds,
+          snapshots: { new: snapshot("2026-10-01T00:00:00Z") },
+        },
+      });
+      const row = el(container, '.sts-world[data-world="new"]');
+      expect(row.querySelector(".flag.a")).toBeNull();
     });
 
     test("the last change failed", () => {
