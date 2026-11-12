@@ -427,11 +427,14 @@
   text-overflow: ellipsis;
 }
 
+/* Foundry sets button > * { pointer-events: none }; the flags need hover
+   for their tooltips. Clicks still reach the world's button. */
 .sts-shell .sts-world .marks {
   grid-row: span 2;
   display: flex;
   gap: 6px;
   align-items: center;
+  pointer-events: auto;
 }
 
 .sts-shell .sts-world .meta {

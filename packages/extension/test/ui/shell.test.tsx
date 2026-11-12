@@ -223,6 +223,62 @@ describe("the worlds rail", () => {
     expect(row.querySelector(".flag.q")).toBeNull();
   });
 
+  describe("the attention flag says why", () => {
+    const snapshot = (takenAt: string) => ({
+      worldId: "new",
+      title: "New One",
+      system: { id: "dnd5e", version: "5" },
+      coreVersion: "14.370",
+      active: [{ id: "stagehand", version: "1.0.0" }],
+      companionVersion: "0.1.0",
+      takenAt,
+    });
+    const flagTitle = (
+      over: NonNullable<Parameters<typeof renderUi>[1]>["data"],
+    ) => {
+      const { container } = shell({ data: { ...withWorlds, ...over } });
+      const row = el(container, '.sts-world[data-world="new"]');
+      return el(row, ".flag.a").getAttribute("title");
+    };
+
+    test("not tracked yet", () => {
+      expect(flagTitle({})).toBe(
+        "Not tracked yet: launch this world once with Stagehand on so it can report its modules.",
+      );
+    });
+
+    test("played since the last report", () => {
+      // Played 2026-11-01; the report is a month older.
+      expect(
+        flagTitle({ snapshots: { new: snapshot("2026-10-01T00:00:00Z") } }),
+      ).toBe(
+        "Played since Stagehand last heard from it, so its module list may be out of date. Launch it once with Stagehand on.",
+      );
+    });
+
+    test("the last change failed", () => {
+      expect(
+        flagTitle({
+          snapshots: { new: snapshot("2026-11-01T00:00:00Z") },
+          commands: [
+            {
+              id: "c1",
+              scope: "world",
+              worldId: "new",
+              type: "preset.apply",
+              payload: { mode: "add", presetIds: ["p1"] },
+              createdAt: "2026-10-30T00:00:00Z",
+              baseSnapshotAt: null,
+              status: "failed",
+            },
+          ],
+        }),
+      ).toBe(
+        "The last change failed at launch. Recent changes on its page say why.",
+      );
+    });
+  });
+
   test("Create World opens Foundry's own form", () => {
     const { getByRole, page } = shell();
     fireEvent.click(getByRole("button", { name: "Create World" }));

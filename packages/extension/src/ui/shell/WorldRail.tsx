@@ -45,7 +45,7 @@ function ProblemFlag(props: {
 /** Favourite, lock, queued changes and problems, after the title. */
 function Marks(props: { readonly row: WorldRow; readonly problems: number }) {
   const { t } = useUi();
-  const { world, pending, attention, status, snapshot } = props.row;
+  const { world, pending, attention } = props.row;
   return (
     <span class="marks">
       {world.favorite ? (
@@ -74,9 +74,7 @@ function Marks(props: { readonly row: WorldRow; readonly problems: number }) {
           class="fa-solid fa-triangle-exclamation flag a"
           role="img"
           aria-label={t("shell.attention")}
-          title={t(`sheet.status.${status}`, {
-            n: snapshot?.active.length ?? 0,
-          })}
+          title={t(`shell.why.${attention}`)}
         />
       ) : null}
     </span>
