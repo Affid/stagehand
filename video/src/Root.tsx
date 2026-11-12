@@ -1,6 +1,7 @@
 import type { FC } from "react";
 import { Composition } from "remotion";
 import { Recap, type RecapProps } from "./b/Outro";
+import { LISTING, LISTING_FRAMES, ListingGif } from "./listing/ListingGif";
 import { PromoB, type PromoBProps } from "./b/PromoB";
 import { B_TOTAL_FRAMES } from "./b/timeline";
 import { FPS } from "./motion";
@@ -40,6 +41,15 @@ export const Root: FC = () => (
       width={1920}
       height={1080}
       defaultProps={{ hold: LISTING_HOLD, loop: true } satisfies RecapProps}
+    />
+    {/* Made for a GIF: flat, hard cuts, only small things moving. */}
+    <Composition
+      id="ListingGif"
+      component={ListingGif}
+      durationInFrames={LISTING_FRAMES}
+      fps={FPS}
+      width={LISTING.width}
+      height={LISTING.height}
     />
   </>
 );

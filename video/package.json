@@ -9,6 +9,7 @@
     "render": "remotion render src/index.ts Promo out/stagehand-promo.mp4",
     "render:b": "remotion render src/index.ts PromoB out/stagehand-promo-b.mp4 --props='{\"music\":\"b-sampled\"}'",
     "render:listing": "remotion render src/index.ts ListingLoop out/listing-loop.mp4",
+    "render:listing-gif": "remotion render src/index.ts ListingGif out/listing-frames --sequence --image-format=png",
     "still": "remotion still src/index.ts Promo",
     "typecheck": "tsc --noEmit"
   },

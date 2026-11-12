@@ -47,6 +47,15 @@ ffmpeg -y -i video/out/listing-loop.mp4 -vf "fps=12,scale=900:-1:flags=lanczos,s
   -loop 0 docs/media/stagehand-setup.gif
 ```
 
+`ListingGif` is made for a GIF from the start (960 x 600, flat colours,
+hard cuts, only the pointer, a ring and the caption move), about 350 KB:
+
+```bash
+(cd video && pnpm render:listing-gif)                               # out/listing-frames/*.png
+ffmpeg -y -framerate 30 -i video/out/listing-frames/element-%03d.png -vf "fps=20,split[a][b];[a]palettegen=max_colors=256:stats_mode=full[p];[b][p]paletteuse=dither=none:diff_mode=rectangle" \
+  -loop 0 docs/media/stagehand-listing.gif
+```
+
 `music` is `sampled` (the default), `synth`, `simple` or `none` (cut B:
 `b-sampled`, `b-synth` or `none`); see
 [music/README.md](music/README.md) for what each is and how it is made.
