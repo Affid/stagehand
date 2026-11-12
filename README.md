@@ -57,7 +57,8 @@ Foundry VTT 13 and 14.
 
 - Companion module: Stagehand offers to install it on a server that
   doesn't have it (see First run). By hand: in Foundry's Install Module
-  window, paste the manifest URL
+  window, search for **Stagehand** (it is in Foundry's package list), or
+  paste the manifest URL
   `https://raw.githubusercontent.com/Affid/stagehand/manifests/stagehand/module.json`.
 - Extension: install
   [Stagehand for Foundry VTT](https://chromewebstore.google.com/detail/iilpkngpgiiocbmnnjkhmehaadnpknac)
