@@ -16,7 +16,8 @@ export const statusLabel = (t: Translate, s: Status): string => t(`up.st.${s}`);
 
 function worldWhy(t: Translate, x: CompatRow): string {
   const verified = x.sys?.verified ?? "?";
-  const sys = t(`up.why.sys.${x.status}`, { verified });
+  // The world's own status counts its modules too: this part is the system's.
+  const sys = t(`up.why.sys.${x.sys?.status ?? x.status}`, { verified });
   const mine = x.mine?.length ?? 0;
   const off = x.off?.length ?? 0;
   const mods = x.unknown

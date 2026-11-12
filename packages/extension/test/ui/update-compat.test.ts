@@ -1,6 +1,6 @@
 // Your packages on a release (package 7): Foundry's availability codes as
 // the prototype's statuses, where each package is used, what to update, and
-// a world judged by its system with its modules to check.
+// a world judged by its system and its modules to check.
 import type { Snapshot } from "@stagehand/shared/world";
 import { describe, expect, test } from "vitest";
 import type { CompatEntry, Preview } from "../../src/page-compat.ts";
@@ -11,6 +11,8 @@ import {
   toCheck,
   updatesNeeded,
 } from "../../src/ui/shell/server/update/compat.ts";
+import { why } from "../../src/ui/shell/server/update/compat-text.ts";
+import { createTranslator } from "../../src/ui/i18n.ts";
 import { setupState } from "./harness.tsx";
 
 const entry = (
@@ -87,13 +89,59 @@ describe("compatData", () => {
     expect(d.module.find((x) => x.id === "c")?.dep).toBe("Title lib");
   });
 
-  test("a system is used by the worlds on it; a world is as its system", () => {
+  test("a system is used by the worlds on it; a world lists its modules to check", () => {
     expect(d.system[0]?.worlds.map((w) => w.id)).toEqual(["w1"]);
     const w = d.world[0];
-    expect(w?.status).toBe("ok");
     expect(w?.mine?.map((m) => m.id).sort()).toEqual(["a", "c", "lib"]);
     expect(w?.off?.map((m) => m.id).sort()).toEqual(["c", "lib"]);
     expect(w && toCheck(w)).toBe(true);
+  });
+
+  describe("a world's status: its system's, made worse by its modules", () => {
+    // "b" is unverified here (code 2); the others as in PREVIEW.
+    const modules = PREVIEW.module.map((m) =>
+      m.id === "b" ? entry("b", 2) : m,
+    );
+    const worldWith = (active: string[], system = 1) =>
+      compatData(setupState({ snapshots: { w1: snap(active) } }), {
+        ...PREVIEW,
+        system: [entry("dnd5e", system, { version: "5.2" })],
+        module: modules,
+      }).world[0]?.status;
+
+    test("all modules compatible: as its system", () => {
+      expect(worldWith(["a"])).toBe("ok");
+    });
+
+    test("an unverified module: unverified", () => {
+      expect(worldWith(["a", "b"])).toBe("unv");
+    });
+
+    test("an incompatible or broken module: a risk, as the world still opens", () => {
+      expect(worldWith(["a", "lib"])).toBe("risk");
+      expect(worldWith(["c"])).toBe("risk");
+      expect(worldWith(["b", "lib"])).toBe("risk");
+    });
+
+    test("an incompatible system stays incompatible", () => {
+      expect(worldWith(["b"], 7)).toBe("bad");
+    });
+
+    test("its line still speaks of its system's own status", () => {
+      const d2 = compatData(
+        setupState({ snapshots: { w1: snap(["a", "b"]) } }),
+        { ...PREVIEW, module: modules },
+      );
+      const w = d2.world[0];
+      expect(w && why(createTranslator("en"), w, "")).toBe(
+        "Its system has a compatible version · 1 of its 2 modules to check",
+      );
+    });
+
+    test("without the companion: as its system", () => {
+      const d2 = compatData(setupState(), PREVIEW);
+      expect(d2.world[0]?.status).toBe("ok");
+    });
   });
 
   test("a world without the companion has unknown modules", () => {

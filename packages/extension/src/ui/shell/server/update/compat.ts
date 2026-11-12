@@ -1,7 +1,7 @@
 // Your packages on a release, as the prototype (_update.js compatData):
 // Foundry's preview rates the newest version of each installed system and
-// module, and each world by its system; we add where each one is used and,
-// for a world, which of its modules need a look.
+// module, and each world by its system; we add where each one is used, a
+// world's modules to its rating, and which of them need a look.
 import { isNewerVersion } from "@stagehand/shared/version";
 import type { WorldInfo } from "@stagehand/shared/world";
 import type { SetupState } from "../../../../messages.ts";
@@ -30,6 +30,27 @@ const BY_CODE: ReadonlyMap<number, Status> = new Map([
 
 /** Unknown (0) and any code Foundry adds later: worth a look. */
 export const statusOf = (code: number): Status => BY_CODE.get(code) ?? "risk";
+
+/** Worst first. */
+const ORDER: Readonly<Record<Status, number>> = {
+  bad: 0,
+  dep: 1,
+  risk: 2,
+  unv: 3,
+  ok: 4,
+};
+
+const worse = (a: Status, b: Status): Status => (ORDER[a] <= ORDER[b] ? a : b);
+
+/**
+ * What a world's modules say about it: an unverified one leaves it
+ * unverified; any worse one is a risk, not more, as Foundry still opens
+ * the world and only leaves that module off.
+ */
+function byModules(off: readonly CompatRow[]): Status {
+  if (off.some((m) => m.status !== "unv")) return "risk";
+  return off.length ? "unv" : "ok";
+}
 
 export interface CompatRow {
   readonly kind: Kind;
@@ -142,14 +163,16 @@ function worldRows(
     const tracked = worldModules(state, e.id).tracked;
     const on = new Set(tracked ? nextSet(state, e.id) : []);
     const mine = modules.filter((m) => on.has(m.id));
+    const off = mine.filter((m) => m.status !== "ok");
     const base = packageRow("world", e, null, []);
     return {
       ...base,
-      // As Foundry's checker: a world is as compatible as its system.
-      status: sys?.status ?? base.status,
+      // Foundry's checker rates a world by its system alone; its modules
+      // count too, or a world with modules to check reads as compatible.
+      status: worse(sys?.status ?? base.status, byModules(off)),
       ...(sys ? { sys } : {}),
       mine,
-      off: mine.filter((m) => m.status !== "ok"),
+      off,
       unknown: !tracked,
     };
   });
@@ -165,14 +188,6 @@ export function compatData(state: SetupState, p: Preview): CompatData {
 export const toCheck = (x: CompatRow): boolean =>
   x.status !== "ok" ||
   (x.kind === "world" && (x.unknown === true || (x.off?.length ?? 0) > 0));
-
-const ORDER: Readonly<Record<Status, number>> = {
-  bad: 0,
-  dep: 1,
-  risk: 2,
-  unv: 3,
-  ok: 4,
-};
 
 /** Worst first; then the most used; then by name. */
 export const byConcern = (a: CompatRow, b: CompatRow): number =>
