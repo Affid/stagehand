@@ -180,11 +180,13 @@
 }
 
 /* Sections and cards */
+/* The page body scrolls; the list keeps its full height in it, or it
+   shrinks and its cards run over Recent changes below. */
 .sts-shell .stw-modules {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  min-height: 0;
+  flex: none;
 }
 
 .sts-shell .stw-sections {
