@@ -72,6 +72,7 @@ const TAGGED: Readonly<Record<string, readonly string[]>> = {
 
 const NOTES: Readonly<Record<string, string>> = {
   "dice-so-nice": "Players love it; turn off for slow laptops.",
+  healthEstimate: "Players see wounds, not numbers.",
   tokenmagic: "Keep effects short on big maps.",
   "quick-insert": "Ctrl+Space finds anything.",
   polyglot: "Set each character's languages first.",

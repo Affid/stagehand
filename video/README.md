@@ -47,14 +47,30 @@ ffmpeg -y -i video/out/listing-loop.mp4 -vf "fps=12,scale=900:-1:flags=lanczos,s
   -loop 0 docs/media/stagehand-setup.gif
 ```
 
-`ListingGif` is made for a GIF from the start (960 x 600, flat colours,
-hard cuts, only the pointer, a ring and the caption move), about 350 KB:
+`ListingGif` is the companion's foundryvtt.com GIF, made for a GIF from the
+start: 960 x 600, flat colours, hard cuts, only the pointer, a ring and the
+caption move, about 900 KB for 37 seconds. Its script is
+`src/listing/script.ts`: the Library by folder and by tag, Health Estimate's
+panel, a world (all modules, then only those on), the switch, the review,
+the companion's notice in the world, Backups, Update, Configuration, the
+phone, a closing card. Its screens come from their own capture, off the demo
+server (each run launches a world and applies a change, so reset the demo
+first; the world backups are made once):
 
 ```bash
-(cd video && pnpm render:listing-gif)                               # out/listing-frames/*.png
-ffmpeg -y -framerate 30 -i video/out/listing-frames/element-%03d.png -vf "fps=20,split[a][b];[a]palettegen=max_colors=256:stats_mode=full[p];[b][p]paletteuse=dither=none:diff_mode=rectangle" \
+export FOUNDRY_PORT=30015 FOUNDRY_DATA_DIR=~/foundry/data-demo
+node video/capture/listing-backups.ts          # once: a backup of each world
+node scripts/demo/setup-demo.ts                # resets the worlds' modules
+node video/capture/listing.ts                  # public/capture/listing/
+node scripts/demo/setup-demo.ts                # back to the demo's state
+(cd video && pnpm render:listing-gif)          # out/listing-gif/*.png
+ffmpeg -y -framerate 30 -i video/out/listing-gif/element-%04d.png -vf "fps=20,split[a][b];[a]palettegen=max_colors=256:stats_mode=full[p];[b][p]paletteuse=dither=none:diff_mode=rectangle" \
   -loop 0 docs/media/stagehand-listing.gif
 ```
+
+The capture writes a neutral `/home/gm` over the capturing machine's home
+folder on the Configuration page, and only there; a world left running by a
+failed run is shut down with `node video/capture/shutdown.ts`.
 
 `music` is `sampled` (the default), `synth`, `simple` or `none` (cut B:
 `b-sampled`, `b-synth` or `none`); see

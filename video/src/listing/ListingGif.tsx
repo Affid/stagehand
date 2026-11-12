@@ -1,12 +1,12 @@
 // A loop made to be a GIF, for the companion's foundryvtt.com page: the real
 // Setup pages, cut hard from one to the next, with a pointer walking the
-// flow. Only small things move (the pointer, a ring, the caption), so
-// most frames cost a GIF almost nothing.
+// flow (script.ts). Only small things move (the pointer, a ring, the
+// caption), so most frames cost a GIF almost nothing.
 import type { FC } from "react";
 import { AbsoluteFill, Img, useCurrentFrame } from "remotion";
-import { capture, SHOTS } from "../data";
 import { sec, track } from "../motion";
 import { COLOR } from "../theme";
+import { EndCard, Phones } from "./cards";
 import {
   Caption,
   ClickRing,
@@ -15,80 +15,14 @@ import {
   type Box,
   type Point,
 } from "./parts";
+import { type Scene, SCENES, type View, WHOLE } from "./script";
+
+export { LISTING_FRAMES } from "./script";
 
 export const LISTING = { width: 960, height: 600, bar: 60 } as const;
-
-/** Which part of a captured page the picture shows, and how big. */
-interface View {
-  readonly scale: number;
-  readonly x: number;
-  readonly y: number;
-}
-
-/** The whole page, at the picture's width. */
-const WHOLE: View = { scale: LISTING.width / 1280, x: 0, y: 0 };
-/** The launch dialog at its own size, centred. */
-const DIALOG: View = { scale: 1, x: 160, y: 90 };
-
-interface Scene {
-  readonly src: string;
-  readonly view: View;
-  readonly lead: string;
-  readonly rest: string;
-  readonly frames: number;
-  /** What the rings go round, in page pixels, and when each shows. */
-  readonly marks: readonly { readonly box: Box; readonly at: number }[];
-  /** Where the pointer goes to click, in page pixels, and when. */
-  readonly click: { readonly box: Box; readonly at: number };
-}
-
-const W = capture.walk;
-/** The first folder's heading on the Library ("At the table"). */
-const FOLDER: Box = capture.library.folders[0]?.rect ?? [297, 206, 922, 28];
-
-const SCENES: readonly Scene[] = [
-  {
-    src: SHOTS.library,
-    view: WHOLE,
-    lead: "Your modules",
-    rest: "in folders, with your notes.",
-    frames: sec(3.4),
-    marks: [
-      { box: FOLDER, at: sec(0.4) },
-      { box: W.noted.note, at: sec(1.3) },
-    ],
-    click: { box: W.world.railItem, at: sec(2.9) },
-  },
-  {
-    src: SHOTS.world,
-    view: WHOLE,
-    lead: "Each world",
-    rest: "has its own page.",
-    frames: sec(2.8),
-    marks: [],
-    click: { box: W.world.toggle, at: sec(2.3) },
-  },
-  {
-    src: SHOTS.queued,
-    view: WHOLE,
-    lead: "Flip a switch.",
-    rest: "It waits for launch.",
-    frames: sec(3),
-    marks: [{ box: W.queued.waits, at: sec(0.15) }],
-    click: { box: W.queued.launch, at: sec(2.5) },
-  },
-  {
-    src: SHOTS.review,
-    view: DIALOG,
-    lead: "Review it,",
-    rest: "then launch.",
-    frames: sec(3.6),
-    marks: [{ box: W.review.verdict, at: sec(0.3) }],
-    click: { box: W.review.apply, at: sec(2.6) },
-  },
-];
-
-export const LISTING_FRAMES = SCENES.reduce((n, s) => n + s.frames, 0);
+const PICTURE = LISTING.height - LISTING.bar;
+/** Where the pointer waits when the scene before it clicked nothing. */
+const REST: Point = { x: 720, y: 420 };
 
 const toPicture = (v: View, p: Point): Point => ({
   x: (p.x - v.x) * v.scale,
@@ -103,71 +37,87 @@ const boxIn = (v: View, b: Box): Box => {
   return [p.x, p.y, b[2] * v.scale, b[3] * v.scale];
 };
 
+interface Playing {
+  readonly scene: Scene;
+  readonly local: number;
+  readonly before: Scene;
+}
+
 /** The scene playing at `frame`, the frame within it, and the one before. */
-const sceneAt = (frame: number) => {
+const sceneAt = (frame: number): Playing => {
   let start = 0;
-  for (const [i, s] of SCENES.entries()) {
-    if (frame < start + s.frames) {
+  for (const [i, scene] of SCENES.entries()) {
+    if (frame < start + scene.frames) {
       const before = SCENES[(i + SCENES.length - 1) % SCENES.length]!;
-      return { scene: s, local: frame - start, before };
+      return { scene, local: frame - start, before };
     }
-    start += s.frames;
+    start += scene.frames;
   }
   const last = SCENES[SCENES.length - 1]!;
-  return { scene: last, local: last.frames - 1, before: SCENES[0]! };
+  return { scene: last, local: last.frames - 1, before: last };
 };
 
-/** Where the pointer is: it starts where the last click was, then travels. */
+/** It starts where the last click was, then travels to this scene's. */
 const pointer = (scene: Scene, before: Scene, local: number): Point => {
-  const from = centreOf(before.view, before.click.box);
-  const to = centreOf(scene.view, scene.click.box);
-  const leave = scene.click.at - sec(1);
-  const arrive = scene.click.at - sec(0.15);
-  const keys = (a: number, b: number) =>
-    [
+  const click = scene.click!;
+  const from = before.click
+    ? centreOf(before.view ?? WHOLE, before.click.box)
+    : REST;
+  const to = centreOf(scene.view ?? WHOLE, click.box);
+  const leave = Math.max(0, click.at - sec(1));
+  const arrive = click.at - sec(0.15);
+  const along = (a: number, b: number): number =>
+    track(local, [
       [leave, a],
       [arrive, b],
-    ] as const;
-  return {
-    x: track(local, keys(from.x, to.x)),
-    y: track(local, keys(from.y, to.y)),
-  };
+    ]);
+  return { x: along(from.x, to.x), y: along(from.y, to.y) };
+};
+
+const Page: FC<Playing> = ({ scene, local, before }) => {
+  const v = scene.view ?? WHOLE;
+  const click = scene.click;
+  const at = click ? pointer(scene, before, local) : null;
+  const pressed = click && local >= click.at && local < click.at + 4;
+  return (
+    <div
+      style={{
+        position: "absolute",
+        inset: 0,
+        height: PICTURE,
+        overflow: "hidden",
+      }}
+    >
+      <Img
+        src={scene.src!}
+        style={{
+          position: "absolute",
+          left: -v.x * v.scale,
+          top: -v.y * v.scale,
+          width: 1280 * v.scale,
+          maxWidth: "none",
+        }}
+      />
+      {(scene.rings ?? []).map((r) => (
+        <Mark key={r.at} box={boxIn(v, r.box)} frame={local} on={r.at} />
+      ))}
+      {click && at && <ClickRing at={at} frame={local} on={click.at} />}
+      {at && <Cursor at={at} press={pressed ? 1 : 0} />}
+    </div>
+  );
 };
 
 export const ListingGif: FC = () => {
-  const frame = useCurrentFrame();
-  const { scene, local, before } = sceneAt(frame);
-  const v = scene.view;
-  const at = pointer(scene, before, local);
-  const clickAt = scene.click.at;
-  const press = local >= clickAt && local < clickAt + 4 ? 1 : 0;
-  const picture = LISTING.height - LISTING.bar;
+  const playing = sceneAt(useCurrentFrame());
+  const { scene } = playing;
+  if (scene.kind === "end") return <EndCard />;
   return (
     <AbsoluteFill style={{ background: COLOR.bg }}>
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          height: picture,
-          overflow: "hidden",
-        }}
-      >
-        <Img
-          src={scene.src}
-          style={{
-            position: "absolute",
-            left: -v.x * v.scale,
-            top: -v.y * v.scale,
-            width: 1280 * v.scale,
-            maxWidth: "none",
-          }}
-        />
-        {scene.marks.map((m) => (
-          <Mark key={m.at} box={boxIn(v, m.box)} frame={local} on={m.at} />
-        ))}
-        <ClickRing at={at} frame={local} on={clickAt} />
-        <Cursor at={at} press={press} />
-      </div>
+      {scene.kind === "phones" ? (
+        <Phones height={PICTURE} />
+      ) : (
+        <Page {...playing} />
+      )}
       <Caption lead={scene.lead} rest={scene.rest} height={LISTING.bar} />
     </AbsoluteFill>
   );
