@@ -36,14 +36,15 @@ interface Scene {
   readonly lead: string;
   readonly rest: string;
   readonly frames: number;
-  /** What the ring goes round, in page pixels, and when it shows. */
-  readonly mark?: { readonly box: Box; readonly at: number };
+  /** What the rings go round, in page pixels, and when each shows. */
+  readonly marks: readonly { readonly box: Box; readonly at: number }[];
   /** Where the pointer goes to click, in page pixels, and when. */
   readonly click: { readonly box: Box; readonly at: number };
 }
 
 const W = capture.walk;
-const NOTED: Box = W.noted.card;
+/** The first folder's heading on the Library ("At the table"). */
+const FOLDER: Box = capture.library.folders[0]?.rect ?? [297, 206, 922, 28];
 
 const SCENES: readonly Scene[] = [
   {
@@ -52,7 +53,10 @@ const SCENES: readonly Scene[] = [
     lead: "Your modules",
     rest: "in folders, with your notes.",
     frames: sec(3.4),
-    mark: { box: NOTED, at: sec(0.5) },
+    marks: [
+      { box: FOLDER, at: sec(0.4) },
+      { box: W.noted.note, at: sec(1.3) },
+    ],
     click: { box: W.world.railItem, at: sec(2.9) },
   },
   {
@@ -61,6 +65,7 @@ const SCENES: readonly Scene[] = [
     lead: "Each world",
     rest: "has its own page.",
     frames: sec(2.8),
+    marks: [],
     click: { box: W.world.toggle, at: sec(2.3) },
   },
   {
@@ -69,7 +74,7 @@ const SCENES: readonly Scene[] = [
     lead: "Flip a switch.",
     rest: "It waits for launch.",
     frames: sec(3),
-    mark: { box: W.queued.waits, at: sec(0.15) },
+    marks: [{ box: W.queued.waits, at: sec(0.15) }],
     click: { box: W.queued.launch, at: sec(2.5) },
   },
   {
@@ -78,7 +83,7 @@ const SCENES: readonly Scene[] = [
     lead: "Review it,",
     rest: "then launch.",
     frames: sec(3.6),
-    mark: { box: W.review.verdict, at: sec(0.3) },
+    marks: [{ box: W.review.verdict, at: sec(0.3) }],
     click: { box: W.review.apply, at: sec(2.6) },
   },
 ];
@@ -157,13 +162,9 @@ export const ListingGif: FC = () => {
             maxWidth: "none",
           }}
         />
-        {scene.mark && (
-          <Mark
-            box={boxIn(v, scene.mark.box)}
-            frame={local}
-            on={scene.mark.at}
-          />
-        )}
+        {scene.marks.map((m) => (
+          <Mark key={m.at} box={boxIn(v, m.box)} frame={local} on={m.at} />
+        ))}
         <ClickRing at={at} frame={local} on={clickAt} />
         <Cursor at={at} press={press} />
       </div>
