@@ -50,7 +50,7 @@ flowchart LR
   companion -->|"applies the queue,<br/>reports modules"| flags
 ```
 
-Status: public release (companion 0.1.2, extension and app 0.3.0).
+Status: public release (companion 0.1.2, extension and app 0.3.1).
 Foundry VTT 13 and 14.
 
 ## Install

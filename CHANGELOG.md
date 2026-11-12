@@ -5,6 +5,25 @@ the companion module (`stagehand-v<version>`, its `module.json`), the
 browser extension (`stagehand-extension-v<version>`, its `manifest.json`)
 and the Android app (`stagehand-app-v<version>`, the extension's version).
 
+## 2026-11-12
+
+### Extension 0.3.1
+
+- A world no longer shows a warning after a session longer than ten
+  minutes. Foundry marks a world as played when it closes as well as when
+  it launches, and Stagehand took that for a world played without it.
+- The warning beside a world in the list now shows why on hover. It
+  showed nothing before, and for a failed change it named the wrong
+  reason.
+- A long module list on a world's page no longer runs over Recent changes.
+- On the Update page, a world with modules to check no longer reads as
+  compatible: an unverified module makes it Unverified, and an
+  incompatible one a Compatibility risk.
+
+### Android app 0.3.1
+
+- The same fixes, where the phone shows them.
+
 ## 2026-11-11
 
 ### Extension 0.3.0
