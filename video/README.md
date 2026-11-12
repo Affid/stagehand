@@ -36,6 +36,15 @@ ffmpeg -y -ss 14.6 -i video/out/stagehand-promo-b.mp4 -frames:v 1 -vf scale=1280
   docs/media/stagehand-promo-poster.jpg
 ```
 
+The companion's foundryvtt.com page shows a silent loop of cut B's
+queued-change part (19.95 s to 27.9 s: flip a switch, it waits, review,
+launch), 800 px wide at 12 fps, about 3.4 MB:
+
+```bash
+ffmpeg -y -ss 19.95 -t 7.95 -i video/out/stagehand-promo-b.mp4 -vf "fps=12,scale=800:-1:flags=lanczos,split[a][b];[a]palettegen=max_colors=192:stats_mode=diff[p];[b][p]paletteuse=dither=none:diff_mode=rectangle" \
+  -loop 0 docs/media/stagehand-launch-review.gif
+```
+
 `music` is `sampled` (the default), `synth`, `simple` or `none` (cut B:
 `b-sampled`, `b-synth` or `none`); see
 [music/README.md](music/README.md) for what each is and how it is made.
