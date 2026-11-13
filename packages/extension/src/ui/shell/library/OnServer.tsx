@@ -63,7 +63,7 @@ function Acts(props: { readonly pkg: PackageInfo; readonly kind: Kind }) {
         : btn("editPackage", "pen-to-square", "pk.edit")}
       {props.pkg.locked
         ? null
-        : btn("updatePackage", "rotate", "pk.checkUpdate")}
+        : btn("updatePackage", "rotate", "pk.updateIfAvailable")}
       {btn("backupPackage", "floppy-disk", "pk.backup")}
       {btn("uninstallPackage", "trash", "pk.uninstall")}
     </div>

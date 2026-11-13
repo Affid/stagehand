@@ -381,7 +381,7 @@ function packageInfo(m, kind) {
       ${sw("lockpkg", ST.lock.has(m.id), "Lock updates", "Foundry skips it in Update All")}</ul>
       <div class="sts-foundry-acts" style="margin-top:8px">
         <button type="button" data-act="foundry" data-what="Edit ${kind}"><i class="fa-solid fa-pen-to-square"></i>Edit manifest…</button>
-        <button type="button" data-act="foundry" data-what="Check for update"><i class="fa-solid fa-rotate"></i>Check update</button>
+        <button type="button" data-act="foundry" data-what="Update if available"><i class="fa-solid fa-rotate"></i>Update if available</button>
         <button type="button" data-act="foundry" data-what="Take Backup"><i class="fa-solid fa-floppy-disk"></i>Backup</button>
         <button type="button" data-act="foundry" data-what="Uninstall"><i class="fa-solid fa-trash"></i>Uninstall</button></div></div>
     <p class="st-muted" style="font-size:12px;margin:0">Read from the ${kind.toLowerCase()}'s manifest. Favourite and lock are Foundry's own settings; the buttons open Foundry's own dialogs.</p>`;

@@ -884,7 +884,7 @@
   "pk.lock": "Lock updates",
   "pk.lockHint": "Foundry skips it in Update All",
   "pk.edit": "Edit manifest…",
-  "pk.checkUpdate": "Check update",
+  "pk.updateIfAvailable": "Update if available",
   "pk.backup": "Backup",
   "pk.uninstall": "Uninstall",
   "pk.foot.module": "Read from the module's manifest. Favourite and lock are Foundry's own settings; the buttons open Foundry's own dialogs.",

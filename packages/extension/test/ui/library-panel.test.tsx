@@ -283,7 +283,7 @@ describe("the Package tab's server settings and actions (6b2)", () => {
     });
     for (const [name, action] of [
       ["Edit manifest…", "editPackage"],
-      ["Check update", "updatePackage"],
+      ["Update if available", "updatePackage"],
       ["Backup", "backupPackage"],
       ["Uninstall", "uninstallPackage"],
     ] as const) {
