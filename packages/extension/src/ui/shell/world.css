@@ -394,6 +394,12 @@
   flex: none;
 }
 
+/* Foundry draws its checkboxes as a 20 px icon-font square in ::before;
+   an unchecked switch would show it behind the knob. */
+.sts-shell .sts-switch::before {
+  content: none;
+}
+
 .sts-shell .sts-switch::after {
   content: "";
   position: absolute;
