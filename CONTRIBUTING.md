@@ -59,3 +59,19 @@ The companion module:
 
 The extension and the app will release under their own tags, so they never
 change where Foundry looks for the companion's updates.
+
+## Download counts
+
+GitHub keeps only running totals of release downloads and 14 days of
+repository traffic. The Download counts workflow (Actions tab) saves a
+snapshot once a day on the `stats` branch:
+
+- `downloads.csv`: one line per release file per day, with its total so
+  far. The day-to-day difference is that day's downloads.
+- `traffic.csv`: views and clones per day, with unique visitors. It needs
+  the `STATS_TOKEN` secret, a fine-grained token for this repository only
+  with read-only Administration access; without it only downloads are
+  saved. Referrers are not saved, since they name people's own servers.
+
+`node scripts/stats/snapshot.ts <folder>` takes the same snapshot by hand.
+Chrome Web Store installs are only in the store's Developer Dashboard.

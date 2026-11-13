@@ -1,0 +1,52 @@
+# Once a day, saves release download totals and GitHub's daily views and
+# clones as CSV on the `stats` branch (scripts/stats/snapshot.ts). GitHub
+# keeps only running totals and 14 days of traffic; this keeps the history.
+# Traffic needs the STATS_TOKEN secret (CONTRIBUTING.md, Download counts);
+# without it only downloads are saved. Referrers are not saved: they name
+# people's own Foundry servers, and this branch is public.
+name: Download counts
+
+on:
+  schedule:
+    - cron: "17 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: stats
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check out the stats branch
+        run: |
+          if git ls-remote --exit-code --heads origin stats > /dev/null; then
+            git fetch --depth 1 origin stats:stats
+            git worktree add ../stats stats
+          else
+            git worktree add --orphan -b stats ../stats
+          fi
+      - name: Take today's snapshot
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          STATS_TOKEN: ${{ secrets.STATS_TOKEN }}
+        run: node scripts/stats/snapshot.ts ../stats
+      - name: Save it on the stats branch
+        run: |
+          cd ../stats
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Nothing changed."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "stats $(date -u +%F)"
+          git push origin stats
