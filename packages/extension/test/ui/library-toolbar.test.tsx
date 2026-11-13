@@ -67,6 +67,8 @@ describe("the Library's head", () => {
     expect(el(container, '[data-system="dnd5e"]').textContent).toContain(
       "Used by 1 world",
     );
+    const name = el(container, '[data-system="dnd5e"] button.t');
+    expect(name.title).toBe(name.textContent);
     fireEvent.click(getByRole("button", { name: "Install System" }));
     expect(page.foundryAction).toHaveBeenCalledWith({
       action: "installPackage",

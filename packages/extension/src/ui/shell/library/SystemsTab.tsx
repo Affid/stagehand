@@ -66,6 +66,7 @@ function SysCard(props: { readonly s: SystemInfo }) {
           type="button"
           class="t"
           aria-expanded={open}
+          title={s.title}
           onClick={() =>
             store.set({
               side: open ? null : { kind: "system", id: s.id },

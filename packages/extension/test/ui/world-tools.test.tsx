@@ -223,6 +223,20 @@ describe("View options", () => {
     expect(container.querySelector(".stc-row")).toBeTruthy();
     expect(container.querySelector(".stw-card")).toBe(null);
   });
+
+  test("List: a name shows in full on hover, with its problem under it", () => {
+    const { container, getByRole } = page({
+      snapshots: { w1: snap(["stagehand", "a", "c"]) },
+    });
+    fireEvent.click(getByRole("button", { name: "View options" }));
+    fireEvent.click(getByRole("button", { name: "List" }));
+    const name = (id: string): string =>
+      el(container, `.stc-row[data-module="${id}"] button.t`).title;
+    expect(name("a")).toBe("Title a");
+    const row = el(container, '.stc-row[data-module="c"]');
+    expect(row.classList.contains("prob")).toBe(true);
+    expect(name("c")).toBe(`Title c\n${row.title}`);
+  });
 });
 
 describe("the launch review's extras", () => {

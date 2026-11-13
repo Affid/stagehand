@@ -46,6 +46,7 @@ function OpenName(props: { readonly id: string; readonly title: string }) {
       type="button"
       class="t"
       aria-expanded={open}
+      title={props.title}
       onClick={() => store.set({ panel: open ? null : props.id, side: null })}
     >
       {props.title}

@@ -127,12 +127,18 @@ function CardTitle(props: {
   readonly onOpen: (id: string) => void;
 }) {
   const { pkg } = props;
-  if (props.selecting) return <span class="t">{pkg.title}</span>;
+  if (props.selecting)
+    return (
+      <span class="t" title={pkg.title}>
+        {pkg.title}
+      </span>
+    );
   return (
     <button
       type="button"
       class="t"
       aria-expanded={props.open}
+      title={pkg.title}
       onClick={() => props.onOpen(pkg.id)}
     >
       {pkg.title}

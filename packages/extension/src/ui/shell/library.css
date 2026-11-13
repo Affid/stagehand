@@ -152,6 +152,7 @@
 
 /* The card's name opens its details */
 .sts-shell .stl-card button.t {
+  display: block;
   width: auto;
   height: auto;
   padding: 0;

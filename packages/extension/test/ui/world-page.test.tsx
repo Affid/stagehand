@@ -110,6 +110,11 @@ describe("the Modules tab", () => {
     expect(here.textContent).toContain("this world");
   });
 
+  test("a card's name shows in full on hover, for names too long to fit", () => {
+    const { getByRole } = page();
+    expect(getByRole("button", { name: "Title a" }).title).toBe("Title a");
+  });
+
   test("each card says why in one line", () => {
     const { container } = page();
     expect(card(container, "a").textContent).toContain("for Strahd");

@@ -286,11 +286,17 @@
   border-left-color: #f5c45e;
 }
 
+/* The name and its "turns on/off" chip share a baseline (an all-caps chip
+   centred on its box sits high); the switch stays centred. */
 .sts-shell .stw-card .l1 {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   gap: 9px;
   min-width: 0;
+}
+
+.sts-shell .stw-card .l1 .sts-switch {
+  align-self: center;
 }
 
 .sts-shell .stw-card .t {

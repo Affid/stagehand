@@ -59,12 +59,9 @@ export function ModuleLine(props: {
     row.problem ? "prob" : "",
     viewing ? "viewing" : "",
   ].join(" ");
+  const problem = row.problem ? whyLine(row, p.why).text : undefined;
   return (
-    <li
-      class={cls}
-      data-module={pkg.id}
-      title={row.problem ? whyLine(row, p.why).text : undefined}
-    >
+    <li class={cls} data-module={pkg.id} title={problem}>
       <input
         type="checkbox"
         role="switch"
@@ -81,6 +78,8 @@ export function ModuleLine(props: {
         type="button"
         class="t"
         aria-expanded={viewing}
+        // The name's own tooltip hides the row's: keep the problem under it.
+        title={problem ? `${pkg.title}\n${problem}` : pkg.title}
         onClick={() =>
           store.set({ panel: viewing ? null : pkg.id, side: null })
         }

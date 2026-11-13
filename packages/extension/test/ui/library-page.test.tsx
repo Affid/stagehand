@@ -46,6 +46,13 @@ describe("the Library page", () => {
     expect(card(container, "b").classList.contains("risk")).toBe(true);
   });
 
+  test("a card's name shows in full on hover, for names too long to fit", () => {
+    const { container, getByRole } = library();
+    expect(el(card(container, "a"), "button.t").title).toBe("Title a");
+    fireEvent.click(getByRole("button", { name: "Select" }));
+    expect(el(card(container, "a"), ".t").title).toBe("Title a");
+  });
+
   test("Group by tag, author or smart group", () => {
     const { container, getByRole } = library();
     const by = getByRole("combobox", { name: "Group by" });
