@@ -5,6 +5,24 @@ the companion module (`stagehand-v<version>`, its `module.json`), the
 browser extension (`stagehand-extension-v<version>`, its `manifest.json`)
 and the Android app (`stagehand-app-v<version>`, the extension's version).
 
+## 2026-11-13
+
+### Extension 0.3.2
+
+- A module's "Check update" button is now "Update if available", as
+  Foundry's own is: it installs a newer version straight away, not only
+  checks for one.
+- A switch turned off no longer shows Foundry's checkbox square around
+  its knob.
+- A module or system name too long for its card ends in an ellipsis and
+  shows in full on hover, instead of being cut off mid-letter.
+- A "turns on" or "turns off" tag sits on the line of its module's name,
+  and no longer breaks over two lines in the List view.
+
+### Android app 0.3.2
+
+- The same fixes, where the phone shows them.
+
 ## 2026-11-12
 
 ### Extension 0.3.1
