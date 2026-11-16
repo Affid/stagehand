@@ -13,6 +13,13 @@ updates.
 
 Stagehand is not affiliated with or endorsed by Foundry Gaming LLC.
 
+<a href="https://github.com/Affid/stagehand/tree/stats">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Affid/stagehand/stats/card-dark.svg">
+    <img alt="Stagehand downloads so far: companion module, Chrome Web Store, extension zip and Android app" src="https://raw.githubusercontent.com/Affid/stagehand/stats/card-light.svg">
+  </picture>
+</a>
+
 https://github.com/user-attachments/assets/95aa1de2-6b0b-400c-8874-ff722e6487b8
 
 ![The Library: modules in folders, with tags, notes and the worlds each one is on](docs/store/screenshots/1-library.png)
@@ -52,13 +59,6 @@ flowchart LR
 
 Status: public release (companion 0.1.2, extension and app 0.3.2).
 Foundry VTT 13 and 14.
-
-<a href="https://github.com/Affid/stagehand/tree/stats">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Affid/stagehand/stats/card-dark.svg">
-    <img alt="Stagehand downloads so far: companion module, Chrome Web Store, extension zip and Android app" src="https://raw.githubusercontent.com/Affid/stagehand/stats/card-light.svg">
-  </picture>
-</a>
 
 ## Install
 
