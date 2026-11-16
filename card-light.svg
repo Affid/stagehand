@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="178" viewBox="0 0 800 178" role="img" aria-label="Stagehand downloads" font-family='system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif'>
+<title>Stagehand downloads</title>
+<rect x="0.5" y="0.5" width="799" height="177" rx="6" fill="#ffffff" stroke="#d1d9e0"/>
+<text x="24" y="34" font-size="14" fill="#1f2328" font-weight="600">Stagehand downloads</text>
+<text x="776" y="34" font-size="12" fill="#6e7781" text-anchor="end">Updated Nov 16, 2026</text>
+<line x1="24" x2="38" y1="64" y2="64" stroke="#2a78d6" stroke-width="2" stroke-linecap="round"/>
+<text x="44" y="68" font-size="12" fill="#59636e">Companion module</text>
+<text x="24" y="106" font-size="30" fill="#1f2328" font-weight="600">40</text>
+<text x="24" y="128" font-size="12" fill="#1a7f37">+13 since Nov 13</text>
+<path d="M140 108 L178.7 104 L217.3 92 L256 82" fill="none" stroke="#8c959f" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="256" cy="82" r="4" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>
+<line x1="280" x2="294" y1="64" y2="64" stroke="#eb6834" stroke-width="2" stroke-linecap="round"/>
+<text x="300" y="68" font-size="12" fill="#59636e">Extension</text>
+<text x="280" y="106" font-size="30" fill="#1f2328" font-weight="600">18</text>
+<text x="280" y="128" font-size="12" fill="#1a7f37">+2 since Nov 13</text>
+<path d="M396 108 L434.7 108 L473.3 95 L512 82" fill="none" stroke="#8c959f" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="512" cy="82" r="4" fill="#eb6834" stroke="#ffffff" stroke-width="2"/>
+<line x1="536" x2="550" y1="64" y2="64" stroke="#1baf7a" stroke-width="2" stroke-linecap="round"/>
+<text x="556" y="68" font-size="12" fill="#59636e">Android app</text>
+<text x="536" y="106" font-size="30" fill="#1f2328" font-weight="600">10</text>
+<text x="536" y="128" font-size="12" fill="#6e7781">0 since Nov 13</text>
+<path d="M652 108 L690.7 108 L729.3 108 L768 108" fill="none" stroke="#8c959f" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="768" cy="108" r="4" fill="#1baf7a" stroke="#ffffff" stroke-width="2"/>
+<text x="24" y="162" font-size="11" fill="#6e7781">Downloads from GitHub releases. Chrome Web Store installs are not counted.</text>
+</svg>
