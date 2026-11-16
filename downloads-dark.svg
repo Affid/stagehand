@@ -1,32 +1,36 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="800" height="300" viewBox="0 0 800 300" role="img" aria-label="Downloads so far. Total downloads of each part's release files, day by day" font-family='system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif'>
-<title>Downloads so far. Total downloads of each part's release files, day by day</title>
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="300" viewBox="0 0 800 300" role="img" aria-label="Downloads so far. Store installs and release file downloads of each part, day by day" font-family='system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif'>
+<title>Downloads so far. Store installs and release file downloads of each part, day by day</title>
 <rect x="0.5" y="0.5" width="799" height="299" rx="6" fill="#0d1117" stroke="#3d444d"/>
 <text x="24" y="38" font-size="16" fill="#f0f6fc" font-weight="600">Downloads so far</text>
-<text x="24" y="58" font-size="12" fill="#9198a1">Total downloads of each part's release files, day by day</text>
+<text x="24" y="58" font-size="12" fill="#9198a1">Store installs and release file downloads of each part, day by day</text>
 <line x1="24" x2="38" y1="78" y2="78" stroke="#3987e5" stroke-width="2" stroke-linecap="round"/>
 <text x="44" y="82" font-size="12" fill="#9198a1">Companion module<tspan dx="6" font-weight="600" fill="#f0f6fc">40</tspan></text>
-<line x1="203.6" x2="217.6" y1="78" y2="78" stroke="#d95926" stroke-width="2" stroke-linecap="round"/>
-<text x="223.6" y="82" font-size="12" fill="#9198a1">Extension<tspan dx="6" font-weight="600" fill="#f0f6fc">18</tspan></text>
-<line x1="332.8" x2="346.8" y1="78" y2="78" stroke="#199e70" stroke-width="2" stroke-linecap="round"/>
-<text x="352.8" y="82" font-size="12" fill="#9198a1">Android app<tspan dx="6" font-weight="600" fill="#f0f6fc">10</tspan></text>
-<line x1="45.2" x2="768" y1="264" y2="264" stroke="#3d444d" stroke-width="1"/>
-<text x="37.2" y="268" font-size="11" fill="#9198a1" text-anchor="end">0</text>
-<line x1="45.2" x2="768" y1="224" y2="224" stroke="#21262d" stroke-width="1"/>
-<text x="37.2" y="228" font-size="11" fill="#9198a1" text-anchor="end">10</text>
-<line x1="45.2" x2="768" y1="184" y2="184" stroke="#21262d" stroke-width="1"/>
-<text x="37.2" y="188" font-size="11" fill="#9198a1" text-anchor="end">20</text>
-<line x1="45.2" x2="768" y1="144" y2="144" stroke="#21262d" stroke-width="1"/>
-<text x="37.2" y="148" font-size="11" fill="#9198a1" text-anchor="end">30</text>
-<line x1="45.2" x2="768" y1="104" y2="104" stroke="#21262d" stroke-width="1"/>
-<text x="37.2" y="108" font-size="11" fill="#9198a1" text-anchor="end">40</text>
-<text x="45.2" y="286" font-size="11" fill="#9198a1">Nov 13, 2026</text>
-<text x="286.1" y="286" font-size="11" fill="#9198a1" text-anchor="middle">Nov 14</text>
-<text x="527.1" y="286" font-size="11" fill="#9198a1" text-anchor="middle">Nov 15</text>
+<line x1="203.6" x2="217.6" y1="78" y2="78" stroke="#c98500" stroke-width="2" stroke-linecap="round"/>
+<text x="223.6" y="82" font-size="12" fill="#9198a1">Chrome Web Store<tspan dx="6" font-weight="600" fill="#f0f6fc">135</tspan></text>
+<line x1="390.4" x2="404.4" y1="78" y2="78" stroke="#d95926" stroke-width="2" stroke-linecap="round"/>
+<text x="410.4" y="82" font-size="12" fill="#9198a1">Extension zip<tspan dx="6" font-weight="600" fill="#f0f6fc">18</tspan></text>
+<line x1="548.4" x2="562.4" y1="78" y2="78" stroke="#199e70" stroke-width="2" stroke-linecap="round"/>
+<text x="568.4" y="82" font-size="12" fill="#9198a1">Android app<tspan dx="6" font-weight="600" fill="#f0f6fc">10</tspan></text>
+<line x1="51.8" x2="768" y1="264" y2="264" stroke="#3d444d" stroke-width="1"/>
+<text x="43.8" y="268" font-size="11" fill="#9198a1" text-anchor="end">0</text>
+<line x1="51.8" x2="768" y1="210.66666666666669" y2="210.66666666666669" stroke="#21262d" stroke-width="1"/>
+<text x="43.8" y="214.7" font-size="11" fill="#9198a1" text-anchor="end">50</text>
+<line x1="51.8" x2="768" y1="157.33333333333334" y2="157.33333333333334" stroke="#21262d" stroke-width="1"/>
+<text x="43.8" y="161.3" font-size="11" fill="#9198a1" text-anchor="end">100</text>
+<line x1="51.8" x2="768" y1="104" y2="104" stroke="#21262d" stroke-width="1"/>
+<text x="43.8" y="108" font-size="11" fill="#9198a1" text-anchor="end">150</text>
+<text x="51.8" y="286" font-size="11" fill="#9198a1">Nov 11, 2026</text>
+<text x="195" y="286" font-size="11" fill="#9198a1" text-anchor="middle">Nov 12</text>
+<text x="338.3" y="286" font-size="11" fill="#9198a1" text-anchor="middle">Nov 13</text>
+<text x="481.5" y="286" font-size="11" fill="#9198a1" text-anchor="middle">Nov 14</text>
+<text x="624.8" y="286" font-size="11" fill="#9198a1" text-anchor="middle">Nov 15</text>
 <text x="768" y="286" font-size="11" fill="#9198a1" text-anchor="end">Nov 16</text>
-<path d="M45.2 156 L286.1 148 L527.1 124 L768 104" fill="none" stroke="#3987e5" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
-<circle cx="768" cy="104" r="4" fill="#3987e5" stroke="#0d1117" stroke-width="2"/>
-<path d="M45.2 200 L286.1 200 L527.1 196 L768 192" fill="none" stroke="#d95926" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
-<circle cx="768" cy="192" r="4" fill="#d95926" stroke="#0d1117" stroke-width="2"/>
-<path d="M45.2 224 L286.1 224 L527.1 224 L768 224" fill="none" stroke="#199e70" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
-<circle cx="768" cy="224" r="4" fill="#199e70" stroke="#0d1117" stroke-width="2"/>
+<path d="M338.3 235.2 L481.5 233.1 L624.8 226.7 L768 221.3" fill="none" stroke="#3987e5" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="768" cy="221.3" r="4" fill="#3987e5" stroke="#0d1117" stroke-width="2"/>
+<path d="M51.8 245.9 L195 211.7 L338.3 184 L481.5 150.9 L624.8 120" fill="none" stroke="#c98500" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="624.8" cy="120" r="4" fill="#c98500" stroke="#0d1117" stroke-width="2"/>
+<path d="M338.3 246.9 L481.5 246.9 L624.8 245.9 L768 244.8" fill="none" stroke="#d95926" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="768" cy="244.8" r="4" fill="#d95926" stroke="#0d1117" stroke-width="2"/>
+<path d="M338.3 253.3 L481.5 253.3 L624.8 253.3 L768 253.3" fill="none" stroke="#199e70" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="768" cy="253.3" r="4" fill="#199e70" stroke="#0d1117" stroke-width="2"/>
 </svg>
