@@ -15,6 +15,8 @@ import {
 export interface Tile {
   readonly label: string;
   readonly points: Series;
+  /** Colour slot, the same as the thing's line in the charts. */
+  readonly slot?: number;
 }
 
 export interface CardSpec {
@@ -29,7 +31,10 @@ const GAP = 16;
 const HEIGHT = 178;
 const WEEK = 7;
 const SPARK_DAYS = 30;
-const SPARK_OFFSET = 116;
+/** Where the trend line starts in a tile, as a share of its width. */
+const SPARK_SHARE = 0.5;
+const SPARK_MIN = 92;
+const SPARK_MAX = 116;
 
 /** "+5 in 7 days", or since the first count when there is less history. */
 export function change(points: Series): string | undefined {
@@ -88,6 +93,7 @@ function tile(
   const note =
     delta ?? (first ? `counting since ${formatDate(first.date)}` : "no data");
   const grew = delta?.startsWith("+") ?? false;
+  const offset = Math.min(SPARK_MAX, Math.max(SPARK_MIN, width * SPARK_SHARE));
   return [
     `<line x1="${x}" x2="${x + 14}" y1="64" y2="64" stroke="${color}" stroke-width="2" stroke-linecap="round"/>`,
     text(x + 20, 68, t.label, { size: 12, fill: theme.secondary }),
@@ -99,7 +105,7 @@ function tile(
     text(x, 128, note, { size: 12, fill: grew ? theme.good : theme.muted }),
     ...sparkline(
       t.points,
-      { x: x + SPARK_OFFSET, y: 82, w: width - SPARK_OFFSET - 8, h: 26 },
+      { x: x + offset, y: 82, w: width - offset - 8, h: 26 },
       color,
       theme,
     ),
@@ -127,7 +133,7 @@ export function summaryCard(spec: CardSpec, theme: Theme): string {
         t,
         PAD + i * (tileWidth + GAP),
         tileWidth,
-        theme.series[i] ?? theme.spark,
+        theme.series[t.slot ?? i] ?? theme.spark,
         theme,
       ),
     ),

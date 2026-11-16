@@ -81,4 +81,8 @@ commit to `main`.
 
 `node scripts/stats/snapshot.ts <folder>` takes the same snapshot by hand,
 and `node scripts/stats/render.ts <folder>` draws it.
-Chrome Web Store installs are only in the store's Developer Dashboard.
+Chrome Web Store installs have no API: export them from the store's
+Developer Dashboard (Analytics, Installs, Export) now and then and upload
+the CSV into `chrome-web-store/` on the `stats` branch (on GitHub: open
+the folder, Add file, Upload files). The next run counts it; exports may
+overlap.

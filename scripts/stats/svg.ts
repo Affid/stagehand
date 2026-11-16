@@ -17,7 +17,7 @@ export interface Theme {
   readonly spark: string;
   readonly good: string;
   /** Categorical slots in fixed order, checked for colour-blind separation. */
-  readonly series: readonly [string, string, string];
+  readonly series: readonly [string, string, string, string];
 }
 
 // Surfaces are GitHub's own page colours, so the card sits flush in a README.
@@ -33,7 +33,7 @@ export const THEMES: Readonly<Record<ThemeName, Theme>> = {
     axis: "#c8d1da",
     spark: "#8c959f",
     good: "#1a7f37",
-    series: ["#2a78d6", "#eb6834", "#1baf7a"],
+    series: ["#2a78d6", "#eb6834", "#1baf7a", "#eda100"],
   },
   dark: {
     name: "dark",
@@ -46,7 +46,7 @@ export const THEMES: Readonly<Record<ThemeName, Theme>> = {
     axis: "#3d444d",
     spark: "#656c76",
     good: "#3fb950",
-    series: ["#3987e5", "#d95926", "#199e70"],
+    series: ["#3987e5", "#d95926", "#199e70", "#c98500"],
   },
 };
 

@@ -56,7 +56,7 @@ Foundry VTT 13 and 14.
 <a href="https://github.com/Affid/stagehand/tree/stats">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Affid/stagehand/stats/card-dark.svg">
-    <img alt="Stagehand downloads so far: companion module, extension and Android app" src="https://raw.githubusercontent.com/Affid/stagehand/stats/card-light.svg">
+    <img alt="Stagehand downloads so far: companion module, Chrome Web Store, extension zip and Android app" src="https://raw.githubusercontent.com/Affid/stagehand/stats/card-light.svg">
   </picture>
 </a>
 

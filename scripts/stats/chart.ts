@@ -20,6 +20,8 @@ import {
 export interface Line {
   readonly name: string;
   readonly points: Series;
+  /** Colour slot; fixed per thing counted, so a missing line repaints none. */
+  readonly slot?: number;
   /** Shown after the name in the legend, e.g. the latest total. */
   readonly legendValue?: number;
 }
@@ -140,7 +142,7 @@ function legend(lines: readonly Line[], theme: Theme): string[] {
     lines.slice(0, i).reduce((x, l) => x + legendWidth(l), PAD),
   );
   return lines.flatMap((line, i) => {
-    const color = theme.series[i] ?? theme.spark;
+    const color = theme.series[line.slot ?? i] ?? theme.spark;
     const at = starts[i] ?? PAD;
     return [
       `<line x1="${round(at)}" x2="${round(at + KEY)}" y1="${LEGEND_Y - 4}" y2="${LEGEND_Y - 4}" stroke="${color}" stroke-width="2" stroke-linecap="round"/>`,
@@ -151,7 +153,7 @@ function legend(lines: readonly Line[], theme: Theme): string[] {
 
 function marks(lines: readonly Line[], plot: Plot, theme: Theme): string[] {
   return lines.flatMap((line, i) => {
-    const color = theme.series[i] ?? theme.spark;
+    const color = theme.series[line.slot ?? i] ?? theme.spark;
     const points = line.points.map(
       (p) => [plot.x(p.date), plot.y(p.value)] as const,
     );

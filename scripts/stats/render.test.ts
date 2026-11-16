@@ -169,4 +169,33 @@ describe("statsReadme", () => {
     });
     expect(without).not.toContain("traffic-light.svg");
   });
+
+  test("the store's total and last export day when there are exports", () => {
+    const readme = statsReadme({
+      base: "https://x/stats",
+      latest,
+      hasTraffic: false,
+      store: { date: "2026-11-15", value: 135 },
+    });
+    expect(readme).toContain("| Chrome Web Store | 135 |");
+    expect(readme).toContain("Last export day: Nov 15, 2026.");
+    expect(
+      statsReadme({ base: "https://x", latest, hasTraffic: false }),
+    ).not.toContain("| Chrome Web Store |");
+  });
+});
+
+describe("colour slots", () => {
+  test("a line keeps its slot's colour whatever its place", () => {
+    const svg = lineChart(
+      {
+        title: "T",
+        subtitle: "S",
+        lines: [{ name: "App", points: days(1, 2), slot: 2 }],
+      },
+      THEMES.light,
+    );
+    expect(svg).toContain(`stroke="${THEMES.light.series[2]}"`);
+    expect(svg).not.toContain(`stroke="${THEMES.light.series[0]}"`);
+  });
 });
