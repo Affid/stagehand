@@ -73,5 +73,12 @@ snapshot once a day on the `stats` branch:
   with read-only Administration access; without it only downloads are
   saved. Referrers are not saved, since they name people's own servers.
 
-`node scripts/stats/snapshot.ts <folder>` takes the same snapshot by hand.
+After the snapshot, `scripts/stats/render.ts` draws the counts as SVG
+charts (a light and a dark file each) and writes the branch's `README.md`
+with them and the latest totals. The main README shows the summary card
+from there (`card-light.svg`, `card-dark.svg`), so it updates without a
+commit to `main`.
+
+`node scripts/stats/snapshot.ts <folder>` takes the same snapshot by hand,
+and `node scripts/stats/render.ts <folder>` draws it.
 Chrome Web Store installs are only in the store's Developer Dashboard.

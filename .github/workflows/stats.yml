@@ -1,6 +1,8 @@
 # Once a day, saves release download totals and GitHub's daily views and
-# clones as CSV on the `stats` branch (scripts/stats/snapshot.ts). GitHub
-# keeps only running totals and 14 days of traffic; this keeps the history.
+# clones as CSV on the `stats` branch (scripts/stats/snapshot.ts), then draws
+# them as SVG charts with a README there (scripts/stats/render.ts); the main
+# README shows the summary card. GitHub keeps only running totals and 14
+# days of traffic; this keeps the history.
 # Traffic needs the STATS_TOKEN secret (CONTRIBUTING.md, Download counts);
 # without it only downloads are saved. Referrers are not saved: they name
 # people's own Foundry servers, and this branch is public.
@@ -38,6 +40,8 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           STATS_TOKEN: ${{ secrets.STATS_TOKEN }}
         run: node scripts/stats/snapshot.ts ../stats
+      - name: Draw the charts
+        run: node scripts/stats/render.ts ../stats
       - name: Save it on the stats branch
         run: |
           cd ../stats

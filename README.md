@@ -53,6 +53,13 @@ flowchart LR
 Status: public release (companion 0.1.2, extension and app 0.3.2).
 Foundry VTT 13 and 14.
 
+<a href="https://github.com/Affid/stagehand/tree/stats">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Affid/stagehand/stats/card-dark.svg">
+    <img alt="Stagehand downloads so far: companion module, extension and Android app" src="https://raw.githubusercontent.com/Affid/stagehand/stats/card-light.svg">
+  </picture>
+</a>
+
 ## Install
 
 - Companion module: Stagehand offers to install it on a server that

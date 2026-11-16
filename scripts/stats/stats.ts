@@ -62,7 +62,7 @@ export function downloadRows(releases: unknown): DownloadRow[] {
 }
 
 /** The data lines of a CSV file, without its header or blank lines. */
-const dataLines = (csv: string): string[] =>
+export const dataLines = (csv: string): string[] =>
   csv
     .split("\n")
     .slice(1)
