@@ -215,6 +215,33 @@ Read in their source (2026-11-18):
   time. Our setting's hint mentions Shift-click while BBMM holds the
   button. The sidebar button is labelled "Module Management" in 14.
 
+### Keeping Foundry's save safe
+
+Module Management is a form whose save takes the form's named checkboxes
+as the whole module list; our view has none, so a save that slipped
+through would switch every module off. The spike's guard (a capture-phase
+`submit` listener) covers Enter and submit buttons but not code that calls
+the window's `submit()`. So the build stacks these (2026-11-18):
+
+1. **Fail-safe form content:** a hidden, complete set of the module
+   checkboxes, named by module id and kept equal to the cards' switches. If
+   Foundry's save ever runs, it saves what the cards show (with Foundry's
+   own dependency check), never an empty list.
+2. **The submit guard** from the spike, which opens our review instead.
+3. **This window's save handler swapped for ours**, so code calling
+   `submit()` reaches the review too. Foundry freezes a window's options
+   only one level deep, and the submit listener uses the nested `form`
+   object; the build's tests confirm it.
+4. **Take over only a window that looks as expected** (Foundry 13 or 14,
+   the class, `.window-content`); otherwise leave Foundry's window as it
+   is, as Setup's safe mode does.
+5. **Live tests on the dangerous paths:** Enter, the submit button,
+   `submit()` from code, re-renders by Foundry and by another module. The
+   world's module list must never come out empty.
+
+BBMM's own window avoids all of this, but needs the sidebar button (which
+we decided not to compete for) and leaves two module lists in the game.
+
 ### The Forge
 
 The companion detects the Forge and does nothing there (the global's name
@@ -242,8 +269,9 @@ is checked in the spike).
    capture-phase `submit` listener stops it, checked with Foundry's settings
    write spied on. With BBMM (1.5.2): a click opens BBMM's window,
    Shift-click opens Foundry's with our view, BBMM's header button stays.
-   For the build: set the window's height (Foundry sizes it to its
-   content).
+   For the build: a minimum height (owner, 2026-11-18: not a fixed one),
+   so a short list doesn't make a small window and a long one still grows
+   up to the screen.
 2. **Build (tests first):** the shared UI package out of
    `packages/extension/src/ui` (Setup's live suites must still pass); the
    companion's provider (library file, `game.modules`, saving and reload);
