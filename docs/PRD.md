@@ -183,7 +183,7 @@ Built only from the standard manifest `authors` field. No new author-supplied me
 | C-4 | Recompute the diff against the **live** state, not the stale snapshot. Show a confirmation dialog. On confirm, apply, acknowledge and reload once. | P0 |
 | C-5 | Never disable itself, even in Replace mode. | P0 |
 | C-6 | Mirror core's checks: required dependencies, conflicts, version compatibility, system restrictions. | P0 |
-| C-7 | Optional: show folders and tags in core's Manage Modules dialog (read-only). | P2 |
+| C-7 | Show the library's folders, tags and notes in core's Manage Modules window, read-only, to full GMs and Assistant GMs (planned 2026-11-18, docs/IN-WORLD-LIBRARY-PLAN.md). | P1 |
 
 ### 7.9 Localisation
 | ID | Requirement | P |
@@ -224,7 +224,7 @@ Foundry has no flag that tells a page "this user is the server admin". It only s
 | PR-2 | Global library data (folders, tags, notes, saved views, presets) can only be edited from an admin-verified browser. Everyone else gets a read-only view. | P0 |
 | PR-3 | World commands can only be created from the Setup UI, i.e. by an admin. | P0 |
 | PR-4 | In-world actions require the full Gamemaster role. Check the exact role, not a general "is GM" check that may include Assistant GMs. | P0 |
-| PR-5 | **World GMs without the extension:** the module reads the published `library.json` (D-3) and offers "Apply presets" for the current world only, using the same diff and confirmation flow (8.5). | P1 |
+| PR-5 | **World GMs without the extension:** the module reads the published `library.json` (D-3) and offers "Apply presets" for the current world only, using the same diff and confirmation flow (8.5). Planned with C-7 in docs/IN-WORLD-LIBRARY-PLAN.md: from Manage Modules, with our own dialogs. | P1 |
 | PR-6 | **World-scoped data** (for example, which presets this world follows) is stored in that world's own settings and is editable by its GM. It never changes the global library. | P1 |
 | PR-7 | The bridge and module reject any message that changes global data (library writes, `library.push`) unless the server is admin-verified in this browser. | P0 |
 | PR-8 | **Tamper detection:** the admin's extension keeps the revision and hash of the last library it published. If the server copy differs, Setup warns and offers to restore it. | P1 |
@@ -435,7 +435,7 @@ Until then, organisation comes only from the admin (folders, tags, notes, preset
 1. Final product name.
 2. Ship Chromium-only first, or Chrome and Firefox together?
 3. How should pending commands behave when a world is renamed, duplicated or deleted?
-4. How does Setup behave on the Forge, Molten and other hosts?
+4. How does Setup behave on the Forge, Molten and other hosts? (2026-11-18: the in-world library does not cover the Forge, which has no Setup; see docs/IN-WORLD-LIBRARY-PLAN.md.)
 5. Should "Not now" on the launch dialog keep commands pending indefinitely, or expire them?
 6. Should snapshots also record module versions, to flag "updated since last launch"?
 7. Is BBMM's author open to a shared preset and folder format?
