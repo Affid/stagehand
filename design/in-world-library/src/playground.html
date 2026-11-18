@@ -1,0 +1,94 @@
+<title>In-World Library</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Signika:wght@400;600&family=Amiri:wght@700&display=swap">
+<style>
+/* Layout: a slim control bar over one stage; the stage holds a 1600x1000 game view, scaled to fit.
+   Single dark look on purpose: it frames Foundry's own dark game interface. */
+:root {
+  --bg: #0b0a13; --bar: #17151f; --line: #2c2836; --fg: #e9e4f2; --muted: #a59eb4;
+  --accent: #ee9b3a; --accent-ink: #1a1206;
+  --display: "Amiri", Georgia, serif; --body: "Signika", "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 14px/1.45 var(--body); display: flex; flex-direction: column; }
+.bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; padding-block: 10px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); background: var(--bar); border-bottom: 1px solid var(--line); }
+.bar h1 { margin: 0; font: 700 1.35rem/1 var(--display); letter-spacing: .01em; text-wrap: balance; }
+.bar .tag { font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line); padding: 2px 8px; border-radius: 999px; }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; margin-left: auto; }
+.tools > button { font: inherit; color: var(--fg); background: transparent; border: 1px solid var(--line); border-radius: 6px; padding: 6px 12px; cursor: pointer; }
+.tools > button:hover { background: rgb(255 255 255 / 5%); }
+.seg { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.seg .lbl { padding: 0 10px; color: var(--muted); font-size: .86rem; }
+.seg button { font: inherit; color: var(--muted); background: transparent; border: 0; border-left: 1px solid var(--line); padding: 6px 12px; cursor: pointer; border-radius: 0; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.hint { flex-basis: 100%; margin: 0; color: var(--muted); font-size: .86rem; min-width: 0; }
+.hint b { color: var(--fg); font-weight: 600; }
+.stage { flex: 1; min-height: 0; position: relative; overflow: hidden; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 12px; }
+.stage.actual { overflow: auto; }
+.frame { position: absolute; top: 12px; left: 50%; width: 1600px; height: 1000px; border: 1px solid var(--line); border-radius: 4px; background: #000; transform-origin: top center; }
+.stage.actual .frame { position: relative; left: 0; top: 0; transform: none !important; margin: 0 auto; }
+iframe { width: 100%; height: 100%; border: 0; display: block; border-radius: 4px; }
+@media (max-width: 700px) { .tools { margin-left: 0; } }
+</style>
+
+<header class="bar">
+  <h1>In-World Library</h1>
+  <span class="tag">Mockup · nothing is saved</span>
+  <div class="tools">
+    <span class="seg" role="group" aria-label="Library on the server"><span class="lbl">Library</span><button type="button" data-lib="1" aria-pressed="true">On the server</button><button type="button" data-lib="0" aria-pressed="false">None yet</button></span>
+    <span class="seg" role="group" aria-label="Signed in as"><span class="lbl">Signed in as</span><button type="button" data-role="gm" aria-pressed="true">Gamemaster</button><button type="button" data-role="assistant" aria-pressed="false">Assistant GM</button><button type="button" data-role="player" aria-pressed="false">Player</button></span>
+    <span class="seg" role="group" aria-label="Foundry's interface theme"><span class="lbl">Interface</span><button type="button" data-theme="dark" aria-pressed="true">Dark</button><button type="button" data-theme="light" aria-pressed="false">Light</button></span>
+    <button type="button" id="fit" aria-pressed="true">Actual size</button>
+    <button type="button" id="reset">Reset</button>
+  </div>
+  <p class="hint">A Gamemaster in the world <b>Curse of Strahd</b>, in Foundry's own <b>Module Management</b>. Try: <b>fold a folder</b> (Foundry's sidebar folder headers) · search for a tag (<b>heavy</b>) or a word from a note (<b>laptop</b>) · hover the <b>note</b> icon · the <b>A–Z</b> button beside the expand arrows · <b>Apply Presets…</b>: <b>Horror ambience</b> with Add (a dependency comes along), <b>One-shot minimal</b> with Remove (a module still needs one), <b>Strahd content</b> (one isn't installed) · tick a box first, then Apply Presets, for the unsaved-changes line · <b>None yet</b> is Foundry's window untouched · <b>Player</b> sees Foundry's read-only list.</p>
+</header>
+<main class="stage" id="stage">
+  <div class="frame" id="frame"><iframe id="view" title="Game view with Module Management" src="mock.html"></iframe></div>
+</main>
+
+<script>
+const view = document.getElementById("view"), frame = document.getElementById("frame"), stage = document.getElementById("stage");
+const fitBtn = document.getElementById("fit");
+const state = { lib: "1", role: "gm", theme: "dark" };
+let fit = true;
+
+function scale() {
+  if (!fit) { frame.style.transform = ""; return; }
+  const w = stage.clientWidth - 32, h = stage.clientHeight - 24;
+  const s = Math.min(1, w / 1600, h / 1000);
+  frame.style.transform = `translateX(-50%) scale(${s})`;
+}
+
+function load(reset) {
+  const q = new URLSearchParams(state);
+  if (reset) q.set("reset", String(Date.now()));
+  view.src = `mock.html?${q}`;
+}
+
+function bindSeg(attr, key) {
+  document.querySelectorAll(`[data-${attr}]`).forEach((b) => b.addEventListener("click", () => {
+    state[key] = b.dataset[attr];
+    document.querySelectorAll(`[data-${attr}]`).forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+    load(false);
+  }));
+}
+bindSeg("lib", "lib");
+bindSeg("role", "role");
+bindSeg("theme", "theme");
+
+fitBtn.addEventListener("click", () => {
+  fit = !fit;
+  fitBtn.setAttribute("aria-pressed", String(fit));
+  fitBtn.textContent = fit ? "Actual size" : "Fit to window";
+  stage.classList.toggle("actual", !fit);
+  scale();
+});
+document.getElementById("reset").addEventListener("click", () => load(true));
+addEventListener("resize", scale);
+scale();
+load(false);
+</script>

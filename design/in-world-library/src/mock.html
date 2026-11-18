@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Curse of Strahd</title>
+<link href="fvtt/css/foundry2.css" rel="stylesheet">
+<style>@import "fvtt/fonts/fontawesome/css/all.min.css" layer(variables);</style>
+<link href="mock.css" rel="stylesheet">
+</head>
+<body class="vtt game system-dnd5e theme-dark">
+<div id="board" aria-hidden="true"></div>
+
+<!-- Foundry's game interface, reduced to what frames the window. -->
+<div id="interface" class="themed theme-dark">
+  <nav class="mock-controls" aria-label="Scene controls (decoration)">
+    <i class="fa-solid fa-user"></i><i class="fa-solid fa-bullseye"></i><i class="fa-solid fa-pencil"></i>
+    <i class="fa-solid fa-block-brick"></i><i class="fa-regular fa-lightbulb"></i><i class="fa-solid fa-music"></i>
+    <i class="fa-solid fa-chess-board"></i><i class="fa-solid fa-bookmark"></i>
+  </nav>
+  <aside class="mock-sidebar" aria-label="Sidebar">
+    <section class="mock-settings">
+      <h2>Game Settings</h2>
+      <button type="button" id="open-settings" disabled><i class="fa-solid fa-cogs" inert></i><span>Configure Settings</span></button>
+      <button type="button" id="open-modules"><i class="fa-solid fa-cube" inert></i><span>Manage Modules</span></button>
+      <button type="button" disabled><i class="fa-solid fa-globe" inert></i><span>Edit World</span></button>
+      <button type="button" disabled><i class="fa-solid fa-users" inert></i><span>User Management</span></button>
+      <p class="mock-world">Curse of Strahd · dnd5e · Foundry 14</p>
+    </section>
+    <nav class="mock-tabs" aria-label="Sidebar tabs (decoration)">
+      <i class="fa-solid fa-comments"></i><i class="fa-solid fa-swords"></i><i class="fa-solid fa-map"></i>
+      <i class="fa-solid fa-user"></i><i class="fa-solid fa-suitcase"></i><i class="fa-solid fa-book-open"></i>
+      <i class="fa-solid fa-th-list"></i><i class="fa-solid fa-cards"></i><i class="fa-solid fa-code"></i>
+      <i class="fa-solid fa-music"></i><i class="fa-solid fa-atlas"></i><i class="fa-solid fa-cogs active"></i>
+    </nav>
+  </aside>
+  <div class="mock-players"><span class="dot"></span><span id="whoami">Gamemaster [GM]</span></div>
+</div>
+
+<div id="windows"></div>
+<ol id="notifications"></ol>
+<aside id="tooltip" role="tooltip" hidden></aside>
+<div id="reload" hidden><p>Reloading the world…</p></div>
+
+<script src="data.js"></script>
+<script src="plan.js"></script>
+<script src="window.js"></script>
+<script src="dialogs.js"></script>
+<script src="boot.js"></script>
+</body>
+</html>

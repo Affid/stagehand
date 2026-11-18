@@ -136,7 +136,15 @@ is checked in the spike).
 0. **Mockup:** one clickable artifact with Foundry's CSS: Manage Modules
    grouped by folders, in A–Z order, and with no library; the Apply presets
    dialog through to the diff. The owner chooses; the mockup is then the
-   spec.
+   spec. Built 2026-11-18 in `design/in-world-library` (published at
+   https://claude.ai/artifact/SjcMMvJ6B7MmQWuWpZ8mTj), waiting for the
+   owner's review. Choices in it to confirm or change: Apply Presets is the
+   footer's last button; a line under the list says where folders, tags and
+   notes come from; folder headers count "N of M active"; a search opens
+   folded folders that hold matches; the folders/A–Z choice and folded
+   folders are kept per user; Assistant GMs see the library without Apply
+   Presets; players see Foundry's window unchanged; the diff dialog offers
+   Apply & Reload, Back and Cancel.
 1. **Spike:** grouping rows in Manage Modules on 13.351 and 14.370, alone
    and with BBMM and Module Management+ installed; search, filters and the
    expand toggle after regrouping; re-renders. The Forge's global.

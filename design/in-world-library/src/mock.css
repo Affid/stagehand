@@ -1,0 +1,92 @@
+/* The mockup's game page: a reduced game interface around Foundry's own
+   Module Management window, plus Stagehand's additions to it. Foundry's
+   foundry2.css does the rest. */
+
+[hidden] { display: none !important; }
+html, body { width: 1600px; height: 1000px; overflow: hidden; }
+body { background: #000; }
+#board { position: fixed; inset: 0; background: radial-gradient(ellipse at 45% 50%, #14121c 0%, #050508 70%); }
+
+/* ---------- the game interface around the window (decoration) ---------- */
+.mock-controls, .mock-tabs { position: fixed; display: grid; gap: 8px; }
+.mock-controls { left: 16px; top: 16px; grid-template-columns: 32px; }
+.mock-controls i, .mock-tabs i {
+  width: 32px; height: 32px; display: grid; place-items: center; border-radius: 4px;
+  border: 1px solid var(--color-cool-4, #302831); background: var(--color-cool-5-90, rgb(11 10 19 / 90%));
+  color: var(--color-light-3, #ccc); font-size: 14px;
+}
+.mock-tabs { right: 16px; top: 16px; grid-template-columns: 32px; }
+.mock-tabs i.active { border-color: var(--color-warm-2, #ee9b3a); color: var(--color-light-1, #fff); }
+.mock-sidebar .mock-settings {
+  position: fixed; right: 60px; top: 16px; width: 300px; padding: 12px;
+  display: flex; flex-direction: column; gap: 8px; border-radius: 6px;
+  background: var(--color-cool-5-90, rgb(11 10 19 / 90%)); border: 1px solid var(--color-cool-4, #302831);
+}
+.mock-settings h2 { margin: 0 0 4px; font-size: var(--font-size-16, 1rem); border-bottom: 1px solid var(--color-cool-4, #302831); padding-bottom: 6px; }
+.mock-settings button { justify-content: flex-start; gap: 8px; }
+.mock-world { margin: 4px 0 0; font-size: var(--font-size-12, 0.75rem); color: var(--color-text-subtle, #9f9275); }
+.mock-players {
+  position: fixed; left: 16px; bottom: 16px; padding: 8px 12px; border-radius: 6px; display: flex; gap: 8px; align-items: center;
+  background: var(--color-cool-5-90, rgb(11 10 19 / 90%)); border: 1px solid var(--color-cool-4, #302831); font-size: var(--font-size-13, 0.8125rem);
+}
+.mock-players .dot { width: 10px; height: 10px; border-radius: 50%; background: #cc8328; }
+body.theme-light .mock-settings, body.theme-light .mock-players, body.theme-light .mock-controls i, body.theme-light .mock-tabs i {
+  background: rgb(240 236 228 / 92%); color: #2a2520; border-color: #b9ad98;
+}
+
+/* ---------- Foundry's window, placed as Foundry would ---------- */
+#module-management { position: fixed; left: 460px; top: 60px; width: 680px; height: 880px; z-index: 101; }
+#module-management > .window-content { display: flex; flex-direction: column; min-height: 0; }
+#module-management .package-list { flex: 1; min-height: 0; overflow-y: auto; margin: 0; padding: 0; }
+#module-management .form-footer { flex: none; }
+
+/* ---------- Stagehand: folder groups (Foundry's sidebar folders) ---------- */
+#module-management .stagehand-folder { --sidebar-folder-height: 24px; list-style: none; margin: 0 0 2px; }
+#module-management .stagehand-folder > .folder-header {
+  position: static; cursor: pointer; gap: 6px; border-radius: 3px; font-size: var(--font-size-14, 0.875rem);
+}
+#module-management .stagehand-folder > .folder-header:focus-visible { outline: 2px solid var(--color-warm-2, #ee9b3a); outline-offset: -2px; }
+#module-management .stagehand-folder > .folder-header .folder-name { flex: 1; min-width: 0; }
+#module-management .stagehand-count { flex: none; font-size: var(--font-size-12, 0.75rem); opacity: 0.85; font-variant-numeric: tabular-nums; }
+#module-management .stagehand-folder > .subdirectory {
+  margin: 0 0 6px 0; padding: 0 0 0 8px; list-style: none;
+  border-left: 4px solid var(--sidebar-folder-color, var(--color-dark-1));
+}
+#module-management .stagehand-folder > .subdirectory > .stagehand-folder { margin-top: 4px; }
+
+/* ---------- Stagehand: tags and notes in a row ---------- */
+#module-management .stagehand-tag {
+  display: inline-flex; align-items: center; gap: 4px; padding: 0 6px; white-space: nowrap;
+  font-size: var(--font-size-12, 0.75rem);
+}
+#module-management .stagehand-tag .swatch { width: 8px; height: 8px; border-radius: 50%; background: var(--st-tag); flex: none; }
+#module-management .stagehand-note { cursor: help; }
+#module-management .stagehand-note:focus-visible { outline: 2px solid var(--color-warm-2, #ee9b3a); }
+#module-management .stagehand-note-line { margin: 0 0 4px; font-style: italic; }
+#module-management .stagehand-source { margin: 6px 0 0; font-size: var(--font-size-12, 0.75rem); text-align: center; }
+
+/* ---------- Stagehand's dialogs ---------- */
+.stagehand-backdrop { position: fixed; inset: 0; background: rgb(0 0 0 / 45%); z-index: 199; }
+dialog.stagehand-dialog { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 520px; z-index: 200; margin: 0; }
+#stagehand-diff.stagehand-dialog { width: 460px; }
+.stagehand-dialog .dialog-content { gap: 10px; }
+.stagehand-dialog fieldset { margin: 0; }
+.stagehand-presets, .stagehand-modes { display: flex; flex-direction: column; gap: 6px; }
+.stagehand-preset, .stagehand-mode {
+  display: grid; grid-template-columns: auto 1fr auto; column-gap: 8px; align-items: center; cursor: pointer;
+}
+.stagehand-preset .name, .stagehand-mode .name { font-weight: bold; }
+.stagehand-preset .meta { font-size: var(--font-size-12, 0.75rem); color: var(--color-text-subtle, #9f9275); font-variant-numeric: tabular-nums; }
+.stagehand-preset .about, .stagehand-mode .about {
+  grid-column: 2 / -1; font-size: var(--font-size-12, 0.75rem); color: var(--color-text-subtle, #9f9275);
+}
+.stagehand-warning { margin: 0; font-size: var(--font-size-13, 0.8125rem); color: var(--color-level-warning, #ee9b3a); }
+.stagehand-diff h4 { margin: 10px 0 2px; font-size: var(--font-size-18, 1.125rem); }
+.stagehand-diff ul { margin: 0; padding-left: 20px; }
+.stagehand-diff p { margin: 0 0 6px; }
+
+/* ---------- the reload ---------- */
+#reload { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; background: #000; color: #ddd; font-size: 1.1rem; }
+#reload p { margin: 0; }
+#notifications { z-index: 1100; }
+#tooltip { z-index: 1200; }
