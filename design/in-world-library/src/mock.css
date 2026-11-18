@@ -78,3 +78,10 @@ body.theme-light #module-management .stagehand-about { color: #2a2520; }
 
 /* ---------- Foundry's Configure Settings, placed as Foundry would ---------- */
 #settings-config { position: fixed; left: 410px; top: 110px; width: 780px; height: 680px; z-index: 150; }
+
+/* ---------- BBMM's own window (a stand-in) and Stagehand's question ---------- */
+#bbmm-manager { position: fixed; left: 420px; top: 140px; width: 760px; height: 560px; z-index: 120; }
+#stagehand-bbmm.stagehand-dialog { width: 540px; }
+.stagehand-choices { margin: 0; display: grid; gap: 4px 0; }
+.stagehand-choices dt { font-weight: bold; margin-top: 6px; }
+.stagehand-choices dd { margin: 0; font-size: var(--font-size-13, 0.8125rem); color: var(--color-text-subtle, #9f9275); }

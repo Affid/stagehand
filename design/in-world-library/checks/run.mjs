@@ -168,6 +168,35 @@ await shot("10-player");
 await open("theme=light");
 await shot("11-light");
 
+// BBMM in the same world
+const ask = page.locator("#stagehand-bbmm");
+await page.goto(`${base}/mock.html?reset=1&bbmm=1`);
+await ask.waitFor();
+check("with BBMM, Stagehand asks which view to use", ((await ask.textContent()) ?? "").includes("Two Module Views"));
+await shot("12-bbmm-prompt");
+await ask.locator('[data-action="keepBbmm"]').click();
+check("keep: the notice names Shift-click", ((await page.locator("#notifications").textContent()) ?? "").includes("Shift-click Module Management"));
+await page.locator("#open-modules").click();
+check("keep: a click opens BBMM's window", (await page.locator("#bbmm-manager").isVisible()) && (await win.count()) === 0);
+check("keep: BBMM's tooltip is on the button", (await page.locator("#open-modules").getAttribute("data-tooltip-text")) === "Opens BBMM Module Manager (Shift-click for core)");
+await page.locator("#open-modules").click({ modifiers: ["Shift"] });
+check("keep: Shift-click opens Stagehand's view, BBMM's header button beside it", (await win.locator(".stw-card").count()) === 38 && (await win.locator(".bbmm-header-menu-btn").count()) === 1);
+await shot("12b-bbmm-shift");
+await page.goto(`${base}/mock.html?bbmm=1`);
+await page.waitForSelector("#bbmm-manager");
+check("answered: not asked again", (await ask.count()) === 0);
+await page.goto(`${base}/mock.html?reset=1&bbmm=1`);
+await ask.waitFor();
+await ask.locator('[data-action="useStagehand"]').click();
+await page.waitForSelector("#notifications .notification.info");
+check("use: the notice says BBMM's view is off", ((await page.locator("#notifications").textContent()) ?? "").includes("enhanced module management is off"));
+await page.locator("#open-modules").click();
+check("use: a click opens Stagehand's view", (await win.locator(".stw-card").count()) === 38 && (await page.locator("#bbmm-manager").count()) === 0);
+await page.locator("#open-settings").click();
+await page.locator('#settings-config [data-tab="bbmm"]').click();
+check("use: BBMM's setting is off in Configure Settings", !(await page.locator('#settings-config input[name="bbmm.enableModuleManagement"]').isChecked()));
+await shot("12c-bbmm-setting");
+
 check("no page errors", errors.length === 0, errors.join(" | "));
 await browser.close();
 server.close();

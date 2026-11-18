@@ -40,11 +40,12 @@ iframe { width: 100%; height: 100%; border: 0; display: block; border-radius: 4p
   <div class="tools">
     <span class="seg" role="group" aria-label="Library on the server"><span class="lbl">Library</span><button type="button" data-lib="1" aria-pressed="true">On the server</button><button type="button" data-lib="0" aria-pressed="false">None yet</button></span>
     <span class="seg" role="group" aria-label="Signed in as"><span class="lbl">Signed in as</span><button type="button" data-role="gm" aria-pressed="true">Gamemaster</button><button type="button" data-role="assistant" aria-pressed="false">Assistant GM</button><button type="button" data-role="player" aria-pressed="false">Player</button></span>
+    <span class="seg" role="group" aria-label="BBMM in this world"><span class="lbl">BBMM</span><button type="button" data-bbmm="0" aria-pressed="true">Off</button><button type="button" data-bbmm="1" aria-pressed="false">In this world</button></span>
     <span class="seg" role="group" aria-label="Foundry's interface theme"><span class="lbl">Interface</span><button type="button" data-theme="dark" aria-pressed="true">Dark</button><button type="button" data-theme="light" aria-pressed="false">Light</button></span>
     <button type="button" id="fit" aria-pressed="true">Actual size</button>
     <button type="button" id="reset">Reset</button>
   </div>
-  <p class="hint">A Gamemaster in the world <b>Curse of Strahd</b>, in Foundry's own <b>Module Management</b>, with Setup's world page inside it. Try: <b>click a card</b> for the module panel (<b>×</b> closes it) · <b>flip a switch</b>: the card says <b>turns on/off</b>, Changes counts it, and <b>Save Module Settings</b> reviews before reloading · turn off <b>Modular A/V</b> to see <b>Needs Modular A/V, which is off</b> · <b>Apply preset…</b>: <b>Horror ambience</b> (a dependency comes along at saving), <b>Strahd content</b> (one isn't installed) · <b>Group by</b> Folder, Tag, Author or Smart group · search for a tag (<b>heavy</b>) or a word from a note (<b>laptop</b>) · <b>Configure Settings</b> (sidebar) → Stagehand → <b>Library view in Module Management</b> off gives Foundry's own list, untouched · <b>None yet</b> and <b>Player</b> see Foundry's window.</p>
+  <p class="hint">A Gamemaster in the world <b>Curse of Strahd</b>, in Foundry's own <b>Module Management</b>, with Setup's world page inside it. Try: <b>click a card</b> for the module panel (<b>×</b> closes it) · <b>flip a switch</b>: the card says <b>turns on/off</b>, Changes counts it, and <b>Save Module Settings</b> reviews before reloading · turn off <b>Modular A/V</b> to see <b>Needs Modular A/V, which is off</b> · <b>Apply preset…</b>: <b>Horror ambience</b> (a dependency comes along at saving), <b>Strahd content</b> (one isn't installed) · <b>Group by</b> Folder, Tag, Author or Smart group · search for a tag (<b>heavy</b>) or a word from a note (<b>laptop</b>) · <b>Configure Settings</b> (sidebar) → Stagehand → <b>Library view in Module Management</b> off gives Foundry's own list, untouched · <b>BBMM: In this world</b>: Stagehand asks once which view Module Management opens; with BBMM's kept, <b>Shift-click Module Management</b> (sidebar) for Stagehand's · <b>Reset</b> asks again · <b>None yet</b> and <b>Player</b> see Foundry's window.</p>
 </header>
 <main class="stage" id="stage">
   <div class="frame" id="frame"><iframe id="view" title="Game view with Module Management" src="mock.html"></iframe></div>
@@ -53,7 +54,7 @@ iframe { width: 100%; height: 100%; border: 0; display: block; border-radius: 4p
 <script>
 const view = document.getElementById("view"), frame = document.getElementById("frame"), stage = document.getElementById("stage");
 const fitBtn = document.getElementById("fit");
-const state = { lib: "1", role: "gm", theme: "dark" };
+const state = { lib: "1", role: "gm", theme: "dark", bbmm: "0" };
 let fit = true;
 
 function scale() {
@@ -79,6 +80,7 @@ function bindSeg(attr, key) {
 bindSeg("lib", "lib");
 bindSeg("role", "role");
 bindSeg("theme", "theme");
+bindSeg("bbmm", "bbmm");
 
 fitBtn.addEventListener("click", () => {
   fit = !fit;

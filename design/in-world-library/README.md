@@ -25,6 +25,9 @@ node checks/run.mjs    # walks the flows in Chromium and checks what shows; scre
 - `src/settings.js`: Foundry's Configure Settings window (category browser)
   with Stagehand's setting, "Show the Stagehand library in Module
   Management".
+- `src/bbmm.js`: BBMM in the same world, as its source does it (its window
+  stand-in, Shift-click, its tooltip and header button, its setting), and
+  Stagehand's one-time question about which view Module Management opens.
 - `src/dialogs.js`: Apply preset (marks its changes on the cards) and the
   review before saving, drawn as Foundry's DialogV2 (markup captured from
   14.370).
@@ -33,7 +36,8 @@ node checks/run.mjs    # walks the flows in Chromium and checks what shows; scre
   Stagehand stays on.
 - `src/data.js`: a sample world and library.
 - `src/boot.js`: state, Foundry's tooltip and notifications as stand-ins, the
-  reload. Query: `lib=0`, `role=gm|assistant|player`, `theme=dark|light`.
+  reload. Query: `lib=0`, `role=gm|assistant|player`, `theme=dark|light`,
+  `bbmm=1`.
 
 Prototype code: one global state object and re-rendering on change. Not a
 model for the companion.

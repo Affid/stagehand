@@ -201,11 +201,19 @@ Read in their source (2026-11-18):
   and reads `ModuleManagement.CONFIG_SETTING`, none of which exist in 13
   or 14. It fails there with or without Stagehand (BBMM's description says
   it broke in 13); nothing to design for.
-- Proposed, waiting for the owner: don't compete for the sidebar button.
-  When BBMM's enhanced management is on, tell the GM once where Stagehand's
-  view is (Shift-click on Manage Modules, or turn that BBMM setting off),
-  and say the same in our setting's hint. The spike checks both orders on
-  13 and 14.
+- **Decided (owner, 2026-11-18): ask once, don't compete for the button.**
+  When BBMM's enhanced management is on, Stagehand's Library view is on for
+  that Gamemaster and nobody has answered yet in this world, the first full
+  Gamemaster who loads the world gets "Stagehand: Two Module Views": "BBMM
+  and Stagehand each have their own Module Management view. Which one
+  should Module Management open in this world?" "Use Stagehand's view"
+  turns off BBMM's setting through Foundry's settings (world-wide, so the
+  dialog says so; BBMM requires a reload). "Keep BBMM's view" changes
+  nothing and says to Shift-click Module Management (BBMM's own tooltip
+  already reads "Shift-click for core"). Neither button is the default.
+  The answer is kept for the world; closing the dialog asks again next
+  time. Our setting's hint mentions Shift-click while BBMM holds the
+  button. The sidebar button is labelled "Module Management" in 14.
 
 ### The Forge
 

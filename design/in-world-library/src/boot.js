@@ -1,6 +1,7 @@
 // The mockup's state, its stand-ins for Foundry's tooltip, notifications and
 // reload, and start-up. Query: lib=0 (no library on the server),
-// role=gm|assistant|player, theme=dark|light, reset=1 (forget folds, grouping and the setting).
+// role=gm|assistant|player, theme=dark|light, bbmm=1 (BBMM in the world),
+// reset=1 (forget folds, grouping, the settings and the BBMM answer).
 
 const Q = new URLSearchParams(location.search);
 const KEY = "stagehand-in-world-mock:";
@@ -11,7 +12,7 @@ function load(key) {
 function store(key, value) {
   try { localStorage.setItem(KEY + key, JSON.stringify(value)); } catch { /* storage refused: per-page only */ }
 }
-if (Q.get("reset")) ["structured", "collapsed", "groupBy"].forEach((k) => { try { localStorage.removeItem(KEY + k); } catch { /* ignore */ } });
+if (Q.get("reset")) ["structured", "collapsed", "groupBy", "bbmmAsked", "bbmmEnhanced"].forEach((k) => { try { localStorage.removeItem(KEY + k); } catch { /* ignore */ } });
 
 const S = {
   library: Q.get("lib") !== "0",
@@ -35,6 +36,10 @@ const S = {
   fromPreset: new Map(),
   marked: [],
   windowOpen: false,
+  /** BBMM in the same world: its world setting "Enable enhanced module management" (on by default), and whether Stagehand has asked. */
+  bbmm: Q.get("bbmm") === "1",
+  bbmmEnhanced: load("bbmmEnhanced") !== false,
+  bbmmAsked: load("bbmmAsked") === true,
 };
 
 // ---------- Foundry's notifications ----------
@@ -86,11 +91,14 @@ const theme = Q.get("theme") === "light" ? "theme-light" : "theme-dark";
 document.body.classList.replace("theme-dark", theme);
 document.getElementById("interface").classList.replace("theme-dark", theme);
 document.getElementById("whoami").textContent = { gm: "Gamemaster [GM]", assistant: "Assistant [Assistant GM]", player: "Mia [Player]" }[S.role];
-document.getElementById("open-modules").addEventListener("click", openWindow);
+document.getElementById("open-modules").addEventListener("click", onModuleManagementClick);
+updateSidebarButton();
 document.getElementById("open-settings").addEventListener("click", openSettings);
 document.addEventListener("keydown", (e) => {
   if (e.key !== "Escape") return;
   if (document.querySelector(".stagehand-dialog")) closeDialogs();
   else closeWindow();
 });
-openWindow();
+// The world loads: Stagehand asks about BBMM once; otherwise the mockup opens Module Management as the button would.
+if (shouldAskAboutBbmm()) openBbmmPrompt();
+else onModuleManagementClick({ shiftKey: false });

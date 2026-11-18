@@ -75,6 +75,7 @@ function windowHtml() {
     <header class="window-header">
       <i class="window-icon fa-fw fa-solid fa-cube" inert></i>
       <h1 class="window-title">Module Management</h1>
+      ${bbmmHeaderButton()}
       <button type="button" class="header-control icon fa-solid fa-ellipsis-vertical" data-tooltip-text="Toggle Controls" aria-label="Toggle Controls"></button>
       <button type="button" class="header-control icon fa-solid fa-xmark" data-tooltip-text="Close Window" aria-label="Close Window" data-action="close"></button>
     </header>
@@ -115,6 +116,7 @@ const ACTIONS = {
   ptab: (el) => { S.ptab = el.dataset.id; render(); },
   fixOn: (el) => { S.ticks.add(el.dataset.id); render(); },
   addPreset: () => openPicker(),
+  bbmmToolbox: () => notify("info", "Mockup: this opens BBMM's toolbox."),
   review: () => openReview(),
   discard: () => { S.ticks = new Set(S.saved); S.fromPreset = new Map(); S.marked = []; render(); },
   deactivateAll: () => { S.ticks = new Set(usesCards() ? [STAGEHAND] : []); render(); },

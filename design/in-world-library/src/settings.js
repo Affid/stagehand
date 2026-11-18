@@ -8,20 +8,33 @@ const CATEGORIES = [
   ["core", "Core", 24], ["dnd5e", "Dungeons & Dragons Fifth Edition", 18], ["dice-so-nice", "Dice So Nice!", 9],
   ["fxmaster", "FXMaster", 3], ["health-estimate", "Health Estimate", 7], ["stagehand", "Stagehand", 1],
 ];
-const settingsView = { tab: "stagehand", structured: true };
+const settingsView = { tab: "stagehand", structured: true, bbmmEnhanced: true };
+const categories = () => S.bbmm ? [...CATEGORIES.slice(0, 1), ["bbmm", "Big Bad Module Manager", 12], ...CATEGORIES.slice(1)] : CATEGORIES;
 
 function settingsTabsHtml() {
-  return CATEGORIES.map(([id, label, n]) => `<button type="button" data-action="settingsTab" data-tab="${id}" class="plain${settingsView.tab === id ? " active" : ""}">
+  return categories().map(([id, label, n]) => `<button type="button" data-action="settingsTab" data-tab="${id}" class="plain${settingsView.tab === id ? " active" : ""}">
       <span>${esc(label)}</span><span class="count" data-count>[${n}]</span></button>`).join("");
 }
 
 function settingsCategoryHtml() {
+  if (settingsView.tab === "bbmm") return bbmmSettingHtml();
   if (settingsView.tab !== "stagehand") return `<p class="hint">Mockup: only Stagehand's settings are drawn.</p>`;
+  const shift = bbmmTakesButton() ? " With BBMM's enhanced module management on, Shift-click Module Management to open it." : "";
   return `<div class="form-group">
       <label for="settings-config-stagehand.libraryView">Library view in Module Management</label>
       <div class="form-fields"><input type="checkbox" id="settings-config-stagehand.libraryView" name="stagehand.libraryView"${settingsView.structured ? " checked" : ""}></div>
-      <p class="hint">Modules appear as cards in the library's folders, with each module's details, presets and a review before saving. Turn this off for Foundry's own list, for example if another module adds to that window. This applies to you only.</p>
+      <p class="hint">Modules appear as cards in the library's folders, with each module's details, presets and a review before saving. Turn this off for Foundry's own list, for example if another module adds to that window. This applies to you only.${shift}</p>
     </div>`;
+}
+
+/** BBMM's own setting, as it registers it (world, GM only, needs a reload); the rest of its tab isn't drawn. */
+function bbmmSettingHtml() {
+  return `<div class="form-group">
+      <label for="settings-config-bbmm.enableModuleManagement">Enable enhanced module management</label>
+      <div class="form-fields"><input type="checkbox" id="settings-config-bbmm.enableModuleManagement" name="bbmm.enableModuleManagement"${settingsView.bbmmEnhanced ? " checked" : ""}></div>
+      <p class="hint">When enabled, BBMM replaces the stock Manage Modules list with the compact layout and notes UI for all users. Only a GM can change this.</p>
+    </div>
+    <p class="hint">Mockup: BBMM's other settings aren't drawn.</p>`;
 }
 
 function settingsHtml() {
@@ -47,6 +60,7 @@ function settingsHtml() {
 
 function openSettings() {
   settingsView.structured = S.structured;
+  settingsView.bbmmEnhanced = S.bbmmEnhanced;
   closeSettings();
   document.getElementById("windows").insertAdjacentHTML("beforeend", settingsHtml());
   const win = document.getElementById("settings-config");
@@ -60,6 +74,7 @@ function openSettings() {
   });
   win.addEventListener("change", (e) => {
     if (e.target.name === "stagehand.libraryView") settingsView.structured = e.target.checked;
+    if (e.target.name === "bbmm.enableModuleManagement") settingsView.bbmmEnhanced = e.target.checked;
   });
   win.addEventListener("submit", (e) => { e.preventDefault(); saveSettingsConfig(); });
 }
@@ -77,8 +92,13 @@ function closeSettings() {
 /** Foundry saves the setting; Stagehand's onChange draws Module Management again if it is open. */
 function saveSettingsConfig() {
   const changed = settingsView.structured !== S.structured;
+  const bbmmChanged = settingsView.bbmmEnhanced !== S.bbmmEnhanced;
   S.structured = settingsView.structured;
   store("structured", S.structured);
+  S.bbmmEnhanced = settingsView.bbmmEnhanced;
+  store("bbmmEnhanced", S.bbmmEnhanced);
   closeSettings();
+  updateSidebarButton();
+  if (bbmmChanged) { closeWindow(); closeBbmmWindow(); reloadWorld(); return; }
   if (changed && document.getElementById("module-management")) { S.search = ""; openWindow(); }
 }
