@@ -42,6 +42,20 @@ await win.locator('[data-folder-id="combat"] > .folder-header').click();
 check("folding hides the folder's rows", (await win.locator('[data-folder-id="combat"] li.package:visible').count()) === 0);
 await shot("02-folded");
 
+// A module's details in its row
+check("details: Modular A/V: LiveKit opens with the mockup", await win.locator('[data-module-id="modular-av-livekit"] .stagehand-details').isVisible());
+check("details: other rows stay closed", (await win.locator(".stagehand-details:visible").count()) === 1);
+await win.locator('[data-folder-id="combat"] > .folder-header').click();
+await win.locator('[data-module-id="perfect-vision"] .stagehand-more').click();
+const pv = win.locator('[data-module-id="perfect-vision"] .stagehand-details');
+check("details: a row opens on its chevron", await pv.isVisible());
+check("details: presets and requirements show", ((await pv.textContent()) ?? "").includes("Horror ambience") && ((await pv.textContent()) ?? "").includes("libWrapper"));
+await pv.scrollIntoViewIfNeeded();
+await shot("02b-details-row");
+await win.locator('[data-module-id="perfect-vision"] .stagehand-more').click();
+check("details: the chevron closes it again", !(await pv.isVisible()));
+await win.locator('[data-folder-id="combat"] > .folder-header').click();
+
 // Search over tags and notes
 await win.locator("#module-search").fill("heavy");
 check("search finds tags", (await visibleRows()) === 3, `${await visibleRows()} rows`);
@@ -110,11 +124,20 @@ check("picker warns about unsaved ticks", await dlg.locator(".stagehand-warning"
 await shot("11-unsaved");
 await dlg.locator('footer [data-action="cancel"]').click();
 
+// Details in a side panel
+await open("details=panel");
+check("panel: the window widens with a details pane", await win.locator(".stagehand-aside").isVisible());
+check("panel: shows the chosen module", ((await win.locator(".stagehand-aside-title").textContent()) ?? "") === "Modular A/V: LiveKit");
+await win.locator('[data-module-id="lib-wrapper"] .stagehand-more').click();
+check("panel: another module's chevron shows it", ((await win.locator(".stagehand-aside").textContent()) ?? "").includes("Needed by"));
+await shot("11b-details-panel");
+
 // No library: Foundry's window untouched
 await open("lib=0");
 check("no library: no folders", (await win.locator(".stagehand-folder").count()) === 0);
 check("no library: no Apply Presets", (await win.locator('[data-action="applyPresets"]').count()) === 0);
 check("no library: no tags", (await win.locator(".stagehand-tag").count()) === 0);
+check("no library: no details buttons", (await win.locator(".stagehand-more").count()) === 0);
 await shot("12-no-library");
 
 // Assistant GM and player

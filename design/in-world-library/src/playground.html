@@ -40,11 +40,12 @@ iframe { width: 100%; height: 100%; border: 0; display: block; border-radius: 4p
   <div class="tools">
     <span class="seg" role="group" aria-label="Library on the server"><span class="lbl">Library</span><button type="button" data-lib="1" aria-pressed="true">On the server</button><button type="button" data-lib="0" aria-pressed="false">None yet</button></span>
     <span class="seg" role="group" aria-label="Signed in as"><span class="lbl">Signed in as</span><button type="button" data-role="gm" aria-pressed="true">Gamemaster</button><button type="button" data-role="assistant" aria-pressed="false">Assistant GM</button><button type="button" data-role="player" aria-pressed="false">Player</button></span>
+    <span class="seg" role="group" aria-label="Where a module's details open"><span class="lbl">Details</span><button type="button" data-details="row" aria-pressed="true">In the row</button><button type="button" data-details="panel" aria-pressed="false">Side panel</button></span>
     <span class="seg" role="group" aria-label="Foundry's interface theme"><span class="lbl">Interface</span><button type="button" data-theme="dark" aria-pressed="true">Dark</button><button type="button" data-theme="light" aria-pressed="false">Light</button></span>
     <button type="button" id="fit" aria-pressed="true">Actual size</button>
     <button type="button" id="reset">Reset</button>
   </div>
-  <p class="hint">A Gamemaster in the world <b>Curse of Strahd</b>, in Foundry's own <b>Module Management</b>. Try: <b>fold a folder</b> (Foundry's sidebar folder headers) · search for a tag (<b>heavy</b>) or a word from a note (<b>laptop</b>) · hover the <b>note</b> icon · the <b>A–Z</b> button beside the expand arrows · <b>Apply Presets…</b>: <b>Horror ambience</b> with Add (a dependency comes along), <b>One-shot minimal</b> with Remove (a module still needs one), <b>Strahd content</b> (one isn't installed) · tick a box first, then Apply Presets, for the unsaved-changes line · <b>None yet</b> is Foundry's window untouched · <b>Player</b> sees Foundry's read-only list.</p>
+  <p class="hint">A Gamemaster in the world <b>Curse of Strahd</b>, in Foundry's own <b>Module Management</b>. Try: a module's details with the <b>chevron</b> at the end of its row (<b>Details</b> above switches to a <b>side panel</b>) · <b>fold a folder</b> (Foundry's sidebar folder headers) · search for a tag (<b>heavy</b>) or a word from a note (<b>laptop</b>) · hover the <b>note</b> icon · the <b>A–Z</b> button beside the expand arrows · <b>Apply Presets…</b>: <b>Horror ambience</b> with Add (a dependency comes along), <b>One-shot minimal</b> with Remove (a module still needs one), <b>Strahd content</b> (one isn't installed) · tick a box first, then Apply Presets, for the unsaved-changes line · <b>None yet</b> is Foundry's window untouched · <b>Player</b> sees Foundry's read-only list.</p>
 </header>
 <main class="stage" id="stage">
   <div class="frame" id="frame"><iframe id="view" title="Game view with Module Management" src="mock.html"></iframe></div>
@@ -53,7 +54,7 @@ iframe { width: 100%; height: 100%; border: 0; display: block; border-radius: 4p
 <script>
 const view = document.getElementById("view"), frame = document.getElementById("frame"), stage = document.getElementById("stage");
 const fitBtn = document.getElementById("fit");
-const state = { lib: "1", role: "gm", theme: "dark" };
+const state = { lib: "1", role: "gm", theme: "dark", details: "row" };
 let fit = true;
 
 function scale() {
@@ -79,6 +80,7 @@ function bindSeg(attr, key) {
 bindSeg("lib", "lib");
 bindSeg("role", "role");
 bindSeg("theme", "theme");
+bindSeg("details", "details");
 
 fitBtn.addEventListener("click", () => {
   fit = !fit;
