@@ -4,11 +4,11 @@
 <text x="24" y="38" font-size="16" fill="#f0f6fc" font-weight="600">Downloads so far</text>
 <text x="24" y="58" font-size="12" fill="#9198a1">Store installs and release file downloads of each part, day by day</text>
 <line x1="24" x2="38" y1="78" y2="78" stroke="#3987e5" stroke-width="2" stroke-linecap="round"/>
-<text x="44" y="82" font-size="12" fill="#9198a1">Companion module<tspan dx="6" font-weight="600" fill="#f0f6fc">42</tspan></text>
+<text x="44" y="82" font-size="12" fill="#9198a1">Companion module<tspan dx="6" font-weight="600" fill="#f0f6fc">45</tspan></text>
 <line x1="203.6" x2="217.6" y1="78" y2="78" stroke="#c98500" stroke-width="2" stroke-linecap="round"/>
 <text x="223.6" y="82" font-size="12" fill="#9198a1">Chrome Web Store<tspan dx="6" font-weight="600" fill="#f0f6fc">135</tspan></text>
 <line x1="390.4" x2="404.4" y1="78" y2="78" stroke="#d95926" stroke-width="2" stroke-linecap="round"/>
-<text x="410.4" y="82" font-size="12" fill="#9198a1">Extension zip<tspan dx="6" font-weight="600" fill="#f0f6fc">18</tspan></text>
+<text x="410.4" y="82" font-size="12" fill="#9198a1">Extension zip<tspan dx="6" font-weight="600" fill="#f0f6fc">19</tspan></text>
 <line x1="548.4" x2="562.4" y1="78" y2="78" stroke="#199e70" stroke-width="2" stroke-linecap="round"/>
 <text x="568.4" y="82" font-size="12" fill="#9198a1">Android app<tspan dx="6" font-weight="600" fill="#f0f6fc">10</tspan></text>
 <line x1="51.8" x2="768" y1="264" y2="264" stroke="#3d444d" stroke-width="1"/>
@@ -20,17 +20,17 @@
 <line x1="51.8" x2="768" y1="104" y2="104" stroke="#21262d" stroke-width="1"/>
 <text x="43.8" y="108" font-size="11" fill="#9198a1" text-anchor="end">150</text>
 <text x="51.8" y="286" font-size="11" fill="#9198a1">Nov 11, 2026</text>
-<text x="171.2" y="286" font-size="11" fill="#9198a1" text-anchor="middle">Nov 12</text>
-<text x="290.5" y="286" font-size="11" fill="#9198a1" text-anchor="middle">Nov 13</text>
-<text x="529.3" y="286" font-size="11" fill="#9198a1" text-anchor="middle">Nov 15</text>
-<text x="648.6" y="286" font-size="11" fill="#9198a1" text-anchor="middle">Nov 16</text>
-<text x="768" y="286" font-size="11" fill="#9198a1" text-anchor="end">Nov 17</text>
-<path d="M290.5 235.2 L409.9 233.1 L529.3 226.7 L648.6 221.3 L768 219.2" fill="none" stroke="#3987e5" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
-<circle cx="768" cy="219.2" r="4" fill="#3987e5" stroke="#0d1117" stroke-width="2"/>
-<path d="M51.8 245.9 L171.2 211.7 L290.5 184 L409.9 150.9 L529.3 120" fill="none" stroke="#c98500" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
-<circle cx="529.3" cy="120" r="4" fill="#c98500" stroke="#0d1117" stroke-width="2"/>
-<path d="M290.5 246.9 L409.9 246.9 L529.3 245.9 L648.6 244.8 L768 244.8" fill="none" stroke="#d95926" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
-<circle cx="768" cy="244.8" r="4" fill="#d95926" stroke="#0d1117" stroke-width="2"/>
-<path d="M290.5 253.3 L409.9 253.3 L529.3 253.3 L648.6 253.3 L768 253.3" fill="none" stroke="#199e70" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="154.1" y="286" font-size="11" fill="#9198a1" text-anchor="middle">Nov 12</text>
+<text x="358.7" y="286" font-size="11" fill="#9198a1" text-anchor="middle">Nov 14</text>
+<text x="461.1" y="286" font-size="11" fill="#9198a1" text-anchor="middle">Nov 15</text>
+<text x="665.7" y="286" font-size="11" fill="#9198a1" text-anchor="middle">Nov 17</text>
+<text x="768" y="286" font-size="11" fill="#9198a1" text-anchor="end">Nov 18</text>
+<path d="M256.4 235.2 L358.7 233.1 L461.1 226.7 L563.4 221.3 L665.7 219.2 L768 216" fill="none" stroke="#3987e5" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="768" cy="216" r="4" fill="#3987e5" stroke="#0d1117" stroke-width="2"/>
+<path d="M51.8 245.9 L154.1 211.7 L256.4 184 L358.7 150.9 L461.1 120" fill="none" stroke="#c98500" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="461.1" cy="120" r="4" fill="#c98500" stroke="#0d1117" stroke-width="2"/>
+<path d="M256.4 246.9 L358.7 246.9 L461.1 245.9 L563.4 244.8 L665.7 244.8 L768 243.7" fill="none" stroke="#d95926" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="768" cy="243.7" r="4" fill="#d95926" stroke="#0d1117" stroke-width="2"/>
+<path d="M256.4 253.3 L358.7 253.3 L461.1 253.3 L563.4 253.3 L665.7 253.3 L768 253.3" fill="none" stroke="#199e70" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
 <circle cx="768" cy="253.3" r="4" fill="#199e70" stroke="#0d1117" stroke-width="2"/>
 </svg>
