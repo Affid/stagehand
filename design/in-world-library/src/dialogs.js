@@ -1,6 +1,7 @@
 // Stagehand's own dialogs, drawn as Foundry's DialogV2 (markup captured from
-// 14.370): choose presets and a mode, then the diff and confirmation that the
-// companion already shows for queued changes (packages/module/src/dialog.ts).
+// 14.370): Add a preset (marks its changes on the cards, as Setup's world page
+// does), and the review before saving (the companion's diff sections from
+// packages/module/src/dialog.ts, with Setup's "Turns on / Turns off").
 
 const MODES = [
   { id: "add", label: "Add", hint: "Turn these modules on. Everything else stays as it is." },
@@ -45,15 +46,14 @@ function closeDialogs() {
   document.querySelectorAll(".stagehand-dialog, .stagehand-backdrop").forEach((el) => el.remove());
 }
 
-// ---------- 1. choose presets and a mode ----------
+// ---------- Add a preset ----------
 
 function presetRow(p) {
-  const on = p.modules.filter((id) => S.saved.has(id)).length;
-  const titles = p.modules.map(titleOf).join(", ");
+  const on = p.modules.filter((id) => S.ticks.has(id)).length;
   return `<label class="stagehand-preset">
     <input type="checkbox" name="preset" value="${esc(p.id)}"${pick.presets.has(p.id) ? " checked" : ""}>
     <span class="name">${esc(p.name)}</span>
-    <span class="meta" data-tooltip-text="${esc(titles)}">${p.modules.length} modules · ${on} on here</span>
+    <span class="meta" data-tooltip-text="${esc(p.modules.map(titleOf).join(", "))}">${p.modules.length} modules · ${on} on here</span>
     <span class="about">${esc(p.description)}</span>
   </label>`;
 }
@@ -65,73 +65,75 @@ function modeRow(m) {
   </label>`;
 }
 
-function pickerBody() {
-  const unsaved = isDirty()
-    ? `<p class="stagehand-warning"><i class="fa-solid fa-triangle-exclamation" inert></i> Changes you haven't saved in Module Management are dropped when the world reloads.</p>`
-    : "";
-  return `<p class="hint">Presets from this server's Stagehand library. Applying one changes this world's modules and reloads the world once.</p>
-    <fieldset><legend>Presets</legend><div class="stagehand-presets">${PRESETS.map(presetRow).join("")}</div></fieldset>
-    <fieldset><legend>How</legend><div class="stagehand-modes">${MODES.map(modeRow).join("")}</div></fieldset>
-    ${unsaved}`;
-}
-
 function openPicker() {
-  const next = button("next", "fa-arrow-right", "Review Changes", pick.presets.size ? "" : " disabled");
-  const dlg = showDialog(dialogFrame("stagehand-pick", "fa-layer-group", "Stagehand: Apply Presets", pickerBody(), next + button("cancel", "fa-xmark", "Cancel")), {
+  const body = `<p class="hint">Presets from this server's Stagehand library. Their changes show on the cards; Save Module Settings applies them.</p>
+    <fieldset><legend>Presets</legend><div class="stagehand-presets">${PRESETS.map(presetRow).join("")}</div></fieldset>
+    <fieldset><legend>How</legend><div class="stagehand-modes">${MODES.map(modeRow).join("")}</div></fieldset>`;
+  const mark = button("mark", "fa-check", "Mark Changes", pick.presets.size ? "" : " disabled");
+  const dlg = showDialog(dialogFrame("stagehand-pick", "fa-layer-group", "Stagehand: Add a Preset", body, mark + button("cancel", "fa-xmark", "Cancel")), {
     change: () => {
       pick.presets = new Set([...dlg.querySelectorAll('input[name="preset"]:checked')].map((i) => i.value));
       pick.mode = dlg.querySelector('input[name="mode"]:checked')?.value ?? "add";
-      dlg.querySelector('[data-action="next"]').disabled = pick.presets.size === 0;
+      dlg.querySelector('[data-action="mark"]').disabled = pick.presets.size === 0;
     },
-    next: () => openDiff(planFor([...S.saved], [...pick.presets], pick.mode)),
+    mark: () => markChosen(),
     cancel: closeDialogs,
   });
 }
 
-// ---------- 2. the diff and confirmation ----------
+function markChosen() {
+  const result = markPreset(S.ticks, [...pick.presets], pick.mode);
+  const mode = MODES.find((m) => m.id === pick.mode).label;
+  S.ticks = result.ticks;
+  result.from.forEach((name, id) => S.fromPreset.set(id, name));
+  S.marked = [...S.marked, ...PRESETS.filter((p) => pick.presets.has(p.id)).map((p) => `${p.name} (${mode})`)];
+  pick.presets = new Set();
+  closeDialogs();
+  render();
+  if (result.missing.length) notify("warning", `Stagehand: ${result.missing.map(titleOf).join(", ")} isn't installed on this server, so it was skipped.`);
+}
+
+// ---------- review before saving ----------
 
 function section(title, items) {
   if (!items.length) return "";
-  return `<h4>${esc(title)}</h4><ul>${items.map((i) => `<li>${esc(i)}</li>`).join("")}</ul>`;
+  return `<h4>${esc(title)} · ${items.length}</h4><ul>${items.map((i) => `<li>${esc(i)}</li>`).join("")}</ul>`;
 }
 
-function diffBody(plan) {
-  const mode = MODES.find((m) => m.id === plan.mode).label;
+function reviewBody(plan) {
   const parts = [
-    `<p>Changes from the presets you chose. Applying reloads the world once.</p>`,
-    plan.changed ? "" : `<p>No change: the world already matches.</p>`,
-    section("Presets", plan.presets.map((p) => `${p.name} (${mode})`)),
-    section("Enable", plan.enable.map(titleOf)),
+    `<p>Saving changes this world's modules and reloads the world once.</p>`,
+    section("Presets", plan.presets),
+    section("Turns on", plan.enable.map(titleOf)),
     section("Added as dependencies", plan.added.map(titleOf)),
-    section("Disable", plan.disable.map(titleOf)),
-    section("Not installed (skipped)", plan.missing.map(titleOf)),
+    section("Turns off", plan.disable.map(titleOf)),
     section("Still needed by modules that stay", plan.dependents.map((d) => `${titleOf(d.id)}, needed by ${d.requiredBy.map(titleOf).join(" and ")}`)),
   ];
   if (plan.dependents.length)
-    parts.push(`<label class="checkbox"><input type="checkbox" name="removeDependents"> Also disable the modules that need a removed one</label>`);
+    parts.push(`<label class="checkbox"><input type="checkbox" name="removeDependents"> Also turn off the modules that need a removed one</label>`);
   return `<div class="stagehand-diff">${parts.join("")}</div>`;
 }
 
-function openDiff(plan) {
-  const buttons = button("apply", "fa-check", "Apply &amp; Reload", plan.changed ? "" : " disabled") + button("back", "fa-arrow-left", "Back") + button("cancel", "fa-xmark", "Cancel");
-  const dlg = showDialog(dialogFrame("stagehand-diff", "fa-layer-group", "Stagehand: Apply Presets", diffBody(plan), buttons), {
+function openReview() {
+  const plan = planFromTicks([...S.saved], S.ticks, S.marked);
+  const buttons = button("apply", "fa-check", "Save &amp; Reload", plan.changed ? "" : " disabled") + button("cancel", "fa-arrow-left", "Back");
+  const dlg = showDialog(dialogFrame("stagehand-diff", "fa-floppy-disk", "Stagehand: Review Changes", reviewBody(plan), buttons), {
     apply: () => applyPlan(plan, dlg.querySelector('input[name="removeDependents"]')?.checked === true),
-    back: openPicker,
     cancel: closeDialogs,
   });
 }
 
 function applyPlan(plan, removeDependents) {
   if (plan.dependents.length && !removeDependents) {
-    notify("warning", "Stagehand: choose to disable the dependent modules too, or go back.");
+    notify("warning", "Stagehand: choose to turn off the modules that need it too, or go back.");
     return;
   }
-  const names = plan.presets.map((p) => p.name).join(", ");
-  const mode = MODES.find((m) => m.id === plan.mode).label;
+  const n = plan.enable.length + plan.added.length + plan.disable.length;
   S.saved = resultOf(plan, removeDependents);
   S.ticks = new Set(S.saved);
-  pick.presets = new Set();
+  S.fromPreset = new Map();
+  S.marked = [];
   closeDialogs();
   closeWindow();
-  reloadWorld(`Stagehand: applied ${names} (${mode}).`);
+  reloadWorld(`Stagehand: saved ${n} module change${n === 1 ? "" : "s"}.`);
 }

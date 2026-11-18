@@ -1,8 +1,8 @@
 # In-world library mockup
 
-A clickable mockup of Stagehand's library inside a world: the server's
-folders, tags and notes in Foundry's own Module Management window, and
-Apply Presets with Stagehand's dialogs. Plan and decisions:
+A clickable mockup of Stagehand's library inside a world: Setup's world
+page (cards in folder sections, the module panel, presets) inside Foundry's
+own Module Management window, with Setup's Cards | Foundry's switch. Plan and decisions:
 `docs/IN-WORLD-LIBRARY-PLAN.md` (issue #2).
 
 ```sh
@@ -13,17 +13,20 @@ node checks/run.mjs    # walks the flows in Chromium and checks what shows; scre
 
 - `src/mock.html`: a reduced game interface (scene controls, the Game
   Settings tab, the players list) around the window.
-- `src/window.js`: Module Management as Foundry 14.370 renders it (markup
-  captured from the live window on the private 14 server), plus the
-  library: folder groups drawn with Foundry's sidebar folder headers, tags
-  and a note icon in each row's tag strip, search over tags and notes, the
-  folders/A–Z button in the search row, a module's details (in a
-  side panel, closed with x), Apply Presets in the footer.
-- `src/dialogs.js`: choose presets and a mode, then the diff and
-  confirmation (the companion's `dialog.ts` sections), drawn as Foundry's
-  DialogV2 (markup captured from 14.370).
+- `src/window.js`: Module Management as Foundry 14.370 renders it (frame and
+  list markup captured from the live window on the private 14 server), the
+  Cards | Foundry's switch, and the actions.
+- `src/cards.js`, `src/cards.css`: Setup's world page, Modules tab, inside
+  the window: folder sections of cards with switches, All / On / Changes,
+  Add a preset, the pending line, the module panel (Library and Package).
+  Markup and CSS from the Setup mockup (`../setup-page/src/_calm.*`,
+  `_shell.*`, `_kit.css`), limited to `#module-management`.
+- `src/dialogs.js`: Add a preset (marks its changes on the cards) and the
+  review before saving, drawn as Foundry's DialogV2 (markup captured from
+  14.370).
 - `src/plan.js`: a small version of the shared resolver: Add, Replace,
-  Remove, required modules come along, Stagehand stays on.
+  Remove, required modules come along, switched-off modules stay off,
+  Stagehand stays on.
 - `src/data.js`: a sample world and library.
 - `src/boot.js`: state, Foundry's tooltip and notifications as stand-ins, the
   reload. Query: `lib=0`, `role=gm|assistant|player`, `theme=dark|light`.

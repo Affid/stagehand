@@ -32,116 +32,99 @@ const shot = (name) => page.screenshot({ path: `${OUT}shots/${name}.png` });
 const visibleRows = () => page.locator("#module-management li.package:visible").count();
 const win = page.locator("#module-management");
 
-// Folders
+const card = (id) => win.locator(`.stw-card[data-id="${id}"]`);
+const panelTitle = () => win.locator(".sts-panel .sts-modhead h3").textContent();
+const changesCount = async () => ((await win.locator('.st-seg2 [data-id="changes"]').textContent()) ?? "").trim();
+
+// Setup's world page inside Module Management
 await open();
-await shot("01-folders");
-check("folder headers show", (await win.locator(".stagehand-folder > .folder-header:visible").count()) === 9);
-check("folders are one level, as Setup makes them", (await win.locator(".stagehand-folder .stagehand-folder").count()) === 0);
-check("library tags show", (await win.locator(".stagehand-tag:visible").count()) > 10);
-await win.locator('[data-folder-id="combat"] > .folder-header').click();
-check("folding hides the folder's rows", (await win.locator('[data-folder-id="combat"] li.package:visible').count()) === 0);
-await shot("02-folded");
+await shot("01-cards");
+check("cards layout by default", (await win.getAttribute("class")).includes("stagehand-cards"));
+check("folder sections show", (await win.locator(".stc-sec").count()) === 9);
+check("every module has a card", (await win.locator(".stw-card").count()) === 38);
+check("the panel opens with the mockup", (await panelTitle()) === "Modular A/V: LiveKit");
+await card("perfect-vision").locator(".t").click();
+check("clicking a card shows it in the panel", (await panelTitle()) === "Perfect Vision");
+check("its folder and presets show", ((await win.locator(".sts-panel").textContent()) ?? "").includes("Lighting & weather") && ((await win.locator(".sts-panel").textContent()) ?? "").includes("Horror ambience"));
+await win.locator('.sts-subtabs [data-id="package"]').click();
+check("Package tab: relationships", ((await win.locator(".sts-panel").textContent()) ?? "").includes("Needs libWrapper"));
+await shot("02-panel-package");
+await win.locator('.sts-subtabs [data-id="library"]').click();
+await win.locator('[data-action="closePanel"]').click();
+check("x closes the panel", (await win.locator(".sts-panel").count()) === 0);
+await shot("03-panel-closed");
 
-// A module's details in the side panel
-const width = async () => (await win.boundingBox()).width;
-check("panel: open with the mockup, window widened", (await win.locator(".stagehand-aside").isVisible()) && (await width()) > 1000);
-check("panel: shows the chosen module", ((await win.locator(".stagehand-aside-title").textContent()) ?? "") === "Modular A/V: LiveKit");
-check("panel: no Expand button while the library shows", (await win.locator('[data-action="toggleExpanded"]').count()) === 0);
-await win.locator('[data-module-id="lib-wrapper"] .stagehand-more').click();
-check("panel: another module's arrow shows it", ((await win.locator(".stagehand-aside").textContent()) ?? "").includes("Needed by"));
-check("panel: its row is marked", (await win.locator('[data-module-id="lib-wrapper"].stagehand-selected').count()) === 1);
-await shot("02b-details-panel");
-await win.locator('[data-action="closeDetails"]').click();
-check("panel: x closes it and the window narrows", (await win.locator(".stagehand-aside").count()) === 0 && (await width()) < 700);
-await shot("02c-panel-closed");
-await win.locator('[data-module-id="perfect-vision"] .stagehand-more').click();
-check("panel: an arrow opens it again", ((await win.locator(".stagehand-aside-title").textContent()) ?? "") === "Perfect Vision");
-await win.locator('[data-module-id="perfect-vision"] .stagehand-more').click();
-check("panel: the same arrow closes it", (await win.locator(".stagehand-aside").count()) === 0);
-
-// Search over tags and notes
+// Folding, search
+await win.locator('.stc-head[data-id="combat"]').click();
+check("folding hides a section's cards", (await win.locator('.stc-sec[data-group="combat"] .stw-card').count()) === 0);
+await win.locator('.stc-head[data-id="combat"]').click();
 await win.locator("#module-search").fill("heavy");
-check("search finds tags", (await visibleRows()) === 3, `${await visibleRows()} rows`);
-await shot("03-search-tag");
+check("search finds tags", (await win.locator(".stw-card").count()) === 3);
 await win.locator("#module-search").fill("laptop");
-check("search finds notes", (await visibleRows()) === 1);
+check("search finds notes", (await win.locator(".stw-card").count()) === 1);
 await win.locator("#module-search").fill("");
 
-// Note tooltip
-await win.locator('[data-module-id="perfect-vision"] .stagehand-note').hover();
-check("note tooltip shows the note", (await page.locator("#tooltip:visible").textContent())?.includes("3D Canvas") === true);
-await shot("04-note-tooltip");
-
-// A–Z
-await win.locator('[data-action="stagehandView"]').click();
-check("A–Z drops the folders", (await win.locator(".stagehand-folder").count()) === 0);
-check("A–Z keeps tags", (await win.locator(".stagehand-tag:visible").count()) > 10);
-await shot("05-a-z");
-await win.locator('[data-action="stagehandView"]').click();
-
-// Apply presets: Add with a dependency
-await win.locator('[data-action="applyPresets"]').click();
+// A switch, a problem, the review
+await card("modular-av").locator(".sts-switch").click();
+check("a switch marks the card", ((await card("modular-av").textContent()) ?? "").includes("turns off"));
+check("Changes counts it", (await changesCount()) === "Changes 1");
+check("dependent cards name the problem", ((await card("modular-av-dock").textContent()) ?? "").includes("Needs Modular A/V, which is off"));
+check("the pending line shows", await win.locator(".stc-pending").isVisible());
+await shot("04-switched");
+await win.locator('.st-seg2 [data-id="changes"]').click();
+check("Changes shows only changed cards", (await win.locator(".stw-card").count()) === 1);
+await win.locator('.st-seg2 [data-id="all"]').click();
+await win.locator('button[type="submit"]').click();
 const dlg = page.locator("dialog.stagehand-dialog");
-check("Review waits for a preset", await dlg.locator('[data-action="next"]').isDisabled());
+check("saving opens the review", ((await dlg.locator(".stagehand-diff").textContent()) ?? "").includes("Turns off"));
+check("the review names what still needs it", ((await dlg.locator(".stagehand-diff").textContent()) ?? "").includes("Still needed by modules that stay"));
+await shot("05-review");
+await dlg.locator('[data-action="apply"]').click();
+check("it refuses without the dependents choice", await page.locator("#notifications .notification.warning").isVisible());
+await dlg.locator('footer [data-action="cancel"]').click();
+await win.locator('.stc-pending [data-action="discard"]').click();
+check("Discard clears the changes", (await changesCount()) === "Changes" && (await win.locator(".stc-pending").count()) === 0);
+
+// Add a preset
+await win.locator('[data-action="addPreset"]').click();
+check("Mark Changes waits for a preset", await dlg.locator('[data-action="mark"]').isDisabled());
 await dlg.locator('input[value="horror"]').check();
-await shot("07-picker");
-await dlg.locator('[data-action="next"]').click();
-check("diff names the dependency", (await dlg.locator(".stagehand-diff").textContent()).includes("Added as dependencies"));
-await shot("08-diff-add");
+await shot("06-preset");
+await dlg.locator('[data-action="mark"]').click();
+check("a preset marks its cards", ((await card("tokenmagic").textContent()) ?? "").includes("From the preset Horror ambience"));
+check("its problem shows before saving", ((await card("modular-av-audio-reverb").textContent()) ?? "").includes("Needs Modular A/V: Audio mixer"));
+await shot("07-preset-marked");
+await win.locator('button[type="submit"]').click();
+check("the review names the preset and the dependency", ((await dlg.textContent()) ?? "").includes("Horror ambience (Add)") && ((await dlg.textContent()) ?? "").includes("Added as dependencies"));
 await dlg.locator('[data-action="apply"]').click();
 await page.waitForSelector("#notifications .notification.info");
-check("applied: notification", (await page.locator("#notifications").textContent()).includes("Horror ambience (Add)"));
-await shot("09-applied");
+check("saved: notification", ((await page.locator("#notifications").textContent()) ?? "").includes("saved"));
 await page.locator("#open-modules").click();
-check("applied: Token Magic FX is on", await win.locator('[data-module-id="tokenmagic"] input').isChecked());
-
-// Remove with a module still needing one
-await win.locator('[data-action="applyPresets"]').click();
-await dlg.locator('input[value="oneshot"]').check();
-await dlg.locator('input[value="remove"]').check();
-await dlg.locator('[data-action="next"]').click();
-check("diff lists what still needs a removed module", (await dlg.locator(".stagehand-diff").textContent()).includes("Still needed by modules that stay"));
-await shot("10-diff-remove");
-await dlg.locator('[data-action="apply"]').click();
-check("refuses without the dependents choice", await page.locator("#notifications .notification.warning").isVisible());
-await dlg.locator('[data-action="back"]').click();
-
-// Not installed
-await dlg.locator('input[value="oneshot"]').uncheck();
+check("saved: Token Magic FX is on", await card("tokenmagic").locator(".sts-switch").isChecked());
+await win.locator('[data-action="addPreset"]').click();
 await dlg.locator('input[value="strahd"]').check();
-await dlg.locator('input[value="add"]').check();
-await dlg.locator('[data-action="next"]').click();
-check("diff skips a module that isn't installed", (await dlg.locator(".stagehand-diff").textContent()).includes("Monk's Enhanced Journal"));
-await dlg.locator('footer [data-action="cancel"]').click();
+await dlg.locator('[data-action="mark"]').click();
+check("a module that isn't installed is named", ((await page.locator("#notifications").textContent()) ?? "").includes("Monk's Enhanced Journal"));
 
-// Unsaved ticks
-await win.locator('[data-module-id="popout"] input').check();
-await win.locator('[data-action="applyPresets"]').click();
-check("picker warns about unsaved ticks", await dlg.locator(".stagehand-warning").isVisible());
-await shot("11-unsaved");
-await dlg.locator('footer [data-action="cancel"]').click();
+// Foundry's own list
+await win.locator('.stw-layout [data-id="foundry"]').click();
+check("Foundry's: Foundry's own rows", (await win.locator("li.package").count()) === 38 && (await win.locator(".stw-card").count()) === 0);
+check("Foundry's: Foundry's Expand is there", (await win.locator('[data-action="toggleExpanded"]').count()) === 1);
+await shot("08-foundrys");
+await win.locator('.stw-layout [data-id="cards"]').click();
+check("back to cards", (await win.locator(".stw-card").count()) === 38);
 
-// No library: Foundry's window untouched
+// No library, Assistant GM, player
 await open("lib=0");
-check("no library: no folders", (await win.locator(".stagehand-folder").count()) === 0);
-check("no library: no Apply Presets", (await win.locator('[data-action="applyPresets"]').count()) === 0);
-check("no library: no tags", (await win.locator(".stagehand-tag").count()) === 0);
-check("no library: no details buttons", (await win.locator(".stagehand-more").count()) === 0);
-await win.locator('[data-action="toggleExpanded"]').click();
-check("no library: Foundry's Expand still shows descriptions", await win.locator('[data-module-id="perfect-vision"] .package-description').isVisible());
-await shot("12-no-library");
-
-// Assistant GM and player
+check("no library: Foundry's window, no switch", (await win.locator(".stw-layout, .stw-card").count()) === 0 && (await win.locator("li.package").count()) === 38);
+await shot("09-no-library");
 await open("role=assistant");
-check("assistant: library, no Apply Presets", (await win.locator(".stagehand-folder").count()) > 0 && (await win.locator('[data-action="applyPresets"]').count()) === 0);
+check("assistant: cards without Add a preset", (await win.locator(".stw-card").count()) === 38 && (await win.locator('[data-action="addPreset"]').count()) === 0);
 await open("role=player");
-check("player: read-only, active modules only", (await visibleRows()) === 19 && (await win.locator("li.package input:not([disabled])").count()) === 0);
-check("player: no library", (await win.locator(".stagehand-folder, .stagehand-tag").count()) === 0);
-await shot("13-player");
-
-// Light interface
+check("player: Foundry's read-only list", (await win.locator("li.package:visible").count()) === 19 && (await win.locator("li.package input:not([disabled])").count()) === 0 && (await win.locator(".stw-card").count()) === 0);
+await shot("10-player");
 await open("theme=light");
-await shot("14-light");
+await shot("11-light");
 
 check("no page errors", errors.length === 0, errors.join(" | "));
 await browser.close();

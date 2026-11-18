@@ -1,7 +1,8 @@
 # The library inside a world (plan)
 
-Status: planned 2026-11-18 (GitHub issue #2). Not built. Next step: a
-clickable mockup for the owner, then the spike.
+Status: planned 2026-11-18 (GitHub issue #2). Not built. Next step: the
+owner's review of the mockup (Setup's cards in Module Management), then the
+spike.
 
 ## Goal
 
@@ -21,11 +22,18 @@ Who it is for:
 ## Owner's decisions (2026-11-18)
 
 - **Read-only in v1.** Nothing in a world writes the library. Folders, tags
-  and notes show in Manage Modules; organising stays on Setup. This is what
+  and notes show in Module Management; organising stays on Setup. This is what
   PRD 7.11 already says for world Gamemasters.
-- **Apply presets is in v1, with our own dialogs:** choose presets and a
-  mode (Add, Replace, Remove), then the companion's diff and confirmation
-  (`packages/module/src/dialog.ts`). Not Foundry's checkboxes.
+- **Presets are in v1, with our own dialogs:** choose presets and a mode
+  (Add, Replace, Remove); their changes are marked on the cards, and saving
+  reviews them in the companion's diff (`packages/module/src/dialog.ts`).
+  Not Foundry's checkboxes.
+- **Setup's world page inside Module Management** (owner, 2026-11-18,
+  after the first mockup): the Modules tab of Setup's world page (cards,
+  folder sections, the module panel), reused rather than a second design,
+  with Setup's Cards | Foundry's switch. This replaced the first design
+  (Foundry's rows moved into folder groups, tags in the rows, a details
+  pane of our own).
 - **No "save as preset" in a world**, and no new Setup action for it:
   Setup's presets from a folder, a group or a selection are enough.
 - **The Forge is not covered.** It has no Setup (so no extension or app),
@@ -97,42 +105,55 @@ an invalid one is logged once.
 Shown to full Gamemasters and Assistant GMs. Players see Foundry's window
 unchanged.
 
-### In Manage Modules
+### In Manage Modules: Setup's world page
 
-- **Folder groups:** headers styled like Foundry's sidebar folders (folder
-  colour, caret, "5 of 12 active"), one level as Setup makes them (a
-  subfolder found in the file sits under its parent), "Not in a folder"
-  last. Collapse state is kept per user (client setting).
-- **Foundry's own rows are moved, never rebuilt,** so what other modules
-  (BBMM, Module Management+) add to a row survives. A header hides when
-  the search or a filter hides all of its rows.
-- **Tags** in the row's tag strip, as Foundry `.tag` spans with the tag's
-  colour and name (never colour alone).
-- **Notes** as an icon with `data-tooltip-text`; in Foundry's expanded
-  mode, also the first line of the description.
-- **A module's details** in a side panel (owner, 2026-11-18: Setup shows
-  them; Foundry's Expand opens every row at once): an arrow at the end of
-  each row shows the module in a pane on the right, and the window widens;
-  x (or the same arrow) closes it and the window narrows back. The pane has
-  the note, description, folder, tags, the presets it is in, what it
-  requires and what needs it, version, author and package id. Foundry's
-  Expand button is hidden while the library shows.
-- **Search** matches tag names and notes too.
-- **Folders or A–Z:** a small toggle beside Foundry's expand button
-  returns to Foundry's flat order, also the way out when another module
-  reorders the list.
+What Setup's world page does for a world from outside, Module Management
+does from inside, so the window shows that page's Modules tab (owner,
+2026-11-18):
 
-### Apply presets
+- **Cards in folder sections:** one card per module with its switch, the
+  title and one line (what needs it, "Needs X, which is off", from which
+  preset, not verified, the note, or the description), as on Setup.
+  Sections are the library's folders (one level, as Setup makes them;
+  "Unfiled" last) with "N of M on"; folded sections are kept per user.
+- **All, On, Changes** and a search that also matches tags and notes.
+- **Changes are marked, then saved:** a flipped switch marks its card
+  "turns on" or "turns off"; a line counts the changes and problems with
+  Review and Discard; Foundry's Save Module Settings shows the count and
+  opens the review (Turns on, Added as dependencies, Turns off, Still
+  needed by modules that stay), then saves and reloads.
+- **The module panel**, as on Setup, opened by clicking a card and closed
+  with x: Library tab (folder, tags, note, presets, this world's switch;
+  read-only, with a line saying it is organised on the Setup screen) and
+  Package tab (version and verification, authors, relationships, contents).
+  Setup's "On in worlds" becomes this world only: a world can't see the
+  others.
+- **Cards | Foundry's:** Setup's Library switch. "Foundry's" is Foundry's
+  own window, untouched (its Expand included), the way out when another
+  module (BBMM, Module Management+) adds to Foundry's rows. Kept per user.
+- **Without a library**, and **for players**, Foundry's window stays as it
+  is, with no switch.
 
-- An "Apply presets…" button in the window's footer, for full Gamemasters
-  only (PR-4).
-- Our dialog: the library's presets to choose from, and a mode (Add,
-  Replace, Remove). Then the existing diff and confirmation, the plan from
-  the shared resolver against the live world (`world-state.ts planFor`),
-  and the same save and reload as a queued change (`apply.ts`).
-- Ticks in Manage Modules that were not saved are dropped when a preset is
-  applied; the dialog says so.
-- The companion keeps itself enabled, as in every mode (C-5).
+### Presets
+
+- "Add a preset…" in the tools row, for full Gamemasters only (PR-4); Setup's
+  "Copy from another world" has no place here.
+- Our dialog: the library's presets and a mode (Add, Replace, Remove).
+  "Mark Changes" marks them on the cards ("From the preset X"); a module the
+  preset names but the server doesn't have is named in a notice.
+- Saving goes through the same review, with the presets listed; the
+  companion keeps itself on (C-5).
+
+### Reuse, not a copy
+
+The cards, sections, module panel and their CSS move from
+`packages/extension/src/ui` into a shared UI package used by Setup and the
+companion. The companion gives them a provider for a world: modules from
+`game.modules`, the library from its file, this world only; switching and
+saving through Foundry's module configuration. The read-only mode exists
+already (`canChange`, PR-2 and V-3). The companion loads this code only when
+a Gamemaster opens the window, so players never download it. Setup's CSS is
+limited to its own markup so it can't reach the game's interface.
 
 ### The Forge
 
@@ -141,25 +162,25 @@ is checked in the spike).
 
 ## Phases
 
-0. **Mockup:** one clickable artifact with Foundry's CSS: Manage Modules
-   grouped by folders, in A–Z order, and with no library; the Apply presets
-   dialog through to the diff. The owner chooses; the mockup is then the
-   spec. Built 2026-11-18 in `design/in-world-library` (published at
-   https://claude.ai/artifact/SjcMMvJ6B7MmQWuWpZ8mTj), waiting for the
-   owner's review. Choices in it to confirm or change: Apply Presets is the
-   footer's last button; a line under the list says where folders, tags and
-   notes come from; folder headers count "N of M active"; a search opens
-   folded folders that hold matches; the folders/A–Z choice and folded
-   folders are kept per user; Assistant GMs see the library without Apply
-   Presets; players see Foundry's window unchanged; the diff dialog offers
-   Apply & Reload, Back and Cancel.
-1. **Spike:** grouping rows in Manage Modules on 13.351 and 14.370, alone
-   and with BBMM and Module Management+ installed; search, filters and the
-   expand toggle after regrouping; re-renders. The Forge's global.
-2. **Build (tests first):** the library read in the module, grouping, tags,
-   notes, search, the toggle; the Apply presets dialog over the existing
-   plan and dialog. Unit tests with fakes; live specs on the private 13 and
-   14 servers.
+0. **Mockup:** `design/in-world-library`, published at
+   https://claude.ai/artifact/SjcMMvJ6B7MmQWuWpZ8mTj. First version
+   2026-11-18 (Foundry's rows in folder groups, then a details pane); the
+   owner chose to reuse Setup's cards instead, and the mockup now shows
+   them, built from the Setup mockup's own CSS. Waiting for the owner's
+   review. Choices in it to confirm or change: presets marked on the cards
+   and applied by saving (not at once); the review before saving; Assistant
+   GMs get the cards without Add a preset; the Cards | Foundry's choice and
+   folded sections kept per user; Stagehand's own card is always on, as on
+   Setup.
+1. **Spike:** Setup's Modules tab rendered inside Module Management on
+   13.351 and 14.370 (window size, Foundry's re-renders, light and dark
+   interface), alone and with BBMM and Module Management+ installed; loading
+   the shared UI on demand from the companion. The Forge's global.
+2. **Build (tests first):** the shared UI package out of
+   `packages/extension/src/ui` (Setup's live suites must still pass); the
+   companion's provider (library file, `game.modules`, saving and reload);
+   Add a preset and the review over the existing plan and dialog. Unit tests
+   with fakes; live specs on the private 13 and 14 servers.
 3. **Docs:** COMPANION-GUIDE.md, the module's README and manifest
    description, CHANGELOG. The foundryvtt.com listing text is the owner's
    to write (Foundry's AI policy).

@@ -1,0 +1,137 @@
+/* Setup's world page, Modules tab, inside Foundry's Module Management window.
+   Copied from the Setup mockup (design/setup-page/src/_calm.css, _shell.css,
+   _kit.css) and limited to #module-management so nothing reaches the game's
+   own interface. Light theme overrides at the end. */
+
+#module-management.stagehand-cards { left: 70px; width: 1160px; }
+#module-management.stagehand-cards > .window-content { gap: 8px; }
+
+/* ---------- tools row (Setup's calm tab row) ---------- */
+#module-management .stc-tools { display: flex; gap: 6px; align-items: center; flex: none; }
+#module-management .stc-tools input[type=search] { height: 28px; width: 220px; flex: none; }
+#module-management .stc-tools button { height: 28px; width: auto; flex: none; padding: 0 10px; gap: 6px; font-size: 13px; }
+#module-management .stc-tools .sp { flex: 1; }
+#module-management .st-seg2 { display: inline-flex; border: 1px solid var(--color-cool-3); border-radius: 3px; overflow: hidden; height: 28px; flex: none; }
+#module-management .st-seg2 button { height: 100%; border: 0; border-right: 1px solid var(--color-cool-3); border-radius: 0; padding: 0 10px; font-size: 12.5px; color: var(--color-light-3); background: none; }
+#module-management .st-seg2 button:last-child { border-right: 0; }
+#module-management .st-seg2 button[aria-pressed="true"] { background: var(--color-cool-3); color: var(--color-light-1); }
+#module-management .stw-layout { display: inline-flex; flex: none; }
+#module-management .stw-layout button { height: 28px; width: auto; flex: none; padding: 0 10px; gap: 6px; font-size: 13px; border-radius: 0; }
+#module-management .stw-layout button:first-child { border-radius: 3px 0 0 3px; }
+#module-management .stw-layout button:last-child { border-radius: 0 3px 3px 0; border-left: 0; }
+#module-management .stw-layout button[aria-pressed="true"] { border-color: var(--color-warm-1); color: var(--color-light-1); box-shadow: 0 0 4px var(--color-warm-2); }
+#module-management .stw-layout.compact button { width: 28px; height: 26px; padding: 0; justify-content: center; }
+
+/* ---------- pending changes ---------- */
+#module-management .stc-pending { align-self: flex-start; display: inline-flex; align-items: center; gap: 10px; padding: 3px 10px; border-radius: 3px; background: rgb(11 10 19 / 70%); border: 1px solid rgb(238 155 58 / 55%); color: #f6d3a8; font-size: 12.5px; }
+#module-management .stc-pending.warn { border-color: rgb(245 196 94 / 70%); color: #f3dca4; }
+#module-management .stc-pending > i { color: var(--color-warm-1); }
+#module-management .stc-pending a { color: var(--color-warm-1); text-decoration: underline; cursor: pointer; }
+#module-management .stc-badge { margin-left: 4px; min-width: 20px; height: 20px; padding: 0 5px; border-radius: 10px; background: #1a1206; color: var(--color-warm-1); font-size: 12px; display: inline-grid; place-items: center; }
+
+/* ---------- body: sections beside the module panel ---------- */
+#module-management .stagehand-body { flex: 1; min-height: 0; display: flex; gap: 12px; }
+#module-management .stc-sections { flex: 1; min-width: 0; list-style: none; margin: 0; padding: 0 4px 12px 0; overflow: auto; display: grid; gap: 14px; align-content: start; }
+#module-management .stc-head { display: flex; align-items: center; gap: 8px; height: 28px; padding: 0 6px 0 8px; border-left: 3px solid var(--c); background: linear-gradient(90deg, color-mix(in srgb, var(--c) 30%, transparent), transparent 70%); border-radius: 2px; cursor: pointer; }
+#module-management .stc-head:focus-visible { outline: 2px solid var(--color-warm-2); outline-offset: 1px; }
+#module-management .stc-head .name { font-size: 14px; font-weight: 600; color: var(--color-light-1); }
+#module-management .stc-head .count { color: var(--color-text-subtle); font-size: 12px; }
+#module-management .stc-head > i { color: var(--color-light-4); font-size: 11px; }
+#module-management .stc-empty { color: var(--color-text-subtle); padding: 20px 4px; }
+
+/* ---------- cards ---------- */
+#module-management .stw-grid { list-style: none; margin: 6px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px; }
+#module-management .stw-card { display: grid; gap: 4px; padding: 8px 10px 8px 9px; border-radius: 4px; border: 1px solid var(--color-cool-4); border-left: 3px solid var(--color-cool-4); background: rgb(11 10 19 / 62%); cursor: pointer; min-width: 0; transition: border-color .1s, background .1s; }
+#module-management .stw-card:hover { border-color: var(--color-cool-3); background: rgb(24 21 33 / 78%); }
+#module-management .stw-card:focus-visible { outline: 2px solid var(--color-warm-2); outline-offset: 1px; }
+#module-management .stw-card.off { background: rgb(11 10 19 / 38%); }
+#module-management .stw-card.off .t { color: var(--color-light-4); }
+#module-management .stw-card.plus { border-left-color: #6fd083; background: rgb(63 143 82 / 14%); }
+#module-management .stw-card.minus { border-left-color: #e0705a; background: rgb(180 82 63 / 14%); }
+#module-management .stw-card.dep { border-left-color: #a8873a; }
+#module-management .stw-card.prob { border-color: rgb(245 196 94 / 55%); border-left-color: #f5c45e; }
+#module-management .stw-card.viewing { border-color: var(--color-warm-1); box-shadow: 0 0 6px rgb(238 155 58 / 35%); }
+#module-management .stw-card .l1 { display: flex; align-items: center; gap: 9px; min-width: 0; }
+#module-management .stw-card .t { font-size: 14.5px; font-weight: 600; color: var(--color-light-1); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+#module-management .stw-delta { flex: none; font-size: 11px; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; }
+#module-management .stw-card.plus .stw-delta { color: #8fd49b; }
+#module-management .stw-card.minus .stw-delta { color: #ff9c8f; }
+#module-management .stw-card .l2 { display: flex; align-items: baseline; gap: 6px; padding-left: 35px; font-size: 12px; color: var(--color-text-subtle); min-width: 0; }
+#module-management .stw-card .l2 span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#module-management .stw-card .l2 i { font-size: 10.5px; flex: none; color: var(--color-light-4); }
+#module-management .stw-card .l2.warn { color: #f3dca4; }
+#module-management .stw-card .l2.warn i { color: #f5c45e; }
+#module-management .stw-card .l2.dep { color: #d9c08a; }
+#module-management .stw-card .l2.dep i { color: #c9a24e; }
+#module-management .stw-card .l2.note { color: var(--color-light-3); font-style: italic; }
+#module-management .stw-card .l2 a { color: var(--color-warm-1); text-decoration: underline; }
+#module-management .stw-card.off .l2.desc { opacity: .7; }
+
+/* Setup's switch */
+#module-management .sts-switch { appearance: none; width: 26px; height: 15px; border-radius: 8px; background: var(--color-cool-3); position: relative; cursor: pointer; border: 0; margin: 0; flex: none; }
+#module-management .sts-switch::before { display: none; }
+#module-management .sts-switch::after { content: ""; position: absolute; top: 2px; left: 2px; width: 11px; height: 11px; border-radius: 50%; background: var(--color-light-4); transition: left .1s; }
+#module-management .sts-switch:checked { background: #3f8f52; }
+#module-management .sts-switch:checked::after { left: 13px; background: #fff; }
+#module-management .sts-switch:disabled { opacity: .4; cursor: not-allowed; }
+#module-management .sts-switch:focus-visible { outline: 2px solid var(--color-warm-2); outline-offset: 2px; }
+
+/* ---------- the module panel (Setup's sts-panel, as a column of the window) ---------- */
+#module-management .sts-panel { flex: 0 0 330px; display: flex; flex-direction: column; min-height: 0; border-left: 1px solid var(--color-cool-4); position: relative; }
+#module-management .sts-panel > h2.divider { margin: 2px 12px 4px; font-size: 18px; flex: none; }
+#module-management .sts-panel .sts-close { position: absolute; right: 4px; top: 0; width: 26px; height: 26px; padding: 0; z-index: 2; }
+#module-management .sts-panel .scroll { flex: 1; min-height: 0; overflow: auto; padding: 4px 6px 12px 14px; display: flex; flex-direction: column; gap: 12px; font-size: 13px; }
+#module-management .sts-modhead h3 { margin: 0; font-size: 17px; color: var(--color-light-1); border: 0; }
+#module-management .sts-modhead .sub { color: var(--color-text-subtle); font-size: 12px; margin-top: 2px; }
+#module-management .sts-subtabs { display: flex; gap: 2px; border-bottom: 1px solid var(--color-cool-4); flex: none; }
+#module-management .sts-subtabs a { padding: 6px 12px; display: inline-flex; gap: 7px; align-items: center; color: var(--color-light-3); border-bottom: 2px solid transparent; margin-bottom: -1px; font-size: 14px; cursor: pointer; }
+#module-management .sts-subtabs a.active { color: var(--color-light-1); border-bottom-color: var(--color-warm-1); }
+#module-management .sts-kv { display: grid; grid-template-columns: 70px 1fr; gap: 8px 10px; align-items: center; }
+#module-management .sts-kv > span { color: var(--color-text-subtle); }
+#module-management .sts-kv > .v { color: var(--color-light-2); }
+#module-management .sts-kv .note { color: var(--color-light-2); font-style: italic; }
+#module-management .sts-kv .chips { display: flex; flex-wrap: wrap; gap: 4px; }
+#module-management .st-chip { display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 8px; border-radius: 12px; border: 1px solid var(--color-cool-3); background: var(--color-cool-4); color: var(--color-light-2); font-size: var(--font-size-12); white-space: nowrap; }
+#module-management .st-chip i.fa-solid { font-size: 10px; }
+#module-management .st-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--st-c, var(--color-light-5)); flex: none; box-shadow: 0 0 0 1px rgb(0 0 0 / 50%); }
+#module-management .st-muted { color: var(--color-text-subtle); }
+#module-management .sts-chg h4 { margin: 0 0 4px; font-family: var(--font-body, Signika), sans-serif; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--color-text-subtle); display: flex; justify-content: space-between; gap: 8px; border-bottom: 1px solid var(--color-cool-4); padding-bottom: 3px; }
+#module-management .sts-chg ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; }
+#module-management .sts-chg li { display: grid; grid-template-columns: 18px 1fr auto; gap: 8px; align-items: center; color: var(--color-light-2); }
+#module-management .sts-chg li .s { font-weight: 700; text-align: center; color: var(--color-light-4); }
+#module-management .sts-chg li .x { color: var(--color-light-4); font-size: 12px; padding: 0 4px; }
+#module-management .sts-wlist li { grid-template-columns: 1fr auto auto; padding: 4px 2px; }
+#module-management .sts-wlist li .d { font-size: 11px; font-weight: 600; }
+#module-management .sts-wlist li .d.plus { color: #8fd49b; }
+#module-management .sts-wlist li .d.minus { color: #ff9c8f; }
+#module-management .sts-badge { display: inline-flex; gap: 4px; align-items: center; font-size: 11px; padding: 0 6px; border-radius: 3px; border: 1px solid; margin-left: 4px; }
+#module-management .sts-badge.ok { color: #8fd49b; border-color: #3f8f52; }
+#module-management .sts-badge.warn { color: #f5c45e; border-color: #8a6a1f; }
+#module-management .stagehand-source { margin: 0; font-size: 12px; color: var(--color-text-subtle); }
+
+/* ---------- Foundry's interface in its light theme ---------- */
+body.theme-light #module-management .stw-card { background: rgb(255 255 255 / 55%); border-color: #c9bfae; border-left-color: #c9bfae; }
+body.theme-light #module-management .stw-card:hover { background: rgb(255 255 255 / 80%); border-color: #a99d88; }
+body.theme-light #module-management .stw-card.off { background: rgb(255 255 255 / 30%); }
+body.theme-light #module-management .stw-card .t,
+body.theme-light #module-management .stc-head .name,
+body.theme-light #module-management .sts-modhead h3 { color: #1e1a16; }
+body.theme-light #module-management .stw-card.off .t { color: #6d6458; }
+body.theme-light #module-management .stw-card.plus { background: rgb(63 143 82 / 16%); border-left-color: #3f8f52; }
+body.theme-light #module-management .stw-card.minus { background: rgb(180 82 63 / 14%); border-left-color: #b4523f; }
+body.theme-light #module-management .stw-card.plus .stw-delta { color: #2d6e3c; }
+body.theme-light #module-management .stw-card.minus .stw-delta { color: #9a3b2a; }
+body.theme-light #module-management .stw-card .l2.warn,
+body.theme-light #module-management .stw-card .l2.dep { color: #7a5a12; }
+body.theme-light #module-management .stw-card .l2.note,
+body.theme-light #module-management .sts-kv > .v,
+body.theme-light #module-management .sts-kv .note,
+body.theme-light #module-management .sts-chg li,
+body.theme-light #module-management .st-chip { color: #2a2520; }
+body.theme-light #module-management .st-chip { background: rgb(255 255 255 / 60%); border-color: #c9bfae; }
+body.theme-light #module-management .stc-pending { background: rgb(255 255 255 / 70%); color: #6b4a12; }
+body.theme-light #module-management .st-seg2 button { color: #4a4238; }
+body.theme-light #module-management .st-seg2 button[aria-pressed="true"] { background: #d8cfbf; color: #1e1a16; }
+body.theme-light #module-management .stw-layout button[aria-pressed="true"] { color: #1e1a16; background: rgb(238 155 58 / 22%); }
+body.theme-light #module-management .sts-subtabs a { color: #4a4238; }
+body.theme-light #module-management .sts-subtabs a.active { color: #1e1a16; }

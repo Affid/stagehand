@@ -1,6 +1,6 @@
 // The mockup's state, its stand-ins for Foundry's tooltip, notifications and
 // reload, and start-up. Query: lib=0 (no library on the server),
-// role=gm|assistant|player, theme=dark|light, reset=1 (forget folds and view).
+// role=gm|assistant|player, theme=dark|light, reset=1 (forget folds and layout).
 
 const Q = new URLSearchParams(location.search);
 const KEY = "stagehand-in-world-mock:";
@@ -11,21 +11,28 @@ function load(key) {
 function store(key, value) {
   try { localStorage.setItem(KEY + key, JSON.stringify(value)); } catch { /* storage refused: per-page only */ }
 }
-if (Q.get("reset")) ["view", "collapsed"].forEach((k) => { try { localStorage.removeItem(KEY + k); } catch { /* ignore */ } });
+if (Q.get("reset")) ["layout", "collapsed"].forEach((k) => { try { localStorage.removeItem(KEY + k); } catch { /* ignore */ } });
 
 const S = {
   library: Q.get("lib") !== "0",
   role: ["gm", "assistant", "player"].includes(Q.get("role")) ? Q.get("role") : "gm",
+  /** The world's saved module list, and the switches as they are now. */
   saved: new Set(ACTIVE),
   ticks: new Set(ACTIVE),
+  /** Setup's world page ("cards") or Foundry's own list ("foundry"); kept per user. */
+  layout: load("layout") === "foundry" ? "foundry" : "cards",
+  show: "all",
   filter: "all",
   search: "",
   expanded: false,
-  view: load("view") === "az" ? "az" : "folders",
   collapsed: new Set(load("collapsed") ?? []),
-  windowOpen: false,
-  /** The module shown in the side panel; null when the panel is closed. */
+  /** The module in the panel, and its tab. */
   selected: "modular-av-livekit",
+  ptab: "library",
+  /** Modules a preset turned on (for "From the preset X"), and the presets marked so far. */
+  fromPreset: new Map(),
+  marked: [],
+  windowOpen: false,
 };
 
 // ---------- Foundry's notifications ----------

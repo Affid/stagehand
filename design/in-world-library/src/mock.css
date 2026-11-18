@@ -40,31 +40,6 @@ body.theme-light .mock-settings, body.theme-light .mock-players, body.theme-ligh
 #module-management .package-list { flex: 1; min-height: 0; overflow-y: auto; margin: 0; padding: 0; }
 #module-management .form-footer { flex: none; }
 
-/* ---------- Stagehand: folder groups (Foundry's sidebar folders) ---------- */
-#module-management .stagehand-folder { --sidebar-folder-height: 24px; list-style: none; margin: 0 0 2px; }
-#module-management .stagehand-folder > .folder-header {
-  position: static; cursor: pointer; gap: 6px; border-radius: 3px; font-size: var(--font-size-14, 0.875rem);
-}
-#module-management .stagehand-folder > .folder-header:focus-visible { outline: 2px solid var(--color-warm-2, #ee9b3a); outline-offset: -2px; }
-#module-management .stagehand-folder > .folder-header .folder-name { flex: 1; min-width: 0; }
-#module-management .stagehand-count { flex: none; font-size: var(--font-size-12, 0.75rem); opacity: 0.85; font-variant-numeric: tabular-nums; }
-#module-management .stagehand-folder > .subdirectory {
-  margin: 0 0 6px 0; padding: 0 0 0 8px; list-style: none;
-  border-left: 4px solid var(--sidebar-folder-color, var(--color-dark-1));
-}
-#module-management .stagehand-folder > .subdirectory > .stagehand-folder { margin-top: 4px; }
-
-/* ---------- Stagehand: tags and notes in a row ---------- */
-#module-management .stagehand-tag {
-  display: inline-flex; align-items: center; gap: 4px; padding: 0 6px; white-space: nowrap;
-  font-size: var(--font-size-12, 0.75rem);
-}
-#module-management .stagehand-tag .swatch { width: 8px; height: 8px; border-radius: 50%; background: var(--st-tag); flex: none; }
-#module-management .stagehand-note { cursor: help; }
-#module-management .stagehand-note:focus-visible { outline: 2px solid var(--color-warm-2, #ee9b3a); }
-#module-management .stagehand-note-line { margin: 0 0 4px; font-style: italic; }
-#module-management .stagehand-source { margin: 6px 0 0; font-size: var(--font-size-12, 0.75rem); text-align: center; }
-
 /* ---------- Stagehand's dialogs ---------- */
 .stagehand-backdrop { position: fixed; inset: 0; background: rgb(0 0 0 / 45%); z-index: 199; }
 dialog.stagehand-dialog { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 520px; z-index: 200; margin: 0; }
@@ -91,30 +66,9 @@ dialog.stagehand-dialog { position: fixed; left: 50%; top: 50%; transform: trans
 #notifications { z-index: 1100; }
 #tooltip { z-index: 1200; }
 
-/* ---------- Stagehand: a module's details ---------- */
-#module-management .stagehand-more { flex: none; }
-#module-management .stagehand-about { margin: 0; font-size: var(--font-size-13, 0.8125rem); }
-#module-management .stagehand-note-line i { margin-right: 4px; opacity: 0.8; }
-#module-management .stagehand-facts {
-  display: grid; grid-template-columns: max-content 1fr; gap: 3px 12px; margin: 0; font-size: var(--font-size-12, 0.75rem);
-}
-#module-management .stagehand-facts dt { color: var(--color-text-subtle, #9f9275); }
-#module-management .stagehand-facts dd { margin: 0; display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
-#module-management .stagehand-facts em { font-style: normal; color: var(--color-text-subtle, #9f9275); }
-#module-management li.package.stagehand-selected { background: rgb(255 255 255 / 6%); box-shadow: inset 3px 0 var(--color-warm-2, #ee9b3a); }
-body.theme-light #module-management li.package.stagehand-selected { background: rgb(0 0 0 / 6%); }
-
-/* ---------- Stagehand: details in a side panel ---------- */
-#module-management.stagehand-wide { left: 150px; width: 1080px; }
-#module-management .stagehand-split { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 14px; }
-#module-management .stagehand-split > .package-list { min-height: 0; overflow-y: auto; }
-#module-management .stagehand-aside {
-  min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;
-  padding: 2px 4px 2px 14px; border-left: 1px solid var(--color-border, #4a4553);
-}
-#module-management .stagehand-aside-head { display: flex; align-items: flex-start; gap: 8px; }
-#module-management .stagehand-aside-title { flex: 1; min-width: 0; margin: 0; font-size: var(--font-size-20, 1.25rem); }
-#module-management .stagehand-aside-state { margin: -4px 0 0; font-size: var(--font-size-12, 0.75rem); color: var(--color-text-subtle, #9f9275); }
-#module-management .stagehand-aside-state.on { color: var(--color-level-success, #3fa45b); }
-#module-management .stagehand-aside .stagehand-note-line { margin: 0; font-style: italic; }
-#module-management .stagehand-facts code { font-size: inherit; padding: 0; background: none; border: 0; }
+/* ---------- the cards layout's slots ---------- */
+#module-management .stagehand-pending-slot, #module-management .stagehand-footer-slot { flex: none; display: flex; }
+#module-management .stagehand-pending-slot:empty { display: none; }
+#module-management .stagehand-footer-slot > .form-footer { flex: 1; }
+#module-management .stagehand-about { margin: 0; color: var(--color-light-2); }
+body.theme-light #module-management .stagehand-about { color: #2a2520; }
