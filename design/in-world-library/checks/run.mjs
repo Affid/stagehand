@@ -132,7 +132,7 @@ await dlg.locator('input[value="strahd"]').check();
 await dlg.locator('[data-action="mark"]').click();
 check("a module that isn't installed is named", ((await page.locator("#notifications").textContent()) ?? "").includes("Monk's Enhanced Journal"));
 
-// The setting: Show the Stagehand library in Module Management
+// The setting: Library view in Module Management
 check("no layout switch in the window", (await win.locator(".stw-layout").count()) === 0);
 await page.locator("#open-settings").click();
 const cfg = page.locator("#settings-config");

@@ -1,7 +1,7 @@
 // Foundry's Module Management window, as 14.370 renders it (frame and list
 // markup captured from the live window). With a Stagehand library on the
 // server, Gamemasters get Setup's world page inside it (cards.js), unless they
-// turn off "Show the Stagehand library in Module Management" (settings.js):
+// turn off "Library view in Module Management" (settings.js):
 // then it is Foundry's own list, untouched, so what other modules add to its
 // rows keeps working there.
 

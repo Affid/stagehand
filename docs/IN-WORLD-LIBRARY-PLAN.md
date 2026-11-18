@@ -138,8 +138,9 @@ does from inside, so the window shows that page's Modules tab (owner,
   Setup's "On in worlds" becomes this world only: a world can't see the
   others.
 - **A setting instead of a switch** (owner, 2026-11-18): no layout switch
-  in the window. Stagehand's tab in Configure Settings has "Show the
-  Stagehand library in Module Management", on by default, per user
+  in the window. Stagehand's tab in Configure Settings has "Library view
+  in Module Management" (short enough for one line in Foundry's label
+  column), on by default, per user
   (Foundry's user scope). Hint: "Modules appear as cards in the library's
   folders, with each module's details, presets and a review before saving.
   Turn this off for Foundry's own list, for example if another module adds

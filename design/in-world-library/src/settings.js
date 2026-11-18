@@ -1,7 +1,7 @@
 // Foundry's Configure Settings window (SettingsConfig, a CategoryBrowser in
-// 14.370: templates/category-browser/sidebar.hbs, main.hbs and
+// 14.370, its content a standard-form: templates/category-browser/sidebar.hbs, main.hbs and
 // templates/settings/config-category.hbs), with Stagehand's one setting:
-// "Show the Stagehand library in Module Management", per user, on by default. Other categories are
+// "Library view in Module Management", per user, on by default. Other categories are
 // drawn as tabs only.
 
 const CATEGORIES = [
@@ -18,7 +18,7 @@ function settingsTabsHtml() {
 function settingsCategoryHtml() {
   if (settingsView.tab !== "stagehand") return `<p class="hint">Mockup: only Stagehand's settings are drawn.</p>`;
   return `<div class="form-group">
-      <label for="settings-config-stagehand.libraryView">Show the Stagehand library in Module Management</label>
+      <label for="settings-config-stagehand.libraryView">Library view in Module Management</label>
       <div class="form-fields"><input type="checkbox" id="settings-config-stagehand.libraryView" name="stagehand.libraryView"${settingsView.structured ? " checked" : ""}></div>
       <p class="hint">Modules appear as cards in the library's folders, with each module's details, presets and a review before saving. Turn this off for Foundry's own list, for example if another module adds to that window. This applies to you only.</p>
     </div>`;
@@ -31,7 +31,7 @@ function settingsHtml() {
       <h1 class="window-title">Game Settings</h1>
       <button type="button" class="header-control icon fa-solid fa-xmark" data-tooltip-text="Close Window" aria-label="Close Window" data-action="closeSettings"></button>
     </header>
-    <section class="window-content">
+    <section class="window-content standard-form">
       <aside class="flexcol" data-application-part="sidebar">
         <search><input type="search" placeholder="&#xf002;" aria-label="Filter" autocomplete="off" spellcheck="false"></search>
         <nav class="tabs vertical scrollable">${settingsTabsHtml()}</nav>

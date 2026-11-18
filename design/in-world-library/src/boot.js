@@ -19,7 +19,7 @@ const S = {
   /** The world's saved module list, and the switches as they are now. */
   saved: new Set(ACTIVE),
   ticks: new Set(ACTIVE),
-  /** Stagehand's setting "Show the Stagehand library in Module Management" (per user, on by default). */
+  /** Stagehand's setting "Library view in Module Management" (per user, on by default). */
   structured: load("structured") !== false,
   show: "all",
   /** Setup's Group by: folder, tag, author or smart group; kept per user. */
