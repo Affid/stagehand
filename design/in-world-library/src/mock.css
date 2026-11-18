@@ -51,6 +51,9 @@ dialog.stagehand-dialog { position: fixed; left: 50%; top: 50%; transform: trans
   display: grid; grid-template-columns: auto 1fr auto; column-gap: 8px; align-items: center; cursor: pointer;
 }
 .stagehand-preset .name, .stagehand-mode .name { font-weight: bold; }
+.stagehand-dialog .sts-badge { display: inline-flex; gap: 4px; align-items: center; font-size: 11px; font-weight: normal; padding: 0 6px; border-radius: 3px; border: 1px solid; margin-left: 6px; vertical-align: 1px; }
+.stagehand-dialog .sts-badge.ok { color: #8fd49b; border-color: #3f8f52; }
+body.theme-light .stagehand-dialog .sts-badge.ok { color: #2d6e3c; }
 .stagehand-preset .meta { font-size: var(--font-size-12, 0.75rem); color: var(--color-text-subtle, #9f9275); font-variant-numeric: tabular-nums; }
 .stagehand-preset .about, .stagehand-mode .about {
   grid-column: 2 / -1; font-size: var(--font-size-12, 0.75rem); color: var(--color-text-subtle, #9f9275);

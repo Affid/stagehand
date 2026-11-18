@@ -43,6 +43,7 @@ check("cards layout by default", (await win.getAttribute("class")).includes("sta
 check("folder sections show", (await win.locator(".stc-sec").count()) === 9);
 check("every module has a card", (await win.locator(".stw-card").count()) === 38);
 check("the panel opens with the mockup", (await panelTitle()) === "Modular A/V: LiveKit");
+check("the panel marks the active preset's chip, not the other", ((await win.locator(".sts-panel .st-chip.active").textContent()) ?? "").includes("One-shot minimal") && (await win.locator(".sts-panel .st-chip.active").count()) === 1);
 await card("perfect-vision").locator(".t").click();
 check("clicking a card shows it in the panel", (await panelTitle()) === "Perfect Vision");
 check("its folder and presets show", ((await win.locator(".sts-panel").textContent()) ?? "").includes("Lighting & weather") && ((await win.locator(".sts-panel").textContent()) ?? "").includes("Horror ambience"));
@@ -114,6 +115,9 @@ check("Discard clears the changes", (await changesCount()) === "Changes" && (awa
 await win.locator('[data-action="addPreset"]').click();
 check("the button says Apply preset", ((await win.locator('[data-action="addPreset"]').textContent()) ?? "").includes("Apply preset"));
 check("Mark Changes waits for a preset", await dlg.locator('[data-action="mark"]').isDisabled());
+check("a preset whose modules are all on is Active", ((await dlg.locator('label:has(input[value="oneshot"])').textContent()) ?? "").includes("Active"));
+check("a preset with some off isn't", !((await dlg.locator('label:has(input[value="horror"])').textContent()) ?? "").includes("Active"));
+check("modules the server lacks are named, not counted", ((await dlg.locator('label:has(input[value="strahd"])').textContent()) ?? "").includes("1 not installed"));
 await dlg.locator('input[value="horror"]').check();
 await shot("06-preset");
 await dlg.locator('[data-action="mark"]').click();
@@ -127,6 +131,9 @@ await page.waitForSelector("#notifications .notification.info");
 check("saved: notification", ((await page.locator("#notifications").textContent()) ?? "").includes("saved"));
 await page.locator("#open-modules").click();
 check("saved: Token Magic FX is on", await card("tokenmagic").locator(".sts-switch").isChecked());
+await win.locator('[data-action="addPreset"]').click();
+check("once saved, Horror ambience is Active", ((await dlg.locator('label:has(input[value="horror"])').textContent()) ?? "").includes("Active"));
+await dlg.locator('footer [data-action="cancel"]').click();
 await win.locator('[data-action="addPreset"]').click();
 await dlg.locator('input[value="strahd"]').check();
 await dlg.locator('[data-action="mark"]').click();

@@ -91,6 +91,8 @@
 #module-management .sts-kv .chips { display: flex; flex-wrap: wrap; gap: 4px; }
 #module-management .st-chip { display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 8px; border-radius: 12px; border: 1px solid var(--color-cool-3); background: var(--color-cool-4); color: var(--color-light-2); font-size: var(--font-size-12); white-space: nowrap; }
 #module-management .st-chip i.fa-solid { font-size: 10px; }
+#module-management .st-chip.active { border-color: #3f8f52; color: #b9e3c1; }
+#module-management .st-chip.active i { color: #8fd49b; }
 #module-management .st-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--st-c, var(--color-light-5)); flex: none; box-shadow: 0 0 0 1px rgb(0 0 0 / 50%); }
 #module-management .st-muted { color: var(--color-text-subtle); }
 #module-management .sts-chg h4 { margin: 0 0 4px; font-family: var(--font-body, Signika), sans-serif; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--color-text-subtle); display: flex; justify-content: space-between; gap: 8px; border-bottom: 1px solid var(--color-cool-4); padding-bottom: 3px; }
@@ -127,6 +129,7 @@ body.theme-light #module-management .sts-kv .note,
 body.theme-light #module-management .sts-chg li,
 body.theme-light #module-management .st-chip { color: #2a2520; }
 body.theme-light #module-management .st-chip { background: rgb(255 255 255 / 60%); border-color: #c9bfae; }
+body.theme-light #module-management .st-chip.active { border-color: #3f8f52; color: #2d6e3c; }
 body.theme-light #module-management .stc-pending { background: rgb(255 255 255 / 70%); color: #6b4a12; }
 body.theme-light #module-management .st-seg2 button { color: #4a4238; }
 body.theme-light #module-management .st-seg2 button[aria-pressed="true"] { background: #d8cfbf; color: #1e1a16; }

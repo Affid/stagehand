@@ -153,7 +153,10 @@ function cardsFooterHtml() {
 function libraryTab(m) {
   const folder = FOLDERS.find((f) => f.id === FOLDER_OF[m.id])?.name ?? "Unfiled";
   const tags = tagsOf(m.id).map((t) => `<span class="st-chip"><i class="st-dot" style="--st-c:${t.color}"></i>${esc(t.name)}</span>`).join("") || '<span class="st-muted">None</span>';
-  const presets = PRESETS.filter((p) => p.modules.includes(m.id)).map((p) => `<span class="st-chip"><i class="fa-solid fa-layer-group" inert></i>${esc(p.name)}</span>`).join("") || '<span class="st-muted">None</span>';
+  const chip = (p) => presetState(p, S.ticks).active
+    ? `<span class="st-chip active" data-tooltip-text="Active: all its modules are on in this world"><i class="fa-solid fa-check" inert></i>${esc(p.name)}</span>`
+    : `<span class="st-chip"><i class="fa-solid fa-layer-group" inert></i>${esc(p.name)}</span>`;
+  const presets = PRESETS.filter((p) => p.modules.includes(m.id)).map(chip).join("") || '<span class="st-muted">None</span>';
   const now = isOn(m.id);
   const d = now === wasOn(m.id) ? "<span></span>" : `<span class="d ${now ? "plus" : "minus"}">${now ? "turns on" : "turns off"}</span>`;
   return `<div class="sts-kv"><span>Folder</span><span class="v">${esc(folder)}</span>

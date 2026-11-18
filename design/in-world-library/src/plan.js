@@ -55,6 +55,17 @@ function planFor(active, presetIds, mode) {
   };
 }
 
+/**
+ * A preset is active when every module in it that this server has is on
+ * (owner, 2026-11-18); modules the server doesn't have are left out.
+ */
+function presetState(p, on) {
+  const installed = p.modules.filter((id) => MODULE_BY_ID[id]);
+  const count = installed.filter((id) => on.has(id)).length;
+  return { installed: installed.length, on: count, missing: p.modules.length - installed.length,
+    active: installed.length > 0 && count === installed.length };
+}
+
 /** The world's modules after the plan; with `removeDependents`, those go too. */
 function resultOf(plan, removeDependents) {
   const out = new Set(plan.target);

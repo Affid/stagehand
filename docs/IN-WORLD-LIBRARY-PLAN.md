@@ -158,6 +158,12 @@ does from inside, so the window shows that page's Modules tab (owner,
 - Our dialog: the library's presets and a mode (Add, Replace, Remove).
   "Mark Changes" marks them on the cards ("From the preset X"); a module the
   preset names but the server doesn't have is named in a notice.
+- **Active presets** (owner, 2026-11-18): a preset is active when every
+  module in it that the server has is on (modules it lacks are left out of
+  the count; the switches as they stand, unsaved changes included). The
+  dialog marks it "Active" ("All 5 on here"); the module panel marks its
+  chip with a check. Setup doesn't show this yet; its world page and
+  Library could use the same rule.
 - Saving goes through the same review, with the presets listed; the
   companion keeps itself on (C-5).
 

@@ -49,11 +49,14 @@ function closeDialogs() {
 // ---------- Apply preset ----------
 
 function presetRow(p) {
-  const on = p.modules.filter((id) => S.ticks.has(id)).length;
-  return `<label class="stagehand-preset">
+  const st = presetState(p, S.ticks);
+  const count = st.active ? `All ${st.installed} on here` : `${st.installed} modules · ${st.on} on here`;
+  const missing = st.missing ? ` · ${st.missing} not installed` : "";
+  const badge = st.active ? ` <span class="sts-badge ok" data-tooltip-text="All its modules are on in this world"><i class="fa-solid fa-check" inert></i>Active</span>` : "";
+  return `<label class="stagehand-preset${st.active ? " active" : ""}">
     <input type="checkbox" name="preset" value="${esc(p.id)}"${pick.presets.has(p.id) ? " checked" : ""}>
-    <span class="name">${esc(p.name)}</span>
-    <span class="meta" data-tooltip-text="${esc(p.modules.map(titleOf).join(", "))}">${p.modules.length} modules · ${on} on here</span>
+    <span class="name">${esc(p.name)}${badge}</span>
+    <span class="meta" data-tooltip-text="${esc(p.modules.map(titleOf).join(", "))}">${count}${missing}</span>
     <span class="about">${esc(p.description)}</span>
   </label>`;
 }
