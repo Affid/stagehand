@@ -94,26 +94,23 @@ function foundryDescription(m) {
     <ul class="package-metadata"><li><strong>Author:</strong> <span class="author">${esc(m.author)}</span></li>${deps}</ul>`;
 }
 
+/** Foundry's description in the row; with the library, details live in the side panel instead. */
 function description(m) {
-  return `<div class="package-description">${showsLibrary() ? `<div class="stagehand-details">${detailsHtml(m)}</div>` : foundryDescription(m)}</div>`;
+  return showsLibrary() ? "" : `<div class="package-description">${foundryDescription(m)}</div>`;
 }
 
-/** The row's own details button (Stagehand): opens its details in place, or in the side panel. */
+/** The row's details button (Stagehand): shows the module in the side panel, or closes it again. */
 function moreButton(m) {
   if (!showsLibrary()) return "";
-  const panel = S.details === "panel";
-  const open = panel ? S.selected === m.id : S.open.has(m.id);
-  const icon = panel ? "fa-angle-right" : open ? "fa-chevron-up" : "fa-chevron-down";
-  const tip = panel ? "Show details" : open ? "Hide details" : "Show details";
-  const state = panel ? `aria-pressed="${open}"` : `aria-expanded="${open}"`;
-  return `<button type="button" class="inline-control icon fa-solid ${icon} stagehand-more" data-action="moduleDetails"
-    ${state} data-tooltip-text="${tip}" aria-label="${tip}: ${esc(m.title)}"></button>`;
+  const open = S.selected === m.id;
+  const tip = open ? "Close details" : "Show details";
+  return `<button type="button" class="inline-control icon fa-solid fa-angle-right stagehand-more" data-action="moduleDetails"
+    aria-pressed="${open}" data-tooltip-text="${tip}" aria-label="${tip}: ${esc(m.title)}"></button>`;
 }
 
 function row(m) {
   const disabled = isEditable() ? "" : " disabled";
-  const open = showsLibrary() && (S.details === "panel" ? S.selected === m.id : S.open.has(m.id));
-  const mark = open ? (S.details === "panel" ? " stagehand-selected" : " stagehand-open") : "";
+  const mark = showsLibrary() && S.selected === m.id ? " stagehand-selected" : "";
   return `<li class="package flexrow${S.saved.has(m.id) ? " active" : ""}${mark}"${isShown(m) ? "" : " hidden"} data-module-id="${esc(m.id)}">
     <div class="package-overview tags flexrow">
       <label class="package-title flexrow">
@@ -182,11 +179,16 @@ function viewToggleHtml() {
     data-action="stagehandView" data-tooltip-text="${tip}" aria-label="${tip}"></button>`;
 }
 
-function searchRowHtml() {
+/** Foundry's Expand shows descriptions in the rows; with the library they live in the side panel, so it goes. */
+function expandHtml() {
+  if (showsLibrary()) return "";
   const tip = S.expanded ? "Collapse" : "Expand";
-  return `${filtersHtml()}${viewToggleHtml()}
-    <button type="button" class="inline-control icon fa-solid fa-angle-double-${S.expanded ? "down" : "up"}"
+  return `<button type="button" class="inline-control icon fa-solid fa-angle-double-${S.expanded ? "down" : "up"}"
       data-action="toggleExpanded" data-tooltip-text="${tip}" aria-label="${tip}"></button>`;
+}
+
+function searchRowHtml() {
+  return `${filtersHtml()}${viewToggleHtml()}${expandHtml()}`;
 }
 
 function footerHtml() {
@@ -211,7 +213,7 @@ function windowHtml() {
   const hint = isEditable()
     ? "Use this form to configure which Modules are active within your current World. Submitting changes to active modules will cause the current session to reload."
     : "The Modules listed below are currently active within this World.";
-  const wide = showsLibrary() && S.details === "panel" ? " stagehand-wide" : "";
+  const wide = hasPanel() ? " stagehand-wide" : "";
   return `<form id="module-management" class="application${wide}" autocomplete="off">
     <header class="window-header">
       <i class="window-icon fa-fw fa-solid fa-cube" inert></i>
@@ -232,18 +234,24 @@ function windowHtml() {
   </form>`;
 }
 
+const hasPanel = () => showsLibrary() && MODULE_BY_ID[S.selected] !== undefined;
+
 function asideHtml() {
   const m = MODULE_BY_ID[S.selected];
-  if (!m) return `<p class="hint stagehand-empty">Choose <i class="fa-solid fa-angle-right" inert></i> on a module to see its details here.</p>`;
+  if (!m) return "";
   const state = S.saved.has(m.id) ? "Active in this world" : "Not active in this world";
-  return `<h3 class="stagehand-aside-title">${esc(m.title)}</h3>
+  return `<header class="stagehand-aside-head">
+      <h3 class="stagehand-aside-title">${esc(m.title)}</h3>
+      <button type="button" class="inline-control icon fa-solid fa-xmark" data-action="closeDetails"
+        data-tooltip-text="Close details" aria-label="Close details"></button>
+    </header>
     <p class="stagehand-aside-state${S.saved.has(m.id) ? " on" : ""}">${state}</p>
     ${detailsHtml(m)}`;
 }
 
 function bodyHtml() {
   const menu = `<menu class="package-list scrollable${S.expanded ? " expanded" : ""}">${listHtml()}</menu>`;
-  if (!(showsLibrary() && S.details === "panel")) return menu;
+  if (!hasPanel()) return menu;
   return `<div class="stagehand-split">${menu}<aside class="stagehand-aside" aria-label="Module details">${asideHtml()}</aside></div>`;
 }
 
@@ -280,14 +288,19 @@ const ACTIONS = {
   toggleFolder: (el) => toggleFolder(el.closest("[data-folder-id]").dataset.folderId),
   deactivateAll: () => { S.ticks = new Set(); renderList(); },
   applyPresets: () => openPicker(),
-  moduleDetails: (el) => toggleDetails(el.closest("[data-module-id]").dataset.moduleId),
+  moduleDetails: (el) => showDetails(el.closest("[data-module-id]").dataset.moduleId),
+  closeDetails: () => showDetails(null),
 };
 
-function toggleDetails(id) {
-  if (S.details === "panel") S.selected = id;
-  else if (S.open.has(id)) S.open.delete(id);
-  else S.open.add(id);
-  renderList();
+/** Opening or closing the panel changes the window's width, so the window is drawn again. */
+function showDetails(id) {
+  const next = id === S.selected ? null : id;
+  const reshape = (next === null) !== (S.selected === null);
+  S.selected = next;
+  if (!reshape) { renderList(); return; }
+  openWindow();
+  const back = next ?? id;
+  document.querySelector(`#module-management [data-module-id="${CSS.escape(back)}"] .stagehand-more`)?.focus();
 }
 
 function toggleFolder(id) {

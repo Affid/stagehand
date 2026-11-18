@@ -1,7 +1,6 @@
 // The mockup's state, its stand-ins for Foundry's tooltip, notifications and
 // reload, and start-up. Query: lib=0 (no library on the server),
-// role=gm|assistant|player, theme=dark|light, details=row|panel,
-// reset=1 (forget folds and view).
+// role=gm|assistant|player, theme=dark|light, reset=1 (forget folds and view).
 
 const Q = new URLSearchParams(location.search);
 const KEY = "stagehand-in-world-mock:";
@@ -25,9 +24,7 @@ const S = {
   view: load("view") === "az" ? "az" : "folders",
   collapsed: new Set(load("collapsed") ?? []),
   windowOpen: false,
-  /** How a module's details open: in its row, or in a side panel. */
-  details: Q.get("details") === "panel" ? "panel" : "row",
-  open: new Set(["modular-av-livekit"]),
+  /** The module shown in the side panel; null when the panel is closed. */
   selected: "modular-av-livekit",
 };
 

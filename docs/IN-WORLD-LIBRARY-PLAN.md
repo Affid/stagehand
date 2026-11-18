@@ -110,12 +110,13 @@ unchanged.
   colour and name (never colour alone).
 - **Notes** as an icon with `data-tooltip-text`; in Foundry's expanded
   mode, also the first line of the description.
-- **A module's details** (owner, 2026-11-18: Setup shows them, Foundry's
-  Expand opens every row at once): the note, description, folder, tags,
-  the presets it is in, what it requires and what needs it, version,
-  author and package id. Two variants in the mockup, to choose from: a
-  chevron at the end of each row opens that row's details in place, or a
-  wider window with a details pane on the right, like Setup's panel.
+- **A module's details** in a side panel (owner, 2026-11-18: Setup shows
+  them; Foundry's Expand opens every row at once): an arrow at the end of
+  each row shows the module in a pane on the right, and the window widens;
+  x (or the same arrow) closes it and the window narrows back. The pane has
+  the note, description, folder, tags, the presets it is in, what it
+  requires and what needs it, version, author and package id. Foundry's
+  Expand button is hidden while the library shows.
 - **Search** matches tag names and notes too.
 - **Folders or A–Z:** a small toggle beside Foundry's expand button
   returns to Foundry's flat order, also the way out when another module
