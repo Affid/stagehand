@@ -1,7 +1,7 @@
 # The library inside a world (plan)
 
-Status: planned 2026-11-18 (GitHub issue #2). Not built. Next step: the
-owner's review of the mockup (Setup's cards in Module Management), then the
+Status: planned 2026-11-18 (GitHub issue #2). Not built. The owner approved
+the mockup the same day ("Looks good"); it is the spec. Next step: the
 spike.
 
 ## Goal
@@ -226,8 +226,8 @@ is checked in the spike).
    https://claude.ai/artifact/SjcMMvJ6B7MmQWuWpZ8mTj. First version
    2026-11-18 (Foundry's rows in folder groups, then a details pane); the
    owner chose to reuse Setup's cards instead, and the mockup now shows
-   them, built from the Setup mockup's own CSS. Waiting for the owner's
-   review. Choices in it to confirm or change: presets marked on the cards
+   them, built from the Setup mockup's own CSS. Approved by the owner
+   2026-11-18, with the choices below; it is the spec. Choices in it to confirm or change: presets marked on the cards
    and applied by saving (not at once); the review before saving; Assistant
    GMs get the cards without Apply preset; folded sections and Group by kept
    per user; Stagehand's own card is always on, as on Setup; the setting's
