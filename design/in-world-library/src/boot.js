@@ -11,7 +11,7 @@ function load(key) {
 function store(key, value) {
   try { localStorage.setItem(KEY + key, JSON.stringify(value)); } catch { /* storage refused: per-page only */ }
 }
-if (Q.get("reset")) ["layout", "collapsed"].forEach((k) => { try { localStorage.removeItem(KEY + k); } catch { /* ignore */ } });
+if (Q.get("reset")) ["layout", "collapsed", "groupBy"].forEach((k) => { try { localStorage.removeItem(KEY + k); } catch { /* ignore */ } });
 
 const S = {
   library: Q.get("lib") !== "0",
@@ -22,6 +22,8 @@ const S = {
   /** Setup's world page ("cards") or Foundry's own list ("foundry"); kept per user. */
   layout: load("layout") === "foundry" ? "foundry" : "cards",
   show: "all",
+  /** Setup's Group by: folder, tag, author or smart group; kept per user. */
+  groupBy: ["tag", "author", "smart"].includes(load("groupBy")) ? load("groupBy") : "folder",
   filter: "all",
   search: "",
   expanded: false,

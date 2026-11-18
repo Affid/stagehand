@@ -64,6 +64,20 @@ await win.locator("#module-search").fill("laptop");
 check("search finds notes", (await win.locator(".stw-card").count()) === 1);
 await win.locator("#module-search").fill("");
 
+// Group by
+const groupBy = (v) => win.locator('select[name="groupBy"]').selectOption(v);
+await groupBy("tag");
+check("group by tag: a section per tag, then Untagged", (await win.locator(".stc-sec").count()) === 5 && ((await win.locator(".stc-sec").last().textContent()) ?? "").includes("Untagged"));
+check("group by tag: a module shows under each of its tags", (await card("dice-so-nice").count()) === 2);
+await shot("03b-group-tag");
+await groupBy("author");
+check("group by author: Wasp's three modules together", (await win.locator('.stc-sec[data-group="author:Wasp"] .stw-card').count()) === 3);
+await groupBy("smart");
+check("smart groups: Libraries, Content packs, System, Not verified", (await win.locator(".stc-sec").count()) === 4 && (await win.locator('.stc-sec[data-group="smart:library"] .stw-card').count()) === 3);
+await shot("03c-group-smart");
+await groupBy("folder");
+check("back to folders", (await win.locator(".stc-sec").count()) === 9);
+
 // A switch, a problem, the review
 await card("modular-av").locator(".sts-switch").click();
 check("a switch marks the card", ((await card("modular-av").textContent()) ?? "").includes("turns off"));

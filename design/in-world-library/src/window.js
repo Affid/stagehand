@@ -145,6 +145,7 @@ function bindWindow(win) {
   });
   win.addEventListener("change", (e) => {
     const box = e.target.closest('input[type="checkbox"]');
+    if (e.target.matches('select[name="groupBy"]')) { S.groupBy = e.target.value; store("groupBy", S.groupBy); render(); return; }
     if (!box) return;
     if (box.matches(".sts-switch")) { setTick(box.dataset.id, box.checked); render(); return; }
     setTick(box.name, box.checked);

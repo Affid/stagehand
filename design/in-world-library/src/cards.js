@@ -56,16 +56,46 @@ function keepsCard(m) {
   return [m.title, m.id, ...tagsOf(m.id).map((t) => t.name), NOTES[m.id] ?? ""].some((x) => x.toLowerCase().includes(q));
 }
 
-function sectionHtml(folder, users) {
-  const all = MODULES.filter((m) => (FOLDER_OF[m.id] ?? UNFILED.id) === folder.id).sort((a, b) => a.title.localeCompare(b.title));
+// ---------- groups: Setup's Group by (model/library-groups.ts) ----------
+
+const GROUP_BYS = [["folder", "Folder"], ["tag", "Tag"], ["author", "Author"], ["smart", "Smart group"]];
+const having = (test) => MODULES.filter(test);
+
+/** Smart groups a world can work out from its own manifests; "Unused in known worlds" needs the other worlds. */
+function smartGroups() {
+  const systems = [...new Set(MODULES.map((m) => m.system).filter(Boolean))];
+  return [
+    { key: "smart:library", name: "Libraries", mods: having((m) => m.library) },
+    { key: "smart:content", name: "Content packs", mods: having((m) => m.contentOnly) },
+    ...systems.map((s) => ({ key: `smart:system:${s}`, name: `System: ${s}`, mods: having((m) => m.system === s) })),
+    { key: "smart:unverified", name: "Not verified for this core version", mods: having((m) => m.unverified) },
+  ];
+}
+
+function groups() {
+  if (S.groupBy === "tag") {
+    const tagged = (m) => (TAGS_OF[m.id] ?? []).length > 0;
+    return [...TAGS.map((t) => ({ key: `tag:${t.id}`, name: t.name, color: t.color, mods: having((m) => (TAGS_OF[m.id] ?? []).includes(t.id)) })),
+      { key: "untagged", name: "Untagged", mods: having((m) => !tagged(m)) }];
+  }
+  if (S.groupBy === "author") {
+    return [...new Set(MODULES.map((m) => m.author))].sort((a, b) => a.localeCompare(b))
+      .map((a) => ({ key: `author:${a}`, name: a, mods: having((m) => m.author === a) }));
+  }
+  if (S.groupBy === "smart") return smartGroups();
+  return [...FOLDERS, UNFILED].map((f) => ({ key: f.id, name: f.name, color: f.color, mods: having((m) => (FOLDER_OF[m.id] ?? UNFILED.id) === f.id) }));
+}
+
+function sectionHtml(g, users) {
+  const all = [...g.mods].sort((a, b) => a.title.localeCompare(b.title));
   const shown = all.filter(keepsCard);
   if (!shown.length) return "";
   const on = all.filter((m) => isOn(m.id)).length;
-  const folded = S.collapsed.has(folder.id) && S.search.trim() === "";
-  const c = folder.color || "var(--color-cool-3)";
-  return `<li class="stc-sec" data-group="${esc(folder.id)}" style="--c:${c}">
-    <header class="stc-head" data-action="toggleFolder" data-id="${esc(folder.id)}" role="button" tabindex="0" aria-expanded="${!folded}">
-      <i class="fa-solid fa-chevron-${folded ? "right" : "down"} fa-fw" inert></i><span class="name">${esc(folder.name)}</span><span class="count">${on} of ${all.length} on</span>
+  const folded = S.collapsed.has(g.key) && S.search.trim() === "";
+  const c = g.color || "var(--color-cool-3)";
+  return `<li class="stc-sec" data-group="${esc(g.key)}" style="--c:${c}">
+    <header class="stc-head" data-action="toggleFolder" data-id="${esc(g.key)}" role="button" tabindex="0" aria-expanded="${!folded}">
+      <i class="fa-solid fa-chevron-${folded ? "right" : "down"} fa-fw" inert></i><span class="name">${esc(g.name)}</span><span class="count">${on} of ${all.length} on</span>
     </header>
     ${folded ? "" : `<ol class="stw-grid">${shown.map((m) => cardHtml(m, users)).join("")}</ol>`}
   </li>`;
@@ -73,7 +103,7 @@ function sectionHtml(folder, users) {
 
 function sectionsHtml() {
   const users = usersOn();
-  const html = [...FOLDERS, UNFILED].map((f) => sectionHtml(f, users)).join("");
+  const html = groups().map((g) => sectionHtml(g, users)).join("");
   const empty = S.show === "changes" ? "Nothing changed yet." : S.show === "on" ? "No modules on." : "No modules match.";
   return html || `<li class="stc-empty">${empty}</li>`;
 }
@@ -95,8 +125,14 @@ function toolsHtml() {
   return `<div class="stc-tools">
     <input type="search" id="module-search" autocomplete="off" placeholder="Filter modules" aria-label="Filter modules" value="${esc(S.search)}">
     <span class="st-seg2" role="group" aria-label="Show">${seg("all", `All ${MODULES.length}`)}${seg("on", `On ${S.ticks.size}`)}${seg("changes", `Changes${n ? ` ${n}` : ""}`)}</span>
-    ${add}<span class="sp"></span>${layoutSwitch()}
+    ${add}${groupByHtml()}<span class="sp"></span>${layoutSwitch()}
   </div>`;
+}
+
+/** Setup's Group by, as on its Library's toolbar. */
+function groupByHtml() {
+  const options = GROUP_BYS.map(([id, label]) => `<option value="${id}"${S.groupBy === id ? " selected" : ""}>${label}</option>`).join("");
+  return `<label class="stc-group"><span>Group by</span><select name="groupBy" aria-label="Group by">${options}</select></label>`;
 }
 
 function problemsCount() {

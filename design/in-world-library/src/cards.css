@@ -11,6 +11,8 @@
 #module-management .stc-tools input[type=search] { height: 28px; width: 220px; flex: none; }
 #module-management .stc-tools button { height: 28px; width: auto; flex: none; padding: 0 10px; gap: 6px; font-size: 13px; }
 #module-management .stc-tools .sp { flex: 1; }
+#module-management .stc-group { display: inline-flex; align-items: center; gap: 6px; flex: none; margin-left: 6px; font-size: 13px; color: var(--color-text-subtle); }
+#module-management .stc-group select { height: 28px; width: 130px; }
 #module-management .st-seg2 { display: inline-flex; border: 1px solid var(--color-cool-3); border-radius: 3px; overflow: hidden; height: 28px; flex: none; }
 #module-management .st-seg2 button { height: 100%; border: 0; border-right: 1px solid var(--color-cool-3); border-radius: 0; padding: 0 10px; font-size: 12.5px; color: var(--color-light-3); background: none; }
 #module-management .st-seg2 button:last-child { border-right: 0; }

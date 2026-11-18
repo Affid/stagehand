@@ -116,6 +116,12 @@ does from inside, so the window shows that page's Modules tab (owner,
   preset, not verified, the note, or the description), as on Setup.
   Sections are the library's folders (one level, as Setup makes them;
   "Unfiled" last) with "N of M on"; folded sections are kept per user.
+- **Group by** Folder, Tag, Author or Smart group, Setup's four modes
+  (`model/library-groups.ts`), inline in the tools row as on Setup's
+  Library (Setup's world page keeps it under View options); kept per user.
+  Smart groups are the ones a world can work out from its own manifests:
+  Libraries, Content packs, System, Not verified. "Unused in known worlds"
+  needs the other worlds, so it isn't offered.
 - **All, On, Changes** and a search that also matches tags and notes.
 - **Changes are marked, then saved:** a flipped switch marks its card
   "turns on" or "turns off"; a line counts the changes and problems with
