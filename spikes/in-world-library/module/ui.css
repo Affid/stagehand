@@ -1,0 +1,47 @@
+/* The spike view: enough to see the window's size and Foundry's theme around our cards. */
+.st-spike-cards .window-content {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.st-spike-host,
+.st-spike-view {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+  gap: 8px;
+}
+.st-spike-head {
+  margin: 0;
+  color: var(--color-text-subtle);
+}
+.st-spike-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex: 1;
+  overflow: auto;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  align-content: start;
+}
+.st-spike-card {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 10px;
+  border: 1px solid var(--color-cool-4);
+  border-left: 3px solid var(--color-cool-4);
+  border-radius: 4px;
+}
+.st-spike-card.on {
+  border-left-color: #3f8f52;
+}
+.st-spike-card .t {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

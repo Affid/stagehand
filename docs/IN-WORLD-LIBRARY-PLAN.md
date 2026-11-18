@@ -1,8 +1,8 @@
 # The library inside a world (plan)
 
 Status: planned 2026-11-18 (GitHub issue #2). Not built. The owner approved
-the mockup the same day ("Looks good"); it is the spec. Next step: the
-spike.
+the mockup the same day ("Looks good"); it is the spec. The spike passed
+on 13 and 14 the same day (`spikes/in-world-library`). Next step: the build.
 
 ## Goal
 
@@ -233,11 +233,17 @@ is checked in the spike).
    per user; Stagehand's own card is always on, as on Setup; the setting's
    per-user scope; "Mark Changes" as the preset dialog's button (its changes
    wait for Save).
-1. **Spike:** Setup's Modules tab rendered inside Module Management on
-   13.351 and 14.370 (window size, Foundry's re-renders, light and dark
-   interface), alone and with BBMM (enhanced management on and off,
-   Shift-click, its header button); loading
-   the shared UI on demand from the companion. The Forge's global.
+1. **Spike:** done 2026-11-18, `spikes/in-world-library` (README there):
+   17 of 17 checks on 13.351 and 14.370. Our view replaces Module
+   Management's content on every render and keeps its width; Preact and our
+   CSS load on demand from the module (about 0.1 s); the light interface
+   works; a player gets Foundry's list. Foundry's form save would read our
+   view as an empty module list and switch every module off: a
+   capture-phase `submit` listener stops it, checked with Foundry's settings
+   write spied on. With BBMM (1.5.2): a click opens BBMM's window,
+   Shift-click opens Foundry's with our view, BBMM's header button stays.
+   For the build: set the window's height (Foundry sizes it to its
+   content).
 2. **Build (tests first):** the shared UI package out of
    `packages/extension/src/ui` (Setup's live suites must still pass); the
    companion's provider (library file, `game.modules`, saving and reload);

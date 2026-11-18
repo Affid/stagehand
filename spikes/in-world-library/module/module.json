@@ -1,0 +1,8 @@
+{
+  "id": "st-spike-mm",
+  "title": "Stagehand spike: view in Module Management",
+  "description": "Throwaway spike for the in-world library plan. Not for use.",
+  "version": "0.0.1",
+  "compatibility": { "minimum": "13", "verified": "14" },
+  "esmodules": ["main.js"]
+}
