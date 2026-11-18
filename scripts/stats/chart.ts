@@ -23,7 +23,7 @@ export interface Line {
   /** Colour slot; fixed per thing counted, so a missing line repaints none. */
   readonly slot?: number;
   /** Shown after the name in the legend, e.g. the latest total. */
-  readonly legendValue?: number;
+  readonly legendValue?: number | undefined;
 }
 
 export interface ChartSpec {

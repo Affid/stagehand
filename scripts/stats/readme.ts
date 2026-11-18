@@ -42,7 +42,7 @@ export interface ReadmeSpec {
   readonly latest: readonly DownloadLine[];
   readonly hasTraffic: boolean;
   /** Chrome Web Store installs so far, when there are exports. */
-  readonly store?: Point;
+  readonly store?: Point | undefined;
 }
 
 export const STORE_NAME = "Chrome Web Store";
