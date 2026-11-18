@@ -31,7 +31,7 @@ Who it is for:
 - **Setup's world page inside Module Management** (owner, 2026-11-18,
   after the first mockup): the Modules tab of Setup's world page (cards,
   folder sections, the module panel), reused rather than a second design,
-  with Setup's Cards | Foundry's switch. This replaced the first design
+  and a setting to turn it off. This replaced the first design
   (Foundry's rows moved into folder groups, tags in the rows, a details
   pane of our own).
 - **No "save as preset" in a world**, and no new Setup action for it:
@@ -137,15 +137,22 @@ does from inside, so the window shows that page's Modules tab (owner,
   Package tab (version and verification, authors, relationships, contents).
   Setup's "On in worlds" becomes this world only: a world can't see the
   others.
-- **Cards | Foundry's:** Setup's Library switch. "Foundry's" is Foundry's
-  own window, untouched (its Expand included), the way out when another
-  module (BBMM, Module Management+) adds to Foundry's rows. Kept per user.
+- **A setting instead of a switch** (owner, 2026-11-18): no layout switch
+  in the window. Stagehand's tab in Configure Settings has "Show the
+  Stagehand library in Module Management", on by default, per user
+  (Foundry's user scope). Hint: "Modules appear as cards in the library's
+  folders, with each module's details, presets and a review before saving.
+  Turn this off for Foundry's own list, for example if another module adds
+  to that window. This applies to you only." Off is Foundry's own window,
+  untouched (its Expand included), the way out when BBMM or Module
+  Management+ add to Foundry's rows.
 - **Without a library**, and **for players**, Foundry's window stays as it
-  is, with no switch.
+  is.
 
 ### Presets
 
-- "Add a preset…" in the tools row, for full Gamemasters only (PR-4); Setup's
+- "Apply preset…" in the tools row (owner's wording), for full Gamemasters
+  only (PR-4); Setup's
   "Copy from another world" has no place here.
 - Our dialog: the library's presets and a mode (Add, Replace, Remove).
   "Mark Changes" marks them on the cards ("From the preset X"); a module the
@@ -178,9 +185,10 @@ is checked in the spike).
    them, built from the Setup mockup's own CSS. Waiting for the owner's
    review. Choices in it to confirm or change: presets marked on the cards
    and applied by saving (not at once); the review before saving; Assistant
-   GMs get the cards without Add a preset; the Cards | Foundry's choice and
-   folded sections kept per user; Stagehand's own card is always on, as on
-   Setup.
+   GMs get the cards without Apply preset; folded sections and Group by kept
+   per user; Stagehand's own card is always on, as on Setup; the setting's
+   per-user scope; "Mark Changes" as the preset dialog's button (its changes
+   wait for Save).
 1. **Spike:** Setup's Modules tab rendered inside Module Management on
    13.351 and 14.370 (window size, Foundry's re-renders, light and dark
    interface), alone and with BBMM and Module Management+ installed; loading

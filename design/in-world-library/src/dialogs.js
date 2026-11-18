@@ -1,5 +1,5 @@
 // Stagehand's own dialogs, drawn as Foundry's DialogV2 (markup captured from
-// 14.370): Add a preset (marks its changes on the cards, as Setup's world page
+// 14.370): Apply preset (marks its changes on the cards, as Setup's world page
 // does), and the review before saving (the companion's diff sections from
 // packages/module/src/dialog.ts, with Setup's "Turns on / Turns off").
 
@@ -46,7 +46,7 @@ function closeDialogs() {
   document.querySelectorAll(".stagehand-dialog, .stagehand-backdrop").forEach((el) => el.remove());
 }
 
-// ---------- Add a preset ----------
+// ---------- Apply preset ----------
 
 function presetRow(p) {
   const on = p.modules.filter((id) => S.ticks.has(id)).length;
@@ -70,7 +70,7 @@ function openPicker() {
     <fieldset><legend>Presets</legend><div class="stagehand-presets">${PRESETS.map(presetRow).join("")}</div></fieldset>
     <fieldset><legend>How</legend><div class="stagehand-modes">${MODES.map(modeRow).join("")}</div></fieldset>`;
   const mark = button("mark", "fa-check", "Mark Changes", pick.presets.size ? "" : " disabled");
-  const dlg = showDialog(dialogFrame("stagehand-pick", "fa-layer-group", "Stagehand: Add a Preset", body, mark + button("cancel", "fa-xmark", "Cancel")), {
+  const dlg = showDialog(dialogFrame("stagehand-pick", "fa-layer-group", "Stagehand: Apply Preset", body, mark + button("cancel", "fa-xmark", "Cancel")), {
     change: () => {
       pick.presets = new Set([...dlg.querySelectorAll('input[name="preset"]:checked')].map((i) => i.value));
       pick.mode = dlg.querySelector('input[name="mode"]:checked')?.value ?? "add";

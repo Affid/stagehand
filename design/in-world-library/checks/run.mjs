@@ -112,6 +112,7 @@ check("Discard clears the changes", (await changesCount()) === "Changes" && (awa
 
 // Add a preset
 await win.locator('[data-action="addPreset"]').click();
+check("the button says Apply preset", ((await win.locator('[data-action="addPreset"]').textContent()) ?? "").includes("Apply preset"));
 check("Mark Changes waits for a preset", await dlg.locator('[data-action="mark"]').isDisabled());
 await dlg.locator('input[value="horror"]').check();
 await shot("06-preset");
@@ -131,20 +132,29 @@ await dlg.locator('input[value="strahd"]').check();
 await dlg.locator('[data-action="mark"]').click();
 check("a module that isn't installed is named", ((await page.locator("#notifications").textContent()) ?? "").includes("Monk's Enhanced Journal"));
 
-// Foundry's own list
-await win.locator('.stw-layout [data-id="foundry"]').click();
-check("Foundry's: Foundry's own rows", (await win.locator("li.package").count()) === 38 && (await win.locator(".stw-card").count()) === 0);
-check("Foundry's: Foundry's Expand is there", (await win.locator('[data-action="toggleExpanded"]').count()) === 1);
-await shot("08-foundrys");
-await win.locator('.stw-layout [data-id="cards"]').click();
-check("back to cards", (await win.locator(".stw-card").count()) === 38);
+// The setting: Show the Stagehand library in Module Management
+check("no layout switch in the window", (await win.locator(".stw-layout").count()) === 0);
+await page.locator("#open-settings").click();
+const cfg = page.locator("#settings-config");
+check("Configure Settings opens on Stagehand's tab", ((await cfg.locator("nav.tabs .active").textContent()) ?? "").includes("Stagehand"));
+check("the setting is on by default", await cfg.locator('input[name="stagehand.libraryView"]').isChecked());
+await shot("08-settings");
+await cfg.locator('input[name="stagehand.libraryView"]').uncheck();
+await cfg.locator('button[type="submit"]').click();
+check("off: Foundry's own rows", (await win.locator("li.package").count()) === 38 && (await win.locator(".stw-card").count()) === 0);
+check("off: Foundry's Expand is there", (await win.locator('[data-action="toggleExpanded"]').count()) === 1);
+await shot("08b-foundrys");
+await page.locator("#open-settings").click();
+await cfg.locator('input[name="stagehand.libraryView"]').check();
+await cfg.locator('button[type="submit"]').click();
+check("on again: cards", (await win.locator(".stw-card").count()) === 38);
 
 // No library, Assistant GM, player
 await open("lib=0");
 check("no library: Foundry's window, no switch", (await win.locator(".stw-layout, .stw-card").count()) === 0 && (await win.locator("li.package").count()) === 38);
 await shot("09-no-library");
 await open("role=assistant");
-check("assistant: cards without Add a preset", (await win.locator(".stw-card").count()) === 38 && (await win.locator('[data-action="addPreset"]').count()) === 0);
+check("assistant: cards without Apply preset", (await win.locator(".stw-card").count()) === 38 && (await win.locator('[data-action="addPreset"]').count()) === 0);
 await open("role=player");
 check("player: Foundry's read-only list", (await win.locator("li.package:visible").count()) === 19 && (await win.locator("li.package input:not([disabled])").count()) === 0 && (await win.locator(".stw-card").count()) === 0);
 await shot("10-player");

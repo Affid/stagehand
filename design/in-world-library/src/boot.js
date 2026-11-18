@@ -1,6 +1,6 @@
 // The mockup's state, its stand-ins for Foundry's tooltip, notifications and
 // reload, and start-up. Query: lib=0 (no library on the server),
-// role=gm|assistant|player, theme=dark|light, reset=1 (forget folds and layout).
+// role=gm|assistant|player, theme=dark|light, reset=1 (forget folds, grouping and the setting).
 
 const Q = new URLSearchParams(location.search);
 const KEY = "stagehand-in-world-mock:";
@@ -11,7 +11,7 @@ function load(key) {
 function store(key, value) {
   try { localStorage.setItem(KEY + key, JSON.stringify(value)); } catch { /* storage refused: per-page only */ }
 }
-if (Q.get("reset")) ["layout", "collapsed", "groupBy"].forEach((k) => { try { localStorage.removeItem(KEY + k); } catch { /* ignore */ } });
+if (Q.get("reset")) ["structured", "collapsed", "groupBy"].forEach((k) => { try { localStorage.removeItem(KEY + k); } catch { /* ignore */ } });
 
 const S = {
   library: Q.get("lib") !== "0",
@@ -19,8 +19,8 @@ const S = {
   /** The world's saved module list, and the switches as they are now. */
   saved: new Set(ACTIVE),
   ticks: new Set(ACTIVE),
-  /** Setup's world page ("cards") or Foundry's own list ("foundry"); kept per user. */
-  layout: load("layout") === "foundry" ? "foundry" : "cards",
+  /** Stagehand's setting "Show the Stagehand library in Module Management" (per user, on by default). */
+  structured: load("structured") !== false,
   show: "all",
   /** Setup's Group by: folder, tag, author or smart group; kept per user. */
   groupBy: ["tag", "author", "smart"].includes(load("groupBy")) ? load("groupBy") : "folder",
@@ -87,6 +87,7 @@ document.body.classList.replace("theme-dark", theme);
 document.getElementById("interface").classList.replace("theme-dark", theme);
 document.getElementById("whoami").textContent = { gm: "Gamemaster [GM]", assistant: "Assistant [Assistant GM]", player: "Mia [Player]" }[S.role];
 document.getElementById("open-modules").addEventListener("click", openWindow);
+document.getElementById("open-settings").addEventListener("click", openSettings);
 document.addEventListener("keydown", (e) => {
   if (e.key !== "Escape") return;
   if (document.querySelector(".stagehand-dialog")) closeDialogs();

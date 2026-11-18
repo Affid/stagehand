@@ -1,14 +1,15 @@
 // Foundry's Module Management window, as 14.370 renders it (frame and list
 // markup captured from the live window). With a Stagehand library on the
-// server, Gamemasters get Setup's world page inside it (cards.js) and a
-// Cards | Foundry's switch; "Foundry's" is Foundry's own list, untouched, so
-// what other modules add to its rows keeps working there.
+// server, Gamemasters get Setup's world page inside it (cards.js), unless they
+// turn off "Show the Stagehand library in Module Management" (settings.js):
+// then it is Foundry's own list, untouched, so what other modules add to its
+// rows keeps working there.
 
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 
 const isEditable = () => S.role !== "player";
 const showsLibrary = () => S.library && S.role !== "player";
-const usesCards = () => showsLibrary() && S.layout === "cards";
+const usesCards = () => showsLibrary() && S.structured;
 const isDirty = () => S.ticks.size !== S.saved.size || [...S.ticks].some((id) => !S.saved.has(id));
 const tagsOf = (id) => (TAGS_OF[id] ?? []).map((t) => TAGS.find((x) => x.id === t)).filter(Boolean);
 
@@ -45,7 +46,7 @@ function foundrySearchRowHtml() {
     : "";
   const tip = S.expanded ? "Collapse" : "Expand";
   const expand = `<button type="button" class="inline-control icon fa-solid fa-angle-double-${S.expanded ? "down" : "up"}" data-action="toggleExpanded" data-tooltip-text="${tip}" aria-label="${tip}"></button>`;
-  return `${filters}${expand}${showsLibrary() ? layoutSwitch(true) : ""}`;
+  return `${filters}${expand}`;
 }
 
 function foundryContentHtml() {
@@ -107,7 +108,6 @@ const ACTIONS = {
   close: closeWindow,
   changeFilter: (el) => { S.filter = el.dataset.filter; render(); },
   toggleExpanded: () => { S.expanded = !S.expanded; render(); },
-  layout: (el) => { S.layout = el.dataset.id; store("layout", S.layout); S.search = ""; openWindow(); },
   show: (el) => { S.show = el.dataset.id; render(); },
   toggleFolder: (el) => { toggleSet(S.collapsed, el.dataset.id); store("collapsed", [...S.collapsed]); render(); },
   openPanel: (el) => { S.selected = S.selected === el.dataset.id ? null : el.dataset.id; render(); },

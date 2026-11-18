@@ -1,5 +1,5 @@
 // Setup's world page, Modules tab, inside Foundry's Module Management: folder
-// sections of cards with a switch each, All / On / Changes, Add a preset, the
+// sections of cards with a switch each, All / On / Changes, Apply preset, the
 // module panel (Library and Package tabs). Same markup and classes as the
 // Setup mockup (design/setup-page/src/_calm.js, _shell.js), read-only for the
 // library: folders, tags and notes are organised on the Setup screen.
@@ -110,22 +110,14 @@ function sectionsHtml() {
 
 // ---------- tools row, pending strip, footer ----------
 
-/** Cards | Foundry's, as on Setup's Library; icons only in Foundry's narrow window. */
-function layoutSwitch(compact = false) {
-  const b = (id, icon, label) => compact
-    ? `<button type="button" class="icon" data-action="layout" data-id="${id}" aria-pressed="${S.layout === id}" aria-label="${label}" data-tooltip-text="${label}"><i class="fa-solid ${icon}" inert></i></button>`
-    : `<button type="button" data-action="layout" data-id="${id}" aria-pressed="${S.layout === id}"><i class="fa-solid ${icon}" inert></i>${label}</button>`;
-  return `<div class="stw-layout${compact ? " compact" : ""}" role="group" aria-label="Layout">${b("cards", "fa-grid-2", "Cards")}${b("foundry", "fa-list", "Foundry's")}</div>`;
-}
-
 function toolsHtml() {
   const n = changes().length;
   const seg = (id, label) => `<button type="button" data-action="show" data-id="${id}" aria-pressed="${S.show === id}">${label}</button>`;
-  const add = canAddPreset() ? `<button type="button" data-action="addPreset"><i class="fa-solid fa-layer-group" inert></i>Add a preset…</button>` : "";
+  const add = canAddPreset() ? `<button type="button" data-action="addPreset"><i class="fa-solid fa-layer-group" inert></i>Apply preset…</button>` : "";
   return `<div class="stc-tools">
     <input type="search" id="module-search" autocomplete="off" placeholder="Filter modules" aria-label="Filter modules" value="${esc(S.search)}">
     <span class="st-seg2" role="group" aria-label="Show">${seg("all", `All ${MODULES.length}`)}${seg("on", `On ${S.ticks.size}`)}${seg("changes", `Changes${n ? ` ${n}` : ""}`)}</span>
-    ${add}${groupByHtml()}<span class="sp"></span>${layoutSwitch()}
+    ${add}${groupByHtml()}
   </div>`;
 }
 

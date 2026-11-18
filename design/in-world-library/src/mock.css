@@ -72,3 +72,6 @@ dialog.stagehand-dialog { position: fixed; left: 50%; top: 50%; transform: trans
 #module-management .stagehand-footer-slot > .form-footer { flex: 1; }
 #module-management .stagehand-about { margin: 0; color: var(--color-light-2); }
 body.theme-light #module-management .stagehand-about { color: #2a2520; }
+
+/* ---------- Foundry's Configure Settings, placed as Foundry would ---------- */
+#settings-config { position: fixed; left: 410px; top: 110px; width: 780px; height: 680px; z-index: 150; }
