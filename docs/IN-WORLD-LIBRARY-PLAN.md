@@ -272,11 +272,48 @@ is checked in the spike).
    For the build: a minimum height (owner, 2026-11-18: not a fixed one),
    so a short list doesn't make a small window and a long one still grows
    up to the screen.
-2. **Build (tests first):** the shared UI package out of
-   `packages/extension/src/ui` (Setup's live suites must still pass); the
-   companion's provider (library file, `game.modules`, saving and reload);
-   Add a preset and the review over the existing plan and dialog. Unit tests
-   with fakes; live specs on the private 13 and 14 servers.
+2. **Build (tests first),** in slices, each committed once its tests pass:
+   - **2a. Shared UI package** `packages/ui` (`@stagehand/ui`, TypeScript
+     source like `@stagehand/shared`), behaviour unchanged on Setup:
+     - `ModulesData` in shared, the part of Setup's state the models read
+       (library, setup's modules, worlds and core, snapshots, commands);
+       `SetupState` fits it as it is.
+     - Moves: the models (`world-modules`, `preview`, `library-groups`,
+       `modules`, `order`, `unverified`), the cards and sections
+       (`ModulesTab`, `ModuleSections`, `ModuleCard`, `ModuleLine`,
+       `why`, `useWhy`, `turn-all`), the module panel (`ModulePanel`,
+       `LibraryTab`, `PackageTab`), the widgets they use, the translator
+       and the English strings.
+     - Its own context, `ModulesUi`: translations, data, the view and
+       panel state, `flip`, `queueApply`, an optional `op` (none: read
+       only), and three permissions where Setup has one `canChange`:
+       switch modules, organise the library, apply presets. Setup
+       provides it once at the shell's root from `useUi`; Foundry's
+       package actions (`OnServer`) stay in the extension as a slot.
+     - Stays in the extension: Setup's tools row and Add menu, the launch
+       line and review, the store, the actions, the page bridge.
+     - CSS: the shared rules move with the components, nested under a
+       root class both hosts carry instead of `.sts-shell`.
+     - Done when unit tests, typecheck and Setup's live suites pass.
+   - **2b. The companion's view:** Preact and JSX in the module's build;
+     the view in a chunk loaded on demand. The provider: the library file
+     (`parseSyncFile`), `game.modules` as packages, this world's snapshot,
+     unsaved changes as a local list of commands (Setup's `flipModule`
+     and `previewApply` work on it unchanged). The mockup's tools row
+     (filter, All/On/Changes, Apply preset..., Group by), the "not saved
+     yet" line, the footer with the count on Save Module Settings.
+   - **2c. Window and save:** the setting; taking over only an expected
+     window, for users Foundry lets edit modules ("Modify settings",
+     Assistant GM up by default; the mockup's roles: Apply preset and the
+     BBMM prompt for full Gamemasters); width and minimum height; the five
+     save-safety layers; the review (Save & Reload, Back) writing the
+     module configuration and reloading; the Apply Preset dialog with
+     active presets.
+   - **2d. BBMM:** the one-time prompt.
+   - **2e. Live specs** on the private 13 and 14 servers: the paths in
+     "Keeping Foundry's save safe", the setting, no library, a player,
+     BBMM; then code and security review, and a results page with
+     screenshots.
 3. **Docs:** COMPANION-GUIDE.md, the module's README and manifest
    description, CHANGELOG. The foundryvtt.com listing text is the owner's
    to write (Foundry's AI policy).
