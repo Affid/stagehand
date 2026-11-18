@@ -10,6 +10,7 @@ const isEditable = () => S.role !== "player";
 const showsLibrary = () => S.library && S.role !== "player";
 const usesCards = () => showsLibrary() && S.layout === "cards";
 const isDirty = () => S.ticks.size !== S.saved.size || [...S.ticks].some((id) => !S.saved.has(id));
+const hasPanel = () => MODULE_BY_ID[S.selected] !== undefined;
 const tagsOf = (id) => (TAGS_OF[id] ?? []).map((t) => TAGS.find((x) => x.id === t)).filter(Boolean);
 
 // ---------- Foundry's own list ----------
@@ -70,7 +71,8 @@ function foundryContentHtml() {
 // ---------- the window ----------
 
 function windowHtml() {
-  return `<form id="module-management" class="application${usesCards() ? " stagehand-cards" : ""}" autocomplete="off">
+  const cls = usesCards() ? ` stagehand-cards${hasPanel() ? " stagehand-with-panel" : ""}` : "";
+  return `<form id="module-management" class="application${cls}" autocomplete="off">
     <header class="window-header">
       <i class="window-icon fa-fw fa-solid fa-cube" inert></i>
       <h1 class="window-title">Module Management</h1>

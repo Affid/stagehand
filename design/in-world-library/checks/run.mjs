@@ -50,8 +50,18 @@ await win.locator('.sts-subtabs [data-id="package"]').click();
 check("Package tab: relationships", ((await win.locator(".sts-panel").textContent()) ?? "").includes("Needs libWrapper"));
 await shot("02-panel-package");
 await win.locator('.sts-subtabs [data-id="library"]').click();
+const before = await card("modular-av").boundingBox();
+const wide = (await win.boundingBox()).width;
 await win.locator('[data-action="closePanel"]').click();
 check("x closes the panel", (await win.locator(".sts-panel").count()) === 0);
+const after = await card("modular-av").boundingBox();
+check("closing the panel moves no card", before.x === after.x && before.width === after.width);
+check("the window narrows by the panel's width", wide - (await win.boundingBox()).width > 300);
+check("the tools row still fits the narrower window", await win.locator(".stc-tools").evaluate((el) => el.scrollWidth <= el.clientWidth));
+await card("modular-av").locator(".t").click();
+const reopened = await card("modular-av").boundingBox();
+check("opening it again moves no card either", reopened.x === after.x && reopened.width === after.width);
+await win.locator('[data-action="closePanel"]').click();
 await shot("03-panel-closed");
 
 // Folding, search

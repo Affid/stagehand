@@ -210,6 +210,7 @@ function cardsContentHtml() {
 
 /** Redraw what changes with state, keeping the search box (and its focus) in place. */
 function renderCards(win) {
+  win.classList.toggle("stagehand-with-panel", hasPanel());
   const seg = win.querySelector(".st-seg2");
   const tools = document.createElement("div");
   tools.innerHTML = toolsHtml();
