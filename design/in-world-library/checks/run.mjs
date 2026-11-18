@@ -36,7 +36,7 @@ const win = page.locator("#module-management");
 await open();
 await shot("01-folders");
 check("folder headers show", (await win.locator(".stagehand-folder > .folder-header:visible").count()) === 9);
-check("subfolder sits in its parent", (await win.locator('[data-folder-id="maps"] [data-folder-id="light"]').count()) === 1);
+check("folders are one level, as Setup makes them", (await win.locator(".stagehand-folder .stagehand-folder").count()) === 0);
 check("library tags show", (await win.locator(".stagehand-tag:visible").count()) > 10);
 await win.locator('[data-folder-id="combat"] > .folder-header').click();
 check("folding hides the folder's rows", (await win.locator('[data-folder-id="combat"] li.package:visible').count()) === 0);

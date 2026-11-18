@@ -100,8 +100,9 @@ unchanged.
 ### In Manage Modules
 
 - **Folder groups:** headers styled like Foundry's sidebar folders (folder
-  colour, caret, "12 · 5 active"), two levels as in the library, "Not in a
-  folder" last. Collapse state is kept per user (client setting).
+  colour, caret, "5 of 12 active"), one level as Setup makes them (a
+  subfolder found in the file sits under its parent), "Not in a folder"
+  last. Collapse state is kept per user (client setting).
 - **Foundry's own rows are moved, never rebuilt,** so what other modules
   (BBMM, Module Management+) add to a row survives. A header hides when
   the search or a filter hides all of its rows.

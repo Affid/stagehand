@@ -55,12 +55,13 @@ const ACTIVE = [
 ];
 
 // The server's library, as Setup keeps it in Data/stagehand/library.json.
+// Folders are one level, as Setup makes them (it has no subfolders).
 const FOLDERS = [
   { id: "voice", name: "Voice & video", color: "#2b4f5c", parentId: null },
   { id: "audio", name: "Audio & ambience", color: "#5a3a6e", parentId: null },
   { id: "combat", name: "Combat", color: "#6e2a2a", parentId: null },
   { id: "maps", name: "Maps & scenes", color: "#2f5a35", parentId: null },
-  { id: "light", name: "Lighting & weather", color: "#3d6b48", parentId: "maps" },
+  { id: "light", name: "Lighting & weather", color: "#6b5524", parentId: null },
   { id: "ui", name: "UI & sheets", color: "#3a3f6e", parentId: null },
   { id: "strahd", name: "Curse of Strahd", color: "#5c2433", parentId: null },
   { id: "libs", name: "Libraries", color: "#47434d", parentId: null },
