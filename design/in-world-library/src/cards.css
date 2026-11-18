@@ -3,17 +3,17 @@
    _kit.css) and limited to #module-management so nothing reaches the game's
    own interface. Light theme overrides at the end. */
 
-/* The cards keep one width and three columns; the module panel adds its own width to the
-   window, to the right, so opening or closing it never moves a card. */
-#module-management.stagehand-cards { left: 120px; width: 880px; }
-#module-management.stagehand-cards.stagehand-with-panel { width: 1222px; }
+/* The window keeps one width (owner: a window that grows and shrinks is worse, and some
+   screens lack the room). The cards always keep three columns, narrower while the module
+   panel is open, so opening or closing it never moves a card to another row or column. */
+#module-management.stagehand-cards { left: 70px; width: 1160px; }
 #module-management.stagehand-cards > .window-content { gap: 8px; }
 
 /* ---------- tools row (Setup's calm tab row) ---------- */
 #module-management .stc-tools { display: flex; gap: 6px; align-items: center; flex: none; }
-#module-management .stc-tools input[type=search] { height: 28px; width: auto; flex: 1 1 160px; min-width: 120px; }
+#module-management .stc-tools input[type=search] { height: 28px; width: auto; flex: 0 1 220px; min-width: 120px; }
 #module-management .stc-tools button { height: 28px; width: auto; flex: none; padding: 0 10px; gap: 6px; font-size: 13px; }
-#module-management .stc-tools .sp { flex: 0 0 4px; }
+#module-management .stc-tools .sp { flex: 1; }
 #module-management .stc-group { display: inline-flex; align-items: center; gap: 6px; flex: none; margin-left: 6px; font-size: 13px; color: var(--color-text-subtle); }
 #module-management .stc-group select { height: 28px; width: 130px; }
 #module-management .st-seg2 { display: inline-flex; border: 1px solid var(--color-cool-3); border-radius: 3px; overflow: hidden; height: 28px; flex: none; }

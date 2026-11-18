@@ -129,9 +129,10 @@ does from inside, so the window shows that page's Modules tab (owner,
   opens the review (Turns on, Added as dependencies, Turns off, Still
   needed by modules that stay), then saves and reloads.
 - **The module panel**, as on Setup, opened by clicking a card and closed
-  with x. The cards keep one width (three columns); the panel adds its width
-  to the window, to the right, so opening or closing it moves no card
-  (owner, 2026-11-18). The panel: Library tab (folder, tags, note, presets, this world's switch;
+  with x. The window keeps one width (owner, 2026-11-18: a window that grows
+  and shrinks is worse, and some screens lack the room); the cards always
+  keep three columns, narrower while the panel is open, so opening or
+  closing it moves no card to another row or column. The panel: Library tab (folder, tags, note, presets, this world's switch;
   read-only, with a line saying it is organised on the Setup screen) and
   Package tab (version and verification, authors, relationships, contents).
   Setup's "On in worlds" becomes this world only: a world can't see the
