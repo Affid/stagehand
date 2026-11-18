@@ -178,6 +178,35 @@ already (`canChange`, PR-2 and V-3). The companion loads this code only when
 a Gamemaster opens the window, so players never download it. Setup's CSS is
 limited to its own markup so it can't reach the game's interface.
 
+### Other module managers in the same world
+
+Read in their source (2026-11-18):
+
+- **BBMM** (thejoester/bbmm 1.4.11, Foundry 13 and 14, active). Its world
+  setting "Enable enhanced module management" (on by default, GM only,
+  needs a reload) catches clicks on the sidebar's Manage Modules button in
+  the capture phase and opens BBMM's own window; Shift-click still opens
+  Foundry's (`scripts/module-management.js`, `renderSettings`). In
+  Foundry's window it only adds a "BBMM" button to the header, which opens
+  its toolbox (`settings.js`, `renderModuleManagement`); it doesn't touch
+  the rows. Its module presets also write Foundry's module configuration,
+  as ours do: two preset systems, no clash.
+- So with BBMM's enhanced management on, Manage Modules opens BBMM and
+  Stagehand's view shows only on Shift-click. With it off, Foundry's window
+  opens with Stagehand's cards, and BBMM's header button still works,
+  since Stagehand leaves the header alone.
+- **Module Management+** (mouse0270/module-credits 2.2.0, verified for 11,
+  last change January 2024) was written for the old window: it looks for
+  `#module-list`, overrides `ModuleManagement.prototype._onChangeCheckbox`
+  and reads `ModuleManagement.CONFIG_SETTING`, none of which exist in 13
+  or 14. It fails there with or without Stagehand (BBMM's description says
+  it broke in 13); nothing to design for.
+- Proposed, waiting for the owner: don't compete for the sidebar button.
+  When BBMM's enhanced management is on, tell the GM once where Stagehand's
+  view is (Shift-click on Manage Modules, or turn that BBMM setting off),
+  and say the same in our setting's hint. The spike checks both orders on
+  13 and 14.
+
 ### The Forge
 
 The companion detects the Forge and does nothing there (the global's name
@@ -198,7 +227,8 @@ is checked in the spike).
    wait for Save).
 1. **Spike:** Setup's Modules tab rendered inside Module Management on
    13.351 and 14.370 (window size, Foundry's re-renders, light and dark
-   interface), alone and with BBMM and Module Management+ installed; loading
+   interface), alone and with BBMM (enhanced management on and off,
+   Shift-click, its header button); loading
    the shared UI on demand from the companion. The Forge's global.
 2. **Build (tests first):** the shared UI package out of
    `packages/extension/src/ui` (Setup's live suites must still pass); the
