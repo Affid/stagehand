@@ -212,8 +212,13 @@ describe("home: a server's own sheet", () => {
     await saved(w, LAN, "Home server");
     await w.deps.state.markOpened(LAN, "2026-11-04T12:00:00.000Z");
     show(w);
-    const open = await screen.findByRole("link", { name: "Open Home server" });
+    const open = await screen.findByRole("link", { name: /^Open Home server/ });
     expect(open.getAttribute("href")).toBe(`${LAN}/setup`);
+    // WCAG 2.5.3: the name holds the card's visible text (axe's
+    // label-content-name-mismatch), "Open" said only to screen readers.
+    expect(open.getAttribute("aria-label")).toBeNull();
+    expect(open.textContent).toContain("Open");
+    expect(open.querySelector(".sth-sr")?.textContent).toBe("Open ");
     expect(screen.getByText("192.168.1.20:30000")).toBeTruthy();
     expect(screen.getByText("Opened 5 days ago")).toBeTruthy();
     expect(screen.getByText("H")).toBeTruthy();

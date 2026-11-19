@@ -35,16 +35,16 @@ export function ServerCard(props: ServerCardProps) {
   const label = server.name ?? host;
   return (
     <div class="sth-card sth-server">
-      <a
-        class="sth-open"
-        href={props.href}
-        aria-label={t("set.openAria", { server: label })}
-      >
+      {/* Named by its own text (WCAG 2.5.3), "Open" for screen readers only. */}
+      <a class="sth-open" href={props.href}>
         <span class="sth-letter" aria-hidden="true">
           {letterOf(label)}
         </span>
         <span class="sth-text">
-          <span class="sth-name">{label}</span>
+          <span class="sth-name">
+            <span class="sth-sr">{t("home.openPrefix")}</span>
+            {label}
+          </span>
           <span class="sth-sub">
             {server.name ? <span class="sth-host">{host}</span> : null}
             {server.id.startsWith("http:") ? (

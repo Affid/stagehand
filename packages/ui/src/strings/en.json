@@ -1154,6 +1154,7 @@
   "home.badAddress": "That isn't an address yet: for example 192.168.1.20:30000.",
   "home.refused": "The app can't open that address, so nothing changed.",
   "home.opened": "Opened {ago}",
+  "home.openPrefix": "Open ",
   "home.notOpened": "Not opened yet",
   "home.editAria": "Edit or remove {server}",
   "home.name": "Name",
