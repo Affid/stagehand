@@ -4,8 +4,8 @@
 // with Check again. The update itself is Foundry's (page/update.ts).
 import { useMemo, useState } from "preact/hooks";
 import type { Release } from "../../../page-update.ts";
-import { TabList, TabPanel } from "../../common/tabs.tsx";
-import { Icon } from "../../common/widgets.tsx";
+import { TabList, TabPanel } from "@stagehand/ui/common/tabs.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../context.ts";
 import { channelName } from "../../model/update.ts";
 import { PageHead } from "./PageHead.tsx";

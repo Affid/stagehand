@@ -3,9 +3,9 @@
 // instead of the 10 to 30 seconds Foundry spends behind its hidden Setup.
 // Full screen on a phone, a panel over the page on a desktop.
 import { useEffect, useRef, useState } from "preact/hooks";
-import { Icon } from "../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../context.ts";
-import type { Translate } from "../i18n.ts";
+import type { Translate } from "@stagehand/ui/i18n.ts";
 import {
   type Launching,
   type LaunchStage,

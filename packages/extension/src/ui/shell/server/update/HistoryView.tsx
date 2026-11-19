@@ -4,9 +4,9 @@
 // foundryvtt.com only with the browser's permission; without it, the list
 // opens there.
 import { useEffect, useMemo, useState } from "preact/hooks";
-import { Icon } from "../../../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../../context.ts";
-import { plural } from "../../../i18n.ts";
+import { plural } from "@stagehand/ui/i18n.ts";
 import { channelName } from "../../../model/update.ts";
 import { HistoryNotes } from "./HistoryNotes.tsx";
 import { isNewer, type ReleaseItem } from "./releases.ts";

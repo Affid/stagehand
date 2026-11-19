@@ -2,8 +2,8 @@ import { listAuthors } from "@stagehand/shared/organise/authors";
 import { smartGroups } from "@stagehand/shared/organise/groups";
 import { parseCoreVersion } from "@stagehand/shared/version";
 import { describe, expect, test } from "vitest";
-import { createTranslator } from "../../src/ui/i18n.ts";
-import { groupLibrary } from "../../src/ui/model/library-groups.ts";
+import { createTranslator } from "@stagehand/ui/i18n.ts";
+import { groupLibrary } from "@stagehand/ui/model/library-groups.ts";
 import { LIBRARY, pkg } from "./harness.tsx";
 
 const modules = [

@@ -1,9 +1,9 @@
 // Queued and finished changes, as the sheet lists them.
 import { type Command, changeModules } from "@stagehand/shared/world";
-import { Icon } from "../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../context.ts";
-import { plural } from "../i18n.ts";
-import { isOrphaned } from "../model/preview.ts";
+import { plural } from "@stagehand/ui/i18n.ts";
+import { isOrphaned } from "@stagehand/ui/model/preview.ts";
 
 const MODE_ICON = { add: "plus", replace: "right-left", remove: "minus" };
 const HISTORY_ICON = {

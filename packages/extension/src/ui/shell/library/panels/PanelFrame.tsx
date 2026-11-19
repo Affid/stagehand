@@ -1,7 +1,7 @@
 // A panel in the column beside the Library, as the prototype's sts-panel:
 // a divider title, a close button, a scrolling body and an optional footer.
 import type { ComponentChildren } from "preact";
-import { Icon } from "../../../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../../context.ts";
 
 export function PanelFrame(props: {

@@ -3,14 +3,19 @@
 // queues a change for the next launch; a live region says what it did.
 import type { WorldInfo } from "@stagehand/shared/world";
 import { useRef, useState } from "preact/hooks";
-import { useUi } from "../../context.ts";
-import type {
-  WorldModuleRow,
-  WorldModules,
-} from "../../model/world-modules.ts";
+import { useModules } from "../context.ts";
+import type { WorldModuleRow, WorldModules } from "../model/world-modules.ts";
 import { ModuleSections } from "./ModuleSections.tsx";
-import type { Filters, Show } from "./ModulesTools.tsx";
 import { useWhy } from "./useWhy.ts";
+
+export type Show = "all" | "on" | "changes";
+
+export interface Filters {
+  readonly show: Show;
+  readonly text: string;
+  readonly onShow: (s: Show) => void;
+  readonly onText: (s: string) => void;
+}
 
 const keep = (show: Show, text: string) => (r: WorldModuleRow) => {
   if (show === "on" && !r.next) return false;
@@ -35,7 +40,7 @@ export function ModulesTab(props: {
   readonly model: WorldModules;
   readonly filters: Filters;
 }) {
-  const { actions, t } = useUi();
+  const { t, flip } = useModules();
   const { show, text } = props.filters;
   const [said, setSaid] = useState("");
   const why = useWhy();
@@ -46,7 +51,7 @@ export function ModulesTab(props: {
     if (saving.current.has(id)) return;
     saving.current.add(id);
     setSaid(t(`wp.announce.${on ? "on" : "off"}`, { module: why.name(id) }));
-    void actions.flip(props.world.id, id, on).finally(() => {
+    void flip(props.world.id, id, on).finally(() => {
       saving.current.delete(id);
     });
   };

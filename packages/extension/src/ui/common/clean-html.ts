@@ -3,7 +3,7 @@
 // world would run on Setup (security review). DOMParser runs no scripts;
 // the copy keeps formatting, but no attribute except a checked link or
 // image source.
-import { safeUrl } from "./files.ts";
+import { safeUrl } from "@stagehand/ui/common/safe-url.ts";
 
 const KEEP = new Set([
   "p",

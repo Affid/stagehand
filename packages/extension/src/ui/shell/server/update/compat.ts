@@ -7,7 +7,7 @@ import type { WorldInfo } from "@stagehand/shared/world";
 import type { SetupState } from "../../../../messages.ts";
 import type { CompatEntry, Preview } from "../../../../page-compat.ts";
 import { worldsUsing } from "../../../model/systems.ts";
-import { nextSet, worldModules } from "../../../model/world-modules.ts";
+import { nextSet, worldModules } from "@stagehand/ui/model/world-modules.ts";
 
 /** Compatible, unverified, risk, incompatible, missing dependency. */
 export type Status = "ok" | "unv" | "risk" | "bad" | "dep";

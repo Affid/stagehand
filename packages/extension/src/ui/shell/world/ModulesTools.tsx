@@ -1,25 +1,18 @@
 // The Modules tab's tools, in the tab row as the prototype: the filter,
 // All / On / Changes, Add, and View options (group by, cards or list).
 import type { WorldInfo } from "@stagehand/shared/world";
-import { useDisclosure } from "../../common/disclosure.ts";
-import { Icon } from "../../common/widgets.tsx";
+import { useDisclosure } from "@stagehand/ui/common/disclosure.ts";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../context.ts";
-import { GROUP_BYS, type GroupBy } from "../../model/library-groups.ts";
-import type { WorldModules } from "../../model/world-modules.ts";
-import type { WorldView } from "../../store.ts";
+import { GROUP_BYS, type GroupBy } from "@stagehand/ui/model/library-groups.ts";
+import type { WorldModules } from "@stagehand/ui/model/world-modules.ts";
+import type { Filters, Show } from "@stagehand/ui/world/ModulesTab.tsx";
+import type { WorldView } from "@stagehand/ui/context.ts";
 import { AddMenu } from "./AddMenu.tsx";
 
-export type Show = "all" | "on" | "changes";
 const SHOWS: readonly Show[] = ["all", "on", "changes"];
 const LAYOUTS: readonly WorldView["layout"][] = ["cards", "list"];
 const LAYOUT_ICON = { cards: "grid-2", list: "list" } as const;
-
-export interface Filters {
-  readonly show: Show;
-  readonly text: string;
-  readonly onShow: (s: Show) => void;
-  readonly onText: (s: string) => void;
-}
 
 /** Group by and Layout, for every world's page while Setup is open. */
 function ViewBody(props: { readonly first: { current: HTMLElement | null } }) {

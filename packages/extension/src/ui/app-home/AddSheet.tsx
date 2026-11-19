@@ -2,7 +2,7 @@
 // Foundry answers there, then Add and open (mockup: design/app-screens).
 import { useState } from "preact/hooks";
 import type { ServerId } from "../../background/servers.ts";
-import type { Translate } from "../i18n.ts";
+import type { Translate } from "@stagehand/ui/i18n.ts";
 import type { AppHome } from "../settings/platform.ts";
 import type { Servers } from "../settings/useServers.ts";
 import { serverOf, type Typed } from "./address.ts";

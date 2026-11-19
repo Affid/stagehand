@@ -1,8 +1,8 @@
 // "Add to a world…" / "Turn on in a world…": every world in Foundry's
 // order; worlds without the companion are listed but off.
-import { Icon } from "../../../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../../context.ts";
-import { worldOrder } from "../../../model/order.ts";
+import { worldOrder } from "@stagehand/ui/model/order.ts";
 import { PopMenu } from "../common/PopMenu.tsx";
 
 export function WorldPick(props: {

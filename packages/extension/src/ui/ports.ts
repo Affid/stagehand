@@ -3,7 +3,8 @@
 // own (a download, a file input, `window.confirm`, a new tab); the app hands
 // them to the native side (a system file picker, a native dialog, a Custom
 // Tab).
-import { downloadText, pickTextFile, safeUrl } from "./common/files.ts";
+import { downloadText, pickTextFile } from "./common/files.ts";
+import { safeUrl } from "@stagehand/ui/common/safe-url.ts";
 
 export interface FilesPort {
   /** Saves text as a file the user keeps (library export). */

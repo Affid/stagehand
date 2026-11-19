@@ -1,5 +1,5 @@
 // Startup and appearance, Data and storage, and Other, as the prototype.
-import { Icon } from "../../../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../../context.ts";
 import { SelectRow, SwitchRow, TextRow, Row } from "./fields.tsx";
 import type { Config } from "./useConfig.ts";

@@ -3,7 +3,10 @@
 // toolbar (or the selection's bar), and the modules in quiet groups. Tags,
 // Presets and New modules open in the panel column.
 import { useUi } from "../../context.ts";
-import { groupLibrary, type LibGroup } from "../../model/library-groups.ts";
+import {
+  groupLibrary,
+  type LibGroup,
+} from "@stagehand/ui/model/library-groups.ts";
 import { Banners } from "../../modules/banners.tsx";
 import { CompanionBand } from "../CompanionBand.tsx";
 import { type ModulesModel, useModulesModel } from "../../modules/derived.ts";
@@ -13,7 +16,7 @@ import { LIBRARY_TABS, LibraryTabs, shownTab } from "./head/LibraryTabs.tsx";
 import { PhoneModulesHead, PhoneSystemsHead } from "./head/PhoneHead.tsx";
 import { Docked } from "../phone/Dock.tsx";
 import { isCompact, useLayout } from "../phone/layout.ts";
-import { TabPanel } from "../../common/tabs.tsx";
+import { TabPanel } from "@stagehand/ui/common/tabs.tsx";
 import { SelectBar } from "./head/SelectBar.tsx";
 import { Toolbar } from "./head/Toolbar.tsx";
 import { Sections } from "./Sections.tsx";

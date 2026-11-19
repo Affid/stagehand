@@ -3,17 +3,20 @@
 // set it up. Launch reviews queued changes first.
 import type { WorldInfo } from "@stagehand/shared/world";
 import { useRef, useState } from "preact/hooks";
-import { Icon } from "../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { logError } from "@stagehand/shared/log";
 import { type LaunchWritten, writeLaunchNote } from "../../app/launch-note.ts";
 import { startLaunch } from "../launching.ts";
 import { useUi } from "../context.ts";
 import { systemTitle } from "../model/system.ts";
-import { plural } from "../i18n.ts";
-import { type WorldModules, worldModules } from "../model/world-modules.ts";
+import { plural } from "@stagehand/ui/i18n.ts";
+import {
+  type WorldModules,
+  worldModules,
+} from "@stagehand/ui/model/world-modules.ts";
 import { cssImage } from "./route.ts";
 import { type LaunchChoice, LaunchReview } from "./world/LaunchReview.tsx";
-import { useWhy } from "./world/useWhy.ts";
+import { useWhy } from "@stagehand/ui/world/useWhy.ts";
 import { useBackups } from "./world/useBackups.ts";
 import { launchOff } from "../tasks.ts";
 import { WorldBody, type WorldTab } from "./world/WorldBody.tsx";

@@ -4,12 +4,15 @@
 import type { WorldInfo } from "@stagehand/shared/world";
 import { MAX_PICKED } from "@stagehand/shared/world";
 import { useRef, useState } from "preact/hooks";
-import { useDisclosure, useFocusFirst } from "../../../common/disclosure.ts";
-import { Icon } from "../../../common/widgets.tsx";
+import {
+  useDisclosure,
+  useFocusFirst,
+} from "@stagehand/ui/common/disclosure.ts";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../../context.ts";
-import { worldOrder } from "../../../model/order.ts";
-import { pendingFor } from "../../../model/preview.ts";
-import { nextSet } from "../../../model/world-modules.ts";
+import { worldOrder } from "@stagehand/ui/model/order.ts";
+import { pendingFor } from "@stagehand/ui/model/preview.ts";
+import { nextSet } from "@stagehand/ui/model/world-modules.ts";
 
 type Step =
   | { readonly kind: "main" }

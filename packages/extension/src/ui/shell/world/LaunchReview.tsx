@@ -4,18 +4,18 @@
 // confirmation: the world asks again only if its live check differs.
 import type { WorldInfo } from "@stagehand/shared/world";
 import { useState } from "preact/hooks";
-import { Icon, Modal } from "../../common/widgets.tsx";
+import { Icon, Modal } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../context.ts";
 import type { BackupInfo } from "../../../page-backups.ts";
-import { ago, plural, type Translate } from "../../i18n.ts";
+import { ago, plural, type Translate } from "@stagehand/ui/i18n.ts";
 import { age } from "../../model/worlds.ts";
 import { formatSize } from "../../common/size.ts";
 import { backupForQueue } from "./backups/Nudge.tsx";
 import { latestBackup } from "./useBackups.ts";
-import { pendingFor } from "../../model/preview.ts";
-import type { WorldModules } from "../../model/world-modules.ts";
-import type { WhyContext } from "./why.ts";
-import { whyLine } from "./why.ts";
+import { pendingFor } from "@stagehand/ui/model/preview.ts";
+import type { WorldModules } from "@stagehand/ui/model/world-modules.ts";
+import type { WhyContext } from "@stagehand/ui/world/why.ts";
+import { whyLine } from "@stagehand/ui/world/why.ts";
 
 export type LaunchChoice =
   | { readonly kind: "apply"; readonly backup: boolean }

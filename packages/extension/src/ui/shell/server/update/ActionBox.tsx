@@ -6,7 +6,7 @@
 import type { ComponentChildren } from "preact";
 import { useState } from "preact/hooks";
 import type { Release } from "../../../../page-update.ts";
-import { Icon } from "../../../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../../context.ts";
 import { lockReason } from "../../../tasks.ts";
 import { agoMs } from "../../world/backups/text.ts";

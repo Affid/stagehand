@@ -4,9 +4,9 @@
 import type { BackupInfo, BackupOp } from "../../../../page-backups.ts";
 import type { PackageBackups } from "../../../../page-server-backups.ts";
 import { formatSize } from "../../../common/size.ts";
-import { Icon } from "../../../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../../context.ts";
-import { plural } from "../../../i18n.ts";
+import { plural } from "@stagehand/ui/i18n.ts";
 import { BackupRow } from "../../world/backups/BackupRow.tsx";
 import { backupAge, tip } from "../../world/backups/text.ts";
 import { versionTag } from "./version.ts";

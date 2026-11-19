@@ -1,7 +1,7 @@
 // How a row of Your packages reads (prototype _update.js ST_INFO, compatWhy):
 // its status and icon, and one line on why, in Foundry's own terms.
-import type { Translate } from "../../../i18n.ts";
-import { plural } from "../../../i18n.ts";
+import type { Translate } from "@stagehand/ui/i18n.ts";
+import { plural } from "@stagehand/ui/i18n.ts";
 import type { CompatRow, Status } from "./compat.ts";
 
 export const STATUS_ICON: Readonly<Record<Status, string>> = {

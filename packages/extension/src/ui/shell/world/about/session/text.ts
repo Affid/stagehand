@@ -1,6 +1,6 @@
 // How the schedule reads (prototype _sched.js): dates in the schedule's own
 // time zone, the zone named with its offset, and the rule in words.
-import type { Translate } from "../../../../i18n.ts";
+import type { Translate } from "@stagehand/ui/i18n.ts";
 import {
   cityOf,
   daysUntil,

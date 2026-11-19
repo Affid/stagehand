@@ -3,7 +3,7 @@
 // servers, Release history's permission, the build.
 import { useEffect, useState } from "preact/hooks";
 import { foundryServerOfPage } from "../../background/servers.ts";
-import { createTranslator, pickLanguage } from "../i18n.ts";
+import { createTranslator, pickLanguage } from "@stagehand/ui/i18n.ts";
 import type { SettingsPlatform, SettingsTab } from "./platform.ts";
 import { ReleaseAccess } from "./ReleaseAccess.tsx";
 import { ServerList } from "./ServerList.tsx";

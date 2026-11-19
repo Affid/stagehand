@@ -20,7 +20,7 @@ CI runs `pnpm verify` on every push and pull request.
 - Small pieces: no function over 50 lines (lint enforces it), files well
   under 800 lines.
 - New objects instead of changing existing ones.
-- Anything that reaches the user goes through `packages/extension/src/i18n/en.json`.
+- Anything that reaches the user goes through `packages/ui/src/strings/en.json`.
 - Untrusted input (Foundry's pages, world flags, files on the server) is
   checked before use.
 - Stagehand talks to the user's Foundry server and nothing else, apart from

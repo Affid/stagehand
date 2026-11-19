@@ -3,7 +3,7 @@
 // own page; Back and the page's name on a world or What's new.
 import type { WorldInfo } from "@stagehand/shared/world";
 import { useEffect, useRef } from "preact/hooks";
-import { Icon } from "../../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../context.ts";
 import { PowerMenu } from "../Header.tsx";
 import type { Route } from "../route.ts";

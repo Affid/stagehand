@@ -5,7 +5,7 @@
 import type { Clash, ClashReason } from "@stagehand/shared/library/merge";
 import type { ExtensionMessage } from "../messages.ts";
 import type { Send } from "./actions.ts";
-import type { Translate } from "./i18n.ts";
+import type { Translate } from "@stagehand/ui/i18n.ts";
 import {
   createLibrarySync,
   type LibrarySync,

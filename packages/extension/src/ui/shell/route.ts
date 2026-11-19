@@ -1,7 +1,7 @@
 // Which page the new Setup page shows, the worlds filter, and world artwork
 // made safe for CSS.
 import type { WorldInfo } from "@stagehand/shared/world";
-import { worldOrder } from "../model/order.ts";
+import { worldOrder } from "@stagehand/ui/model/order.ts";
 
 export type Route =
   | { readonly kind: "library" }

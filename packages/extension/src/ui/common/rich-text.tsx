@@ -5,7 +5,7 @@
 // Plain text keeps its line breaks (SETUP-REDESIGN.md, build requirements).
 import type { ComponentChildren } from "preact";
 import { h } from "preact";
-import { safeUrl } from "./files.ts";
+import { safeUrl } from "@stagehand/ui/common/safe-url.ts";
 
 /** Elements kept as they are. */
 const KEEP = new Set([

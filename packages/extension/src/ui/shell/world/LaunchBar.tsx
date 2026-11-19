@@ -3,10 +3,10 @@
 // sheet, and Launch, where a thumb reaches it. It replaces the banner's
 // pending line with Review and Discard, and its Launch.
 import type { WorldInfo } from "@stagehand/shared/world";
-import { Icon } from "../../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../context.ts";
-import { plural } from "../../i18n.ts";
-import type { WorldModules } from "../../model/world-modules.ts";
+import { plural } from "@stagehand/ui/i18n.ts";
+import type { WorldModules } from "@stagehand/ui/model/world-modules.ts";
 import { launchOff } from "../../tasks.ts";
 
 function What(props: {

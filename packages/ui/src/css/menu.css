@@ -1,0 +1,32 @@
+/* The small menu under a ⋮ button (a group's actions; Setup's header
+   menus). In Setup's styles right after shell.css, whose
+   header rules (.sth-acts, .sth-help) it must follow. */
+
+.st-ui .sth-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 2;
+  min-width: 210px;
+  display: grid;
+  gap: 2px;
+  padding: 6px;
+  background: var(--color-cool-5, #0b0a13);
+  border: 1px solid var(--color-cool-3);
+  border-radius: 4px;
+  box-shadow: 0 4px 14px #000;
+}
+
+.st-ui .sth-menu button {
+  width: 100%;
+  justify-content: flex-start;
+  background: none;
+  border: 0;
+  height: 32px;
+  padding: 0 10px;
+}
+
+.st-ui .sth-menu button:hover,
+.st-ui .sth-menu button:focus-visible {
+  background: rgb(255 255 255 / 7%);
+}

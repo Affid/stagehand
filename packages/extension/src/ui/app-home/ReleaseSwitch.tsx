@@ -1,6 +1,6 @@
 // Release history as one switch: foundryvtt.com allowed for the Update
 // page's release notes, or not.
-import type { Translate } from "../i18n.ts";
+import type { Translate } from "@stagehand/ui/i18n.ts";
 import type { SettingsPlatform } from "../settings/platform.ts";
 import { useAccess } from "../settings/ReleaseAccess.tsx";
 import { History } from "./icons.tsx";

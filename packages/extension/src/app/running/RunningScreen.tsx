@@ -7,9 +7,9 @@
 // running).
 import type { ComponentChildren } from "preact";
 import { useRef, useState } from "preact/hooks";
-import { useModalFocus } from "../../ui/common/modal-focus.ts";
-import { Icon } from "../../ui/common/widgets.tsx";
-import { plural, type Translate } from "../../ui/i18n.ts";
+import { useModalFocus } from "@stagehand/ui/common/modal-focus.ts";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
+import { plural, type Translate } from "@stagehand/ui/i18n.ts";
 import { cssImage } from "../../ui/shell/route.ts";
 import type { ApplyView } from "./apply-flow.ts";
 import {

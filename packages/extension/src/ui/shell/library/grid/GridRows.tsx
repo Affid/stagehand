@@ -4,9 +4,9 @@
 import type { PackageInfo } from "@stagehand/shared/package";
 import type { WorldInfo } from "@stagehand/shared/world";
 import { useUi } from "../../../context.ts";
-import type { LibGroup } from "../../../model/library-groups.ts";
-import { COMPANION_ID } from "../../../model/preview.ts";
-import { useTurnable, useTurnAll } from "../../world/turn-all.ts";
+import type { LibGroup } from "@stagehand/ui/model/library-groups.ts";
+import { COMPANION_ID } from "@stagehand/ui/model/preview.ts";
+import { useTurnable, useTurnAll } from "@stagehand/ui/world/turn-all.ts";
 import type { Folding, Models, WorldRows } from "./types.ts";
 
 const MAX_DOTS = 3;

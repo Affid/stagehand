@@ -3,9 +3,9 @@
 // View (Group by) and ⋮ for Select, Install, Update all, Tags, Presets, New
 // folder, Collapse or expand all, and Import and export. Systems: the
 // filter, Install and Update all as icons.
-import { GROUP_BYS, type GroupBy } from "../../../model/library-groups.ts";
+import { GROUP_BYS, type GroupBy } from "@stagehand/ui/model/library-groups.ts";
 import { updateCount } from "../../../model/updates.ts";
-import { Icon } from "../../../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../../context.ts";
 import { PopMenu, type PopItem } from "../common/PopMenu.tsx";
 import { useTransfer } from "./Transfer.tsx";

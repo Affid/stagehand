@@ -13,7 +13,7 @@ import type { BackupInfo } from "../../src/page-backups.ts";
 import type { ServerBackupOp } from "../../src/page-server-backups.ts";
 import { createActions, type Send } from "../../src/ui/actions.ts";
 import { ShellRoot } from "../../src/ui/App.tsx";
-import { createTranslator } from "../../src/ui/i18n.ts";
+import { createTranslator } from "@stagehand/ui/i18n.ts";
 import { NO_UPDATES } from "../../src/page-updates.ts";
 import { trackProgress, UNLOCKED } from "../../src/ui/tasks.ts";
 import type {

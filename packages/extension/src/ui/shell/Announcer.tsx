@@ -3,8 +3,8 @@
 // for the whole page (SETUP-REDESIGN.md, H4).
 import { useEffect, useRef, useState } from "preact/hooks";
 import { useUi } from "../context.ts";
-import { plural } from "../i18n.ts";
-import { pendingFor } from "../model/preview.ts";
+import { plural } from "@stagehand/ui/i18n.ts";
+import { pendingFor } from "@stagehand/ui/model/preview.ts";
 
 /** Each world's number of queued changes. */
 function useCounts(): ReadonlyMap<string, number> {

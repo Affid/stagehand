@@ -1,5 +1,5 @@
 // How the About tab reads Foundry's world data (prototype _calm.js).
-import type { Translate } from "../../../i18n.ts";
+import type { Translate } from "@stagehand/ui/i18n.ts";
 
 const HOUR = 3600;
 

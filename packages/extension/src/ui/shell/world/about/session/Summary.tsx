@@ -1,8 +1,8 @@
 // The editor's summary (prototype _sched.js): the first date in the
 // schedule's own zone, and what players elsewhere see.
-import { Icon } from "../../../../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../../../context.ts";
-import { plural } from "../../../../i18n.ts";
+import { plural } from "@stagehand/ui/i18n.ts";
 import { cityOf } from "../../../../model/schedule.ts";
 import { otherZones, whenIn } from "./text.ts";
 

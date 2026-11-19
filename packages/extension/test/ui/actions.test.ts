@@ -14,7 +14,7 @@ import {
   createTranslator,
   pickLanguage,
   plural,
-} from "../../src/ui/i18n.ts";
+} from "@stagehand/ui/i18n.ts";
 import { createStore, EMPTY_FILTER, type UiState } from "../../src/ui/store.ts";
 import { fakePage } from "./harness.tsx";
 import { START_NAV } from "../../src/ui/shell/phone/nav.ts";

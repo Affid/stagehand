@@ -2,7 +2,7 @@
 // its address.
 import { useState } from "preact/hooks";
 import { normalizeServerUrl } from "../../background/servers.ts";
-import type { Translate } from "../i18n.ts";
+import type { Translate } from "@stagehand/ui/i18n.ts";
 import type { AppHome } from "./platform.ts";
 import { type Servers, serverLabel } from "./useServers.ts";
 

@@ -4,7 +4,7 @@
 import type { Preset } from "@stagehand/shared/library/schema";
 import { useState } from "preact/hooks";
 import { newId } from "../../../actions.ts";
-import { Icon } from "../../../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../../context.ts";
 import { ModuleChecks } from "./ModuleChecks.tsx";
 import { PanelFrame } from "./PanelFrame.tsx";

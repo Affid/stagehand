@@ -1,9 +1,9 @@
 // New modules since the Library was last sorted (prototype intakeBand):
 // Sort them opens the New modules panel; Later leaves them in Unfiled and
 // stops marking them.
-import { Icon } from "../../../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../../context.ts";
-import { plural } from "../../../i18n.ts";
+import { plural } from "@stagehand/ui/i18n.ts";
 import { isCompact, useLayout } from "../../phone/layout.ts";
 
 /** On a phone: one line, "3 new modules to sort", Sort and × (Later). */

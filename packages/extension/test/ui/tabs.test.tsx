@@ -2,7 +2,7 @@
 import { cleanup, fireEvent, render } from "@testing-library/preact";
 import { useState } from "preact/hooks";
 import { afterEach, describe, expect, test } from "vitest";
-import { TabList, TabPanel } from "../../src/ui/common/tabs.tsx";
+import { TabList, TabPanel } from "@stagehand/ui/common/tabs.tsx";
 import { renderUi } from "./harness.tsx";
 
 afterEach(cleanup);

@@ -1,8 +1,8 @@
 // A queued change made outside a world's own page that leaves the world
 // with problems at its next launch says so (prototype warnIfBroken); on the
 // world's page its cards already show them.
-import { plural, type Translate } from "./i18n.ts";
-import { worldModules } from "./model/world-modules.ts";
+import { plural, type Translate } from "@stagehand/ui/i18n.ts";
+import { worldModules } from "@stagehand/ui/model/world-modules.ts";
 import type { PageBridge } from "./page.ts";
 import { resolveRoute } from "./shell/route.ts";
 import type { Store } from "./store.ts";

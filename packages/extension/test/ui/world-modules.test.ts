@@ -1,7 +1,7 @@
 import type { Command, Snapshot } from "@stagehand/shared/world";
 import { describe, expect, test } from "vitest";
 import type { SetupState } from "../../src/messages.ts";
-import { flipModule, worldModules } from "../../src/ui/model/world-modules.ts";
+import { flipModule, worldModules } from "@stagehand/ui/model/world-modules.ts";
 import { pkg, setupState } from "./harness.tsx";
 
 const snap = (active: string[]): Snapshot => ({

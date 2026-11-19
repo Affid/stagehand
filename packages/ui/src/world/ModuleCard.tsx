@@ -1,9 +1,9 @@
 // One module on the world page: a switch, its name, a "turns on/off" chip
 // when the next launch changes it, and one line that says why.
-import { Icon } from "../../common/widgets.tsx";
-import { useUi } from "../../context.ts";
-import type { WorldModuleRow } from "../../model/world-modules.ts";
-import { COMPANION_ID } from "../../model/preview.ts";
+import { Icon } from "../common/widgets.tsx";
+import { useModules } from "../context.ts";
+import type { WorldModuleRow } from "../model/world-modules.ts";
+import { COMPANION_ID } from "../model/preview.ts";
 import { type WhyContext, type WhyLine, whyLine } from "./why.ts";
 
 export interface CardProps {
@@ -17,14 +17,14 @@ function WhyRow(props: {
   readonly line: WhyLine;
   readonly onFlip: (moduleId: string, on: boolean) => void;
 }) {
-  const { canChange } = useUi();
+  const { canSwitch } = useModules();
   const { line } = props;
   const { fix } = line;
   return (
     <div class={`l2 ${line.tone}`} title={line.title}>
       {line.icon ? <Icon name={line.icon} /> : null}
       <span>{line.text}</span>
-      {fix && canChange ? (
+      {fix && canSwitch ? (
         <button
           type="button"
           class="st-link"
@@ -39,15 +39,15 @@ function WhyRow(props: {
 
 /** The name opens the module's details beside the page; again, closes them. */
 function OpenName(props: { readonly id: string; readonly title: string }) {
-  const { state, store } = useUi();
-  const open = state.panel === props.id;
+  const { panel, openPanel } = useModules();
+  const open = panel === props.id;
   return (
     <button
       type="button"
       class="t"
       aria-expanded={open}
       title={props.title}
-      onClick={() => store.set({ panel: open ? null : props.id, side: null })}
+      onClick={() => openPanel(open ? null : props.id)}
     >
       {props.title}
     </button>
@@ -55,17 +55,17 @@ function OpenName(props: { readonly id: string; readonly title: string }) {
 }
 
 export function ModuleCard(props: CardProps) {
-  const { state, t, canChange } = useUi();
+  const { t, panel, canSwitch } = useModules();
   const { row } = props;
   const line = whyLine(row, props.why);
-  const locked = row.pkg.id === COMPANION_ID || !canChange;
+  const locked = row.pkg.id === COMPANION_ID || !canSwitch;
   const cls = [
     "stw-card",
     row.next ? "on" : "off",
     row.delta === "on" ? "plus" : row.delta === "off" ? "minus" : "",
     row.problem ? "prob" : "",
     row.risk ? "risk" : "",
-    state.panel === row.pkg.id ? "viewing" : "",
+    panel === row.pkg.id ? "viewing" : "",
   ].join(" ");
   return (
     <li class={cls} data-module={row.pkg.id}>

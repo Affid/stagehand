@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { cleanup, fireEvent, render } from "@testing-library/preact";
 import { afterEach, describe, expect, test, vi } from "vitest";
-import { InlineInput } from "../../src/ui/common/widgets.tsx";
+import { InlineInput } from "@stagehand/ui/common/widgets.tsx";
 
 afterEach(cleanup);
 

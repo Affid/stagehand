@@ -1,5 +1,5 @@
 // What server.check found at the typed address.
-import type { Translate } from "../i18n.ts";
+import type { Translate } from "@stagehand/ui/i18n.ts";
 import { Check as CheckIcon, Warn } from "./icons.tsx";
 import type { Check } from "./useCheck.ts";
 

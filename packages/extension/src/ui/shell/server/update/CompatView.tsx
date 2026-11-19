@@ -4,11 +4,11 @@
 // why, its version (and the one to update to), where it is used, and links.
 import { useState } from "preact/hooks";
 import type { Release } from "../../../../page-update.ts";
-import { safeUrl } from "../../../common/files.ts";
-import { TabList, TabPanel } from "../../../common/tabs.tsx";
-import { Icon } from "../../../common/widgets.tsx";
+import { safeUrl } from "@stagehand/ui/common/safe-url.ts";
+import { TabList, TabPanel } from "@stagehand/ui/common/tabs.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../../context.ts";
-import { plural } from "../../../i18n.ts";
+import { plural } from "@stagehand/ui/i18n.ts";
 import {
   byConcern,
   type CompatData,

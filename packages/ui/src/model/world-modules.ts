@@ -10,7 +10,7 @@ import {
   testAvailability,
 } from "@stagehand/shared/version";
 import type { Command } from "@stagehand/shared/world";
-import type { SetupState } from "../../messages.ts";
+import type { ModulesData } from "./data.ts";
 import {
   COMPANION_ID,
   type NewChange,
@@ -59,7 +59,7 @@ export interface WorldModules {
 }
 
 interface Context {
-  readonly state: SetupState;
+  readonly state: ModulesData;
   readonly worldId: string;
   readonly now: ReadonlySet<string>;
   readonly next: ReadonlySet<string>;
@@ -152,7 +152,7 @@ function rowFor(ctx: Context, pkg: PackageInfo): WorldModuleRow {
   return { pkg, now, next, delta, why, problem: problem !== undefined, risk };
 }
 
-function context(state: SetupState, worldId: string): Context | undefined {
+function context(state: ModulesData, worldId: string): Context | undefined {
   const snapshot = state.snapshots[worldId];
   if (!snapshot || !state.setup) return undefined;
   const now = new Set(snapshot.active.map((m) => m.id));
@@ -168,7 +168,10 @@ function context(state: SetupState, worldId: string): Context | undefined {
   };
 }
 
-export function worldModules(state: SetupState, worldId: string): WorldModules {
+export function worldModules(
+  state: ModulesData,
+  worldId: string,
+): WorldModules {
   const ctx = context(state, worldId);
   const queued = pendingFor(state, worldId).length;
   if (!ctx || !state.setup)
@@ -212,7 +215,7 @@ const isSingle = (c: Command, id: string): boolean =>
  * queues a new one only if the world would still not match the switch.
  */
 export function flipModule(
-  state: SetupState,
+  state: ModulesData,
   worldId: string,
   moduleId: string,
   on: boolean,
@@ -221,7 +224,7 @@ export function flipModule(
     isSingle(c, moduleId),
   );
   const cancel = singles.map((c) => c.id);
-  const without: SetupState = {
+  const without: ModulesData = {
     ...state,
     commands: state.commands.filter((c) => !cancel.includes(c.id)),
   };
@@ -237,7 +240,7 @@ export function flipModule(
  * The modules on in a world after its next launch, the companion left out:
  * what "copy this world" copies (queued changes included, as the prototype).
  */
-export const nextSet = (state: SetupState, worldId: string): string[] =>
+export const nextSet = (state: ModulesData, worldId: string): string[] =>
   worldModules(state, worldId)
     .rows.filter((r) => r.next && r.pkg.id !== COMPANION_ID)
     .map((r) => r.pkg.id);

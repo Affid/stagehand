@@ -1,6 +1,6 @@
 import { describe, expect, test, vi } from "vitest";
 import { watchProblems } from "../../src/ui/broken.ts";
-import { createTranslator } from "../../src/ui/i18n.ts";
+import { createTranslator } from "@stagehand/ui/i18n.ts";
 import { createStore, type UiState } from "../../src/ui/store.ts";
 import { fakePage, setupState, uiState } from "./harness.tsx";
 

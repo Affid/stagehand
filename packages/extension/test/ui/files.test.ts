@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
-import { fileStamp, safeUrl } from "../../src/ui/common/files.ts";
+import { fileStamp } from "../../src/ui/common/files.ts";
+import { safeUrl } from "@stagehand/ui/common/safe-url.ts";
 
 describe("safeUrl", () => {
   test.each([

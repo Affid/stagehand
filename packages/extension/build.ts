@@ -1,18 +1,19 @@
 // Builds the extension into dist/ and the Android app's web part into
 // dist-app/ (Android plan, phase 2). Each entry is a classic script
 // (content scripts, Firefox's background page and WebView's document-start
-// scripts can't be ES modules). The new Setup page's styles
-// (src/ui/shell/*.css) are appended to the extension's setup-ui.css and put
-// into the app's app-setup.js, which adds them at document start.
+// scripts can't be ES modules). The Setup page's styles (SETUP_SHEETS:
+// static/setup-ui.css, src/ui/shell/*.css and packages/ui's shared sheets)
+// become the extension's setup-ui.css and go into the app's app-setup.js,
+// which adds them at document start.
 // `node build.ts --release` builds without the dev build label on Setup;
 // `--extension` or `--app` builds one target only.
 import {
-  appendFileSync,
   cpSync,
   existsSync,
   readdirSync,
   readFileSync,
   rmSync,
+  writeFileSync,
 } from "node:fs";
 import { execSync } from "node:child_process";
 import { join } from "node:path";
@@ -51,40 +52,45 @@ const ONLY_EXTENSION = process.argv.includes("--extension");
 const ONLY_APP = process.argv.includes("--app");
 const BUILD = buildLabel();
 
-const SHELL_SHEETS = [
-  "shell.css",
-  "world.css",
-  "library.css",
-  "panel.css",
-  "tools.css",
-  "about.css",
-  "session.css",
-  "backups.css",
-  "libpanels.css",
-  "grid.css",
-  "config.css",
-  "update.css",
-  "news.css",
-  "themes.css",
-  "layout.css",
-  "phone.css",
-  "phone-sheets.css",
-  "phone-world.css",
-  "phone-library.css",
-  "phone-server.css",
-  "launching.css",
-  "veil.css",
+const shell = (sheet: string): string =>
+  join(root, "src", "ui", "shell", sheet);
+const shared = (sheet: string): string =>
+  join(root, "..", "ui", "src", "css", sheet);
+
+/**
+ * The Setup page's styles, in cascade order: the modules view's shared
+ * sheets (packages/ui) where they always stood among Setup's own.
+ */
+const SETUP_SHEETS = [
+  shared("base.css"),
+  join(root, "static", "setup-ui.css"),
+  shell("shell.css"),
+  shared("menu.css"),
+  shared("world.css"),
+  shared("library.css"),
+  shared("panel.css"),
+  shared("tools.css"),
+  shell("about.css"),
+  shell("session.css"),
+  shell("backups.css"),
+  shared("libpanels.css"),
+  shell("grid.css"),
+  shell("config.css"),
+  shell("update.css"),
+  shell("news.css"),
+  shell("themes.css"),
+  shell("layout.css"),
+  shell("phone.css"),
+  shell("phone-sheets.css"),
+  shell("phone-world.css"),
+  shell("phone-library.css"),
+  shell("phone-server.css"),
+  shell("launching.css"),
+  shell("veil.css"),
 ];
 
-/** The Setup page's styles: static/setup-ui.css, then the shell's sheets. */
-function setupCss(): string {
-  return [
-    readFileSync(join(root, "static", "setup-ui.css"), "utf8"),
-    ...SHELL_SHEETS.map((sheet) =>
-      readFileSync(join(root, "src", "ui", "shell", sheet), "utf8"),
-    ),
-  ].join("\n");
-}
+const setupCss = (): string =>
+  SETUP_SHEETS.map((sheet) => readFileSync(sheet, "utf8")).join("\n");
 
 const entryFile = (name: string): string => {
   const tsx = join(root, "src", "entries", `${name}.tsx`);
@@ -135,11 +141,7 @@ async function buildExtension(): Promise<void> {
   ])
     await buildEntry(name, outDir, {});
   cpSync(join(root, "static"), outDir, { recursive: true });
-  for (const sheet of SHELL_SHEETS)
-    appendFileSync(
-      join(outDir, "setup-ui.css"),
-      `\n${readFileSync(join(root, "src", "ui", "shell", sheet), "utf8")}`,
-    );
+  writeFileSync(join(outDir, "setup-ui.css"), setupCss());
 }
 
 /** No chrome.* or browser.* in the app (the plan's bundle check). */

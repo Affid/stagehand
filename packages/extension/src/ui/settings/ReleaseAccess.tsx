@@ -2,7 +2,7 @@
 // Release history (background/releases.ts).
 import { useEffect, useState } from "preact/hooks";
 import { FOUNDRY_ORIGIN } from "../../background/releases.ts";
-import type { Translate } from "../i18n.ts";
+import type { Translate } from "@stagehand/ui/i18n.ts";
 import type { SettingsPlatform } from "./platform.ts";
 
 /** Whether foundryvtt.com is allowed, and changing it. */

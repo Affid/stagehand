@@ -3,7 +3,7 @@
 import { parsePresetImport } from "@stagehand/shared/library/transfer";
 import { newId } from "../../../actions.ts";
 import { fileStamp } from "../../../common/files.ts";
-import { Icon } from "../../../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../../context.ts";
 import { PopMenu } from "../common/PopMenu.tsx";
 

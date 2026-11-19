@@ -4,8 +4,8 @@ import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import { useQuirks } from "../quirks.ts";
 import { StopDialog } from "./server/config/Dialogs.tsx";
 import type { FoundryAction } from "../../page-protocol.ts";
-import { useDismiss } from "../common/dismiss.ts";
-import { Icon } from "../common/widgets.tsx";
+import { useDismiss } from "@stagehand/ui/common/dismiss.ts";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../context.ts";
 import { VersionMenu } from "./VersionMenu.tsx";
 

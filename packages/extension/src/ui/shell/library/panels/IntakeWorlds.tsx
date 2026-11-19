@@ -3,10 +3,10 @@
 // show, and the rest are one click away (prototype intakeItem).
 import type { PackageInfo } from "@stagehand/shared/package";
 import { useState } from "preact/hooks";
-import { Icon } from "../../../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../../context.ts";
-import { worldOrder } from "../../../model/order.ts";
-import { worldModules } from "../../../model/world-modules.ts";
+import { worldOrder } from "@stagehand/ui/model/order.ts";
+import { worldModules } from "@stagehand/ui/model/world-modules.ts";
 
 /** Up to this many worlds show at once. */
 const FEW = 6;

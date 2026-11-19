@@ -2,11 +2,11 @@
 // it (each opens its page; none means safe to uninstall), then its Package
 // details and Foundry's own settings and actions.
 import type { SystemInfo } from "@stagehand/shared/world";
-import { Icon } from "../../../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../../context.ts";
-import { plural } from "../../../i18n.ts";
+import { plural } from "@stagehand/ui/i18n.ts";
 import { asPackage, worldsUsing } from "../../../model/systems.ts";
-import { PackageTab } from "../PackageTab.tsx";
+import { PackageTab } from "@stagehand/ui/panel/PackageTab.tsx";
 import { PanelFrame } from "./PanelFrame.tsx";
 import { shownVersion } from "@stagehand/shared/version";
 

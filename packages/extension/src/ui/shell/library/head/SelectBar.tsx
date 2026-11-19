@@ -1,15 +1,15 @@
 // While selecting, the toolbar row becomes the selection's (prototype
 // selBar): how many, All shown, None, Move to, Tags, Add to preset, Turn on
 // in a world…, and Done.
-import { Icon } from "../../../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../../context.ts";
-import { plural } from "../../../i18n.ts";
-import { orderedFolders } from "../../../model/modules.ts";
+import { plural } from "@stagehand/ui/i18n.ts";
+import { orderedFolders } from "@stagehand/ui/model/modules.ts";
 import { useFolderOps } from "../../../modules/folder-ops.ts";
 import { PopMenu } from "../common/PopMenu.tsx";
 import { useNewPreset } from "../panels/PresetsPanel.tsx";
 import { WorldPick } from "../panels/WorldPick.tsx";
-import { queueInParts } from "../../world/turn-all.ts";
+import { queueInParts } from "@stagehand/ui/world/turn-all.ts";
 import { TagsPop } from "./TagsPop.tsx";
 
 function MoveTo(props: { readonly ids: readonly string[] }) {

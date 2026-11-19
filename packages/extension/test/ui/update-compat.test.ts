@@ -12,7 +12,7 @@ import {
   updatesNeeded,
 } from "../../src/ui/shell/server/update/compat.ts";
 import { why } from "../../src/ui/shell/server/update/compat-text.ts";
-import { createTranslator } from "../../src/ui/i18n.ts";
+import { createTranslator } from "@stagehand/ui/i18n.ts";
 import { setupState } from "./harness.tsx";
 
 const entry = (

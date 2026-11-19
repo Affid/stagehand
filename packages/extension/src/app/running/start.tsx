@@ -11,7 +11,7 @@ import { showReconnecting } from "../reconnecting.ts";
 import { hideBrowserNotice } from "../../page/browser-notice.ts";
 import { hideResolutionNotice } from "../../page/resolution.ts";
 import { isServerPage } from "../native-api.ts";
-import { createTranslator } from "../../ui/i18n.ts";
+import { createTranslator } from "@stagehand/ui/i18n.ts";
 import { type ApplyFlowDeps } from "./apply-flow.ts";
 import { useApply } from "./useApply.ts";
 import type { PasswordQuestion } from "../platform.ts";

@@ -1,10 +1,10 @@
 // The Backups tab's head: a summary with Select and Take a backup, or, while
 // selecting, what is picked and Delete.
 import type { BackupInfo } from "../../../../page-backups.ts";
-import { Icon } from "../../../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { formatSize } from "../../../common/size.ts";
 import { useUi } from "../../../context.ts";
-import { plural } from "../../../i18n.ts";
+import { plural } from "@stagehand/ui/i18n.ts";
 import { backupAge, tip } from "./text.ts";
 
 const sizeOf = (list: readonly BackupInfo[]): number =>

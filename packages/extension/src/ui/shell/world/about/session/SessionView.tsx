@@ -2,7 +2,7 @@
 // own time zone (and the viewer's, when it differs), the rule, and the next
 // dates with Skip / Restore, or Remove for chosen dates.
 import type { WorldInfo } from "@stagehand/shared/world";
-import { Icon } from "../../../../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../../../context.ts";
 import {
   nextOf,

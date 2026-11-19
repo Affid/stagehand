@@ -3,7 +3,11 @@
 // server in a bar at the bottom. The extension's popup stays ui/settings.
 import { useEffect, useRef, useState } from "preact/hooks";
 import type { ServerId } from "../../background/servers.ts";
-import { createTranslator, pickLanguage, type Translate } from "../i18n.ts";
+import {
+  createTranslator,
+  pickLanguage,
+  type Translate,
+} from "@stagehand/ui/i18n.ts";
 import type {
   AppHome as AppLinks,
   SettingsPlatform,

@@ -2,9 +2,9 @@
 // each with its folder, tags and worlds, a suggestion from its family, and
 // Done; Later closes, Done with all marks every one sorted.
 import type { PackageInfo } from "@stagehand/shared/package";
-import { Icon } from "../../../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../../context.ts";
-import { plural } from "../../../i18n.ts";
+import { plural } from "@stagehand/ui/i18n.ts";
 import { IntakeWorlds, useWorldsOn } from "./IntakeWorlds.tsx";
 import { PanelFrame } from "./PanelFrame.tsx";
 import { type Suggestion, suggestFor } from "./suggest.ts";

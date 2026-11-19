@@ -2,7 +2,7 @@
 // its own dialogs to edit the manifest, update, back up or uninstall it.
 import type { PackageInfo } from "@stagehand/shared/package";
 import type { FoundryAction } from "../../../page-protocol.ts";
-import { Icon } from "../../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../context.ts";
 
 type PackageAction = Extract<FoundryAction, { id: string }>["action"];

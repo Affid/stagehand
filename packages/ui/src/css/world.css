@@ -15,7 +15,7 @@
 }
 
 /* Banner: queued changes and the Launch count */
-.sts-shell .stc-pending {
+.st-ui .stc-pending {
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -28,16 +28,16 @@
   font-size: 12.5px;
 }
 
-.sts-shell .stc-pending.warn {
+.st-ui .stc-pending.warn {
   border-color: rgb(245 196 94 / 70%);
   color: #f3dca4;
 }
 
-.sts-shell .stc-pending > i {
+.st-ui .stc-pending > i {
   color: var(--color-warm-1);
 }
 
-.sts-shell .stc-pending .st-link {
+.st-ui .stc-pending .st-link {
   width: auto;
   height: auto;
   padding: 0;
@@ -48,7 +48,7 @@
   font-size: inherit;
 }
 
-.sts-shell .stc-badge {
+.st-ui .stc-badge {
   margin-left: 4px;
   min-width: 20px;
   height: 20px;
@@ -61,7 +61,7 @@
   place-items: center;
 }
 
-.sts-shell .st-seg2 {
+.st-ui .st-seg2 {
   display: inline-flex;
   border: 1px solid var(--color-cool-3);
   border-radius: 3px;
@@ -70,7 +70,7 @@
   flex: none;
 }
 
-.sts-shell .st-seg2 button {
+.st-ui .st-seg2 button {
   width: auto;
   height: 100%;
   padding: 0 10px;
@@ -84,30 +84,30 @@
   transition: none;
 }
 
-.sts-shell .st-seg2 button:last-child {
+.st-ui .st-seg2 button:last-child {
   border-right: 0;
 }
 
-.sts-shell .st-seg2 button.on {
+.st-ui .st-seg2 button.on {
   background: var(--color-cool-3);
   color: var(--color-light-1);
 }
 
-.sts-shell .st-seg2 .c {
+.st-ui .st-seg2 .c {
   color: var(--color-light-4);
   font-size: 11.5px;
 }
 
 /* On the chosen segment the count stays readable (4.5:1, Phase 6). */
-.sts-shell .st-seg2 button.on .c {
+.st-ui .st-seg2 button.on .c {
   color: var(--color-light-2);
 }
 
-.sts-shell .stw-add {
+.st-ui .stw-add {
   position: relative;
 }
 
-.sts-shell .stw-add > button {
+.st-ui .stw-add > button {
   height: 28px;
   width: auto;
   padding: 0 10px;
@@ -115,7 +115,7 @@
   font-size: 13px;
 }
 
-.sts-shell .stw-addmenu {
+.st-ui .stw-addmenu {
   position: absolute;
   top: calc(100% + 6px);
   right: 0;
@@ -132,7 +132,7 @@
   box-shadow: 0 4px 14px #000;
 }
 
-.sts-shell .stw-addmenu h4 {
+.st-ui .stw-addmenu h4 {
   margin: 6px 6px 2px;
   font-size: 11.5px;
   letter-spacing: 0.06em;
@@ -142,7 +142,7 @@
   padding-bottom: 3px;
 }
 
-.sts-shell .stw-addmenu button {
+.st-ui .stw-addmenu button {
   width: 100%;
   height: auto;
   min-height: 30px;
@@ -154,27 +154,27 @@
   gap: 8px;
 }
 
-.sts-shell .stw-addmenu button:hover,
-.sts-shell .stw-addmenu button:focus-visible {
+.st-ui .stw-addmenu button:hover,
+.st-ui .stw-addmenu button:focus-visible {
   background: rgb(255 255 255 / 7%);
 }
 
-.sts-shell .stw-addstep {
+.st-ui .stw-addstep {
   display: grid;
   gap: 4px;
 }
 
-.sts-shell .stw-addstep button:not(.st-link) {
+.st-ui .stw-addstep button:not(.st-link) {
   display: grid;
   gap: 2px;
 }
 
-.sts-shell .stw-addstep button span {
+.st-ui .stw-addstep button span {
   font-size: 12px;
   color: var(--color-text-subtle);
 }
 
-.sts-shell .stw-addmenu .st-empty {
+.st-ui .stw-addmenu .st-empty {
   margin: 2px 8px 6px;
   font-size: 12.5px;
 }
@@ -182,14 +182,14 @@
 /* Sections and cards */
 /* The page body scrolls; the list keeps its full height in it, or it
    shrinks and its cards run over Recent changes below. */
-.sts-shell .stw-modules {
+.st-ui .stw-modules {
   display: flex;
   flex-direction: column;
   gap: 10px;
   flex: none;
 }
 
-.sts-shell .stw-sections {
+.st-ui .stw-sections {
   list-style: none;
   margin: 0;
   padding: 0 0 16px;
@@ -198,7 +198,7 @@
   align-content: start;
 }
 
-.sts-shell .stw-head {
+.st-ui .stw-head {
   width: 100%;
   height: 28px;
   display: flex;
@@ -218,23 +218,23 @@
   transition: none;
 }
 
-.sts-shell .stw-head .name {
+.st-ui .stw-head .name {
   font-size: 14px;
   font-weight: 600;
   color: var(--color-light-1);
 }
 
-.sts-shell .stw-head .count {
+.st-ui .stw-head .count {
   color: var(--color-text-subtle);
   font-size: 12px;
 }
 
-.sts-shell .stw-head > i {
+.st-ui .stw-head > i {
   color: var(--color-light-4);
   font-size: 11px;
 }
 
-.sts-shell .stw-grid {
+.st-ui .stw-grid {
   list-style: none;
   margin: 6px 0 0;
   padding: 0;
@@ -243,7 +243,7 @@
   gap: 8px;
 }
 
-.sts-shell .stw-card {
+.st-ui .stw-card {
   display: grid;
   gap: 4px;
   padding: 8px 10px 8px 9px;
@@ -257,49 +257,49 @@
 /* A module that is simply on keeps the neutral edge: only changes and
    problems are coloured (SETUP-REDESIGN.md; prototype _calm.css). */
 
-.sts-shell .stw-card.off {
+.st-ui .stw-card.off {
   background: rgb(11 10 19 / 38%);
 }
 
-.sts-shell .stw-card.off .t {
+.st-ui .stw-card.off .t {
   color: var(--color-light-4);
 }
 
 /* Foundry would badge it a compatibility risk; a change's colour still wins. */
-.sts-shell .stw-card.risk {
+.st-ui .stw-card.risk {
   border-color: rgb(245 196 94 / 55%);
   border-left-color: #f5c45e;
 }
 
-.sts-shell .stw-card.plus {
+.st-ui .stw-card.plus {
   border-left-color: #6fd083;
   background: rgb(63 143 82 / 14%);
 }
 
-.sts-shell .stw-card.minus {
+.st-ui .stw-card.minus {
   border-left-color: #e0705a;
   background: rgb(180 82 63 / 14%);
 }
 
-.sts-shell .stw-card.prob {
+.st-ui .stw-card.prob {
   border-color: rgb(245 196 94 / 55%);
   border-left-color: #f5c45e;
 }
 
 /* The name and its "turns on/off" chip share a baseline (an all-caps chip
    centred on its box sits high); the switch stays centred. */
-.sts-shell .stw-card .l1 {
+.st-ui .stw-card .l1 {
   display: flex;
   align-items: baseline;
   gap: 9px;
   min-width: 0;
 }
 
-.sts-shell .stw-card .l1 .sts-switch {
+.st-ui .stw-card .l1 .sts-switch {
   align-self: center;
 }
 
-.sts-shell .stw-card .t {
+.st-ui .stw-card .t {
   font-size: 14.5px;
   font-weight: 600;
   color: var(--color-light-1);
@@ -310,7 +310,7 @@
   flex: 1;
 }
 
-.sts-shell .stw-delta {
+.st-ui .stw-delta {
   flex: none;
   font-size: 11px;
   font-weight: 700;
@@ -318,15 +318,15 @@
   text-transform: uppercase;
 }
 
-.sts-shell .stw-card.plus .stw-delta {
+.st-ui .stw-card.plus .stw-delta {
   color: #8fd49b;
 }
 
-.sts-shell .stw-card.minus .stw-delta {
+.st-ui .stw-card.minus .stw-delta {
   color: #ff9c8f;
 }
 
-.sts-shell .stw-card .l2 {
+.st-ui .stw-card .l2 {
   display: flex;
   align-items: baseline;
   gap: 6px;
@@ -336,45 +336,45 @@
   min-width: 0;
 }
 
-.sts-shell .stw-card .l2 span {
+.st-ui .stw-card .l2 span {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.sts-shell .stw-card .l2 i {
+.st-ui .stw-card .l2 i {
   font-size: 10.5px;
   flex: none;
   color: var(--color-light-4);
 }
 
-.sts-shell .stw-card .l2.warn {
+.st-ui .stw-card .l2.warn {
   color: #f3dca4;
 }
 
-.sts-shell .stw-card .l2.warn i {
+.st-ui .stw-card .l2.warn i {
   color: #f5c45e;
 }
 
-.sts-shell .stw-card .l2.dep {
+.st-ui .stw-card .l2.dep {
   color: #d9c08a;
 }
 
-.sts-shell .stw-card .l2.dep i {
+.st-ui .stw-card .l2.dep i {
   color: #c9a24e;
 }
 
-.sts-shell .stw-card .l2.note {
+.st-ui .stw-card .l2.note {
   color: var(--color-light-3);
   font-style: italic;
 }
 
-.sts-shell .stw-card.off .l2.desc {
+.st-ui .stw-card.off .l2.desc {
   opacity: 0.7;
 }
 
-.sts-shell .stw-card .l2 .st-link {
+.st-ui .stw-card .l2 .st-link {
   width: auto;
   height: auto;
   padding: 0;
@@ -387,7 +387,7 @@
 }
 
 /* The on/off switch */
-.sts-shell .sts-switch {
+.st-ui .sts-switch {
   appearance: none;
   width: 26px;
   height: 15px;
@@ -402,11 +402,11 @@
 
 /* Foundry draws its checkboxes as a 20 px icon-font square in ::before;
    an unchecked switch would show it behind the knob. */
-.sts-shell .sts-switch::before {
+.st-ui .sts-switch::before {
   content: none;
 }
 
-.sts-shell .sts-switch::after {
+.st-ui .sts-switch::after {
   content: "";
   position: absolute;
   top: 2px;
@@ -418,27 +418,27 @@
   transition: left 0.1s;
 }
 
-.sts-shell .sts-switch:checked {
+.st-ui .sts-switch:checked {
   background: #3f8f52;
 }
 
-.sts-shell .sts-switch:checked::after {
+.st-ui .sts-switch:checked::after {
   left: 13px;
   background: #fff;
 }
 
-.sts-shell .sts-switch:disabled {
+.st-ui .sts-switch:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
 
-.sts-shell .sts-switch:focus-visible {
+.st-ui .sts-switch:focus-visible {
   outline: 2px solid var(--color-warm-1);
   outline-offset: 2px;
 }
 
 /* A world without the companion */
-.sts-shell .stw-empty {
+.st-ui .stw-empty {
   margin: 48px auto;
   max-width: 520px;
   display: grid;
@@ -449,23 +449,23 @@
   font-size: 14px;
 }
 
-.sts-shell .stw-empty > i {
+.st-ui .stw-empty > i {
   font-size: 34px;
   color: var(--color-light-4);
 }
 
-.sts-shell .stw-empty h3 {
+.st-ui .stw-empty h3 {
   margin: 4px 0 0;
   font-size: 19px;
   color: var(--color-light-1);
   border: 0;
 }
 
-.sts-shell .stw-empty p {
+.st-ui .stw-empty p {
   margin: 0;
 }
 
-.sts-shell .stw-empty ol {
+.st-ui .stw-empty ol {
   margin: 4px 0 6px;
   padding-left: 20px;
   text-align: left;
@@ -473,7 +473,7 @@
   gap: 4px;
 }
 
-.sts-shell .stw-empty button {
+.st-ui .stw-empty button {
   height: 36px;
   width: auto;
   flex: none;
@@ -482,7 +482,7 @@
   font-weight: 700;
 }
 
-.sts-shell .stw-history {
+.st-ui .stw-history {
   color: var(--color-light-3);
   font-size: 13px;
 }
@@ -561,21 +561,21 @@ ul.stw-check.warn {
   gap: 2px;
 }
 
-.sts-shell .stw-addmenu button .n {
+.st-ui .stw-addmenu button .n {
   margin-left: auto;
   font-size: 12px;
   color: var(--color-text-subtle);
 }
 
 /* The About tab */
-.sts-shell .stw-about {
+.st-ui .stw-about {
   display: grid;
   grid-template-columns: minmax(0, 1.45fr) minmax(280px, 1fr);
   gap: 18px;
   align-items: start;
 }
 
-.sts-shell .stw-box {
+.st-ui .stw-box {
   display: grid;
   gap: 10px;
   padding: 12px 14px;
@@ -584,7 +584,7 @@ ul.stw-check.warn {
   background: rgb(11 10 19 / 55%);
 }
 
-.sts-shell .stw-box h3 {
+.st-ui .stw-box h3 {
   margin: 0;
   font-size: 12px;
   letter-spacing: 0.06em;
@@ -593,7 +593,7 @@ ul.stw-check.warn {
   border: 0;
 }
 
-.sts-shell .stw-box > button {
+.st-ui .stw-box > button {
   justify-self: start;
   width: auto;
   height: 30px;
@@ -601,18 +601,18 @@ ul.stw-check.warn {
   gap: 6px;
 }
 
-.sts-shell .stw-desc {
+.st-ui .stw-desc {
   display: grid;
   gap: 6px;
 }
 
-.sts-shell .stw-desc.folded .st-rich {
+.st-ui .stw-desc.folded .st-rich {
   max-height: calc(1.5em * 6);
   overflow: hidden;
   mask-image: linear-gradient(to bottom, #000 70%, transparent);
 }
 
-.sts-shell .stw-desc .st-link {
+.st-ui .stw-desc .st-link {
   justify-self: start;
   width: auto;
   height: auto;
@@ -624,39 +624,39 @@ ul.stw-check.warn {
   font-size: 12.5px;
 }
 
-.sts-shell .st-rich {
+.st-ui .st-rich {
   font-size: 14px;
   line-height: 1.5;
   color: var(--color-light-1);
 }
 
-.sts-shell .st-rich > :first-child {
+.st-ui .st-rich > :first-child {
   margin-top: 0;
 }
 
-.sts-shell .st-rich p,
-.sts-shell .st-rich ul,
-.sts-shell .st-rich ol {
+.st-ui .st-rich p,
+.st-ui .st-rich ul,
+.st-ui .st-rich ol {
   margin: 0 0 0.5em;
 }
 
-.sts-shell .st-rich ul,
-.sts-shell .st-rich ol {
+.st-ui .st-rich ul,
+.st-ui .st-rich ol {
   padding-left: 1.4em;
 }
 
-.sts-shell .st-rich h4 {
+.st-ui .st-rich h4 {
   margin: 0.4em 0 0.3em;
   font-size: 15px;
   border: 0;
 }
 
-.sts-shell .st-rich a {
+.st-ui .st-rich a {
   color: var(--color-warm-1);
   text-decoration: underline;
 }
 
-.sts-shell .stw-details {
+.st-ui .stw-details {
   display: grid;
   grid-template-columns: 130px minmax(0, 1fr);
   gap: 7px 12px;
@@ -664,22 +664,22 @@ ul.stw-check.warn {
   font-size: 13.5px;
 }
 
-.sts-shell .stw-details dt {
+.st-ui .stw-details dt {
   color: var(--color-text-subtle);
 }
 
-.sts-shell .stw-details dd {
+.st-ui .stw-details dd {
   margin: 0;
   color: var(--color-light-1);
 }
 
-.sts-shell .stw-editable {
+.st-ui .stw-editable {
   display: inline-flex;
   align-items: center;
   gap: 6px;
 }
 
-.sts-shell .stw-editable .st-icon {
+.st-ui .stw-editable .st-icon {
   width: 22px;
   height: 22px;
   padding: 0;
@@ -689,12 +689,12 @@ ul.stw-check.warn {
   color: var(--color-light-4);
 }
 
-.sts-shell .stw-editable .st-icon:hover {
+.st-ui .stw-editable .st-icon:hover {
   color: var(--color-warm-1);
 }
 
 /* The Update page, and the chip's update mark */
-.sts-shell .sth-ver .upd {
+.st-ui .sth-ver .upd {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -705,14 +705,14 @@ ul.stw-check.warn {
 }
 
 /* A server page's heading: Foundry's display face and a summary line. */
-.sts-shell .stb-head {
+.st-ui .stb-head {
   display: flex;
   align-items: flex-end;
   gap: 12px;
   flex: none;
 }
 
-.sts-shell .stb-head h2 {
+.st-ui .stb-head h2 {
   margin: 0;
   text-align: left;
   font-family: "Modesto Condensed", serif;
@@ -722,18 +722,18 @@ ul.stw-check.warn {
   border: 0;
 }
 
-.sts-shell .stb-head p {
+.st-ui .stb-head p {
   margin: 4px 0 0;
   color: var(--color-text-subtle);
   font-size: 13px;
 }
 
-.sts-shell .stb-head code {
+.st-ui .stb-head code {
   font-size: 12px;
   color: var(--color-light-3);
 }
 
-.sts-shell .stb-head button {
+.st-ui .stb-head button {
   width: auto;
   height: 32px;
   padding: 0 12px;

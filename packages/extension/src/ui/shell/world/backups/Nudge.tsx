@@ -1,10 +1,10 @@
 // While changes wait for the next launch: back up first, or it's done.
 import type { WorldInfo } from "@stagehand/shared/world";
 import type { BackupInfo } from "../../../../page-backups.ts";
-import { Icon } from "../../../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../../context.ts";
-import { plural } from "../../../i18n.ts";
-import { pendingFor } from "../../../model/preview.ts";
+import { plural } from "@stagehand/ui/i18n.ts";
+import { pendingFor } from "@stagehand/ui/model/preview.ts";
 import { backupAge, backupLabel, tip } from "./text.ts";
 
 /** The latest backup, when it is newer than every waiting change. */

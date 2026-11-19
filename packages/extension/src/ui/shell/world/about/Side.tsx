@@ -4,7 +4,7 @@
 import type { WorldInfo } from "@stagehand/shared/world";
 import { useState } from "preact/hooks";
 import type { BackupInfo } from "../../../../page-backups.ts";
-import { Icon } from "../../../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../../context.ts";
 import { cssImage } from "../../route.ts";
 import { useSave } from "../AboutEdit.tsx";

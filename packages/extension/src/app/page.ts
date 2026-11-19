@@ -17,7 +17,7 @@ import {
 } from "./bridge.ts";
 import { BACK, BRIDGE_NAME, HOME_PAGE, isServerPage } from "./native-api.ts";
 import { pressBack } from "../ui/shell/phone/back.ts";
-import { createTranslator, pickLanguage } from "../ui/i18n.ts";
+import { createTranslator, pickLanguage } from "@stagehand/ui/i18n.ts";
 import { showReconnecting } from "./reconnecting.ts";
 import { hideBrowserNotice } from "../page/browser-notice.ts";
 import { hideResolutionNotice } from "../page/resolution.ts";

@@ -2,7 +2,7 @@
 // of showing switches that can't work (SETUP-REDESIGN.md). On a server
 // without the companion module, the setup starts with installing it.
 import type { WorldInfo } from "@stagehand/shared/world";
-import { Icon } from "../../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../context.ts";
 import { startLaunch } from "../../launching.ts";
 import { companionNeed } from "../../model/companion.ts";

@@ -5,7 +5,7 @@ import type { PackageType } from "../../../../page-backups.ts";
 import type { PackageBackups } from "../../../../page-server-backups.ts";
 import { formatSize } from "../../../common/size.ts";
 import { useUi } from "../../../context.ts";
-import { plural } from "../../../i18n.ts";
+import { plural } from "@stagehand/ui/i18n.ts";
 import { PackageRow, type RunPackage } from "./PackageRow.tsx";
 
 type Sort = "name" | "size" | "latest";

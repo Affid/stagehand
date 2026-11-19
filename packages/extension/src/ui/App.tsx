@@ -2,13 +2,16 @@
 import type { ComponentChildren } from "preact";
 import { useErrorBoundary } from "preact/hooks";
 import { UiContext, type UiDeps } from "./context.ts";
+import { SetupModules } from "./modules-ui.tsx";
 import { Shell } from "./shell/Shell.tsx";
 
 const Provider = (props: {
   readonly deps: UiDeps;
   readonly children: ComponentChildren;
 }) => (
-  <UiContext.Provider value={props.deps}>{props.children}</UiContext.Provider>
+  <UiContext.Provider value={props.deps}>
+    <SetupModules>{props.children}</SetupModules>
+  </UiContext.Provider>
 );
 
 /** Renders nothing after an error and reports it, so Foundry's page can return. */

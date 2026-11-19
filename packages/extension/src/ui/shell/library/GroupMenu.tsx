@@ -5,13 +5,13 @@
 import type { Folder } from "@stagehand/shared/library/schema";
 import { useState } from "preact/hooks";
 import { PALETTE, PALETTE_NAMES } from "../../actions.ts";
-import { useDisclosure } from "../../common/disclosure.ts";
-import { Icon } from "../../common/widgets.tsx";
+import { useDisclosure } from "@stagehand/ui/common/disclosure.ts";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../context.ts";
-import { orderedFolders } from "../../model/modules.ts";
-import { worldOrder } from "../../model/order.ts";
+import { orderedFolders } from "@stagehand/ui/model/modules.ts";
+import { worldOrder } from "@stagehand/ui/model/order.ts";
 import { useFolderOps } from "../../modules/folder-ops.ts";
-import { queueInParts } from "../world/turn-all.ts";
+import { queueInParts } from "@stagehand/ui/world/turn-all.ts";
 import { useNewPreset } from "./panels/PresetsPanel.tsx";
 
 type Step = "main" | "colour" | "world";

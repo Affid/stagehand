@@ -2,7 +2,7 @@
 // on the left, the control on the right; a changed row is marked.
 import type { ComponentChildren } from "preact";
 import type { Choice, SettingKey } from "../../../../page-config.ts";
-import { Icon } from "../../../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../../context.ts";
 import { clean, shown } from "./model.ts";
 import type { Config } from "./useConfig.ts";

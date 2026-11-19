@@ -1,7 +1,7 @@
 // One saved server on the home screen: a tap opens it in the app (native
 // takes the link), ⋮ opens its sheet.
 import { age } from "../model/worlds.ts";
-import { ago, type Translate } from "../i18n.ts";
+import { ago, type Translate } from "@stagehand/ui/i18n.ts";
 import type { ListedServer } from "../settings/useServers.ts";
 import { hostOf, letterOf } from "./address.ts";
 import { Dots, Unlock } from "./icons.tsx";

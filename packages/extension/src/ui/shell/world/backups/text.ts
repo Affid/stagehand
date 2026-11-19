@@ -1,7 +1,7 @@
 // How a backup reads: its note or date, when it was taken, and Foundry's
 // version badge.
 import type { BackupInfo } from "../../../../page-backups.ts";
-import { ago, type Translate } from "../../../i18n.ts";
+import { ago, type Translate } from "@stagehand/ui/i18n.ts";
 import { age } from "../../../model/worlds.ts";
 
 export const backupDate = (ms: number): string =>

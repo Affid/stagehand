@@ -2,9 +2,9 @@
 // status, the five that need a look most, and how many need updating too.
 // The full list is the Your packages tab.
 import type { Release } from "../../../../page-update.ts";
-import { Icon } from "../../../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../../context.ts";
-import { plural } from "../../../i18n.ts";
+import { plural } from "@stagehand/ui/i18n.ts";
 import {
   byConcern,
   type CompatData,

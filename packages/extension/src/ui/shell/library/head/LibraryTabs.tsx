@@ -1,7 +1,7 @@
 // The Library's tabs, as the prototype: Modules, Systems and By world, each
 // with its icon and count.
-import { TabList } from "../../../common/tabs.tsx";
-import { Icon } from "../../../common/widgets.tsx";
+import { TabList } from "@stagehand/ui/common/tabs.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../../context.ts";
 import { type Layout, useLayout } from "../../phone/layout.ts";
 

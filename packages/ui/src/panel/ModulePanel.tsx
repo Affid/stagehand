@@ -3,9 +3,9 @@
 // Package tab (PackageTab.tsx: Foundry's manifest and its own actions).
 import type { PackageInfo } from "@stagehand/shared/package";
 import { useState } from "preact/hooks";
-import { TabList, TabPanel } from "../../common/tabs.tsx";
-import { Icon } from "../../common/widgets.tsx";
-import { useUi } from "../../context.ts";
+import { TabList, TabPanel } from "../common/tabs.tsx";
+import { Icon } from "../common/widgets.tsx";
+import { useModules } from "../context.ts";
 import { LibraryTab } from "./LibraryTab.tsx";
 import { PackageTab } from "./PackageTab.tsx";
 import { shownVersion } from "@stagehand/shared/version";
@@ -32,7 +32,7 @@ function PanelTabs(props: {
   readonly tab: Tab;
   readonly onTab: (tab: Tab) => void;
 }) {
-  const { t } = useUi();
+  const { t } = useModules();
   return (
     <nav class="sts-subtabs">
       <TabList
@@ -59,7 +59,7 @@ export function ModulePanel(props: {
   readonly here?: string | undefined;
   readonly onClose: () => void;
 }) {
-  const { t } = useUi();
+  const { t } = useModules();
   const [tab, setTab] = useState<Tab>("library");
   const { pkg } = props;
   return (

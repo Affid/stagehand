@@ -1,8 +1,8 @@
 // One module on one line (View options › List), as the prototype: switch,
 // name (opens the details), a risk or note mark, tag dots, and the change.
-import { useUi } from "../../context.ts";
-import { COMPANION_ID } from "../../model/preview.ts";
-import type { WorldModuleRow } from "../../model/world-modules.ts";
+import { useModules } from "../context.ts";
+import { COMPANION_ID } from "../model/preview.ts";
+import type { WorldModuleRow } from "../model/world-modules.ts";
 import type { SectionsProps } from "./ModuleSections.tsx";
 import { whyLine } from "./why.ts";
 
@@ -10,11 +10,11 @@ const MAX_DOTS = 3;
 
 /** A risk mark, a note mark and up to three tag dots. */
 function Marks(props: { readonly row: WorldModuleRow }) {
-  const { state, t } = useUi();
+  const { t, data } = useModules();
   const { row } = props;
-  const meta = state.data.library.modules[row.pkg.id];
+  const meta = data.library.modules[row.pkg.id];
   const tags = (meta?.tags ?? []).flatMap(
-    (id) => state.data.library.tags.find((x) => x.id === id) ?? [],
+    (id) => data.library.tags.find((x) => x.id === id) ?? [],
   );
   const note = meta?.note.trim();
   return (
@@ -48,10 +48,10 @@ export function ModuleLine(props: {
   readonly row: WorldModuleRow;
   readonly p: SectionsProps;
 }) {
-  const { state, store, t, canChange } = useUi();
+  const { t, panel, openPanel, canSwitch } = useModules();
   const { row, p } = props;
   const { pkg } = row;
-  const viewing = state.panel === pkg.id;
+  const viewing = panel === pkg.id;
   const cls = [
     "stc-row",
     row.next ? "on" : "off",
@@ -67,7 +67,7 @@ export function ModuleLine(props: {
         role="switch"
         class="sts-switch"
         checked={row.next}
-        disabled={pkg.id === COMPANION_ID || !canChange}
+        disabled={pkg.id === COMPANION_ID || !canSwitch}
         aria-label={t("wp.switch", { module: pkg.title, world: p.world.title })}
         onClick={(e) => {
           e.preventDefault();
@@ -80,9 +80,7 @@ export function ModuleLine(props: {
         aria-expanded={viewing}
         // The name's own tooltip hides the row's: keep the problem under it.
         title={problem ? `${pkg.title}\n${problem}` : pkg.title}
-        onClick={() =>
-          store.set({ panel: viewing ? null : pkg.id, side: null })
-        }
+        onClick={() => openPanel(viewing ? null : pkg.id)}
       >
         {pkg.title}
       </button>

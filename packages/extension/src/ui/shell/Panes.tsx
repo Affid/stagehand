@@ -4,7 +4,7 @@ import type { WorldInfo } from "@stagehand/shared/world";
 import { useEffect } from "preact/hooks";
 import { useUi } from "../context.ts";
 import { LibraryPage } from "./library/LibraryPage.tsx";
-import { ModulePanel } from "./library/ModulePanel.tsx";
+import { ModulePanel } from "@stagehand/ui/panel/ModulePanel.tsx";
 import { IntakePanel } from "./library/panels/IntakePanel.tsx";
 import { PresetsPanel } from "./library/panels/PresetsPanel.tsx";
 import { SystemPanel } from "./library/panels/SystemPanel.tsx";

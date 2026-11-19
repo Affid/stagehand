@@ -4,7 +4,7 @@
 // your own certificate's files; and an Advanced fold.
 import type { ComponentChildren } from "preact";
 import { useState } from "preact/hooks";
-import { Icon } from "../../../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../../context.ts";
 import { useQuirks } from "../../../quirks.ts";
 import { clean, shown } from "./model.ts";

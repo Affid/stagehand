@@ -3,9 +3,9 @@
 // does, so it is safe to uninstall); version and authors. The name opens
 // the system's panel.
 import type { SystemInfo } from "@stagehand/shared/world";
-import { Icon } from "../../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../context.ts";
-import { plural } from "../../i18n.ts";
+import { plural } from "@stagehand/ui/i18n.ts";
 import { worldsUsing } from "../../model/systems.ts";
 import { updateFor } from "../../model/updates.ts";
 import { shownVersion } from "@stagehand/shared/version";

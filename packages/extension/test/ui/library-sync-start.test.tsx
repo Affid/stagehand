@@ -4,7 +4,7 @@
 import { cleanup } from "@testing-library/preact";
 import { afterEach, describe, expect, test, vi } from "vitest";
 import type { ExtensionMessage } from "../../src/messages.ts";
-import { createTranslator } from "../../src/ui/i18n.ts";
+import { createTranslator } from "@stagehand/ui/i18n.ts";
 import {
   sendNotingChanges,
   startLibrarySync,

@@ -1,11 +1,11 @@
 /* The world page's tab row and its tools, group actions, the list layout,
    and the launch review's list (prototype _calm.css). */
-.sts-shell .sts-subtabs .sts-tablist {
+.st-ui .sts-subtabs .sts-tablist {
   display: flex;
   gap: 2px;
 }
 
-.sts-shell .sts-subtabs .stc-tools {
+.st-ui .sts-subtabs .stc-tools {
   margin-left: auto;
   display: flex;
   gap: 6px;
@@ -13,13 +13,13 @@
   padding-bottom: 4px;
 }
 
-.sts-shell .stc-tools input[type="search"] {
+.st-ui .stc-tools input[type="search"] {
   height: 28px;
   width: 170px;
   flex: none;
 }
 
-.sts-shell .stc-tools button {
+.st-ui .stc-tools button {
   height: 28px;
   width: auto;
   flex: none;
@@ -28,24 +28,24 @@
   font-size: 13px;
 }
 
-.sts-shell .stc-tools button.icon {
+.st-ui .stc-tools button.icon {
   width: 28px;
   padding: 0;
 }
 
-.sts-shell .stc-viewwrap {
+.st-ui .stc-viewwrap {
   position: relative;
   display: inline-flex;
 }
 
-.sts-shell .stc-viewpop {
+.st-ui .stc-viewpop {
   position: absolute;
   top: calc(100% + 6px);
   right: 0;
   width: 320px;
 }
 
-.sts-shell .stc-viewbody {
+.st-ui .stc-viewbody {
   display: grid;
   grid-template-columns: 70px 1fr;
   gap: 10px;
@@ -53,36 +53,36 @@
   padding: 10px;
 }
 
-.sts-shell .stc-viewbody label {
+.st-ui .stc-viewbody label {
   display: contents;
 }
 
-.sts-shell .stc-viewbody select {
+.st-ui .stc-viewbody select {
   height: 28px;
 }
 
-.sts-shell .stc-viewbody .st-seg2 button {
+.st-ui .stc-viewbody .st-seg2 button {
   width: auto;
 }
 
 /* A group's header with its ⋮ actions */
-.sts-shell .stw-headrow {
+.st-ui .stw-headrow {
   display: flex;
   align-items: center;
   gap: 4px;
 }
 
-.sts-shell .stw-headrow .stw-head {
+.st-ui .stw-headrow .stw-head {
   flex: 1;
   min-width: 0;
 }
 
-.sts-shell .stw-gmenu {
+.st-ui .stw-gmenu {
   position: relative;
   display: inline-flex;
 }
 
-.sts-shell .stw-gmenu .st-hbtn {
+.st-ui .stw-gmenu .st-hbtn {
   width: 22px;
   height: 22px;
   padding: 0;
@@ -93,14 +93,14 @@
   opacity: 0.6;
 }
 
-.sts-shell .stw-headrow:hover .st-hbtn,
-.sts-shell .stw-gmenu .st-hbtn[aria-expanded="true"],
-.sts-shell .stw-gmenu .st-hbtn:focus-visible {
+.st-ui .stw-headrow:hover .st-hbtn,
+.st-ui .stw-gmenu .st-hbtn[aria-expanded="true"],
+.st-ui .stw-gmenu .st-hbtn:focus-visible {
   opacity: 1;
 }
 
 /* View options › List: one line per module */
-.sts-shell .stc-list {
+.st-ui .stc-list {
   list-style: none;
   margin: 4px 0 0;
   padding: 0;
@@ -109,7 +109,7 @@
   gap: 0 18px;
 }
 
-.sts-shell .stc-row {
+.st-ui .stc-row {
   display: flex;
   align-items: center;
   gap: 9px;
@@ -122,28 +122,28 @@
   min-width: 0;
 }
 
-.sts-shell .stc-row:hover {
+.st-ui .stc-row:hover {
   background: rgb(255 255 255 / 5%);
 }
 
-.sts-shell .stc-row.viewing {
+.st-ui .stc-row.viewing {
   background: rgb(238 155 58 / 10%);
 }
 
-.sts-shell .stc-row.plus {
+.st-ui .stc-row.plus {
   border-left-color: #6fd083;
 }
 
-.sts-shell .stc-row.minus {
+.st-ui .stc-row.minus {
   border-left-color: #e0705a;
 }
 
-.sts-shell .stc-row.prob {
+.st-ui .stc-row.prob {
   border-left-color: #f5c45e;
   background: rgb(245 196 94 / 8%);
 }
 
-.sts-shell .stc-row button.t {
+.st-ui .stc-row button.t {
   display: block;
   flex: 0 1 auto;
   min-width: 0;
@@ -161,35 +161,35 @@
   white-space: nowrap;
 }
 
-.sts-shell .stc-row.off button.t {
+.st-ui .stc-row.off button.t {
   color: var(--color-light-4);
 }
 
-.sts-shell .stc-row .dots {
+.st-ui .stc-row .dots {
   display: inline-flex;
   gap: 2px;
   flex: none;
 }
 
-.sts-shell .stc-row .dots .st-dot {
+.st-ui .stc-row .dots .st-dot {
   width: 7px;
   height: 7px;
   background: var(--st-c, #777);
 }
 
-.sts-shell .stc-row .stc-warn {
+.st-ui .stc-row .stc-warn {
   color: #f5c45e;
   font-size: 11px;
   flex: none;
 }
 
-.sts-shell .stc-row .stc-note {
+.st-ui .stc-row .stc-note {
   color: var(--color-light-4);
   font-size: 11px;
   flex: none;
 }
 
-.sts-shell .stc-row .d {
+.st-ui .stc-row .d {
   flex: none;
   white-space: nowrap;
   margin-left: auto;

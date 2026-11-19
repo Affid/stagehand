@@ -2,9 +2,9 @@
 // Show filter), always in Foundry's own order.
 import type { WorldInfo } from "@stagehand/shared/world";
 import type { SetupState } from "../../messages.ts";
-import { worldOrder } from "./order.ts";
-import { pendingFor } from "./preview.ts";
-import { worldModules } from "./world-modules.ts";
+import { worldOrder } from "@stagehand/ui/model/order.ts";
+import { pendingFor } from "@stagehand/ui/model/preview.ts";
+import { worldModules } from "@stagehand/ui/model/world-modules.ts";
 
 export type GridShow = "all" | "fav" | "recent" | "attention" | "pick";
 export const GRID_SHOWS: readonly GridShow[] = [

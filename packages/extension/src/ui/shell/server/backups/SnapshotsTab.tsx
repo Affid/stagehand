@@ -6,9 +6,9 @@ import type {
   SnapshotInfo,
 } from "../../../../page-server-backups.ts";
 import { formatSize } from "../../../common/size.ts";
-import { Icon } from "../../../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../../context.ts";
-import { plural } from "../../../i18n.ts";
+import { plural } from "@stagehand/ui/i18n.ts";
 import { agoMs, backupTime, tip } from "../../world/backups/text.ts";
 import { DeleteSome } from "../../world/backups/Head.tsx";
 import { versionTag } from "./version.ts";

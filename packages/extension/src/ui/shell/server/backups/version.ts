@@ -1,6 +1,6 @@
 // Foundry's version tag on the server page: the same generation is safe,
 // an older one warns, a newer one can't be restored here.
-import type { Translate } from "../../../i18n.ts";
+import type { Translate } from "@stagehand/ui/i18n.ts";
 import type { Tag } from "../../world/backups/BackupRow.tsx";
 
 export type Made = "taken" | "made";

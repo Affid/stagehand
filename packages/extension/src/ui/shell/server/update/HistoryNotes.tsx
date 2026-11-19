@@ -2,7 +2,7 @@
 // title, date, how many changes, and every section open.
 import { useMemo } from "preact/hooks";
 import { useUi } from "../../../context.ts";
-import { plural } from "../../../i18n.ts";
+import { plural } from "@stagehand/ui/i18n.ts";
 import { entriesOf, type Notes, parseNotes } from "./notes.ts";
 import { Intro, Items } from "./NotesView.tsx";
 import type { ReleaseItem } from "./releases.ts";

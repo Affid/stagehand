@@ -2,7 +2,7 @@
 // nowhere (Foundry 13's quit, compat/quirks.ts), our page says so instead of
 // Foundry's quit page. Over everything, as the launching screen is.
 import { useEffect, useRef } from "preact/hooks";
-import { Icon } from "../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../context.ts";
 
 export function StoppedScreen() {

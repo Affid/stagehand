@@ -11,7 +11,7 @@ import {
 import { COMPANION_ID } from "@stagehand/shared/companion";
 import { parseCoreVersion } from "@stagehand/shared/version";
 import { type Command, changeModules } from "@stagehand/shared/world";
-import type { SetupState } from "../../messages.ts";
+import type { ModulesData } from "./data.ts";
 
 export { COMPANION_ID };
 
@@ -42,14 +42,14 @@ export interface Preview {
 
 /** A world's queued changes, oldest first. */
 export const pendingFor = (
-  state: SetupState,
+  state: ModulesData,
   worldId: string,
 ): readonly Command[] =>
   state.commands.filter((c) => c.worldId === worldId && c.status === "pending");
 
 /** The modules of these presets; unknown presets add nothing. */
 export const presetModules = (
-  state: SetupState,
+  state: ModulesData,
   presetIds: readonly string[],
 ): string[] => [
   ...new Set(
@@ -60,12 +60,12 @@ export const presetModules = (
 ];
 
 /** Like the background's failOrphans: any deleted preset fails the change. */
-export const isOrphaned = (state: SetupState, c: Command): boolean =>
+export const isOrphaned = (state: ModulesData, c: Command): boolean =>
   c.payload.presetIds.some(
     (id) => !state.library.presets.some((p) => p.id === id),
   );
 
-const toSpec = (state: SetupState, change: NewChange): ApplySpec => ({
+const toSpec = (state: ModulesData, change: NewChange): ApplySpec => ({
   mode: change.mode,
   modules: changeModules(state.library.presets, {
     presetIds: [...change.presetIds],
@@ -73,7 +73,7 @@ const toSpec = (state: SetupState, change: NewChange): ApplySpec => ({
   }),
 });
 
-export function previewApply(state: SetupState, req: PreviewRequest): Preview {
+export function previewApply(state: ModulesData, req: PreviewRequest): Preview {
   const world = state.setup?.worlds.find((w) => w.id === req.worldId);
   const all = pendingFor(state, req.worldId);
   const queued = all.filter((c) => !isOrphaned(state, c));

@@ -2,10 +2,10 @@
 // holds (renamed in place after New folder), and its cards when open.
 import type { Folder } from "@stagehand/shared/library/schema";
 import { useEffect, useRef } from "preact/hooks";
-import { InlineInput } from "../../common/widgets.tsx";
+import { InlineInput } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../context.ts";
-import { plural } from "../../i18n.ts";
-import type { LibGroup } from "../../model/library-groups.ts";
+import { plural } from "@stagehand/ui/i18n.ts";
+import type { LibGroup } from "@stagehand/ui/model/library-groups.ts";
 import type { ModulesModel } from "../../modules/derived.ts";
 import { useFolderOps } from "../../modules/folder-ops.ts";
 import { GroupMenu } from "./GroupMenu.tsx";

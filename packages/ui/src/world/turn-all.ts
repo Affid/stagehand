@@ -2,9 +2,9 @@
 // group menu and the By world grid's group counts. Queued for the next
 // launch, in parts the background accepts.
 import { MAX_PICKED } from "@stagehand/shared/world";
-import { useUi } from "../../context.ts";
-import { COMPANION_ID } from "../../model/preview.ts";
-import type { WorldModuleRow } from "../../model/world-modules.ts";
+import { useModules } from "../context.ts";
+import { COMPANION_ID } from "../model/preview.ts";
+import type { WorldModuleRow } from "../model/world-modules.ts";
 
 /** Ids in parts the background accepts in one change (MAX_PICKED). */
 export function inParts(ids: readonly string[], size = MAX_PICKED): string[][] {
@@ -50,20 +50,20 @@ export async function queueInParts(
 
 /** The rows "Turn all on / off" would change. */
 export function useTurnable(rows: readonly WorldModuleRow[]) {
-  const { state } = useUi();
-  const installed = new Set(state.data.setup?.modules.map((m) => m.id));
+  const { data } = useModules();
+  const installed = new Set(data.setup?.modules.map((m) => m.id));
   return (on: boolean): readonly WorldModuleRow[] =>
     rows.filter((r) => turns(r, on, installed));
 }
 
 /** Queues "Turn all on / off" for a group, in parts the background accepts. */
 export function useTurnAll(rows: readonly WorldModuleRow[], worldId: string) {
-  const { actions } = useUi();
+  const { queueApply } = useModules();
   const turnable = useTurnable(rows);
   return (on: boolean): void => {
     const ids = turnable(on).map((r) => r.pkg.id);
     void queueInParts(
-      (part) => actions.queueApply(worldId, on ? "add" : "remove", [], part),
+      (part) => queueApply(worldId, on ? "add" : "remove", [], part),
       `${worldId}:${on ? "on" : "off"}:${ids.join(",")}`,
       ids,
     );

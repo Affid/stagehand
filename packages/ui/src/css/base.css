@@ -1,0 +1,84 @@
+/* What every page of the modules view needs: the colours and type of
+   Stagehand's windows (.st-app) and small shared pieces. First in Setup's
+   styles, before setup-ui.css; first in the companion's. */
+
+.st-app {
+  --st-text: var(--color-text-primary, #e7e1d5);
+  --st-muted: var(--color-text-subtle, #a9a39a);
+  --st-border: var(--color-border, #4b4a44);
+  --st-accent: var(--color-warm-2, #ee9b3a);
+  --st-panel: var(--color-cool-5-75, rgb(11 10 19 / 75%));
+  --st-hover: rgb(255 255 255 / 6%);
+  --st-warn: #e0a85a;
+  --st-danger: #d9534f;
+  --st-good: #69b46d;
+  /* Status colours stay apart from Foundry's orange, which means "act or
+     selected". Each pair measured at 6:1 or more on Foundry's dark panel. */
+  --st-ok: #7fd18a;
+  --st-info: #9cc3ff;
+  --st-attn: #f5c45e;
+  --st-err: #ff8f80;
+  --st-line: rgb(255 255 255 / 12%);
+  --st-surface: rgb(11 10 19 / 82%);
+  /* For things drawn over text: popovers and floating tools. */
+  --st-surface-solid: var(--color-cool-4, #15151e);
+  --st-fill: var(--color-warm-1, #ee9b3a);
+  --st-on-fill: #1b1208;
+  color: var(--st-text);
+  font-size: var(--font-size-13, 13px);
+  margin: 0 0 0.75rem;
+}
+
+.st-icon {
+  flex: none;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0.1rem 0.25rem;
+  border: none;
+  background: none;
+  color: var(--st-muted);
+  line-height: 1;
+}
+
+.st-icon:hover:not(:disabled) {
+  color: var(--st-accent);
+}
+
+.st-link {
+  width: auto;
+  margin: 0;
+  padding: 0.1rem 0;
+  border: none;
+  background: none;
+  color: var(--st-accent);
+  text-align: left;
+}
+
+.st-link:hover {
+  text-decoration: underline;
+}
+
+.st-dot {
+  display: inline-block;
+  flex: none;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+}
+
+.st-empty {
+  color: var(--st-muted);
+}
+
+.st-hint {
+  margin: 0;
+  color: var(--st-muted);
+  font-size: var(--font-size-12, 12px);
+  line-height: 1.4;
+}
+
+.st-empty {
+  margin: 0;
+  color: var(--st-muted);
+}

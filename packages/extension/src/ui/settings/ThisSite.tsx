@@ -2,7 +2,7 @@
 // Stagehand there (asks for that site, adds it, reloads the page).
 import { useState } from "preact/hooks";
 import type { ServerId } from "../../background/servers.ts";
-import type { Translate } from "../i18n.ts";
+import type { Translate } from "@stagehand/ui/i18n.ts";
 import type { SettingsTab } from "./platform.ts";
 import { serverLabel } from "./useServers.ts";
 

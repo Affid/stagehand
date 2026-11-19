@@ -3,7 +3,7 @@
 import { PALETTE, PALETTE_NAMES } from "../actions.ts";
 import { useUi } from "../context.ts";
 import { closePopover, useDismiss } from "./popover.ts";
-import { Icon } from "./widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 
 export function ColorPicker(props: {
   readonly label: string;

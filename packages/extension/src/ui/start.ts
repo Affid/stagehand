@@ -19,7 +19,7 @@ import type { PageChannel } from "../page-channel.ts";
 import { NO_UPDATES } from "../page-updates.ts";
 import { createActions, type Send } from "./actions.ts";
 import type { UiDeps } from "./context.ts";
-import { createTranslator, pickLanguage } from "./i18n.ts";
+import { createTranslator, pickLanguage } from "@stagehand/ui/i18n.ts";
 import { liftVeil } from "../page/veil.ts";
 import { createPageBridge } from "./page.ts";
 import type { UiPorts } from "./ports.ts";

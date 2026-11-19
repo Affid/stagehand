@@ -5,7 +5,7 @@
 import type { WorldInfo } from "@stagehand/shared/world";
 import { useState } from "preact/hooks";
 import type { WorldChanges } from "../../../page-save.ts";
-import { IconButton, InlineInput } from "../../common/widgets.tsx";
+import { IconButton, InlineInput } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../context.ts";
 
 /** Edits need a verified admin, a supported Foundry and the flag. */

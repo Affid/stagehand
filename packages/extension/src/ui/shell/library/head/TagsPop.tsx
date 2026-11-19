@@ -3,10 +3,10 @@
 // adds and removes at once.
 import type { Tag } from "@stagehand/shared/library/schema";
 import { useState } from "preact/hooks";
-import { useDisclosure } from "../../../common/disclosure.ts";
-import { Icon } from "../../../common/widgets.tsx";
+import { useDisclosure } from "@stagehand/ui/common/disclosure.ts";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../../context.ts";
-import { plural } from "../../../i18n.ts";
+import { plural } from "@stagehand/ui/i18n.ts";
 
 type TagState = "all" | "some" | "none";
 

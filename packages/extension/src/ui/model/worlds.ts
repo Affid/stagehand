@@ -3,7 +3,7 @@
 import type { Plan } from "@stagehand/shared/resolver";
 import type { Command, Snapshot, WorldInfo } from "@stagehand/shared/world";
 import type { SetupState } from "../../messages.ts";
-import { pendingFor, previewApply } from "./preview.ts";
+import { pendingFor, previewApply } from "@stagehand/ui/model/preview.ts";
 
 // No "stale": Foundry stamps lastPlayed when a world closes as well as at
 // launch, so a report older than lastPlayed only means a long session.

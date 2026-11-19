@@ -2,15 +2,15 @@
 // group), as cards or one line each. A group's ⋮ turns all of it on or off.
 import type { WorldInfo } from "@stagehand/shared/world";
 import { useState } from "preact/hooks";
-import { useDisclosure } from "../../common/disclosure.ts";
-import { Icon } from "../../common/widgets.tsx";
-import { useUi } from "../../context.ts";
-import { groupLibrary, type LibGroup } from "../../model/library-groups.ts";
-import type { WorldModuleRow } from "../../model/world-modules.ts";
-import { useModulesModel } from "../../modules/derived.ts";
+import { useDisclosure } from "../common/disclosure.ts";
+import { Icon } from "../common/widgets.tsx";
+import { useModules } from "../context.ts";
+import { groupLibrary, type LibGroup } from "../model/library-groups.ts";
+import type { WorldModuleRow } from "../model/world-modules.ts";
 import { ModuleCard } from "./ModuleCard.tsx";
 import { ModuleLine } from "./ModuleLine.tsx";
 import { useTurnAll } from "./turn-all.ts";
+import { useGroupSources } from "./useGroupSources.ts";
 import type { WhyContext } from "./why.ts";
 
 export interface SectionsProps {
@@ -27,7 +27,7 @@ function GroupMenu(props: {
   readonly rows: readonly WorldModuleRow[];
   readonly worldId: string;
 }) {
-  const { t } = useUi();
+  const { t } = useModules();
   const d = useDisclosure<HTMLSpanElement>();
   const turnAll = useTurnAll(props.rows, props.worldId);
   const turn = (on: boolean): void => {
@@ -77,7 +77,7 @@ function SectionHead(props: {
   readonly all: readonly WorldModuleRow[];
   readonly worldId: string;
 }) {
-  const { t, canChange } = useUi();
+  const { t, canSwitch } = useModules();
   const name = props.name;
   return (
     <div class="stw-headrow">
@@ -99,7 +99,7 @@ function SectionHead(props: {
           })}
         </span>
       </button>
-      {canChange ? (
+      {canSwitch ? (
         <GroupMenu name={name} rows={props.all} worldId={props.worldId} />
       ) : null}
     </div>
@@ -114,12 +114,12 @@ function Section(props: {
   readonly onToggle: () => void;
   readonly p: SectionsProps;
 }) {
-  const { state, t } = useUi();
+  const { t, view } = useModules();
   const { group, rows } = props;
   const name =
     group.name ??
     t(group.label ?? "", group.param ? { param: group.param } : {});
-  const list = state.worldView.layout === "list";
+  const list = view.layout === "list";
   return (
     <li class="stw-sec" style={{ "--c": group.color ?? "var(--color-cool-3)" }}>
       <SectionHead
@@ -150,26 +150,39 @@ function Section(props: {
   );
 }
 
+/** Folded sections: the page's when it keeps them, else the view's own. */
+function useFolds(): {
+  readonly closed: ReadonlySet<string>;
+  readonly toggle: (key: string) => void;
+} {
+  const { folded, onFold } = useModules();
+  const [own, setOwn] = useState<ReadonlySet<string>>(new Set());
+  if (folded && onFold) return { closed: folded, toggle: onFold };
+  return {
+    closed: own,
+    toggle: (key) => {
+      const next = new Set(own);
+      if (!next.delete(key)) next.add(key);
+      setOwn(next);
+    },
+  };
+}
+
 export function ModuleSections(props: SectionsProps) {
-  const { state } = useUi();
-  const model = useModulesModel(state);
-  const [closed, setClosed] = useState<ReadonlySet<string>>(new Set());
+  const { data, view, where } = useModules();
+  const model = useGroupSources(data, where === "setup");
+  const { closed, toggle } = useFolds();
   const rowOf = new Map(props.all.map((r) => [r.pkg.id, r]));
   const shown = new Set(props.rows.map((r) => r.pkg.id));
   const groups = groupLibrary(
     props.all.map((r) => r.pkg),
-    state.worldView.by,
+    view.by,
     {
-      library: state.data.library,
+      library: data.library,
       smart: model.groups,
       authors: model.authors,
     },
   );
-  const toggle = (key: string): void => {
-    const next = new Set(closed);
-    if (!next.delete(key)) next.add(key);
-    setClosed(next);
-  };
   const rowsOf = (g: LibGroup): WorldModuleRow[] =>
     g.modules.flatMap((m) => rowOf.get(m.id) ?? []);
   return (

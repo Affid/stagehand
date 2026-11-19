@@ -1,6 +1,6 @@
 // The session editor's calendar and time zone picker (prototype _sched.js).
 import { useState } from "preact/hooks";
-import { Icon } from "../../../../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../../../context.ts";
 import { cityOf } from "../../../../model/schedule.ts";
 import { BROWSER_TZ, dayName, tzLabel } from "./text.ts";

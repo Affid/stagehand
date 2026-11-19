@@ -1,6 +1,6 @@
 // The filter, and Foundry's own Install and Update All for modules or
 // systems (prototype controls row).
-import { Icon } from "../../../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../../context.ts";
 
 export function FilterRow(props: {

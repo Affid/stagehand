@@ -4,7 +4,7 @@
 // and last played.
 import type { WorldInfo } from "@stagehand/shared/world";
 import type { BackupInfo } from "../../../../page-backups.ts";
-import { IconButton } from "../../../common/widgets.tsx";
+import { IconButton } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../../context.ts";
 import { systemTitle } from "../../../model/system.ts";
 import { useLastPlayed } from "../../WorldRail.tsx";

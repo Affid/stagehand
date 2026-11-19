@@ -1,6 +1,6 @@
 // UI strings (L-1). The language follows the server's configured language
 // where a translation exists, else the browser's, else English (L-2).
-import enJson from "../i18n/en.json";
+import enJson from "./strings/en.json";
 
 export type Params = Readonly<Record<string, string | number>>;
 export type Translate = (key: string, params?: Params) => string;

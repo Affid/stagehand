@@ -28,7 +28,7 @@ function DesktopShell() {
   const { state } = useUi();
   return (
     <div
-      class="sts-shell"
+      class="sts-shell st-ui"
       inert={state.launching !== null || state.serverStopped === true}
     >
       <Header />

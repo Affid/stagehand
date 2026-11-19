@@ -4,8 +4,8 @@ import type { PackageInfo } from "@stagehand/shared/package";
 import type { Command, Snapshot } from "@stagehand/shared/world";
 import { BUNDLED_CONFIG } from "../../src/adapters/config.ts";
 import type { SetupState } from "../../src/messages.ts";
-import { groupByFolder, scopeModules } from "../../src/ui/model/modules.ts";
-import { effectOf, previewApply } from "../../src/ui/model/preview.ts";
+import { groupByFolder, scopeModules } from "@stagehand/ui/model/modules.ts";
+import { effectOf, previewApply } from "@stagehand/ui/model/preview.ts";
 import { age, worldRows } from "../../src/ui/model/worlds.ts";
 
 const pkg = (id: string, over: Partial<PackageInfo> = {}): PackageInfo => ({

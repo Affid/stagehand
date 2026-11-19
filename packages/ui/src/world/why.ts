@@ -1,9 +1,9 @@
 // The words, icon and fix for a card's "why" line (SETUP-REDESIGN.md: world
 // page cards). Pure, so the card stays a plain view.
-import { unverifiedText } from "../../model/unverified.ts";
-import type { Translate } from "../../i18n.ts";
-import { plural } from "../../i18n.ts";
-import type { WorldModuleRow } from "../../model/world-modules.ts";
+import { unverifiedText } from "../model/unverified.ts";
+import type { Translate } from "../i18n.ts";
+import { plural } from "../i18n.ts";
+import type { WorldModuleRow } from "../model/world-modules.ts";
 
 export interface Fix {
   readonly label: string;

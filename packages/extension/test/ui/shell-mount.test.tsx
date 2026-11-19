@@ -2,7 +2,7 @@
 import { act } from "preact/test-utils";
 import { afterEach, describe, expect, test, vi } from "vitest";
 import { createActions, type Send } from "../../src/ui/actions.ts";
-import { createTranslator } from "../../src/ui/i18n.ts";
+import { createTranslator } from "@stagehand/ui/i18n.ts";
 import { SHELL_HOST, syncShell } from "../../src/ui/shell/mount.tsx";
 import { createStore } from "../../src/ui/store.ts";
 import {

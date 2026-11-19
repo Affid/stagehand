@@ -8,7 +8,7 @@ import { screen } from "@testing-library/preact";
 import { afterEach, describe, expect, test } from "vitest";
 import type { ExtensionMessage, SetupState } from "../../src/messages.ts";
 import type { BackupInfo } from "../../src/page-backups.ts";
-import { inParts } from "../../src/ui/shell/world/turn-all.ts";
+import { inParts } from "@stagehand/ui/world/turn-all.ts";
 import { el, pkg, renderUi, sent, setupState } from "./harness.tsx";
 
 afterEach(cleanup);

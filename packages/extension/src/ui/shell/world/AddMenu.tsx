@@ -2,12 +2,12 @@
 // modules (match it, or add only). Everything waits for the next launch.
 import { useCallback, useId, useRef, useState } from "preact/hooks";
 import { MAX_PICKED } from "@stagehand/shared/world";
-import { useFocusFirst } from "../../common/disclosure.ts";
-import { useDismiss } from "../../common/dismiss.ts";
-import { Icon } from "../../common/widgets.tsx";
+import { useFocusFirst } from "@stagehand/ui/common/disclosure.ts";
+import { useDismiss } from "@stagehand/ui/common/dismiss.ts";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../context.ts";
-import { plural } from "../../i18n.ts";
-import { nextSet } from "../../model/world-modules.ts";
+import { plural } from "@stagehand/ui/i18n.ts";
+import { nextSet } from "@stagehand/ui/model/world-modules.ts";
 
 interface Source {
   readonly id: string;

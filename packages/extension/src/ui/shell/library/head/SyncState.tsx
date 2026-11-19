@@ -3,7 +3,7 @@
 // tooltip and read out by screen readers.
 import { useUi } from "../../../context.ts";
 import type { SyncStatus } from "../../../library-sync.ts";
-import type { Translate } from "../../../i18n.ts";
+import type { Translate } from "@stagehand/ui/i18n.ts";
 
 const ICONS = {
   synced: "cloud",

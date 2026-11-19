@@ -2,7 +2,7 @@
 // change it Foundry first checks the current one, then the new one is typed
 // twice and saved with the other changes) and the admin username.
 import { useState } from "preact/hooks";
-import { Icon } from "../../../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../../context.ts";
 import { useQuirks } from "../../../quirks.ts";
 import { Row, TextRow } from "./fields.tsx";

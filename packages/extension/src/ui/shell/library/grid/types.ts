@@ -3,7 +3,7 @@
 import type {
   WorldModuleRow,
   WorldModules,
-} from "../../../model/world-modules.ts";
+} from "@stagehand/ui/model/world-modules.ts";
 
 export interface WorldRows {
   readonly model: WorldModules;

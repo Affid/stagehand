@@ -7,15 +7,14 @@ import {
   isCompatibilityRisk,
   testAvailability,
 } from "@stagehand/shared/version";
-import { safeUrl } from "../../common/files.ts";
-import { Icon } from "../../common/widgets.tsx";
-import { useUi } from "../../context.ts";
-import { plural } from "../../i18n.ts";
-import { type Kind, OnServer } from "./OnServer.tsx";
+import { safeUrl } from "../common/safe-url.ts";
+import { Icon } from "../common/widgets.tsx";
+import { type PackageKind, useModules } from "../context.ts";
+import { plural } from "../i18n.ts";
 
 function Badge(props: { readonly pkg: PackageInfo }) {
-  const { state, t } = useUi();
-  const core = state.data.setup?.core;
+  const { t, data } = useModules();
+  const core = data.setup?.core;
   const verified = props.pkg.compatibility.verified;
   if (!core || !verified) return null;
   const risk = isCompatibilityRisk(
@@ -30,7 +29,7 @@ function Badge(props: { readonly pkg: PackageInfo }) {
 }
 
 function Links(props: { readonly pkg: PackageInfo }) {
-  const { t } = useUi();
+  const { t } = useModules();
   const { pkg } = props;
   const links = [
     ["pk.project", pkg.url],
@@ -58,7 +57,7 @@ function Links(props: { readonly pkg: PackageInfo }) {
 }
 
 function Facts(props: { readonly pkg: PackageInfo }) {
-  const { t } = useUi();
+  const { t } = useModules();
   const { pkg } = props;
   const min = pkg.compatibility.minimum;
   return (
@@ -84,8 +83,8 @@ const REL = {
 } as const;
 
 function Relationships(props: { readonly pkg: PackageInfo }) {
-  const { state, t } = useUi();
-  const installed = state.data.setup?.modules ?? [];
+  const { t, data } = useModules();
+  const installed = data.setup?.modules ?? [];
   const rows = (Object.keys(REL) as (keyof typeof REL)[]).flatMap((k) =>
     (props.pkg[k] as readonly Relation[]).map((r) => ({ k, r })),
   );
@@ -114,7 +113,7 @@ function Relationships(props: { readonly pkg: PackageInfo }) {
 }
 
 function Contents(props: { readonly pkg: PackageInfo }) {
-  const { t } = useUi();
+  const { t } = useModules();
   const packs = props.pkg.packs ?? [];
   const langs = props.pkg.languages ?? [];
   return (
@@ -148,17 +147,19 @@ function Contents(props: { readonly pkg: PackageInfo }) {
 
 export function PackageTab(props: {
   readonly pkg: PackageInfo;
-  readonly kind?: Kind;
+  readonly kind?: PackageKind;
 }) {
-  const { t } = useUi();
+  const { t, PackageActions } = useModules();
   const kind = props.kind ?? "module";
   return (
     <div class="sts-pkgtab">
       <Facts pkg={props.pkg} />
       <Relationships pkg={props.pkg} />
       <Contents pkg={props.pkg} />
-      <OnServer pkg={props.pkg} kind={kind} />
-      <p class="st-muted sts-foot">{t(`pk.foot.${kind}`)}</p>
+      {PackageActions ? <PackageActions pkg={props.pkg} kind={kind} /> : null}
+      <p class="st-muted sts-foot">
+        {t(PackageActions ? `pk.foot.${kind}` : "pk.foot.manifest")}
+      </p>
     </div>
   );
 }

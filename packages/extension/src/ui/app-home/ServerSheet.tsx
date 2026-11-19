@@ -3,7 +3,7 @@
 // (mockup: design/app-screens, approved 2026-11-09).
 import { useState } from "preact/hooks";
 import { MAX_SERVER_NAME } from "../../messages.ts";
-import type { Translate } from "../i18n.ts";
+import type { Translate } from "@stagehand/ui/i18n.ts";
 import type { AppHome } from "../settings/platform.ts";
 import type { ListedServer, Servers } from "../settings/useServers.ts";
 import { hostOf, serverOf, type Typed, typedOf } from "./address.ts";

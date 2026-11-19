@@ -1,6 +1,6 @@
 // Chosen dates under the calendar (prototype _sched.js, .stw-chosen): each
 // date with its own time, which can be changed, and Remove.
-import { Icon } from "../../../../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../../../context.ts";
 import { HH_MM, todayIn, zonedToUtc } from "../../../../model/schedule.ts";
 import { BROWSER_TZ, dateLabel } from "./text.ts";

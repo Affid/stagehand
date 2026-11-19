@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { worldOrder } from "../../src/ui/model/order.ts";
+import { worldOrder } from "@stagehand/ui/model/order.ts";
 
 const w = (id: string, extra: Record<string, unknown> = {}) => ({
   id,

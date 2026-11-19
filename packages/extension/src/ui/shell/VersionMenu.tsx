@@ -2,8 +2,8 @@
 // Foundry's build and channel, the update, and Help (Foundry's own Support
 // and issues window, and the knowledge base on foundryvtt.com).
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
-import { useDismiss } from "../common/dismiss.ts";
-import { Icon } from "../common/widgets.tsx";
+import { useDismiss } from "@stagehand/ui/common/dismiss.ts";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../context.ts";
 import { channelName } from "../model/update.ts";
 

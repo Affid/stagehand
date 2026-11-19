@@ -3,9 +3,9 @@
 // down (Foundry stops; whatever started it may bring it back), and the
 // certificate requests (what Foundry will do, before it does).
 import type { SettingKey, Settings } from "../../../../page-config.ts";
-import { Icon, Modal } from "../../../common/widgets.tsx";
+import { Icon, Modal } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../../context.ts";
-import { plural, type Translate } from "../../../i18n.ts";
+import { plural, type Translate } from "@stagehand/ui/i18n.ts";
 import type { ChangeKey, Config } from "./useConfig.ts";
 
 /** A setting's value as people read it (prototype cfgShow). */

@@ -4,7 +4,7 @@
 // folded to its latest headline after; Featured Content is always open.
 import { type NewsItem, newsUrls } from "@stagehand/shared/news";
 import { useEffect, useState } from "preact/hooks";
-import { Icon } from "../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../context.ts";
 
 /** Warm the cache for every banner once, so sliding never waits on one. */

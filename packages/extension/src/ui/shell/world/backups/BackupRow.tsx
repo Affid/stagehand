@@ -1,7 +1,7 @@
 // One of Foundry's backups: its name, when, the latest pill, Foundry's
 // version badge, size, Restore… and Delete (or a box to pick it).
 import type { BackupInfo } from "../../../../page-backups.ts";
-import { Icon } from "../../../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { formatSize } from "../../../common/size.ts";
 import { useUi } from "../../../context.ts";
 import {

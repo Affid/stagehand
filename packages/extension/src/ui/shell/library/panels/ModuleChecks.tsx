@@ -1,7 +1,7 @@
 // Every installed module as a box to tick, under its folder (then Unfiled),
 // for a tag's or a preset's modules (prototype moduleChecks).
 import { useUi } from "../../../context.ts";
-import { orderedFolders } from "../../../model/modules.ts";
+import { orderedFolders } from "@stagehand/ui/model/modules.ts";
 
 /** Installed modules by folder, in the folders' order, then Unfiled. */
 function useFolderGroups() {

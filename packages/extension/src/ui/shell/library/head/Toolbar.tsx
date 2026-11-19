@@ -1,7 +1,7 @@
 // The Library's toolbar, as the prototype: Group by, then Select, Collapse
 // all, New folder, Tags, Presets and Import and export.
-import { GROUP_BYS, type GroupBy } from "../../../model/library-groups.ts";
-import { Icon } from "../../../common/widgets.tsx";
+import { GROUP_BYS, type GroupBy } from "@stagehand/ui/model/library-groups.ts";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../../context.ts";
 import { SyncState } from "./SyncState.tsx";
 import { Transfer } from "./Transfer.tsx";

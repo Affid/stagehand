@@ -3,7 +3,7 @@
 import { useEffect, useState } from "preact/hooks";
 import { newId, nextColor } from "../../actions.ts";
 import { useUi } from "../../context.ts";
-import type { GroupBy } from "../../model/library-groups.ts";
+import type { GroupBy } from "@stagehand/ui/model/library-groups.ts";
 import type { LibTab } from "./head/LibraryTabs.tsx";
 
 /** Folded groups: one at a time, or all at once. */

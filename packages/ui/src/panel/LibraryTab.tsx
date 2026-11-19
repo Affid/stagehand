@@ -1,21 +1,19 @@
 // A module's Library tab: folder, tags, note, the presets that hold it, and
 // every world: a switch that queues a change for its next launch, or
-// "companion off" where Stagehand isn't set up.
+// "companion off" where Stagehand isn't set up. Inside a world it is
+// WorldLibraryTab.
 import type { PackageInfo } from "@stagehand/shared/package";
-import type { WorldInfo } from "@stagehand/shared/world";
 import { useState } from "preact/hooks";
-import { IconButton } from "../../common/widgets.tsx";
-import { useUi } from "../../context.ts";
-import { worldOrder } from "../../model/order.ts";
-import { COMPANION_ID } from "../../model/preview.ts";
-import {
-  type WorldModuleRow,
-  worldModules,
-} from "../../model/world-modules.ts";
+import { IconButton } from "../common/widgets.tsx";
+import { useModules } from "../context.ts";
+import { type Where, WorldItem } from "./WorldItem.tsx";
+import { WorldLibraryTab } from "./WorldLibraryTab.tsx";
+import { worldOrder } from "../model/order.ts";
+import { worldModules } from "../model/world-modules.ts";
 
 export function FolderField(props: { readonly id: string }) {
-  const { state, actions, t, canChange } = useUi();
-  const { library } = state.data;
+  const { t, data, organise, canOrganise } = useModules();
+  const { library } = data;
   const current = library.modules[props.id]?.folderId ?? "";
   return (
     <label class="stl-field">
@@ -23,10 +21,10 @@ export function FolderField(props: { readonly id: string }) {
       <select
         aria-label={t("mp.folder")}
         value={current}
-        disabled={!canChange}
+        disabled={!canOrganise}
         onChange={(e) => {
           const v = e.currentTarget.value;
-          void actions.op({
+          void organise({
             op: "module.setFolder",
             moduleIds: [props.id],
             folderId: v === "" ? null : v,
@@ -48,7 +46,7 @@ function AddTag(props: {
   readonly others: readonly { readonly id: string; readonly name: string }[];
   readonly onAdd: (id: string) => void;
 }) {
-  const { t } = useUi();
+  const { t } = useModules();
   if (props.others.length === 0) return null;
   return (
     <select
@@ -69,13 +67,13 @@ function AddTag(props: {
 }
 
 export function TagsField(props: { readonly id: string }) {
-  const { state, actions, t, canChange } = useUi();
-  const { library } = state.data;
+  const { t, data, organise, canOrganise } = useModules();
+  const { library } = data;
   const ids = library.modules[props.id]?.tags ?? [];
   const mine = library.tags.filter((tag) => ids.includes(tag.id));
   const others = library.tags.filter((tag) => !ids.includes(tag.id));
   const set = (add: string[], remove: string[]): void => {
-    void actions.op({
+    void organise({
       op: "module.setTags",
       moduleIds: [props.id],
       add,
@@ -90,7 +88,7 @@ export function TagsField(props: { readonly id: string }) {
           <span key={tag.id} class="stl-tag" style={{ "--st-c": tag.color }}>
             <i class="st-dot" aria-hidden="true" />
             {tag.name}
-            {canChange ? (
+            {canOrganise ? (
               <IconButton
                 icon="xmark"
                 label={t("mp.removeTag", { tag: tag.name })}
@@ -99,7 +97,7 @@ export function TagsField(props: { readonly id: string }) {
             ) : null}
           </span>
         ))}
-        {canChange ? (
+        {canOrganise ? (
           <AddTag others={others} onAdd={(id) => set([id], [])} />
         ) : null}
       </div>
@@ -109,8 +107,8 @@ export function TagsField(props: { readonly id: string }) {
 
 /** Saves when it loses focus, as every text field on the page does. */
 function NoteField(props: { readonly id: string }) {
-  const { state, actions, t, canChange } = useUi();
-  const saved = state.data.library.modules[props.id]?.note ?? "";
+  const { t, data, organise, canOrganise } = useModules();
+  const saved = data.library.modules[props.id]?.note ?? "";
   const [text, setText] = useState(saved);
   return (
     <label class="stl-field">
@@ -119,65 +117,16 @@ function NoteField(props: { readonly id: string }) {
         aria-label={t("mp.note")}
         maxLength={4000}
         value={text}
-        disabled={!canChange}
+        disabled={!canOrganise}
         onInput={(e) => setText(e.currentTarget.value)}
         onBlur={(e) => {
           // The field's own value: a click right after typing must not lose it.
           const note = e.currentTarget.value;
           if (note.trim() !== saved.trim())
-            void actions.op({ op: "module.setNote", moduleId: props.id, note });
+            void organise({ op: "module.setNote", moduleId: props.id, note });
         }}
       />
     </label>
-  );
-}
-
-interface Where {
-  readonly world: WorldInfo;
-  readonly tracked: boolean;
-  readonly row: WorldModuleRow | undefined;
-}
-
-function WorldItem(props: {
-  readonly pkg: PackageInfo;
-  readonly where: Where;
-  readonly here: boolean;
-}) {
-  const { actions, t, canChange } = useUi();
-  const { pkg } = props;
-  const { world, row } = props.where;
-  const model = { tracked: props.where.tracked };
-  const on = row?.next ?? false;
-  return (
-    <li class={props.here ? "sts-here" : ""}>
-      <span>
-        {world.title}
-        {props.here ? (
-          <span class="st-muted"> · {t("mp.thisWorld")}</span>
-        ) : null}
-      </span>
-      {!model.tracked ? (
-        <span class="d na">{t("grid.off")}</span>
-      ) : row?.delta ? (
-        <span class={`d ${row.delta === "on" ? "plus" : "minus"}`}>
-          {t(`mp.delta.${row.delta}`)}
-        </span>
-      ) : (
-        <span />
-      )}
-      <input
-        type="checkbox"
-        role="switch"
-        class="sts-switch"
-        checked={on}
-        disabled={!canChange || !model.tracked || pkg.id === COMPANION_ID}
-        aria-label={t("wp.switch", { module: pkg.title, world: world.title })}
-        onClick={(e) => {
-          e.preventDefault();
-          void actions.flip(world.id, pkg.id, !on);
-        }}
-      />
-    </li>
   );
 }
 
@@ -186,14 +135,11 @@ function Worlds(props: {
   readonly pkg: PackageInfo;
   readonly here: string | undefined;
 }) {
-  const { state, t } = useUi();
-  const worlds = worldOrder(
-    state.data.setup?.worlds ?? [],
-    state.data.setup?.lang,
-  );
+  const { t, data } = useModules();
+  const worlds = worldOrder(data.setup?.worlds ?? [], data.setup?.lang);
   // Each world's modules once per render (review: not twice per world).
   const where: Where[] = worlds.map((w) => {
-    const m = worldModules(state.data, w.id);
+    const m = worldModules(data, w.id);
     return {
       world: w,
       tracked: m.tracked,
@@ -226,9 +172,19 @@ export function LibraryTab(props: {
   readonly pkg: PackageInfo;
   readonly here?: string | undefined;
 }) {
-  const { state, t } = useUi();
+  const { where } = useModules();
+  if (where === "world" && props.here)
+    return <WorldLibraryTab pkg={props.pkg} here={props.here} />;
+  return <SetupLibraryTab pkg={props.pkg} here={props.here} />;
+}
+
+function SetupLibraryTab(props: {
+  readonly pkg: PackageInfo;
+  readonly here?: string | undefined;
+}) {
+  const { t, data } = useModules();
   const { pkg } = props;
-  const presets = state.data.library.presets.filter((p) =>
+  const presets = data.library.presets.filter((p) =>
     p.modules.includes(pkg.id),
   );
   return (
@@ -237,7 +193,7 @@ export function LibraryTab(props: {
       <TagsField id={pkg.id} />
       <NoteField
         // Starts again when the saved note changes elsewhere (import, another tab).
-        key={`${pkg.id}:${state.data.library.modules[pkg.id]?.note ?? ""}`}
+        key={`${pkg.id}:${data.library.modules[pkg.id]?.note ?? ""}`}
         id={pkg.id}
       />
       <div class="stl-field">

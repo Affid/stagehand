@@ -1,8 +1,8 @@
 // The grid's bar, as the prototype: Group by, which worlds to Show (and how
 // many, with hidden worlds that have changes), the module filter, and a hint.
 import { useUi } from "../../../context.ts";
-import { plural } from "../../../i18n.ts";
-import { GROUP_BYS, type GroupBy } from "../../../model/library-groups.ts";
+import { plural } from "@stagehand/ui/i18n.ts";
+import { GROUP_BYS, type GroupBy } from "@stagehand/ui/model/library-groups.ts";
 import {
   GRID_SHOWS,
   type GridShow,

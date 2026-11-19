@@ -1,4 +1,4 @@
-// File download and upload in the page, and safe links from manifests.
+// File download and upload in the page.
 
 export function downloadText(fileName: string, text: string): void {
   const url = URL.createObjectURL(
@@ -30,19 +30,6 @@ export function pickTextFile(): Promise<string | undefined> {
     });
     input.click();
   });
-}
-
-/** Manifest URLs are untrusted: only http(s) links are rendered. */
-export function safeUrl(url: string | undefined): string | undefined {
-  if (!url) return undefined;
-  try {
-    const parsed = new URL(url);
-    return parsed.protocol === "http:" || parsed.protocol === "https:"
-      ? parsed.href
-      : undefined;
-  } catch {
-    return undefined;
-  }
 }
 
 export const fileStamp = (date: Date): string =>

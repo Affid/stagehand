@@ -9,8 +9,8 @@ import type { Lock, Progress } from "../page-progress.ts";
 import type { Updates } from "../page-updates.ts";
 import type { Adapter } from "../adapters/config.ts";
 import type { AdapterChoice } from "../adapters/select.ts";
-import type { GroupBy } from "./model/library-groups.ts";
-import type { Scope } from "./model/modules.ts";
+import type { WorldView } from "@stagehand/ui/context.ts";
+import type { Scope } from "@stagehand/ui/model/modules.ts";
 import type { PhoneNav } from "./shell/phone/nav.ts";
 import type { Route } from "./shell/route.ts";
 
@@ -55,11 +55,6 @@ export type SidePanel =
   | { readonly kind: "tags" | "presets"; readonly id?: string }
   | { readonly kind: "intake" }
   | { readonly kind: "system"; readonly id: string };
-
-export interface WorldView {
-  readonly by: GroupBy;
-  readonly layout: "cards" | "list";
-}
 
 export const DEFAULT_WORLD_VIEW: WorldView = { by: "folder", layout: "cards" };
 

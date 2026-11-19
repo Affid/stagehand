@@ -4,9 +4,9 @@
 // the bottom and saved through Foundry after a dialog that lists them; then
 // the restart notice with Shut down now (Foundry has no restart command).
 import { useState } from "preact/hooks";
-import { Icon } from "../../../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../../context.ts";
-import { plural } from "../../../i18n.ts";
+import { plural } from "@stagehand/ui/i18n.ts";
 import { PageHead } from "../PageHead.tsx";
 import { Access } from "./Access.tsx";
 import { CertDialog, SaveDialog, StopDialog } from "./Dialogs.tsx";

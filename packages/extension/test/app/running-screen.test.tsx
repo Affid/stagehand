@@ -8,7 +8,7 @@ import { RunningScreen } from "../../src/app/running/RunningScreen.tsx";
 import type { ApplyView } from "../../src/app/running/apply-flow.ts";
 import type { CloseResult, Status } from "../../src/app/running/server.ts";
 import { showsRunning, startRunning } from "../../src/app/running/start.tsx";
-import { createTranslator } from "../../src/ui/i18n.ts";
+import { createTranslator } from "@stagehand/ui/i18n.ts";
 
 afterEach(() => {
   cleanup();

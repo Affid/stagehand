@@ -1,0 +1,19 @@
+{
+  "name": "@stagehand/ui",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./*": "./src/*"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@stagehand/shared": "workspace:*",
+    "preact": "^11.1.1"
+  },
+  "devDependencies": {
+    "@testing-library/preact": "^3.2.6"
+  }
+}

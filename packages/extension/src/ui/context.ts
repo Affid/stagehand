@@ -3,7 +3,7 @@ import { createContext } from "preact";
 import { useContext } from "preact/hooks";
 import { allowsChanges } from "../adapters/select.ts";
 import type { Actions } from "./actions.ts";
-import type { Translate } from "./i18n.ts";
+import type { Translate } from "@stagehand/ui/i18n.ts";
 import type { PageBridge } from "./page.ts";
 import type { UiPorts } from "./ports.ts";
 import { type Store, type UiState, useStore } from "./store.ts";

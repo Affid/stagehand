@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
-import { createTranslator } from "../../src/ui/i18n.ts";
-import { unverifiedText } from "../../src/ui/model/unverified.ts";
+import { createTranslator } from "@stagehand/ui/i18n.ts";
+import { unverifiedText } from "@stagehand/ui/model/unverified.ts";
 
 describe("the not verified line", () => {
   const t = createTranslator("en");

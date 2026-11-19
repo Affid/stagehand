@@ -1,7 +1,7 @@
 // The server has no companion module, or an older one than this Stagehand
 // works with (issue 1): say so on the Library and offer Foundry's install.
 import { MIN_COMPANION_VERSION } from "@stagehand/shared/companion";
-import { Icon } from "../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../context.ts";
 import { type CompanionNeed, companionNeed } from "../model/companion.ts";
 

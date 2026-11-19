@@ -171,7 +171,7 @@ export function PhoneShell(props: { readonly layout: Layout }) {
       <SheetHostContext.Provider value={sheets}>
         <div
           ref={root}
-          class={`sts-shell stp${layout === "tablet" ? " stp-wide" : ""}${bannerGone ? " stp-scrolled" : ""}`}
+          class={`sts-shell st-ui stp${layout === "tablet" ? " stp-wide" : ""}${bannerGone ? " stp-scrolled" : ""}`}
           data-screen={home ? "home" : "page"}
           data-page={pageName(route)}
           inert={state.launching !== null || state.serverStopped === true}

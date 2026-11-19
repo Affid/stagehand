@@ -1,11 +1,11 @@
 // A world's column: its art and name (open its page), its menu, how many
 // modules are on, what is queued, and a mark when something needs attention.
 import type { WorldInfo } from "@stagehand/shared/world";
-import { Icon } from "../../../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../../context.ts";
-import { plural } from "../../../i18n.ts";
-import { pendingFor } from "../../../model/preview.ts";
-import type { WorldModules } from "../../../model/world-modules.ts";
+import { plural } from "@stagehand/ui/i18n.ts";
+import { pendingFor } from "@stagehand/ui/model/preview.ts";
+import type { WorldModules } from "@stagehand/ui/model/world-modules.ts";
 import { cssImage } from "../../route.ts";
 import { ColumnMenu } from "./ColumnMenu.tsx";
 

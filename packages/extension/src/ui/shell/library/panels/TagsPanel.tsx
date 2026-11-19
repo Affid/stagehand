@@ -2,7 +2,7 @@
 // tag, and the chosen tag's name, colour and modules, or Delete tag.
 import type { Tag } from "@stagehand/shared/library/schema";
 import { newId, nextColor, PALETTE, PALETTE_NAMES } from "../../../actions.ts";
-import { Icon } from "../../../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../../context.ts";
 import { ModuleChecks } from "./ModuleChecks.tsx";
 import { PanelFrame } from "./PanelFrame.tsx";

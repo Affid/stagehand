@@ -3,7 +3,7 @@
    setup-ui.css. */
 
 /* Rows of controls */
-.sts-shell .st-row {
+.st-ui .st-row {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -13,22 +13,22 @@
   flex: none;
 }
 
-.sts-shell .st-row .st-label {
+.st-ui .st-row .st-label {
   color: var(--color-text-subtle);
   font-size: var(--font-size-12);
 }
 
-.sts-shell .st-row select {
+.st-ui .st-row select {
   height: 28px;
   width: auto;
   min-width: 120px;
 }
 
-.sts-shell .st-row .st-spacer {
+.st-ui .st-row .st-spacer {
   flex: 1;
 }
 
-.sts-shell .st-row button {
+.st-ui .st-row button {
   height: 28px;
   flex: none;
   width: auto;
@@ -37,42 +37,42 @@
   gap: 6px;
 }
 
-.sts-shell .st-row button.icon {
+.st-ui .st-row button.icon {
   width: 28px;
   padding: 0;
 }
 
-.sts-shell .st-row button.st-on,
-.sts-shell .st-row button[aria-pressed="true"] {
+.st-ui .st-row button.st-on,
+.st-ui .st-row button[aria-pressed="true"] {
   border-color: var(--color-warm-1);
   box-shadow: 0 0 4px var(--color-warm-2);
   color: var(--color-light-1);
 }
 
-.sts-shell .st-row button.bright {
+.st-ui .st-row button.bright {
   padding: 0 14px;
   font-weight: 700;
 }
 
 /* The filter with Install and Update All */
-.sts-shell .stl-controls {
+.st-ui .stl-controls {
   display: flex;
   gap: 8px;
   align-items: center;
   flex: none;
 }
 
-.sts-shell .stl-controls .filter {
+.st-ui .stl-controls .filter {
   flex: 1;
   display: flex;
 }
 
-.sts-shell .stl-controls input[type="search"] {
+.st-ui .stl-controls input[type="search"] {
   width: 100%;
   height: 34px;
 }
 
-.sts-shell .stl-controls > button {
+.st-ui .stl-controls > button {
   height: 34px;
   width: auto;
   flex: 0 0 150px;
@@ -80,7 +80,7 @@
 }
 
 /* New installs */
-.sts-shell .sts-intake-band {
+.st-ui .sts-intake-band {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -93,17 +93,17 @@
   flex: none;
 }
 
-.sts-shell .sts-intake-band > i {
+.st-ui .sts-intake-band > i {
   color: #8fd49b;
   font-size: 18px;
 }
 
-.sts-shell .sts-intake-band > span {
+.st-ui .sts-intake-band > span {
   flex: 1;
   min-width: 0;
 }
 
-.sts-shell .sts-intake-band button {
+.st-ui .sts-intake-band button {
   height: 28px;
   width: auto;
   flex: none;
@@ -113,17 +113,17 @@
 }
 
 /* The companion module is missing or out of date: the same band, in amber */
-.sts-shell .sts-intake-band.sts-companion-band {
+.st-ui .sts-intake-band.sts-companion-band {
   border-color: rgb(201 148 60 / 60%);
   background: rgb(201 148 60 / 10%);
   color: #f0e2c8;
 }
 
-.sts-shell .sts-intake-band.sts-companion-band > i {
+.st-ui .sts-intake-band.sts-companion-band > i {
   color: #e0b060;
 }
 
-.sts-shell .sts-newtag {
+.st-ui .sts-newtag {
   margin-left: 6px;
   padding: 0 5px;
   border: 1px solid #3f8f52;
@@ -136,7 +136,7 @@
 }
 
 /* The selection's bar */
-.sts-shell .sts-selbar {
+.st-ui .sts-selbar {
   /* Wider than a pane a details panel narrows (1366 or less): wrap rather
      than put Done under the panel. The prototype overflows here. */
   flex-wrap: wrap;
@@ -151,12 +151,12 @@
   color: var(--color-light-1);
 }
 
-.sts-shell .sts-selbar > i {
+.st-ui .sts-selbar > i {
   color: var(--color-warm-1);
   font-size: 16px;
 }
 
-.sts-shell .sts-selbar strong.sts-selcount {
+.st-ui .sts-selbar strong.sts-selcount {
   flex: 0 0 7.5em;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -164,12 +164,12 @@
   font-variant-numeric: tabular-nums;
 }
 
-.sts-shell .sts-selbar button[disabled] {
+.st-ui .sts-selbar button[disabled] {
   opacity: 0.45;
   cursor: default;
 }
 
-.sts-shell .sts-selbar .sts-sep {
+.st-ui .sts-selbar .sts-sep {
   width: 1px;
   height: 20px;
   background: var(--color-cool-3);
@@ -177,24 +177,24 @@
 }
 
 /* Pick lists in a popover */
-.sts-shell .sts-popwrap {
+.st-ui .sts-popwrap {
   position: relative;
   display: inline-flex;
 }
 
-.sts-shell .sts-popwrap > .st-pop {
+.st-ui .sts-popwrap > .st-pop {
   position: absolute;
   top: calc(100% + 4px);
   left: 0;
   width: 280px;
 }
 
-.sts-shell .sts-panel .sts-popwrap > .st-pop {
+.st-ui .sts-panel .sts-popwrap > .st-pop {
   left: auto;
   right: 0;
 }
 
-.sts-shell .st-pop ul.sts-pick {
+.st-ui .st-pop ul.sts-pick {
   list-style: none;
   margin: 0;
   padding: 4px 0;
@@ -202,7 +202,7 @@
   overflow: auto;
 }
 
-.sts-shell .st-pop ul.sts-pick button {
+.st-ui .st-pop ul.sts-pick button {
   display: grid;
   grid-template-columns: 18px 1fr auto;
   gap: 8px;
@@ -218,23 +218,23 @@
   color: var(--color-light-2);
 }
 
-.sts-shell .st-pop ul.sts-pick button:hover,
-.sts-shell .st-pop ul.sts-pick button:focus-visible {
+.st-ui .st-pop ul.sts-pick button:hover,
+.st-ui .st-pop ul.sts-pick button:focus-visible {
   background: var(--color-dark-1);
 }
 
-.sts-shell .st-pop ul.sts-pick li.dis button {
+.st-ui .st-pop ul.sts-pick li.dis button {
   color: var(--color-light-5);
   cursor: not-allowed;
 }
 
-.sts-shell .st-pop .sts-pop-note {
+.st-ui .st-pop .sts-pop-note {
   padding: 6px 10px 8px;
   color: var(--color-text-subtle);
   font-size: 12px;
 }
 
-.sts-shell .st-pop footer {
+.st-ui .st-pop footer {
   display: flex;
   gap: 6px;
   align-items: center;
@@ -243,12 +243,12 @@
   border-top: 1px solid var(--color-cool-4);
 }
 
-.sts-shell .st-pop footer .st-muted {
+.st-ui .st-pop footer .st-muted {
   flex: 1;
   font-size: 11px;
 }
 
-.sts-shell .st-small-btn {
+.st-ui .st-small-btn {
   height: 26px;
   width: auto;
   flex: none;
@@ -256,11 +256,11 @@
   font-size: var(--font-size-12);
 }
 
-.sts-shell .st-tagpop {
+.st-ui .st-tagpop {
   width: 300px;
 }
 
-.sts-shell .st-tagpop .st-checklist {
+.st-ui .st-tagpop .st-checklist {
   list-style: none;
   margin: 0;
   padding: 4px 0;
@@ -268,7 +268,7 @@
   overflow: auto;
 }
 
-.sts-shell .st-tagpop .st-checklist label {
+.st-ui .st-tagpop .st-checklist label {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -276,36 +276,36 @@
   cursor: pointer;
 }
 
-.sts-shell .st-tagpop .st-checklist label:hover {
+.st-ui .st-tagpop .st-checklist label:hover {
   background: var(--color-dark-1);
 }
 
-.sts-shell .st-tagpop .st-name {
+.st-ui .st-tagpop .st-name {
   flex: 1;
   color: var(--color-light-2);
 }
 
-.sts-shell .st-tagpop li.st-changed {
+.st-ui .st-tagpop li.st-changed {
   background: rgb(238 155 58 / 8%);
 }
 
-.sts-shell .st-tagpop .st-delta {
+.st-ui .st-tagpop .st-delta {
   font-size: 11px;
   padding: 0 5px;
   border-radius: 2px;
   border: 1px solid;
 }
 
-.sts-shell .st-tagpop .st-plus {
+.st-ui .st-tagpop .st-plus {
   color: #8fd49b;
 }
 
-.sts-shell .st-tagpop .st-minus {
+.st-ui .st-tagpop .st-minus {
   color: #ff9c8f;
 }
 
 /* Panels: lists, fields, module boxes */
-.sts-shell .sts-panel footer {
+.st-ui .sts-panel footer {
   flex: none;
   display: flex;
   gap: 8px;
@@ -313,7 +313,7 @@
   border-top: 1px solid var(--color-cool-4);
 }
 
-.sts-shell .sts-panel footer button {
+.st-ui .sts-panel footer button {
   height: 32px;
   width: auto;
   flex: 1;
@@ -321,46 +321,46 @@
   font-size: 13px;
 }
 
-.sts-shell .sts-panel footer button[disabled] {
+.st-ui .sts-panel footer button[disabled] {
   opacity: 0.45;
 }
 
-.sts-shell .sts-panel .lead {
+.st-ui .sts-panel .lead {
   margin: 0;
   color: var(--color-light-3);
   font-size: 13px;
 }
 
-.sts-shell .sts-kv {
+.st-ui .sts-kv {
   display: grid;
   grid-template-columns: 70px 1fr;
   gap: 8px 10px;
   align-items: center;
 }
 
-.sts-shell .sts-kv > span {
+.st-ui .sts-kv > span {
   color: var(--color-text-subtle);
 }
 
-.sts-shell .sts-kv select,
-.sts-shell .sts-kv input[type="text"] {
+.st-ui .sts-kv select,
+.st-ui .sts-kv input[type="text"] {
   height: 28px;
 }
 
-.sts-shell .sts-kv textarea {
+.st-ui .sts-kv textarea {
   height: 56px;
   resize: none;
   font-family: inherit;
   font-size: 13px;
 }
 
-.sts-shell .sts-kv .chips {
+.st-ui .sts-kv .chips {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
 }
 
-.sts-shell .sts-list {
+.st-ui .sts-list {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -368,7 +368,7 @@
   gap: 2px;
 }
 
-.sts-shell .sts-list li > button {
+.st-ui .sts-list li > button {
   display: grid;
   grid-template-columns: 20px 1fr auto;
   gap: 8px;
@@ -385,17 +385,17 @@
   color: var(--color-light-2);
 }
 
-.sts-shell .sts-list li > button:hover {
+.st-ui .sts-list li > button:hover {
   background: rgb(255 255 255 / 4%);
 }
 
-.sts-shell .sts-list li.active > button {
+.st-ui .sts-list li.active > button {
   background: rgb(255 255 255 / 7%);
   border-left-color: var(--color-warm-1);
   color: var(--color-light-1);
 }
 
-.sts-shell .sts-list .sw {
+.st-ui .sts-list .sw {
   width: 16px;
   height: 16px;
   border-radius: 3px;
@@ -403,29 +403,29 @@
   border: 1px solid rgb(255 255 255 / 20%);
 }
 
-.sts-shell .sts-list .c {
+.st-ui .sts-list .c {
   font-size: 12px;
   color: var(--color-light-4);
 }
 
-.sts-shell .sts-list li.new > button {
+.st-ui .sts-list li.new > button {
   color: var(--color-warm-1);
 }
 
-.sts-shell .sts-sws {
+.st-ui .sts-sws {
   display: flex;
   gap: 5px;
   flex-wrap: wrap;
 }
 
-.sts-shell .sts-sws .st-swatch {
+.st-ui .sts-sws .st-swatch {
   width: 22px;
   height: 22px;
   padding: 0;
   flex: none;
 }
 
-.sts-shell .sts-mods {
+.st-ui .sts-mods {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -433,7 +433,7 @@
   gap: 1px;
 }
 
-.sts-shell .sts-mods li.grp {
+.st-ui .sts-mods li.grp {
   margin: 8px 0 2px;
   color: var(--color-light-4);
   font-size: 11px;
@@ -441,7 +441,7 @@
   text-transform: uppercase;
 }
 
-.sts-shell .sts-mods li label {
+.st-ui .sts-mods li label {
   display: flex;
   gap: 8px;
   align-items: center;
@@ -450,22 +450,22 @@
   cursor: pointer;
 }
 
-.sts-shell .sts-mods li label input {
+.st-ui .sts-mods li label input {
   margin: 0;
 }
 
-.sts-shell .sts-panel .sts-popwrap > button.bright {
+.st-ui .sts-panel .sts-popwrap > button.bright {
   height: 32px;
   width: 100%;
   gap: 6px;
 }
 
-.sts-shell .sts-panel .sts-popwrap {
+.st-ui .sts-panel .sts-popwrap {
   display: flex;
 }
 
 /* Chips you can toggle: tags and worlds of a new module */
-.sts-shell .st-chip {
+.st-ui .st-chip {
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -481,33 +481,33 @@
   box-shadow: none;
 }
 
-.sts-shell .sts-tchip {
+.st-ui .sts-tchip {
   cursor: pointer;
   opacity: 0.55;
 }
 
-.sts-shell .sts-tchip:hover {
+.st-ui .sts-tchip:hover {
   opacity: 0.85;
 }
 
-.sts-shell .sts-tchip.on {
+.st-ui .sts-tchip.on {
   opacity: 1;
   border-color: var(--color-light-4);
   color: var(--color-light-1);
 }
 
-.sts-shell .sts-tchip.on .fa-check {
+.st-ui .sts-tchip.on .fa-check {
   color: #8fd49b;
   font-size: 10px;
 }
 
-.sts-shell .sts-tchip.sug {
+.st-ui .sts-tchip.sug {
   opacity: 0.9;
   border-style: dashed;
   border-color: rgb(245 196 94 / 70%);
 }
 
-.sts-shell .sts-morew {
+.st-ui .sts-morew {
   font-size: 12px;
   color: var(--color-light-3);
   text-decoration: underline;
@@ -517,7 +517,7 @@
 }
 
 /* A new module in the panel */
-.sts-shell .sts-intake-item {
+.st-ui .sts-intake-item {
   display: grid;
   gap: 8px;
   padding: 10px;
@@ -526,38 +526,38 @@
   background: rgb(0 0 0 / 18%);
 }
 
-.sts-shell .sts-intake-item .hd {
+.st-ui .sts-intake-item .hd {
   display: flex;
   flex-wrap: wrap;
   gap: 2px 8px;
   align-items: baseline;
 }
 
-.sts-shell .sts-intake-item .hd strong {
+.st-ui .sts-intake-item .hd strong {
   color: var(--color-light-1);
   font-size: 14px;
 }
 
-.sts-shell .sts-intake-item .hd .st-muted {
+.st-ui .sts-intake-item .hd .st-muted {
   font-size: 12px;
 }
 
-.sts-shell .sts-intake-item .sts-kv {
+.st-ui .sts-intake-item .sts-kv {
   grid-template-columns: 56px 1fr;
 }
 
-.sts-shell .sts-intake-item .acts {
+.st-ui .sts-intake-item .acts {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.sts-shell .sts-intake-item .acts .st-link {
+.st-ui .sts-intake-item .acts .st-link {
   color: var(--color-light-3);
   font-size: 12px;
 }
 
-.sts-shell .sts-intake-item .acts button:not(.st-link) {
+.st-ui .sts-intake-item .acts button:not(.st-link) {
   height: 26px;
   width: auto;
   flex: none;
@@ -566,7 +566,7 @@
   font-size: 12.5px;
 }
 
-.sts-shell .sts-sug {
+.st-ui .sts-sug {
   display: flex;
   gap: 6px;
   align-items: baseline;
@@ -578,41 +578,41 @@
   font-size: 12px;
 }
 
-.sts-shell .sts-sug span {
+.st-ui .sts-sug span {
   flex: 1;
 }
 
-.sts-shell .sts-sug .st-link {
+.st-ui .sts-sug .st-link {
   color: var(--color-warm-1);
   white-space: nowrap;
 }
 
 /* A folder named in place after New folder */
-.sts-shell .stl-renaming {
+.st-ui .stl-renaming {
   display: flex;
   align-items: center;
   padding: 2px 8px;
 }
 
-.sts-shell .stl-renaming input {
+.st-ui .stl-renaming input {
   height: 26px;
   max-width: 320px;
 }
 
 /* A card's marks: Foundry's star and lock, and an update to install */
-.sts-shell .stw-fav {
+.st-ui .stw-fav {
   color: #e8c35a;
   font-size: 12px;
   flex: none;
 }
 
-.sts-shell .stw-lock {
+.st-ui .stw-lock {
   color: var(--color-light-4);
   font-size: 12px;
   flex: none;
 }
 
-.sts-shell .stw-upd {
+.st-ui .stw-upd {
   height: 22px;
   width: auto;
   flex: none;
@@ -625,18 +625,18 @@
   background: rgb(63 143 82 / 18%);
 }
 
-.sts-shell .stw-upd:hover {
+.st-ui .stw-upd:hover {
   background: rgb(63 143 82 / 32%);
   color: #fff;
 }
 
 /* A module's Package tab */
-.sts-shell .sts-pkgtab {
+.st-ui .sts-pkgtab {
   display: grid;
   gap: 14px;
 }
 
-.sts-shell .sts-badge {
+.st-ui .sts-badge {
   display: inline-flex;
   gap: 4px;
   align-items: center;
@@ -647,28 +647,28 @@
   font-size: 11px;
 }
 
-.sts-shell .sts-badge.ok {
+.st-ui .sts-badge.ok {
   color: #8fd49b;
   border-color: #3f8f52;
 }
 
-.sts-shell .sts-badge.warn {
+.st-ui .sts-badge.warn {
   color: #f5c45e;
   border-color: #8a6a1f;
 }
 
-.sts-shell .sts-links a {
+.st-ui .sts-links a {
   color: var(--color-light-2);
   text-decoration: underline;
   text-decoration-color: var(--color-light-5);
 }
 
-.sts-shell .sts-links a:hover {
+.st-ui .sts-links a:hover {
   color: var(--color-warm-1);
 }
 
-.sts-shell .sts-usedby ul,
-.sts-shell .sts-pkgtab .sts-chg ul:not(.sts-wlist) {
+.st-ui .sts-usedby ul,
+.st-ui .sts-pkgtab .sts-chg ul:not(.sts-wlist) {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -676,8 +676,8 @@
   gap: 3px;
 }
 
-.sts-shell .sts-usedby li,
-.sts-shell .sts-pkgtab .sts-chg ul:not(.sts-wlist) li {
+.st-ui .sts-usedby li,
+.st-ui .sts-pkgtab .sts-chg ul:not(.sts-wlist) li {
   display: grid;
   grid-template-columns: 18px 1fr auto;
   gap: 8px;
@@ -685,43 +685,43 @@
   color: var(--color-light-2);
 }
 
-.sts-shell .sts-usedby li .s,
-.sts-shell .sts-pkgtab .sts-chg li .s {
+.st-ui .sts-usedby li .s,
+.st-ui .sts-pkgtab .sts-chg li .s {
   text-align: center;
   color: var(--color-light-4);
 }
 
-.sts-shell .sts-pkgtab .sts-chg li .s.plus {
+.st-ui .sts-pkgtab .sts-chg li .s.plus {
   color: #8fd49b;
 }
 
-.sts-shell .sts-pkgtab .sts-chg li .s.minus {
+.st-ui .sts-pkgtab .sts-chg li .s.minus {
   color: #ff9c8f;
 }
 
-.sts-shell .sts-pkgtab .sts-chg li .s.rec {
+.st-ui .sts-pkgtab .sts-chg li .s.rec {
   color: var(--color-light-3);
 }
 
-.sts-shell .sts-usedby li .x,
-.sts-shell .sts-pkgtab .sts-chg li .x {
+.st-ui .sts-usedby li .x,
+.st-ui .sts-pkgtab .sts-chg li .x {
   color: var(--color-light-4);
   font-size: 12px;
   padding: 0 4px;
 }
 
-.sts-shell .sts-hint {
+.st-ui .sts-hint {
   font-size: 11.5px;
 }
 
-.sts-shell .sts-foundry-acts {
+.st-ui .sts-foundry-acts {
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
   margin-top: 8px;
 }
 
-.sts-shell .sts-foundry-acts button {
+.st-ui .sts-foundry-acts button {
   height: 28px;
   width: auto;
   flex: none;
@@ -730,55 +730,55 @@
   font-size: 12.5px;
 }
 
-.sts-shell .sts-foot {
+.st-ui .sts-foot {
   margin: 0;
   font-size: 12px;
 }
 
 /* A group's menu and, in select mode, its box */
-.sts-shell .sth-menu .st-swatches {
+.st-ui .sth-menu .st-swatches {
   display: grid;
   grid-template-columns: repeat(4, 28px);
   gap: 6px;
   padding: 4px;
 }
 
-.sts-shell .sth-menu .st-swatch {
+.st-ui .sth-menu .st-swatch {
   width: 28px;
   height: 28px;
   padding: 0;
   border-radius: 4px;
 }
 
-.sts-shell .sts-gcheck {
+.st-ui .sts-gcheck {
   flex: none;
   width: 16px;
   height: 16px;
   margin: 0 4px 0 8px;
 }
 
-.sts-shell .stl-emptygroup {
+.st-ui .stl-emptygroup {
   margin: 4px 0 8px 30px;
   font-size: 12.5px;
 }
 
-.sts-shell .sts-usedby li.none {
+.st-ui .sts-usedby li.none {
   display: block;
   color: var(--color-text-subtle);
 }
 
-.sts-shell .sts-usedby li .x {
+.st-ui .sts-usedby li .x {
   width: auto;
   height: auto;
   padding: 0 4px;
 }
 
-.sts-shell .sts-usedby {
+.st-ui .sts-usedby {
   margin-bottom: 14px;
 }
 
 /* A tag's colour dot, wherever it shows (prototype _kit.css) */
-.sts-shell .st-dot {
+.st-ui .st-dot {
   width: 8px;
   height: 8px;
   background: var(--st-c, var(--color-light-5));

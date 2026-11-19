@@ -1,7 +1,7 @@
 // The address field: an http/https toggle and the rest as Foundry shows it.
 // Pasting a whole address picks the toggle.
 import { useEffect, useRef } from "preact/hooks";
-import type { Translate } from "../i18n.ts";
+import type { Translate } from "@stagehand/ui/i18n.ts";
 import { readTyped, type Scheme, type Typed } from "./address.ts";
 
 export interface AddressFieldProps {

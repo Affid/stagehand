@@ -4,10 +4,10 @@
 // Bug Fixes open), and each entry's issue number as a link to GitHub.
 import { useMemo, useState } from "preact/hooks";
 import type { Release } from "../../../../page-update.ts";
-import { Icon } from "../../../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { cleanChildren } from "../../../common/rich-text.tsx";
 import { useUi } from "../../../context.ts";
-import { plural } from "../../../i18n.ts";
+import { plural } from "@stagehand/ui/i18n.ts";
 import {
   type NoteArea,
   type NoteEntry,

@@ -1,8 +1,8 @@
 // A button that opens a short pick list (the prototype's st-pop with
 // sts-pick): each item picks and closes; off items say why.
 import type { ComponentChildren } from "preact";
-import { useDisclosure } from "../../../common/disclosure.ts";
-import { Icon } from "../../../common/widgets.tsx";
+import { useDisclosure } from "@stagehand/ui/common/disclosure.ts";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 
 export interface PopItem {
   readonly key: string;

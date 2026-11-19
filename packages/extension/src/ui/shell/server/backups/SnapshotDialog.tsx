@@ -8,9 +8,9 @@ import {
   type SnapshotSpace,
 } from "../../../../page-server-backups.ts";
 import { formatSize } from "../../../common/size.ts";
-import { Icon, Modal } from "../../../common/widgets.tsx";
+import { Icon, Modal } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../../context.ts";
-import { plural } from "../../../i18n.ts";
+import { plural } from "@stagehand/ui/i18n.ts";
 
 /** "1 world, 5 modules and 1 system". */
 function useCounts(): string {

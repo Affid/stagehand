@@ -9,10 +9,10 @@ import {
   shownVersion,
   testAvailability,
 } from "@stagehand/shared/version";
-import { Icon } from "../../common/widgets.tsx";
+import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../context.ts";
-import { plural } from "../../i18n.ts";
-import { unverifiedText } from "../../model/unverified.ts";
+import { plural } from "@stagehand/ui/i18n.ts";
+import { unverifiedText } from "@stagehand/ui/model/unverified.ts";
 import { updateFor } from "../../model/updates.ts";
 
 const MAX_TAGS = 3;
