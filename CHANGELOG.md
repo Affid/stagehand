@@ -5,9 +5,9 @@ the companion module (`stagehand-v<version>`, its `module.json`), the
 browser extension (`stagehand-extension-v<version>`, its `manifest.json`)
 and the Android app (`stagehand-app-v<version>`, the extension's version).
 
-## Unreleased
+## 2026-11-19
 
-### Companion module
+### Companion module 0.2.0
 
 - Module Management shows the server's Stagehand library inside a world
   (issue #2): modules as cards in the library's folders, each module's
@@ -16,16 +16,18 @@ and the Android app (`stagehand-app-v<version>`, the extension's version).
   organises a library with Stagehand; players keep Foundry's list. Each
   user can turn it off in Configure Settings: "Library view in Module
   Management".
+- The window opens to fit the screen, can be resized, and gives its cards
+  as many columns as its width allows.
 - With BBMM's own module manager on, the first full Gamemaster is asked
   once which view Module Management opens.
 
-### Extension
+### Extension 0.3.3
 
 - Links are readable in Foundry's Fantasy and Sci-fi Setup themes, such as
   Delete tag in the Tags panel: they took a dark tint of the theme's colour
   meant for backgrounds, and showed dark on dark.
 
-### Android app
+### Android app 0.3.3
 
 - The same fix, in the phone's sheets.
 - A server's card on the home screen reads its whole text to screen
