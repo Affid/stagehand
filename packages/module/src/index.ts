@@ -1,10 +1,12 @@
 // Companion module entry: one session per join, for the first full
 // Gamemaster in the world (C-1, PR-4), through the world's own flags
-// (docs/COMPANION-WORLD-PROTOCOL.md). Assistant GMs and players: nothing.
+// (docs/COMPANION-WORLD-PROTOCOL.md); and the library view in Module
+// Management for Gamemasters (docs/IN-WORLD-LIBRARY-PLAN.md).
 import "@stagehand/shared/zod-config";
 import { logError } from "@stagehand/shared/log";
 import { foundryGlobals } from "./foundry.ts";
 import { isFirstGamemaster } from "./gamemaster.ts";
+import { registerModuleView } from "./manage/register.ts";
 import { createWorldIo } from "./world-io.ts";
 import { runWorldSession } from "./world-session.ts";
 
@@ -31,6 +33,8 @@ async function start(): Promise<void> {
     },
   });
 }
+
+registerModuleView(foundryGlobals());
 
 const { Hooks } = foundryGlobals();
 Hooks.once("ready", () => {

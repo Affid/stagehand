@@ -1,0 +1,319 @@
+/* Stagehand's view in Foundry's Module Management (design/in-world-library).
+   After the shared sheets (packages/ui/src/css), which style the cards and
+   the module panel: the window's layout, the tools row's inline Group by,
+   Foundry's light interface, and the view's two dialogs. Everything is
+   limited to the window or to the dialogs' own class. */
+
+/* The window keeps the width it opened with (owner: a window that grows and
+   shrinks is worse) and has a minimum height, so a short list doesn't make
+   a small window (owner, 2026-11-18); a long one grows up to the screen. */
+#module-management.stagehand-cards {
+  min-height: min(720px, calc(100vh - 80px));
+}
+
+#module-management.stagehand-cards > .window-content {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding-bottom: 0;
+  overflow: hidden;
+}
+
+#module-management .stagehand-host {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.st-ui.stagehand-view {
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* The tools row: filter, All / On / Changes, Apply preset, Group by */
+.st-ui.stagehand-view .stc-tools {
+  flex: none;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.st-ui.stagehand-view .stc-tools input[type="search"] {
+  flex: 0 1 220px;
+  width: auto;
+  min-width: 120px;
+}
+
+.st-ui.stagehand-view .stc-group {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 6px;
+  font-size: 13px;
+  color: var(--color-text-subtle);
+  white-space: nowrap;
+}
+
+.st-ui.stagehand-view .stc-group select {
+  width: 130px;
+  height: 28px;
+}
+
+.st-ui.stagehand-view .stc-pending {
+  align-self: flex-start;
+  margin: 0;
+}
+
+/* Sections beside the module panel; only the sections scroll */
+.st-ui.stagehand-view .stagehand-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  gap: 12px;
+}
+
+.st-ui.stagehand-view .stw-modules {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+/* Three columns always, narrower while the panel is open: opening or
+   closing it moves no card to another row or column (owner, 2026-11-18). */
+.st-ui.stagehand-view .stw-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+/* The module panel is a column of the window here, not a framed window */
+.st-ui.stagehand-view .sts-panel.application {
+  position: relative;
+  inset: auto;
+  z-index: auto;
+  flex: 0 0 330px;
+  min-width: 0;
+  min-height: 0;
+  max-height: none;
+  margin: 0;
+  border: 0;
+  border-left: 1px solid var(--color-cool-4);
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+
+/* Room for the panel's close button beside a long module title */
+.st-ui.stagehand-view .sts-panel .sts-modhead {
+  padding-right: 30px;
+}
+
+/* Foundry outlines a focused or .active button in orange; as on Setup, a
+   click leaves no ring (the keyboard's focus keeps one), and the panel's
+   selected tab is marked by its underline alone. */
+.st-ui.stagehand-view button:focus:not(:focus-visible),
+.st-ui.stagehand-view
+  .sts-subtabs
+  button[role="tab"].active:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
+}
+
+.st-ui.stagehand-view .stl-chip.preset.active {
+  border-color: #3f8f52;
+  color: #b9e3c1;
+}
+
+.st-ui.stagehand-view .stl-chip.preset.active i {
+  color: #8fd49b;
+}
+
+/* Foundry's footer, with the count on Save Module Settings */
+.st-ui.stagehand-view .form-footer {
+  flex: none;
+  margin: 0;
+  padding: 8px 0;
+}
+
+.st-ui.stagehand-view .stc-badge {
+  min-width: 20px;
+  height: 20px;
+  margin-left: 4px;
+  padding: 0 5px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 10px;
+  background: #1a1206;
+  color: var(--color-warm-1);
+  font-size: 12px;
+}
+
+.stagehand-failsafe {
+  display: none;
+}
+
+/* Foundry's interface in its light theme */
+body.theme-light .st-ui.stagehand-view .stw-card {
+  background: rgb(255 255 255 / 55%);
+  border-color: #c9bfae;
+  border-left-color: #c9bfae;
+}
+
+body.theme-light .st-ui.stagehand-view .stw-card:hover {
+  background: rgb(255 255 255 / 80%);
+  border-color: #a99d88;
+}
+
+body.theme-light .st-ui.stagehand-view .stw-card.off {
+  background: rgb(255 255 255 / 30%);
+}
+
+body.theme-light .st-ui.stagehand-view .stw-card .t,
+body.theme-light .st-ui.stagehand-view .stw-head .name,
+body.theme-light .st-ui.stagehand-view .sts-modhead h3 {
+  color: #1e1a16;
+}
+
+body.theme-light .st-ui.stagehand-view .stw-card.off .t {
+  color: #6d6458;
+}
+
+body.theme-light .st-ui.stagehand-view .stw-card.plus {
+  background: rgb(63 143 82 / 16%);
+  border-left-color: #3f8f52;
+}
+
+body.theme-light .st-ui.stagehand-view .stw-card.minus {
+  background: rgb(180 82 63 / 14%);
+  border-left-color: #b4523f;
+}
+
+body.theme-light .st-ui.stagehand-view .stw-card.plus .stw-delta {
+  color: #2d6e3c;
+}
+
+body.theme-light .st-ui.stagehand-view .stw-card.minus .stw-delta {
+  color: #9a3b2a;
+}
+
+body.theme-light .st-ui.stagehand-view .stw-card .l2.warn {
+  color: #7a5a12;
+}
+
+body.theme-light .st-ui.stagehand-view .stw-card .l2,
+body.theme-light .st-ui.stagehand-view .stw-head .count,
+body.theme-light .st-ui.stagehand-view .st-seg2 .c {
+  color: #5f574c;
+}
+
+body.theme-light .st-ui.stagehand-view .stw-card .l2.note {
+  color: #4a4238;
+}
+
+body.theme-light .st-ui.stagehand-view .stw-card .l2 i,
+body.theme-light .st-ui.stagehand-view .stw-head > i {
+  color: #6d6458;
+}
+
+body.theme-light .st-ui.stagehand-view .stc-pending {
+  background: rgb(255 255 255 / 70%);
+  color: #6b4a12;
+}
+
+body.theme-light .st-ui.stagehand-view .st-seg2 button {
+  color: #4a4238;
+}
+
+body.theme-light .st-ui.stagehand-view .st-seg2 button.on {
+  background: #c4b498;
+  color: #1e1a16;
+}
+
+body.theme-light .st-ui.stagehand-view .stl-chip.preset.active {
+  color: #2d6e3c;
+}
+
+/* The view's dialogs: Apply Preset, the review, and BBMM's question */
+.stagehand-dialog .stagehand-lead:focus {
+  outline: none;
+}
+
+.stagehand-dialog fieldset {
+  margin: 0;
+}
+
+.stagehand-dialog .stagehand-presets,
+.stagehand-dialog .stagehand-modes {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.stagehand-dialog .stagehand-preset,
+.stagehand-dialog .stagehand-mode {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  column-gap: 8px;
+  align-items: center;
+  cursor: pointer;
+}
+
+.stagehand-dialog .stagehand-preset .name,
+.stagehand-dialog .stagehand-mode .name {
+  font-weight: bold;
+}
+
+.stagehand-dialog .stagehand-preset .meta {
+  font-size: var(--font-size-12, 0.75rem);
+  color: var(--color-text-subtle);
+  font-variant-numeric: tabular-nums;
+}
+
+.stagehand-dialog .stagehand-preset .about,
+.stagehand-dialog .stagehand-mode .about {
+  grid-column: 2 / -1;
+  font-size: var(--font-size-12, 0.75rem);
+  color: var(--color-text-subtle);
+}
+
+.stagehand-dialog .sts-badge {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  margin-left: 6px;
+  padding: 0 6px;
+  border: 1px solid;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: normal;
+  vertical-align: 1px;
+}
+
+.stagehand-dialog .sts-badge.ok {
+  color: #8fd49b;
+  border-color: #3f8f52;
+}
+
+body.theme-light .stagehand-dialog .sts-badge.ok {
+  color: #2d6e3c;
+}
+
+.stagehand-dialog .stagehand-diff h4 {
+  margin: 10px 0 2px;
+  font-size: var(--font-size-18, 1.125rem);
+}
+
+.stagehand-dialog .stagehand-diff ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.stagehand-dialog .stagehand-diff p {
+  margin: 0 0 6px;
+}

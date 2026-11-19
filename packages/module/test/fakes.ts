@@ -49,7 +49,7 @@ export function fakeGame(
     return Promise.resolve(value);
   });
   const game: FoundryGame = {
-    user: { id: "u1", role },
+    user: { id: "u1", role, isGM: role >= 3, can: () => role >= 3 },
     users,
     world: { id: "w1", title: "World One" },
     system: { id: "dnd5e", version: "5.1.0" },
@@ -60,7 +60,8 @@ export function fakeGame(
       set,
       register: vi.fn(),
     },
-    i18n: { localize: (key) => key, format: (key) => key },
+    socket: { emit: vi.fn() },
+    i18n: { lang: "en", localize: (key) => key, format: (key) => key },
   };
   return { game, set };
 }

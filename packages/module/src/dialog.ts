@@ -36,7 +36,7 @@ function section(
   return `<h4>${escapeHtml(game.i18n.localize(`${K}.${key}`))}</h4><ul>${li}</ul>`;
 }
 
-function checkbox(name: string, label: string): string {
+export function checkbox(name: string, label: string): string {
   return `<label class="checkbox"><input type="checkbox" name="${name}"> ${escapeHtml(label)}</label>`;
 }
 

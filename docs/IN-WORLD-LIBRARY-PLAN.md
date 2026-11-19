@@ -272,48 +272,43 @@ is checked in the spike).
    For the build: a minimum height (owner, 2026-11-18: not a fixed one),
    so a short list doesn't make a small window and a long one still grows
    up to the screen.
-2. **Build (tests first),** in slices, each committed once its tests pass:
-   - **2a. Shared UI package** `packages/ui` (`@stagehand/ui`, TypeScript
-     source like `@stagehand/shared`), behaviour unchanged on Setup:
-     - `ModulesData` in shared, the part of Setup's state the models read
-       (library, setup's modules, worlds and core, snapshots, commands);
-       `SetupState` fits it as it is.
-     - Moves: the models (`world-modules`, `preview`, `library-groups`,
-       `modules`, `order`, `unverified`), the cards and sections
-       (`ModulesTab`, `ModuleSections`, `ModuleCard`, `ModuleLine`,
-       `why`, `useWhy`, `turn-all`), the module panel (`ModulePanel`,
-       `LibraryTab`, `PackageTab`), the widgets they use, the translator
-       and the English strings.
-     - Its own context, `ModulesUi`: translations, data, the view and
-       panel state, `flip`, `queueApply`, an optional `op` (none: read
-       only), and three permissions where Setup has one `canChange`:
-       switch modules, organise the library, apply presets. Setup
-       provides it once at the shell's root from `useUi`; Foundry's
-       package actions (`OnServer`) stay in the extension as a slot.
-     - Stays in the extension: Setup's tools row and Add menu, the launch
-       line and review, the store, the actions, the page bridge.
-     - CSS: the shared rules move with the components, nested under a
-       root class both hosts carry instead of `.sts-shell`.
-     - Done when unit tests, typecheck and Setup's live suites pass.
-   - **2b. The companion's view:** Preact and JSX in the module's build;
-     the view in a chunk loaded on demand. The provider: the library file
-     (`parseSyncFile`), `game.modules` as packages, this world's snapshot,
-     unsaved changes as a local list of commands (Setup's `flipModule`
-     and `previewApply` work on it unchanged). The mockup's tools row
-     (filter, All/On/Changes, Apply preset..., Group by), the "not saved
-     yet" line, the footer with the count on Save Module Settings.
-   - **2c. Window and save:** the setting; taking over only an expected
-     window, for users Foundry lets edit modules ("Modify settings",
-     Assistant GM up by default; the mockup's roles: Apply preset and the
-     BBMM prompt for full Gamemasters); width and minimum height; the five
-     save-safety layers; the review (Save & Reload, Back) writing the
-     module configuration and reloading; the Apply Preset dialog with
-     active presets.
-   - **2d. BBMM:** the one-time prompt.
-   - **2e. Live specs** on the private 13 and 14 servers: the paths in
-     "Keeping Foundry's save safe", the setting, no library, a player,
-     BBMM; then code and security review, and a results page with
-     screenshots.
+2. **Build:** done 2026-11-19, on the private 13.351 and 14.370 servers.
+   - **Shared UI package** `packages/ui` (`@stagehand/ui`): the world
+     page's cards, sections and module panel, their models, widgets,
+     translator and strings, and five style sheets (root class `.st-ui`,
+     which Setup's shell root carries beside `.sts-shell`). Its context
+     `ModulesUi` has `where` ("setup" or "world"), `canSwitch` and
+     `canOrganise` where Setup had one `canChange`, optional folds kept by
+     the page, and a slot for Setup's own package actions. Setup's build
+     reads the sheets in their old cascade order; the built stylesheet was
+     compared rule by rule with the one before (same 1,269 rules, same
+     order but for 14 shared rules moved where nothing competes with them).
+   - **The companion's view** (`packages/module/src/manage`, eager;
+     `src/view`, a chunk of 148 kB, 43 kB gzipped, loaded only when a
+     Gamemaster opens the window; `stagehand-view.css`): the library read
+     once per page (a missing or unreadable file is tried again), this
+     world's modules as Setup's model sees a world, unsaved changes as
+     local commands, the mockup's tools row, "not saved yet" line and
+     footer, the review (Save & Reload reloads everyone, as Foundry's own
+     save does), Apply Preset with active presets, the per-user setting,
+     the BBMM question (its hint switches while BBMM holds the button).
+   - **Foundry's save:** the five layers above. A failed load puts
+     Foundry's list back and says so; a redraw during a load keeps only the
+     newest view; one review or preset dialog at a time.
+   - **Tests:** 150 companion and 13 shared-package unit tests; live specs
+     `tests/foundry/world-modules.spec.ts` (9) and
+     `world-modules-bbmm.spec.ts` (2) pass on 13 and 14; Setup's live
+     suites show no change from before (each failure also fails on the
+     commit before, or passes once the test world's flags are clear).
+   - **Reviews:** code and security review, no critical or high
+     findings; fixed: a failed load, a leftover host, a size cap enforced
+     while reading, ids from the library escaped in notices, fold keys
+     capped, failed reads not cached.
+   - **Not ours, found on the way:** on the private server some Setup
+     specs depend on the test world having no companion report, and
+     `companion-http.spec.ts` leaves one; `setup-many`, `setup-layout`,
+     `setup-a11y`, `setup-steady` and the app's fantasy and sci-fi walks
+     fail there before and after this change.
 3. **Docs:** COMPANION-GUIDE.md, the module's README and manifest
    description, CHANGELOG. The foundryvtt.com listing text is the owner's
    to write (Foundry's AI policy).
