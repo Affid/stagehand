@@ -6,33 +6,31 @@
 <line x1="24" x2="38" y1="78" y2="78" stroke="#3987e5" stroke-width="2" stroke-linecap="round"/>
 <text x="44" y="82" font-size="12" fill="#9198a1">Companion module<tspan dx="6" font-weight="600" fill="#f0f6fc">51</tspan></text>
 <line x1="203.6" x2="217.6" y1="78" y2="78" stroke="#c98500" stroke-width="2" stroke-linecap="round"/>
-<text x="223.6" y="82" font-size="12" fill="#9198a1">Chrome Web Store<tspan dx="6" font-weight="600" fill="#f0f6fc">161</tspan></text>
+<text x="223.6" y="82" font-size="12" fill="#9198a1">Chrome Web Store<tspan dx="6" font-weight="600" fill="#f0f6fc">214</tspan></text>
 <line x1="390.4" x2="404.4" y1="78" y2="78" stroke="#d95926" stroke-width="2" stroke-linecap="round"/>
 <text x="410.4" y="82" font-size="12" fill="#9198a1">Extension zip<tspan dx="6" font-weight="600" fill="#f0f6fc">19</tspan></text>
 <line x1="548.4" x2="562.4" y1="78" y2="78" stroke="#199e70" stroke-width="2" stroke-linecap="round"/>
 <text x="568.4" y="82" font-size="12" fill="#9198a1">Android app<tspan dx="6" font-weight="600" fill="#f0f6fc">10</tspan></text>
 <line x1="51.8" x2="768" y1="264" y2="264" stroke="#3d444d" stroke-width="1"/>
 <text x="43.8" y="268" font-size="11" fill="#9198a1" text-anchor="end">0</text>
-<line x1="51.8" x2="768" y1="224" y2="224" stroke="#21262d" stroke-width="1"/>
-<text x="43.8" y="228" font-size="11" fill="#9198a1" text-anchor="end">50</text>
-<line x1="51.8" x2="768" y1="184" y2="184" stroke="#21262d" stroke-width="1"/>
-<text x="43.8" y="188" font-size="11" fill="#9198a1" text-anchor="end">100</text>
-<line x1="51.8" x2="768" y1="144" y2="144" stroke="#21262d" stroke-width="1"/>
-<text x="43.8" y="148" font-size="11" fill="#9198a1" text-anchor="end">150</text>
+<line x1="51.8" x2="768" y1="210.66666666666669" y2="210.66666666666669" stroke="#21262d" stroke-width="1"/>
+<text x="43.8" y="214.7" font-size="11" fill="#9198a1" text-anchor="end">100</text>
+<line x1="51.8" x2="768" y1="157.33333333333334" y2="157.33333333333334" stroke="#21262d" stroke-width="1"/>
+<text x="43.8" y="161.3" font-size="11" fill="#9198a1" text-anchor="end">200</text>
 <line x1="51.8" x2="768" y1="104" y2="104" stroke="#21262d" stroke-width="1"/>
-<text x="43.8" y="108" font-size="11" fill="#9198a1" text-anchor="end">200</text>
+<text x="43.8" y="108" font-size="11" fill="#9198a1" text-anchor="end">300</text>
 <text x="51.8" y="286" font-size="11" fill="#9198a1">Nov 11, 2026</text>
 <text x="230.9" y="286" font-size="11" fill="#9198a1" text-anchor="middle">Nov 13</text>
 <text x="320.4" y="286" font-size="11" fill="#9198a1" text-anchor="middle">Nov 14</text>
 <text x="499.4" y="286" font-size="11" fill="#9198a1" text-anchor="middle">Nov 16</text>
 <text x="589" y="286" font-size="11" fill="#9198a1" text-anchor="middle">Nov 17</text>
 <text x="768" y="286" font-size="11" fill="#9198a1" text-anchor="end">Nov 19</text>
-<path d="M230.9 242.4 L320.4 240.8 L409.9 236 L499.4 232 L589 230.4 L678.5 228 L768 223.2" fill="none" stroke="#3987e5" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
-<circle cx="768" cy="223.2" r="4" fill="#3987e5" stroke="#0d1117" stroke-width="2"/>
-<path d="M51.8 250.4 L141.3 224.8 L230.9 204 L320.4 179.2 L409.9 156 L499.4 135.2" fill="none" stroke="#c98500" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
-<circle cx="499.4" cy="135.2" r="4" fill="#c98500" stroke="#0d1117" stroke-width="2"/>
-<path d="M230.9 251.2 L320.4 251.2 L409.9 250.4 L499.4 249.6 L589 249.6 L678.5 248.8 L768 248.8" fill="none" stroke="#d95926" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
-<circle cx="768" cy="248.8" r="4" fill="#d95926" stroke="#0d1117" stroke-width="2"/>
-<path d="M230.9 256 L320.4 256 L409.9 256 L499.4 256 L589 256 L678.5 256 L768 256" fill="none" stroke="#199e70" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
-<circle cx="768" cy="256" r="4" fill="#199e70" stroke="#0d1117" stroke-width="2"/>
+<path d="M230.9 249.6 L320.4 248.5 L409.9 245.3 L499.4 242.7 L589 241.6 L678.5 240 L768 236.8" fill="none" stroke="#3987e5" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="768" cy="236.8" r="4" fill="#3987e5" stroke="#0d1117" stroke-width="2"/>
+<path d="M51.8 254.9 L141.3 237.9 L230.9 224 L320.4 207.5 L409.9 192 L499.4 178.1 L589 163.7 L678.5 149.9" fill="none" stroke="#c98500" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="678.5" cy="149.9" r="4" fill="#c98500" stroke="#0d1117" stroke-width="2"/>
+<path d="M230.9 255.5 L320.4 255.5 L409.9 254.9 L499.4 254.4 L589 254.4 L678.5 253.9 L768 253.9" fill="none" stroke="#d95926" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="768" cy="253.9" r="4" fill="#d95926" stroke="#0d1117" stroke-width="2"/>
+<path d="M230.9 258.7 L320.4 258.7 L409.9 258.7 L499.4 258.7 L589 258.7 L678.5 258.7 L768 258.7" fill="none" stroke="#199e70" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="768" cy="258.7" r="4" fill="#199e70" stroke="#0d1117" stroke-width="2"/>
 </svg>
