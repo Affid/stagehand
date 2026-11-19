@@ -3,36 +3,9 @@
 // Health Estimate carries the story: met in the Library, off in the world,
 // switched on, reviewed, applied by the companion.
 import { sec } from "../motion";
-import type { Box } from "./parts";
+import { framesOf, page, type Scene, type View } from "./scene";
 import { at, SCREENS } from "./shots";
 
-/** Which part of a captured page the picture shows, and how big. */
-export interface View {
-  readonly scale: number;
-  readonly x: number;
-  readonly y: number;
-}
-
-export interface Ring {
-  readonly box: Box;
-  readonly at: number;
-}
-
-export interface Scene {
-  /** A captured page, the phones, or the closing card. */
-  readonly kind: "page" | "phones" | "end";
-  readonly src?: string;
-  readonly view?: View;
-  readonly lead: string;
-  readonly rest: string;
-  readonly frames: number;
-  readonly rings?: readonly Ring[];
-  /** Where the pointer clicks, in page pixels, and when. */
-  readonly click?: Ring;
-}
-
-/** The whole page at the picture's width (960 of 1280). */
-export const WHOLE: View = { scale: 0.75, x: 0, y: 0 };
 /** The launch dialog at its own size, centred. */
 const DIALOG: View = { scale: 1, x: 160, y: 90 };
 /** The world's top half, close enough to read the companion's notice. */
@@ -40,22 +13,6 @@ const NOTICE: View = { scale: 1.15, x: 222, y: 20 };
 
 const L = at.library;
 const W = at.world;
-
-const page = (
-  src: string,
-  lead: string,
-  rest: string,
-  seconds: number,
-  more: Partial<Scene> = {},
-): Scene => ({
-  kind: "page",
-  src,
-  view: WHOLE,
-  lead,
-  rest,
-  frames: sec(seconds),
-  ...more,
-});
 
 export const SCENES: readonly Scene[] = [
   page(SCREENS.library, "A new Setup page,", "with a module library.", 3.2, {
@@ -107,4 +64,4 @@ export const SCENES: readonly Scene[] = [
   { kind: "end", lead: "", rest: "", frames: sec(3.4) },
 ];
 
-export const LISTING_FRAMES = SCENES.reduce((n, s) => n + s.frames, 0);
+export const LISTING_FRAMES = framesOf(SCENES);
