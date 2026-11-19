@@ -1,6 +1,6 @@
 // The listing GIF's two scenes that aren't a captured page: the Android
 // app's screens on three phones, and the closing card. Flat, like the rest.
-import type { FC } from "react";
+import type { FC, ReactNode } from "react";
 import { AbsoluteFill, Img } from "remotion";
 import { Mark } from "../scenes/EndCard";
 import { COLOR, fontFamily } from "../theme";
@@ -37,7 +37,11 @@ export const Phones: FC<{ height: number }> = ({ height }) => (
   </AbsoluteFill>
 );
 
-export const EndCard: FC = () => (
+/** The closing card: Stagehand's mark and name, then two lines. */
+const Closing: FC<{
+  readonly first: ReactNode;
+  readonly second: ReactNode;
+}> = ({ first, second }) => (
   <AbsoluteFill
     style={{
       background: COLOR.bg,
@@ -52,12 +56,31 @@ export const EndCard: FC = () => (
       <Mark frame={999} />
     </div>
     <div style={{ fontSize: 76, fontWeight: 600, marginTop: 4 }}>Stagehand</div>
-    <div style={{ fontSize: 25, color: COLOR.dim, marginTop: 14 }}>
-      The companion module works with the{" "}
-      <span style={{ color: COLOR.warm }}>Stagehand</span> Chrome extension
-    </div>
-    <div style={{ fontSize: 25, color: COLOR.dim, marginTop: 4 }}>
-      and the Stagehand Android app.
-    </div>
+    <div style={{ fontSize: 25, color: COLOR.dim, marginTop: 14 }}>{first}</div>
+    <div style={{ fontSize: 25, color: COLOR.dim, marginTop: 4 }}>{second}</div>
   </AbsoluteFill>
+);
+
+const warm = (text: string): ReactNode => (
+  <span style={{ color: COLOR.warm }}>{text}</span>
+);
+
+export const EndCard: FC = () => (
+  <Closing
+    first={
+      <>
+        The companion module works with the{" "}
+        <span style={{ color: COLOR.warm }}>Stagehand</span> Chrome extension
+      </>
+    }
+    second="and the Stagehand Android app."
+  />
+);
+
+/** The in-world GIF's closing card. */
+export const WorldEndCard: FC = () => (
+  <Closing
+    first="Your library in every world's Module Management,"
+    second={<>organised with the {warm("Stagehand")} extension or app.</>}
+  />
 );

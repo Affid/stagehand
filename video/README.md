@@ -61,6 +61,25 @@ The capture writes a neutral `/home/gm` over the capturing machine's home
 folder on the Configuration page, and only there; a world left running by a
 failed run is shut down with `node video/capture/shutdown.ts`.
 
+`WorldGif` is its second GIF, the library view inside a world (companion
+0.2.0), played by the same `SceneGif` with its own script,
+`src/listing/world-script.ts`: the settings sidebar's Module Management,
+Token Magic FX in its folder, its panel's Library and Package tabs, the
+switch, the review with libWrapper added, the window after Save & Reload, a
+closing card; about 560 KB for 23 seconds. Its capture launches the
+Clockwork Heist world in a plain Chromium (no extension) and really saves
+the change, so reset the demo after it. The demo's companion must be 0.2.0
+or later:
+
+```bash
+export FOUNDRY_PORT=30015 FOUNDRY_DATA_DIR=~/foundry/data-demo
+node video/capture/listing-in-world.ts         # public/capture/listing-world/
+node scripts/demo/setup-demo.ts                # back to the demo's state
+(cd video && pnpm render:world-gif)            # out/world-gif/*.png
+ffmpeg -y -framerate 30 -i video/out/world-gif/element-%03d.png -vf "fps=20,split[a][b];[a]palettegen=max_colors=256:stats_mode=full[p];[b][p]paletteuse=dither=none:diff_mode=rectangle" \
+  -loop 0 docs/media/stagehand-in-world.gif
+```
+
 `music` is `sampled` (the default), `synth`, `simple` or `none` (cut B:
 `b-sampled`, `b-synth` or `none`); see
 [music/README.md](music/README.md) for what each is and how it is made.

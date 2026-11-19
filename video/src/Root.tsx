@@ -1,6 +1,7 @@
 import type { FC } from "react";
 import { Composition } from "remotion";
 import { LISTING, LISTING_FRAMES, ListingGif } from "./listing/ListingGif";
+import { WORLD_FRAMES, WorldGif } from "./listing/WorldGif";
 import { PromoB, type PromoBProps } from "./b/PromoB";
 import { B_TOTAL_FRAMES } from "./b/timeline";
 import { FPS } from "./motion";
@@ -33,6 +34,15 @@ export const Root: FC = () => (
       id="ListingGif"
       component={ListingGif}
       durationInFrames={LISTING_FRAMES}
+      fps={FPS}
+      width={LISTING.width}
+      height={LISTING.height}
+    />
+    {/* Its second GIF: the library view inside a world. */}
+    <Composition
+      id="WorldGif"
+      component={WorldGif}
+      durationInFrames={WORLD_FRAMES}
       fps={FPS}
       width={LISTING.width}
       height={LISTING.height}
