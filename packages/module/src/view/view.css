@@ -9,6 +9,9 @@
    a small window (owner, 2026-11-18); a long one grows up to the screen. */
 #module-management.stagehand-cards {
   min-height: min(720px, calc(100vh - 80px));
+  /* Never taller than the screen (owner, 2026-11-19): the cards scroll
+     inside, and window.ts keeps its bottom in view. */
+  max-height: calc(100vh - 20px);
 }
 
 #module-management.stagehand-cards > .window-content {

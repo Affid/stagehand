@@ -14,7 +14,12 @@ const MARGIN = 10;
 const HOST_CLASS = "stagehand-host";
 
 export interface ModuleWindow extends GuardedWindow {
-  setPosition(position: { width: number; left: number }): unknown;
+  readonly position: { readonly top: number };
+  setPosition(position: {
+    readonly width?: number;
+    readonly left?: number;
+    readonly top?: number;
+  }): unknown;
   /** Foundry draws the window again (its own list, when we stand aside). */
   render(): Promise<unknown>;
 }
@@ -37,6 +42,7 @@ export interface WindowDeps {
     setReview: (review: () => void) => void,
   ) => Promise<Mounted>;
   readonly viewportWidth: () => number;
+  readonly viewportHeight: () => number;
   /** Says the view couldn't load (Foundry's list is back). */
   readonly viewFailed: () => void;
 }
@@ -48,6 +54,8 @@ interface WindowState {
   render: number;
   /** The view couldn't load: Foundry's list stays until the window closes. */
   failed: boolean;
+  /** Stops keeping the window on the screen. */
+  unwatch?: (() => void) | undefined;
 }
 
 const states = new WeakMap<object, WindowState>();
@@ -65,6 +73,34 @@ function dropView(state: WindowState): void {
   state.mounted?.unmount();
   state.mounted = undefined;
   state.review = undefined;
+  state.unwatch?.();
+  state.unwatch = undefined;
+}
+
+/**
+ * Keeps the window's bottom on the screen (owner, 2026-11-19): Foundry
+ * placed it for its own shorter list, and its height follows the view's
+ * (a minimum, and the screen's height at most, in view.css). It moves up
+ * only as far as it must, now and whenever its height changes.
+ */
+function keepOnScreen(
+  deps: WindowDeps,
+  app: ModuleWindow,
+  element: HTMLElement,
+): () => void {
+  const fit = (): void => {
+    const height = element.offsetHeight;
+    const room = deps.viewportHeight();
+    if (app.position.top + height <= room - MARGIN) return;
+    app.setPosition({ top: Math.max(MARGIN, room - height - MARGIN) });
+  };
+  fit();
+  if (typeof ResizeObserver === "undefined") return () => undefined;
+  const observer = new ResizeObserver(fit);
+  observer.observe(element);
+  return () => {
+    observer.disconnect();
+  };
 }
 
 async function eligible(
@@ -171,6 +207,7 @@ export async function takeOverWindow(
     return false;
   }
   state.mounted = mounted;
+  state.unwatch = keepOnScreen(deps, app, element);
   return true;
 }
 

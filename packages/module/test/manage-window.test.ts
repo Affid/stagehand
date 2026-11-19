@@ -5,7 +5,11 @@
 // replaces the previous view.
 import { emptyLibrary } from "@stagehand/shared/library/schema";
 import { describe, expect, it, vi } from "vitest";
-import { takeOverWindow, type WindowDeps } from "../src/manage/window.ts";
+import {
+  closeWindow,
+  takeOverWindow,
+  type WindowDeps,
+} from "../src/manage/window.ts";
 
 function fakeApp() {
   const element = document.createElement("form");
@@ -15,7 +19,10 @@ function fakeApp() {
   const handler = vi.fn();
   const app = {
     options: { form: { handler } },
-    setPosition: vi.fn(),
+    position: { top: 250 },
+    setPosition: vi.fn((p: { top?: number }) => {
+      if (p.top !== undefined) app.position.top = p.top;
+    }),
     render: vi.fn(() => Promise.resolve()),
   };
   return { app, element, handler };
@@ -38,6 +45,7 @@ function deps(over: Partial<WindowDeps> = {}) {
     loadCss: vi.fn(),
     mount,
     viewportWidth: () => 1600,
+    viewportHeight: () => 1000,
     viewFailed: vi.fn(),
     ...over,
   };
@@ -199,5 +207,59 @@ describe("takeOverWindow", () => {
     expect(w.element.querySelector(".stagehand-host")).toBeNull();
     expect(w.element.classList.contains("stagehand-cards")).toBe(false);
     expect(w.app.render).toHaveBeenCalledTimes(1);
+  });
+
+  it("moves up, as far as needed, when the view makes it reach below the screen", async () => {
+    // Arrange: Foundry placed it for its own short list
+    const w = fakeApp();
+    Object.defineProperty(w.element, "offsetHeight", { get: () => 900 });
+    const { d } = deps();
+
+    // Act
+    await takeOverWindow(d, w.app, w.element, true);
+
+    // Assert: 1000 high screen, 10 px margin
+    expect(w.app.setPosition).toHaveBeenLastCalledWith({ top: 90 });
+  });
+
+  it("stays where it is while it fits", async () => {
+    const w = fakeApp();
+    Object.defineProperty(w.element, "offsetHeight", { get: () => 600 });
+    const { d } = deps();
+
+    await takeOverWindow(d, w.app, w.element, false);
+
+    expect(w.app.setPosition).not.toHaveBeenCalled();
+  });
+
+  it("moves up again when it grows, and stops watching when the view goes", async () => {
+    // Arrange: a ResizeObserver that reports when asked
+    let resized: () => void = () => undefined;
+    const disconnect = vi.fn();
+    vi.stubGlobal(
+      "ResizeObserver",
+      class {
+        constructor(callback: () => void) {
+          resized = callback;
+        }
+        observe = vi.fn();
+        disconnect = disconnect;
+      },
+    );
+    const w = fakeApp();
+    let height = 600;
+    Object.defineProperty(w.element, "offsetHeight", { get: () => height });
+    const { d } = deps();
+    await takeOverWindow(d, w.app, w.element, false);
+
+    // Act: the list grows (a filter cleared)
+    height = 950;
+    resized();
+    closeWindow(w.app);
+
+    // Assert
+    expect(w.app.setPosition).toHaveBeenLastCalledWith({ top: 40 });
+    expect(disconnect).toHaveBeenCalledTimes(1);
+    vi.unstubAllGlobals();
   });
 });

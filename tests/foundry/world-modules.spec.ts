@@ -136,6 +136,26 @@ test("a Gamemaster's Module Management shows the library's folders as cards", as
   await closeModules(gm);
 });
 
+test("on a short screen the window fits: the cards scroll, Save stays in view", async () => {
+  await gm.setViewportSize({ width: 1600, height: 600 });
+  try {
+    const w = await openModules(gm);
+    await expect(w.locator(".stagehand-view")).toBeVisible();
+    await expect
+      .poll(async () => {
+        const box = await w.boundingBox();
+        return (box?.y ?? 0) + (box?.height ?? 0);
+      })
+      .toBeLessThanOrEqual(600);
+    await expect(
+      w.getByRole("button", { name: /Save Module Settings/ }),
+    ).toBeInViewport();
+    await closeModules(gm);
+  } finally {
+    await gm.setViewportSize({ width: 1600, height: 1000 });
+  }
+});
+
 test("Foundry's save never writes the view as an empty module list", async () => {
   const saves = await watchSaves(gm);
   const before = await activeIds(gm);

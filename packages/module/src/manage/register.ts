@@ -157,6 +157,7 @@ export function registerModuleView(g: FoundryGlobals): void {
       loadCss,
       mount: mounter(g, app),
       viewportWidth: () => window.innerWidth,
+      viewportHeight: () => window.innerHeight,
       viewFailed: () => {
         g.ui.notifications.warn(
           g.game.i18n.localize("STAGEHAND.Manage.ViewFailed"),
