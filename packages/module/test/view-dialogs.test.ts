@@ -174,6 +174,59 @@ describe("reviewChanges", () => {
     expect(target).not.toContain("d");
   });
 
+  it("stays open with a warning until the dependents choice is made", async () => {
+    // Arrange: turning off a module another one needs
+    const g = game();
+    const changes = flipChange(
+      worldData(g, LIB, [], NOW),
+      "w1",
+      "a",
+      false,
+      fresh(),
+    );
+    const warn = vi.fn();
+    let pressed: { before: boolean; after: boolean } | undefined;
+    const wait = vi.fn((options: Parameters<DialogV2["wait"]>[0]) => {
+      const form = document.createElement("form");
+      form.innerHTML = options.content;
+      const save = document.createElement("button");
+      save.dataset.action = "save";
+      save.type = "submit";
+      form.append(save);
+      document.body.append(form);
+      options.render?.(new Event("render"), { element: form });
+      // Act: Save without the box, then with it
+      const first = new MouseEvent("click", {
+        bubbles: true,
+        cancelable: true,
+      });
+      save.dispatchEvent(first);
+      form.querySelector<HTMLInputElement>(
+        'input[name="removeDependents"]',
+      )!.checked = true;
+      const second = new MouseEvent("click", {
+        bubbles: true,
+        cancelable: true,
+      });
+      save.dispatchEvent(second);
+      pressed = {
+        before: first.defaultPrevented,
+        after: second.defaultPrevented,
+      };
+      return Promise.resolve(null);
+    });
+
+    await reviewChanges(
+      { dialog: { wait }, game: g, warn, save: vi.fn() },
+      worldData(g, LIB, changes, NOW),
+    );
+
+    // Assert
+    expect(pressed).toEqual({ before: true, after: false });
+    expect(warn).toHaveBeenCalledTimes(1);
+    expect(warn).toHaveBeenCalledWith("STAGEHAND.Manage.NeedDependentsChoice");
+  });
+
   it("offers only Back when nothing changes", async () => {
     const g = game();
     const { dialog, seen } = pressing("back");

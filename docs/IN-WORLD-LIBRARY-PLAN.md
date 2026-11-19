@@ -296,9 +296,10 @@ is checked in the spike).
      the BBMM question (its hint switches while BBMM holds the button).
    - **Foundry's save:** the five layers above. A failed load puts
      Foundry's list back and says so; a redraw during a load keeps only the
-     newest view; one review or preset dialog at a time.
-   - **Tests:** 150 companion and 13 shared-package unit tests; live specs
-     `tests/foundry/world-modules.spec.ts` (9) and
+     newest view; one review or preset dialog at a time; the review stays
+     open with a warning until a needed box is ticked, as the mockup's does.
+   - **Tests:** 151 companion and 13 shared-package unit tests; live specs
+     `tests/foundry/world-modules.spec.ts` (10) and
      `world-modules-bbmm.spec.ts` (2) pass on 13 and 14; Setup's live
      suites show no change from before (each failure also fails on the
      commit before, or passes once the test world's flags are clear).

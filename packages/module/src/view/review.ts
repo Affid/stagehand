@@ -113,6 +113,31 @@ const refusal = (plan: Plan, choice: Choice): string | undefined => {
   return undefined;
 };
 
+/**
+ * Save stays unpressed, with a warning, while a needed box is unticked:
+ * the review stays open, as the mockup's does (Foundry's dialogs close on
+ * any button). A click and Enter both press Save.
+ */
+function holdSave(element: HTMLElement, plan: Plan, deps: ReviewDeps): void {
+  const save = element.querySelector('button[data-action="save"]');
+  save?.addEventListener(
+    "click",
+    (event) => {
+      const button = event.currentTarget as HTMLButtonElement;
+      const choice = {
+        removeDependents: ticked(button, "removeDependents"),
+        acceptConflicts: ticked(button, "acceptConflicts"),
+      };
+      const reason = refusal(plan, choice);
+      if (!reason) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      deps.warn(deps.game.i18n.localize(reason));
+    },
+    { capture: true },
+  );
+}
+
 const isChoice = (v: unknown): v is Choice =>
   typeof v === "object" && v !== null && "removeDependents" in v;
 
@@ -129,6 +154,9 @@ export async function reviewChanges(
     buttons: buttons(deps.game, plan?.changed === true),
     rejectClose: false,
     modal: true,
+    render: (_event, dialog) => {
+      if (plan) holdSave(dialog.element, plan, deps);
+    },
     classes: ["stagehand-dialog"],
   });
   if (!plan || !isChoice(result)) return "back";

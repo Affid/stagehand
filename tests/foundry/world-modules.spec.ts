@@ -213,6 +213,27 @@ test("a switch is saved through the review, with what the module needs", async (
   );
 });
 
+test("turning off a module another needs waits for the choice", async () => {
+  const w = await openModules(gm);
+  await w
+    .getByRole("switch", { name: /Stagehand Fixture: library on in/ })
+    .click();
+  await w.getByRole("button", { name: /Save Module Settings/ }).click();
+  const review = dialog(gm, "Review Changes");
+  await expect(review).toContainText("Still needed by modules that stay");
+
+  await review.getByRole("button", { name: "Save & Reload" }).click();
+
+  await expect(gm.locator("#notifications")).toContainText(
+    "turn off the modules that need it too",
+  );
+  await expect(review).toBeVisible();
+  await review.getByRole("button", { name: "Back" }).click();
+  await expect(review).toHaveCount(0);
+  await w.getByRole("button", { name: "Discard" }).click();
+  await closeModules(gm);
+});
+
 test("Apply preset marks the preset's modules, active once all are on", async () => {
   const w = await openModules(gm);
 
