@@ -25,6 +25,7 @@ import {
   waitFor,
 } from "../../scripts/foundry/admin.ts";
 import { loadFoundryEnv } from "../../scripts/foundry/env.ts";
+import { unreportedWorld } from "../../scripts/foundry/reset-world.ts";
 import {
   COMPANION_ID,
   companionState,
@@ -110,6 +111,8 @@ test.beforeAll(async () => {
     existsSync(aside) || isLink(aside),
     `${aside} is left from an earlier run: mv it back to ${folder}`,
   );
+  // The companion hasn't reported the test world, whatever ran before.
+  await unreportedWorld(env);
   const api = await createAdminClient(env.url);
   admin = api;
   await shutdownWorld(api, env.adminPassword);

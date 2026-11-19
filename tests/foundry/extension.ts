@@ -104,12 +104,22 @@ async function joinByRequest(
   url: string,
   user: string,
 ): Promise<void> {
+  // Foundry fills in its users a moment after the page starts (13 and 14).
+  await page.waitForFunction(
+    () =>
+      Array.isArray(
+        (globalThis as { game?: { data?: { users?: unknown } } }).game?.data
+          ?.users,
+      ),
+    null,
+    { timeout: 60_000 },
+  );
   const redirect = await page.evaluate(
     async ({ base, name }) => {
       const g = globalThis as unknown as {
-        game: { users: { id: string; name: string }[] };
+        game: { data: { users: { _id: string; name: string }[] } };
       };
-      const userId = g.game.users.find((u) => u.name === name)?.id;
+      const userId = g.game.data.users.find((u) => u.name === name)?._id;
       const res = await fetch(`${base}/join`, {
         method: "POST",
         credentials: "same-origin",

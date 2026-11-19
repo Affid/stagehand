@@ -8,8 +8,22 @@ import { expect, type Locator, type Page, test } from "@playwright/test";
 import { loadFoundryEnv } from "../../scripts/foundry/env.ts";
 import { SCREENS } from "./extension.ts";
 import { loadTarget, openSetupAsAdmin, type Target } from "./target.ts";
+import { addMany, removeMany } from "../../scripts/foundry/many.ts";
 
 const env = loadFoundryEnv();
+/** Module rows that outgrow a 768 px screen, on any server. */
+const LONG_LIST_STUBS = 30;
+
+/** Runs `body` with stub modules installed, taken away again after. */
+async function withStubs(body: () => Promise<void>): Promise<void> {
+  await removeMany();
+  await addMany(0, LONG_LIST_STUBS);
+  try {
+    await body();
+  } finally {
+    await removeMany();
+  }
+}
 let ext: Target;
 let page: Page;
 
@@ -154,6 +168,10 @@ test("2560: By world columns keep their width; the frame ends at the table (poli
 });
 
 test("1366×768: a long grid scrolls down without cutting the last world (review)", async () => {
+  await withStubs(() => longGrid());
+});
+
+async function longGrid(): Promise<void> {
   // Its own browser with scrollbars that take room, as a desktop Chrome.
   const own = await loadTarget([], { scrollbars: true });
   try {
@@ -179,7 +197,7 @@ test("1366×768: a long grid scrolls down without cutting the last world (review
   } finally {
     await own.context.close();
   }
-});
+}
 
 test("2560: the server pages fill the screen too", async () => {
   await page.setViewportSize({ width: 2560, height: 1440 });
@@ -194,6 +212,16 @@ test("2560: the server pages fill the screen too", async () => {
 });
 
 test("1366×768: the Library's lists scroll under their head (owner's bug)", async () => {
+  await withStubs(async () => {
+    await page.reload();
+    await shell(page).locator(".sts-top").waitFor();
+    await libraryScrolls();
+  });
+  await page.reload();
+  await shell(page).locator(".sts-top").waitFor();
+});
+
+async function libraryScrolls(): Promise<void> {
   await page.setViewportSize({ width: 1366, height: 768 });
   const main = shell(page).locator(".sts-main");
   await shell(page).locator(".sts-lib").click();
@@ -220,4 +248,4 @@ test("1366×768: the Library's lists scroll under their head (owner's bug)", asy
   await expect(main.locator(".stl-card").last()).toBeInViewport();
   await expect(main.getByRole("tab", { name: /^Modules/ })).toBeInViewport();
   expect(await sections.evaluate((e) => e.scrollTop)).toBeGreaterThan(0);
-});
+}

@@ -15,7 +15,10 @@ import {
   shutdownWorld,
 } from "../../scripts/foundry/admin.ts";
 import { loadFoundryEnv } from "../../scripts/foundry/env.ts";
-import { resetWorldModules } from "../../scripts/foundry/reset-world.ts";
+import {
+  clearOurFlags,
+  resetWorldModules,
+} from "../../scripts/foundry/reset-world.ts";
 import { TEST_WORLD } from "../../scripts/foundry/world.ts";
 import { joinWorld } from "./extension.ts";
 import { ON_APP } from "./target.ts";
@@ -50,6 +53,8 @@ test.afterAll(async () => {
   if (!admin) return;
   try {
     await shutdownWorld(admin, env.adminPassword);
+    // The join wrote a report: the suites after this one start without it.
+    await clearOurFlags(admin);
   } finally {
     await admin.dispose();
   }

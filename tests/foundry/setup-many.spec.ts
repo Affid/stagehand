@@ -1,6 +1,8 @@
 // Many worlds and modules on the new Setup page (Phase 6), as the
 // prototype's checks/busy.mjs and gridwide.mjs: 30 test worlds and 120 stub
 // modules are added to the local server for this suite and taken away after.
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import { expect, type Page, test } from "@playwright/test";
 import { loadFoundryEnv } from "../../scripts/foundry/env.ts";
 import { addMany, removeMany } from "../../scripts/foundry/many.ts";
@@ -16,6 +18,29 @@ const env = loadFoundryEnv();
 let ext: Target;
 let page: Page;
 
+const ADDED_WORLDS = 30;
+const ADDED_MODULES = 120;
+
+/** What the server has besides ours: the counts depend on the server. */
+const installed = (kind: "worlds" | "modules", manifest: string): number => {
+  const dir = join(env.dataDir, "Data", kind);
+  return readdirSync(dir).filter((d) => existsSync(join(dir, d, manifest)))
+    .length;
+};
+let worlds = 0;
+let modules = 0;
+
+/** Takes a module out of the sorted list in the server's library file. */
+function unsortOnServer(id: string): void {
+  const file = join(env.dataDir, "Data", "stagehand", "library.json");
+  if (!existsSync(file)) return;
+  const saved = JSON.parse(readFileSync(file, "utf8")) as {
+    sorted?: string[] | null;
+  };
+  const sorted = saved.sorted?.filter((m) => m !== id) ?? null;
+  writeFileSync(file, JSON.stringify({ ...saved, sorted }));
+}
+
 const shell = (p: Page) => p.locator("#st-shell-root");
 const main = (p: Page) => shell(p).locator(".sts-main");
 
@@ -25,7 +50,9 @@ test.beforeAll(async () => {
   test.setTimeout(10 * 60_000);
   // A clean start: leftovers of an earlier run go first (review).
   await removeMany();
-  await addMany(30, 120);
+  worlds = installed("worlds", "world.json") + ADDED_WORLDS;
+  modules = installed("modules", "module.json") + ADDED_MODULES;
+  await addMany(ADDED_WORLDS, ADDED_MODULES);
   ext = await loadTarget();
   page = await ext.context.newPage();
   await page.setViewportSize({ width: 1366, height: 768 });
@@ -43,7 +70,7 @@ test.afterAll(async () => {
 
 test("the rail scrolls; it fades while more worlds are below, not at the end", async () => {
   const list = shell(page).locator(".sts-worlds");
-  await expect(list.locator(".sts-world")).toHaveCount(32);
+  await expect(list.locator(".sts-world")).toHaveCount(worlds);
   await expect(list).toHaveClass(/\bmore\b/);
   // News and Featured Content stay below the list, in view.
   const news = await shell(page).locator(".str-feat").boundingBox();
@@ -61,7 +88,7 @@ test("By world: 92 px columns at least, names and headers pinned, a fade while w
     .getByRole("tab", { name: /By world/ })
     .click();
   const wrap = main(page).locator(".stl-gridwrap");
-  await expect(wrap.locator("thead th.w")).toHaveCount(32);
+  await expect(wrap.locator("thead th.w")).toHaveCount(worlds);
   const col = await wrap.locator("thead th.w").first().boundingBox();
   expect(col?.width).toBeGreaterThanOrEqual(92);
   await expect(wrap).toHaveClass(/more-right/);
@@ -99,8 +126,10 @@ test("By world: Show narrows the worlds and says how many", async () => {
     .selectOption({ label: "Played in the last 3 months" });
   const shown = await main(page).locator(".stl-gridwrap thead th.w").count();
   expect(shown).toBeGreaterThan(0);
-  expect(shown).toBeLessThan(32);
-  await expect(main(page)).toContainText(`${String(shown)} of 32 worlds`);
+  expect(shown).toBeLessThan(worlds);
+  await expect(main(page)).toContainText(
+    `${String(shown)} of ${String(worlds)} worlds`,
+  );
   await main(page)
     .getByRole("combobox", { name: "Show" })
     .selectOption({ label: "All worlds" });
@@ -110,10 +139,10 @@ test("a module's details list every world and scroll", async () => {
   await main(page)
     .getByRole("tab", { name: /Modules/ })
     .click();
-  await expect(main(page).locator(".stl-card")).toHaveCount(139);
+  await expect(main(page).locator(".stl-card")).toHaveCount(modules);
   await main(page).locator("button.t").first().click();
   const panel = shell(page).locator(".sts-panel");
-  await expect(panel.locator(".sts-wlist li")).toHaveCount(32);
+  await expect(panel.locator(".sts-wlist li")).toHaveCount(worlds);
   const scrolls = await panel
     .locator(".scroll")
     .evaluate((s) => s.scrollHeight > s.clientHeight);
@@ -146,13 +175,19 @@ test("intake: a new module offers only its worlds at first, the rest one click a
   await updateStored<string[]>(ext, `sorted:${env.url}`, (all) =>
     (all ?? []).filter((m) => m !== "st-stub-001"),
   );
+  // Sorted is shared through the server's library file too (library sync):
+  // a newly installed module is in neither.
+  unsortOnServer("st-stub-001");
   await page.reload();
   await shell(page).locator(".sts-lib").click();
   await main(page).getByRole("button", { name: "Sort them" }).click();
   const item = shell(page).locator(
     '.sts-intake-item[data-module="st-stub-001"]',
   );
-  const chips = item.locator(".sts-tchip");
+  // The worlds' chips (the group with "N worlds"), not the library's tags.
+  const chips = item
+    .locator(".chips", { has: page.locator(".sts-morew") })
+    .locator(".sts-tchip");
   await expect(chips).toHaveCount(0);
   const more = item.locator(".sts-morew");
   await expect(more).toHaveText(/30 worlds/);

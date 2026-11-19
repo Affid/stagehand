@@ -71,8 +71,10 @@ test("a world: the first queued change adds the banner's line without moving the
     .locator(`.sts-world[data-world="${TEST_WORLD.id}"]`)
     .click();
   const cards = main(page).locator(".stw-card");
+  // A fixture's switch: the companion's card sorts first and can't change.
+  const fixture = main(page).locator('.stw-card[data-module="st-fixture-a"]');
   await stays(cards.last(), () =>
-    cards.first().locator('input[role="switch"]').click(),
+    fixture.locator('input[role="switch"]').click(),
   );
   await expect(main(page).locator(".sts-banner")).toContainText("wait");
   // Only changes and problems get a coloured edge: a module simply on and

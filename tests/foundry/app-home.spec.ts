@@ -1,7 +1,8 @@
-// The app's home screen (Android plan, phase 2, package 5), in the app
-// harness on the local Foundry: it lists the server, Remove gives Setup
-// back to Foundry, adding it back brings our page back, Release history is
-// turned on and off in native, and Setup's rail opens the home screen.
+// The app's home screen (Android plan, phase 2, package 5; the cards and
+// sheet of phase 7), in the app harness on the local Foundry: it lists the
+// server, removing it from its sheet gives Setup back to Foundry, adding it
+// back brings our page back, Release history's switch is native's
+// permission, and Setup's rail opens the home screen.
 // The app counterpart of setup-settings.spec.ts; it runs its own app
 // harness, so it runs the same in both runs of the suite. Ends with the
 // server added, as it began.
@@ -12,13 +13,13 @@ import {
 } from "../../scripts/foundry/admin.ts";
 import { loadFoundryEnv } from "../../scripts/foundry/env.ts";
 import {
-  addServerAtHome,
   type AppHarness,
   launchApp,
   openAppSetupAsAdmin,
 } from "../app/harness.ts";
 import { audit } from "./axe.ts";
 import { exitTour, SCREENS } from "./extension.ts";
+import extensionPackage from "../../packages/extension/package.json" with { type: "json" };
 
 const env = loadFoundryEnv();
 const HOST = new URL(env.url).host;
@@ -47,21 +48,27 @@ const shell = () => page.locator("#st-shell-root");
 
 test("the home screen lists the server, Release history and the build", async () => {
   await home.reload();
-  const row = home.locator(".stp-servers li").filter({ hasText: HOST });
-  await expect(row).toBeVisible();
+  await expect(home.getByRole("link", { name: `Open ${HOST}` })).toBeVisible();
   await expect(
-    home.getByRole("button", { name: `Remove ${HOST}` }),
+    home.getByRole("button", { name: `Edit or remove ${HOST}` }),
+  ).toBeVisible();
+  await expect(
+    home.getByRole("switch", { name: "Release history" }),
   ).toBeVisible();
   // No "This site" in the app: the home screen has no tab under it.
   await expect(home.getByText("This site")).toHaveCount(0);
-  await expect(home.locator("footer")).toContainText("Build 0.2.0");
+  await expect(home.locator("footer")).toContainText(
+    `Build ${extensionPackage.version}`,
+  );
   await home.screenshot({ path: `${SCREENS}/app-home.png` });
-  await audit(home, "app home screen", ".stp");
+  await audit(home, "app home screen", ".sth");
 });
 
 test("Remove takes Stagehand off the server: Setup is Foundry's own again", async () => {
-  await home.getByRole("button", { name: `Remove ${HOST}` }).click();
-  await expect(home.getByText(/No servers yet/)).toBeVisible();
+  await home.getByRole("button", { name: `Edit or remove ${HOST}` }).click();
+  await home.getByRole("button", { name: "Remove this server…" }).click();
+  await home.getByRole("button", { name: "Remove", exact: true }).click();
+  await expect(home.getByText("Your Foundry servers")).toBeVisible();
   expect([...app.native.origins]).toEqual([]);
   await page.reload();
   await expect(page.locator("#setup")).toBeVisible({ timeout: 10_000 });
@@ -69,8 +76,10 @@ test("Remove takes Stagehand off the server: Setup is Foundry's own again", asyn
 });
 
 test("adding it back by address brings the new Setup page back", async () => {
-  await addServerAtHome(app, env.url);
-  await page.reload();
+  // Opening the server from home (the app's own origin) is a cross-site
+  // navigation: Foundry's session cookie stays behind and Foundry starts a
+  // new session, so the admin logs in again, as on a phone.
+  await openAppSetupAsAdmin(app, page, env.url, env.adminPassword);
   await expect(shell().locator(".sts-top")).toBeVisible();
 });
 
@@ -89,14 +98,14 @@ test("a background that refuses Setup gives Foundry's page back at once", async 
   await expect(shell().locator(".sts-top")).toBeVisible();
 });
 
-test("Release history is allowed and taken back in native", async () => {
-  await home.getByRole("button", { name: "Allow foundryvtt.com" }).click();
-  await expect(home.getByText("Allowed.")).toBeVisible();
+test("Release history's switch is native's permission, given and taken back", async () => {
+  const release = home.getByRole("switch", { name: "Release history" });
+  await expect(release).toHaveAttribute("aria-checked", "false");
+  await release.click();
+  await expect(release).toHaveAttribute("aria-checked", "true");
   expect(app.native.releaseHistory).toBe(true);
-  await home.getByRole("button", { name: "Remove the permission" }).click();
-  await expect(
-    home.getByRole("button", { name: "Allow foundryvtt.com" }),
-  ).toBeVisible();
+  await release.click();
+  await expect(release).toHaveAttribute("aria-checked", "false");
   expect(app.native.releaseHistory).toBe(false);
 });
 

@@ -125,7 +125,10 @@ test("axe: a world's page, its menus and the launch review", async () => {
     .click();
   await expect(main().locator(".stw-card").first()).toBeVisible();
   await audit("world modules");
-  await main().locator('.stw-card input[role="switch"]').first().click();
+  // A fixture's switch: the companion's card sorts first and can't change.
+  await main()
+    .locator('.stw-card[data-module="st-fixture-a"] input[role="switch"]')
+    .click();
   await audit("world modules with a queued change");
   await main().getByRole("button", { name: "View options" }).click();
   await audit("View options");

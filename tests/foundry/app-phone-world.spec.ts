@@ -26,8 +26,11 @@ import {
 } from "../app/harness.ts";
 import { exitTour, joinWorld, SCREENS } from "./extension.ts";
 import { settled } from "./settle.ts";
+import { addMany, removeMany } from "../../scripts/foundry/many.ts";
 
 const env = loadFoundryEnv();
+/** Module cards enough to scroll a phone's world page. */
+const SCROLL_STUBS = 20;
 const PHONE = { width: 412, height: 915 };
 let app: AppHarness;
 let admin: APIRequestContext;
@@ -57,6 +60,9 @@ test.describe.configure({ mode: "serial" });
 
 test.beforeAll(async () => {
   await resetWorldModules(env);
+  // A world page long enough to scroll its banner away, on any server.
+  await removeMany();
+  await addMany(0, SCROLL_STUBS);
   admin = await createAdminClient(env.url);
   await loginAsAdmin(admin, env.adminPassword, `${env.dataDir}/Config`);
   app = await launchApp({ device: "phone" });
@@ -76,18 +82,18 @@ test.beforeAll(async () => {
     mobile: false,
   });
   await joinWorld(page, env.url, "Gamemaster");
-  // The companion's report reached native's storage.
-  await expect
-    .poll(
-      () =>
-        [...app.native.kv.keys()].some(
-          (k) =>
-            k.startsWith("snapshots") &&
-            (app.native.kv.get(k) ?? "").includes(TEST_WORLD.id),
-        ),
-      { timeout: 30_000 },
-    )
-    .toBe(true);
+  // The companion's report is in the world's flags; Setup reads it when it
+  // opens below (docs/COMPANION-WORLD-PROTOCOL.md).
+  await page.waitForFunction(
+    () =>
+      (
+        globalThis as unknown as {
+          game?: { world?: { flags?: Record<string, { report?: unknown }> } };
+        }
+      ).game?.world?.flags?.stagehand?.report !== undefined,
+    null,
+    { timeout: 30_000 },
+  );
   await cdp.send("Emulation.clearDeviceMetricsOverride");
   await cdp.detach();
   await toSetup();
@@ -97,6 +103,7 @@ test.afterAll(async () => {
   await app.close();
   await shutdownWorld(admin, env.adminPassword).catch(() => undefined);
   await admin.dispose();
+  await removeMany();
   await resetWorldModules(env);
 });
 
@@ -181,6 +188,12 @@ test("Launch goes through the review, which comes up from the bottom", async () 
 
 test("the top bar turns solid with the world's name once the banner scrolls away", async () => {
   const name = shell().locator(".stp-top h1");
+  // From the top: the tests before may have left the page scrolled.
+  await shell()
+    .locator(".sts-main")
+    .evaluate((el) => {
+      el.scrollTop = 0;
+    });
   await expect(name).toHaveCSS("opacity", "0");
   await shell()
     .locator(".sts-main")

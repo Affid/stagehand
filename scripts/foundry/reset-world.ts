@@ -31,6 +31,22 @@ export async function clearOurFlags(api: APIRequestContext): Promise<void> {
     throw new Error("Clearing our flags: Foundry kept them");
 }
 
+/**
+ * The test world stopped and without our flags, as a server where the
+ * companion has never reported it: for suites that need that start
+ * whatever ran before them.
+ */
+export async function unreportedWorld(env: FoundryEnv): Promise<void> {
+  const api = await createAdminClient(env.url);
+  try {
+    await shutdownWorld(api, env.adminPassword);
+    await loginAsAdmin(api, env.adminPassword, `${env.dataDir}/Config`);
+    await clearOurFlags(api);
+  } finally {
+    await api.dispose();
+  }
+}
+
 /** Waits until the companion has reported only itself active. */
 async function reportedOnlyCompanion(gm: Page): Promise<void> {
   await gm.waitForFunction(

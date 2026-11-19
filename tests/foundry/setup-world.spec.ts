@@ -15,6 +15,7 @@ import {
   shutdownWorld,
 } from "../../scripts/foundry/admin.ts";
 import { loadFoundryEnv } from "../../scripts/foundry/env.ts";
+import { unreportedWorld } from "../../scripts/foundry/reset-world.ts";
 import { TEST_WORLD } from "../../scripts/foundry/world.ts";
 import { exitTour, SCREENS } from "./extension.ts";
 import {
@@ -54,6 +55,8 @@ async function seedSnapshot(active: readonly string[]): Promise<void> {
 test.describe.configure({ mode: "serial" });
 
 test.beforeAll(async () => {
+  // The companion hasn't reported the test world, whatever ran before.
+  await unreportedWorld(env);
   admin = await createAdminClient(env.url);
   await shutdownWorld(admin, env.adminPassword);
   ext = await loadTarget();
