@@ -156,6 +156,38 @@ test("on a short screen the window fits: the cards scroll, Save stays in view", 
   }
 });
 
+test("the window is resizable and keeps its size through Foundry's redraws", async () => {
+  const w = await openModules(gm);
+  const handle = w.locator(".window-resize-handle");
+  await expect(handle).toBeVisible();
+  const h = await handle.boundingBox();
+  if (!h) throw new Error("no resize handle");
+  await gm.mouse.move(h.x + h.width / 2, h.y + h.height / 2);
+  await gm.mouse.down();
+  await gm.mouse.move(h.x + h.width / 2 - 80, h.y + h.height / 2 - 120, {
+    steps: 8,
+  });
+  await gm.mouse.up();
+  const resized = await w.boundingBox();
+  await gm.evaluate(async () => {
+    const g = globalThis as unknown as {
+      foundry: {
+        applications: {
+          instances: Map<string, { render(): Promise<unknown> }>;
+        };
+      };
+    };
+    await g.foundry.applications.instances.get("module-management")?.render();
+  });
+  await expect(w.locator(".stagehand-view")).toBeVisible();
+  const redrawn = await w.boundingBox();
+  expect(Math.round(redrawn?.height ?? 0)).toBe(
+    Math.round(resized?.height ?? 1),
+  );
+  expect(Math.round(redrawn?.width ?? 0)).toBe(Math.round(resized?.width ?? 1));
+  await closeModules(gm);
+});
+
 test("Foundry's save never writes the view as an empty module list", async () => {
   const saves = await watchSaves(gm);
   const before = await activeIds(gm);

@@ -19,7 +19,10 @@ const FILE = serializeSyncFile(
   "2026-11-19T10:00:00.000Z",
 );
 
+const moduleClass = { DEFAULT_OPTIONS: { window: { resizable: false } } };
+
 function globals(role: number, setting: unknown = true) {
+  moduleClass.DEFAULT_OPTIONS.window.resizable = false;
   const { game } = fakeGame(
     [
       { id: "stagehand", active: true },
@@ -45,7 +48,10 @@ function globals(role: number, setting: unknown = true) {
     },
     ui: { notifications: { info: vi.fn(), warn: vi.fn(), error: vi.fn() } },
     foundry: {
-      applications: { api: { DialogV2: { wait: vi.fn() } } },
+      applications: {
+        api: { DialogV2: { wait: vi.fn() } },
+        sidebar: { apps: { ModuleManagement: moduleClass } },
+      },
       utils: { debouncedReload: vi.fn(), getRoute: (p: string) => `/${p}` },
     },
   } as unknown as FoundryGlobals;
@@ -176,5 +182,45 @@ describe("registerModuleView", () => {
       expect(w.element.querySelector(".stagehand-view")).not.toBeNull();
     });
     expect(fetch).toHaveBeenCalledTimes(2);
+  });
+
+  it("makes Module Management resizable once the library is read, for a Gamemaster", async () => {
+    const { once } = globals(4);
+
+    once.get("ready")?.();
+
+    await vi.waitFor(() => {
+      expect(moduleClass.DEFAULT_OPTIONS.window.resizable).toBe(true);
+    });
+  });
+
+  it("leaves Foundry's window as it is for a player, or with the setting off", async () => {
+    const player = globals(1);
+    player.once.get("ready")?.();
+    await new Promise((r) => setTimeout(r, 20));
+    expect(moduleClass.DEFAULT_OPTIONS.window.resizable).toBe(false);
+
+    const off = globals(4, false);
+    off.once.get("ready")?.();
+    await new Promise((r) => setTimeout(r, 20));
+    expect(moduleClass.DEFAULT_OPTIONS.window.resizable).toBe(false);
+  });
+
+  it("gives Foundry back its own window when the setting is turned off", async () => {
+    const { game, once } = globals(4);
+    once.get("init")?.();
+    once.get("ready")?.();
+    await vi.waitFor(() => {
+      expect(moduleClass.DEFAULT_OPTIONS.window.resizable).toBe(true);
+    });
+    const config = vi
+      .mocked(game.settings.register)
+      .mock.calls.find((c) => c[1] === "libraryView")?.[2] as {
+      onChange: (on: boolean) => void;
+    };
+
+    config.onChange(false);
+
+    expect(moduleClass.DEFAULT_OPTIONS.window.resizable).toBe(false);
   });
 });

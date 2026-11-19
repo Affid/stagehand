@@ -96,7 +96,19 @@ export interface FoundryGlobals {
     };
   };
   readonly foundry: {
-    readonly applications: { readonly api: { readonly DialogV2: DialogV2 } };
+    readonly applications: {
+      readonly api: { readonly DialogV2: DialogV2 };
+      /** Module Management's class: its defaults apply to each new window. */
+      readonly sidebar?: {
+        readonly apps?: {
+          readonly ModuleManagement?: {
+            readonly DEFAULT_OPTIONS?: {
+              readonly window?: { resizable?: boolean };
+            };
+          };
+        };
+      };
+    };
     readonly utils: {
       debouncedReload(): void;
       /** A path on this server, with Foundry's route prefix if it has one. */

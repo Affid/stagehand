@@ -4,13 +4,19 @@
    Foundry's light interface, and the view's two dialogs. Everything is
    limited to the window or to the dialogs' own class. */
 
-/* The window keeps the width it opened with (owner: a window that grows and
-   shrinks is worse) and has a minimum height, so a short list doesn't make
-   a small window (owner, 2026-11-18); a long one grows up to the screen. */
+/* The window opens at its content's height, from 720 px (owner: a short
+   list doesn't make a small window) to 880 px (owner, 2026-11-19: a window
+   filling the screen was too big), never taller than the screen. It is
+   resizable while the view is in it (.stagehand-sized, register.ts): then
+   the user's size holds, down to a usable minimum and up to the screen. */
 #module-management.stagehand-cards {
-  min-height: min(720px, calc(100vh - 80px));
-  /* Never taller than the screen (owner, 2026-11-19): the cards scroll
-     inside, and window.ts keeps its bottom in view. */
+  min-height: min(720px, calc(100vh - 20px));
+  max-height: min(880px, calc(100vh - 20px));
+}
+
+#module-management.stagehand-cards.stagehand-sized {
+  min-width: 760px;
+  min-height: min(420px, calc(100vh - 20px));
   max-height: calc(100vh - 20px);
 }
 

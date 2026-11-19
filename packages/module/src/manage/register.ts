@@ -20,7 +20,10 @@ export const SETTING = "libraryView";
 const CSS_FILE = "stagehand-view.css";
 const CSS_ID = "stagehand-view-css";
 
-export function registerSetting(g: FoundryGlobals): void {
+export function registerSetting(
+  g: FoundryGlobals,
+  onChange: (on: boolean) => void,
+): void {
   registerBbmmAnswer(g.game);
   g.game.settings.register(MODULE_ID, SETTING, {
     name: "STAGEHAND.Manage.SettingName",
@@ -29,7 +32,25 @@ export function registerSetting(g: FoundryGlobals): void {
     config: true,
     type: Boolean,
     default: true,
+    onChange: (value: unknown) => {
+      onChange(value !== false);
+    },
   });
+}
+
+/**
+ * Module Management is resizable while our view takes it over (owner,
+ * 2026-11-19). Foundry adds a window's resize handle only when it draws the
+ * frame, before our render hook, and 13 has no hook before that: so the
+ * class's own default changes, for this user, and only while the view is
+ * theirs. Foundry's window stays fixed for players, without a library, or
+ * with the setting off.
+ */
+function resizableWindows(g: FoundryGlobals, on: boolean): void {
+  const window =
+    g.foundry.applications.sidebar?.apps?.ModuleManagement?.DEFAULT_OPTIONS
+      ?.window;
+  if (window && !Object.isFrozen(window)) window.resizable = on;
 }
 
 function loadCss(): void {
@@ -124,10 +145,13 @@ function reloadEveryone(g: FoundryGlobals): void {
   g.foundry.utils.debouncedReload();
 }
 
-export function registerModuleView(g: FoundryGlobals): void {
-  // Read once per page; a missing or unreadable file is tried again next time.
+/** Reads once per page; a missing or unreadable file is tried again next time. */
+function libraryReader(
+  g: FoundryGlobals,
+  onRead: () => void,
+): () => Promise<Library | undefined> {
   let library: Promise<Library | undefined> | undefined;
-  const readLibrary = (): Promise<Library | undefined> =>
+  return () =>
     (library ??= readWorldLibrary({
       fetch: (url, init) => fetch(url, init),
       route: (path) => g.foundry.utils.getRoute(path),
@@ -136,13 +160,24 @@ export function registerModuleView(g: FoundryGlobals): void {
       },
     }).then((read) => {
       if (read === undefined) library = undefined;
+      else onRead();
       return read;
     }));
+}
+
+export function registerModuleView(g: FoundryGlobals): void {
   const settingOn = (): boolean =>
     g.game.settings.get(MODULE_ID, SETTING) !== false;
   const isGM = (): boolean => g.game.user?.isGM === true;
+  let hasLibrary = false;
+  const readLibrary = libraryReader(g, () => {
+    hasLibrary = true;
+    resizableWindows(g, isGM() && settingOn());
+  });
   g.Hooks.once("init", () => {
-    registerSetting(g);
+    registerSetting(g, (on) => {
+      resizableWindows(g, on && hasLibrary && isGM());
+    });
   });
   g.Hooks.once("ready", () => {
     onReady(g, { isGM, settingOn, readLibrary });

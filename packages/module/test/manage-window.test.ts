@@ -18,7 +18,11 @@ function fakeApp() {
   document.body.append(element);
   const handler = vi.fn();
   const app = {
-    options: { form: { handler } },
+    options: {
+      form: { handler },
+      window: { resizable: false },
+      position: { height: "auto" as number | "auto" },
+    },
     position: { top: 250 },
     setPosition: vi.fn((p: { top?: number }) => {
       if (p.top !== undefined) app.position.top = p.top;
@@ -261,5 +265,50 @@ describe("takeOverWindow", () => {
     expect(w.app.setPosition).toHaveBeenLastCalledWith({ top: 40 });
     expect(disconnect).toHaveBeenCalledTimes(1);
     vi.unstubAllGlobals();
+  });
+
+  it("a resizable window opens at its content's height, 720 to 880 px, inside the screen", async () => {
+    // Arrange: a long list (natural 1400 px) in a resizable window
+    const w = fakeApp();
+    w.app.options.window.resizable = true;
+    Object.defineProperty(w.element, "offsetHeight", { get: () => 1400 });
+    const { d } = deps();
+
+    // Act
+    await takeOverWindow(d, w.app, w.element, true);
+
+    // Assert: at most 880, and moved up to fit a 1000 px screen
+    expect(w.app.setPosition).toHaveBeenLastCalledWith({
+      height: 880,
+      top: 110,
+    });
+    expect(w.element.classList.contains("stagehand-sized")).toBe(true);
+    // Foundry's redraws re-apply an "auto" height: this window has its own.
+    expect(w.app.options.position.height).toBe(880);
+  });
+
+  it("a resizable window with a short list still opens 720 px high", async () => {
+    const w = fakeApp();
+    w.app.options.window.resizable = true;
+    Object.defineProperty(w.element, "offsetHeight", { get: () => 400 });
+    const { d } = deps();
+
+    await takeOverWindow(d, w.app, w.element, true);
+
+    expect(w.app.setPosition).toHaveBeenLastCalledWith({
+      height: 720,
+      top: 250,
+    });
+  });
+
+  it("keeps the size the user gave a resizable window when Foundry redraws it", async () => {
+    const w = fakeApp();
+    w.app.options.window.resizable = true;
+    Object.defineProperty(w.element, "offsetHeight", { get: () => 400 });
+    const { d } = deps();
+
+    await takeOverWindow(d, w.app, w.element, false);
+
+    expect(w.app.setPosition).not.toHaveBeenCalled();
   });
 });

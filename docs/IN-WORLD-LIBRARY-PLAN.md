@@ -294,6 +294,13 @@ is checked in the spike).
      footer, the review (Save & Reload reloads everyone, as Foundry's own
      save does), Apply Preset with active presets, the per-user setting,
      the BBMM question (its hint switches while BBMM holds the button).
+   - **The window** (owner, 2026-11-19, on the demo): it opens at its
+     content's height from 720 to 880 px, never taller than the screen,
+     moved up only as far as needed; it is resizable while the view is in
+     it (Foundry's Module Management isn't; the class's default changes
+     for this user only while the view is theirs, since 13 has no hook
+     before the frame is drawn), and keeps the user's size through
+     Foundry's redraws until it is closed.
    - **Foundry's save:** the five layers above. A failed load puts
      Foundry's list back and says so; a redraw during a load keeps only the
      newest view; one review or preset dialog at a time; the review stays

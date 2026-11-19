@@ -10,13 +10,23 @@ import { takesOver } from "./take-over.ts";
 
 /** The cards' width: three columns and the module panel (the mockup). */
 export const VIEW_WIDTH = 1160;
+/** A resizable window opens between these heights (owner, 2026-11-19). */
+export const MIN_HEIGHT = 720;
+export const MAX_HEIGHT = 880;
 const MARGIN = 10;
 const HOST_CLASS = "stagehand-host";
 
 export interface ModuleWindow extends GuardedWindow {
+  readonly options: GuardedWindow["options"] & {
+    /** Resizable: the companion made Module Management so (register.ts). */
+    readonly window?: { readonly resizable?: boolean };
+    /** This window's own copy (ApplicationV2 deep-clones its options). */
+    readonly position?: { height?: number | "auto" };
+  };
   readonly position: { readonly top: number };
   setPosition(position: {
     readonly width?: number;
+    readonly height?: number;
     readonly left?: number;
     readonly top?: number;
   }): unknown;
@@ -173,6 +183,50 @@ function guard(
     );
 }
 
+/**
+ * A resizable window opens once at its content's height, 720 to 880 px
+ * and inside the screen; after that its size is the user's (owner,
+ * 2026-11-19: a full-screen window was too big, and it couldn't be resized).
+ */
+function sizeToContent(
+  deps: WindowDeps,
+  app: ModuleWindow,
+  element: HTMLElement,
+): void {
+  const before = element.style.height;
+  element.style.height = "auto";
+  const natural = element.offsetHeight;
+  element.style.height = before;
+  const room = deps.viewportHeight() - 2 * MARGIN;
+  const height = Math.max(
+    Math.min(MIN_HEIGHT, room),
+    Math.min(natural, MAX_HEIGHT, room),
+  );
+  const top = Math.max(
+    MARGIN,
+    Math.min(app.position.top, deps.viewportHeight() - height - MARGIN),
+  );
+  app.setPosition({ height, top });
+  // Foundry's redraws re-apply an "auto" height from the window's options,
+  // which resizable windows don't measure again: this window has its own.
+  const position = app.options.position;
+  if (position && !Object.isFrozen(position)) position.height = height;
+}
+
+/** Sized once when resizable; else kept on the screen as it grows. */
+function fitWindow(
+  deps: WindowDeps,
+  app: ModuleWindow,
+  element: HTMLElement,
+  firstRender: boolean,
+): (() => void) | undefined {
+  if (app.options.window?.resizable !== true)
+    return keepOnScreen(deps, app, element);
+  element.classList.add("stagehand-sized");
+  if (firstRender) sizeToContent(deps, app, element);
+  return undefined;
+}
+
 export async function takeOverWindow(
   deps: WindowDeps,
   app: ModuleWindow,
@@ -207,7 +261,7 @@ export async function takeOverWindow(
     return false;
   }
   state.mounted = mounted;
-  state.unwatch = keepOnScreen(deps, app, element);
+  state.unwatch = fitWindow(deps, app, element, firstRender);
   return true;
 }
 
