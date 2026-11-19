@@ -1,13 +1,11 @@
 // A module's Library tab inside a running world (design/in-world-library):
-// the library shown, not edited, since it is organised on Setup; the
-// presets that hold the module, checked when active here; and this world's
-// switch.
+// the library shown, not edited, since it is organised on Setup, and the
+// presets that hold the module, checked when active here.
 import type { PackageInfo } from "@stagehand/shared/package";
 import { Icon } from "../common/widgets.tsx";
 import { useModules } from "../context.ts";
 import { presetState } from "../model/presets.ts";
 import { worldModules } from "../model/world-modules.ts";
-import { WorldItem } from "./WorldItem.tsx";
 
 function Chips(props: { readonly children: preact.ComponentChildren[] }) {
   const { t } = useModules();
@@ -85,30 +83,12 @@ export function WorldLibraryTab(props: {
   readonly here: string;
 }) {
   const { t, data } = useModules();
-  const world = data.setup?.worlds.find((w) => w.id === props.here);
-  const model = worldModules(data, props.here);
-  const on = new Set(model.next);
+  // The module's switch is on its card: no "This world" list here (owner,
+  // 2026-11-19); this world's switches still mark the active presets.
+  const on = new Set(worldModules(data, props.here).next);
   return (
     <div class="stl-libtab">
       <Facts pkg={props.pkg} on={on} />
-      {world ? (
-        <div class="sts-chg">
-          <h4>
-            <span>{t("mp.thisWorldHead")}</span>
-          </h4>
-          <ul class="sts-wlist">
-            <WorldItem
-              pkg={props.pkg}
-              where={{
-                world,
-                tracked: model.tracked,
-                row: model.rows.find((r) => r.pkg.id === props.pkg.id),
-              }}
-              here={false}
-            />
-          </ul>
-        </div>
-      ) : null}
       <p class="st-hint">{t("mp.source")}</p>
     </div>
   );

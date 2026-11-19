@@ -291,7 +291,6 @@
   "mm.delta.on": "turns on",
   "mm.delta.off": "turns off",
   "mp.thisWorld": "this world",
-  "mp.thisWorldHead": "This world",
   "mp.presetActive": "Active: all its modules are on in this world",
   "mp.source": "Folders, tags, notes and presets come from this server's Stagehand library and are organised on the Setup screen.",
   "mp.onIn": "On in worlds · {n} of {total}",

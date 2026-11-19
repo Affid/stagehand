@@ -2,7 +2,7 @@
 // The module panel's Library tab inside a world: the library shown, not
 // edited (it is organised on Setup), this world's switch, and the presets
 // that hold the module, marked when active (design/in-world-library).
-import { cleanup, fireEvent, screen } from "@testing-library/preact";
+import { cleanup, screen } from "@testing-library/preact";
 import { afterEach, describe, expect, it } from "vitest";
 import { LibraryTab } from "../src/panel/LibraryTab.tsx";
 import { fakeUi, pkg, renderWith, worldOf } from "./harness.tsx";
@@ -44,15 +44,11 @@ describe("LibraryTab in a world", () => {
     expect(qol?.classList.contains("active")).toBe(false);
   });
 
-  it("lists this world alone, with its switch", () => {
-    const ui = fakeUi();
+  it("doesn't repeat this world's switch, which is on the module's card", () => {
+    // Owner, 2026-11-19: inside a world the section only repeated the card.
+    renderWith(fakeUi(), <LibraryTab pkg={pkg("b")} here="w1" />);
 
-    renderWith(ui, <LibraryTab pkg={pkg("b")} here="w1" />);
-    fireEvent.click(
-      screen.getByRole("switch", { name: "Title b on in Strahd" }),
-    );
-
-    expect(screen.getByText("This world")).toBeTruthy();
-    expect(ui.flip).toHaveBeenCalledWith("w1", "b", true);
+    expect(screen.queryByRole("switch")).toBeNull();
+    expect(screen.queryByText("This world")).toBeNull();
   });
 });
