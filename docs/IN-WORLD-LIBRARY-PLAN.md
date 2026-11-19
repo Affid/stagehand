@@ -131,14 +131,16 @@ does from inside, so the window shows that page's Modules tab (owner,
   opens the review (Turns on, Added as dependencies, Turns off, Still
   needed by modules that stay), then saves and reloads.
 - **The module panel**, as on Setup, opened by clicking a card and closed
-  with x. The window keeps one width (owner, 2026-11-18: a window that grows
-  and shrinks is worse, and some screens lack the room); the cards always
-  keep three columns, narrower while the panel is open, so opening or
-  closing it moves no card to another row or column. The panel: Library tab (folder, tags, note, presets, this world's switch;
-  read-only, with a line saying it is organised on the Setup screen) and
-  Package tab (version and verification, authors, relationships, contents).
-  Setup's "On in worlds" becomes this world only: a world can't see the
-  others.
+  with x. The panel doesn't change the window's size (owner, 2026-11-18: a
+  window that grows and shrinks is worse, and some screens lack the room).
+  The cards' columns follow the window's width, 1 to 4 (owner,
+  2026-11-19, once the window could be resized), not the room beside the
+  panel, so opening or closing it moves no card to another row or column.
+  The panel: Library tab (folder, tags, note, presets; read-only, with a
+  line saying it is organised on the Setup screen; Setup's "On in worlds"
+  list is left out, since a world knows only itself and its switch is on
+  the card: owner, 2026-11-19) and Package tab (version and verification,
+  authors, relationships, contents).
 - **A setting instead of a switch** (owner, 2026-11-18): no layout switch
   in the window. Stagehand's tab in Configure Settings has "Library view
   in Module Management" (short enough for one line in Foundry's label

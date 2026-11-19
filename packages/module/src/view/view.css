@@ -95,10 +95,35 @@
   padding-right: 4px;
 }
 
-/* Three columns always, narrower while the panel is open: opening or
-   closing it moves no card to another row or column (owner, 2026-11-18). */
+/* Columns by the window's width (owner, 2026-11-19), not by the room the
+   cards have: the view spans the window whether the module panel is open
+   or not, so opening or closing the panel moves no card to another row or
+   column (owner, 2026-11-18), while a narrower window gets fewer, wider
+   cards. */
+.st-ui.stagehand-view {
+  container: stagehand-view / inline-size;
+}
+
 .st-ui.stagehand-view .stw-grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(var(--stagehand-columns, 3), minmax(0, 1fr));
+}
+
+@container stagehand-view (min-width: 1370px) {
+  .stagehand-body {
+    --stagehand-columns: 4;
+  }
+}
+
+@container stagehand-view (max-width: 1059px) {
+  .stagehand-body {
+    --stagehand-columns: 2;
+  }
+}
+
+@container stagehand-view (max-width: 779px) {
+  .stagehand-body {
+    --stagehand-columns: 1;
+  }
 }
 
 /* The module panel is a column of the window here, not a framed window */
