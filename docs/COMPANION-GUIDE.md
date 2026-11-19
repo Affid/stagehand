@@ -17,8 +17,12 @@ world and does two things:
 - **Applies** the module changes queued on Setup, after showing them to the
   Gamemaster, or without asking when the Gamemaster already reviewed that
   exact change on Setup at launch.
+- **Shows the library** in Module Management, for Gamemasters: Setup's
+  cards and module panel inside Foundry's window, changes saved through a
+  review ([The library view](#the-library-view)). This part reads the
+  library file Setup keeps on the server, not the flags.
 
-Both go through one place: `flags.stagehand` in the world's own
+Reports and changes go through one place: `flags.stagehand` in the world's own
 `world.json`. Setup reads and writes it while the world is stopped; the
 companion while it runs. There is no other channel between them: no
 server, no socket, no messages.
@@ -61,25 +65,39 @@ below) and join again.
 
 ## How the code is put together
 
-The module is TypeScript, bundled with Vite into one unminified ES module,
-`dist/stagehand.js`, with the parts of `packages/shared` it imports.
+The module is TypeScript, bundled with Vite into unminified ES modules
+with the parts of `packages/shared` and `packages/ui` it imports:
+`dist/stagehand.js`, the library view's chunk (`stagehand-mount-*.js`,
+Preact and the view, loaded only when a Gamemaster opens Module
+Management), the code both share, and `stagehand-view.css`.
 
-One rule shapes it: **only `index.ts` touches Foundry.** It reads Foundry's
-globals (through `foundry.ts`) and hands everything else in as plain
-dependencies: the game object, the dialog class, `fetch`, notifications,
-reload. Every other file is plain logic over those dependencies, so the
-unit tests run it against fakes (`test/fakes.ts`) without Foundry.
+One rule shapes it: **only `index.ts` and `manage/register.ts` touch
+Foundry.** They read Foundry's globals (through `foundry.ts`) and hand
+everything else in as plain dependencies: the game object, the dialog
+class, `fetch`, notifications, reload. Every other file is plain logic
+over those dependencies, so the unit tests run it against fakes
+(`test/fakes.ts`) without Foundry.
 
-| File               | Role                                                                                 |
-| ------------------ | ------------------------------------------------------------------------------------ |
-| `index.ts`         | Entry point on Foundry's `ready` hook: the first-GM check, then one session          |
-| `foundry.ts`       | The few Foundry APIs used, typed narrowly; `MODULE_ID`                               |
-| `gamemaster.ts`    | Which Gamemaster runs the session                                                    |
-| `world-session.ts` | One join: read the flags, settle the last change, report or apply, save              |
-| `apply.ts`         | Plan, ask, record, write the module configuration, reload                            |
-| `dialog.ts`        | The confirmation dialog; escapes every value it shows                                |
-| `world-state.ts`   | Reads the live world; builds the plan and the module configuration                   |
-| `world-io.ts`      | Saves our flags (Foundry's `editWorld`) and reads the server's clock (`/api/status`) |
+| File                  | Role                                                                                 |
+| --------------------- | ------------------------------------------------------------------------------------ |
+| `index.ts`            | Entry point on Foundry's `ready` hook: the first-GM check, then one session          |
+| `foundry.ts`          | The few Foundry APIs used, typed narrowly; `MODULE_ID`                               |
+| `gamemaster.ts`       | Which Gamemaster runs the session                                                    |
+| `world-session.ts`    | One join: read the flags, settle the last change, report or apply, save              |
+| `apply.ts`            | Plan, ask, record, write the module configuration, reload                            |
+| `dialog.ts`           | The confirmation dialog; escapes every value it shows                                |
+| `world-state.ts`      | Reads the live world; builds the plan and the module configuration                   |
+| `world-io.ts`         | Saves our flags (Foundry's `editWorld`) and reads the server's clock (`/api/status`) |
+| `manage/register.ts`  | The library view's hooks: its setting, the library read, render and close            |
+| `manage/window.ts`    | Takes Module Management over on each render, or stands aside                         |
+| `manage/guard.ts`     | Keeps Foundry's own save from running on our view                                    |
+| `manage/library.ts`   | Reads `Data/stagehand/library.json` (untrusted: capped, validated)                   |
+| `manage/bbmm.ts`      | The one-time question when BBMM holds the button                                     |
+| `view/mount.tsx`      | The chunk's entry: the window's store, the dialogs, saving and reloading             |
+| `view/App.tsx`        | The view: tools row, cards (from `packages/ui`), panel, footer, `FailSafe`           |
+| `view/changes.ts`     | Unsaved changes as local commands, which Setup's model reads as a queue              |
+| `view/review.ts`      | The review before saving                                                             |
+| `view/pick-preset.ts` | Apply Preset, with active presets                                                    |
 
 From `packages/shared`, also used by Setup, so both sides agree:
 
@@ -91,9 +109,15 @@ From `packages/shared`, also used by Setup, so both sides agree:
 | `version.ts`               | Foundry version parsing and compatibility, mirroring core        |
 | `world.ts`                 | The queued command type and the flags key                        |
 | `log.ts`, `zod-config.ts`  | Console output; Zod without `new Function`                       |
+| `library/sync-file.ts`     | Reading the library file                                         |
+
+From `packages/ui`, also used by Setup: the cards, sections and module
+panel, their models and strings, behind the `ModulesUi` context
+(`context.ts`; `where: "world"` inside a world).
 
 What ships, in `packages/module/dist`: `module.json` and `lang/en.json`
-(copied from `static`) and `stagehand.js`.
+(copied from `static`), `stagehand.js` with its chunks, and
+`stagehand-view.css`.
 
 ## The flags
 
@@ -171,6 +195,36 @@ save it also updates that copy (`updateSource`) and calls the
 `stagehandSaved` hook. Requests never follow a redirect (a refused one
 redirects to the join page) and time out after 15 seconds.
 
+## The library view
+
+[IN-WORLD-LIBRARY-PLAN.md](IN-WORLD-LIBRARY-PLAN.md) has the design and
+the owner's decisions; the approved mockup is `design/in-world-library`.
+
+1. **Load.** At `init` the setting is registered; at `ready`, for a
+   Gamemaster with the view on, the library file is read once for the page
+   (a missing or unreadable file is tried again on the next open), and the
+   BBMM question may be asked.
+2. **Render.** On every `renderModuleManagement`, `takeOverWindow` checks
+   the user, the setting, the library, the window and Foundry's version.
+   Anything unexpected: Foundry's window stays as it is. Otherwise it
+   guards the save, sizes the window on its first render, puts a host in
+   place of Foundry's list and loads the view's chunk into it. A redraw by
+   Foundry replaces the view; a load overtaken by a newer render is
+   dropped; a failed load puts Foundry's list back.
+3. **Change.** The view keeps one store per window, so Foundry's redraws
+   keep the unsaved changes. A switch or a preset adds a local command;
+   Setup's `flipModule`, `previewApply` and `worldModules` read them as
+   they read a world's queue.
+4. **Save.** Save Module Settings (or any submit of the form) opens the
+   review. Save & Reload writes core's module configuration, then every
+   client reloads, as after Foundry's own save.
+
+Foundry's own form handler takes the form's checkboxes as the whole module
+list, and our view has none of Foundry's. So: a hidden checkbox per module
+kept equal to the cards (`FailSafe`), a capture-phase submit listener and
+the window's own handler wrapped (`guard.ts`), and only a known window
+taken over. The guard acts only while our view is in the window.
+
 ## Rules worth keeping
 
 - **Record before change** (`apply.ts`, `write`). A change made without a
@@ -185,14 +239,22 @@ redirects to the join page) and time out after 15 seconds.
 - **Saves stay under Foundry's limit** (`MAX_SAVE_BYTES`, `fitReport`).
 - **The companion stays on** (`moduleConfiguration` always includes
   `MODULE_ID`), so no change can switch off the thing that reports it.
+- **Foundry's save never runs on our view** (`guard.ts`, `FailSafe`), and
+  nothing replaces a window the companion doesn't recognise.
+- **The library file is untrusted** (`library.ts`, `parseSyncFile`):
+  anyone with Foundry's upload permission can overwrite it. Its text is
+  rendered as text, and escaped in dialogs and notices.
 - **Only the Foundry server.** No other host, no telemetry, no AI at
   runtime.
 
 ## Making changes
 
-- **A string.** All of them are in `static/lang/en.json` under
-  `STAGEHAND`, read with `game.i18n`. The dialog's are under
-  `STAGEHAND.Apply`.
+- **A string.** Foundry's side (dialogs, notices, the setting) is in
+  `static/lang/en.json` under `STAGEHAND`, read with `game.i18n`: the
+  apply dialog under `STAGEHAND.Apply`, the library view under
+  `STAGEHAND.Manage`. The view's own words are in
+  `packages/ui/src/strings/en.json`, shared with Setup; `view/translate.ts`
+  swaps the few that talk about a next launch (`mm.*`).
 - **A new question in the dialog.** If the resolver's `Plan` grows a new
   kind of problem, add it to the dialog's `sections`, to `refusal` if it
   needs consent, and to `asReviewed`: a reviewed launch must not skip a
@@ -216,6 +278,7 @@ pnpm test packages/module             # the module's unit tests
 pnpm test                             # everything, as CI runs it
 pnpm test:foundry apply               # in-world end to end against the local Foundry
 pnpm test:foundry companion-http      # the companion on plain http at a network address
+pnpm test:foundry world-modules       # the library view, with BBMM (installs it from its release)
 ```
 
 - `test/apply.test.ts`: world state, the dialog's escaping, every choice
@@ -226,9 +289,18 @@ pnpm test:foundry companion-http      # the companion on plain http at a network
 - `test/world-io.test.ts`: saving, the page copy, redirects and timeouts,
   the size limit, the clock, which Gamemaster runs it.
 - `test/manifest.test.ts`: the manifest's URLs, version and compatibility.
+- `test/manage*.test.ts`: the library read, who gets the view, the save
+  guard, taking the window over and standing aside, the BBMM question.
+- `test/view-*.test.ts(x)`: the view's data and unsaved changes, the view,
+  the review and Apply Preset (with a check that every string exists),
+  mounting and saving.
 - `tests/foundry/apply.spec.ts`: the whole loop on a real Foundry with the
   extension: a reviewed launch, a remove that others need, the Assistant
   GM, Launch without changes, a Gamemaster in a browser without Stagehand.
+- `tests/foundry/world-modules.spec.ts` and `world-modules-bbmm.spec.ts`:
+  the library view on a real Foundry, without the extension: the cards,
+  every path to Foundry's save, saving with a dependency, presets, the
+  setting, an Assistant, a player, no library, the light interface, BBMM.
 
 Coverage must stay at 80% or more (`pnpm test:coverage`).
 

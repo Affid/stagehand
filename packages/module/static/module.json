@@ -1,7 +1,7 @@
 {
   "id": "stagehand",
   "title": "Stagehand",
-  "description": "Companion for Stagehand, a browser extension and Android app that replace Foundry VTT's Setup screen with a module library, presets and per-world module management. It does nothing on its own: install the <a href=\"https://chromewebstore.google.com/detail/iilpkngpgiiocbmnnjkhmehaadnpknac\">Stagehand extension</a> from the Chrome Web Store, or the Android app, too. It runs only for the full Gamemaster, keeps its exchange with Stagehand in the world's flags, and talks to nothing but your Foundry server.",
+  "description": "Companion for Stagehand, a browser extension and Android app that replace Foundry VTT's Setup screen with a module library, presets and per-world module management. It reports each world's modules to Stagehand, applies the changes you queue there, and shows the server's Stagehand library in Module Management. Install the <a href=\"https://chromewebstore.google.com/detail/iilpkngpgiiocbmnnjkhmehaadnpknac\">Stagehand extension</a> from the Chrome Web Store, or the Android app, too: the library is organised there. It keeps its exchange with Stagehand in the world's flags and talks to nothing but your Foundry server.",
   "authors": [
     {
       "name": "Andrei Fedorov",

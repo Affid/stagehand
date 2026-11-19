@@ -23,12 +23,9 @@ is the way it is.
 - [SETUP-REDESIGN.md](SETUP-REDESIGN.md) and
   [SETUP-BUILD-PLAN.md](SETUP-BUILD-PLAN.md): the new Setup page's design
   and how it was built. The mockup it follows is in `../design/setup-page`.
-
-## Planned
-
-- [IN-WORLD-LIBRARY-PLAN.md](IN-WORLD-LIBRARY-PLAN.md): the library's
-  folders, tags and notes in a world's Manage Modules window, and applying
-  presets from there (issue #2).
+- [IN-WORLD-LIBRARY-PLAN.md](IN-WORLD-LIBRARY-PLAN.md): the library view
+  in a world's Module Management (issue #2), with the owner's decisions
+  and how it was built. Its mockup is in `../design/in-world-library`.
 
 ## Android app
 

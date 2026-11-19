@@ -5,6 +5,20 @@ the companion module (`stagehand-v<version>`, its `module.json`), the
 browser extension (`stagehand-extension-v<version>`, its `manifest.json`)
 and the Android app (`stagehand-app-v<version>`, the extension's version).
 
+## Unreleased
+
+### Companion module
+
+- Module Management shows the server's Stagehand library inside a world
+  (issue #2): modules as cards in the library's folders, each module's
+  details, Apply preset, and a review before saving that reloads the
+  world once. For Gamemasters and Assistant GMs on a server whose admin
+  organises a library with Stagehand; players keep Foundry's list. Each
+  user can turn it off in Configure Settings: "Library view in Module
+  Management".
+- With BBMM's own module manager on, the first full Gamemaster is asked
+  once which view Module Management opens.
+
 ## 2026-11-13
 
 ### Extension 0.3.2
