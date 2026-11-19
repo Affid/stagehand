@@ -19,6 +19,19 @@ and the Android app (`stagehand-app-v<version>`, the extension's version).
 - With BBMM's own module manager on, the first full Gamemaster is asked
   once which view Module Management opens.
 
+### Extension
+
+- Links are readable in Foundry's Fantasy and Sci-fi Setup themes, such as
+  Delete tag in the Tags panel: they took a dark tint of the theme's colour
+  meant for backgrounds, and showed dark on dark.
+
+### Android app
+
+- The same fix, in the phone's sheets.
+- A server's card on the home screen reads its whole text to screen
+  readers (its address, whether it is encrypted, when it was opened), not
+  only "Open" and its name.
+
 ## 2026-11-13
 
 ### Extension 0.3.2

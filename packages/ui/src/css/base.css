@@ -29,6 +29,16 @@
   margin: 0 0 0.75rem;
 }
 
+/* Foundry's Fantasy and Sci-fi Setup themes make --color-warm-2 a dark
+   tint for backgrounds (#603032, #303260). As text on our dark panels and
+   sheets it can't be read (axe: 1.8:1 and 1.6:1 for a link), so there our
+   accent is the theme's bright one, --color-warm-1. The default theme's
+   --color-warm-2 is a readable red-orange and stays. */
+body.theme-fantasy .st-app,
+body.theme-scifi .st-app {
+  --st-accent: var(--color-warm-1);
+}
+
 .st-icon {
   flex: none;
   width: auto;
