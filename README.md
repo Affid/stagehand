@@ -21,7 +21,7 @@ Written once a day by the Download counts workflow (`.github/workflows/stats.yml
 
 | | Downloads so far | What it counts |
 | --- | ---: | --- |
-| Chrome Web Store | 214 | Installs from the store, summed from the daily counts in its Developer Dashboard exports (`chrome-web-store/`). Last export day: Nov 18, 2026. |
+| Chrome Web Store | 267 | Installs from the store, summed from the daily counts in its Developer Dashboard exports (`chrome-web-store/`). Last export day: Nov 20, 2026. |
 | Companion module | 65 | `stagehand.zip` downloads: the companion module installed or updated by Foundry. |
 | Extension zip | 20 | The extension's zip from the releases, for people who load it unpacked. |
 | Android app | 12 | The APK from the releases, sideloaded. |
