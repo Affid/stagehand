@@ -4,7 +4,7 @@
 <text x="24" y="38" font-size="16" fill="#1f2328" font-weight="600">Downloads so far</text>
 <text x="24" y="58" font-size="12" fill="#59636e">Store installs and release file downloads of each part, day by day</text>
 <line x1="24" x2="38" y1="78" y2="78" stroke="#2a78d6" stroke-width="2" stroke-linecap="round"/>
-<text x="44" y="82" font-size="12" fill="#59636e">Companion module<tspan dx="6" font-weight="600" fill="#1f2328">65</tspan></text>
+<text x="44" y="82" font-size="12" fill="#59636e">Companion module<tspan dx="6" font-weight="600" fill="#1f2328">66</tspan></text>
 <line x1="203.6" x2="217.6" y1="78" y2="78" stroke="#eda100" stroke-width="2" stroke-linecap="round"/>
 <text x="223.6" y="82" font-size="12" fill="#59636e">Chrome Web Store<tspan dx="6" font-weight="600" fill="#1f2328">267</tspan></text>
 <line x1="390.4" x2="404.4" y1="78" y2="78" stroke="#eb6834" stroke-width="2" stroke-linecap="round"/>
@@ -20,17 +20,17 @@
 <line x1="51.8" x2="768" y1="104" y2="104" stroke="#eaeef2" stroke-width="1"/>
 <text x="43.8" y="108" font-size="11" fill="#6e7781" text-anchor="end">300</text>
 <text x="51.8" y="286" font-size="11" fill="#6e7781">Nov 11, 2026</text>
-<text x="195" y="286" font-size="11" fill="#6e7781" text-anchor="middle">Nov 13</text>
-<text x="338.3" y="286" font-size="11" fill="#6e7781" text-anchor="middle">Nov 15</text>
-<text x="481.5" y="286" font-size="11" fill="#6e7781" text-anchor="middle">Nov 17</text>
-<text x="624.8" y="286" font-size="11" fill="#6e7781" text-anchor="middle">Nov 19</text>
-<text x="768" y="286" font-size="11" fill="#6e7781" text-anchor="end">Nov 21</text>
-<path d="M195 249.6 L266.7 248.5 L338.3 245.3 L409.9 242.7 L481.5 241.6 L553.1 240 L624.8 236.8 L696.4 230.9 L768 229.3" fill="none" stroke="#2a78d6" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
-<circle cx="768" cy="229.3" r="4" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>
-<path d="M51.8 254.9 L123.4 237.9 L195 224 L266.7 207.5 L338.3 192 L409.9 178.1 L481.5 163.7 L553.1 149.9 L624.8 136 L696.4 121.6" fill="none" stroke="#eda100" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
-<circle cx="696.4" cy="121.6" r="4" fill="#eda100" stroke="#ffffff" stroke-width="2"/>
-<path d="M195 255.5 L266.7 255.5 L338.3 254.9 L409.9 254.4 L481.5 254.4 L553.1 253.9 L624.8 253.9 L696.4 253.3 L768 253.3" fill="none" stroke="#eb6834" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="182" y="286" font-size="11" fill="#6e7781" text-anchor="middle">Nov 13</text>
+<text x="312.2" y="286" font-size="11" fill="#6e7781" text-anchor="middle">Nov 15</text>
+<text x="507.6" y="286" font-size="11" fill="#6e7781" text-anchor="middle">Nov 18</text>
+<text x="637.8" y="286" font-size="11" fill="#6e7781" text-anchor="middle">Nov 20</text>
+<text x="768" y="286" font-size="11" fill="#6e7781" text-anchor="end">Nov 22</text>
+<path d="M182 249.6 L247.1 248.5 L312.2 245.3 L377.3 242.7 L442.5 241.6 L507.6 240 L572.7 236.8 L637.8 230.9 L702.9 229.3 L768 228.8" fill="none" stroke="#2a78d6" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="768" cy="228.8" r="4" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>
+<path d="M51.8 254.9 L116.9 237.9 L182 224 L247.1 207.5 L312.2 192 L377.3 178.1 L442.5 163.7 L507.6 149.9 L572.7 136 L637.8 121.6" fill="none" stroke="#eda100" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="637.8" cy="121.6" r="4" fill="#eda100" stroke="#ffffff" stroke-width="2"/>
+<path d="M182 255.5 L247.1 255.5 L312.2 254.9 L377.3 254.4 L442.5 254.4 L507.6 253.9 L572.7 253.9 L637.8 253.3 L702.9 253.3 L768 253.3" fill="none" stroke="#eb6834" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
 <circle cx="768" cy="253.3" r="4" fill="#eb6834" stroke="#ffffff" stroke-width="2"/>
-<path d="M195 258.7 L266.7 258.7 L338.3 258.7 L409.9 258.7 L481.5 258.7 L553.1 258.7 L624.8 258.7 L696.4 257.6 L768 257.6" fill="none" stroke="#1baf7a" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M182 258.7 L247.1 258.7 L312.2 258.7 L377.3 258.7 L442.5 258.7 L507.6 258.7 L572.7 258.7 L637.8 257.6 L702.9 257.6 L768 257.6" fill="none" stroke="#1baf7a" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
 <circle cx="768" cy="257.6" r="4" fill="#1baf7a" stroke="#ffffff" stroke-width="2"/>
 </svg>

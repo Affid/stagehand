@@ -18,13 +18,13 @@
 <line x1="45.2" x2="768" y1="104" y2="104" stroke="#eaeef2" stroke-width="1"/>
 <text x="37.2" y="108" font-size="11" fill="#6e7781" text-anchor="end">40</text>
 <text x="45.2" y="286" font-size="11" fill="#6e7781">Nov 10, 2026</text>
-<text x="189.8" y="286" font-size="11" fill="#6e7781" text-anchor="middle">Nov 12</text>
-<text x="334.3" y="286" font-size="11" fill="#6e7781" text-anchor="middle">Nov 14</text>
-<text x="478.9" y="286" font-size="11" fill="#6e7781" text-anchor="middle">Nov 16</text>
-<text x="623.4" y="286" font-size="11" fill="#6e7781" text-anchor="middle">Nov 18</text>
-<text x="768" y="286" font-size="11" fill="#6e7781" text-anchor="end">Nov 20</text>
-<path d="M45.2 260 L117.5 248 L189.8 152 L262 236 L334.3 256 L406.6 248 L478.9 240 L551.2 252 L623.4 240 L695.7 260 L768 256" fill="none" stroke="#2a78d6" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
-<circle cx="768" cy="256" r="4" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>
-<path d="M45.2 232 L117.5 152 L189.8 112 L262 124 L334.3 136 L406.6 224 L478.9 208 L551.2 184 L623.4 208 L695.7 188 L768 208" fill="none" stroke="#eb6834" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
-<circle cx="768" cy="208" r="4" fill="#eb6834" stroke="#ffffff" stroke-width="2"/>
+<text x="176.6" y="286" font-size="11" fill="#6e7781" text-anchor="middle">Nov 12</text>
+<text x="308" y="286" font-size="11" fill="#6e7781" text-anchor="middle">Nov 14</text>
+<text x="505.2" y="286" font-size="11" fill="#6e7781" text-anchor="middle">Nov 17</text>
+<text x="636.6" y="286" font-size="11" fill="#6e7781" text-anchor="middle">Nov 19</text>
+<text x="768" y="286" font-size="11" fill="#6e7781" text-anchor="end">Nov 21</text>
+<path d="M45.2 260 L110.9 248 L176.6 152 L242.3 236 L308 256 L373.7 248 L439.5 240 L505.2 252 L570.9 240 L636.6 260 L702.3 256 L768 252" fill="none" stroke="#2a78d6" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="768" cy="252" r="4" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>
+<path d="M45.2 232 L110.9 152 L176.6 112 L242.3 124 L308 136 L373.7 224 L439.5 208 L505.2 184 L570.9 208 L636.6 188 L702.3 208 L768 128" fill="none" stroke="#eb6834" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="768" cy="128" r="4" fill="#eb6834" stroke="#ffffff" stroke-width="2"/>
 </svg>
