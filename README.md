@@ -1,6 +1,6 @@
 # Stagehand download counts
 
-Written once a day by the Download counts workflow (`.github/workflows/stats.yml` on `main`). Last snapshot: Nov 23, 2026. Do not edit by hand: the next run replaces this file and the charts.
+Written once a day by the Download counts workflow (`.github/workflows/stats.yml` on `main`). Last snapshot: Nov 24, 2026. Do not edit by hand: the next run replaces this file and the charts.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Affid/stagehand/stats/card-dark.svg">
@@ -22,18 +22,18 @@ Written once a day by the Download counts workflow (`.github/workflows/stats.yml
 | | Downloads so far | What it counts |
 | --- | ---: | --- |
 | Chrome Web Store | 318 | Installs from the store, summed from the daily counts in its Developer Dashboard exports (`chrome-web-store/`). Last export day: Nov 22, 2026. |
-| Companion module | 69 | `stagehand.zip` downloads: the companion module installed or updated by Foundry. |
+| Companion module | 73 | `stagehand.zip` downloads: the companion module installed or updated by Foundry. |
 | Extension zip | 20 | The extension's zip from the releases, for people who load it unpacked. |
-| Android app | 12 | The APK from the releases, sideloaded. |
-| Foundry lookups | 359 | `module.json` downloads: Foundry reading the release manifest through the foundryvtt.com listing. These are lookups, not installs. |
+| Android app | 13 | The APK from the releases, sideloaded. |
+| Foundry lookups | 389 | `module.json` downloads: Foundry reading the release manifest through the foundryvtt.com listing. These are lookups, not installs. |
 
 <details>
 <summary>Every release file</summary>
 
 | Release | File | Downloads |
 | --- | --- | ---: |
-| stagehand-v0.2.0 | module.json | 122 |
-| stagehand-v0.2.0 | stagehand.zip | 18 |
+| stagehand-v0.2.0 | module.json | 152 |
+| stagehand-v0.2.0 | stagehand.zip | 22 |
 | stagehand-v0.1.2 | module.json | 228 |
 | stagehand-v0.1.2 | stagehand.zip | 44 |
 | stagehand-v0.1.1 | module.json | 4 |
@@ -46,7 +46,7 @@ Written once a day by the Download counts workflow (`.github/workflows/stats.yml
 | stagehand-extension-v0.3.0 | stagehand-extension-0.3.0.zip | 4 |
 | stagehand-extension-v0.2.1 | stagehand-extension-0.2.1.zip | 1 |
 | stagehand-extension-v0.2.0 | stagehand-extension-0.2.0.zip | 3 |
-| stagehand-app-v0.3.3 | stagehand-0.3.3.apk | 1 |
+| stagehand-app-v0.3.3 | stagehand-0.3.3.apk | 2 |
 | stagehand-app-v0.3.2 | stagehand-0.3.2.apk | 3 |
 | stagehand-app-v0.3.1 | stagehand-0.3.1.apk | 2 |
 | stagehand-app-v0.3.0 | stagehand-0.3.0.apk | 2 |
