@@ -1,9 +1,10 @@
 # Stagehand shared code
 
-The code the companion module, the extension and the app's web part all
-use: data formats, validation and the logic that must give the same answer
-everywhere. Nothing here talks to Foundry or the browser directly, so all
-of it is unit-tested without either.
+The code the companion module, the extension, the app's web part and the
+shared UI ([`packages/ui`](../ui/README.md)) all use: data formats,
+validation and the logic that must give the same answer everywhere.
+Nothing here talks to Foundry or the browser directly, so all of it is
+unit-tested without either.
 
 Not published on its own. The other packages import its source
 (`@stagehand/shared/<file>`) and bundle what they use.
@@ -11,6 +12,7 @@ Not published on its own. The other packages import its source
 | File or folder    | What it holds                                                                |
 | ----------------- | ---------------------------------------------------------------------------- |
 | `world-flags.ts`  | What Setup and the companion leave each other in a world's flags; validated  |
+| `companion.ts`    | The companion as Setup knows it: id, manifest URL, oldest version            |
 | `resolver.ts`     | The apply plan: what turns on and off, dependencies, conflicts (`resolver/`) |
 | `version.ts`      | Version comparison and compatibility, mirroring Foundry core                 |
 | `package.ts`      | Package data as the library uses it, with its schemas                        |

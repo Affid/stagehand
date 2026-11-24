@@ -1,6 +1,6 @@
 # Android app: the new Setup page on a phone
 
-Status: planned 2026-11-07; phase 0 closed the same day (answered on the emulator; the phone checks moved to phase 4); phase 1 (phone design): the owner chose the tabs layout and, after the rounds below, moved on to development on 2026-11-08; the owner settled its two open questions on 2026-11-08 (see "Phase 1" below). Phase 2 (app platform layer) done 2026-11-08: the five packages below. Phase 3 (phone layout) done 2026-11-08 in seven packages. Phase 4 (the Android app) done 2026-11-08 in five packages: the app runs the Setup page on the emulator, and a launch from it applies queued changes through the companion. Phase 5 (on-device suite) done 2026-11-09: `pnpm test:android` passes on the emulator and the release APK is in the owner's folder; the run on the owner's phone waits for its checks. The owner's decisions are below. Owner's choices: an Android app that
+Status: planned 2026-11-07; phase 0 closed the same day (answered on the emulator; the phone checks moved to phase 4); phase 1 (phone design): the owner chose the tabs layout and, after the rounds below, moved on to development on 2026-11-08; the owner settled its two open questions on 2026-11-08 (see "Phase 1" below). Phase 2 (app platform layer) done 2026-11-08: the five packages below. Phase 3 (phone layout) done 2026-11-08 in seven packages. Phase 4 (the Android app) done 2026-11-08 in five packages: the app runs the Setup page on the emulator, and a launch from it applies queued changes through the companion. Phase 5 (on-device suite) done 2026-11-09: `pnpm test:android` passes on the emulator and the release APK is in the owner's folder; the run on the owner's phone waits for its checks. Phase 6 (the owner's first use) and phase 7 (the app shows only our pages) done 2026-11-09 and 2026-11-10; first released as app 0.2.0 on 2026-11-10. The owner's decisions are below. Owner's choices: an Android app that
 loads the user's Foundry server in a WebView and draws our Setup page over it
 (option 2 of three; the others were the extension in Firefox for Android, and
 a native client speaking Foundry's protocol); **Setup only** (a world, once
@@ -1226,10 +1226,10 @@ Progress (2026-11-09):
   (launch.mark from Setup) and applies only for it; the cover (native) over
   the hidden /game; the game page watches the companion and says done;
   leaving for home or another server ends it.
-- **Package 5 waits for Foundry**: the device suite logs in through the
-  native field (typeNative) and expects the launching screen, the running
-  page and the changes applied out of sight; not run, the shared server
-  has run another developer's world all day.
+- **Package 5 done** (`d340de6`, `21b0841`, `15602c9`, `7b5e17a`,
+  2026-11-09 and 2026-11-10): the device suite logs in through the native
+  field (typeNative) and checks the launching screen, the running page and
+  the changes applied out of sight.
 
 ## Native rules (for phase 4)
 

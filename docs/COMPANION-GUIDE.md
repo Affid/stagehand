@@ -2,23 +2,24 @@
 
 For anyone who works on the companion module (`packages/module`) or
 reviews it: what it is for, how to run it, how the code is put together,
-and what to keep in mind when changing it. Read it next to the source; the
-module is under 800 lines.
+and what to keep in mind when changing it. Read it next to the source:
+reporting and applying are about 800 lines (`src/*.ts`), the library view
+about 1,900 more (`src/manage`, `src/view`).
 
 ## What it is for
 
 Stagehand's Setup page (in the extension or the app) runs while no world
 does. It can't see inside a world: which modules are on is kept in the
 world's own database, out of Setup's reach. The companion runs inside the
-world and does two things:
+world and does three things:
 
 - **Reports** the world's active modules, with their versions and the
   Foundry and system versions, so Setup can show them.
 - **Applies** the module changes queued on Setup, after showing them to the
   Gamemaster, or without asking when the Gamemaster already reviewed that
   exact change on Setup at launch.
-- **Shows the library** in Module Management, for Gamemasters: Setup's
-  cards and module panel inside Foundry's window, changes saved through a
+- **Shows the library** in Module Management, for Gamemasters and
+  Assistant GMs: Setup's cards and module panel inside Foundry's window, changes saved through a
   review ([The library view](#the-library-view)). This part reads the
   library file Setup keeps on the server, not the flags.
 
@@ -89,15 +90,22 @@ over those dependencies, so the unit tests run it against fakes
 | `world-state.ts`      | Reads the live world; builds the plan and the module configuration                   |
 | `world-io.ts`         | Saves our flags (Foundry's `editWorld`) and reads the server's clock (`/api/status`) |
 | `manage/register.ts`  | The library view's hooks: its setting, the library read, render and close            |
-| `manage/window.ts`    | Takes Module Management over on each render, or stands aside                         |
+| `manage/take-over.ts` | Whether the view takes a window: Foundry 13 or 14, a Gamemaster, setting, library    |
+| `manage/window.ts`    | Takes Module Management over on each render, or stands aside; the window's size      |
 | `manage/guard.ts`     | Keeps Foundry's own save from running on our view                                    |
 | `manage/library.ts`   | Reads `Data/stagehand/library.json` (untrusted: capped, validated)                   |
 | `manage/bbmm.ts`      | The one-time question when BBMM holds the button                                     |
 | `view/mount.tsx`      | The chunk's entry: the window's store, the dialogs, saving and reloading             |
 | `view/App.tsx`        | The view: tools row, cards (from `packages/ui`), panel, footer, `FailSafe`           |
+| `view/Tools.tsx`      | The tools row: filter, All / On / Changes, Apply preset, Group by                    |
+| `view/Footer.tsx`     | The changes line and Foundry's own footer buttons, which open the review             |
+| `view/FailSafe.tsx`   | Foundry's form kept equal to the cards (hidden checkboxes)                           |
+| `view/store.ts`       | One window's state: unsaved changes, filter, open module; `prefs.ts` keeps Group by  |
+| `view/world-data.ts`  | This world as `packages/ui` reads a world: its modules, the changes as a queue       |
 | `view/changes.ts`     | Unsaved changes as local commands, which Setup's model reads as a queue              |
 | `view/review.ts`      | The review before saving                                                             |
 | `view/pick-preset.ts` | Apply Preset, with active presets                                                    |
+| `view/view.css`       | The window's layout and the dialogs, after `packages/ui`'s sheets                    |
 
 From `packages/shared`, also used by Setup, so both sides agree:
 
@@ -201,14 +209,17 @@ redirects to the join page) and time out after 15 seconds.
 the owner's decisions; the approved mockup is `design/in-world-library`.
 
 1. **Load.** At `init` the setting is registered; at `ready`, for a
-   Gamemaster with the view on, the library file is read once for the page
+   Gamemaster or Assistant GM with the view on, the library file is read once for the page
    (a missing or unreadable file is tried again on the next open), and the
    BBMM question may be asked.
 2. **Render.** On every `renderModuleManagement`, `takeOverWindow` checks
    the user, the setting, the library, the window and Foundry's version.
    Anything unexpected: Foundry's window stays as it is. Otherwise it
-   guards the save, sizes the window on its first render, puts a host in
-   place of Foundry's list and loads the view's chunk into it. A redraw by
+   guards the save, sizes the window on its first render (its content's
+   height, 720 to 880 px, never taller than the screen, moved up only as
+   far as needed; resizable while the view is in it, and the user's size
+   holds through redraws), puts a host in place of Foundry's list and
+   loads the view's chunk into it. A redraw by
    Foundry replaces the view; a load overtaken by a newer render is
    dropped; a failed load puts Foundry's list back.
 3. **Change.** The view keeps one store per window, so Foundry's redraws
@@ -216,8 +227,10 @@ the owner's decisions; the approved mockup is `design/in-world-library`.
    Setup's `flipModule`, `previewApply` and `worldModules` read them as
    they read a world's queue.
 4. **Save.** Save Module Settings (or any submit of the form) opens the
-   review. Save & Reload writes core's module configuration, then every
-   client reloads, as after Foundry's own save.
+   review. While it needs a box ticked (a conflict, or a module others
+   still need), Save stays unpressed with a warning. Save & Reload writes
+   core's module configuration, then every client reloads, as after
+   Foundry's own save.
 
 Foundry's own form handler takes the form's checkboxes as the whole module
 list, and our view has none of Foundry's. So: a hidden checkbox per module
@@ -332,8 +345,10 @@ the manifest URL points to, and sends the version to foundryvtt.com.
   This risk was reviewed and accepted; the "Risks" section of
   [COMPANION-WORLD-PROTOCOL.md](COMPANION-WORLD-PROTOCOL.md#risks) has
   the details.
-- **Does it run for players?** No. Nothing runs for anyone but the one
-  full Gamemaster.
+- **Does it run for players?** No. Reporting and applying run for one
+  full Gamemaster only. The library view runs for Gamemasters and
+  Assistant GMs (Apply preset for full Gamemasters only); players keep
+  Foundry's own list.
 
 ## Checking your understanding
 

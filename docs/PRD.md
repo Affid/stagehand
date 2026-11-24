@@ -5,7 +5,7 @@
 | **Status** | Draft v0.5 |
 | **Date** | 2026-11-04 |
 | **Target** | Foundry VTT V13 and V14 at launch; V15 when released |
-| **Deliverables** | Browser extension + companion module |
+| **Deliverables** | Browser extension + companion module; an Android app since 2026-11-07 (docs/ANDROID-APP-PLAN.md) |
 | **Out of scope (for now)** | Server-side companion |
 
 ---
@@ -85,7 +85,7 @@ Positioning: **library-level organisation at Setup, plus additive presets.** Thi
 
 - **Extension background:** source of truth for the library (folders, tags, notes, presets), world snapshots and pending commands. Data is namespaced per server.
 - **Setup UI:** content script injected into registered servers' Setup page. It reads installed-package data and renders the organisation layer.
-- **Bridge:** content script on the game page. It relays messages between the companion module and the background. The bridge contains no Foundry logic.
+- **Bridge:** content script on the game page. It relays messages between the companion module and the background. The bridge contains no Foundry logic. *Replaced 2026-11-09: Setup and the companion now leave each other the queue and the report in the world's own flags, with no bridge (docs/COMPANION-WORLD-PROTOCOL.md).*
 - **Companion module:** owns all Foundry-side logic. It sends a snapshot of the world, pulls pending commands, checks dependencies and conflicts, gets GM confirmation and applies changes through core settings.
 
 **Design decision:** the extension never calls Foundry APIs itself. All world mutations live in the listed module. That keeps the logic transparent, reviewable and versioned with Foundry compatibility.
@@ -233,6 +233,8 @@ Foundry has no flag that tells a page "this user is the server admin". It only s
 **Limits.** These rules decide what the tool offers, not what Foundry allows. A full GM can already change their world's modules through core, and GMs can usually upload files, so a GM could replace `library.json` outside the tool (PR-8 detects that). If the server has no Administrator password, Foundry opens straight to Setup and anyone who can reach the server counts as an admin.
 
 ## 8. Module ↔ extension protocol
+
+*Superseded 2026-11-09 by docs/COMPANION-WORLD-PROTOCOL.md: no bridge and no messages; the queue, the launch intent and the companion's report live in the world's `flags.stagehand`, versioned by `FORMAT`. The apply algorithm (8.5) still holds. The rest of this section is kept for the record.*
 
 ### 8.1 Transport
 - The companion module (page JavaScript) and the bridge content script talk through `window.postMessage(msg, location.origin)`.
@@ -388,8 +390,8 @@ Until then, organisation comes only from the admin (folders, tags, notes, preset
 | Risk | Impact | Mitigation |
 |---|---|---|
 | Setup page internals are undocumented and change between versions | Setup UI breaks on updates | Read package data, not markup, where possible. Version adapters (section 6), safe mode (V-3), version-keyed remote config (V-5), test matrix (V-8). |
-| Extension and module versions drift apart across worlds and servers | Broken handshake for some worlds | Protocol negotiation and long protocol support (8.7). Visible "companion outdated" status. |
-| The Foundry desktop app (Electron) has no browser extensions | Setup features unavailable there | Document opening the server in Chrome or Firefox. The in-world part needs the extension in that browser too. |
+| Extension and module versions drift apart across worlds and servers | Broken handshake for some worlds | Protocol negotiation and long protocol support (8.7); since 2026-11-09 the flags' `FORMAT` (a side that sees a newer one leaves the flags alone). Visible "companion outdated" status, with an update offer. |
+| The Foundry desktop app (Electron) has no browser extensions | Setup features unavailable there | Document opening the server in Chrome or Firefox. The in-world part works without the extension since 2026-11-09 (world flags). |
 | Hosted services may replace or restrict the Setup screen | Reduced reach | Verify per host. The in-world part still works. |
 | Setting module configuration directly skips core's dependency prompts | Broken worlds | Mirror core's checks (8.5). Always show a diff. Require GM confirmation. |
 | Browser storage is per device | Lost organisation | Server file sync (D-3, built); export and import (D-1) stay as a backup. |

@@ -55,10 +55,34 @@ The companion module:
 3. The release workflow (Actions tab) builds the zip, creates the GitHub
    release, publishes `module.json` on the `manifests` branch (the URL
    Foundry checks for updates) and, with the `FOUNDRY_RELEASE_TOKEN`
-   secret set, sends the version to foundryvtt.com.
+   secret set, sends the version to foundryvtt.com. If that send failed,
+   the "Send companion version to foundryvtt.com" workflow sends it again.
 
-The extension and the app will release under their own tags, so they never
-change where Foundry looks for the companion's updates.
+The extension and the Android app share one version and release by hand,
+under their own tags, so they never change where Foundry looks for the
+companion's updates:
+
+1. Bump the version in `packages/extension/package.json` and
+   `packages/extension/static/manifest.json` (the app takes the
+   manifest's), the README's Status line, and add dated
+   `### Extension <version>` and `### Android app <version>` sections to
+   CHANGELOG.md. Commit as `chore(release): extension and app <version>`.
+2. `pnpm verify`, then `pnpm --filter @stagehand/extension build:release`:
+   `dist` and `dist-app` without the dev build label.
+3. Zip `dist` without the source maps, its files at the archive's root, as
+   `stagehand-extension-<version>.zip`.
+4. `node scripts/android/gradle.ts assembleRelease` (not
+   `pnpm android:build`, which rebuilds the web part with the dev label).
+   Check that the APK is signed with the same certificate as the last
+   release, and attach it as `stagehand-<version>.apk`.
+5. Tag `stagehand-extension-v<version>` and `stagehand-app-v<version>`,
+   push, and create a GitHub release for each, the app's last so it is
+   marked Latest.
+6. Upload the zip to the Chrome Web Store
+   ([docs/store/CHROME-WEB-STORE.md](docs/store/CHROME-WEB-STORE.md)).
+
+When the companion releases on the same day, it goes first: its workflow
+creates its own release.
 
 ## Download counts
 

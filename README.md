@@ -9,7 +9,8 @@ around your modules: a library with folders, tags and notes, presets you
 can apply to any world, a view of which modules each world uses, and
 queued module changes you review before they happen. It also covers the
 rest of Setup: launching worlds, backups, configuration and Foundry's own
-updates.
+updates. Inside a running world, the companion module shows the same
+library in Foundry's Module Management.
 
 Stagehand is not affiliated with or endorsed by Foundry Gaming LLC.
 
@@ -32,10 +33,13 @@ https://github.com/user-attachments/assets/95aa1de2-6b0b-400c-8874-ff722e6487b8
   the new Setup page, shown on the servers you allow it on.
 - **Android app**: the same Setup page on a phone or tablet, for servers you
   add in the app.
-- **Companion module** (`stagehand`): runs inside a world for the full
-  Gamemaster only. It reports the world's modules to Setup and applies the
-  changes you queued, after showing them in a dialog. On its own it does
-  nothing; it needs the extension or the app.
+- **Companion module** (`stagehand`): runs inside a world. For the full
+  Gamemaster it reports the world's modules to Setup and applies the
+  changes you queued, after showing them in a dialog. For Gamemasters and
+  Assistant GMs it shows the server's library in Module Management: modules
+  as cards in the library's folders, Apply preset, and a review before
+  saving. On its own it does nothing; the changes and the library come
+  from the extension or the app.
 
 How they fit together. Everything stays on your device and your own
 Foundry server:
@@ -55,6 +59,7 @@ flowchart LR
   page <-->|"syncs"| library
   page -->|"queues changes,<br/>reads reports"| flags
   companion -->|"applies the queue,<br/>reports modules"| flags
+  companion -.->|"reads, for<br/>Module Management"| library
 ```
 
 Status: public release (companion 0.2.0, extension and app 0.3.3).
@@ -103,9 +108,10 @@ and nothing on the server changes.
 
 - The library (folders, tags, notes, saved views, presets) is kept in the
   browser or app, and in `Data/stagehand/library.json` on your Foundry
-  server so it follows you to every device. Like everything in Foundry's
-  Data folder, that file can be read by anyone who knows its path; don't
-  put secrets in module notes.
+  server so it follows you to every device. The companion shows it,
+  read-only, to the Gamemasters and Assistant GMs of every world on that
+  server. Like everything in Foundry's Data folder, that file can be read
+  by anyone who knows its path; don't put secrets in module notes.
 - Queued changes and the companion's reports live in each world's own
   flags (`world.json`).
 - Stagehand talks to your Foundry server. Beyond it, the extension and the
@@ -200,25 +206,32 @@ start the usual server again.
 
 Each package has its own README: [module](packages/module/README.md),
 [extension](packages/extension/README.md),
-[android](packages/android/README.md), [shared](packages/shared/README.md).
+[android](packages/android/README.md), [shared](packages/shared/README.md),
+[ui](packages/ui/README.md).
 
 ```
 packages/shared            protocol, schemas, version logic, resolver, library model and sync
+packages/ui                the modules view and module panel, shared by Setup and the companion (Preact)
 packages/extension         the Setup page, its background and Foundry adapters (Preact)
   src/compat/v13           everything Foundry 13 does differently (docs/FOUNDRY-13-PLAN.md)
   src/app                  the app's side of the same page (native bridge, running page)
-packages/module            companion module: session, apply flow, dialog
+packages/module            companion module: session, apply flow, dialog, the library view in Module Management
 packages/android           Android app: WebViews, native bridge (Kotlin, Gradle)
 config/setup-config.json   Setup adapters read from this repository (pnpm config:write)
 scripts/foundry            local Foundry helpers (admin API, world setup, linking)
 scripts/android            Gradle wrapper, contract vectors, coverage
+scripts/release            the companion's release and its foundryvtt.com listing
+scripts/stats              the daily download counts and their charts (CONTRIBUTING.md)
+scripts/demo               the demo server behind the store screenshots and the video
 scripts/dev, scripts/spike developer and spike helpers
 tests/foundry              live suites against a local Foundry (Setup UI, in-world apply)
 tests/app                  the app's web part in Playwright, its native side simulated
 tests/android              the on-device suite for the Android app
 fixtures/modules           three tiny modules the live suites install
-design                     mockups the UI follows (Setup page, app screens, icon)
+design                     mockups the UI follows (Setup page, in-world library, app screens, icon)
 spikes                     throwaway experiments that answered early questions
 docs                       product requirements, plans and findings (docs/README.md)
-.github/workflows          CI (pnpm verify) and the companion's release
+docs/media                 the listing GIFs and the promo video
+video                      the promo video and the listing GIFs, made with Remotion (own install)
+.github/workflows          CI (pnpm verify), the companion's release and listing, daily download counts
 ```

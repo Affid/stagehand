@@ -16,8 +16,9 @@ report is credited unless you'd rather it wasn't.
 
 ## Supported versions
 
-The latest release of each part. Stagehand is not released yet; until then,
-the `main` branch.
+The latest release of each part: the companion module, the browser
+extension and the Android app (see the
+[releases](https://github.com/Affid/stagehand/releases)).
 
 ## Scope
 

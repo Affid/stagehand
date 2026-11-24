@@ -1,6 +1,7 @@
 # The library inside a world (plan)
 
-Status: built 2026-11-19 (GitHub issue #2), not released yet. Planned
+Status: built and released 2026-11-19 as companion 0.2.0 (GitHub issue
+#2). Planned
 2026-11-18; the owner approved the mockup the same day ("Looks good"); it
 is the spec. The spike passed on 13 and 14 the same day
 (`spikes/in-world-library`); the build and its live specs pass on both
@@ -320,9 +321,12 @@ is checked in the spike).
      specs depend on the test world having no companion report, and
      `companion-http.spec.ts` leaves one; `setup-many`, `setup-layout`,
      `setup-a11y`, `setup-steady` and the app's fantasy and sci-fi walks
-     fail there before and after this change.
+     fail there before and after this change. Fixed the same day
+     (`454ef1f`): the live suites no longer depend on the server's data
+     or on their order.
 3. **Docs:** done 2026-11-19: COMPANION-GUIDE.md ("The library view"),
-   the module's README and manifest description, CHANGELOG (Unreleased).
+   the module's README and manifest description, CHANGELOG (released as
+   companion 0.2.0, with extension and app 0.3.3).
    The foundryvtt.com listing text is the owner's to write (Foundry's AI
    policy).
 

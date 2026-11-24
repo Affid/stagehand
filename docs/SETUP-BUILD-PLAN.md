@@ -1,6 +1,10 @@
 # Building the new Setup page
 
-Status: started 2026-11-06. Design: `docs/SETUP-REDESIGN.md`. Foundry facts: `docs/SETUP-SPIKE.md`.
+Status: done (phases 1 to 6, the settings panel and a polish pass, from 2026-11-06); first
+released as extension 0.2.0 on 2026-11-10. Design: `docs/SETUP-REDESIGN.md`. Foundry facts:
+`docs/SETUP-SPIKE.md`. Since 2026-11-19 the world page's cards, the module panel, their models,
+strings and styles live in `packages/ui` (shared with the companion's view in a world), so some
+paths below under `packages/extension/src/ui` are now there.
 Mockup to match: `design/setup-page/` (playground: https://claude.ai/artifact/YKaVJnZdr1zsju86XQSpBT).
 
 ## Approach

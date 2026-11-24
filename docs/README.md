@@ -34,6 +34,13 @@ is the way it is.
 - [ANDROID-SPIKE.md](ANDROID-SPIKE.md): the tools and the first throwaway
   app (`../spikes/android`).
 
+## Store and media
+
+- [store/CHROME-WEB-STORE.md](store/CHROME-WEB-STORE.md): the Chrome Web
+  Store listing, ready to paste, and the steps before each submission.
+- `media/`: the foundryvtt.com listing GIFs and the promo video, made in
+  `../video` (its README has the steps).
+
 ## History
 
 Dated findings from earlier stages, superseded by the documents above:

@@ -62,9 +62,12 @@ app's copy; Gradle packs it into the APK.
 | `src/compat/v13` | Everything Foundry 13 does differently, in one folder                            |
 | `src/app`        | The Android app's side: the bridge to native, its background, the running page   |
 | `src/platform`   | The browser APIs (`chrome.*`), behind small interfaces                           |
-| `src/i18n`       | The Setup page's strings                                                         |
 | `static`         | `manifest.json`, icons, the popup and the base styles                            |
 | `static-app`     | The app's own pages (home, background)                                           |
+
+The world page's cards, the module panel and every string the page shows
+are in [`packages/ui`](../ui/README.md), shared with the companion's view
+inside a world.
 
 The Setup page runs in two halves: `setup-main` in Foundry's page, where
 Foundry's data and actions are, and `setup-ui` as an isolated content

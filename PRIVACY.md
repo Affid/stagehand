@@ -14,10 +14,15 @@ sends nothing to its author or to anyone else.
   and, in each world's `world.json`, the module changes you queued and the
   companion's report of the world's modules. Like everything in Foundry's
   Data folder, these files can be read by anyone who knows their path.
+- **Inside a world:** the companion module shows the server's library,
+  read-only, to that world's Gamemasters and Assistant GMs in Module
+  Management. It keeps each user's choices there (how modules are grouped,
+  which sections are folded) in that user's browser.
 
 ## What it connects to
 
-- The Foundry servers you add, and only after you allow each one.
+- The Foundry servers you add, and only after you allow each one. The
+  companion module connects only to the Foundry server it runs on.
 - This repository on GitHub, once a day, to read the Setup page's
   configuration (selectors and switches, no code and no data about you).
 - foundryvtt.com, to read Foundry's release notes, only if you grant that
@@ -38,4 +43,4 @@ Questions or concerns: open an issue at
 https://github.com/Affid/stagehand/issues (or, for anything sensitive, a
 private report under Security).
 
-Last updated: 2026-11-10.
+Last updated: 2026-11-24.

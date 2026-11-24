@@ -196,4 +196,6 @@ setting to turn sync off in v1.
 - Hosts without a writable Data folder (The Forge): sync shows as
   unavailable there.
 - World GMs reading published presets (PR-5) from the file: possible later,
-  since the file is already readable by URL.
+  since the file is already readable by URL. Built 2026-11-19: the
+  companion reads the file for its library view in Module Management,
+  never writes it (docs/IN-WORLD-LIBRARY-PLAN.md).
