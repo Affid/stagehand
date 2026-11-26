@@ -5,16 +5,19 @@ A clickable mockup of the replacement Setup page. Decisions and open questions:
 
 ```sh
 ./assets.sh            # Foundry's CSS, fonts and images from ~/foundry/vtt into fvtt/ (git-ignored)
-node build.mjs         # out/index.html is the playground; out/phone.html the phone playground; out/setup-shell.html the page itself
-node checks/run.mjs    # 40 Playwright checks; screenshots go to out/shots/
+node build.mjs         # out/index.html is the playground; out/phone.html the phone playground; out/updates.html the updates playground; out/setup-shell.html the page itself
+node checks/run.mjs    # 41 Playwright checks; screenshots go to out/shots/
 ```
 
 - `src/` — the page: `_data.js` (sample library), `_kit.*` (Foundry card markup), `_shell.*`
   (layout, world page, Library), `_ideas.*` (grid, intake, copy, review at launch),
   `_calm.*` (current cards, header, About, Backups), `_sched.*` (next session), `_server.*` (server backups page), `_config.*` (Configuration page), `_update.*` (update and release notes), `_tips.js`
-  (tooltips), `_news.js`, `_phone.*` (the phone layout, `?phone=1`, the "tabs" layout the owner
+  (tooltips), `_updates.*` (Library > Updates: the check, the review with warnings, updating with
+  progress, the panel's Update box; `docs/UPDATES-PLAN.md`; `?upd=current|offline`), `_news.js`, `_phone.*` (the phone layout, `?phone=1`, the "tabs" layout the owner
   chose; Android app phase 1), `_running.*` (the app opened while a world runs:
   `?phone=1&running=<world>&people=<n>`), `_boot.js`.
+- `updates.html` — the updates playground: the Library with the Updates tab, and what the check finds
+  (updates, nothing, no answer).
 - `phone.html` — the phone playground: the new page or Foundry's, small phone, phone or tablet, a world running or not, and Foundry's own
   page today (`out/today.jpg`, made by `node scripts/dev/phone-today.ts` from the repo root while
   Foundry runs; copied by the build when present).

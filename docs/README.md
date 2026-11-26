@@ -27,6 +27,12 @@ is the way it is.
   in a world's Module Management (issue #2), with the owner's decisions
   and how it was built. Its mockup is in `../design/in-world-library`.
 
+## Planned
+
+- [UPDATES-PLAN.md](UPDATES-PLAN.md): checking, reviewing and installing
+  module and system updates on Setup, with warnings and progress. Its
+  mockup is the Library's Updates tab in `../design/setup-page`.
+
 ## Android app
 
 - [ANDROID-APP-PLAN.md](ANDROID-APP-PLAN.md): the app, phase by phase, with
