@@ -45,14 +45,14 @@ r.dockNote = await text(`${row("modular-av-dock")} .spu-note`);
 await p.click(`${row("modular-av")} .spu-tick`); await p.waitForTimeout(60);
 r.dockWarn = await text(`${row("modular-av-dock")} .spu-warn`);
 expect(/Needs Modular A\/V/.test(r.dockWarn ?? ""), "the Dock warns without Modular A/V");
-await p.click(`${row("modular-av-dock")} .spu-warn a`); await p.waitForTimeout(60);
+await p.click(`${row("modular-av-dock")} .spu-warn button.spu-mini`); await p.waitForTimeout(60);
 expect(await p.locator(`${row("modular-av")} .spu-tick`).isChecked(), "Tick it too ticks Modular A/V");
 
 // The system update: its impact on modules, and the module whose update fits the new version.
 r.tidyBefore = await text(`${row("tidy5e-sheet")} .spu-warn`);
 await p.click(`${row("dnd5e")} .spu-tick`); await p.waitForTimeout(60);
 r.dndWarn = await text(`${row("dnd5e")} .spu-warn`);
-await p.click(`${row("dnd5e")} .spu-warn a`); await p.waitForTimeout(60);
+await p.click(`${row("dnd5e")} .spu-warn button.spu-mini`); await p.waitForTimeout(60);
 r.dndAfter = await text(`${row("dnd5e")} .spu-warn`);
 r.tidyAfter = await text(`${row("tidy5e-sheet")} .spu-note`);
 expect(/1 module declares/.test(r.dndAfter ?? ""), "with Tidy ticked, one module is left outside its range");
@@ -90,17 +90,26 @@ await p.click(".sts-panel .sts-close"); await p.waitForTimeout(80);
 
 // Ways back: a manifest that refused access, checked again after renewing; a check that failed,
 // tried again; a refused download, tried again after renewing.
-await p.click(`${row("dungeon-draw")} .spu-why a[data-act=urecheck]`); await p.waitForTimeout(300);
-r.rechecking = await text(`${row("dungeon-draw")} .spu-side`);
-expect(/Checking/.test(r.rechecking ?? ""), "the row shows its own check");
+r.actions = { links: await p.locator('a[data-act=urecheck], a[data-act=uretry], a[data-act=uagain], a[data-act=ufix], a[data-what="Install Module"]').count(), buttons: await texts("button.spu-act") };
+expect(r.actions.links === 0 && r.actions.buttons.length >= 4, "row actions are buttons, not links");
+// The owner's bug: Check again scrolled the list to the top, hiding the row's own progress.
+await p.evaluate(() => { const l = document.querySelector(".spu-list"); l.scrollTop = l.scrollHeight; });
+const inList = (id) => p.evaluate((sel) => { const l = document.querySelector(".spu-list").getBoundingClientRect(), b = document.querySelector(sel)?.getBoundingClientRect(); return !!b && b.top >= l.top - 1 && b.bottom <= l.bottom + 1; }, row(id));
+const before = await p.evaluate(() => document.querySelector(".spu-list").scrollTop);
+await p.click(`${row("dungeon-draw")} .spu-side button[data-act=urecheck]`); await p.waitForTimeout(300);
+r.rechecking = { side: await text(`${row("dungeon-draw")} .spu-side`), scrollKept: Math.abs((await p.evaluate(() => document.querySelector(".spu-list").scrollTop)) - before) < 2, inView: await inList("dungeon-draw") };
+expect(/Checking/.test(r.rechecking.side ?? ""), "the row shows its own check");
+expect(before > 0 && r.rechecking.scrollKept && r.rechecking.inView, "the list keeps its scroll while the row checks");
 await p.waitForTimeout(1100);
 r.renewed = { section: await p.evaluate(() => ST.uc.results.get("dungeon-draw").section), ticked: await p.locator(`${row("dungeon-draw")} .spu-tick`).isChecked() };
 expect(r.renewed.section === "ready" && r.renewed.ticked, "a renewed manifest comes back Ready and ticked");
-await p.click(`${row("health-estimate")} .spu-why a[data-act=uretry]`); await p.waitForTimeout(1400);
+r.renewedInView = await inList("dungeon-draw");
+expect(r.renewedInView, "the row is brought into view in Ready");
+await p.click(`${row("health-estimate")} .spu-side button[data-act=uretry]`); await p.waitForTimeout(1400);
 r.retried = await p.evaluate(() => ST.uc.results.get("health-estimate").section);
 expect(r.retried === "ready", "a check that answers on the second try offers its update");
 await shot("updates-11-ways-back");
-await p.click(`${row("chat-portrait")} .spu-why a[data-act=uagain]`); await p.waitForTimeout(200);
+await p.click(`${row("chat-portrait")} .spu-side button[data-act=uagain]`); await p.waitForTimeout(200);
 r.again = await text(`${row("chat-portrait")} .spu-side`);
 await p.waitForSelector(".spu-sum", { timeout: 20000 });
 r.againDone = { sum: await text(".spu-sum"), section: await p.evaluate(() => ST.uc.results.get("chat-portrait").section) };
@@ -115,7 +124,7 @@ await p.goto(`file://${dir}out/setup-shell.html?calm=1&n=60&lsub=updates&upd=off
 r.offline = { head: await text(".spu-head"), sections: await texts(".spu-sh"), rows: await p.locator(".spu-row").count() };
 expect(/Couldn't check/.test(r.offline.head ?? "") && r.offline.rows === 0, "offline: one folded section, no rows open");
 await p.click(".spu-sh[data-id=error]"); await p.waitForTimeout(80);
-await p.click(`.spu-row:first-child .spu-why a[data-act=uretry]`); await p.waitForTimeout(1400);
+await p.click(`.spu-row:first-child .spu-side button[data-act=uretry]`); await p.waitForTimeout(1400);
 r.offlineRetry = await text(".spu-row:first-child .spu-why");
 expect(/Still no answer after 2 tries/.test(r.offlineRetry ?? ""), "offline: a second try says so and points to the project page");
 await shot("updates-10-offline");

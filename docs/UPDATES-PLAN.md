@@ -97,6 +97,17 @@ counts the updates you can act on (Ready and Needs attention); the rail's
   - **Couldn't check:** see "When the check gets no answer".
   - A line at the foot: "1 locked module isn't checked" (Foundry's lock
     skips it, as Foundry's Update All does).
+- **Actions are buttons, links only go somewhere** (owner, 2026-11-27: a
+  "Check again" link read like "Foundry's update"). A row's action (Check
+  again, Try again, Install…) is a button in the row's right-hand column,
+  where its progress shows during a run; a warning's fix ("Tick it too",
+  "Tick Tidy 5e Sheets too") is a small button after the warning.
+  Changelog, a project page and Foundry's update stay links. The section
+  headers' Tick all and Untick all stay links, as Undo all and Remove are
+  elsewhere on the page.
+- **The list keeps its place** while rows change (owner, 2026-11-27:
+  Check again scrolled to the top and hid the row's progress). A row that
+  moves to Ready is brought into view.
 - **Foot:** "Back up first" (Foundry's own package backup of the ticked
   packages), "5 ticked", **Update 5**.
 - **After an update:** a summary at the top ("4 updated · 1 failed ·

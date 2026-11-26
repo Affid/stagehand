@@ -128,16 +128,17 @@ function warnings(a, readyIds) {
   for (const n of a.needs ?? []) {
     if (atLeast(willHave(n.id, readyIds), n.min)) continue;
     const fix = ST.uc.results.get(n.id)?.to;
-    out.push({ text: `Needs ${titleOf(n.id)} ${n.min} or newer (you have ${verOf(n.id)}).`, fix: fix && atLeast(fix, n.min) ? n.id : null, fixLabel: "Tick it too" });
+    out.push({ text: `Needs ${titleOf(n.id)} ${n.min} or newer (you have ${verOf(n.id)}).`, fixes: fix && atLeast(fix, n.min) ? [{ id: n.id, label: "Tick it too" }] : [] });
   }
   if (a.sys && !atLeast(willHave(a.sys.id, readyIds), a.sys.min)) {
     const to = ST.uc.results.get(a.sys.id)?.to;
-    out.push({ text: `Fits ${titleOf(a.sys.id)} ${a.sys.min} or newer; you have ${verOf(a.sys.id)}${to ? `, and ${to} is available` : ""}.`, fix: to ? a.sys.id : null, fixLabel: "Tick it too" });
+    out.push({ text: `Fits ${titleOf(a.sys.id)} ${a.sys.min} or newer; you have ${verOf(a.sys.id)}${to ? `, and ${to} is available` : ""}.`, fixes: to ? [{ id: a.sys.id, label: "Tick it too" }] : [] });
   }
   const left = (a.impact ?? []).filter((d) => !(ST.uc.results.get(d.id)?.sys && tickedOrReady(d.id, readyIds)));
   if (left.length) {
-    const names = left.map((d) => (ST.uc.results.get(d.id)?.to ? `${titleOf(d.id)} (an update fits ${a.to}: <a data-act="ufix" data-id="${d.id}">tick it too</a>)` : `${titleOf(d.id)} (no update yet)`));
-    out.push({ text: `${plural(left.length, "module")} ${left.length === 1 ? "declares" : "declare"} ${titleOf(a.id)} up to ${left[0].max}: ${names.join(", ")}. ${left.length === 1 ? "It" : "They"} may stop working.` });
+    const fits = left.filter((d) => ST.uc.results.get(d.id)?.to);
+    const names = left.map((d) => (ST.uc.results.get(d.id)?.to ? `${titleOf(d.id)} (an update fits ${a.to})` : `${titleOf(d.id)} (no update yet)`));
+    out.push({ text: `${plural(left.length, "module")} ${left.length === 1 ? "declares" : "declare"} ${titleOf(a.id)} up to ${left[0].max}: ${names.join(", ")}. ${left.length === 1 ? "It" : "They"} may stop working.`, fixes: fits.map((d) => ({ id: d.id, label: `Tick ${titleOf(d.id)} too` })) });
   }
   return out;
 }
@@ -149,17 +150,31 @@ function upNotes(a) {
   return out;
 }
 
+const isRefused = (a) => !!a.to && ST.uc.refused.get(a.id) === a.to;
+
+/** Why a row can't be updated. Links only go somewhere (a page); doing something is blockAction's button. */
 function blockText(a) {
-  if (a.core) return `Needs Foundry ${a.core} or newer; you have ${CORE()}. <a data-act="updpage">Foundry's update</a>`;
-  if (a.missing) return `Needs ${esc(a.missing)}, which isn't installed. <a data-act="foundry" data-what="Install Module">Install…</a>`;
-  const again = (act, label) => ` <a data-act="${act}" data-id="${a.id}">${label}</a>`;
-  if (a.premium) return `Premium content on foundryvtt.com: your Foundry account doesn't have it. Bought or renewed it?${again("urecheck", "Check again")}`;
-  if (a.manifestRefused) return `Its manifest refused access (403). A Patreon or other membership may have ended. Renewed it?${again("urecheck", "Check again")}`;
-  if (a.error && (a.tries ?? 1) > 1) return `Still no answer after ${a.tries} tries. Its site may be down: try later, or open its <a data-act="foundry" data-what="Project page (opens the package's own page)">project page</a>.${again("uretry", "Try again")}`;
-  if (a.error) return `Its manifest didn't answer (Foundry waits 5 seconds).${again("uretry", "Try again")}`;
-  if (a.to && ST.uc.refused.get(a.id) === a.to) return `The download was refused (403), so it isn't ticked for you any more. Renewed your access?${again("uagain", "Try again")}`;
+  if (a.core) return `Needs Foundry ${a.core} or newer; you have ${CORE()}. See <a data-act="updpage">Foundry's update</a>.`;
+  if (a.missing) return `Needs ${esc(a.missing)}, which isn't installed.`;
+  if (a.premium) return "Premium content on foundryvtt.com: your Foundry account doesn't have it. After you buy or renew it, Foundry can take up to 5 minutes to see that.";
+  if (a.manifestRefused) return "Its manifest refused access (403). A Patreon or other membership may have ended.";
+  if (a.error && (a.tries ?? 1) > 1) return `Still no answer after ${a.tries} tries. Its site may be down: try later, or open its <a data-act="foundry" data-what="Project page (opens the package's own page)">project page</a>.`;
+  if (a.error) return "Its manifest didn't answer (Foundry waits 5 seconds).";
+  if (isRefused(a)) return "The download was refused (403), so it isn't ticked for you any more.";
   return "";
 }
+
+/** The row's own action, as a button: what the owner does about the reason. */
+function blockAction(a) {
+  if (a.missing) return { act: "foundry", what: "Install Module", icon: "fa-download", label: "Install…", tip: `Opens Foundry's installer for ${esc(a.missing)}` };
+  if (a.premium || a.manifestRefused) return { act: "urecheck", icon: "fa-rotate", label: "Check again", tip: "After renewing or buying it: checks this package again" };
+  if (a.error) return { act: "uretry", icon: "fa-rotate", label: "Try again", tip: "Checks this package again" };
+  if (isRefused(a)) return { act: "uagain", icon: "fa-cloud-arrow-down", label: "Try again", tip: "After renewing your access: installs it now", off: ST.uc.job ? "Waits for the updates running now" : "" };
+  return null;
+}
+
+const actButton = (a, b) => (b ? `<button type="button" class="spu-act" data-act="${b.act}" data-id="${a.id}"${b.what ? ` data-what="${b.what}"` : ""} data-tooltip="${b.off || b.tip}"${b.off ? " disabled" : ""}><i class="fa-solid ${b.icon}"></i>${b.label}</button>` : "");
+const warnLine = (w) => `<div class="spu-warn"><i class="fa-solid fa-triangle-exclamation"></i><span>${w.text}</span>${(w.fixes ?? []).map((f) => `<button type="button" class="spu-mini" data-act="ufix" data-id="${f.id}"><i class="fa-solid fa-check"></i>${f.label}</button>`).join("")}</div>`;
 
 // ---------- the tab ----------
 const ucCount = () => [...ST.uc.results.values()].filter((r) => ["ready", "attention"].includes(r.section)).length;
@@ -223,14 +238,14 @@ function updRow(r) {
   const ver = r.to ? `<span class="spu-ver">${r.from} <i class="fa-solid fa-arrow-right"></i> <b>${r.to}</b></span>` : `<span class="spu-ver">${r.from}</span>`;
   const badge = !r.to || ["blocked", "noaccess", "error"].includes(r.section) ? "" : r.unverified ? `<span class="sts-badge warn" data-tooltip="Foundry installs it; its author hasn't confirmed this build"><i class="fa-solid fa-code-branch"></i>not verified for ${CORE()}</span>` : `<span class="sts-badge ok"><i class="fa-solid fa-code-branch"></i>verified for ${CORE()}</span>`;
   const live = ["ready", "attention"].includes(r.section) && ST.uc.ticked.has(r.id) ? warnings(r) : r.section === "attention" ? warnings(r) : [];
-  const warn = live.map((w) => `<div class="spu-warn"><i class="fa-solid fa-triangle-exclamation"></i><span>${w.text}${w.fix ? ` <a data-act="ufix" data-id="${w.fix}">${w.fixLabel}</a>` : ""}</span></div>`).join("");
+  const warn = live.map(warnLine).join("");
   const note = ST.uc.ticked.has(r.id) ? upNotes(r).map((t) => `<div class="spu-note"><i class="fa-solid fa-link"></i><span>${t}</span></div>`).join("") : "";
   const why = ["blocked", "noaccess", "error"].includes(r.section) ? `<div class="spu-why ${r.section}"><i class="fa-solid ${r.section === "error" ? "fa-circle-exclamation" : r.section === "noaccess" ? "fa-lock" : "fa-ban"}"></i><span>${blockText(r)}</span></div>` : "";
   const cls = [ST.uc.ticked.has(r.id) && canTick ? "ticked" : "", ["blocked", "noaccess", "error"].includes(r.section) ? "muted" : "", ["backup", "download", "install"].includes(job?.rows.get(r.id)?.state) || ST.uc.single.has(r.id) ? "busy" : "", ST.uc.fresh.has(r.id) ? "fresh" : ""].filter(Boolean).join(" ");
   return `<li class="spu-row ${cls}" data-id="${r.id}">${tick}<i class="fa-solid ${upIsSystem(r.id) ? "fa-dice" : "fa-plug"} spu-kind" data-tooltip="${upIsSystem(r.id) ? "System" : "Module"}"></i>
     <div class="spu-main"><div class="l1"><a class="t" data-act="uopen" data-id="${r.id}">${titleOf(r.id)}</a>${ver}${badge}</div>
       <div class="l2">${worldsLine(r.id)}${r.to ? ` · <a data-act="foundry" data-what="Changelog (opens the package's own page)">Changelog</a>` : ""}</div>${warn}${note}${why}</div>
-    <div class="spu-side">${r.section === "updated" ? '<span class="spu-st ok"><i class="fa-solid fa-circle-check"></i>Updated</span>' : rowState(r.id)}</div></li>`;
+    <div class="spu-side">${r.section === "updated" ? '<span class="spu-st ok"><i class="fa-solid fa-circle-check"></i>Updated</span>' : rowState(r.id) || actButton(r, blockAction(r))}</div></li>`;
 }
 
 function updSections() {
@@ -335,15 +350,28 @@ function updateBox(m) {
   if (ST.lock.has(id)) return head('<p><i class="fa-solid fa-lock"></i> Updates are locked: Foundry keeps it as it is. Turn off "Lock updates" below to check.</p>');
   if (s) return head(`<p><strong>${r.from} → ${r.to}</strong></p>${rowState(id)}`, "busy");
   if (ST.uc.single.has(id)) return head('<p><i class="fa-solid fa-spinner fa-spin"></i> Checking its manifest…</p>');
-  if (!r || r.section === "updated") return head(`<p class="spu-uptodate"><i class="fa-solid fa-circle-check"></i> Up to date${r ? `: updated to ${r.to} just now` : ""}. <a data-act="ucheckone" data-id="${id}">Check again</a></p>`);
-  if (["blocked", "noaccess", "error"].includes(r.section)) return head(`<div class="spu-why ${r.section}"><i class="fa-solid ${r.section === "noaccess" ? "fa-lock" : r.section === "error" ? "fa-circle-exclamation" : "fa-ban"}"></i><span>${blockText(r)}</span></div>${r.section === "blocked" ? `<p><a data-act="ucheckone" data-id="${id}">Check again</a></p>` : ""}`);
-  const warn = warnings(r).map((w) => `<div class="spu-warn"><i class="fa-solid fa-triangle-exclamation"></i><span>${w.text}${w.fix ? ` <a data-act="ufix" data-id="${w.fix}">${w.fixLabel}</a>` : ""}</span></div>`).join("");
+  const checkBtn = actButton(m, { act: "ucheckone", icon: "fa-rotate", label: "Check again", tip: "Checks this package's manifest" });
+  if (!r || r.section === "updated") return head(`<div class="spu-boxacts"><p class="spu-uptodate"><i class="fa-solid fa-circle-check"></i> Up to date${r ? `: updated to ${r.to} just now` : ""}.</p>${checkBtn}</div>`);
+  if (["blocked", "noaccess", "error"].includes(r.section)) return head(`<div class="spu-why ${r.section}"><i class="fa-solid ${r.section === "noaccess" ? "fa-lock" : r.section === "error" ? "fa-circle-exclamation" : "fa-ban"}"></i><span>${blockText(r)}</span></div><div class="spu-boxacts end">${actButton(r, blockAction(r)) || checkBtn}</div>`);
+  const warn = warnings(r).map(warnLine).join("");
   return head(`<p><strong>${r.to}</strong> is available · you have ${r.from} · <a data-act="foundry" data-what="Changelog (opens the package's own page)">Changelog</a></p>${warn}
     <div class="spu-boxacts"><label class="spu-bfirst"><input type="checkbox" data-act="ubackup" ${ST.uc.backup ? "checked" : ""}>Back up first</label>
     <button type="button" class="bright" data-act="ugoone" data-id="${id}"${ST.uc.job ? " disabled" : ""}><i class="fa-solid fa-cloud-arrow-down"></i>Update to ${r.to}</button></div>`);
 }
 
 // ---------- hooks into the page ----------
+// The page redraws on every change; the Updates list keeps its scroll, and a row that just became
+// available is brought into view (at once: a smooth scroll wouldn't survive the next redraw).
+const renderBase = render;
+// eslint-disable-next-line no-func-assign
+render = function () {
+  const top = document.querySelector(".spu-list")?.scrollTop;
+  renderBase();
+  const list = document.querySelector(".spu-list");
+  if (list && top !== undefined) list.scrollTop = top;
+  if (ST.uc.reveal) { document.querySelector(`.spu-row[data-id="${ST.uc.reveal}"]`)?.scrollIntoView({ block: "nearest" }); ST.uc.reveal = null; }
+};
+
 const libraryPageBase = libraryPage;
 // eslint-disable-next-line no-func-assign
 libraryPage = function () {
@@ -410,7 +438,7 @@ function recheck(id) {
 }
 /** A row that can be updated now: ticked, marked for a moment, counted. */
 function becameReady(id) {
-  ST.uc.ticked.add(id); ST.uc.fresh.add(id); syncMarks(); render();
+  ST.uc.ticked.add(id); ST.uc.fresh.add(id); ST.uc.open.add("ready"); ST.uc.reveal = id; syncMarks(); render();
   setTimeout(() => { ST.uc.fresh.delete(id); render(); }, 2200);
 }
 A.uretry = (id) => recheck(id);
