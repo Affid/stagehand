@@ -86,6 +86,25 @@ await shot("updates-8-done");
 await p.click(`${row("modular-av")} .t`); await p.waitForTimeout(100);
 r.boxAfter = await text(".sts-panel .spu-box");
 expect(/Up to date: updated to 0\.12\.0/.test(r.boxAfter ?? ""), "the panel says it was updated");
+await p.click(".sts-panel .sts-close"); await p.waitForTimeout(80);
+
+// Ways back: a manifest that refused access, checked again after renewing; a check that failed,
+// tried again; a refused download, tried again after renewing.
+await p.click(`${row("dungeon-draw")} .spu-why a[data-act=urecheck]`); await p.waitForTimeout(300);
+r.rechecking = await text(`${row("dungeon-draw")} .spu-side`);
+expect(/Checking/.test(r.rechecking ?? ""), "the row shows its own check");
+await p.waitForTimeout(1100);
+r.renewed = { section: await p.evaluate(() => ST.uc.results.get("dungeon-draw").section), ticked: await p.locator(`${row("dungeon-draw")} .spu-tick`).isChecked() };
+expect(r.renewed.section === "ready" && r.renewed.ticked, "a renewed manifest comes back Ready and ticked");
+await p.click(`${row("health-estimate")} .spu-why a[data-act=uretry]`); await p.waitForTimeout(1400);
+r.retried = await p.evaluate(() => ST.uc.results.get("health-estimate").section);
+expect(r.retried === "ready", "a check that answers on the second try offers its update");
+await shot("updates-11-ways-back");
+await p.click(`${row("chat-portrait")} .spu-why a[data-act=uagain]`); await p.waitForTimeout(200);
+r.again = await text(`${row("chat-portrait")} .spu-side`);
+await p.waitForSelector(".spu-sum", { timeout: 20000 });
+r.againDone = { sum: await text(".spu-sum"), section: await p.evaluate(() => ST.uc.results.get("chat-portrait").section) };
+expect(r.againDone.section === "updated", "the refused download installs once access is renewed");
 
 // Nothing to update, and no manifest answering.
 await p.goto(`file://${dir}out/setup-shell.html?calm=1&n=60&lsub=updates&upd=current`); await p.waitForSelector(".spu-head:not(.busy)", { timeout: 8000 });
@@ -95,6 +114,10 @@ await shot("updates-9-current");
 await p.goto(`file://${dir}out/setup-shell.html?calm=1&n=60&lsub=updates&upd=offline`); await p.waitForSelector(".spu-head:not(.busy)", { timeout: 8000 });
 r.offline = { head: await text(".spu-head"), sections: await texts(".spu-sh"), rows: await p.locator(".spu-row").count() };
 expect(/Couldn't check/.test(r.offline.head ?? "") && r.offline.rows === 0, "offline: one folded section, no rows open");
+await p.click(".spu-sh[data-id=error]"); await p.waitForTimeout(80);
+await p.click(`.spu-row:first-child .spu-why a[data-act=uretry]`); await p.waitForTimeout(1400);
+r.offlineRetry = await text(".spu-row:first-child .spu-why");
+expect(/Still no answer after 2 tries/.test(r.offlineRetry ?? ""), "offline: a second try says so and points to the project page");
 await shot("updates-10-offline");
 
 console.log(JSON.stringify(r, null, 1)); console.log(errs.length ? errs : "no errors"); await b.close();

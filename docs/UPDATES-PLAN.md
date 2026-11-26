@@ -92,8 +92,9 @@ counts the updates you can act on (Ready and Needs attention); the rail's
   - **Can't update here:** needs another Foundry ("needs Foundry 14.372;
     you have 14.369 · Foundry's update"), or a dependency that isn't
     installed ("needs Monk's Common Display · Install…").
-  - **Not available to you:** see "Access you no longer have".
-  - **Couldn't check:** the error, and Try again.
+  - **Not available to you:** see "Access you no longer have". Each row
+    has its way back (Check again or Try again).
+  - **Couldn't check:** see "When the check gets no answer".
   - A line at the foot: "1 locked module isn't checked" (Foundry's lock
     skips it, as Foundry's Update All does).
 - **Foot:** "Back up first" (Foundry's own package backup of the ticked
@@ -123,8 +124,9 @@ Launch), as they do for a backup: a world launched mid-install would load
 half a module.
 
 The check has its own progress (the head's bar), so a slow manifest reads
-as slow, not stuck. Foundry's per-package timeout (20 s) ends a silent one
-as "Couldn't check".
+as slow, not stuck. Foundry's server gives up on a manifest after 5
+seconds, and its page gives up on the server after 20, so no row waits
+longer than that before it says "Couldn't check".
 
 ### A single package
 
@@ -172,16 +174,45 @@ From certain to learned:
 1. **Premium content sold on foundryvtt.com**, including subscriptions
    Foundry's site tracks: Foundry's package list says whether the license
    owns it (`owned`, from Foundry's owned-packages request). Not owned:
-   "Premium: your Foundry account doesn't have it", before any attempt.
+   "Premium: your Foundry account doesn't have it. Bought or renewed it?
+   Check again", before any attempt.
 2. **A manifest behind a personal key** (a Patreon link): the check comes
    back with 401 or 403: "The manifest refused access. A membership may
-   have ended."
+   have ended. Renewed it? Check again."
 3. **A public manifest with a locked download:** can't be known without
    trying. Testing the download would mean Stagehand contacting the
    creator's server itself (a new host permission and a privacy policy
    change), so instead a refused install (401 or 403) is remembered for
-   that version: "The download was refused on 26 Nov. Not ticked again
-   until a newer version is out."
+   that version: "The download was refused (403), so it isn't ticked for
+   you any more. Renewed your access? Try again."
+
+**Getting the update after renewing** (owner, 2026-11-26: "What if I see
+that and go renew my subscription?"):
+
+- **Check again** (cases 1 and 2) checks that one package again, with its
+  own spinner on the row. If the update is there now, the row moves to
+  Ready, ticked and briefly marked, and the tab's count goes up. For
+  premium content, Foundry's server keeps the owned list for 5 minutes,
+  so a purchase can take that long to show.
+- **Try again** (case 3) installs that package now, with the usual
+  progress and backup. Remembering a refusal only stops Stagehand ticking
+  it on its own; the owner can always try, and a newer version clears it.
+- The same links show in the panel's Update box.
+
+### When the check gets no answer
+
+Owner, 2026-11-26: "Stagehand couldn't check, can I still try?"
+
+- **Try again** on the row checks that package again. If it answers, its
+  update joins Ready, ticked; if it is up to date, the row goes.
+- A second failure says so: "Still no answer after 2 tries. Its site may
+  be down: try later, or open its project page."
+- Stagehand can't wait longer than Foundry: its server gives up on a
+  manifest after 5 seconds (`TIMEOUTS.REMOTE_PACKAGE`), whatever the page
+  asks.
+- There is no "update anyway" without a check: Foundry's install fetches
+  the same manifest first and would fail the same way, and without an
+  answer there is no version to show or warnings to work out.
 
 ### What stays Foundry's
 
@@ -219,6 +250,9 @@ compatible}`), or `error` and `errorCode` (401, 403, 404, 500 from the
   and the owned list for 5 minutes.
 - Foundry's Update All skips locked packages and packages without a
   manifest, and runs five checks at a time.
+- The server fetches a remote manifest or download with a 5-second
+  timeout (`TIMEOUTS.REMOTE_PACKAGE`); the page's `checkPackage` waits 20
+  seconds for the server.
 
 ## Build
 
@@ -246,16 +280,17 @@ compatible}`), or `error` and `errorCode` (401, 403, 404, 500 from the
    Stagehand already receives: on the card's chip, the panel, the Library
    line on the rail; Launch waits. Fix the marks to what Foundry installs
    (availability 4 or below). Small; can ship as a fix release.
-2. **Check.** The page-world check with progress and Stop, the results
-   store, the Updates tab read-only (sections, Check again), marks from the
-   check, ownership from the package list.
+2. **Check.** The page-world check with progress and Stop, checking one
+   package again (Try again, Check again), the results store, the Updates
+   tab read-only (sections, Check again), marks from the check, ownership
+   from the package list.
 3. **Review and update.** Ticking, Back up first, installing the ticked
    packages in order, per-row and overall progress, the summary; the
    panel's Update box and the chip opening it; Update All goes.
 4. **Warnings.** The shared model: dependencies, system impact, "Tick it
    too", Foundry's `systemCompatibility` up front.
 5. **Access.** Refused downloads remembered; the "Not available to you"
-   wording for all three cases.
+   wording for all three cases, each with Check again or Try again.
 
 Each phase: unit tests, the live suites on 14 and 13, the app suite, then
 a commit.

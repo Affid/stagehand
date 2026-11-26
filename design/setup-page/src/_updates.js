@@ -20,8 +20,8 @@ const UPD_ANSWERS = [
   { id: "modular-av-p2p", to: "1.0.0", core: "14.372" },
   { id: "monks-tokenbar", to: "4.2.0", missing: "Monk's Common Display" },
   { id: "tavern-tunes", to: "2.0.0", premium: true },
-  { id: "dungeon-draw", manifestRefused: true },
-  { id: "health-estimate", error: "No answer from its manifest in 20 seconds." },
+  { id: "dungeon-draw", manifestRefused: true, later: "1.5.0" },
+  { id: "health-estimate", error: true, later: "2.8.0" },
 ];
 
 const SECTIONS = [
@@ -45,7 +45,7 @@ const ago = (t) => { const m = Math.round((Date.now() - t) / 60000); return m < 
 
 ST.uc = {
   checkedAt: Date.now() - 2 * HOUR, checking: null, results: new Map(), ticked: new Set(),
-  backup: true, job: null, summary: null, refused: new Map(), single: new Set(), checkedOne: new Map(),
+  backup: true, job: null, summary: null, refused: new Map(), single: new Set(), checkedOne: new Map(), fresh: new Set(),
   open: new Set(SECTIONS.map(([k]) => k)),
 };
 
@@ -152,11 +152,13 @@ function upNotes(a) {
 function blockText(a) {
   if (a.core) return `Needs Foundry ${a.core} or newer; you have ${CORE()}. <a data-act="updpage">Foundry's update</a>`;
   if (a.missing) return `Needs ${esc(a.missing)}, which isn't installed. <a data-act="foundry" data-what="Install Module">Install…</a>`;
-  if (a.premium) return "Premium content on foundryvtt.com: your Foundry account doesn't have it.";
-  if (a.manifestRefused) return "Its manifest refused access (403). A Patreon or other membership may have ended.";
-  if (a.error) return esc(a.error);
-  if (a.to && ST.uc.refused.get(a.id) === a.to) return `The download was refused just now (403). Not ticked again until a version newer than ${a.to} is out.`;
-  return esc(a.error ?? "");
+  const again = (act, label) => ` <a data-act="${act}" data-id="${a.id}">${label}</a>`;
+  if (a.premium) return `Premium content on foundryvtt.com: your Foundry account doesn't have it. Bought or renewed it?${again("urecheck", "Check again")}`;
+  if (a.manifestRefused) return `Its manifest refused access (403). A Patreon or other membership may have ended. Renewed it?${again("urecheck", "Check again")}`;
+  if (a.error && (a.tries ?? 1) > 1) return `Still no answer after ${a.tries} tries. Its site may be down: try later, or open its <a data-act="foundry" data-what="Project page (opens the package's own page)">project page</a>.${again("uretry", "Try again")}`;
+  if (a.error) return `Its manifest didn't answer (Foundry waits 5 seconds).${again("uretry", "Try again")}`;
+  if (a.to && ST.uc.refused.get(a.id) === a.to) return `The download was refused (403), so it isn't ticked for you any more. Renewed your access?${again("uagain", "Try again")}`;
+  return "";
 }
 
 // ---------- the tab ----------
@@ -198,6 +200,7 @@ function updSummary() {
 }
 
 function rowState(id) {
+  if (ST.uc.single.has(id)) return '<span class="spu-st"><i class="fa-solid fa-spinner fa-spin"></i>Checking…</span>';
   const s = ST.uc.job?.rows.get(id);
   if (!s) return "";
   if (s.state === "queued") return '<span class="spu-st q">Waiting</span>';
@@ -222,8 +225,8 @@ function updRow(r) {
   const live = ["ready", "attention"].includes(r.section) && ST.uc.ticked.has(r.id) ? warnings(r) : r.section === "attention" ? warnings(r) : [];
   const warn = live.map((w) => `<div class="spu-warn"><i class="fa-solid fa-triangle-exclamation"></i><span>${w.text}${w.fix ? ` <a data-act="ufix" data-id="${w.fix}">${w.fixLabel}</a>` : ""}</span></div>`).join("");
   const note = ST.uc.ticked.has(r.id) ? upNotes(r).map((t) => `<div class="spu-note"><i class="fa-solid fa-link"></i><span>${t}</span></div>`).join("") : "";
-  const why = ["blocked", "noaccess", "error"].includes(r.section) ? `<div class="spu-why ${r.section}"><i class="fa-solid ${r.section === "error" ? "fa-circle-exclamation" : r.section === "noaccess" ? "fa-lock" : "fa-ban"}"></i><span>${blockText(r)}${r.section === "error" ? ` <a data-act="uretry" data-id="${r.id}">Try again</a>` : ""}</span></div>` : "";
-  const cls = [ST.uc.ticked.has(r.id) && canTick ? "ticked" : "", ["blocked", "noaccess", "error"].includes(r.section) ? "muted" : "", ["backup", "download", "install"].includes(job?.rows.get(r.id)?.state) ? "busy" : ""].filter(Boolean).join(" ");
+  const why = ["blocked", "noaccess", "error"].includes(r.section) ? `<div class="spu-why ${r.section}"><i class="fa-solid ${r.section === "error" ? "fa-circle-exclamation" : r.section === "noaccess" ? "fa-lock" : "fa-ban"}"></i><span>${blockText(r)}</span></div>` : "";
+  const cls = [ST.uc.ticked.has(r.id) && canTick ? "ticked" : "", ["blocked", "noaccess", "error"].includes(r.section) ? "muted" : "", ["backup", "download", "install"].includes(job?.rows.get(r.id)?.state) || ST.uc.single.has(r.id) ? "busy" : "", ST.uc.fresh.has(r.id) ? "fresh" : ""].filter(Boolean).join(" ");
   return `<li class="spu-row ${cls}" data-id="${r.id}">${tick}<i class="fa-solid ${upIsSystem(r.id) ? "fa-dice" : "fa-plug"} spu-kind" data-tooltip="${upIsSystem(r.id) ? "System" : "Module"}"></i>
     <div class="spu-main"><div class="l1"><a class="t" data-act="uopen" data-id="${r.id}">${titleOf(r.id)}</a>${ver}${badge}</div>
       <div class="l2">${worldsLine(r.id)}${r.to ? ` · <a data-act="foundry" data-what="Changelog (opens the package's own page)">Changelog</a>` : ""}</div>${warn}${note}${why}</div>
@@ -333,7 +336,7 @@ function updateBox(m) {
   if (s) return head(`<p><strong>${r.from} → ${r.to}</strong></p>${rowState(id)}`, "busy");
   if (ST.uc.single.has(id)) return head('<p><i class="fa-solid fa-spinner fa-spin"></i> Checking its manifest…</p>');
   if (!r || r.section === "updated") return head(`<p class="spu-uptodate"><i class="fa-solid fa-circle-check"></i> Up to date${r ? `: updated to ${r.to} just now` : ""}. <a data-act="ucheckone" data-id="${id}">Check again</a></p>`);
-  if (["blocked", "noaccess", "error"].includes(r.section)) return head(`<div class="spu-why ${r.section}"><i class="fa-solid fa-ban"></i><span>${blockText(r)}</span></div><p><a data-act="ucheckone" data-id="${id}">Check again</a></p>`);
+  if (["blocked", "noaccess", "error"].includes(r.section)) return head(`<div class="spu-why ${r.section}"><i class="fa-solid ${r.section === "noaccess" ? "fa-lock" : r.section === "error" ? "fa-circle-exclamation" : "fa-ban"}"></i><span>${blockText(r)}</span></div>${r.section === "blocked" ? `<p><a data-act="ucheckone" data-id="${id}">Check again</a></p>` : ""}`);
   const warn = warnings(r).map((w) => `<div class="spu-warn"><i class="fa-solid fa-triangle-exclamation"></i><span>${w.text}${w.fix ? ` <a data-act="ufix" data-id="${w.fix}">${w.fixLabel}</a>` : ""}</span></div>`).join("");
   return head(`<p><strong>${r.to}</strong> is available · you have ${r.from} · <a data-act="foundry" data-what="Changelog (opens the package's own page)">Changelog</a></p>${warn}
     <div class="spu-boxacts"><label class="spu-bfirst"><input type="checkbox" data-act="ubackup" ${ST.uc.backup ? "checked" : ""}>Back up first</label>
@@ -392,13 +395,33 @@ A.ugo = () => startUpdate([...ST.uc.ticked]);
 A.ugoone = (id) => startUpdate([id]);
 A.usumclose = () => { ST.uc.summary = null; render(); };
 A.uopen = (id) => A.pkgupdate(id);
-A.uretry = (id) => {
+/** One package's check again. The sample finds its update (as if the access was renewed or its site came back), except offline. */
+function recheck(id) {
+  const r = ST.uc.results.get(id);
+  if (!r || ST.uc.single.has(id)) return;
   ST.uc.single.add(id); render();
   setTimeout(() => {
     ST.uc.single.delete(id); ST.uc.checkedOne.set(id, Date.now());
-    if (UPD_SCENE !== "offline") ST.uc.results.delete(id);
-    render(); notify(UPD_SCENE === "offline" ? `Still no answer for ${titleOf(id)}.` : `${titleOf(id)} is up to date.`);
-  }, 900);
+    if (UPD_SCENE === "offline" || !r.later) { r.tries = (r.tries ?? 1) + 1; render(); return; }
+    const now = { id, to: r.later, from: r.from, section: "ready" };
+    ST.uc.results.set(id, now);
+    becameReady(id);
+  }, 1100);
+}
+/** A row that can be updated now: ticked, marked for a moment, counted. */
+function becameReady(id) {
+  ST.uc.ticked.add(id); ST.uc.fresh.add(id); syncMarks(); render();
+  setTimeout(() => { ST.uc.fresh.delete(id); render(); }, 2200);
+}
+A.uretry = (id) => recheck(id);
+A.urecheck = (id) => recheck(id);
+/** A refused download, after renewing: install it now. Remembering the refusal only stopped the automatic tick. */
+A.uagain = (id) => {
+  if (ST.uc.job) { notify("It joins when the updates running now have finished. Try again then."); return; }
+  const r = ST.uc.results.get(id);
+  ST.uc.refused.delete(id); r.refuseDownload = false; r.section = "ready";
+  becameReady(id);
+  startUpdate([id]);
 };
 A.ucheckone = (id) => {
   ST.uc.single.add(id); render();

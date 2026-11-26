@@ -43,6 +43,9 @@
 .spu-row.ticked { border-color: rgb(238 155 58 / 45%); }
 .spu-row.busy { border-color: rgb(238 155 58 / 55%); background: rgb(238 155 58 / 6%); }
 .spu-row.muted { background: rgb(11 10 19 / 35%); }
+/* A row that became available (checked again, or its download allowed again): marked for a moment */
+.spu-row.fresh { animation: spu-fresh 2s ease-out; }
+@keyframes spu-fresh { from { box-shadow: 0 0 0 2px rgb(143 212 155 / 70%); background: rgb(63 143 82 / 18%); } to { box-shadow: 0 0 0 0 transparent; } }
 .spu-row.muted .t { color: var(--color-light-3); }
 .spu-main { min-width: 0; display: grid; gap: 4px; }
 .spu-main .l1 { display: flex; align-items: center; gap: 10px; min-width: 0; flex-wrap: wrap; }
@@ -100,4 +103,4 @@
 .stw-upd.spu-chip.failed { color: #ffb3a6; border-color: rgb(180 82 63 / 70%); background: rgb(180 82 63 / 16%); }
 .spu-tabjob, .sts-subtabs a .c > .fa-spinner { color: var(--color-warm-1); display: inline-flex; gap: 4px; align-items: center; }
 .spu-rail { display: inline-flex; gap: 6px; align-items: center; color: var(--color-warm-1); }
-@media (prefers-reduced-motion: reduce) { .spu-bar span { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .spu-bar span { transition: none; } .spu-row.fresh { animation: none; border-color: rgb(143 212 155 / 70%); } }
