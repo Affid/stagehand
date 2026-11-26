@@ -1,9 +1,10 @@
 # Package updates: check, review, update (plan)
 
-Status: planned 2026-11-26. The mockup (`design/setup-page`, Library >
-Updates, `updates.html`; playground
-https://claude.ai/artifact/Uwa28i89Ds7U91x7oKZKBu) waits for the owner's
-review; once approved it is the spec.
+Status: planned 2026-11-26; the owner approved the mockup on 2026-11-27
+("Ok, looks good to me") after four rounds of notes, recorded below. The
+mockup (`design/setup-page`, Library > Updates, `updates.html`; playground
+https://claude.ai/artifact/Uwa28i89Ds7U91x7oKZKBu, version 5) is the spec.
+Not built yet.
 
 ## Goal
 
@@ -358,14 +359,22 @@ a commit.
   that needs Foundry 99, one whose manifest answers 403, one whose download
   answers 403. Check, tick, update, progress seen, versions changed after.
 
-## Proposed defaults (the owner's call)
+## Defaults
 
-- Back up first: on, remembered per browser.
+Shown in the approved mockup, so approved with it:
+
+- Back up first: on.
 - Rows with a warning start unticked.
 - The tab checks again on opening when the last check is over an hour
   old; Setup load keeps the quick package-list check for the marks.
-- Refused downloads are remembered in this browser, not the library file.
 - No Update All button on the Modules and Systems tabs.
+
+Not visible in the mockup, so still a proposal for the owner to confirm
+when the phase gets there:
+
+- Back up first is remembered per browser.
+- Refused downloads are remembered in this browser, not the library file
+  (phase 5).
 
 ## Risks
 
