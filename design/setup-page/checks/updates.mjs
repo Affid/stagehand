@@ -45,14 +45,21 @@ r.dockNote = await text(`${row("modular-av-dock")} .spu-note`);
 await p.click(`${row("modular-av")} .spu-tick`); await p.waitForTimeout(60);
 r.dockWarn = await text(`${row("modular-av-dock")} .spu-warn`);
 expect(/Needs Modular A\/V/.test(r.dockWarn ?? ""), "the Dock warns without Modular A/V");
-await p.click(`${row("modular-av-dock")} .spu-warn button.spu-mini`); await p.waitForTimeout(60);
+await p.click(`${row("modular-av-dock")} .spu-side button[data-act=ufix]`); await p.waitForTimeout(60);
 expect(await p.locator(`${row("modular-av")} .spu-tick`).isChecked(), "Tick it too ticks Modular A/V");
 
 // The system update: its impact on modules, and the module whose update fits the new version.
 r.tidyBefore = await text(`${row("tidy5e-sheet")} .spu-warn`);
 await p.click(`${row("dnd5e")} .spu-tick`); await p.waitForTimeout(60);
 r.dndWarn = await text(`${row("dnd5e")} .spu-warn`);
-await p.click(`${row("dnd5e")} .spu-warn button.spu-mini`); await p.waitForTimeout(60);
+// Every action in the list sits in the same place: one right edge, centred in its row (owner's note).
+r.layout = await p.evaluate(() => [...document.querySelectorAll(".spu-list .spu-side button")].map((b) => {
+  const br = b.getBoundingClientRect(), rr = b.closest(".spu-row").getBoundingClientRect();
+  return { label: b.textContent.trim(), right: Math.round(rr.right - br.right), offCentre: Math.round(Math.abs((br.top + br.bottom) / 2 - (rr.top + rr.bottom) / 2)) };
+}));
+expect(r.layout.length >= 5 && new Set(r.layout.map((x) => x.right)).size === 1, "row actions share one right edge");
+expect(r.layout.every((x) => x.offCentre <= 2), "row actions are centred in their rows");
+await p.click(`${row("dnd5e")} .spu-side button[data-act=ufix]`); await p.waitForTimeout(60);
 r.dndAfter = await text(`${row("dnd5e")} .spu-warn`);
 r.tidyAfter = await text(`${row("tidy5e-sheet")} .spu-note`);
 expect(/1 module declares/.test(r.dndAfter ?? ""), "with Tidy ticked, one module is left outside its range");

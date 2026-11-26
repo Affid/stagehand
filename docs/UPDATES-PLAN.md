@@ -100,8 +100,11 @@ counts the updates you can act on (Ready and Needs attention); the rail's
 - **Actions are buttons, links only go somewhere** (owner, 2026-11-27: a
   "Check again" link read like "Foundry's update"). A row's action (Check
   again, Try again, Install…) is a button in the row's right-hand column,
-  where its progress shows during a run; a warning's fix ("Tick it too",
-  "Tick Tidy 5e Sheets too") is a small button after the warning.
+  where its progress shows during a run. A warning's fix is a button in
+  the same column, naming what it ticks ("Tick D&D 5e too"), so every
+  action shares one right edge and sits centred in its row (owner,
+  2026-11-27: fix buttons placed after the warning text floated
+  mid-row).
   Changelog, a project page and Foundry's update stay links. The section
   headers' Tick all and Untick all stay links, as Undo all and Remove are
   elsewhere on the page.

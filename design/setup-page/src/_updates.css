@@ -57,13 +57,10 @@
 .spu-main .l2 { font-size: 12.5px; color: var(--color-light-3); }
 .spu-main .l2 a, .spu-warn a, .spu-note a, .spu-why a, .spu-box a { color: var(--color-warm-1); text-decoration: underline; text-decoration-color: rgb(238 155 58 / 45%); }
 .spu-warn, .spu-note, .spu-why { display: flex; gap: 7px; align-items: baseline; font-size: 13px; line-height: 1.35; }
-.spu-warn { flex-wrap: wrap; row-gap: 4px; }
-.spu-warn > span { flex: 1 1 320px; min-width: 0; }
 /* Actions are buttons; links only go somewhere (Changelog, a project page, Foundry's update) */
 .spu-act { width: auto; height: 28px; padding: 0 12px; gap: 6px; font-size: 13px; white-space: nowrap; flex: none; }
 .spu-act[disabled] { opacity: .5; }
-.spu-mini { width: auto; height: 24px; padding: 0 9px; gap: 5px; font-size: 12.5px; white-space: nowrap; flex: none; align-self: center; }
-.spu-mini i { font-size: 10px; }
+
 .spu-warn { color: #f3e3c0; }
 .spu-warn > i { color: #f5c45e; font-size: 12px; }
 .spu-note { color: var(--color-light-3); }
@@ -71,7 +68,7 @@
 .spu-why { color: var(--color-light-2); }
 .spu-why > i { color: var(--color-light-4); font-size: 12px; }
 .spu-why.error > i { color: #e39a8c; }
-.spu-side { justify-self: end; align-self: center; text-align: right; }
+.spu-side { justify-self: end; align-self: center; text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
 .spu-st { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--color-light-2); white-space: nowrap; }
 .spu-st.q { color: var(--color-light-4); }
 .spu-st.ok { color: #8fd49b; }

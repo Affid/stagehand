@@ -38,6 +38,9 @@ const upPkg = (id) => MOD[id] ?? sysOf(id);
 const upIsSystem = (id) => !!sysOf(id);
 const verOf = (id) => upPkg(id)?.version ?? "0.11.0";
 const titleOf = (id) => esc(upPkg(id)?.title ?? id);
+/** A name short enough for a button: the systems as the worlds list shortens them. */
+const SHORT_SYSTEM = { dnd5e: "D&D 5e", pf2e: "Pathfinder 2e", swade: "SWADE" };
+const shortOf = (id) => esc(SHORT_SYSTEM[id] ?? short(id));
 const checkable = () => [...ALL_MODULES, ...SYSTEMS].filter((p) => !ST.lock.has(p.id));
 const upNewer = (a, b) => { const x = String(a).split(".").map(Number), y = String(b).split(".").map(Number); for (let i = 0; i < 3; i++) { if ((x[i] ?? 0) !== (y[i] ?? 0)) return (x[i] ?? 0) > (y[i] ?? 0); } return false; };
 const atLeast = (a, b) => !upNewer(b, a);
@@ -128,17 +131,17 @@ function warnings(a, readyIds) {
   for (const n of a.needs ?? []) {
     if (atLeast(willHave(n.id, readyIds), n.min)) continue;
     const fix = ST.uc.results.get(n.id)?.to;
-    out.push({ text: `Needs ${titleOf(n.id)} ${n.min} or newer (you have ${verOf(n.id)}).`, fixes: fix && atLeast(fix, n.min) ? [{ id: n.id, label: "Tick it too" }] : [] });
+    out.push({ text: `Needs ${titleOf(n.id)} ${n.min} or newer (you have ${verOf(n.id)}).`, fixes: fix && atLeast(fix, n.min) ? [{ id: n.id, label: `Tick ${shortOf(n.id)} too` }] : [] });
   }
   if (a.sys && !atLeast(willHave(a.sys.id, readyIds), a.sys.min)) {
     const to = ST.uc.results.get(a.sys.id)?.to;
-    out.push({ text: `Fits ${titleOf(a.sys.id)} ${a.sys.min} or newer; you have ${verOf(a.sys.id)}${to ? `, and ${to} is available` : ""}.`, fixes: to ? [{ id: a.sys.id, label: "Tick it too" }] : [] });
+    out.push({ text: `Fits ${titleOf(a.sys.id)} ${a.sys.min} or newer; you have ${verOf(a.sys.id)}${to ? `, and ${to} is available` : ""}.`, fixes: to ? [{ id: a.sys.id, label: `Tick ${shortOf(a.sys.id)} too` }] : [] });
   }
   const left = (a.impact ?? []).filter((d) => !(ST.uc.results.get(d.id)?.sys && tickedOrReady(d.id, readyIds)));
   if (left.length) {
     const fits = left.filter((d) => ST.uc.results.get(d.id)?.to);
     const names = left.map((d) => (ST.uc.results.get(d.id)?.to ? `${titleOf(d.id)} (an update fits ${a.to})` : `${titleOf(d.id)} (no update yet)`));
-    out.push({ text: `${plural(left.length, "module")} ${left.length === 1 ? "declares" : "declare"} ${titleOf(a.id)} up to ${left[0].max}: ${names.join(", ")}. ${left.length === 1 ? "It" : "They"} may stop working.`, fixes: fits.map((d) => ({ id: d.id, label: `Tick ${titleOf(d.id)} too` })) });
+    out.push({ text: `${plural(left.length, "module")} ${left.length === 1 ? "declares" : "declare"} ${titleOf(a.id)} up to ${left[0].max}: ${names.join(", ")}. ${left.length === 1 ? "It" : "They"} may stop working.`, fixes: fits.map((d) => ({ id: d.id, label: `Tick ${shortOf(d.id)} too` })) });
   }
   return out;
 }
@@ -174,7 +177,9 @@ function blockAction(a) {
 }
 
 const actButton = (a, b) => (b ? `<button type="button" class="spu-act" data-act="${b.act}" data-id="${a.id}"${b.what ? ` data-what="${b.what}"` : ""} data-tooltip="${b.off || b.tip}"${b.off ? " disabled" : ""}><i class="fa-solid ${b.icon}"></i>${b.label}</button>` : "");
-const warnLine = (w) => `<div class="spu-warn"><i class="fa-solid fa-triangle-exclamation"></i><span>${w.text}</span>${(w.fixes ?? []).map((f) => `<button type="button" class="spu-mini" data-act="ufix" data-id="${f.id}"><i class="fa-solid fa-check"></i>${f.label}</button>`).join("")}</div>`;
+const warnLine = (w) => `<div class="spu-warn"><i class="fa-solid fa-triangle-exclamation"></i><span>${w.text}</span></div>`;
+/** A warning's fixes, as buttons where the row keeps its actions. */
+const fixButtons = (ws) => ws.flatMap((w) => w.fixes ?? []).map((f) => actButton({ id: f.id }, { act: "ufix", icon: "fa-check", label: f.label, tip: "Ticks it as well; it updates first" })).join("");
 
 // ---------- the tab ----------
 const ucCount = () => [...ST.uc.results.values()].filter((r) => ["ready", "attention"].includes(r.section)).length;
@@ -245,7 +250,7 @@ function updRow(r) {
   return `<li class="spu-row ${cls}" data-id="${r.id}">${tick}<i class="fa-solid ${upIsSystem(r.id) ? "fa-dice" : "fa-plug"} spu-kind" data-tooltip="${upIsSystem(r.id) ? "System" : "Module"}"></i>
     <div class="spu-main"><div class="l1"><a class="t" data-act="uopen" data-id="${r.id}">${titleOf(r.id)}</a>${ver}${badge}</div>
       <div class="l2">${worldsLine(r.id)}${r.to ? ` · <a data-act="foundry" data-what="Changelog (opens the package's own page)">Changelog</a>` : ""}</div>${warn}${note}${why}</div>
-    <div class="spu-side">${r.section === "updated" ? '<span class="spu-st ok"><i class="fa-solid fa-circle-check"></i>Updated</span>' : rowState(r.id) || actButton(r, blockAction(r))}</div></li>`;
+    <div class="spu-side">${r.section === "updated" ? '<span class="spu-st ok"><i class="fa-solid fa-circle-check"></i>Updated</span>' : rowState(r.id) || actButton(r, blockAction(r)) || (job ? "" : fixButtons(live))}</div></li>`;
 }
 
 function updSections() {
@@ -353,7 +358,8 @@ function updateBox(m) {
   const checkBtn = actButton(m, { act: "ucheckone", icon: "fa-rotate", label: "Check again", tip: "Checks this package's manifest" });
   if (!r || r.section === "updated") return head(`<div class="spu-boxacts"><p class="spu-uptodate"><i class="fa-solid fa-circle-check"></i> Up to date${r ? `: updated to ${r.to} just now` : ""}.</p>${checkBtn}</div>`);
   if (["blocked", "noaccess", "error"].includes(r.section)) return head(`<div class="spu-why ${r.section}"><i class="fa-solid ${r.section === "noaccess" ? "fa-lock" : r.section === "error" ? "fa-circle-exclamation" : "fa-ban"}"></i><span>${blockText(r)}</span></div><div class="spu-boxacts end">${actButton(r, blockAction(r)) || checkBtn}</div>`);
-  const warn = warnings(r).map(warnLine).join("");
+  const ws = warnings(r), fixes = fixButtons(ws);
+  const warn = ws.map(warnLine).join("") + (fixes ? `<div class="spu-boxacts end">${fixes}</div>` : "");
   return head(`<p><strong>${r.to}</strong> is available · you have ${r.from} · <a data-act="foundry" data-what="Changelog (opens the package's own page)">Changelog</a></p>${warn}
     <div class="spu-boxacts"><label class="spu-bfirst"><input type="checkbox" data-act="ubackup" ${ST.uc.backup ? "checked" : ""}>Back up first</label>
     <button type="button" class="bright" data-act="ugoone" data-id="${id}"${ST.uc.job ? " disabled" : ""}><i class="fa-solid fa-cloud-arrow-down"></i>Update to ${r.to}</button></div>`);
