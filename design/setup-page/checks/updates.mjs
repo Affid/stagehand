@@ -67,7 +67,14 @@ await shot("updates-4-warnings");
 
 // Update: backup first, then each package with progress.
 r.button = await text("[data-act=ugo]");
-await p.click("[data-act=ugo]"); await p.waitForTimeout(500);
+// The system update still leaves SRD Battlemaps outside its declared range: Update asks first.
+await p.click("[data-act=ugo]"); await p.waitForTimeout(150);
+r.confirm = { title: await text(".sts-dialog .window-title"), body: await text(".sts-dialog .spu-confirm"), buttons: await texts(".sts-dialog footer button, .sts-dialog .window-footer button, .sts-dialog [data-act=uconfirm], .sts-dialog [data-act=closedialog]") };
+expect(/Update 7 packages\?/.test(r.confirm.title ?? "") && /SRD Battlemaps/.test(r.confirm.body ?? ""), "Update asks first, naming the module that may stop working");
+expect(await p.locator(".spu-foot.busy").count() === 0, "nothing starts before the answer");
+expect(/^update the other 6$/i.test((await text(".sts-dialog button.bright")) ?? ""), "leaving the risky one out is the highlighted choice");
+await shot("updates-4b-confirm");
+await p.click(".sts-dialog [data-act=uconfirm][data-id=all]"); await p.waitForTimeout(500);
 r.backup = await text(".spu-foot.busy strong");
 expect(/Backing up 7 packages/.test(r.backup ?? ""), "the foot shows the backup");
 await shot("updates-5-backup");
@@ -93,7 +100,11 @@ await shot("updates-8-done");
 await p.click(`${row("modular-av")} .t`); await p.waitForTimeout(100);
 r.boxAfter = await text(".sts-panel .spu-box");
 expect(/Up to date: updated to 0\.12\.0/.test(r.boxAfter ?? ""), "the panel says it was updated");
-await p.click(".sts-panel .sts-close"); await p.waitForTimeout(80);
+await p.click(".sts-panel .sts-close"); await p.waitForTimeout(60);
+await p.click("[data-act=lsub][data-id=modules]"); await p.waitForTimeout(100);
+r.outOfRange = await text('li.stw-lib[data-package-id="dnd5e-srd-maps"] .l2');
+expect(/Declares D&D 5e up to 5\.1; you have 5\.2\.0/.test(r.outOfRange ?? ""), "the module left behind shows it on its card");
+await p.click("[data-act=lsub][data-id=updates]"); await p.waitForTimeout(100);
 
 // Ways back: a manifest that refused access, checked again after renewing; a check that failed,
 // tried again; a refused download, tried again after renewing.
@@ -121,6 +132,28 @@ r.again = await text(`${row("chat-portrait")} .spu-side`);
 await p.waitForSelector(".spu-sum", { timeout: 20000 });
 r.againDone = { sum: await text(".spu-sum"), section: await p.evaluate(() => ST.uc.results.get("chat-portrait").section) };
 expect(r.againDone.section === "updated", "the refused download installs once access is renewed");
+
+// Update the other 5: the risky system update stays out; one package from its panel asks too.
+await p.goto(`file://${dir}out/setup-shell.html?calm=1&page=library&n=60&lsub=updates`); await p.waitForSelector(".spu-head:not(.busy)", { timeout: 8000 });
+await p.click(`${row("tidy5e-sheet")} .t`); await p.waitForTimeout(100);
+await p.click(".sts-panel [data-act=ugoone]"); await p.waitForTimeout(100);
+r.single = { title: await text(".sts-dialog .window-title"), body: await text(".sts-dialog .spu-confirm"), choices: await texts(".sts-dialog [data-act=uconfirm]") };
+expect(/Update Tidy 5e Sheets\?/.test(r.single.title ?? "") && r.single.choices.some((c) => /^update anyway$/i.test(c)) && r.single.choices.some((c) => /^also update D&D 5e$/i.test(c)), "one package asks: Update anyway, or also update the system it needs");
+r.singleBright = await text(".sts-dialog button.bright");
+expect(/^also update D&D 5e$/i.test(r.singleBright ?? ""), "the safe choice is the highlighted one");
+expect(await p.locator(".sts-panel .spu-box [data-act=ufix]").count() === 0, "the panel's box has no tick buttons");
+await shot("updates-4c-confirm-one");
+await p.click(".sts-dialog [data-act=uconfirm][data-id=withfix]"); await p.waitForTimeout(100);
+r.chained = { title: await text(".sts-dialog .window-title"), body: await text(".sts-dialog .spu-confirm") };
+expect(/Update 2 packages\?/.test(r.chained.title ?? "") && /SRD Battlemaps/.test(r.chained.body ?? ""), "adding the system asks again about what the system leaves behind");
+await p.click(".sts-dialog [data-act=closedialog]"); await p.waitForTimeout(60);
+expect(await p.locator(".sts-dialog").count() === 0 && !(await p.evaluate(() => !!ST.uc.job)), "Cancel closes it and installs nothing");
+await p.click(".sts-panel .sts-close"); await p.waitForTimeout(60);
+await p.click(`${row("dnd5e")} .spu-tick`); await p.waitForTimeout(60);
+await p.click("[data-act=ugo]"); await p.waitForTimeout(100);
+await p.click(".sts-dialog [data-act=uconfirm][data-id=others]"); await p.waitForTimeout(300);
+r.others = { foot: await text(".spu-foot.busy strong"), dnd: await p.evaluate(() => ST.uc.job?.rows.has("dnd5e")) };
+expect(/Backing up 5 packages/.test(r.others.foot ?? "") && r.others.dnd === false, "Update the other 5 leaves the system out");
 
 // Nothing to update, and no manifest answering.
 await p.goto(`file://${dir}out/setup-shell.html?calm=1&n=60&lsub=updates&upd=current`); await p.waitForSelector(".spu-head:not(.busy)", { timeout: 8000 });

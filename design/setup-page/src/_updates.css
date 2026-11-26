@@ -110,3 +110,7 @@
 .spu-tabjob, .sts-subtabs a .c > .fa-spinner { color: var(--color-warm-1); display: inline-flex; gap: 4px; align-items: center; }
 .spu-rail { display: inline-flex; gap: 6px; align-items: center; color: var(--color-warm-1); }
 @media (prefers-reduced-motion: reduce) { .spu-bar span { transition: none; } .spu-row.fresh { animation: none; border-color: rgb(143 212 155 / 70%); } }
+
+/* Asking before an update that may break something */
+.spu-confirm { display: grid; gap: 8px; }
+.spu-confirm p { margin: 0; }

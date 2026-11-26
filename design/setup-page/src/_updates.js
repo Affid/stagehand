@@ -48,7 +48,7 @@ const ago = (t) => { const m = Math.round((Date.now() - t) / 60000); return m < 
 
 ST.uc = {
   checkedAt: Date.now() - 2 * HOUR, checking: null, results: new Map(), ticked: new Set(),
-  backup: true, job: null, summary: null, refused: new Map(), single: new Set(), checkedOne: new Map(), fresh: new Set(),
+  backup: true, job: null, summary: null, refused: new Map(), single: new Set(), checkedOne: new Map(), fresh: new Set(), pending: null, outOfRange: new Map(),
   open: new Set(SECTIONS.map(([k]) => k)),
 };
 
@@ -340,6 +340,13 @@ function finishUpdate() {
     ST.uc.ticked.delete(id);
   }
   for (const id of j.failed) { ST.uc.results.get(id).section = "noaccess"; ST.uc.ticked.delete(id); }
+  // A system or library that moved past what a module declares: Foundry marks that module with a warning.
+  for (const id of j.ok) {
+    for (const d of ST.uc.results.get(id).impact ?? []) {
+      const fixed = j.ok.includes(d.id) && ST.uc.results.get(d.id)?.sys;
+      if (!fixed) ST.uc.outOfRange.set(d.id, `Declares ${shortOf(id)} up to ${d.max}; you have ${upPkg(id).version}`);
+    }
+  }
   ST.uc.summary = { ok: j.ok, failed: j.failed, backups: ST.uc.backup };
   ST.uc.job = null;
   syncMarks();
@@ -358,14 +365,56 @@ function updateBox(m) {
   const checkBtn = actButton(m, { act: "ucheckone", icon: "fa-rotate", label: "Check again", tip: "Checks this package's manifest" });
   if (!r || r.section === "updated") return head(`<div class="spu-boxacts"><p class="spu-uptodate"><i class="fa-solid fa-circle-check"></i> Up to date${r ? `: updated to ${r.to} just now` : ""}.</p>${checkBtn}</div>`);
   if (["blocked", "noaccess", "error"].includes(r.section)) return head(`<div class="spu-why ${r.section}"><i class="fa-solid ${r.section === "noaccess" ? "fa-lock" : r.section === "error" ? "fa-circle-exclamation" : "fa-ban"}"></i><span>${blockText(r)}</span></div><div class="spu-boxacts end">${actButton(r, blockAction(r)) || checkBtn}</div>`);
-  const ws = warnings(r), fixes = fixButtons(ws);
-  const warn = ws.map(warnLine).join("") + (fixes ? `<div class="spu-boxacts end">${fixes}</div>` : "");
+  // No tick buttons here: this box updates one package, so its confirmation offers the fix instead.
+  const warn = warnings(r).map(warnLine).join("");
   return head(`<p><strong>${r.to}</strong> is available · you have ${r.from} · <a data-act="foundry" data-what="Changelog (opens the package's own page)">Changelog</a></p>${warn}
     <div class="spu-boxacts"><label class="spu-bfirst"><input type="checkbox" data-act="ubackup" ${ST.uc.backup ? "checked" : ""}>Back up first</label>
     <button type="button" class="bright" data-act="ugoone" data-id="${id}"${ST.uc.job ? " disabled" : ""}><i class="fa-solid fa-cloud-arrow-down"></i>Update to ${r.to}</button></div>`);
 }
 
 // ---------- hooks into the page ----------
+// ---------- asking before an update that may break something ----------
+/** The warnings each package in a run would leave, judged on that run alone. */
+function risksOf(ids) {
+  const keep = ST.uc.ticked;
+  ST.uc.ticked = new Set(ids);
+  const out = ids.map((id) => ({ id, ws: warnings(ST.uc.results.get(id)) })).filter((x) => x.ws.length);
+  ST.uc.ticked = keep;
+  return out;
+}
+
+function askOrStart(ids) {
+  if (ST.uc.job || !ids.length) return;
+  const risks = risksOf(ids);
+  if (!risks.length) { startUpdate(ids); return; }
+  ST.uc.pending = { ids, risky: risks.map((x) => x.id), risks };
+  ST.uc.lastRisks = risks;
+  ST.dialog = "updconfirm";
+  render();
+}
+
+function confirmDialog() {
+  if (ST.dialog !== "updconfirm" || !ST.uc.pending) return "";
+  const { ids, risks } = ST.uc.pending, n = ids.length, others = n - risks.length;
+  const affected = (r) => (ST.uc.results.get(r.id).impact ?? []).filter((d) => !(ids.includes(d.id) && ST.uc.results.get(d.id)?.sys));
+  const where = (r) => affected(r).map((d) => { const k = WORLDS_X.filter((w) => !w.noCompanion && desired(w.id, d.id)).length; return k ? `${shortOf(d.id)} is on in ${plural(k, "world")}.` : `${shortOf(d.id)} is in no world.`; }).join(" ");
+  const list = risks.map((r) => `<div class="sts-check warn"><i class="fa-solid fa-triangle-exclamation"></i><span><strong>${titleOf(r.id)} ${ST.uc.results.get(r.id).to}</strong>: ${r.ws.map((w) => w.text).join(" ")} ${where(r)}</span></div>`).join("");
+  const lead = n === 1 ? "It may break something:" : `${risks.length === 1 ? "One of them" : `${risks.length} of them`} may break something:`;
+  const backup = ST.uc.backup ? "Back up first is on: each package can be restored from Backups." : "Back up first is off: there will be no copy to go back to.";
+  const body = `<div class="sts-launch-body spu-confirm"><p>${lead}</p>${list}<p class="st-muted">${backup} Foundry marks a module outside its declared versions with a warning; it still loads.</p></div>`;
+  const fixIds = [...new Set(risks.flatMap((r) => r.ws.flatMap((w) => (w.fixes ?? []).map((f) => f.id))))].filter((id) => !ids.includes(id));
+  const allFixable = fixIds.length && risks.every((r) => r.ws.every((w) => w.fixes?.length));
+  // The highlighted choice is the safest one that still updates: adding the fix, else leaving the risky
+  // ones out; "anyway" is highlighted only when nothing safer exists.
+  const btn = (id, label, bright) => `<button type="button"${bright ? ' class="bright"' : ""} data-act="uconfirm" data-id="${id}">${bright ? '<i class="fa-solid fa-cloud-arrow-down"></i>' : ""}${label}</button>`;
+  const footer = `<button type="button" data-act="closedialog">Cancel</button>`
+    + btn("all", others ? `Update all ${n} anyway` : "Update anyway", !allFixable && !others)
+    + (others ? btn("others", `Update the other ${others}`, !allFixable) : "")
+    + (allFixable ? btn("withfix", `Also update ${fixIds.map(shortOf).join(", ")}`, true) : "");
+  const x = Math.round(innerWidth / 2 - 280), y = Math.max(80, Math.round(innerHeight / 2 - 200));
+  return `<div class="sts-backdrop" data-act="closedialog"></div>${fwindow({ title: n === 1 ? `Update ${titleOf(ids[0])}?` : `Update ${plural(n, "package")}?`, icon: "fa-solid fa-cloud-arrow-down", x, y, w: 560, body, footer, cls: "sts-dialog" })}`;
+}
+
 // The page redraws on every change; the Updates list keeps its scroll, and a row that just became
 // available is brought into view (at once: a smooth scroll wouldn't survive the next redraw).
 const renderBase = render;
@@ -376,6 +425,7 @@ render = function () {
   const list = document.querySelector(".spu-list");
   if (list && top !== undefined) list.scrollTop = top;
   if (ST.uc.reveal) { document.querySelector(`.spu-row[data-id="${ST.uc.reveal}"]`)?.scrollIntoView({ block: "nearest" }); ST.uc.reveal = null; }
+  if (ST.dialog === "updconfirm") document.body.insertAdjacentHTML("beforeend", confirmDialog());
 };
 
 const libraryPageBase = libraryPage;
@@ -393,7 +443,9 @@ libraryPage = function () {
 const libCardBase = libCard;
 // eslint-disable-next-line no-func-assign
 libCard = function (m, o) {
-  const html = libCardBase(m, o), s = ST.uc.job?.rows.get(m.id);
+  let html = libCardBase(m, o);
+  const out = ST.uc.outOfRange.get(m.id), s = ST.uc.job?.rows.get(m.id);
+  if (out) html = html.replace(/<div class="l2[^"]*">[\s\S]*?<\/div>/, `<div class="l2 warn"><i class="fa-solid fa-triangle-exclamation"></i><span>${out}</span></div>`);
   if (!s) return html;
   const label = s.state === "download" ? `${s.pct}%` : s.state === "done" ? "done" : s.state === "failed" ? "failed" : s.state === "install" ? "installing" : s.state === "backup" ? "backup" : "waiting";
   const chip = `<span class="stw-upd spu-chip ${s.state}" data-tooltip="${s.state === "failed" ? esc(s.error) : `Updating to ${ST.uc.results.get(m.id).to}`}"><i class="fa-solid ${s.state === "failed" ? "fa-circle-xmark" : s.state === "done" ? "fa-check" : ["download", "install"].includes(s.state) ? "fa-spinner fa-spin" : "fa-clock"}"></i>${label}</span>`;
@@ -425,8 +477,20 @@ A.utickall = (key) => { const ids = [...ST.uc.results.values()].filter((r) => r.
 A.ufix = (id) => { ST.uc.ticked.add(id); render(); };
 A.ufold = (key, _el, e) => { if (e?.target.closest("a")) return; ST.uc.open.has(key) ? ST.uc.open.delete(key) : ST.uc.open.add(key); render(); };
 A.ubackup = () => { ST.uc.backup = !ST.uc.backup; render(); };
-A.ugo = () => startUpdate([...ST.uc.ticked]);
-A.ugoone = (id) => startUpdate([id]);
+A.ugo = () => askOrStart([...ST.uc.ticked]);
+A.ugoone = (id) => askOrStart([id]);
+A.uconfirm = (mode) => {
+  const { ids, risky } = ST.uc.pending ?? { ids: [], risky: [] };
+  ST.dialog = null; ST.uc.pending = null;
+  if (mode === "withfix") {
+    // The fixes join the run, which is judged again: they may have warnings of their own.
+    const fixes = (ST.uc.lastRisks ?? []).flatMap((r) => r.ws.flatMap((w) => (w.fixes ?? []).map((f) => f.id)));
+    askOrStart([...new Set([...ids, ...fixes])]);
+    return;
+  }
+  if (mode === "others") risky.forEach((id) => ST.uc.ticked.delete(id));
+  startUpdate(mode === "others" ? ids.filter((id) => !risky.includes(id)) : ids);
+};
 A.usumclose = () => { ST.uc.summary = null; render(); };
 A.uopen = (id) => A.pkgupdate(id);
 /** One package's check again. The sample finds its update (as if the access was renewed or its site came back), except offline. */

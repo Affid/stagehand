@@ -181,6 +181,37 @@ with what is installed and what is ticked:
 Rows with a warning start unticked; ticking one is the owner's choice.
 Updates install libraries and systems before the modules that need them.
 
+### Asking before an update that may break something
+
+Owner, 2026-11-27: "Why is there no confirmation menu for the system
+breaking one of the modules that has no updates yet?" A warning on a row
+is easy to miss after Tick all, so Update (and the panel's Update to X)
+asks first whenever a package in the run still has a warning, judged on
+that run alone.
+
+- **Both directions:** a system or library update that leaves installed
+  modules outside the versions they declare (SRD Battlemaps, or a content
+  module such as the Player's Handbook that declares dnd5e up to 5.1), and
+  a module update that needs a newer system or library than the run gives
+  it (Tidy 5e Sheets, or a new Player's Handbook needing dnd5e 5.2). The
+  module type doesn't matter: it is what its manifest declares. Foundry
+  asks only in the second case, and only for systems.
+- **The dialog** (Foundry's DialogV2 look) names each risky package, what
+  it would leave behind and where that is on ("SRD Battlemaps is on in 1
+  world"), and whether Back up first is on. Choices: Cancel; "Update the
+  other 6" (leaves the risky ones out, unticked); "Also update D&D 5e"
+  when every risk has a fix (the bigger run is judged again, so adding
+  D&D 5e asks about SRD Battlemaps next); "Update all 7 anyway". The
+  highlighted choice is the safest one that still updates; "anyway" is
+  highlighted only when nothing safer exists.
+- **What "may stop working" means:** Foundry gives a module outside its
+  declared system versions availability 3 (a warning badge) and still
+  loads it, so whether it works is up to the module. The dialog says so,
+  and after the update the module's card says "Declares D&D 5e up to 5.1;
+  you have 5.2.0".
+- The panel's Update box shows the warning without tick buttons: it
+  updates one package, so its confirmation offers the fix instead.
+
 ### Access you no longer have
 
 From certain to learned:
@@ -264,6 +295,11 @@ compatible}`), or `error` and `errorCode` (401, 403, 404, 500 from the
   and the owned list for 5 minutes.
 - Foundry's Update All skips locked packages and packages without a
   manifest, and runs five checks at a time.
+- A module whose declared system versions don't include the installed
+  system gets availability 3 (`UNVERIFIED_SYSTEM`): a warning badge on
+  Setup; it isn't unavailable (that starts above 4) and still loads.
+  `testDependencyCompatibility` checks only `minimum` and `maximum`;
+  `verified` is advice.
 - The server fetches a remote manifest or download with a 5-second
   timeout (`TIMEOUTS.REMOTE_PACKAGE`); the page's `checkPackage` waits 20
   seconds for the server.
@@ -302,7 +338,8 @@ compatible}`), or `error` and `errorCode` (401, 403, 404, 500 from the
    packages in order, per-row and overall progress, the summary; the
    panel's Update box and the chip opening it; Update All goes.
 4. **Warnings.** The shared model: dependencies, system impact, "Tick it
-   too", Foundry's `systemCompatibility` up front.
+   too", Foundry's `systemCompatibility` up front, and the confirmation
+   before a run that still has warnings.
 5. **Access.** Refused downloads remembered; the "Not available to you"
    wording for all three cases, each with Check again or Try again.
 
