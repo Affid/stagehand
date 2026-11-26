@@ -211,6 +211,45 @@ test("a module's name opens its details; the Package tab shows its manifest", as
   await expect(panel).toHaveCount(0);
 });
 
+/** What a triple click on `target` selects, as a person copying it would. */
+async function tripleClickSelects(target: Locator): Promise<string> {
+  await page.evaluate(() => window.getSelection()?.removeAllRanges());
+  await target.click({ clickCount: 3 });
+  return page.evaluate(() => window.getSelection()?.toString().trim() ?? "");
+}
+
+test("a panel's name and id can be selected to copy (owner's bug)", async () => {
+  await card("st-fixture-a")
+    .getByRole("button", { name: /Stagehand Fixture: A/ })
+    .click();
+  const panel = shell().getByRole("complementary", {
+    name: /Stagehand Fixture: A/,
+  });
+  const head = panel.locator(".sts-modhead");
+  const name = (await head.locator("h3").textContent()) ?? "";
+  expect(name).toContain("Stagehand Fixture: A");
+  expect(await tripleClickSelects(head.locator("h3"))).toBe(name);
+  expect(await tripleClickSelects(head.locator(".sub"))).toContain(
+    "st-fixture-a",
+  );
+  // Buttons stay out of it: a press on one acts, it doesn't select.
+  const tab = panel.getByRole("tab", { name: "Package" });
+  expect(await tripleClickSelects(tab)).toBe("");
+  await panel.getByRole("button", { name: "Close" }).click();
+  // The system's panel, from the Systems tab.
+  const main = shell().locator(".sts-main");
+  await main.getByRole("tab", { name: /^Systems/ }).click();
+  const sys = main.locator(".stl-card[data-system]").first();
+  await sys.locator("button.t").click();
+  const title = (await sys.locator("button.t").textContent()) ?? "";
+  const sysPanel = shell().getByRole("complementary", { name: title });
+  expect(await tripleClickSelects(sysPanel.locator(".sts-modhead h3"))).toBe(
+    title,
+  );
+  await sysPanel.getByRole("button", { name: "Close" }).click();
+  await main.getByRole("tab", { name: /^Modules/ }).click();
+});
+
 test("By world shows every module in every world", async () => {
   await lib()
     .getByRole("tab", { name: /^By world/ })

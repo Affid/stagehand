@@ -34,6 +34,17 @@
   flex-direction: column;
   gap: 12px;
   font-size: 13px;
+  /* Foundry's reset makes the whole page unselectable (body, user-select:
+     none); a panel's name, id and facts are there to be copied (owner's
+     bug). */
+  user-select: text;
+}
+
+/* Its buttons stay as Foundry has them: quick presses on a tab would
+   otherwise select its label, and on a phone a long press shows the
+   button's tip (TouchTip) rather than selecting. */
+.st-ui .sts-panel .scroll button {
+  user-select: none;
 }
 
 .st-ui .sts-modhead h3 {

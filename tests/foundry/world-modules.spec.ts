@@ -136,6 +136,18 @@ test("a Gamemaster's Module Management shows the library's folders as cards", as
   await closeModules(gm);
 });
 
+test("the module panel's id can be selected to copy (owner's bug)", async () => {
+  const w = await openModules(gm);
+  await card(w, A).locator("button.t").click();
+  await gm.evaluate(() => window.getSelection()?.removeAllRanges());
+  await w.locator(".sts-panel .sts-modhead .sub").click({ clickCount: 3 });
+  const selected = await gm.evaluate(
+    () => window.getSelection()?.toString() ?? "",
+  );
+  expect(selected).toContain(A);
+  await closeModules(gm);
+});
+
 test("on a short screen the window fits: the cards scroll, Save stays in view", async () => {
   await gm.setViewportSize({ width: 1600, height: 600 });
   try {
