@@ -17,15 +17,17 @@
   padding: 0 0 16px;
   display: grid;
   gap: 14px;
-  align-content: start;
 }
 
 /* The Modules and Systems lists scroll under the Library's head, as the
    prototype's .st-sections; the pane itself doesn't scroll (the By world
    grid has its own box). They spilled past the window (owner, 2026-11-07).
-   The padding keeps cards' focus rings clear of the scrolling edge. */
+   The padding keeps cards' focus rings clear of the scrolling edge. Rows
+   keep to the top: a short list's grid rows would otherwise stretch to the
+   pane's height, one system card as tall as the window (owner's bug). */
 .st-ui .stl-sections,
 .st-ui .stl-systems {
+  align-content: start;
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;

@@ -221,6 +221,33 @@ test("1366×768: the Library's lists scroll under their head (owner's bug)", asy
   await shell(page).locator(".sts-top").waitFor();
 });
 
+test("1366×768: a short Systems list keeps its cards' height (owner's bug)", async () => {
+  await page.setViewportSize({ width: 1366, height: 768 });
+  const main = shell(page).locator(".sts-main");
+  await shell(page).locator(".sts-lib").click();
+  await main.getByRole("tab", { name: /^Systems/ }).click();
+  const list = main.locator(".stl-systems");
+  // The list fills the pane, with room to spare below its cards.
+  expect(await list.evaluate((e) => e.scrollHeight <= e.clientHeight)).toBe(
+    true,
+  );
+  // Each card is as tall as its lines need, not stretched to the pane: a
+  // copy of it taken out of the grid's rows comes out the same height.
+  const heights = await list.locator(".stl-card").evaluateAll((cards) =>
+    cards.map((card) => {
+      const shown = card.getBoundingClientRect();
+      const free = card.cloneNode(true) as HTMLElement;
+      free.style.cssText = `position: absolute; visibility: hidden; box-sizing: border-box; width: ${shown.width}px`;
+      card.after(free);
+      const natural = free.getBoundingClientRect().height;
+      free.remove();
+      return { shown: Math.round(shown.height), natural: Math.round(natural) };
+    }),
+  );
+  expect(heights.length).toBeGreaterThan(0);
+  for (const h of heights) expect(h.shown).toBe(h.natural);
+});
+
 async function libraryScrolls(): Promise<void> {
   await page.setViewportSize({ width: 1366, height: 768 });
   const main = shell(page).locator(".sts-main");
