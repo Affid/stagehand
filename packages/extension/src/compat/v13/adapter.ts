@@ -16,6 +16,8 @@ export const V13_ADAPTER: Adapter = {
     lockPackage: true,
     diskFree: true,
     updateCheck: true,
+    // The same checkPackage and installPackage in 13.351 (updates plan).
+    packageCheck: true,
     certificates: false,
   },
 };

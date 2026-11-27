@@ -7,7 +7,7 @@ import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../context.ts";
 import { plural } from "@stagehand/ui/i18n.ts";
 import { worldsUsing } from "../../model/systems.ts";
-import { updateFor } from "../../model/updates.ts";
+import { markFor } from "../../model/package-updates.ts";
 import { installOf } from "../../tasks.ts";
 import { InstallChip } from "./InstallChip.tsx";
 import { shownVersion } from "@stagehand/shared/version";
@@ -15,7 +15,7 @@ import { shownVersion } from "@stagehand/shared/version";
 function Marks(props: { readonly s: SystemInfo }) {
   const { state, page, t, canChange } = useUi();
   const { s } = props;
-  const update = updateFor(state.updates.system, s);
+  const update = markFor(state, "system", s);
   const installing = installOf(state, s.id);
   return (
     <>

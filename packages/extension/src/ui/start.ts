@@ -17,14 +17,21 @@ import { sendNotingChanges, startLibrarySync } from "./library-sync-start.ts";
 import type { SetupState } from "../messages.ts";
 import type { PageChannel } from "../page-channel.ts";
 import { NO_UPDATES } from "../page-updates.ts";
-import { createActions, type Send } from "./actions.ts";
+import { type Actions, createActions, type Send } from "./actions.ts";
 import type { UiDeps } from "./context.ts";
 import { createTranslator, pickLanguage } from "@stagehand/ui/i18n.ts";
 import { liftVeil } from "../page/veil.ts";
 import { createPageBridge } from "./page.ts";
 import type { UiPorts } from "./ports.ts";
 import { syncShell } from "./shell/mount.tsx";
-import { createStore, DEFAULT_WORLD_VIEW, EMPTY_FILTER } from "./store.ts";
+import {
+  createStore,
+  DEFAULT_WORLD_VIEW,
+  EMPTY_FILTER,
+  NO_CHECK,
+  type Store,
+} from "./store.ts";
+import { trackChecks } from "./package-check.ts";
 import { trackProgress, UNLOCKED } from "./tasks.ts";
 import { START_NAV } from "./shell/phone/nav.ts";
 
@@ -50,6 +57,20 @@ interface SetupUiState {
   readonly selectors: Adapter["selectors"];
 }
 
+/** What the page world reports: Foundry's tasks, our checks, a stopped server. */
+function track(store: Store, page: UiDeps["page"], actions: Actions): void {
+  trackProgress(store, page);
+  trackChecks({
+    store,
+    page,
+    save: (full, checkedAt, results) =>
+      actions.saveChecks(full, checkedAt, results),
+  });
+  page.subscribe((e) => {
+    if (e.type === "SERVER_STOPPED") store.set({ serverStopped: true });
+  });
+}
+
 function createUi(
   deps: SetupUiDeps,
   page: UiDeps["page"],
@@ -72,15 +93,13 @@ function createUi(
     tasks: [],
     lock: UNLOCKED,
     updates: NO_UPDATES,
+    check: NO_CHECK,
     launching: null,
-  });
-  trackProgress(store, page);
-  page.subscribe((e) => {
-    if (e.type === "SERVER_STOPPED") store.set({ serverStopped: true });
   });
   let sync: LibrarySync | undefined;
   const send = sendNotingChanges(deps.send, () => sync);
   const actions = createActions(store, send, t, page);
+  track(store, page, actions);
   // Only where the library can change: an admin-verified, supported Setup,
   // as soon as it is one (verification may come with a later Setup render).
   const startSync = (): void => {

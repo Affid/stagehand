@@ -13,7 +13,7 @@ import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../context.ts";
 import { plural } from "@stagehand/ui/i18n.ts";
 import { unverifiedText } from "@stagehand/ui/model/unverified.ts";
-import { updateFor } from "../../model/updates.ts";
+import { markFor } from "../../model/package-updates.ts";
 import { installOf } from "../../tasks.ts";
 import { InstallChip } from "./InstallChip.tsx";
 
@@ -58,7 +58,7 @@ function Line(props: {
 function Marks(props: { readonly pkg: PackageInfo }) {
   const { state, page, t, canChange } = useUi();
   const { pkg } = props;
-  const update = updateFor(state.updates.module, pkg);
+  const update = markFor(state, "module", pkg);
   const installing = installOf(state, pkg.id);
   return (
     <>

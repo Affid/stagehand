@@ -52,9 +52,13 @@ const tabNames = (c: Element): string[] =>
   );
 
 describe("the Library's tabs", () => {
-  test("a phone has no By world", () => {
+  test("a phone has no By world; it keeps Updates", () => {
     const { container } = library();
-    expect(tabNames(container)).toEqual(["Modules 5", "Systems 1"]);
+    expect(tabNames(container)).toEqual([
+      "Modules 5",
+      "Systems 1",
+      "Updates 0",
+    ]);
   });
 
   test("a tablet on its side keeps it", () => {
@@ -64,6 +68,7 @@ describe("the Library's tabs", () => {
       "Modules 5",
       "Systems 1",
       "By world 1",
+      "Updates 0",
     ]);
   });
 });

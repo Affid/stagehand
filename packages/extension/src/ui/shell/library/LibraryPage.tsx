@@ -21,6 +21,7 @@ import { SelectBar } from "./head/SelectBar.tsx";
 import { Toolbar } from "./head/Toolbar.tsx";
 import { Sections } from "./Sections.tsx";
 import { SystemsTab } from "./SystemsTab.tsx";
+import { UpdatesTab } from "./updates/UpdatesTab.tsx";
 import { type PageState, usePageState } from "./usePageState.ts";
 import { WorldGrid } from "./grid/WorldGrid.tsx";
 
@@ -101,6 +102,8 @@ export function LibraryPage() {
             by={page.by}
             onBy={page.setBy}
           />
+        ) : page.tab === "updates" ? (
+          <UpdatesTab />
         ) : page.tab === "systems" ? (
           <>
             {isCompact(layout) ? (

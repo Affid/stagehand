@@ -2,6 +2,7 @@
 // The background validates and decides; the UI never writes storage.
 import type { LibraryOp, OpResult } from "@stagehand/shared/library/ops";
 import type { Library } from "@stagehand/shared/library/schema";
+import type { PackageCheck } from "@stagehand/shared/updates/check";
 import type { ApplyMode } from "@stagehand/shared/resolver";
 import { newRequestId } from "@stagehand/shared/protocol";
 import type { ExtensionMessage, SetupState } from "../messages.ts";
@@ -67,6 +68,14 @@ export interface Actions {
   markSorted(ids: readonly string[]): Promise<void>;
   /** News: these articles were opened and are no longer "New". */
   newsSeen(urls: readonly string[]): Promise<void>;
+  /** Our check's results, saved per server: a full check replaces the last. */
+  saveChecks(
+    full: boolean,
+    checkedAt: number,
+    results: readonly PackageCheck[],
+  ): Promise<void>;
+  /** A download refused at this version, or forgotten (null). */
+  markRefused(id: string, version: string | null): Promise<void>;
   /** Foundry's public release list, or one release's page (Release history). */
   releases(version?: string): Promise<ReleasesAnswer>;
   /** Opens the settings panel (servers, foundryvtt.com). */
@@ -370,6 +379,53 @@ function worldActions(
   };
 }
 
+/**
+ * This browser's own view of the server, saved per server: news read, our
+ * check's results and refused downloads (updates plan).
+ */
+function viewActions(b: Base, send: Send, store: Store) {
+  const keep = (next: SetupState | undefined): void => {
+    if (next)
+      store.set((s) => ({
+        data: { ...s.data, updatesCheck: next.updatesCheck },
+      }));
+  };
+  return {
+    async newsSeen(urls: readonly string[]): Promise<void> {
+      const next = await b.guarded(() =>
+        send<SetupState>({ kind: "news-seen", urls: [...urls] }),
+      );
+      if (next)
+        store.set((s) => ({
+          data: { ...s.data, newsUnread: next.newsUnread },
+        }));
+    },
+    async saveChecks(
+      full: boolean,
+      checkedAt: number,
+      results: readonly PackageCheck[],
+    ): Promise<void> {
+      keep(
+        await b.guarded(() =>
+          send<SetupState>({
+            kind: "updates-checked",
+            full,
+            checkedAt,
+            results: [...results],
+          }),
+        ),
+      );
+    },
+    async markRefused(id: string, version: string | null): Promise<void> {
+      keep(
+        await b.guarded(() =>
+          send<SetupState>({ kind: "update-refused", id, version }),
+        ),
+      );
+    },
+  };
+}
+
 export function createActions(
   store: Store,
   send: Send,
@@ -399,15 +455,7 @@ export function createActions(
       await b.guarded(() => send({ kind: "modules-sorted", ids: [...ids] }));
       await b.refresh();
     },
-    async newsSeen(urls) {
-      const next = await b.guarded(() =>
-        send<SetupState>({ kind: "news-seen", urls: [...urls] }),
-      );
-      if (next)
-        store.set((s) => ({
-          data: { ...s.data, newsUnread: next.newsUnread },
-        }));
-    },
+    ...viewActions(b, send, store),
     // Errors come back as answers: the history says what went wrong itself.
     releases: (version) =>
       send<ReleasesAnswer>({

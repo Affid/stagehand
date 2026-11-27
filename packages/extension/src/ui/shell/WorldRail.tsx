@@ -6,7 +6,7 @@ import { useScrollFade } from "../common/scroll-fade.ts";
 import { BUILD, IS_DEV_BUILD } from "../../build-info.ts";
 import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../context.ts";
-import { updateCount } from "../model/updates.ts";
+import { updatesCount } from "../model/package-updates.ts";
 import type { Progress } from "../../page-progress.ts";
 import { installsRunning } from "../tasks.ts";
 import { ago, plural, type Translate } from "@stagehand/ui/i18n.ts";
@@ -154,11 +154,7 @@ function LibraryEntry(props: { readonly current: boolean }) {
   const { state, store, t } = useUi();
   const setup = state.data.setup;
   const fresh = state.data.fresh.length;
-  const updates = updateCount(
-    state.updates,
-    setup?.modules ?? [],
-    setup?.systems ?? [],
-  );
+  const updates = updatesCount(state);
   const installs = installsRunning(state);
   const sub = installs.length
     ? updatingLine(t, installs, [

@@ -29,6 +29,7 @@ const data: SetupState = {
   config: BUNDLED_CONFIG,
   fresh: [],
   newsUnread: [],
+  updatesCheck: { checkedAt: null, results: [], refused: {} },
 };
 
 const initial: UiState = {
@@ -48,6 +49,7 @@ const initial: UiState = {
   updates: { module: {}, system: {} },
   side: null,
   lock: { locked: false },
+  check: { running: null, one: {}, live: {} },
   launching: null,
 };
 

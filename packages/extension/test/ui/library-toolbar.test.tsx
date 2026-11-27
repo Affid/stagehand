@@ -39,12 +39,12 @@ const opSent = (r: ReturnType<typeof library>, op: object) =>
   });
 
 describe("the Library's head", () => {
-  test("tabs Modules, Systems and By world, with icons and counts", () => {
+  test("tabs Modules, Systems, By world and Updates, with icons and counts", () => {
     const { container } = library();
     const tabs = [...container.querySelectorAll(".stl-page [role=tab]")].map(
       (x) => x.textContent,
     );
-    expect(tabs).toEqual(["Modules 5", "Systems 1", "By world 1"]);
+    expect(tabs).toEqual(["Modules 5", "Systems 1", "By world 1", "Updates 0"]);
   });
 
   test("Install Module and Update All are Foundry's own", () => {

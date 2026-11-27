@@ -36,6 +36,8 @@ import {
 import { collect } from "./collect.ts";
 import { watchProgress } from "./progress.ts";
 import { checkUpdates } from "./updates.ts";
+import { checkList, runCheck } from "./package-check.ts";
+import type { CheckRequest } from "../page-package-check.ts";
 import type { PageGlobals } from "./globals.ts";
 import { hideResolutionNotice } from "./resolution.ts";
 import { closeStartedTours, quietSetupTours } from "./tours.ts";
@@ -62,6 +64,8 @@ interface Ctx extends SetupMainDeps {
   showNotice?: (() => void) | undefined;
   /** Foundry stopped (13's quit): nothing more is asked of it or shown. */
   stopped?: boolean;
+  /** Our package checks asked to stop, by request id. */
+  readonly checksStopped: Set<string>;
 }
 
 const clipError = (error: string): string => error.slice(0, MAX_ERROR);
@@ -222,6 +226,28 @@ function handleEditor(
     );
 }
 
+/** Our own check of the library or one package, or stopping a check. */
+function answerCheck(ctx: Ctx, req: CheckRequest): void {
+  const { requestId } = req;
+  if (req.op === "stop") {
+    ctx.checksStopped.add(requestId);
+    return;
+  }
+  const list =
+    req.op === "all" ? checkList(ctx.page) : [{ type: req.type, id: req.id }];
+  void runCheck(ctx.page, list, {
+    requestId,
+    post: ctx.postToUi,
+    stopped: () => ctx.checksStopped.has(requestId),
+  }).catch((error: unknown) => {
+    logError("package check", error);
+    ctx.postToUi({
+      type: "PACKAGE_CHECK",
+      payload: { requestId, kind: "done", error: clipError(String(error)) },
+    });
+  });
+}
+
 function answerUpdates(ctx: Ctx): void {
   ctx.updates ??= checkUpdates(ctx.page);
   void ctx.updates.then((payload) => {
@@ -265,6 +291,9 @@ function handleRequest(ctx: Ctx, m: UiToPage): void {
       break;
     case "SAVE_QUEUE":
       answerQueue(ctx, m.payload);
+      break;
+    case "PACKAGE_CHECK":
+      answerCheck(ctx, m.payload);
       break;
     default:
   }
@@ -374,6 +403,7 @@ export function startSetupMain(deps: SetupMainDeps): void {
       deps.channel.send(m.type, m.payload);
     },
     notify: notifier(deps.page),
+    checksStopped: new Set(),
   };
   const poll = (polls: number): void => {
     // As early as Foundry has its tours: it starts one right after Setup.

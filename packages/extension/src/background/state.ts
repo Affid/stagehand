@@ -15,6 +15,7 @@ import {
   type SetupData,
   type Snapshot,
 } from "@stagehand/shared/world";
+import type { PackageCheck } from "@stagehand/shared/updates/check";
 import { type SerializedKeyValue, type Updated, withResult } from "./kv.ts";
 import type { ServerId } from "./servers.ts";
 
@@ -69,6 +70,7 @@ const MOVED_KINDS: Readonly<Record<string, (to: ServerId) => unknown>> = {
   library: (to) => emptyLibrary(to),
   commands: () => [],
   "news-seen": () => null,
+  "updates-check": () => null,
   setup: () => null,
   snapshots: () => ({}),
   sorted: () => null,
@@ -311,6 +313,65 @@ function commandStore(kv: SerializedKeyValue) {
   };
 }
 
+/** The last check of the server's packages, and refused downloads (updates plan). */
+export interface UpdatesRecord {
+  /** When the last full check finished; null before the first. */
+  readonly checkedAt: number | null;
+  readonly results: readonly PackageCheck[];
+  /** Downloads refused by version, by package id. */
+  readonly refused: Readonly<Record<string, string>>;
+}
+
+export const NO_UPDATES_RECORD: UpdatesRecord = {
+  checkedAt: null,
+  results: [],
+  refused: {},
+};
+
+/** Packages remembered per server, as many as a server can have. */
+const MAX_CHECKED = MAX_PACKAGES * 2;
+
+function updatesStore(kv: SerializedKeyValue) {
+  const k = (id: ServerId): string => key("updates-check", id);
+  return {
+    updatesCheck: async (id: ServerId): Promise<UpdatesRecord> =>
+      (await kv.get<UpdatesRecord>(k(id))) ?? NO_UPDATES_RECORD,
+    /** A full check replaces the results; a single package's merges in. */
+    async saveUpdatesCheck(
+      id: ServerId,
+      full: boolean,
+      checkedAt: number,
+      results: readonly PackageCheck[],
+    ): Promise<void> {
+      await kv.update<UpdatesRecord>(k(id), NO_UPDATES_RECORD, (cur) => {
+        const ids = new Set(results.map((r) => r.id));
+        const kept = full ? [] : cur.results.filter((r) => !ids.has(r.id));
+        return {
+          ...cur,
+          checkedAt: full ? checkedAt : cur.checkedAt,
+          results: [...kept, ...results].slice(-MAX_CHECKED),
+        };
+      });
+    },
+    /** A refused download of this version, or null to forget it. */
+    async markRefused(
+      id: ServerId,
+      pkg: string,
+      version: string | null,
+    ): Promise<void> {
+      await kv.update<UpdatesRecord>(k(id), NO_UPDATES_RECORD, (cur) => {
+        const rest = Object.fromEntries(
+          Object.entries(cur.refused).filter(([k]) => k !== pkg),
+        );
+        return {
+          ...cur,
+          refused: version === null ? rest : { ...rest, [pkg]: version },
+        };
+      });
+    },
+  };
+}
+
 export type ServerState = ReturnType<typeof createState>;
 
 export function createState(kv: SerializedKeyValue) {
@@ -322,5 +383,6 @@ export function createState(kv: SerializedKeyValue) {
     ...commandStore(kv),
     ...intakeStore(kv),
     ...newsStore(kv),
+    ...updatesStore(kv),
   };
 }

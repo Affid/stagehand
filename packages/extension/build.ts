@@ -74,6 +74,7 @@ const SETUP_SHEETS = [
   shell("session.css"),
   shell("backups.css"),
   shared("libpanels.css"),
+  shell("updates.css"),
   shell("grid.css"),
   shell("config.css"),
   shell("update.css"),

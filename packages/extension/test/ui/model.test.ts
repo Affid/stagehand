@@ -165,6 +165,7 @@ const state = (over: Partial<SetupState> = {}): SetupState => ({
   config: BUNDLED_CONFIG,
   fresh: [],
   newsUnread: [],
+  updatesCheck: { checkedAt: null, results: [], refused: {} },
   ...over,
 });
 

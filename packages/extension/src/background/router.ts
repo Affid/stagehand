@@ -130,6 +130,7 @@ async function state(deps: RouterDeps, server: ServerId): Promise<SetupState> {
     config: await deps.loadConfig(),
     fresh: await freshModules(deps, server),
     newsUnread: await unreadNews(deps, server),
+    updatesCheck: await s.updatesCheck(server),
   };
 }
 
@@ -281,6 +282,25 @@ const SETUP_WRITES: ReadonlySet<string> = new Set([
   "modules-sorted",
 ]);
 
+/**
+ * State for this browser's view only, like the page's other views: news
+ * read, and its last check of the server's packages. Nothing on the server
+ * changes, so no admin check. True when `m` was one of these.
+ */
+async function viewOnly(
+  deps: RouterDeps,
+  server: ServerId,
+  m: ExtensionMessage,
+): Promise<boolean> {
+  if (m.kind === "news-seen") await markNewsSeen(deps, server, m.urls);
+  else if (m.kind === "updates-checked")
+    await deps.state.saveUpdatesCheck(server, m.full, m.checkedAt, m.results);
+  else if (m.kind === "update-refused")
+    await deps.state.markRefused(server, m.id, m.version);
+  else return false;
+  return true;
+}
+
 async function fromSetup(
   deps: RouterDeps,
   server: ServerId,
@@ -292,11 +312,7 @@ async function fromSetup(
   if (m.kind === "foundry-releases")
     return readReleases(deps.releases, m.version);
   if (m.kind === "open-settings") return deps.openSettings();
-  // Read state for this browser's view only, like the page's other views.
-  if (m.kind === "news-seen") {
-    await markNewsSeen(deps, server, m.urls);
-    return state(deps, server);
-  }
+  if (await viewOnly(deps, server, m)) return state(deps, server);
   if (!SETUP_WRITES.has(m.kind))
     throw new Error(`Unexpected ${m.kind} from Setup`);
   await assertCanChange(deps, server);

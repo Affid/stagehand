@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "revision": 3,
+  "revision": 4,
   "adapters": [
     {
       "id": "v14",
@@ -20,7 +20,8 @@
         "lockPackage": true,
         "diskFree": true,
         "updateCheck": true,
-        "certificates": true
+        "certificates": true,
+        "packageCheck": true
       }
     },
     {
@@ -41,6 +42,7 @@
         "lockPackage": true,
         "diskFree": true,
         "updateCheck": true,
+        "packageCheck": true,
         "certificates": false
       }
     }

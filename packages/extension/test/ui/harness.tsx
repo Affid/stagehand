@@ -15,6 +15,7 @@ import { createActions, type Send } from "../../src/ui/actions.ts";
 import { ShellRoot } from "../../src/ui/App.tsx";
 import { createTranslator } from "@stagehand/ui/i18n.ts";
 import { NO_UPDATES } from "../../src/page-updates.ts";
+import { trackChecks } from "../../src/ui/package-check.ts";
 import { trackProgress, UNLOCKED } from "../../src/ui/tasks.ts";
 import type {
   BackupsResult,
@@ -30,6 +31,7 @@ import {
   createStore,
   DEFAULT_WORLD_VIEW,
   EMPTY_FILTER,
+  NO_CHECK,
   type UiState,
 } from "../../src/ui/store.ts";
 import { START_NAV } from "../../src/ui/shell/phone/nav.ts";
@@ -119,6 +121,7 @@ export function setupState(over: Partial<SetupState> = {}): SetupState {
     config: BUNDLED_CONFIG,
     fresh: [],
     newsUnread: [],
+    updatesCheck: { checkedAt: null, results: [], refused: {} },
     ...over,
   };
 }
@@ -137,6 +140,8 @@ export function fakePage() {
     setCompact: vi.fn(),
     foundryAction: vi.fn(),
     checkUpdates: vi.fn(),
+    packageCheck: vi.fn<(ask: unknown) => string>(() => "check-1"),
+    stopPackageCheck: vi.fn(),
     saveWorld: vi.fn(() => Promise.resolve<string | undefined>(undefined)),
     saveQueue: vi.fn(() =>
       Promise.resolve<QueueSaved>({ written: "2026-11-09T20:00:00.000Z" }),
@@ -206,6 +211,7 @@ export const uiState = (over: Partial<UiState> = {}): UiState => ({
   tasks: [],
   lock: UNLOCKED,
   updates: NO_UPDATES,
+  check: NO_CHECK,
   launching: null,
   ...over,
 });
@@ -235,7 +241,16 @@ export function renderUi(
         ? data
         : m.kind === "world-queue"
           ? { queue: [] }
-          : { ok: true, library: data.library });
+          : m.kind === "updates-checked"
+            ? {
+                ...data,
+                updatesCheck: {
+                  ...data.updatesCheck,
+                  checkedAt: m.full ? m.checkedAt : data.updatesCheck.checkedAt,
+                  results: m.results,
+                },
+              }
+            : { ok: true, library: data.library });
   const send = vi.fn((m: ExtensionMessage) => Promise.resolve(reply(m)));
   const t = createTranslator("en");
   const fake = fakePage();
@@ -252,6 +267,12 @@ export function renderUi(
     page: fake.page,
     ports: options.app ? { ...fakePorts(), app: true as const } : fakePorts(),
   };
+  trackChecks({
+    store,
+    page: fake.page,
+    save: (full, checkedAt, results) =>
+      deps.actions.saveChecks(full, checkedAt, results),
+  });
   const view = render(<ShellRoot deps={deps} />);
   return { ...view, store, send, ports: deps.ports, ...fake };
 }

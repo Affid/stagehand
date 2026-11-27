@@ -28,6 +28,7 @@ import type {
 } from "../page-server-backups.ts";
 import type { Preview } from "../page-compat.ts";
 import type { Release, UpdateOp, UpdateReply } from "../page-update.ts";
+import type { PackageKind } from "../page-protocol.ts";
 import type { LibraryFileReply } from "../page-library-file.ts";
 
 export interface BackupsResult {
@@ -81,6 +82,17 @@ export interface PageBridge {
   foundryAction(action: FoundryAction): void;
   /** Ask for the updates Foundry would install; they arrive as UPDATES. */
   checkUpdates(): void;
+  /**
+   * Our own check of the library or one package (updates plan): the run's
+   * id; its progress and results arrive as PACKAGE_CHECK events.
+   */
+  packageCheck(
+    ask:
+      | { readonly op: "all" }
+      | { readonly op: "one"; readonly type: PackageKind; readonly id: string },
+  ): string;
+  /** Stops a check of the library: no new package is checked. */
+  stopPackageCheck(requestId: string): void;
   /** Saves a world's details through Foundry; resolves with an error, or undefined. */
   saveWorld(
     worldId: string,
@@ -453,6 +465,14 @@ export function createPageBridge(channel: PageChannel): PageBridge {
     },
     checkUpdates: () => {
       send({ type: "CHECK_UPDATES", payload: {} });
+    },
+    packageCheck: (ask) => {
+      const requestId = newRequestId();
+      send({ type: "PACKAGE_CHECK", payload: { requestId, ...ask } });
+      return requestId;
+    },
+    stopPackageCheck: (requestId) => {
+      send({ type: "PACKAGE_CHECK", payload: { requestId, op: "stop" } });
     },
     ...requests(send, listeners),
     subscribe(fn) {

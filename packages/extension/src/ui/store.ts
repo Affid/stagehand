@@ -7,6 +7,7 @@ import { useEffect, useState } from "preact/hooks";
 import type { SetupState } from "../messages.ts";
 import type { Lock, Progress } from "../page-progress.ts";
 import type { Updates } from "../page-updates.ts";
+import type { PackageCheck } from "@stagehand/shared/updates/check";
 import type { Adapter } from "../adapters/config.ts";
 import type { AdapterChoice } from "../adapters/select.ts";
 import type { WorldView } from "@stagehand/ui/context.ts";
@@ -38,6 +39,8 @@ export interface UiState {
   readonly lock: Lock;
   /** Newer versions Foundry would install, by package id. */
   readonly updates: Updates;
+  /** Our own check of the server's packages while it runs (package-check.ts). */
+  readonly check: CheckView;
   /** The phone and tablet layouts' place: home, and the trail Back retraces. */
   readonly phone: PhoneNav;
   /** The world whose Next launch sheet is open (phone and tablet layouts). */
@@ -55,6 +58,25 @@ export type SidePanel =
   | { readonly kind: "tags" | "presets"; readonly id?: string }
   | { readonly kind: "intake" }
   | { readonly kind: "system"; readonly id: string };
+
+/** A check of the library while it runs: its id and how far it got. */
+export interface CheckRun {
+  readonly requestId: string;
+  readonly done: number;
+  readonly total: number;
+  /** The package being checked now. */
+  readonly current?: string;
+}
+
+export interface CheckView {
+  readonly running: CheckRun | null;
+  /** Packages checked on their own: request id to package id. */
+  readonly one: Readonly<Record<string, string>>;
+  /** Results that came in and aren't saved yet, by package id. */
+  readonly live: Readonly<Record<string, PackageCheck>>;
+}
+
+export const NO_CHECK: CheckView = { running: null, one: {}, live: {} };
 
 export const DEFAULT_WORLD_VIEW: WorldView = { by: "folder", layout: "cards" };
 

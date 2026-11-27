@@ -85,3 +85,58 @@ test("phase 1: Foundry's own update shows its progress on the card, the panel an
     "Updating",
   );
 });
+
+const tab = (name: RegExp): Locator =>
+  shell().locator(".stl-page").getByRole("tab", { name });
+const section = (name: string): Locator =>
+  shell()
+    .locator(".spu-sec")
+    .filter({ has: page.locator(".spu-sh", { hasText: name }) });
+const rowSel = (id: string): string => `.spu-row[data-id="${id}"]`;
+const row = (id: string): Locator => shell().locator(rowSel(id));
+
+test("phase 2: the Updates tab checks every package and sorts what it found", async () => {
+  await tab(/^Updates/).click();
+  // Never checked in this browser: opening the tab checks, with progress.
+  await expect(shell().locator(".spu-head.busy")).toBeVisible();
+  await page.screenshot({ path: `${SCREENS}/updates-phase2-checking.png` });
+  await expect(shell().locator(".spu-head:not(.busy)")).toBeVisible({
+    timeout: 60_000,
+  });
+  await expect(section("Ready").locator(rowSel("st-upd-lib"))).toBeVisible();
+  // Its need is met by another Ready update: Ready too.
+  await expect(section("Ready").locator(rowSel("st-upd-needs"))).toBeVisible();
+  await expect(row("st-upd-lib")).toContainText("1.0.0");
+  await expect(row("st-upd-lib")).toContainText("1.1.0");
+  await expect(
+    section("Can't update here").locator(rowSel("st-upd-core")),
+  ).toContainText("Needs Foundry 99 or newer");
+  await expect(
+    section("Not available to you").locator(rowSel("st-upd-manifest403")),
+  ).toContainText("refused access (403)");
+  // Updated in phase 1: current now, so no row.
+  await expect(row("st-upd-plain")).toHaveCount(0);
+  await page.screenshot({ path: `${SCREENS}/updates-phase2-list.png` });
+  // A row's action checks that package again.
+  await row("st-upd-manifest403")
+    .getByRole("button", { name: "Check again" })
+    .click();
+  await expect(row("st-upd-manifest403")).toContainText("refused access", {
+    timeout: 15_000,
+  });
+  // A private manifest's update gets a mark on its card, from our check.
+  await tab(/^Modules/).click();
+  await expect(card("st-upd-lib").locator(".stw-upd")).toHaveText("1.1.0");
+});
+
+test("phase 2: the check is kept: after a reload the tab shows it without checking again", async () => {
+  await page.reload();
+  await shell().locator(".sts-top").waitFor();
+  await shell()
+    .getByRole("button", { name: /^Library/ })
+    .click();
+  await tab(/^Updates/).click();
+  await expect(shell().locator(".spu-head")).toContainText("checked");
+  await expect(shell().locator(".spu-head.busy")).toHaveCount(0);
+  await expect(row("st-upd-lib")).toBeVisible();
+});

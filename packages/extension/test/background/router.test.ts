@@ -747,6 +747,107 @@ describe("router: news read state (Phase 6)", () => {
   });
 });
 
+describe("router: our check of the server's packages (updates plan)", () => {
+  const check = (id: string, version = "1.1.0") => ({
+    id,
+    type: "module" as const,
+    state: "update" as const,
+    version,
+    checkedAt: 5,
+  });
+  interface Checked {
+    updatesCheck: {
+      checkedAt: number | null;
+      results: { id: string; version?: string }[];
+      refused: Record<string, string>;
+    };
+  }
+
+  test("a full check replaces the last one; one package merges in", async () => {
+    const d = deps();
+    await registered(d);
+    const empty = (await route(d, { kind: "get-state" }, fromSetup)) as Checked;
+    expect(empty.updatesCheck).toEqual({
+      checkedAt: null,
+      results: [],
+      refused: {},
+    });
+    await route(
+      d,
+      {
+        kind: "updates-checked",
+        full: true,
+        checkedAt: 10,
+        results: [check("a"), check("b")],
+      },
+      fromSetup,
+    );
+    const one = (await route(
+      d,
+      {
+        kind: "updates-checked",
+        full: false,
+        checkedAt: 20,
+        results: [check("a", "2.0.0")],
+      },
+      fromSetup,
+    )) as Checked;
+    expect(one.updatesCheck.checkedAt).toBe(10);
+    expect(one.updatesCheck.results.map((r) => [r.id, r.version])).toEqual([
+      ["b", "1.1.0"],
+      ["a", "2.0.0"],
+    ]);
+    const again = (await route(
+      d,
+      {
+        kind: "updates-checked",
+        full: true,
+        checkedAt: 30,
+        results: [check("c")],
+      },
+      fromSetup,
+    )) as Checked;
+    expect(again.updatesCheck.results.map((r) => r.id)).toEqual(["c"]);
+  });
+
+  test("a refused download is remembered by version, and forgotten", async () => {
+    const d = deps();
+    await registered(d);
+    const refused = (await route(
+      d,
+      { kind: "update-refused", id: "pat", version: "1.1.0" },
+      fromSetup,
+    )) as Checked;
+    expect(refused.updatesCheck.refused).toEqual({ pat: "1.1.0" });
+    const gone = (await route(
+      d,
+      { kind: "update-refused", id: "pat", version: null },
+      fromSetup,
+    )) as Checked;
+    expect(gone.updatesCheck.refused).toEqual({});
+  });
+
+  test("a forged result or a world's page is refused", async () => {
+    const d = deps();
+    await registered(d);
+    await expect(
+      route(
+        d,
+        {
+          kind: "updates-checked",
+          full: true,
+          checkedAt: 1,
+          results: [{ ...check("a"), state: "x" }],
+        },
+        fromSetup,
+      ),
+    ).rejects.toThrow();
+    await expect(
+      route(d, { kind: "update-refused", id: "pat", version: "1" }, fromGame),
+    ).rejects.toThrow();
+  });
+});
+
 describe("router: the settings panel lists and removes servers", () => {
   const other = "http://localhost:30000/other";
 

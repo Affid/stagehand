@@ -39,7 +39,7 @@ export { V14_SELECTORS } from "./selectors.ts";
 /** Verified against V14 build 369 in the M0 spike (docs/M0-FINDINGS.md) and again on build 370. */
 export const BUNDLED_CONFIG: SetupConfig = {
   configVersion: 1,
-  revision: 3,
+  revision: 4,
   adapters: [
     {
       id: "v14",
@@ -58,6 +58,9 @@ export const BUNDLED_CONFIG: SetupConfig = {
         diskFree: true,
         updateCheck: true,
         certificates: true,
+        // Our own check and install of packages (updates plan): Foundry's
+        // checkPackage and installPackage, read in 14.370.
+        packageCheck: true,
       },
     },
     V13_ADAPTER,

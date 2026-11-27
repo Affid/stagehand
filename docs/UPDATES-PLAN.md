@@ -341,7 +341,12 @@ compatible}`), or `error` and `errorCode` (401, 403, 404, 500 from the
 2. **Check.** The page-world check with progress and Stop, checking one
    package again (Try again, Check again), the results store, the Updates
    tab read-only (sections, Check again), marks from the check, ownership
-   from the package list.
+   from the package list. Done 2026-11-27: `packageCheck` adapter flag (14
+   and 13, config revision 4); `page/package-check.ts` keeps each update's
+   manifest in the page world and drops any address from error text (a
+   Patreon URL may carry a key); results kept per server as
+   `UpdatesRecord` in the background; the shared model in
+   `packages/shared/src/updates/`.
 3. **Review and update.** Ticking, Back up first, installing the ticked
    packages in order, per-row and overall progress, the summary; the
    panel's Update box and the chip opening it; Update All goes.

@@ -7,14 +7,16 @@ import { MAX_NEWS, MAX_NEWS_URL } from "@stagehand/shared/news";
 import {
   ApplyModeSchema,
   type Command,
+  MAX_PACKAGES,
   MAX_PICKED,
   SetupDataSchema,
   type Snapshot,
 } from "@stagehand/shared/world";
 import { MAX_QUEUE } from "@stagehand/shared/world-flags";
+import { PackageCheckSchema } from "@stagehand/shared/updates/check";
 import { z } from "zod";
 import type { SetupConfig } from "./adapters/config.ts";
-import type { StoredSetup } from "./background/state.ts";
+import type { StoredSetup, UpdatesRecord } from "./background/state.ts";
 
 export const MAX_IMPORT_BYTES = 5_000_000;
 
@@ -84,6 +86,19 @@ export const ExtensionMessageSchema = z.discriminatedUnion("kind", [
     kind: z.literal("news-seen"),
     urls: z.array(z.string().max(MAX_NEWS_URL)).max(MAX_NEWS + 5),
   }),
+  /** Our check of the server's packages: all of them, or one (updates plan). */
+  z.object({
+    kind: z.literal("updates-checked"),
+    full: z.boolean(),
+    checkedAt: z.number().int().min(0),
+    results: z.array(PackageCheckSchema).max(MAX_PACKAGES * 2),
+  }),
+  /** A download refused at this version, or forgotten (null). */
+  z.object({
+    kind: z.literal("update-refused"),
+    id: z.string().regex(/^[A-Za-z0-9_-]{1,200}$/),
+    version: z.string().min(1).max(60).nullable(),
+  }),
   /** The world's queue as Setup writes it into the world's flags. */
   z.object({ kind: z.literal("world-queue"), worldId: Id }),
   /** These changes are now in the world's queue. */
@@ -121,4 +136,6 @@ export interface SetupState {
   readonly fresh: readonly string[];
   /** Links of Foundry's news articles not opened yet (none on a first visit). */
   readonly newsUnread: readonly string[];
+  /** The last check of the server's packages, and refused downloads. */
+  readonly updatesCheck: UpdatesRecord;
 }

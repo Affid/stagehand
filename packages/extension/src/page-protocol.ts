@@ -9,6 +9,12 @@ import {
 } from "./page-progress.ts";
 import { parseUpdates, type Updates } from "./page-updates.ts";
 import {
+  type CheckEvent,
+  type CheckRequest,
+  parseCheckEvent,
+  parseCheckRequest,
+} from "./page-package-check.ts";
+import {
   type EditorOpen,
   type EditorSave,
   parseEditorClose,
@@ -149,6 +155,8 @@ export type UiToPage =
   | { readonly type: "UPDATE"; readonly payload: UpdateRequest }
   /** Check Foundry's package list for updates (answered by UPDATES). */
   | { readonly type: "CHECK_UPDATES"; readonly payload: Record<string, never> }
+  /** Our own check of packages: all, one, or stop (answered by PACKAGE_CHECK events). */
+  | { readonly type: "PACKAGE_CHECK"; readonly payload: CheckRequest }
   /** Read or write the library file on the server (answered by LIBRARY_FILE_DONE). */
   | { readonly type: "LIBRARY_FILE"; readonly payload: LibraryFileRequest };
 
@@ -157,6 +165,8 @@ export type PageToUi =
   | { readonly type: "UPDATES"; readonly payload: Updates }
   /** Foundry's progress for a backup, snapshot or update (page-progress.ts). */
   | { readonly type: "PROGRESS"; readonly payload: Progress }
+  /** Our own check: progress, each package's result, the end (page-package-check.ts). */
+  | { readonly type: "PACKAGE_CHECK"; readonly payload: CheckEvent }
   /** Foundry's busy lock, mirrored on our page. */
   | { readonly type: "LOCK"; readonly payload: Lock }
   /** Whether Foundry's layout is taken over; an error means it could not be and was left alone. */
@@ -268,14 +278,22 @@ function libraryFileRequest(p: Loose): UiToPage | undefined {
   return payload ? { type: "LIBRARY_FILE", payload } : undefined;
 }
 
+/** The update checks: Foundry's package list, or our own check. */
+function parseChecks(type: string, p: Loose): UiToPage | undefined {
+  if (type === "CHECK_UPDATES")
+    return Object.keys(p).length === 0 ? { type, payload: {} } : undefined;
+  const payload = parseCheckRequest(p);
+  return payload ? { type: "PACKAGE_CHECK", payload } : undefined;
+}
+
 /** A message from the UI, checked; undefined when malformed. */
 export function parseUiToPage(type: string, p: unknown): UiToPage | undefined {
   if (!isObject(p)) return undefined;
+  if (type === "CHECK_UPDATES" || type === "PACKAGE_CHECK")
+    return parseChecks(type, p);
   if (type.startsWith("EDITOR_")) return parseEditor(type, p);
   if (type === "LIBRARY_FILE") return libraryFileRequest(p);
   switch (type) {
-    case "CHECK_UPDATES":
-      return Object.keys(p).length === 0 ? { type, payload: {} } : undefined;
     case "NOTIFY":
       return typeof p.kind === "string" &&
         KINDS.includes(p.kind) &&
@@ -332,6 +350,7 @@ type Checkers = {
 
 const PAGE_EVENTS: Checkers = {
   PROGRESS: parseProgress,
+  PACKAGE_CHECK: parseCheckEvent,
   UPDATES: parseUpdates,
   LOCK: parseLock,
   SAVE_DONE: parseSaveDone,

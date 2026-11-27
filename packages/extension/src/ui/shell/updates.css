@@ -1,0 +1,589 @@
+/* The Library's Updates tab (docs/UPDATES-PLAN.md), from the approved
+   mockup (design/setup-page/src/_updates.css): the head with the check,
+   sections of rows with their action column, the foot with Back up first
+   and Update, the panel's Update box, the confirmation. */
+.sts-shell .spu {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.sts-shell .spu-bar {
+  height: 6px;
+  border-radius: 3px;
+  background: rgb(255 255 255 / 10%);
+  overflow: hidden;
+}
+.sts-shell .spu-bar span {
+  display: block;
+  height: 100%;
+  background: var(--color-warm-1);
+  transition: width 0.2s;
+}
+
+/* Head: last check and Check again, or the check's progress */
+.sts-shell .spu-head {
+  min-height: 44px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 10px;
+  border: 1px solid var(--color-cool-4);
+  border-radius: 4px;
+  background: rgb(11 10 19 / 55%);
+}
+.sts-shell .spu-head .t {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-light-3);
+}
+.sts-shell .spu-head .t strong {
+  color: var(--color-light-1);
+}
+.sts-shell .spu-head .t > i {
+  color: var(--color-light-3);
+}
+.sts-shell .spu-head .t > i.ok {
+  color: #8fd49b;
+}
+.sts-shell .spu-head .t > i.warn {
+  color: #f5c45e;
+}
+.sts-shell .spu-head button {
+  flex: none;
+  width: auto;
+  height: 30px;
+  padding: 0 12px;
+  gap: 6px;
+}
+.sts-shell .spu-head.busy {
+  border-color: rgb(238 155 58 / 55%);
+  background: rgb(238 155 58 / 8%);
+}
+.sts-shell .spu-head.busy .t {
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+  width: 260px;
+}
+.sts-shell .spu-head.busy .t span {
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+.sts-shell .spu-head.busy .spu-bar {
+  flex: 1;
+}
+
+/* After an update */
+.sts-shell .spu-sum {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 4px;
+  border: 1px solid;
+}
+.sts-shell .spu-sum.ok {
+  border-color: rgb(63 143 82 / 60%);
+  background: rgb(63 143 82 / 10%);
+  color: #d5eedb;
+}
+.sts-shell .spu-sum.ok > i {
+  color: #8fd49b;
+}
+.sts-shell .spu-sum.warn {
+  border-color: #8a6a1f;
+  background: rgb(138 106 31 / 14%);
+  color: #f3e3c0;
+}
+.sts-shell .spu-sum.warn > i {
+  color: #f5c45e;
+}
+.sts-shell .spu-sum span {
+  flex: 1;
+}
+.sts-shell .spu-sum a {
+  color: var(--color-warm-1);
+  text-decoration: underline;
+}
+.sts-shell .spu-sum button.icon {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  flex: none;
+}
+
+/* Sections and rows */
+.sts-shell .spu-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  list-style: none;
+  margin: 0;
+  padding: 0 3px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.sts-shell .spu-sec {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.sts-shell .spu-sh {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 4px 4px;
+  border-bottom: 1px solid var(--color-cool-4);
+  cursor: pointer;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-subtle);
+}
+.sts-shell .spu-sh > i {
+  width: 10px;
+  color: var(--color-light-4);
+}
+.sts-shell .spu-sh .c {
+  color: var(--color-light-4);
+  letter-spacing: 0;
+}
+.sts-shell .spu-sh a {
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--color-light-3);
+  font-size: 12.5px;
+}
+.sts-shell .spu-sh a:hover {
+  color: var(--color-warm-1);
+}
+.sts-shell .spu-sec.attention .spu-sh span:not(.c):not(.st-spacer) {
+  color: #f5c45e;
+}
+.sts-shell .spu-rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+.sts-shell .spu-row {
+  display: grid;
+  grid-template-columns: 20px 16px minmax(0, 1fr) minmax(150px, 220px);
+  gap: 10px;
+  align-items: start;
+  padding: 8px 10px;
+  border: 1px solid var(--color-cool-4);
+  border-radius: 4px;
+  background: rgb(11 10 19 / 55%);
+}
+.sts-shell .spu-row > .spu-tick {
+  margin: 3px 0 0;
+}
+.sts-shell .spu-row > .spu-kind {
+  margin-top: 4px;
+  color: var(--color-light-4);
+  font-size: 12px;
+  text-align: center;
+}
+.sts-shell .spu-row.ticked {
+  border-color: rgb(238 155 58 / 45%);
+}
+.sts-shell .spu-row.busy {
+  border-color: rgb(238 155 58 / 55%);
+  background: rgb(238 155 58 / 6%);
+}
+.sts-shell .spu-row.muted {
+  background: rgb(11 10 19 / 35%);
+}
+/* A row that became available (checked again, or its download allowed again): marked for a moment */
+.sts-shell .spu-row.fresh {
+  animation: spu-fresh 2s ease-out;
+}
+@keyframes spu-fresh {
+  from {
+    box-shadow: 0 0 0 2px rgb(143 212 155 / 70%);
+    background: rgb(63 143 82 / 18%);
+  }
+  to {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+.sts-shell .spu-row.muted .t {
+  color: var(--color-light-3);
+}
+.sts-shell .spu-main {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+.sts-shell .spu-main .l1 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+.sts-shell .spu-main .t {
+  font-weight: 600;
+  color: var(--color-light-1);
+}
+.sts-shell .spu-main .t:hover {
+  color: var(--color-warm-1);
+}
+.sts-shell .spu-ver {
+  font-size: 13px;
+  color: var(--color-light-3);
+  white-space: nowrap;
+}
+.sts-shell .spu-ver i {
+  font-size: 10px;
+  margin: 0 3px;
+  color: var(--color-light-4);
+}
+.sts-shell .spu-ver b {
+  color: #b9e3c1;
+  font-weight: 600;
+}
+.sts-shell .spu-main .l2 {
+  font-size: 12.5px;
+  color: var(--color-light-3);
+}
+.sts-shell .spu-main .l2 a,
+.sts-shell .spu-warn a,
+.sts-shell .spu-note a,
+.sts-shell .spu-why a,
+.sts-shell .spu-box a {
+  color: var(--color-warm-1);
+  text-decoration: underline;
+  text-decoration-color: rgb(238 155 58 / 45%);
+}
+.sts-shell .spu-warn,
+.sts-shell .spu-note,
+.sts-shell .spu-why {
+  display: flex;
+  gap: 7px;
+  align-items: baseline;
+  font-size: 13px;
+  line-height: 1.35;
+}
+/* Actions are buttons; links only go somewhere (Changelog, a project page, Foundry's update) */
+.sts-shell .spu-act {
+  width: auto;
+  height: 28px;
+  padding: 0 12px;
+  gap: 6px;
+  font-size: 13px;
+  white-space: nowrap;
+  flex: none;
+}
+.sts-shell .spu-act[disabled] {
+  opacity: 0.5;
+}
+
+.sts-shell .spu-warn {
+  color: #f3e3c0;
+}
+.sts-shell .spu-warn > i {
+  color: #f5c45e;
+  font-size: 12px;
+}
+.sts-shell .spu-note {
+  color: var(--color-light-3);
+}
+.sts-shell .spu-note > i {
+  color: #8fd49b;
+  font-size: 11px;
+}
+.sts-shell .spu-why {
+  color: var(--color-light-2);
+}
+.sts-shell .spu-why > i {
+  color: var(--color-light-4);
+  font-size: 12px;
+}
+.sts-shell .spu-why.error > i {
+  color: #e39a8c;
+}
+.sts-shell .spu-side {
+  justify-self: end;
+  align-self: center;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+.sts-shell .spu-st {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--color-light-2);
+  white-space: nowrap;
+}
+.sts-shell .spu-st.q {
+  color: var(--color-light-4);
+}
+.sts-shell .spu-st.ok {
+  color: #8fd49b;
+}
+.sts-shell .spu-st.bad {
+  color: #ffb3a6;
+  white-space: normal;
+  text-align: left;
+}
+.sts-shell .spu-st.dl {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 3px;
+  width: 150px;
+  text-align: left;
+}
+.sts-shell .spu-locked {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  font-size: 12.5px;
+  color: var(--color-light-3);
+  padding: 0 4px;
+}
+.sts-shell .spu-locked > i {
+  color: var(--color-light-4);
+  font-size: 11px;
+}
+.sts-shell .spu-empty {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 18px 14px;
+  border: 1px dashed var(--color-cool-4);
+  border-radius: 4px;
+  color: var(--color-light-2);
+}
+.sts-shell .spu-empty > i {
+  font-size: 20px;
+  color: #8fd49b;
+}
+.sts-shell .spu-empty p {
+  margin: 0;
+}
+
+/* Foot: Back up first, the count, Update; or the run's progress */
+.sts-shell .spu-foot {
+  flex: none;
+  min-height: 50px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 10px;
+  margin-bottom: 10px;
+  border: 1px solid var(--color-cool-4);
+  border-radius: 4px;
+  background: rgb(11 10 19 / 75%);
+}
+.sts-shell .spu-foot button.bright {
+  width: auto;
+  height: 32px;
+  padding: 0 16px;
+  gap: 6px;
+  flex: none;
+}
+.sts-shell .spu-foot button[disabled] {
+  opacity: 0.5;
+}
+.sts-shell .spu-foot.busy {
+  border-color: rgb(238 155 58 / 55%);
+  background: rgb(238 155 58 / 8%);
+}
+.sts-shell .spu-foot.busy strong {
+  flex: none;
+  min-width: 210px;
+}
+.sts-shell .spu-foot.busy .spu-bar {
+  flex: 1;
+}
+.sts-shell .spu-bfirst {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  color: var(--color-light-2);
+  white-space: nowrap;
+}
+.sts-shell .spu-bfirst input {
+  margin: 0;
+}
+
+/* The panel's Update box (Package tab) */
+.sts-shell .spu-box {
+  display: grid;
+  gap: 6px;
+  padding: 8px 10px;
+  border: 1px solid var(--color-cool-4);
+  border-radius: 4px;
+  background: rgb(11 10 19 / 45%);
+}
+.sts-shell .spu-box h4 {
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-family: var(--font-body, Signika), sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-subtle);
+}
+.sts-shell .spu-box h4 .st-muted {
+  text-transform: none;
+  letter-spacing: 0;
+}
+.sts-shell .spu-box p {
+  margin: 0;
+}
+.sts-shell .spu-box.busy {
+  border-color: rgb(238 155 58 / 55%);
+}
+.sts-shell .spu-box .spu-st.dl {
+  width: 100%;
+}
+.sts-shell .spu-uptodate i {
+  color: #8fd49b;
+}
+.sts-shell .spu-boxacts {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 2px;
+}
+.sts-shell .spu-boxacts.end {
+  justify-content: flex-end;
+}
+.sts-shell .spu-boxacts .spu-uptodate {
+  margin: 0;
+}
+.sts-shell .spu-boxacts button.bright {
+  width: auto;
+  height: 30px;
+  padding: 0 12px;
+  gap: 6px;
+}
+
+/* Progress elsewhere: the card's chip, the tab, the rail */
+.sts-shell .stw-upd.spu-chip {
+  cursor: default;
+  color: var(--color-light-1);
+  border-color: rgb(238 155 58 / 60%);
+  background: rgb(238 155 58 / 16%);
+}
+.sts-shell .stw-upd.spu-chip.done {
+  color: #b9e3c1;
+  border-color: rgb(63 143 82 / 70%);
+  background: rgb(63 143 82 / 18%);
+}
+.sts-shell .stw-upd.spu-chip.failed {
+  color: #ffb3a6;
+  border-color: rgb(180 82 63 / 70%);
+  background: rgb(180 82 63 / 16%);
+}
+.sts-shell .spu-tabjob,
+.sts-shell .sts-subtabs a .c > .fa-spinner {
+  color: var(--color-warm-1);
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+}
+.sts-shell .spu-rail {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  color: var(--color-warm-1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .sts-shell .spu-bar span {
+    transition: none;
+  }
+  .sts-shell .spu-row.fresh {
+    animation: none;
+    border-color: rgb(143 212 155 / 70%);
+  }
+}
+
+/* Asking before an update that may break something */
+.sts-shell .spu-confirm {
+  display: grid;
+  gap: 8px;
+}
+.sts-shell .spu-confirm p {
+  margin: 0;
+}
+
+/* The section head's toggle: a button, not the whole head (Tick all sits in it too). */
+.sts-shell .spu-sh button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: auto;
+  height: auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+}
+.sts-shell .spu-sh button:focus-visible {
+  outline: 1px solid var(--color-warm-1);
+  outline-offset: 2px;
+}
+.sts-shell .spu-sh .n {
+  color: var(--color-text-subtle);
+}
+.sts-shell .spu-sec.attention .spu-sh .n {
+  color: #f5c45e;
+}
+.sts-shell .spu-main .t {
+  width: auto;
+  height: auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  color: var(--color-light-1);
+}
+.sts-shell .spu-head .t > span {
+  min-width: 0;
+}
+
+/* Phone and tablet: the action column goes under the row's text. */
+.sts-shell.stp .spu-row {
+  grid-template-columns: 20px 16px minmax(0, 1fr);
+}
+.sts-shell.stp .spu-side {
+  grid-column: 3;
+  justify-self: start;
+  align-items: flex-start;
+}
+.sts-shell.stp .spu-list {
+  overflow: visible;
+}
