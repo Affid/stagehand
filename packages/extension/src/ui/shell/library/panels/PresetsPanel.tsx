@@ -6,6 +6,7 @@ import { useState } from "preact/hooks";
 import { newId } from "../../../actions.ts";
 import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../../context.ts";
+import { DraftField } from "./DraftField.tsx";
 import { ModuleChecks } from "./ModuleChecks.tsx";
 import { PanelFrame } from "./PanelFrame.tsx";
 import { WorldPick } from "./WorldPick.tsx";
@@ -80,30 +81,32 @@ function Fields(props: { readonly p: Preset }) {
   const { t, canChange } = useUi();
   const { p } = props;
   const update = useUpdate(p);
-  const key = `${p.id}:${String(p.revision)}`;
   return (
     <div class="sts-kv">
       <span>{t("presets.name")}</span>
-      <input
-        type="text"
-        key={key}
-        aria-label={t("presets.name")}
-        defaultValue={p.name}
+      <DraftField
+        key={`${p.id}:name`}
+        label={t("presets.name")}
+        value={p.name}
         disabled={!canChange}
-        onChange={(e) => {
-          const name = e.currentTarget.value.trim();
-          if (name && name !== p.name) update({ name });
+        onCommit={(text) => {
+          const name = text.trim();
+          if (!name || name === p.name) return false;
+          update({ name });
+          return true;
         }}
       />
       <span>{t("presets.about")}</span>
-      <textarea
-        key={key}
-        aria-label={t("presets.about")}
-        defaultValue={p.description}
+      <DraftField
+        key={`${p.id}:about`}
+        label={t("presets.about")}
+        value={p.description}
         disabled={!canChange}
-        onChange={(e) => {
-          const description = e.currentTarget.value;
-          if (description !== p.description) update({ description });
+        multiline
+        onCommit={(description) => {
+          if (description === p.description) return false;
+          update({ description });
+          return true;
         }}
       />
     </div>
@@ -172,7 +175,12 @@ function PresetEdit(props: { readonly p: Preset }) {
 export function PresetsPanel(props: { readonly id: string | undefined }) {
   const { state, t } = useUi();
   const { presets } = state.data.library;
-  const current = presets.find((x) => x.id === props.id) ?? presets[0];
+  // The first preset only when none was asked for: a new one on its way
+  // must not lend it another preset's fields.
+  const current =
+    props.id === undefined
+      ? presets[0]
+      : presets.find((x) => x.id === props.id);
   return (
     <PanelFrame title={t("presets.title")} label={t("presets.title")}>
       <PresetList current={current} />

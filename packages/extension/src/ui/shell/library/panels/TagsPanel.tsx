@@ -4,6 +4,7 @@ import type { Tag } from "@stagehand/shared/library/schema";
 import { newId, nextColor, PALETTE, PALETTE_NAMES } from "../../../actions.ts";
 import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../../context.ts";
+import { DraftField } from "./DraftField.tsx";
 import { ModuleChecks } from "./ModuleChecks.tsx";
 import { PanelFrame } from "./PanelFrame.tsx";
 
@@ -90,21 +91,21 @@ function TagFields(props: { readonly tag: Tag }) {
   return (
     <div class="sts-kv">
       <span>{t("tags.name")}</span>
-      <input
-        type="text"
-        key={`${tag.id}:${String(tag.revision)}`}
-        aria-label={t("tags.name")}
-        defaultValue={tag.name}
+      <DraftField
+        key={tag.id}
+        label={t("tags.name")}
+        value={tag.name}
         disabled={!canChange}
-        onChange={(e) => {
-          const name = e.currentTarget.value.trim();
-          if (name && name !== tag.name)
-            void actions.op({
-              op: "tag.update",
-              id: tag.id,
-              baseRevision: tag.revision,
-              changes: { name },
-            });
+        onCommit={(text) => {
+          const name = text.trim();
+          if (!name || name === tag.name) return false;
+          void actions.op({
+            op: "tag.update",
+            id: tag.id,
+            baseRevision: tag.revision,
+            changes: { name },
+          });
+          return true;
         }}
       />
       <span>{t("tags.colour")}</span>
@@ -166,7 +167,10 @@ function TagEdit(props: { readonly tag: Tag }) {
 export function TagsPanel(props: { readonly id: string | undefined }) {
   const { state, t } = useUi();
   const { tags } = state.data.library;
-  const current = tags.find((x) => x.id === props.id) ?? tags[0];
+  // The first tag only when none was asked for: a new tag on its way must
+  // not lend it another tag's fields (typing there would rename that one).
+  const current =
+    props.id === undefined ? tags[0] : tags.find((x) => x.id === props.id);
   return (
     <PanelFrame title={t("tags.title")} label={t("tags.title")}>
       <TagList current={current} />

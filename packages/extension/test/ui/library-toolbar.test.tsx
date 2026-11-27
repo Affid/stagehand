@@ -2,7 +2,13 @@
 // The Library's head and toolbar as the prototype (6a): tabs with counts,
 // Foundry's Install and Update All, Group by, Select with its bar, Collapse
 // all, New folder, the Tags and Presets panels, and Import and export.
-import { cleanup, fireEvent, waitFor, within } from "@testing-library/preact";
+import {
+  act,
+  cleanup,
+  fireEvent,
+  waitFor,
+  within,
+} from "@testing-library/preact";
 import { afterEach, describe, expect, test, vi } from "vitest";
 import type { Snapshot } from "@stagehand/shared/world";
 import type { SetupState } from "../../src/messages.ts";
@@ -177,6 +183,55 @@ describe("the toolbar", () => {
 });
 
 describe("the Tags and Presets panels", () => {
+  test("New tag: until the new tag arrives, no other tag's fields stand in for it", () => {
+    const r = library();
+    fireEvent.click(r.getByRole("button", { name: "Tags" }));
+    const p = r.getByRole("complementary", { name: "Tags" });
+    expect(within(p).getByRole("textbox", { name: "Name" })).toHaveProperty(
+      "value",
+      "visual",
+    );
+    fireEvent.click(within(p).getByRole("button", { name: "New tag" }));
+    // The create is on its way (this harness never applies it).
+    expect(within(p).queryByRole("textbox", { name: "Name" })).toBe(null);
+  });
+
+  test("New preset: until the new preset arrives, no other preset's fields stand in for it", () => {
+    const r = library();
+    fireEvent.click(r.getByRole("button", { name: "Presets" }));
+    const p = r.getByRole("complementary", { name: "Presets" });
+    expect(within(p).getByRole("textbox", { name: "Name" })).toHaveProperty(
+      "value",
+      "QoL",
+    );
+    fireEvent.click(within(p).getByRole("button", { name: /^New preset/ }));
+    expect(within(p).queryByRole("textbox", { name: "Name" })).toBe(null);
+  });
+
+  test("a name being typed survives a refresh of the tag (a save or a sync lands)", async () => {
+    const r = library();
+    fireEvent.click(r.getByRole("button", { name: "Tags" }));
+    const p = r.getByRole("complementary", { name: "Tags" });
+    const name = () => within(p).getByRole("textbox", { name: "Name" });
+    fireEvent.input(name(), { target: { value: "looks" } });
+    void act(() => {
+      r.store.set((s) => ({
+        data: {
+          ...s.data,
+          library: {
+            ...s.data.library,
+            tags: s.data.library.tags.map((x) =>
+              x.id === "t1" ? { ...x, revision: x.revision + 1 } : x,
+            ),
+          },
+        },
+      }));
+    });
+    expect((name() as HTMLInputElement).value).toBe("looks");
+    fireEvent.change(name(), { target: { value: "looks" } });
+    await opSent(r, { op: "tag.update", changes: { name: "looks" } });
+  });
+
   test("Tags lists each tag with its count; New tag; rename; tag a module; Delete tag", async () => {
     const r = library();
     fireEvent.click(r.getByRole("button", { name: "Tags" }));
@@ -203,6 +258,34 @@ describe("the Tags and Presets panels", () => {
     await opSent(r, { op: "tag.delete", id: "t1" });
     fireEvent.click(within(p).getByRole("button", { name: "New tag" }));
     await opSent(r, { op: "tag.create" });
+  });
+
+  test("a preset's About being typed survives a refresh of the preset", async () => {
+    const r = library();
+    fireEvent.click(r.getByRole("button", { name: "Presets" }));
+    const p = r.getByRole("complementary", { name: "Presets" });
+    const about = () => within(p).getByRole("textbox", { name: "About" });
+    fireEvent.input(about(), { target: { value: "Quality of life" } });
+    void act(() => {
+      r.store.set((s) => ({
+        data: {
+          ...s.data,
+          library: {
+            ...s.data.library,
+            presets: s.data.library.presets.map((x) => ({
+              ...x,
+              revision: x.revision + 1,
+            })),
+          },
+        },
+      }));
+    });
+    expect((about() as HTMLTextAreaElement).value).toBe("Quality of life");
+    fireEvent.change(about(), { target: { value: "Quality of life" } });
+    await opSent(r, {
+      op: "preset.update",
+      changes: { description: "Quality of life" },
+    });
   });
 
   test("Presets: name, about, modules, Add to a world… and Delete preset", async () => {
