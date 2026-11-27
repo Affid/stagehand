@@ -8,6 +8,7 @@ import { safeUrl } from "@stagehand/ui/common/safe-url.ts";
 import { TabList, TabPanel } from "@stagehand/ui/common/tabs.tsx";
 import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../../context.ts";
+import { hasUpdatesTab } from "../../library/head/LibraryTabs.tsx";
 import { plural } from "@stagehand/ui/i18n.ts";
 import {
   byConcern,
@@ -218,12 +219,14 @@ function useFilters() {
   return { kind, onKind, chip, setChip, q, setQ };
 }
 
+/** Where to update them: our Updates tab, or Foundry's Update All without it. */
 function Hint(props: { readonly updates: number; readonly version: string }) {
-  const { t } = useUi();
+  const { state, t } = useUi();
   const { updates, version } = props;
+  const key = hasUpdatesTab(state) ? "up.onlyAfterTab" : "up.onlyAfter";
   return (
     <p class="hint">
-      {updates ? `${plural(t, "up.onlyAfter", updates, { version })} ` : ""}
+      {updates ? `${plural(t, key, updates, { version })} ` : ""}
       {t("up.compatHint")}
     </p>
   );

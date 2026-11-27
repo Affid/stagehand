@@ -281,6 +281,14 @@ describe("the Package tab's server settings and actions (6b2)", () => {
       packageType: "module",
       id: "a",
     });
+    // Its hint names our Updates tab, which replaces Foundry's Update All.
+    const lock = within(panel)
+      .getByRole("switch", { name: "Lock updates" })
+      .closest("li");
+    expect(lock?.textContent).toContain(
+      "The Updates tab doesn't check or update it",
+    );
+    expect(lock?.textContent).not.toContain("Update All");
     // Foundry's "Update if available" gives way to our Update box (updates plan).
     expect(
       within(panel).queryByRole("button", { name: "Update if available" }),

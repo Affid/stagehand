@@ -9,7 +9,7 @@ import { afterEach, describe, expect, test } from "vitest";
 import type { CompatEntry, Preview } from "../../src/page-compat.ts";
 import type { Release } from "../../src/page-update.ts";
 import type { UpdateResult } from "../../src/ui/page.ts";
-import { el, renderUi, setupState } from "./harness.tsx";
+import { el, renderUi, SUPPORTED, setupState } from "./harness.tsx";
 
 afterEach(cleanup);
 
@@ -67,8 +67,10 @@ const PREVIEW: Preview = {
 async function open(
   check: UpdateResult = { release: RELEASE },
   coreUpdate: { canUpdate?: boolean } = {},
+  packageCheck = true,
 ) {
   const base = setupState();
+  const adapter = SUPPORTED.status === "supported" ? SUPPORTED.adapter : null;
   const r = renderUi("shell", {
     data: {
       setup: base.setup && {
@@ -81,7 +83,15 @@ async function open(
         },
       },
     },
-    state: { route: { kind: "server", page: "update" } },
+    state: {
+      route: { kind: "server", page: "update" },
+      ...(adapter && {
+        adapter: {
+          status: "supported",
+          adapter: { ...adapter, flags: { ...adapter.flags, packageCheck } },
+        },
+      }),
+    },
     answers: (page) => {
       page.update.mockImplementation((ask) =>
         Promise.resolve(ask.op === "preview" ? { preview: PREVIEW } : check),
@@ -417,6 +427,20 @@ describe("Your packages (Foundry's compatibility preview)", () => {
         r2.container.querySelector('.stl-card.viewing[data-system="dnd5e"]'),
       ).toBeTruthy();
     });
+  });
+
+  test("the packages to update too: the Updates tab, or Update all without it", async () => {
+    const r = await open();
+    fireEvent.click(r.getByRole("tab", { name: /Your packages/ }));
+    expect(el(r.container, ".stu-compat .hint").textContent).toContain(
+      "after you update it too (Library, Updates).",
+    );
+    cleanup();
+    const r2 = await open(undefined, {}, false);
+    fireEvent.click(r2.getByRole("tab", { name: /Your packages/ }));
+    expect(el(r2.container, ".stu-compat .hint").textContent).toContain(
+      "after you update it too (Library, Update all).",
+    );
   });
 
   test("a world without the companion: its modules are unknown", async () => {

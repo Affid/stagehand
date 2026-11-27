@@ -128,7 +128,7 @@ export function OnServer(props: {
         />
         <Switch
           label={t("pk.lock")}
-          hint={t("pk.lockHint")}
+          hint={t(hasUpdatesTab(state) ? "pk.lockHintTab" : "pk.lockHint")}
           on={pkg.locked === true}
           disabled={!canLock}
           onFlip={() => run(pkg.locked ? "unlockPackage" : "lockPackage")}
