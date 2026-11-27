@@ -82,7 +82,11 @@ test("one package from its Update box: checked, then installed with progress on 
   await expect(shell().locator(".sts-lib > span")).toHaveText(
     "Updating 1 of 1…",
   );
-  await page.screenshot({ path: `${SCREENS}/updates-phase1-progress.png` });
+  // Bars as they settle: the fixtures move faster than the bar's transition.
+  await page.screenshot({
+    path: `${SCREENS}/updates-phase1-progress.png`,
+    animations: "disabled",
+  });
   // Done: the chip goes, the card shows the new version, the box says so.
   await expect(chip).toHaveCount(0, { timeout: 20_000 });
   await expect(plain).toContainText("v1.1.0", { timeout: 10_000 });
@@ -103,7 +107,11 @@ test("phase 2: the Updates tab checks every package and sorts what it found", as
   await tab(/^Updates/).click();
   // Never checked in this browser: opening the tab checks, with progress.
   await expect(shell().locator(".spu-head.busy")).toBeVisible();
-  await page.screenshot({ path: `${SCREENS}/updates-phase2-checking.png` });
+  // Bars as they settle: the fixtures move faster than the bar's transition.
+  await page.screenshot({
+    path: `${SCREENS}/updates-phase2-checking.png`,
+    animations: "disabled",
+  });
   await expect(shell().locator(".spu-head:not(.busy)")).toBeVisible({
     timeout: 60_000,
   });
@@ -148,6 +156,33 @@ test("phase 2: the check is kept: after a reload the tab shows it without checki
   await expect(row("st-upd-lib")).toBeVisible();
 });
 
+/**
+ * Every width the run's bar is given, in order, while the run goes on;
+ * the returned function reads them.
+ */
+async function watchRunBar(): Promise<() => Promise<number[]>> {
+  await page.evaluate(() => {
+    const seen: number[] = [];
+    Object.assign(window, { stRunBar: seen });
+    const root = document.querySelector("#st-shell-root");
+    if (!root) throw new Error("No Stagehand shell");
+    new MutationObserver(() => {
+      const fill = root.querySelector<HTMLElement>(
+        ".spu-foot.busy .spu-bar span",
+      );
+      const width = fill ? parseFloat(fill.style.width) : NaN;
+      if (!Number.isNaN(width) && seen.at(-1) !== width) seen.push(width);
+    }).observe(root, {
+      subtree: true,
+      childList: true,
+      attributes: true,
+      attributeFilter: ["style"],
+    });
+  });
+  return () =>
+    page.evaluate(() => (window as unknown as { stRunBar: number[] }).stRunBar);
+}
+
 test("phase 3: Update installs only the ticked packages, after a backup, with progress and a summary", async () => {
   await tab(/^Updates/).click();
   // Only our fixtures: the server's real system update stays as it is.
@@ -162,10 +197,15 @@ test("phase 3: Update installs only the ticked packages, after a backup, with pr
       .check();
   await expect(shell().locator(".spu-foot")).toContainText("3 packages ticked");
   await shell().getByRole("checkbox", { name: "Back up first" }).check();
+  const bar = await watchRunBar();
   await shell().getByRole("button", { name: "Update 3" }).click();
   await expect(shell().locator(".spu-foot.busy")).toBeVisible();
   await expect(shell().locator(".sts-lib > span")).toContainText("Updating");
-  await page.screenshot({ path: `${SCREENS}/updates-phase3-running.png` });
+  // Bars as they settle: the fixtures move faster than the bar's transition.
+  await page.screenshot({
+    path: `${SCREENS}/updates-phase3-running.png`,
+    animations: "disabled",
+  });
   await expect(shell().locator(".spu-sum")).toContainText(
     "2 packages updated · 1 failed.",
     { timeout: 120_000 },
@@ -179,6 +219,10 @@ test("phase 3: Update installs only the ticked packages, after a backup, with pr
   await expect(
     section("Not available to you").locator(rowSel("st-upd-download403")),
   ).toBeVisible();
+  // Backups, then installs: one bar that only ever moves forward.
+  const widths = await bar();
+  expect(widths.length).toBeGreaterThan(2);
+  expect(widths).toEqual(widths.toSorted((a, b) => a - b));
   await page.screenshot({ path: `${SCREENS}/updates-phase3-done.png` });
   await tab(/^Modules/).click();
   await expect(card("st-upd-lib")).toContainText("v1.1.0");

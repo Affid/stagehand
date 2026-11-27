@@ -375,7 +375,11 @@ anyway (highlighted) and the fix.
 After the full live suite on 14 (2026-11-27): the chip's check above; a
 package's row says Waiting, not Backing up, once its backup is done and
 others are still backing up (the page reports `backedUp` after each
-backup, which the run's bar counts as done); the live specs that listed the Library's tabs, ran Update from a
+backup, which the run's bar counts as done); the run's bar only moves
+forward (with Back up first each package is two steps, its backup and its
+install; a package past its download counts as downloaded; the bar keeps
+its furthest point when Foundry's last tick comes before our done); the
+live specs that listed the Library's tabs, ran Update from a
 card, or matched the version menu's "What's new" case-sensitively follow
 the new tab and flow. Foundry 14.371 came out the same day, so the
 "Foundry is up to date" test skips while foundryvtt.com offers a newer

@@ -4,6 +4,7 @@
 // updated.
 import type { Row } from "@stagehand/shared/updates/model";
 import { plural } from "@stagehand/ui/i18n.ts";
+import { useRef } from "preact/hooks";
 import { useUi } from "../../../context.ts";
 import {
   askOrStart,
@@ -68,24 +69,48 @@ export function InstallingState(props: { readonly id: string }) {
   );
 }
 
-/** How far the whole run is, 0 to 100. */
+/**
+ * How far the whole run is, 0 to 100, only ever forward: with Back up
+ * first, each package is two steps (its backup, then its install), so the
+ * bar doesn't start again when the installs begin. A failed backup ends
+ * that package: both its steps count.
+ */
 function runPct(run: InstallRun, current: number | undefined): number {
   const states = run.ids.map((id) => run.states[id]);
-  const backingUp =
-    run.backup && states.some((s) => s === "queued" || s === "backup");
-  const total = run.ids.length;
-  if (backingUp && !states.some((s) => s === "installing" || s === "done")) {
-    const past = run.ids.filter(
-      (id) => run.states[id] !== "queued" && run.states[id] !== "backup",
-    ).length;
-    const at = states.filter((s) => s === "backup").length;
-    return Math.round(((past + at * 0.5) / total) * 100);
-  }
   const finished = states.filter((s) => s === "done" || s === "failed").length;
-  return Math.min(
-    100,
-    Math.round(((finished + (current ?? 0) / 100) / total) * 100),
-  );
+  const installed = finished + (current ?? 0) / 100;
+  const backups = run.backup
+    ? states.filter((s) => s !== "queued" && s !== "backup").length +
+      states.filter((s) => s === "backup").length * 0.5
+    : 0;
+  const steps = run.ids.length * (run.backup ? 2 : 1);
+  return Math.min(100, Math.round(((backups + installed) / steps) * 100));
+}
+
+/** Foundry's steps after a package's download: it counts as downloaded. */
+const AFTER_DOWNLOAD: ReadonlySet<string> = new Set([
+  "extract",
+  "install",
+  "cleanup",
+]);
+
+/** How much of the package installing now has downloaded, 0 to 100. */
+function downloadedPct(task: ReturnType<typeof installOf>): number | undefined {
+  if (task?.step === "download") return task.pct;
+  return task?.step !== undefined && AFTER_DOWNLOAD.has(task.step)
+    ? 100
+    : undefined;
+}
+
+/**
+ * The furthest this run has got. Foundry's last tick for a package can end
+ * its task just before our done for it arrives; the bar doesn't step back.
+ */
+function useForward(requestId: string, pct: number): number {
+  const peak = useRef({ requestId, pct });
+  const was = peak.current.requestId === requestId ? peak.current.pct : 0;
+  peak.current = { requestId, pct: Math.max(was, pct) };
+  return peak.current.pct;
 }
 
 function Running(props: { readonly run: InstallRun }) {
@@ -96,7 +121,7 @@ function Running(props: { readonly run: InstallRun }) {
     run.backup && !states.some((s) => s === "installing" || s === "done");
   const installing = run.ids.find((id) => run.states[id] === "installing");
   const task = installing ? installOf(state, installing) : undefined;
-  const pct = runPct(run, task?.step === "download" ? task.pct : undefined);
+  const pct = useForward(run.requestId, runPct(run, downloadedPct(task)));
   const { at, total } = runPosition(run);
   return (
     <div class="spu-foot busy" role="status">

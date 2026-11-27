@@ -225,27 +225,86 @@ describe("updating the ticked packages (phase 3)", () => {
     ).toBe(null);
   });
 
-  test("backups first: a backed-up row waits, and the foot moves on with each backup", () => {
+  test("backups first: a backed-up row waits, and one bar runs forward through backups and installs", () => {
     const r = updatesTab(checked([A, LIB]));
     fireEvent.click(r.getByRole("button", { name: "Update 2" }));
     const side = (id: string) =>
       el(r.container, `.spu-row[data-id="${id}"] .spu-side`).textContent;
-    void act(() => {
-      r.emit(ev({ kind: "item", id: "lib", state: "backup" }));
+    const foot = () => {
+      const f = el(r.container, ".spu-foot");
+      const bar = el(f, ".spu-bar span");
+      return { text: f.textContent, bar: bar.style.width };
+    };
+    const step = (...events: object[]) => {
+      void act(() => {
+        for (const e of events) r.emit(ev(e));
+      });
+      return foot();
+    };
+    const progress = (over: object) =>
+      r.emit({
+        type: "PROGRESS",
+        payload: {
+          action: "installPackage",
+          id: "https://x/lib.json",
+          packageId: "lib",
+          type: "module",
+          ...over,
+        },
+      });
+    // Two packages, each backed up then installed: four steps.
+    expect(step({ kind: "item", id: "lib", state: "backup" })).toEqual({
+      text: expect.stringContaining("Backing up 2 packages · 13%"),
+      bar: "13%",
     });
     expect(side("lib")).toBe("Backing up");
-    expect(el(r.container, ".spu-foot").textContent).toContain(
-      "Backing up 2 packages · 25%",
-    );
-    void act(() => {
-      r.emit(ev({ kind: "item", id: "lib", state: "backedUp" }));
-      r.emit(ev({ kind: "item", id: "a", state: "backup" }));
+    expect(
+      step(
+        { kind: "item", id: "lib", state: "backedUp" },
+        { kind: "item", id: "a", state: "backup" },
+      ),
+    ).toEqual({
+      text: expect.stringContaining("Backing up 2 packages · 38%"),
+      bar: "38%",
     });
     expect(side("lib")).toBe("Waiting");
     expect(side("a")).toBe("Backing up");
-    expect(el(r.container, ".spu-foot").textContent).toContain(
-      "Backing up 2 packages · 75%",
+    step(
+      { kind: "item", id: "a", state: "backedUp" },
+      { kind: "item", id: "lib", state: "installing" },
     );
+    void act(() => {
+      progress({ step: "download", pct: 40 });
+    });
+    expect(foot()).toEqual({
+      text: expect.stringContaining("Updating 1 of 2 · 60%"),
+      bar: "60%",
+    });
+    // Downloaded, Foundry installs it (no number): the bar doesn't drop back.
+    void act(() => {
+      progress({ step: "install" });
+    });
+    expect(foot()).toEqual({
+      text: expect.stringContaining("Updating 1 of 2 · 75%"),
+      bar: "75%",
+    });
+    // Foundry's last tick can come just before the package's done.
+    void act(() => {
+      progress({ step: "complete" });
+    });
+    expect(foot()).toEqual({
+      text: expect.stringContaining("Updating 1 of 2 · 75%"),
+      bar: "75%",
+    });
+    expect(
+      step(
+        { kind: "item", id: "lib", state: "done" },
+        { kind: "item", id: "a", state: "installing" },
+      ),
+    ).toEqual({
+      text: expect.stringContaining("Updating 2 of 2 · 75%"),
+      bar: "75%",
+    });
   });
 
   test("the end: a summary, what was updated first, and a refused download remembered", async () => {
