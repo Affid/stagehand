@@ -3,7 +3,12 @@
 // package's state as the page world reports it, then a summary. A download
 // the server refused (401 or 403) is remembered at that version, so it isn't
 // ticked again until a newer one is out (phase 5).
-import { installOrder, readyIds } from "@stagehand/shared/updates/model";
+import {
+  installOrder,
+  readyIds,
+  risksOf,
+  safeSubset,
+} from "@stagehand/shared/updates/model";
 import type { InstallEvent } from "../page-package-install.ts";
 import { rowsFor, updatesInput } from "./model/package-updates.ts";
 import type { PageBridge } from "./page.ts";
@@ -162,4 +167,45 @@ export function waitingIn(
 ): "queued" | "backup" | undefined {
   const s = state.install.running?.states[id];
   return s === "queued" || s === "backup" ? s : undefined;
+}
+
+/**
+ * Asks first when a package in the run would still leave something unmet
+ * (updates plan, phase 4), judged on that run alone; else starts it.
+ */
+export function askOrStart(deps: InstallDeps, ids: readonly string[]): void {
+  const state = deps.store.get();
+  if (state.install.running || !ids.length) return;
+  if (!risksOf(updatesInput(state), ids).length) {
+    startInstall(deps, ids);
+    return;
+  }
+  setInstall(deps.store, (i) => ({ ...i, asking: [...ids] }));
+}
+
+/** The owner's answer: cancel, the run as asked, without the risky ones, or with the fixes. */
+export function answer(
+  deps: InstallDeps,
+  choice: "cancel" | "all" | "others" | "withFix",
+  fixes: readonly string[] = [],
+): void {
+  const ids = deps.store.get().install.asking ?? [];
+  setInstall(deps.store, (i) => ({ ...i, asking: undefined }));
+  if (choice === "cancel") return;
+  const safe = new Set(safeSubset(updatesInput(deps.store.get()), ids));
+  if (choice === "all") startInstall(deps, ids);
+  else if (choice === "others") {
+    setTicks(
+      deps.store,
+      tickedIds(deps.store.get()).filter(
+        (id) => safe.has(id) || !ids.includes(id),
+      ),
+    );
+    startInstall(
+      deps,
+      ids.filter((id) => safe.has(id)),
+    );
+  }
+  // The fixes join the run, which is judged again: they may have risks of their own.
+  else askOrStart(deps, [...new Set([...ids, ...fixes])]);
 }

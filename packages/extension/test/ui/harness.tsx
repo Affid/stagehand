@@ -247,16 +247,29 @@ export function renderUi(
         ? data
         : m.kind === "world-queue"
           ? { queue: [] }
-          : m.kind === "updates-checked"
+          : m.kind === "update-refused"
             ? {
                 ...data,
                 updatesCheck: {
                   ...data.updatesCheck,
-                  checkedAt: m.full ? m.checkedAt : data.updatesCheck.checkedAt,
-                  results: m.results,
+                  refused:
+                    m.version === null
+                      ? {}
+                      : { ...data.updatesCheck.refused, [m.id]: m.version },
                 },
               }
-            : { ok: true, library: data.library });
+            : m.kind === "updates-checked"
+              ? {
+                  ...data,
+                  updatesCheck: {
+                    ...data.updatesCheck,
+                    checkedAt: m.full
+                      ? m.checkedAt
+                      : data.updatesCheck.checkedAt,
+                    results: m.results,
+                  },
+                }
+              : { ok: true, library: data.library });
   const send = vi.fn((m: ExtensionMessage) => Promise.resolve(reply(m)));
   const t = createTranslator("en");
   const fake = fakePage();

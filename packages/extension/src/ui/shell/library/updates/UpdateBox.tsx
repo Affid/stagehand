@@ -10,10 +10,16 @@ import { safeUrl } from "@stagehand/ui/common/safe-url.ts";
 import { ago } from "@stagehand/ui/i18n.ts";
 import type { ComponentChildren } from "preact";
 import { useUi } from "../../../context.ts";
-import { checksOf, rowsFor } from "../../../model/package-updates.ts";
+import {
+  checksOf,
+  rowsFor,
+  updatesInput,
+} from "../../../model/package-updates.ts";
+import { warningsOf } from "@stagehand/shared/updates/model";
+import { titlesOf, warningText } from "./Warnings.tsx";
 import { age } from "../../../model/worlds.ts";
 import { checkOne } from "../../../package-check.ts";
-import { setBackup, startInstall } from "../../../package-install.ts";
+import { askOrStart, setBackup } from "../../../package-install.ts";
 import { InstallingState, RunState } from "./RunParts.tsx";
 import { installOf } from "../../../tasks.ts";
 import { RowAction, Why } from "./UpdateRow.tsx";
@@ -102,6 +108,24 @@ const isBusy = (
   installOf(state, pkg.id) !== undefined ||
   Object.values(state.check.one).includes(pkg.id);
 
+/** What the update would leave unmet; its confirmation offers the fix. */
+function BoxWarnings(props: { readonly pkg: PackageInfo }) {
+  const { state, t } = useUi();
+  const { pkg } = props;
+  return (
+    <>
+      {warningsOf(updatesInput(state), pkg.id, new Set([pkg.id])).map(
+        (w, i) => (
+          <div key={String(i)} class="spu-warn">
+            <i class="fa-solid fa-triangle-exclamation" aria-hidden="true" />
+            <span>{warningText(t, w, titlesOf(state), pkg.id)}</span>
+          </div>
+        ),
+      )}
+    </>
+  );
+}
+
 /** What is available, Back up first, and Update to it. */
 function Offered(props: { readonly pkg: PackageInfo; readonly row: Row }) {
   const { state, store, t, canChange } = useUi();
@@ -121,6 +145,7 @@ function Offered(props: { readonly pkg: PackageInfo; readonly row: Row }) {
           </>
         ) : null}
       </p>
+      <BoxWarnings pkg={pkg} />
       <div class="spu-boxacts">
         <label class="spu-bfirst" title={t("upd.backupHint")}>
           <input
@@ -137,7 +162,7 @@ function Offered(props: { readonly pkg: PackageInfo; readonly row: Row }) {
           class="bright"
           disabled={!canChange || state.install.running !== null}
           onClick={() => {
-            startInstall(install, [pkg.id]);
+            askOrStart(install, [pkg.id]);
           }}
         >
           <i class="fa-solid fa-cloud-arrow-down" aria-hidden="true" />

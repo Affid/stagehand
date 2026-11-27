@@ -2,7 +2,7 @@
 // The Library's Updates tab (updates plan, phase 2): our own check, its
 // progress, and what it found in sections, before anything installs.
 import type { PackageCheck } from "@stagehand/shared/updates/check";
-import { act, cleanup, fireEvent } from "@testing-library/preact";
+import { act, cleanup, fireEvent, within } from "@testing-library/preact";
 import { afterEach, describe, expect, test } from "vitest";
 import type { SetupState } from "../../src/messages.ts";
 import type { PageToUi } from "../../src/page-protocol.ts";
@@ -253,5 +253,162 @@ describe("updating the ticked packages (phase 3)", () => {
       id: "a",
       version: "1.1.0",
     });
+  });
+});
+
+describe("warnings and asking first (phase 4)", () => {
+  /** lib and a module needing its new version; a system and a module capping it. */
+  function risky(): Partial<SetupState> {
+    const setup = base.setup;
+    if (!setup) throw new Error("sample setup");
+    return {
+      setup: {
+        ...setup,
+        modules: [
+          pkg("lib", { library: true }),
+          pkg("dock"),
+          pkg("maps", {
+            systems: [
+              {
+                id: "dnd5e",
+                type: "system",
+                compatibility: { maximum: "5.1.9" },
+              },
+            ],
+          }),
+          pkg("free"),
+        ],
+      },
+      updatesCheck: {
+        checkedAt: NOW - 60_000,
+        refused: {},
+        results: [
+          check("lib", {}),
+          check("dock", { requires: [{ id: "lib", minimum: "1.1.0" }] }),
+          check("dnd5e", { type: "system", version: "5.2" }),
+          check("free", {}),
+        ],
+      },
+    };
+  }
+
+  test("a need another update meets: a note while both are ticked, a warning and its fix when not", () => {
+    const r = updatesTab(risky());
+    const dock = () => el(r.container, '.spu-row[data-id="dock"]');
+    expect(dock().textContent).toContain(
+      "Needs Title lib 1.1.0: ticked too, and it updates first.",
+    );
+    fireEvent.click(r.getByRole("checkbox", { name: "Update Title lib" }));
+    expect(dock().textContent).toContain(
+      "Needs Title lib 1.1.0 or newer (you have 1.0.0).",
+    );
+    fireEvent.click(
+      within(dock()).getByRole("button", { name: "Tick Title lib too" }),
+    );
+    expect(
+      r.getByRole("checkbox", { name: "Update Title lib" }),
+    ).toHaveProperty("checked", true);
+  });
+
+  test("the system's update names the module it leaves behind, and needs attention", () => {
+    const r = updatesTab(risky());
+    const sec = section(r.container, "Needs attention");
+    expect(sec?.textContent).toContain("Dungeons & Dragons Fifth Edition");
+    expect(sec?.textContent).toContain(
+      "1 module declares Dungeons & Dragons Fifth Edition up to 5.1.9: Title maps (no update yet). It may stop working.",
+    );
+  });
+
+  test("Update asks first when the run would break something; the other ones is the safe choice", () => {
+    const r = updatesTab(risky());
+    fireEvent.click(
+      r.getByRole("checkbox", {
+        name: "Update Dungeons & Dragons Fifth Edition",
+      }),
+    );
+    fireEvent.click(r.getByRole("button", { name: "Update 4" }));
+    expect(r.page.packageInstall).not.toHaveBeenCalled();
+    const dialog = r.getByRole("dialog", { name: "Update 4 packages?" });
+    expect(dialog.textContent).toContain("Title maps is in no world.");
+    expect(dialog.querySelector("button.bright")?.textContent).toBe(
+      "Update the other 3",
+    );
+    fireEvent.click(
+      within(dialog).getByRole("button", { name: "Update the other 3" }),
+    );
+    expect(r.page.packageInstall).toHaveBeenCalledWith(
+      [
+        { type: "module", id: "lib" },
+        { type: "module", id: "dock" },
+        { type: "module", id: "free" },
+      ],
+      true,
+    );
+  });
+
+  test("Cancel installs nothing; Update anyway installs the run as it was", () => {
+    const r = updatesTab(risky());
+    fireEvent.click(
+      r.getByRole("checkbox", {
+        name: "Update Dungeons & Dragons Fifth Edition",
+      }),
+    );
+    fireEvent.click(r.getByRole("button", { name: "Update 4" }));
+    fireEvent.click(
+      within(r.getByRole("dialog")).getByRole("button", { name: "Cancel" }),
+    );
+    expect(r.queryByRole("dialog")).toBe(null);
+    expect(r.page.packageInstall).not.toHaveBeenCalled();
+    fireEvent.click(r.getByRole("button", { name: "Update 4" }));
+    fireEvent.click(
+      within(r.getByRole("dialog")).getByRole("button", {
+        name: "Update all 4 anyway",
+      }),
+    );
+    expect(r.page.packageInstall).toHaveBeenCalledOnce();
+  });
+});
+
+describe("access you no longer have, and checks that get no answer (phase 5)", () => {
+  test("a refused download: Try again forgets the refusal and installs it", () => {
+    const data = checked([check("a", {})]);
+    const r = updatesTab({
+      ...data,
+      updatesCheck: { ...data.updatesCheck!, refused: { a: "1.1.0" } },
+    });
+    const row = el(r.container, '.spu-row[data-id="a"]');
+    expect(section(r.container, "Not available to you")?.textContent).toContain(
+      "The download was refused, so it isn't ticked for you any more.",
+    );
+    fireEvent.click(within(row).getByRole("button", { name: "Try again" }));
+    expect(r.send).toHaveBeenCalledWith({
+      kind: "update-refused",
+      id: "a",
+      version: null,
+    });
+  });
+
+  test("a check that fails again says how many tries, and where to look", () => {
+    const r = updatesTab(checked(RESULTS));
+    const failed = section(r.container, "Couldn't check");
+    if (!failed) throw new Error("no section");
+    fireEvent.click(within(failed).getByRole("button", { name: "Try again" }));
+    void act(() => {
+      r.emit({
+        type: "PACKAGE_CHECK",
+        payload: {
+          requestId: "check-1",
+          kind: "result",
+          result: check("lib", {
+            state: "error",
+            version: undefined,
+            error: "timeout",
+          }),
+        },
+      });
+    });
+    expect(section(r.container, "Couldn't check")?.textContent).toContain(
+      "Still no answer after 2 tries.",
+    );
   });
 });

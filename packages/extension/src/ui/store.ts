@@ -82,6 +82,8 @@ export interface CheckView {
   readonly one: Readonly<Record<string, string>>;
   /** Results that came in and aren't saved yet, by package id. */
   readonly live: Readonly<Record<string, PackageCheck>>;
+  /** Checks of one package that found no answer, in a row (Try again). */
+  readonly tries?: Readonly<Record<string, number>>;
 }
 
 export const NO_CHECK: CheckView = { running: null, one: {}, live: {} };
@@ -124,6 +126,8 @@ export interface InstallView {
   readonly ticks: readonly string[] | null;
   /** Back up first: Foundry's own backup of each package before its install. */
   readonly backup: boolean;
+  /** A run that may break something, waiting for the owner's answer. */
+  readonly asking?: readonly string[] | undefined;
 }
 
 export const NO_INSTALL: InstallView = {

@@ -93,9 +93,15 @@ const without = <T>(
 function onOneRun(deps: CheckDeps, e: CheckEvent): void {
   const { store } = deps;
   if (e.kind === "result") {
+    const { id, state } = e.result;
     setCheck(store, (c) => ({
       ...c,
-      live: { ...c.live, [e.result.id]: e.result },
+      live: { ...c.live, [id]: e.result },
+      // A failed check that fails again says so (phase 5).
+      tries:
+        state === "error"
+          ? { ...c.tries, [id]: (c.tries?.[id] ?? 1) + 1 }
+          : without(c.tries ?? {}, id),
     }));
     void deps.save(false, (deps.now ?? Date.now)(), [e.result]);
     return;

@@ -328,3 +328,18 @@ export function risksOf(
     return warnings.length ? [{ id, warnings }] : [];
   });
 }
+
+/**
+ * The part of a run with no risk left: risky packages are left out until
+ * nothing left is risky, since leaving one out can make another risky (a
+ * module whose newer system was the one left out).
+ */
+export function safeSubset(i: UpdatesInput, ids: readonly string[]): string[] {
+  let safe = [...ids];
+  for (let pass = 0; pass <= ids.length; pass++) {
+    const risky = new Set(risksOf(i, safe).map((r) => r.id));
+    if (!risky.size) return safe;
+    safe = safe.filter((id) => !risky.has(id));
+  }
+  return safe;
+}

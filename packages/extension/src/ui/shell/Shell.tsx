@@ -1,6 +1,7 @@
 // The new Setup page: header, worlds rail, and a world's page or the Library;
 // in the phone and tablet layouts (phone/PhoneShell.tsx) the same pages one at
 // a time under a tab bar.
+import { UpdateConfirm } from "./library/updates/UpdateConfirm.tsx";
 import { useEffect } from "preact/hooks";
 import { useUi } from "../context.ts";
 import { Announcer } from "./Announcer.tsx";
@@ -36,6 +37,7 @@ function DesktopShell() {
         <WorldRail route={route} />
         <MainPane route={route} world={world} />
         {route.kind === "server" ? null : <PanelColumn here={world?.id} />}
+        <UpdateConfirm />
       </div>
       <Announcer />
     </div>

@@ -3,6 +3,7 @@
 // (the worlds list is home on a phone; a tablet keeps it on the left), the
 // dock and the tab bar at the foot. The pages are the desktop's own; they
 // render their phone forms where they read useLayout().
+import { UpdateConfirm } from "../library/updates/UpdateConfirm.tsx";
 import { useEffect, useLayoutEffect, useRef, useState } from "preact/hooks";
 import { useUi } from "../../context.ts";
 import { Announcer } from "../Announcer.tsx";
@@ -181,6 +182,7 @@ export function PhoneShell(props: { readonly layout: Layout }) {
             <WorldRail route={route} />
             <MainPane route={route} world={world} />
             {route.kind === "server" ? null : <PanelColumn here={world?.id} />}
+            <UpdateConfirm />
           </div>
           <div class="stp-sheets" ref={setSheets} />
           <div class="stp-dock" ref={setDock} />

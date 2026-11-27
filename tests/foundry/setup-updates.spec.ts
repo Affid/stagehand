@@ -201,3 +201,65 @@ test("phase 3: a system's update chip opens its panel's Update box, which instal
     .click();
   await tab(/^Modules/).click();
 });
+
+test("phase 4: an update that needs a newer system asks first, offers the system, and asks again about what the system leaves behind", async () => {
+  await tab(/^Modules/).click();
+  const sysnew = card("st-upd-sysnew");
+  await sysnew.locator("button.t").click();
+  const panel = shell().getByRole("complementary", {
+    name: /needs the system 1.1/,
+  });
+  await panel.getByRole("tab", { name: "Package" }).click();
+  const box = panel.locator(".spu-box");
+  await expect(box).toContainText("Fits Updates fixture system 1.1.0 or newer");
+  await box.getByRole("checkbox", { name: "Back up first" }).uncheck();
+  await box.getByRole("button", { name: "Update to 1.1.0" }).click();
+  const dialog = shell().getByRole("dialog");
+  await expect(dialog).toContainText(
+    "Update Updates fixture: needs the system 1.1?",
+  );
+  await expect(dialog.locator("button.bright")).toHaveText(
+    "Also update Updates fixture system",
+  );
+  await page.screenshot({ path: `${SCREENS}/updates-phase4-confirm.png` });
+  await dialog
+    .getByRole("button", { name: "Also update Updates fixture system" })
+    .click();
+  // Judged again: the system leaves the module that fits only 1.0 behind.
+  await expect(shell().getByRole("dialog")).toContainText("Update 2 packages?");
+  await expect(shell().getByRole("dialog")).toContainText(
+    "Updates fixture: fits the system 1.0 (no update yet)",
+  );
+  // Leaving the system out would leave the module short of it: nothing
+  // safer is left, so Update anyway is the highlighted choice.
+  await expect(shell().getByRole("dialog").locator("button.bright")).toHaveText(
+    "Update anyway",
+  );
+  await shell()
+    .getByRole("dialog")
+    .getByRole("button", { name: "Update anyway" })
+    .click();
+  await panel.getByRole("button", { name: "Close" }).click();
+  await tab(/^Updates/).click();
+  await expect(shell().locator(".spu-sum")).toContainText(
+    "2 packages updated.",
+    {
+      timeout: 60_000,
+    },
+  );
+});
+
+test("phase 5: a refused download's Try again tries the install again; refused again, it stays not available", async () => {
+  const refused = section("Not available to you").locator(
+    rowSel("st-upd-download403"),
+  );
+  await expect(refused).toContainText("The download was refused");
+  await refused.getByRole("button", { name: "Try again" }).click();
+  await expect(shell().locator(".spu-sum")).toContainText("1 failed", {
+    timeout: 60_000,
+  });
+  await expect(
+    section("Not available to you").locator(rowSel("st-upd-download403")),
+  ).toBeVisible();
+  await page.screenshot({ path: `${SCREENS}/updates-phase5-refused.png` });
+});

@@ -15,6 +15,7 @@ import {
 import { checkAll } from "../../../package-check.ts";
 import { RowAction, UpdateRow } from "./UpdateRow.tsx";
 import { setTicks, tickedIds } from "../../../package-install.ts";
+import { FixButtons, RowWarnings } from "./Warnings.tsx";
 import {
   RunState,
   UpdatedSection,
@@ -198,17 +199,24 @@ function renderRow(r: Row, usage: number | undefined) {
       usage={usage}
       {...(canTick(r) ? { tick: <Tick row={r} /> } : {})}
       side={<RowSide row={r} />}
-    />
+    >
+      {canTick(r) ? <RowWarnings row={r} /> : null}
+    </UpdateRow>
   );
 }
 
 /** A row's right-hand column: its run state, else its own action. */
 function RowSide(props: { readonly row: Row }) {
   const { state } = useUi();
-  return state.install.running?.states[props.row.id] ? (
-    <RunState id={props.row.id} />
-  ) : (
+  if (state.install.running?.states[props.row.id])
+    return <RunState id={props.row.id} />;
+  return props.row.block ? (
     <RowAction row={props.row} />
+  ) : (
+    <>
+      <RowAction row={props.row} />
+      <FixButtons row={props.row} />
+    </>
   );
 }
 

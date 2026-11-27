@@ -9,7 +9,8 @@ import type { ComponentChildren } from "preact";
 import { useUi } from "../../../context.ts";
 import { worldsUsing } from "../../../model/systems.ts";
 import { checkOne } from "../../../package-check.ts";
-import { useCheckDeps } from "./useCheckDeps.ts";
+import { useCheckDeps, useInstallDeps } from "./useCheckDeps.ts";
+import { askOrStart } from "../../../package-install.ts";
 
 export interface RowProps {
   readonly row: Row;
@@ -51,6 +52,7 @@ function whyText(
   block: Block,
   core: string,
   title: (id: string) => string,
+  tries = 0,
 ): string {
   switch (block.kind) {
     case "core":
@@ -64,6 +66,7 @@ function whyText(
     case "refused":
       return t("upd.why.refused");
     case "error":
+      if (tries > 1) return t("upd.why.again", { n: String(tries) });
       if (block.errorCode === 404) return t("upd.why.gone");
       if (!block.error || /time(d)? ?out/i.test(block.error))
         return t("upd.why.timeout");
@@ -86,7 +89,13 @@ export function Why(props: { readonly row: Row; readonly block: Block }) {
     <div class={`spu-why ${props.row.section}`}>
       <i class={`fa-solid fa-${icon}`} aria-hidden="true" />
       <span>
-        {whyText(t, props.block, setup?.core.version ?? "", title)}
+        {whyText(
+          t,
+          props.block,
+          setup?.core.version ?? "",
+          title,
+          state.check.tries?.[props.row.id] ?? 0,
+        )}
         {props.block.kind === "core" ? (
           <>
             {" "}
@@ -107,54 +116,89 @@ export function Why(props: { readonly row: Row; readonly block: Block }) {
 }
 
 /** The row's own action for its reason, or that it is being checked. */
-export function RowAction(props: { readonly row: Row }) {
-  const { state, page, t, canChange } = useUi();
+interface Act {
+  readonly icon: string;
+  readonly label: string;
+  readonly hint: string;
+  readonly run: () => void;
+}
+
+/** What the owner can do about a row's reason, if anything. */
+function useAct(row: Row): Act | null {
+  const { page, actions } = useUi();
   const deps = useCheckDeps();
-  const { row } = props;
-  const block = row.block;
-  if (Object.values(state.check.one).includes(row.id))
+  const install = useInstallDeps();
+  const again = (): void => {
+    checkOne(deps, row.type, row.id);
+  };
+  switch (row.block?.kind) {
+    case "missing":
+      return {
+        icon: "download",
+        label: "upd.act.install",
+        hint: "upd.act.installHint",
+        run: () => {
+          page.foundryAction({
+            action: "installPackage",
+            packageType: "module",
+          });
+        },
+      };
+    case "denied":
+    case "notOwned":
+      return {
+        icon: "rotate",
+        label: "upd.act.checkAgain",
+        hint: "upd.act.checkAgainHint",
+        run: again,
+      };
+    case "refused":
+      return {
+        icon: "cloud-arrow-down",
+        label: "upd.act.tryAgain",
+        hint: "upd.act.tryInstallHint",
+        // Renewed: the refusal is forgotten, then it installs (asking first if it may break something).
+        run: () => {
+          void actions.markRefused(row.id, null).then(() => {
+            askOrStart(install, [row.id]);
+          });
+        },
+      };
+    case "error":
+      return {
+        icon: "rotate",
+        label: "upd.act.tryAgain",
+        hint: "upd.act.tryAgainHint",
+        run: again,
+      };
+    default:
+      return null;
+  }
+}
+
+export function RowAction(props: { readonly row: Row }) {
+  const { state, t, canChange } = useUi();
+  const act = useAct(props.row);
+  if (Object.values(state.check.one).includes(props.row.id))
     return (
       <span class="spu-st">
         <i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true" />
         {t("upd.act.checking")}
       </span>
     );
-  if (!block) return null;
-  const button = (
-    icon: string,
-    label: string,
-    hint: string,
-    run: () => void,
-  ) => (
+  if (!act) return null;
+  return (
     <button
       type="button"
       class="spu-act"
-      title={t(hint)}
+      title={t(act.hint)}
       disabled={!canChange}
-      onClick={run}
+      onClick={act.run}
     >
-      <i class={`fa-solid fa-${icon} fa-fw`} aria-hidden="true" />
-      {t(label)}
+      <i class={`fa-solid fa-${act.icon} fa-fw`} aria-hidden="true" />
+      {t(act.label)}
     </button>
   );
-  if (block.kind === "missing")
-    return button("download", "upd.act.install", "upd.act.installHint", () => {
-      page.foundryAction({ action: "installPackage", packageType: "module" });
-    });
-  if (block.kind === "denied" || block.kind === "notOwned")
-    return button(
-      "rotate",
-      "upd.act.checkAgain",
-      "upd.act.checkAgainHint",
-      () => {
-        checkOne(deps, row.type, row.id);
-      },
-    );
-  if (block.kind === "error")
-    return button("rotate", "upd.act.tryAgain", "upd.act.tryAgainHint", () => {
-      checkOne(deps, row.type, row.id);
-    });
-  return null;
 }
 
 function WorldsLine(props: {

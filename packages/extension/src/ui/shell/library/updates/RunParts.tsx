@@ -6,9 +6,9 @@ import type { Row } from "@stagehand/shared/updates/model";
 import { plural } from "@stagehand/ui/i18n.ts";
 import { useUi } from "../../../context.ts";
 import {
+  askOrStart,
   runPosition,
   setBackup,
-  startInstall,
   tickedIds,
 } from "../../../package-install.ts";
 import type { InstallRun } from "../../../store.ts";
@@ -150,7 +150,7 @@ export function UpdatesFoot(props: { readonly rows: readonly Row[] }) {
         class="bright"
         disabled={!n || !canChange}
         onClick={() => {
-          startInstall(deps, ticked);
+          askOrStart(deps, ticked);
         }}
       >
         <i class="fa-solid fa-cloud-arrow-down" aria-hidden="true" />

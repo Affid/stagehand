@@ -363,6 +363,12 @@ compatible}`), or `error` and `errorCode` (401, 403, 404, 500 from the
 5. **Access.** Refused downloads remembered; the "Not available to you"
    wording for all three cases, each with Check again or Try again.
 
+Phases 4 and 5 done 2026-11-27. One change from the mockup, found by the
+live fixtures: "Update the other N" leaves out risky packages until none
+left is risky (`safeSubset`), since leaving out a system can leave a module
+that needs it short; when nothing is left, the dialog offers only Update
+anyway (highlighted) and the fix.
+
 Each phase: unit tests, the live suites on 14 and 13, the app suite, then
 a commit.
 

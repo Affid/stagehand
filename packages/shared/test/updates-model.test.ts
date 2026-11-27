@@ -6,6 +6,7 @@ import {
   readyIds,
   risksOf,
   rowsOf,
+  safeSubset,
   type UpdatesInput,
   warningsOf,
 } from "../src/updates/model.ts";
@@ -294,6 +295,29 @@ describe("installing", () => {
       "a",
       "dock",
     ]);
+  });
+
+  test("the safe part of a run: leaving a risky package out can make another risky", () => {
+    const i = input(
+      [
+        sys("s", "1.0.0"),
+        mod("dep", "1.0.0", {
+          systems: [
+            { id: "s", type: "system", compatibility: { maximum: "1.0.9" } },
+          ],
+        }),
+        mod("needs"),
+        mod("free"),
+      ],
+      [
+        update("s", "1.1.0", { type: "system" }),
+        update("needs", "1.1.0", { systems: [{ id: "s", minimum: "1.1.0" }] }),
+        update("free", "1.1.0"),
+      ],
+    );
+    // s leaves dep behind; without s, needs is short of it: only free is safe.
+    expect(safeSubset(i, ["needs", "s", "free"])).toEqual(["free"]);
+    expect(safeSubset(i, ["needs", "s"])).toEqual([]);
   });
 
   test("a run's risks are judged on that run alone", () => {
