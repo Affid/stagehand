@@ -419,12 +419,15 @@ Shown in the approved mockup, so approved with it:
   old; Setup load keeps the quick package-list check for the marks.
 - No Update All button on the Modules and Systems tabs.
 
-Not visible in the mockup, so still a proposal for the owner to confirm
-when the phase gets there:
+Not visible in the mockup; the owner decided after the build (2026-11-27):
 
-- Back up first is remembered per browser.
-- Refused downloads are remembered in this browser, not the library file
-  (phase 5).
+- Back up first is not remembered: it is on each time Setup opens.
+- Refused downloads are remembered in this browser (extension storage),
+  not the library file.
+- Foundry's own "Backup created" toasts stay, though they cover the
+  tab's summary for a few seconds (hiding them would mean patching
+  Foundry's notifications).
+- The test servers stay on 14.370 for now.
 
 ## Risks
 
