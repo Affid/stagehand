@@ -8,12 +8,15 @@ import { useUi } from "../../context.ts";
 import { plural } from "@stagehand/ui/i18n.ts";
 import { worldsUsing } from "../../model/systems.ts";
 import { updateFor } from "../../model/updates.ts";
+import { installOf } from "../../tasks.ts";
+import { InstallChip } from "./InstallChip.tsx";
 import { shownVersion } from "@stagehand/shared/version";
 
 function Marks(props: { readonly s: SystemInfo }) {
   const { state, page, t, canChange } = useUi();
   const { s } = props;
   const update = updateFor(state.updates.system, s);
+  const installing = installOf(state, s.id);
   return (
     <>
       {s.favorite ? (
@@ -30,7 +33,9 @@ function Marks(props: { readonly s: SystemInfo }) {
           aria-label={t("lib.locked")}
         />
       ) : null}
-      {update ? (
+      {installing ? (
+        <InstallChip task={installing} title={s.title} />
+      ) : update ? (
         <button
           type="button"
           class="stw-upd"

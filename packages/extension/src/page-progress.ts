@@ -55,7 +55,9 @@ const TYPES: ReadonlySet<unknown> = new Set([
 
 /**
  * The package a tick is about. Foundry's last tick of a restore names only the
- * backup, whose id is `<type>.<packageId>.<date>.<ms>`.
+ * backup, whose id is `<type>.<packageId>.<date>.<ms>`. An install's id is
+ * its manifest URL and its title the package's id (Foundry's server sets
+ * both when it starts the download).
  */
 function packageOf(
   p: Loose,
@@ -63,12 +65,17 @@ function packageOf(
 ): { packageId?: string; type?: string } {
   const [head, pkg] = id.split(".");
   const type = TYPES.has(p.type) ? p.type : TYPES.has(head) ? head : undefined;
+  const installOf =
+    p.action === "installPackage" &&
+    typeof p.title === "string" &&
+    ID.test(p.title)
+      ? p.title
+      : undefined;
   const packageId =
     typeof p.packageId === "string" && ID.test(p.packageId)
       ? p.packageId
-      : type && type !== "snapshot" && pkg && ID.test(pkg)
-        ? pkg
-        : undefined;
+      : (installOf ??
+        (type && type !== "snapshot" && pkg && ID.test(pkg) ? pkg : undefined));
   return {
     ...(typeof type === "string" ? { type } : {}),
     ...(packageId ? { packageId } : {}),

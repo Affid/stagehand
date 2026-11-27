@@ -4,6 +4,7 @@ import type { PackageInfo } from "@stagehand/shared/package";
 import type { FoundryAction } from "../../../page-protocol.ts";
 import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../context.ts";
+import { installOf } from "../../tasks.ts";
 
 type PackageAction = Extract<FoundryAction, { id: string }>["action"];
 
@@ -47,6 +48,35 @@ function Switch(props: {
   );
 }
 
+/** Foundry's update of this package, or its progress while it installs. */
+function UpdateButton(props: {
+  readonly pkg: PackageInfo;
+  readonly kind: Kind;
+}) {
+  const { state, t, canChange } = useUi();
+  const run = useRun(props.pkg, props.kind);
+  const task = installOf(state, props.pkg.id);
+  const label = !task
+    ? t("pk.updateIfAvailable")
+    : task.step === "download" && task.pct !== undefined
+      ? t("pk.updatingPct", { pct: String(task.pct) })
+      : t("pk.installing");
+  return (
+    <button
+      type="button"
+      disabled={!canChange || task !== undefined}
+      onClick={() => run("updatePackage")}
+    >
+      {task ? (
+        <i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true" />
+      ) : (
+        <Icon name="rotate" />
+      )}
+      {label}
+    </button>
+  );
+}
+
 function Acts(props: { readonly pkg: PackageInfo; readonly kind: Kind }) {
   const { t, canChange } = useUi();
   const run = useRun(props.pkg, props.kind);
@@ -61,9 +91,9 @@ function Acts(props: { readonly pkg: PackageInfo; readonly kind: Kind }) {
       {props.pkg.locked || props.kind === "system"
         ? null
         : btn("editPackage", "pen-to-square", "pk.edit")}
-      {props.pkg.locked
-        ? null
-        : btn("updatePackage", "rotate", "pk.updateIfAvailable")}
+      {props.pkg.locked ? null : (
+        <UpdateButton pkg={props.pkg} kind={props.kind} />
+      )}
       {btn("backupPackage", "floppy-disk", "pk.backup")}
       {btn("uninstallPackage", "trash", "pk.uninstall")}
     </div>

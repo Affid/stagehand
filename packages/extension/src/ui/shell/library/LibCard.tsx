@@ -14,6 +14,8 @@ import { useUi } from "../../context.ts";
 import { plural } from "@stagehand/ui/i18n.ts";
 import { unverifiedText } from "@stagehand/ui/model/unverified.ts";
 import { updateFor } from "../../model/updates.ts";
+import { installOf } from "../../tasks.ts";
+import { InstallChip } from "./InstallChip.tsx";
 
 const MAX_TAGS = 3;
 
@@ -57,6 +59,7 @@ function Marks(props: { readonly pkg: PackageInfo }) {
   const { state, page, t, canChange } = useUi();
   const { pkg } = props;
   const update = updateFor(state.updates.module, pkg);
+  const installing = installOf(state, pkg.id);
   return (
     <>
       {pkg.favorite ? (
@@ -73,7 +76,9 @@ function Marks(props: { readonly pkg: PackageInfo }) {
           aria-label={t("lib.locked")}
         />
       ) : null}
-      {update ? (
+      {installing ? (
+        <InstallChip task={installing} title={pkg.title} />
+      ) : update ? (
         <button
           type="button"
           class="stw-upd"

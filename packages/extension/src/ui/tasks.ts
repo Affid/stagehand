@@ -44,6 +44,21 @@ export function trackProgress(
   });
 }
 
+/** Foundry's install of this package (an update or a new install), while it runs. */
+export const installOf = (
+  state: Pick<UiState, "tasks">,
+  packageId: string,
+): Progress | undefined =>
+  state.tasks.find(
+    (x) => x.action === "installPackage" && x.packageId === packageId,
+  );
+
+/** Every install Foundry is running. */
+export const installsRunning = (
+  state: Pick<UiState, "tasks">,
+): readonly Progress[] =>
+  state.tasks.filter((x) => x.action === "installPackage");
+
 /** The running tasks about this package. */
 export const tasksFor = (
   state: Pick<UiState, "tasks">,
@@ -71,13 +86,15 @@ const LOCK_WORDS: ReadonlyMap<string, string> = new Map([
   ["SETUP.UpdateDownloading", "lock.update"],
 ]);
 
-/** Why Restore, Delete and Launch wait, while Foundry is busy; else null. */
+/** Why Restore, Delete and Launch wait, while Foundry is busy or installs; else null. */
 export function lockReason(
   t: (key: string) => string,
   state: Pick<UiState, "lock" | "tasks">,
 ): string | null {
   const backingUp = state.tasks.some((x) => LOCKING.has(x.action));
-  if (!state.lock.locked && !backingUp) return null;
+  // A world launched mid-install would load half a module (updates plan).
+  if (!state.lock.locked && !backingUp)
+    return installsRunning(state).length ? t("lock.install") : null;
   // A Map: a message like "constructor" finds nothing (security review).
   const key = state.lock.message
     ? LOCK_WORDS.get(state.lock.message)

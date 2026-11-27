@@ -630,6 +630,32 @@
   color: #fff;
 }
 
+/* An update while Foundry installs it (updates plan, phase 1): not a
+   button, so it draws its own box in the button's place. */
+.st-ui .spu-chip {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  border: 1px solid rgb(238 155 58 / 60%);
+  border-radius: 3px;
+  color: var(--color-light-1);
+  background: rgb(238 155 58 / 16%);
+  font-variant-numeric: tabular-nums;
+  cursor: default;
+  white-space: nowrap;
+}
+
+.st-ui .spu-chip:hover {
+  background: rgb(238 155 58 / 16%);
+  color: var(--color-light-1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st-ui .spu-chip .fa-spin {
+    animation: none;
+  }
+}
+
 /* A module's Package tab */
 .st-ui .sts-pkgtab {
   display: grid;

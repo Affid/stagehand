@@ -49,10 +49,12 @@ with progress all the way.
     installed one: a single update asks first; Update All installs
     everything else and asks about the skipped ones at the end.
 - **Checks nobody makes:**
-  - Module dependencies. A new version that needs a newer or missing
-    library comes back with availability 6 or 11; Foundry's updater treats
-    that as current, so Update All skips it silently and a single update
-    says "already up to date".
+  - Module dependencies. Foundry 14's `testAvailability` doesn't look at
+    `relationships.requires` (a FIXME in its source says so): a new version
+    that needs a newer library comes back verified (availability 1), and
+    Foundry's updater installs it without a word, leaving the module ahead
+    of its library. (Corrected 2026-11-27 from the live fixtures: the first
+    version of this plan said such an update is skipped as current.)
   - A system update's effect on installed modules: updating dnd5e never
     asks which modules declare an older dnd5e range.
   - Anything a manifest doesn't declare. Few modules declare version
@@ -330,7 +332,12 @@ compatible}`), or `error` and `errorCode` (401, 403, 404, 500 from the
 1. **Progress for today's buttons.** Draw the `installPackage` progress
    Stagehand already receives: on the card's chip, the panel, the Library
    line on the rail; Launch waits. Fix the marks to what Foundry installs
-   (availability 4 or below). Small; can ship as a fix release.
+   (availability 4 or below). Small; can ship as a fix release. Done
+   2026-11-27: an install's tick names its package in its `title` (its id
+   is the manifest URL), which is why no card could show it before; the
+   rail says "Installing…" for a package not yet installed. The check
+   before Foundry's install (Update All's silent part) still shows
+   nothing until phase 2 replaces it with our own check.
 2. **Check.** The page-world check with progress and Stop, checking one
    package again (Try again, Check again), the results store, the Updates
    tab read-only (sections, Check again), marks from the check, ownership

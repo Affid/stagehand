@@ -1,7 +1,8 @@
 // Which installed modules and systems have an update Foundry would install:
 // its package list (one request per type, as its installer makes) against
-// what is installed. Newer, and installable on this Foundry (availability 1
-// to 6; 7 to 10 need another core).
+// what is installed. Newer, and what Foundry's own updater installs:
+// availability 1 to 4. It calls 5, 6 and 11 (a missing system or dependency)
+// current, and refuses 7 to 10 (another core).
 import { logError } from "@stagehand/shared/log";
 import type { Updates } from "../page-updates.ts";
 import type { PageGlobals } from "./globals.ts";
@@ -13,7 +14,7 @@ interface UpdateGame {
 }
 
 const INSTALLABLE_MIN = 1;
-const INSTALLABLE_MAX = 6;
+const INSTALLABLE_MAX = 4;
 
 type Newer = (a: string, b: string) => boolean;
 

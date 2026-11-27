@@ -56,6 +56,27 @@ describe("Foundry's progress and lock, forwarded", () => {
     ).toEqual({ action: "createBackup", id: "x" });
   });
 
+  test("an install names its package in Foundry's title; its id is the manifest URL", () => {
+    const tick = (over: object) =>
+      parsePageToUi("PROGRESS", {
+        action: "installPackage",
+        id: "https://example.com/sequencer/module.json",
+        type: "module",
+        title: "sequencer",
+        ...over,
+      })?.payload;
+    expect(tick({ step: "download", pct: 40 })).toMatchObject({
+      packageId: "sequencer",
+      type: "module",
+      pct: 40,
+    });
+    expect(tick({ step: "complete" })).toMatchObject({
+      packageId: "sequencer",
+    });
+    // A title that isn't an id names no package.
+    expect(tick({ title: "Sequencer <b>" })).not.toHaveProperty("packageId");
+  });
+
   test("other actions, bad ids and odd numbers are refused or left out", () => {
     expect(
       parsePageToUi("PROGRESS", { action: "createWorld", id: "w" }),

@@ -7,7 +7,9 @@ import { BUILD, IS_DEV_BUILD } from "../../build-info.ts";
 import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../context.ts";
 import { updateCount } from "../model/updates.ts";
-import { ago, plural } from "@stagehand/ui/i18n.ts";
+import type { Progress } from "../../page-progress.ts";
+import { installsRunning } from "../tasks.ts";
+import { ago, plural, type Translate } from "@stagehand/ui/i18n.ts";
 import { worldOrder } from "@stagehand/ui/model/order.ts";
 import { systemTitle } from "../model/system.ts";
 import { worldModules } from "@stagehand/ui/model/world-modules.ts";
@@ -123,6 +125,31 @@ function WorldItem(props: {
   );
 }
 
+/**
+ * "Updating Sequencer…" or "Updating 3 packages…" (updates plan, phase 1);
+ * "Installing…" when one of them isn't installed yet (Foundry's installer).
+ */
+function updatingLine(
+  t: Translate,
+  installs: readonly Progress[],
+  known: readonly { readonly id: string; readonly title: string }[],
+): string {
+  const titles = installs.map(
+    (x) => known.find((p) => p.id === x.packageId)?.title,
+  );
+  const allKnown = titles.every((title) => title !== undefined);
+  const [only] = installs;
+  if (installs.length === 1 && only)
+    return t(allKnown ? "shell.updatingOne" : "shell.installingOne", {
+      title: titles[0] ?? only.packageId ?? "",
+    });
+  return plural(
+    t,
+    allKnown ? "shell.updatingMany" : "shell.installingMany",
+    installs.length,
+  );
+}
+
 function LibraryEntry(props: { readonly current: boolean }) {
   const { state, store, t } = useUi();
   const setup = state.data.setup;
@@ -132,11 +159,17 @@ function LibraryEntry(props: { readonly current: boolean }) {
     setup?.modules ?? [],
     setup?.systems ?? [],
   );
-  const sub = [
-    plural(t, "shell.librarySub", setup?.modules.length ?? 0),
-    plural(t, "shell.systemsSub", setup?.systems.length ?? 0),
-    ...(updates ? [plural(t, "shell.updatesSub", updates)] : []),
-  ].join(" · ");
+  const installs = installsRunning(state);
+  const sub = installs.length
+    ? updatingLine(t, installs, [
+        ...(setup?.modules ?? []),
+        ...(setup?.systems ?? []),
+      ])
+    : [
+        plural(t, "shell.librarySub", setup?.modules.length ?? 0),
+        plural(t, "shell.systemsSub", setup?.systems.length ?? 0),
+        ...(updates ? [plural(t, "shell.updatesSub", updates)] : []),
+      ].join(" · ");
   return (
     <button
       type="button"
