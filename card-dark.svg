@@ -2,12 +2,12 @@
 <title>Stagehand downloads</title>
 <rect x="0.5" y="0.5" width="799" height="177" rx="6" fill="#0d1117" stroke="#3d444d"/>
 <text x="24" y="34" font-size="14" fill="#f0f6fc" font-weight="600">Stagehand downloads</text>
-<text x="776" y="34" font-size="12" fill="#9198a1" text-anchor="end">Updated Nov 26, 2026</text>
+<text x="776" y="34" font-size="12" fill="#9198a1" text-anchor="end">Updated Nov 27, 2026</text>
 <line x1="24" x2="38" y1="64" y2="64" stroke="#3987e5" stroke-width="2" stroke-linecap="round"/>
 <text x="44" y="68" font-size="12" fill="#9198a1">Companion module</text>
-<text x="24" y="106" font-size="30" fill="#f0f6fc" font-weight="600">77</text>
-<text x="24" y="128" font-size="12" fill="#3fb950">+26 in 7 days</text>
-<path d="M116 108 L121.8 107 L127.7 103.8 L133.5 101.2 L139.4 100.2 L145.2 98.6 L151.1 95.5 L156.9 89.8 L162.8 88.2 L168.6 87.7 L174.5 86.2 L180.3 84.1 L186.2 82 L192 82" fill="none" stroke="#656c76" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="24" y="106" font-size="30" fill="#f0f6fc" font-weight="600">84</text>
+<text x="24" y="128" font-size="12" fill="#3fb950">+22 in 7 days</text>
+<path d="M116 108 L121.4 107.1 L126.9 104.4 L132.3 102.1 L137.7 101.2 L143.1 99.8 L148.6 97.1 L154 92 L159.4 90.7 L164.9 90.2 L170.3 88.8 L175.7 87 L181.1 85.2 L186.6 85.2 L192 82" fill="none" stroke="#656c76" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
 <circle cx="192" cy="82" r="4" fill="#3987e5" stroke="#0d1117" stroke-width="2"/>
 <line x1="216" x2="230" y1="64" y2="64" stroke="#c98500" stroke-width="2" stroke-linecap="round"/>
 <text x="236" y="68" font-size="12" fill="#9198a1">Chrome Web Store</text>
@@ -18,14 +18,14 @@
 <line x1="408" x2="422" y1="64" y2="64" stroke="#d95926" stroke-width="2" stroke-linecap="round"/>
 <text x="428" y="68" font-size="12" fill="#9198a1">Extension zip</text>
 <text x="408" y="106" font-size="30" fill="#f0f6fc" font-weight="600">20</text>
-<text x="408" y="128" font-size="12" fill="#3fb950">+1 in 7 days</text>
-<path d="M500 108 L505.8 108 L511.7 101.5 L517.5 95 L523.4 95 L529.2 88.5 L535.1 88.5 L540.9 82 L546.8 82 L552.6 82 L558.5 82 L564.3 82 L570.2 82 L576 82" fill="none" stroke="#656c76" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="408" y="128" font-size="12" fill="#9198a1">0 in 7 days</text>
+<path d="M500 108 L505.4 108 L510.9 101.5 L516.3 95 L521.7 95 L527.1 88.5 L532.6 88.5 L538 82 L543.4 82 L548.9 82 L554.3 82 L559.7 82 L565.1 82 L570.6 82 L576 82" fill="none" stroke="#656c76" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
 <circle cx="576" cy="82" r="4" fill="#d95926" stroke="#0d1117" stroke-width="2"/>
 <line x1="600" x2="614" y1="64" y2="64" stroke="#199e70" stroke-width="2" stroke-linecap="round"/>
 <text x="620" y="68" font-size="12" fill="#9198a1">Android app</text>
 <text x="600" y="106" font-size="30" fill="#f0f6fc" font-weight="600">13</text>
-<text x="600" y="128" font-size="12" fill="#3fb950">+3 in 7 days</text>
-<path d="M692 108 L697.8 108 L703.7 108 L709.5 108 L715.4 108 L721.2 108 L727.1 108 L732.9 90.7 L738.8 90.7 L744.6 90.7 L750.5 90.7 L756.3 82 L762.2 82 L768 82" fill="none" stroke="#656c76" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="600" y="128" font-size="12" fill="#3fb950">+1 in 7 days</text>
+<path d="M692 108 L697.4 108 L702.9 108 L708.3 108 L713.7 108 L719.1 108 L724.6 108 L730 90.7 L735.4 90.7 L740.9 90.7 L746.3 90.7 L751.7 82 L757.1 82 L762.6 82 L768 82" fill="none" stroke="#656c76" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
 <circle cx="768" cy="82" r="4" fill="#199e70" stroke="#0d1117" stroke-width="2"/>
 <text x="24" y="162" font-size="11" fill="#9198a1">Chrome Web Store installs as of Nov 22, from its dashboard. The rest are GitHub release downloads.</text>
 </svg>

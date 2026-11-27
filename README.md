@@ -1,6 +1,6 @@
 # Stagehand download counts
 
-Written once a day by the Download counts workflow (`.github/workflows/stats.yml` on `main`). Last snapshot: Nov 26, 2026. Do not edit by hand: the next run replaces this file and the charts.
+Written once a day by the Download counts workflow (`.github/workflows/stats.yml` on `main`). Last snapshot: Nov 27, 2026. Do not edit by hand: the next run replaces this file and the charts.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Affid/stagehand/stats/card-dark.svg">
@@ -22,23 +22,23 @@ Written once a day by the Download counts workflow (`.github/workflows/stats.yml
 | | Downloads so far | What it counts |
 | --- | ---: | --- |
 | Chrome Web Store | 318 | Installs from the store, summed from the daily counts in its Developer Dashboard exports (`chrome-web-store/`). Last export day: Nov 22, 2026. |
-| Companion module | 77 | `stagehand.zip` downloads: the companion module installed or updated by Foundry. |
+| Companion module | 84 | `stagehand.zip` downloads: the companion module installed or updated by Foundry. |
 | Extension zip | 20 | The extension's zip from the releases, for people who load it unpacked. |
 | Android app | 13 | The APK from the releases, sideloaded. |
-| Foundry lookups | 452 | `module.json` downloads: Foundry reading the release manifest through the foundryvtt.com listing. These are lookups, not installs. |
+| Foundry lookups | 485 | `module.json` downloads: Foundry reading the release manifest through the foundryvtt.com listing. These are lookups, not installs. |
 
 <details>
 <summary>Every release file</summary>
 
 | Release | File | Downloads |
 | --- | --- | ---: |
-| stagehand-v0.2.0 | module.json | 213 |
-| stagehand-v0.2.0 | stagehand.zip | 26 |
+| stagehand-v0.2.0 | module.json | 245 |
+| stagehand-v0.2.0 | stagehand.zip | 33 |
 | stagehand-v0.1.2 | module.json | 229 |
 | stagehand-v0.1.2 | stagehand.zip | 44 |
 | stagehand-v0.1.1 | module.json | 5 |
 | stagehand-v0.1.1 | stagehand.zip | 2 |
-| stagehand-v0.1.0 | module.json | 5 |
+| stagehand-v0.1.0 | module.json | 6 |
 | stagehand-v0.1.0 | stagehand.zip | 5 |
 | stagehand-extension-v0.3.3 | stagehand-extension-0.3.3.zip | 1 |
 | stagehand-extension-v0.3.2 | stagehand-extension-0.3.2.zip | 6 |
