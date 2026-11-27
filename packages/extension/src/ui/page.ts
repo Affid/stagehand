@@ -93,6 +93,14 @@ export interface PageBridge {
   ): string;
   /** Stops a check of the library: no new package is checked. */
   stopPackageCheck(requestId: string): void;
+  /**
+   * Backs up (when asked) and installs these packages in this order
+   * (updates plan): the run's id; its states arrive as PACKAGE_INSTALL.
+   */
+  packageInstall(
+    items: readonly { readonly type: PackageKind; readonly id: string }[],
+    backup: boolean,
+  ): string;
   /** Saves a world's details through Foundry; resolves with an error, or undefined. */
   saveWorld(
     worldId: string,
@@ -388,6 +396,30 @@ function saves(
   };
 }
 
+/** Our own check and install of packages (updates plan): each returns its run's id. */
+function packageRequests(
+  send: (m: UiToPage) => void,
+): Pick<PageBridge, "packageCheck" | "stopPackageCheck" | "packageInstall"> {
+  return {
+    packageCheck: (ask) => {
+      const requestId = newRequestId();
+      send({ type: "PACKAGE_CHECK", payload: { requestId, ...ask } });
+      return requestId;
+    },
+    stopPackageCheck: (requestId) => {
+      send({ type: "PACKAGE_CHECK", payload: { requestId, op: "stop" } });
+    },
+    packageInstall: (items, backup) => {
+      const requestId = newRequestId();
+      send({
+        type: "PACKAGE_INSTALL",
+        payload: { requestId, items: [...items], backup },
+      });
+      return requestId;
+    },
+  };
+}
+
 /** The bridge's request and answer pairs: saves, backups, config, update. */
 function requests(
   send: (m: UiToPage) => void,
@@ -466,14 +498,7 @@ export function createPageBridge(channel: PageChannel): PageBridge {
     checkUpdates: () => {
       send({ type: "CHECK_UPDATES", payload: {} });
     },
-    packageCheck: (ask) => {
-      const requestId = newRequestId();
-      send({ type: "PACKAGE_CHECK", payload: { requestId, ...ask } });
-      return requestId;
-    },
-    stopPackageCheck: (requestId) => {
-      send({ type: "PACKAGE_CHECK", payload: { requestId, op: "stop" } });
-    },
+    ...packageRequests(send),
     ...requests(send, listeners),
     subscribe(fn) {
       listeners.add(fn);

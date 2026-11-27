@@ -152,6 +152,11 @@ describe("the Updates tab's sections", () => {
     expect(sectionOf(i, "slow")).toBe("error");
   });
 
+  test("an update already installed (just now, or by Foundry) has no row", () => {
+    const i = input([mod("a", "1.1.0")], [update("a", "1.1.0")]);
+    expect(rowsOf(i)).toEqual([]);
+  });
+
   test("a locked package has no row", () => {
     const i = input(
       [mod("l", "1.0.0", { locked: true })],

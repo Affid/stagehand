@@ -94,6 +94,8 @@ const installedOf = (i: UpdatesInput, id: string) =>
 function offered(i: UpdatesInput, id: string): PackageCheck | undefined {
   const c = i.checks[id];
   if (c?.state !== "update" || !c.version) return undefined;
+  const have = installedOf(i, id)?.version;
+  if (have && !isNewerVersion(c.version, have)) return undefined;
   return i.refused[id] === c.version ? undefined : c;
 }
 
@@ -237,9 +239,12 @@ function candidates(
 ): { pkg: InstalledPackage; check: PackageCheck }[] {
   return i.installed.flatMap((pkg) => {
     const check = i.checks[pkg.id];
-    return check && !pkg.locked && SHOWN.has(check.state)
-      ? [{ pkg, check }]
-      : [];
+    if (!check || pkg.locked || !SHOWN.has(check.state)) return [];
+    // Installed since the check (ours just now, or Foundry's own): current.
+    const behind = check.version && isNewerVersion(check.version, pkg.version);
+    if ((check.state === "update" || check.state === "notOwned") && !behind)
+      return [];
+    return [{ pkg, check }];
   });
 }
 

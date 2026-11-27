@@ -349,7 +349,14 @@ compatible}`), or `error` and `errorCode` (401, 403, 404, 500 from the
    `packages/shared/src/updates/`.
 3. **Review and update.** Ticking, Back up first, installing the ticked
    packages in order, per-row and overall progress, the summary; the
-   panel's Update box and the chip opening it; Update All goes.
+   panel's Update box and the chip opening it; Update All goes. Done
+   2026-11-27: `page/package-install.ts` runs Foundry's `createBackup`
+   (note "Before updating to X (Stagehand)") then `installPackage` with
+   its dependency installer off; when the page was reloaded since the
+   check, it checks a package again before installing it (the manifest is
+   kept only in the page world). The shared Package tab takes Setup's
+   Update box through a new `PackageUpdate` slot. Foundry's own "Backup
+   created" toasts show over the page during a run.
 4. **Warnings.** The shared model: dependencies, system impact, "Tick it
    too", Foundry's `systemCompatibility` up front, and the confirmation
    before a run that still has warnings.

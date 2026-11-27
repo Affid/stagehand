@@ -58,9 +58,11 @@ export function ModulePanel(props: {
   /** The world whose page is open, marked in the worlds list. */
   readonly here?: string | undefined;
   readonly onClose: () => void;
+  /** The tab it opens on (Setup's update chip opens Package). */
+  readonly tab?: Tab;
 }) {
   const { t } = useModules();
-  const [tab, setTab] = useState<Tab>("library");
+  const [tab, setTab] = useState<Tab>(props.tab ?? "library");
   const { pkg } = props;
   return (
     <aside class="application framed sts-panel st-app" aria-label={pkg.title}>

@@ -91,15 +91,16 @@ describe("a module's update, while Foundry installs it", () => {
     expect(line()).toBe("Installing 2 packages…");
   });
 
-  test("the panel's update button waits and shows the progress", () => {
+  test("the panel's Update box shows the progress", () => {
     const r = library();
     fireEvent.click(el(card(r.container, "a"), "button.t"));
     fireEvent.click(r.getByRole("tab", { name: "Package" }));
     void act(() => {
       r.emit(install("a", { step: "download", pct: 30 }));
     });
-    const button = r.getByRole("button", { name: "Updating… 30%" });
-    expect(button).toHaveProperty("disabled", true);
+    expect(el(r.container, ".sts-panel .spu-box").textContent).toContain(
+      "Downloading 30%",
+    );
   });
 });
 

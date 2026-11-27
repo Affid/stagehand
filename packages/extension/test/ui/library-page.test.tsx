@@ -152,20 +152,21 @@ describe("a card's marks and line (6b)", () => {
     expect(card(container, "b").querySelector(".stw-lock")).toBeTruthy();
   });
 
-  test("an update Foundry would install: the chip runs Foundry's own update", () => {
+  test("an update: the chip opens the panel's Update box; nothing installs at once", async () => {
     const r = withPkg({ compatibility: { minimum: "13", verified: "14" } });
     r.store.set({ updates: { module: { b: "2.0.0" }, system: {} } });
-    return waitFor(() => {
-      const chip = within(card(r.container, "b")).getByRole("button", {
+    const chip = await waitFor(() =>
+      within(card(r.container, "b")).getByRole("button", {
         name: "Update Title b to 2.0.0",
-      });
-      fireEvent.click(chip);
-      expect(r.page.foundryAction).toHaveBeenCalledWith({
-        action: "updatePackage",
-        packageType: "module",
-        id: "b",
-      });
-    });
+      }),
+    );
+    fireEvent.click(chip);
+    expect(r.page.foundryAction).not.toHaveBeenCalled();
+    expect(r.store.get().panel).toBe("b");
+    expect(
+      r.getByRole("tab", { name: "Package" }).getAttribute("aria-selected"),
+    ).toBe("true");
+    expect(r.container.querySelector(".sts-panel .spu-box")).not.toBe(null);
   });
 
   test("a locked module offers no update", async () => {

@@ -48,6 +48,11 @@ export interface ModulesUi {
     modules?: readonly string[],
   ) => Promise<unknown>;
   readonly organise: (op: LibraryOp) => Promise<unknown>;
+  /** The page's update box at the top of a package's Package tab (Setup's), if any. */
+  readonly PackageUpdate?: ComponentType<{
+    readonly pkg: PackageInfo;
+    readonly kind: PackageKind;
+  }>;
   /** The page's own actions for a package (Setup: Foundry's), if any. */
   readonly PackageActions?: ComponentType<{
     readonly pkg: PackageInfo;

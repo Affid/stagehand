@@ -15,6 +15,12 @@ import {
   parseCheckRequest,
 } from "./page-package-check.ts";
 import {
+  type InstallEvent,
+  type InstallRequest,
+  parseInstallEvent,
+  parseInstallRequest,
+} from "./page-package-install.ts";
+import {
   type EditorOpen,
   type EditorSave,
   parseEditorClose,
@@ -157,6 +163,8 @@ export type UiToPage =
   | { readonly type: "CHECK_UPDATES"; readonly payload: Record<string, never> }
   /** Our own check of packages: all, one, or stop (answered by PACKAGE_CHECK events). */
   | { readonly type: "PACKAGE_CHECK"; readonly payload: CheckRequest }
+  /** Back up and install the ticked updates (answered by PACKAGE_INSTALL events). */
+  | { readonly type: "PACKAGE_INSTALL"; readonly payload: InstallRequest }
   /** Read or write the library file on the server (answered by LIBRARY_FILE_DONE). */
   | { readonly type: "LIBRARY_FILE"; readonly payload: LibraryFileRequest };
 
@@ -167,6 +175,8 @@ export type PageToUi =
   | { readonly type: "PROGRESS"; readonly payload: Progress }
   /** Our own check: progress, each package's result, the end (page-package-check.ts). */
   | { readonly type: "PACKAGE_CHECK"; readonly payload: CheckEvent }
+  /** Installing the ticked updates: each package's state, the end. */
+  | { readonly type: "PACKAGE_INSTALL"; readonly payload: InstallEvent }
   /** Foundry's busy lock, mirrored on our page. */
   | { readonly type: "LOCK"; readonly payload: Lock }
   /** Whether Foundry's layout is taken over; an error means it could not be and was left alone. */
@@ -286,11 +296,22 @@ function parseChecks(type: string, p: Loose): UiToPage | undefined {
   return payload ? { type: "PACKAGE_CHECK", payload } : undefined;
 }
 
+const PACKAGE_REQUESTS: ReadonlySet<string> = new Set([
+  "CHECK_UPDATES",
+  "PACKAGE_CHECK",
+  "PACKAGE_INSTALL",
+]);
+
+function parseInstall(p: Loose): UiToPage | undefined {
+  const payload = parseInstallRequest(p);
+  return payload ? { type: "PACKAGE_INSTALL", payload } : undefined;
+}
+
 /** A message from the UI, checked; undefined when malformed. */
 export function parseUiToPage(type: string, p: unknown): UiToPage | undefined {
   if (!isObject(p)) return undefined;
-  if (type === "CHECK_UPDATES" || type === "PACKAGE_CHECK")
-    return parseChecks(type, p);
+  if (PACKAGE_REQUESTS.has(type))
+    return type === "PACKAGE_INSTALL" ? parseInstall(p) : parseChecks(type, p);
   if (type.startsWith("EDITOR_")) return parseEditor(type, p);
   if (type === "LIBRARY_FILE") return libraryFileRequest(p);
   switch (type) {
@@ -351,6 +372,7 @@ type Checkers = {
 const PAGE_EVENTS: Checkers = {
   PROGRESS: parseProgress,
   PACKAGE_CHECK: parseCheckEvent,
+  PACKAGE_INSTALL: parseInstallEvent,
   UPDATES: parseUpdates,
   LOCK: parseLock,
   SAVE_DONE: parseSaveDone,

@@ -5,6 +5,8 @@ import type { ComponentChildren } from "preact";
 import { type ModulesUi, ModulesContext } from "@stagehand/ui/context.ts";
 import { useUi } from "./context.ts";
 import { OnServer } from "./shell/library/OnServer.tsx";
+import { hasUpdatesTab } from "./shell/library/head/LibraryTabs.tsx";
+import { UpdateBox } from "./shell/library/updates/UpdateBox.tsx";
 
 export function SetupModules(props: { readonly children: ComponentChildren }) {
   const { state, store, actions, t, canChange } = useUi();
@@ -24,6 +26,7 @@ export function SetupModules(props: { readonly children: ComponentChildren }) {
       actions.queueApply(worldId, mode, presetIds, modules),
     organise: (op) => actions.op(op),
     PackageActions: OnServer,
+    ...(hasUpdatesTab(state) ? { PackageUpdate: UpdateBox } : {}),
   };
   return (
     <ModulesContext.Provider value={ui}>

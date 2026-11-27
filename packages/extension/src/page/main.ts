@@ -37,6 +37,7 @@ import { collect } from "./collect.ts";
 import { watchProgress } from "./progress.ts";
 import { checkUpdates } from "./updates.ts";
 import { checkList, runCheck } from "./package-check.ts";
+import { runInstall } from "./package-install.ts";
 import type { CheckRequest } from "../page-package-check.ts";
 import type { PageGlobals } from "./globals.ts";
 import { hideResolutionNotice } from "./resolution.ts";
@@ -266,6 +267,7 @@ const WRITES: ReadonlySet<string> = new Set([
   "CONFIG",
   "UPDATE",
   "LIBRARY_FILE",
+  "PACKAGE_INSTALL",
 ]);
 
 /** The requests that run Foundry's work and answer by id. */
@@ -294,6 +296,17 @@ function handleRequest(ctx: Ctx, m: UiToPage): void {
       break;
     case "PACKAGE_CHECK":
       answerCheck(ctx, m.payload);
+      break;
+    case "PACKAGE_INSTALL":
+      void runInstall(ctx.page, m.payload, ctx.postToUi).catch(
+        (error: unknown) => {
+          logError("package install", error);
+          ctx.postToUi({
+            type: "PACKAGE_INSTALL",
+            payload: { requestId: m.payload.requestId, kind: "done" },
+          });
+        },
+      );
       break;
     default:
   }

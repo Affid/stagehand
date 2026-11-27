@@ -13,7 +13,14 @@ import {
   rowsFor,
 } from "../../../model/package-updates.ts";
 import { checkAll } from "../../../package-check.ts";
-import { UpdateRow } from "./UpdateRow.tsx";
+import { RowAction, UpdateRow } from "./UpdateRow.tsx";
+import { setTicks, tickedIds } from "../../../package-install.ts";
+import {
+  RunState,
+  UpdatedSection,
+  UpdatesFoot,
+  UpdatesSummary,
+} from "./RunParts.tsx";
 import { UpdatesHead } from "./UpdatesHead.tsx";
 import { useCheckDeps } from "./useCheckDeps.ts";
 
@@ -131,6 +138,80 @@ function Locked() {
   );
 }
 
+/** A row's tick: in Ready and Needs attention, off while a run goes. */
+function Tick(props: { readonly row: Row }) {
+  const { state, store, t } = useUi();
+  const ticked = tickedIds(state);
+  const on = ticked.includes(props.row.id);
+  return (
+    <input
+      type="checkbox"
+      class="spu-tick"
+      checked={on}
+      disabled={state.install.running !== null}
+      aria-label={t("upd.tickLabel", { title: props.row.title })}
+      onChange={() => {
+        setTicks(
+          store,
+          on
+            ? ticked.filter((id) => id !== props.row.id)
+            : [...ticked, props.row.id],
+        );
+      }}
+    />
+  );
+}
+
+/** Tick all or Untick all, in Ready's and Needs attention's heads. */
+function TickAll(props: { readonly rows: readonly Row[] }) {
+  const { state, store, t } = useUi();
+  if (state.install.running) return null;
+  const ticked = tickedIds(state);
+  const ids = props.rows.map((r) => r.id);
+  const all = ids.every((id) => ticked.includes(id));
+  return (
+    <a
+      href="#"
+      onClick={(e) => {
+        e.preventDefault();
+        setTicks(
+          store,
+          all
+            ? ticked.filter((id) => !ids.includes(id))
+            : [...new Set([...ticked, ...ids])],
+        );
+      }}
+    >
+      {t(all ? "upd.untickAll" : "upd.tickAll")}
+    </a>
+  );
+}
+
+const canTick = (r: Row): boolean =>
+  r.section === "ready" || r.section === "attention";
+
+function renderRow(r: Row, usage: number | undefined) {
+  return (
+    <UpdateRow
+      key={r.id}
+      row={r}
+      usage={usage}
+      {...(canTick(r) ? { tick: <Tick row={r} /> } : {})}
+      side={<RowSide row={r} />}
+    />
+  );
+}
+
+/** A row's right-hand column: its run state, else its own action. */
+function RowSide(props: { readonly row: Row }) {
+  const { state } = useUi();
+  return state.install.running?.states[props.row.id] ? (
+    <RunState id={props.row.id} />
+  ) : (
+    <RowAction row={props.row} />
+  );
+}
+
 export function UpdatesTab(props: { readonly children?: ComponentChildren }) {
   const { state, t, canChange } = useUi();
   const deps = useCheckDeps();
@@ -148,8 +229,16 @@ export function UpdatesTab(props: { readonly children?: ComponentChildren }) {
   return (
     <div class="spu">
       <UpdatesHead rows={rows} />
+      <UpdatesSummary />
       <ol class="spu-list">
-        <Sections rows={rows} />
+        <UpdatedSection />
+        <Sections
+          rows={rows}
+          render={renderRow}
+          headExtra={(s, list) =>
+            s === "ready" || s === "attention" ? <TickAll rows={list} /> : null
+          }
+        />
         {empty ? (
           <li class="spu-empty">
             <i class="fa-solid fa-mug-hot" aria-hidden="true" />
@@ -162,6 +251,7 @@ export function UpdatesTab(props: { readonly children?: ComponentChildren }) {
         ) : null}
         <Locked />
       </ol>
+      <UpdatesFoot rows={rows} />
       {props.children}
     </div>
   );

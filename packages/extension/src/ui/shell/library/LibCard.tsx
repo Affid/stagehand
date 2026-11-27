@@ -15,6 +15,8 @@ import { plural } from "@stagehand/ui/i18n.ts";
 import { unverifiedText } from "@stagehand/ui/model/unverified.ts";
 import { markFor } from "../../model/package-updates.ts";
 import { installOf } from "../../tasks.ts";
+import { waitingIn } from "../../package-install.ts";
+import { hasUpdatesTab } from "./head/LibraryTabs.tsx";
 import { InstallChip } from "./InstallChip.tsx";
 
 const MAX_TAGS = 3;
@@ -54,12 +56,51 @@ function Line(props: {
   );
 }
 
+/** An update's chip: the panel's Update box where our Updates tab is, else Foundry's update. */
+function UpdateChip(props: {
+  readonly pkg: PackageInfo;
+  readonly version: string;
+}) {
+  const { state, store, page, t, canChange } = useUi();
+  const { pkg } = props;
+  return (
+    <button
+      type="button"
+      class="stw-upd"
+      disabled={!canChange}
+      title={t("lib.updateFrom", { version: pkg.version })}
+      aria-label={t("lib.updateTo", {
+        title: pkg.title,
+        version: props.version,
+      })}
+      onClick={() => {
+        if (hasUpdatesTab(state))
+          store.set({
+            panel: pkg.id,
+            side: null,
+            panelTab: { tab: "package", n: Date.now() },
+          });
+        else
+          page.foundryAction({
+            action: "updatePackage",
+            packageType: "module",
+            id: pkg.id,
+          });
+      }}
+    >
+      <Icon name="arrow-up" />
+      {props.version}
+    </button>
+  );
+}
+
 /** Foundry's star and lock, and an update it would install (not when locked). */
 function Marks(props: { readonly pkg: PackageInfo }) {
-  const { state, page, t, canChange } = useUi();
+  const { state, t } = useUi();
   const { pkg } = props;
   const update = markFor(state, "module", pkg);
   const installing = installOf(state, pkg.id);
+  const waiting = waitingIn(state, pkg.id);
   return (
     <>
       {pkg.favorite ? (
@@ -76,26 +117,10 @@ function Marks(props: { readonly pkg: PackageInfo }) {
           aria-label={t("lib.locked")}
         />
       ) : null}
-      {installing ? (
-        <InstallChip task={installing} title={pkg.title} />
+      {installing || waiting ? (
+        <InstallChip task={installing} waiting={waiting} title={pkg.title} />
       ) : update ? (
-        <button
-          type="button"
-          class="stw-upd"
-          disabled={!canChange}
-          title={t("lib.updateFrom", { version: pkg.version })}
-          aria-label={t("lib.updateTo", { title: pkg.title, version: update })}
-          onClick={() =>
-            page.foundryAction({
-              action: "updatePackage",
-              packageType: "module",
-              id: pkg.id,
-            })
-          }
-        >
-          <Icon name="arrow-up" />
-          {update}
-        </button>
+        <UpdateChip pkg={pkg} version={update} />
       ) : null}
     </>
   );

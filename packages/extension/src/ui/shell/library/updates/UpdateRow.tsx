@@ -71,7 +71,7 @@ function whyText(
   }
 }
 
-function Why(props: { readonly row: Row; readonly block: Block }) {
+export function Why(props: { readonly row: Row; readonly block: Block }) {
   const { state, store, t } = useUi();
   const setup = state.data.setup;
   const title = (id: string): string =>

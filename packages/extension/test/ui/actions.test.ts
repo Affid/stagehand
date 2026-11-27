@@ -50,6 +50,7 @@ const initial: UiState = {
   side: null,
   lock: { locked: false },
   check: { running: null, one: {}, live: {} },
+  install: { running: null, last: null, ticks: null, backup: true },
   launching: null,
 };
 

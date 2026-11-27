@@ -16,6 +16,7 @@ import { ShellRoot } from "../../src/ui/App.tsx";
 import { createTranslator } from "@stagehand/ui/i18n.ts";
 import { NO_UPDATES } from "../../src/page-updates.ts";
 import { trackChecks } from "../../src/ui/package-check.ts";
+import { trackInstalls } from "../../src/ui/package-install.ts";
 import { trackProgress, UNLOCKED } from "../../src/ui/tasks.ts";
 import type {
   BackupsResult,
@@ -32,6 +33,7 @@ import {
   DEFAULT_WORLD_VIEW,
   EMPTY_FILTER,
   NO_CHECK,
+  NO_INSTALL,
   type UiState,
 } from "../../src/ui/store.ts";
 import { START_NAV } from "../../src/ui/shell/phone/nav.ts";
@@ -142,6 +144,9 @@ export function fakePage() {
     checkUpdates: vi.fn(),
     packageCheck: vi.fn<(ask: unknown) => string>(() => "check-1"),
     stopPackageCheck: vi.fn(),
+    packageInstall: vi.fn<(items: unknown, backup: boolean) => string>(
+      () => "install-1",
+    ),
     saveWorld: vi.fn(() => Promise.resolve<string | undefined>(undefined)),
     saveQueue: vi.fn(() =>
       Promise.resolve<QueueSaved>({ written: "2026-11-09T20:00:00.000Z" }),
@@ -212,6 +217,7 @@ export const uiState = (over: Partial<UiState> = {}): UiState => ({
   lock: UNLOCKED,
   updates: NO_UPDATES,
   check: NO_CHECK,
+  install: NO_INSTALL,
   launching: null,
   ...over,
 });
@@ -267,6 +273,11 @@ export function renderUi(
     page: fake.page,
     ports: options.app ? { ...fakePorts(), app: true as const } : fakePorts(),
   };
+  trackInstalls({
+    store,
+    page: fake.page,
+    markRefused: (id, version) => deps.actions.markRefused(id, version),
+  });
   trackChecks({
     store,
     page: fake.page,

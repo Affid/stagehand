@@ -31,12 +31,14 @@ const CORE_MAX = 10;
 const MAX_ERROR = 300;
 const DENIED: ReadonlySet<number> = new Set([401, 403]);
 
-/** The manifest each checked update installs from: `${type}:${id}`. */
-const manifests = new Map<string, string>();
+/** Each checked update: the manifest it installs from and its version. */
+const updates = new Map<string, { manifest: string; version?: string }>();
 export const manifestFor = (
   type: PackageType,
   id: string,
-): string | undefined => manifests.get(`${type}:${id}`);
+): string | undefined => updates.get(`${type}:${id}`)?.manifest;
+export const versionFor = (type: PackageType, id: string): string | undefined =>
+  updates.get(`${type}:${id}`)?.version;
 
 const isObject = (v: unknown): v is Loose =>
   typeof v === "object" && v !== null;
@@ -215,8 +217,15 @@ async function checkOne(
   try {
     const answer = await game.checkPackage({ type: item.type, id: item.id });
     const manifest = isObject(answer) ? answer.manifest : undefined;
-    if (typeof manifest === "string")
-      manifests.set(`${item.type}:${item.id}`, manifest);
+    if (typeof manifest === "string") {
+      const remote =
+        isObject(answer) && isObject(answer.remote) ? answer.remote : {};
+      const version = text(remote.version);
+      updates.set(`${item.type}:${item.id}`, {
+        manifest,
+        ...(version ? { version } : {}),
+      });
+    }
     const isOwned = !owned.has(`${item.type}:${item.id}`);
     return normalise(
       item.type,
@@ -227,6 +236,21 @@ async function checkOne(
   } catch (e: unknown) {
     return failed(item.type, item.id, e, now);
   }
+}
+
+/**
+ * Checks one package again and keeps its update's manifest, as before an
+ * install when the page was reloaded since the check: true when Foundry
+ * would install a newer version of it.
+ */
+export async function recheck(
+  page: Pick<PageGlobals, "game">,
+  item: { type: PackageType; id: string },
+): Promise<boolean> {
+  const result = await checkOne(gameOf(page), item, new Set(), Date.now());
+  return (
+    result.state === "update" && manifestFor(item.type, item.id) !== undefined
+  );
 }
 
 /** Checks each package, posting progress, each result and the end. */

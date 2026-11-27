@@ -125,16 +125,16 @@ describe("one row: the filter, View and ⋮", () => {
     expect(store.get().side).toEqual({ kind: "tags" });
   });
 
-  test("Update all shows with its count when Foundry has updates", () => {
+  test("no Update all: the Updates tab replaces it", () => {
     const { getByRole, container } = library({
       state: { updates: { module: { a: "2.0.0" }, system: {} } },
     });
     fireEvent.click(getByRole("button", { name: /^Select, install/ }));
     expect(
-      within(el(container, ".st-pop")).getByRole("button", {
+      within(el(container, ".st-pop")).queryByRole("button", {
         name: "Update all · 1",
       }),
-    ).toBeTruthy();
+    ).toBe(null);
   });
 
   test("selecting puts the count and the actions in the dock", async () => {

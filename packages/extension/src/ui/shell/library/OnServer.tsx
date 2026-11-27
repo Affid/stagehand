@@ -5,6 +5,7 @@ import type { FoundryAction } from "../../../page-protocol.ts";
 import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../context.ts";
 import { installOf } from "../../tasks.ts";
+import { hasUpdatesTab } from "./head/LibraryTabs.tsx";
 
 type PackageAction = Extract<FoundryAction, { id: string }>["action"];
 
@@ -78,7 +79,7 @@ function UpdateButton(props: {
 }
 
 function Acts(props: { readonly pkg: PackageInfo; readonly kind: Kind }) {
-  const { t, canChange } = useUi();
+  const { state, t, canChange } = useUi();
   const run = useRun(props.pkg, props.kind);
   const btn = (action: PackageAction, icon: string, label: string) => (
     <button type="button" disabled={!canChange} onClick={() => run(action)}>
@@ -91,7 +92,7 @@ function Acts(props: { readonly pkg: PackageInfo; readonly kind: Kind }) {
       {props.pkg.locked || props.kind === "system"
         ? null
         : btn("editPackage", "pen-to-square", "pk.edit")}
-      {props.pkg.locked ? null : (
+      {props.pkg.locked || hasUpdatesTab(state) ? null : (
         <UpdateButton pkg={props.pkg} kind={props.kind} />
       )}
       {btn("backupPackage", "floppy-disk", "pk.backup")}

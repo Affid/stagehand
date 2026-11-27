@@ -89,12 +89,14 @@ const LOCK_WORDS: ReadonlyMap<string, string> = new Map([
 /** Why Restore, Delete and Launch wait, while Foundry is busy or installs; else null. */
 export function lockReason(
   t: (key: string) => string,
-  state: Pick<UiState, "lock" | "tasks">,
+  state: Pick<UiState, "lock" | "tasks"> & Partial<Pick<UiState, "install">>,
 ): string | null {
   const backingUp = state.tasks.some((x) => LOCKING.has(x.action));
   // A world launched mid-install would load half a module (updates plan).
   if (!state.lock.locked && !backingUp)
-    return installsRunning(state).length ? t("lock.install") : null;
+    return installsRunning(state).length || state.install?.running
+      ? t("lock.install")
+      : null;
   // A Map: a message like "constructor" finds nothing (security review).
   const key = state.lock.message
     ? LOCK_WORDS.get(state.lock.message)
@@ -110,7 +112,7 @@ export function lockReason(
  */
 export function launchOff(
   t: (key: string) => string,
-  state: Pick<UiState, "lock" | "tasks">,
+  state: Pick<UiState, "lock" | "tasks"> & Partial<Pick<UiState, "install">>,
   world: { readonly locked?: boolean | undefined },
 ): string | null {
   return world.locked === true ? t("shell.launchLocked") : lockReason(t, state);

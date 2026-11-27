@@ -8,6 +8,7 @@ import type { SetupState } from "../messages.ts";
 import type { Lock, Progress } from "../page-progress.ts";
 import type { Updates } from "../page-updates.ts";
 import type { PackageCheck } from "@stagehand/shared/updates/check";
+import type { ItemState } from "../page-package-install.ts";
 import type { Adapter } from "../adapters/config.ts";
 import type { AdapterChoice } from "../adapters/select.ts";
 import type { WorldView } from "@stagehand/ui/context.ts";
@@ -41,6 +42,13 @@ export interface UiState {
   readonly updates: Updates;
   /** Our own check of the server's packages while it runs (package-check.ts). */
   readonly check: CheckView;
+  /** Installing the ticked updates: the run, the last one, the ticks (package-install.ts). */
+  readonly install: InstallView;
+  /** The module panel opens on this tab once (the update chip opens Package). */
+  readonly panelTab?: {
+    readonly tab: "library" | "package";
+    readonly n: number;
+  };
   /** The phone and tablet layouts' place: home, and the trail Back retraces. */
   readonly phone: PhoneNav;
   /** The world whose Next launch sheet is open (phone and tablet layouts). */
@@ -77,6 +85,53 @@ export interface CheckView {
 }
 
 export const NO_CHECK: CheckView = { running: null, one: {}, live: {} };
+
+export type RunState = "queued" | ItemState;
+
+export interface InstallRun {
+  readonly requestId: string;
+  /** The packages, in install order. */
+  readonly ids: readonly string[];
+  readonly backup: boolean;
+  readonly states: Readonly<Record<string, RunState>>;
+  /** From and to, as the run started, for the summary. */
+  readonly versions: Readonly<Record<string, { from: string; to: string }>>;
+  readonly errors: Readonly<
+    Record<string, { error?: string; errorCode?: number }>
+  >;
+}
+
+export interface InstallSummary {
+  readonly ok: readonly {
+    id: string;
+    title: string;
+    from: string;
+    to: string;
+    type: "module" | "system";
+  }[];
+  readonly failed: readonly {
+    id: string;
+    error?: string;
+    errorCode?: number;
+  }[];
+  readonly backups: boolean;
+}
+
+export interface InstallView {
+  readonly running: InstallRun | null;
+  readonly last: InstallSummary | null;
+  /** The ticked rows; null until the owner ticks: every Ready update. */
+  readonly ticks: readonly string[] | null;
+  /** Back up first: Foundry's own backup of each package before its install. */
+  readonly backup: boolean;
+}
+
+export const NO_INSTALL: InstallView = {
+  running: null,
+  last: null,
+  ticks: null,
+  backup: true,
+};
 
 export const DEFAULT_WORLD_VIEW: WorldView = { by: "folder", layout: "cards" };
 

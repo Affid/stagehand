@@ -149,10 +149,11 @@ export function PackageTab(props: {
   readonly pkg: PackageInfo;
   readonly kind?: PackageKind;
 }) {
-  const { t, PackageActions } = useModules();
+  const { t, PackageActions, PackageUpdate } = useModules();
   const kind = props.kind ?? "module";
   return (
     <div class="sts-pkgtab">
+      {PackageUpdate ? <PackageUpdate pkg={props.pkg} kind={kind} /> : null}
       <Facts pkg={props.pkg} />
       <Relationships pkg={props.pkg} />
       <Contents pkg={props.pkg} />

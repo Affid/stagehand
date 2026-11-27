@@ -72,8 +72,9 @@ function ModuleColumn(props: { readonly here: string | undefined }) {
   if (!pkg) return null;
   return (
     <ModulePanel
-      key={pkg.id}
+      key={`${pkg.id}:${String(state.panelTab?.n ?? 0)}`}
       pkg={pkg}
+      {...(state.panelTab ? { tab: state.panelTab.tab } : {})}
       here={props.here}
       onClose={() => store.set({ panel: null })}
     />

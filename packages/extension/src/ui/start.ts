@@ -29,9 +29,11 @@ import {
   DEFAULT_WORLD_VIEW,
   EMPTY_FILTER,
   NO_CHECK,
+  NO_INSTALL,
   type Store,
 } from "./store.ts";
 import { trackChecks } from "./package-check.ts";
+import { trackInstalls } from "./package-install.ts";
 import { trackProgress, UNLOCKED } from "./tasks.ts";
 import { START_NAV } from "./shell/phone/nav.ts";
 
@@ -66,6 +68,11 @@ function track(store: Store, page: UiDeps["page"], actions: Actions): void {
     save: (full, checkedAt, results) =>
       actions.saveChecks(full, checkedAt, results),
   });
+  trackInstalls({
+    store,
+    page,
+    markRefused: (id, version) => actions.markRefused(id, version),
+  });
   page.subscribe((e) => {
     if (e.type === "SERVER_STOPPED") store.set({ serverStopped: true });
   });
@@ -94,6 +101,7 @@ function createUi(
     lock: UNLOCKED,
     updates: NO_UPDATES,
     check: NO_CHECK,
+    install: NO_INSTALL,
     launching: null,
   });
   let sync: LibrarySync | undefined;

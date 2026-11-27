@@ -1,7 +1,26 @@
-// The filter, and Foundry's own Install and Update All for modules or
+// The filter, and Foundry's own Install (and Update All, where our Updates
+// tab isn't: safe mode) for modules or
 // systems (prototype controls row).
 import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../../context.ts";
+import { hasUpdatesTab } from "./LibraryTabs.tsx";
+
+/** Foundry's own Update All (safe mode, where our Updates tab isn't). */
+function UpdateAll(props: { readonly kind: "module" | "system" }) {
+  const { page, t, canChange } = useUi();
+  return (
+    <button
+      type="button"
+      disabled={!canChange}
+      onClick={() =>
+        page.foundryAction({ action: "updateAll", packageType: props.kind })
+      }
+    >
+      <Icon name="cloud-arrow-down" />
+      <span>{t("lib.updateAll")}</span>
+    </button>
+  );
+}
 
 export function FilterRow(props: {
   readonly kind: "module" | "system";
@@ -40,16 +59,7 @@ export function FilterRow(props: {
         <Icon name="download" />
         <span>{t(`lib.install.${props.kind}`)}</span>
       </button>
-      <button
-        type="button"
-        disabled={!canChange}
-        onClick={() =>
-          page.foundryAction({ action: "updateAll", packageType: props.kind })
-        }
-      >
-        <Icon name="cloud-arrow-down" />
-        <span>{t("lib.updateAll")}</span>
-      </button>
+      {hasUpdatesTab(state) ? null : <UpdateAll kind={props.kind} />}
     </header>
   );
 }

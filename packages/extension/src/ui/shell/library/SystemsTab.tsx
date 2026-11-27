@@ -9,14 +9,17 @@ import { plural } from "@stagehand/ui/i18n.ts";
 import { worldsUsing } from "../../model/systems.ts";
 import { markFor } from "../../model/package-updates.ts";
 import { installOf } from "../../tasks.ts";
+import { waitingIn } from "../../package-install.ts";
+import { hasUpdatesTab } from "./head/LibraryTabs.tsx";
 import { InstallChip } from "./InstallChip.tsx";
 import { shownVersion } from "@stagehand/shared/version";
 
 function Marks(props: { readonly s: SystemInfo }) {
-  const { state, page, t, canChange } = useUi();
+  const { state, store, page, t, canChange } = useUi();
   const { s } = props;
   const update = markFor(state, "system", s);
   const installing = installOf(state, s.id);
+  const waiting = waitingIn(state, s.id);
   return (
     <>
       {s.favorite ? (
@@ -33,8 +36,8 @@ function Marks(props: { readonly s: SystemInfo }) {
           aria-label={t("lib.locked")}
         />
       ) : null}
-      {installing ? (
-        <InstallChip task={installing} title={s.title} />
+      {installing || waiting ? (
+        <InstallChip task={installing} waiting={waiting} title={s.title} />
       ) : update ? (
         <button
           type="button"
@@ -42,13 +45,16 @@ function Marks(props: { readonly s: SystemInfo }) {
           disabled={!canChange}
           title={t("lib.updateFrom", { version: s.version })}
           aria-label={t("lib.updateTo", { title: s.title, version: update })}
-          onClick={() =>
-            page.foundryAction({
-              action: "updatePackage",
-              packageType: "system",
-              id: s.id,
-            })
-          }
+          onClick={() => {
+            if (hasUpdatesTab(state))
+              store.set({ side: { kind: "system", id: s.id }, panel: null });
+            else
+              page.foundryAction({
+                action: "updatePackage",
+                packageType: "system",
+                id: s.id,
+              });
+          }}
         >
           <Icon name="arrow-up" />
           {update}

@@ -47,18 +47,14 @@ describe("the Library's head", () => {
     expect(tabs).toEqual(["Modules 5", "Systems 1", "By world 1", "Updates 0"]);
   });
 
-  test("Install Module and Update All are Foundry's own", () => {
-    const { getByRole, page } = library();
+  test("Install Module is Foundry's own; the Updates tab replaces Update All", () => {
+    const { getByRole, queryByRole, page } = library();
     fireEvent.click(getByRole("button", { name: "Install Module" }));
     expect(page.foundryAction).toHaveBeenCalledWith({
       action: "installPackage",
       packageType: "module",
     });
-    fireEvent.click(getByRole("button", { name: "Update All" }));
-    expect(page.foundryAction).toHaveBeenCalledWith({
-      action: "updateAll",
-      packageType: "module",
-    });
+    expect(queryByRole("button", { name: "Update All" })).toBe(null);
   });
 
   test("the Systems tab lists systems, with Install System", () => {

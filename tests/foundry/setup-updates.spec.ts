@@ -60,30 +60,34 @@ test.afterAll(async () => {
   await server.close();
 });
 
-test("phase 1: Foundry's own update shows its progress on the card, the panel and the rail", async () => {
+test("one package from its Update box: checked, then installed with progress on the card, the box and the rail", async () => {
   const plain = card("st-upd-plain");
   await plain.getByRole("button", { name: /Updates fixture: plain/ }).click();
   const panel = shell().getByRole("complementary", {
     name: /Updates fixture: plain/,
   });
   await panel.getByRole("tab", { name: "Package" }).click();
-  await panel.getByRole("button", { name: "Update if available" }).click();
+  const box = panel.locator(".spu-box");
+  await expect(box).toContainText("Not checked yet.");
+  await box.getByRole("button", { name: "Check for update" }).click();
+  await expect(box).toContainText("1.1.0 is available · you have 1.0.0", {
+    timeout: 20_000,
+  });
+  await box.getByRole("checkbox", { name: "Back up first" }).uncheck();
+  await box.getByRole("button", { name: "Update to 1.1.0" }).click();
   // The download is spread over 3 seconds: its percentage shows on the chip.
   const chip = plain.locator(".spu-chip");
   await expect(chip).toHaveText(/^\d+%$/, { timeout: 15_000 });
+  await expect(box).toContainText(/Downloading \d+%/);
   await expect(shell().locator(".sts-lib > span")).toHaveText(
-    "Updating Updates fixture: plain…",
+    "Updating 1 of 1…",
   );
-  await expect(
-    panel.getByRole("button", { name: /^Updating… \d+%$|^Installing…$/ }),
-  ).toBeDisabled();
   await page.screenshot({ path: `${SCREENS}/updates-phase1-progress.png` });
-  // Done: the chip goes and the card shows the new version.
+  // Done: the chip goes, the card shows the new version, the box says so.
   await expect(chip).toHaveCount(0, { timeout: 20_000 });
   await expect(plain).toContainText("v1.1.0", { timeout: 10_000 });
-  await expect(shell().locator(".sts-lib > span")).not.toContainText(
-    "Updating",
-  );
+  await expect(box).toContainText("updated to 1.1.0 just now");
+  await panel.getByRole("button", { name: "Close" }).click();
 });
 
 const tab = (name: RegExp): Locator =>
@@ -114,8 +118,11 @@ test("phase 2: the Updates tab checks every package and sorts what it found", as
   await expect(
     section("Not available to you").locator(rowSel("st-upd-manifest403")),
   ).toContainText("refused access (403)");
-  // Updated in phase 1: current now, so no row.
-  await expect(row("st-upd-plain")).toHaveCount(0);
+  // Updated by the first test: under Updated just now, not Ready.
+  await expect(section("Ready").locator(rowSel("st-upd-plain"))).toHaveCount(0);
+  await expect(shell().locator(".spu-sec.updated")).toContainText(
+    "Updates fixture: plain",
+  );
   await page.screenshot({ path: `${SCREENS}/updates-phase2-list.png` });
   // A row's action checks that package again.
   await row("st-upd-manifest403")
@@ -139,4 +146,58 @@ test("phase 2: the check is kept: after a reload the tab shows it without checki
   await expect(shell().locator(".spu-head")).toContainText("checked");
   await expect(shell().locator(".spu-head.busy")).toHaveCount(0);
   await expect(row("st-upd-lib")).toBeVisible();
+});
+
+test("phase 3: Update installs only the ticked packages, after a backup, with progress and a summary", async () => {
+  await tab(/^Updates/).click();
+  // Only our fixtures: the server's real system update stays as it is.
+  await section("Ready").getByRole("link", { name: "Untick all" }).click();
+  for (const title of [
+    "Updates fixture: library",
+    "Updates fixture: needs library 1.1",
+    "Updates fixture: download refused",
+  ])
+    await shell()
+      .getByRole("checkbox", { name: `Update ${title}` })
+      .check();
+  await expect(shell().locator(".spu-foot")).toContainText("3 packages ticked");
+  await shell().getByRole("checkbox", { name: "Back up first" }).check();
+  await shell().getByRole("button", { name: "Update 3" }).click();
+  await expect(shell().locator(".spu-foot.busy")).toBeVisible();
+  await expect(shell().locator(".sts-lib > span")).toContainText("Updating");
+  await page.screenshot({ path: `${SCREENS}/updates-phase3-running.png` });
+  await expect(shell().locator(".spu-sum")).toContainText(
+    "2 packages updated · 1 failed.",
+    { timeout: 120_000 },
+  );
+  await expect(shell().locator(".spu-sec.updated")).toContainText(
+    "Updates fixture: library",
+  );
+  await expect(shell().locator(".spu-sec.updated")).toContainText(
+    "Updates fixture: needs library 1.1",
+  );
+  await expect(
+    section("Not available to you").locator(rowSel("st-upd-download403")),
+  ).toBeVisible();
+  await page.screenshot({ path: `${SCREENS}/updates-phase3-done.png` });
+  await tab(/^Modules/).click();
+  await expect(card("st-upd-lib")).toContainText("v1.1.0");
+  await expect(card("st-upd-needs")).toContainText("v1.1.0");
+});
+
+test("phase 3: a system's update chip opens its panel's Update box, which installs nothing by itself", async () => {
+  await tab(/^Systems/).click();
+  const sys = shell().locator('.stl-card[data-system="st-upd-sys"]');
+  await sys.locator(".stw-upd").click();
+  const box = shell().locator(".sts-panel .spu-box");
+  await expect(box).toContainText("1.1.0 is available · you have 1.0.0");
+  await expect(
+    box.getByRole("button", { name: "Update to 1.1.0" }),
+  ).toBeEnabled();
+  await page.screenshot({ path: `${SCREENS}/updates-phase3-box.png` });
+  await shell()
+    .locator(".sts-panel")
+    .getByRole("button", { name: "Close" })
+    .click();
+  await tab(/^Modules/).click();
 });

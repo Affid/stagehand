@@ -281,9 +281,13 @@ describe("the Package tab's server settings and actions (6b2)", () => {
       packageType: "module",
       id: "a",
     });
+    // Foundry's "Update if available" gives way to our Update box (updates plan).
+    expect(
+      within(panel).queryByRole("button", { name: "Update if available" }),
+    ).toBe(null);
+    expect(panel.querySelector(".spu-box")).not.toBe(null);
     for (const [name, action] of [
       ["Edit manifest…", "editPackage"],
-      ["Update if available", "updatePackage"],
       ["Backup", "backupPackage"],
       ["Uninstall", "uninstallPackage"],
     ] as const) {

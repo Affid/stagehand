@@ -5,6 +5,7 @@
 // filter, Install and Update all as icons.
 import { GROUP_BYS, type GroupBy } from "@stagehand/ui/model/library-groups.ts";
 import { updateCount } from "../../../model/updates.ts";
+import { hasUpdatesTab } from "./LibraryTabs.tsx";
 import { Icon } from "@stagehand/ui/common/widgets.tsx";
 import { useUi } from "../../../context.ts";
 import { PopMenu, type PopItem } from "../common/PopMenu.tsx";
@@ -139,13 +140,18 @@ function useManageEntries(props: PhoneHeadProps): Entry[] {
       onPick: foundry("installPackage"),
       on: canChange,
     },
-    {
-      key: "update",
-      icon: "cloud-arrow-down",
-      label: t("stp.updateAll", { n: updates }),
-      onPick: foundry("updateAll"),
-      on: canChange && updates > 0,
-    },
+    // Where our Updates tab is, it replaces Foundry's Update All.
+    ...(hasUpdatesTab(state)
+      ? []
+      : [
+          {
+            key: "update",
+            icon: "cloud-arrow-down",
+            label: t("stp.updateAll", { n: updates }),
+            onPick: foundry("updateAll"),
+            on: canChange && updates > 0,
+          },
+        ]),
   ];
 }
 
@@ -209,7 +215,7 @@ export function PhoneModulesHead(props: PhoneHeadProps) {
 
 /** The Systems tab's row: the filter, Install and Update all. */
 export function PhoneSystemsHead() {
-  const { page, t, canChange } = useUi();
+  const { state, page, t, canChange } = useUi();
   const act = (
     action: "installPackage" | "updateAll",
     label: string,
@@ -230,7 +236,9 @@ export function PhoneSystemsHead() {
     <header class="controls stl-controls stp-libhead">
       <Filter kind="system" />
       {act("installPackage", t("lib.install.system"), "plus")}
-      {act("updateAll", t("lib.updateAll"), "cloud-arrow-down")}
+      {hasUpdatesTab(state)
+        ? null
+        : act("updateAll", t("lib.updateAll"), "cloud-arrow-down")}
     </header>
   );
 }

@@ -9,6 +9,7 @@ import { useUi } from "../context.ts";
 import { updatesCount } from "../model/package-updates.ts";
 import type { Progress } from "../../page-progress.ts";
 import { installsRunning } from "../tasks.ts";
+import { runPosition } from "../package-install.ts";
 import { ago, plural, type Translate } from "@stagehand/ui/i18n.ts";
 import { worldOrder } from "@stagehand/ui/model/order.ts";
 import { systemTitle } from "../model/system.ts";
@@ -156,16 +157,22 @@ function LibraryEntry(props: { readonly current: boolean }) {
   const fresh = state.data.fresh.length;
   const updates = updatesCount(state);
   const installs = installsRunning(state);
-  const sub = installs.length
-    ? updatingLine(t, installs, [
-        ...(setup?.modules ?? []),
-        ...(setup?.systems ?? []),
-      ])
-    : [
-        plural(t, "shell.librarySub", setup?.modules.length ?? 0),
-        plural(t, "shell.systemsSub", setup?.systems.length ?? 0),
-        ...(updates ? [plural(t, "shell.updatesSub", updates)] : []),
-      ].join(" · ");
+  const run = state.install.running;
+  const sub = run
+    ? t("shell.updatingRun", {
+        n: String(runPosition(run).at),
+        total: String(run.ids.length),
+      })
+    : installs.length
+      ? updatingLine(t, installs, [
+          ...(setup?.modules ?? []),
+          ...(setup?.systems ?? []),
+        ])
+      : [
+          plural(t, "shell.librarySub", setup?.modules.length ?? 0),
+          plural(t, "shell.systemsSub", setup?.systems.length ?? 0),
+          ...(updates ? [plural(t, "shell.updatesSub", updates)] : []),
+        ].join(" · ");
   return (
     <button
       type="button"
