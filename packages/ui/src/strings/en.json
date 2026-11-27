@@ -208,7 +208,7 @@
   "wp.add.preset": "Preset: {name}",
   "wp.add.noPresets": "No presets yet. Make them in the Library.",
   "wp.add.copy": "Copy from another world",
-  "wp.add.copyFrom": "Copy from {world}",
+  "wp.add.copyFrom": "Copy from {world}, {count}",
   "wp.add.noWorlds": "No other world reports its modules yet.",
   "wp.add.match": "Match {world}",
   "wp.add.matchHint": "Turn on what is on there, and off the rest.",

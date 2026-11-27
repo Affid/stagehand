@@ -98,18 +98,21 @@ function Choices(props: {
       {sources.length === 0 ? (
         <p class="st-empty">{t("wp.add.noWorlds")}</p>
       ) : null}
-      {sources.map((s) => (
-        <button
-          type="button"
-          key={s.id}
-          aria-label={t("wp.add.copyFrom", { world: s.title })}
-          onClick={() => props.onPickSource(s)}
-        >
-          <Icon name="copy" />
-          <span>{s.title}</span>
-          <span class="n">{plural(t, "wp.add.count", s.modules.length)}</span>
-        </button>
-      ))}
+      {sources.map((s) => {
+        const count = plural(t, "wp.add.count", s.modules.length);
+        // The name holds what the button shows (WCAG 2.5.3, label in name).
+        return (
+          <button
+            type="button"
+            key={s.id}
+            aria-label={t("wp.add.copyFrom", { world: s.title, count })}
+            onClick={() => props.onPickSource(s)}
+          >
+            <Icon name="copy" />
+            <span>{s.title}</span> <span class="n">{count}</span>
+          </button>
+        );
+      })}
     </>
   );
 }

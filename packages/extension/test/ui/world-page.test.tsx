@@ -211,7 +211,9 @@ describe("the Modules tab", () => {
         getByRole("button", { name: "Preset: QoL" }),
       ),
     );
-    fireEvent.click(getByRole("button", { name: "Copy from Vaults" }));
+    fireEvent.click(
+      getByRole("button", { name: /^Copy from Vaults, \d+ modules?$/ }),
+    );
     await waitFor(() =>
       expect(document.activeElement).toBe(
         getByRole("button", { name: "Match Vaults" }),
@@ -222,7 +224,9 @@ describe("the Modules tab", () => {
   test("Add: copy another world's modules, matching it", async () => {
     const { getByRole, send } = page();
     fireEvent.click(getByRole("button", { name: "Add" }));
-    fireEvent.click(getByRole("button", { name: "Copy from Vaults" }));
+    fireEvent.click(
+      getByRole("button", { name: /^Copy from Vaults, \d+ modules?$/ }),
+    );
     fireEvent.click(getByRole("button", { name: "Match Vaults" }));
     await waitFor(() => {
       expect(sent(send)).toContainEqual({
@@ -637,7 +641,9 @@ describe("review findings", () => {
       },
     });
     fireEvent.click(getByRole("button", { name: "Add" }));
-    const copy = getByRole("button", { name: "Copy from Vaults" });
+    const copy = getByRole("button", {
+      name: /^Copy from Vaults, \d+ modules?$/,
+    });
     expect(copy.textContent).toContain("501 modules");
     fireEvent.click(copy);
     const match = getByRole("button", {
