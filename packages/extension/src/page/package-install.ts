@@ -4,9 +4,10 @@
 // manifest our check found. Foundry's dependency installer stays off: an
 // update that needs a package that isn't installed is never ticked.
 import type { InstallRequest } from "../page-package-install.ts";
-import type { PageToUi } from "../page-protocol.ts";
+import type { PackageKind, PageToUi } from "../page-protocol.ts";
 import type { PageGlobals } from "./globals.ts";
 import { manifestFor, recheck, versionFor } from "./package-check.ts";
+import { tapProgress } from "./progress.ts";
 
 type Loose = Readonly<Record<string, unknown>>;
 
@@ -20,10 +21,11 @@ interface InstallGame {
     notify: boolean;
     dependencies: boolean;
   }): Promise<unknown>;
+  /** Foundry 14 answers whether it was made; Foundry 13 answers nothing. */
   createBackup?(
     pkg: { type: string; id: string; title: string },
     options: { note: string },
-  ): Promise<boolean>;
+  ): Promise<boolean | undefined>;
 }
 
 const MAX_ERROR = 300;
@@ -31,9 +33,17 @@ const MAX_ERROR = 300;
 const isObject = (v: unknown): v is Loose =>
   typeof v === "object" && v !== null;
 
+/**
+ * Foundry 13 doesn't report a refused download: its install then fails on
+ * the zip that never arrived (ENOENT on <package>.zip).
+ */
+const LOST_DOWNLOAD = /\bENOENT\b.*\.zip\b/;
+
 /** Foundry's reason, without any address (a Patreon link may hold a key). */
 function errorText(e: unknown): string {
   const raw = e instanceof Error ? e.message : String(e);
+  if (LOST_DOWNLOAD.test(raw))
+    return "The download didn't arrive: its server may have refused it (a membership may have ended), or it was cut off.";
   return raw
     .replace(/^\[[^\]]*\]\s*/, "")
     .replace(/https?:\/\/\S+/g, "its address")
@@ -68,6 +78,33 @@ function titleOf(
 type Post = (m: PageToUi) => void;
 type Item = InstallRequest["items"][number];
 
+/**
+ * Foundry's backup of one package: Foundry 14 answers whether it was made;
+ * Foundry 13 answers nothing either way, so its last tick for the package
+ * ("complete" or "error") says.
+ */
+async function backUp(
+  game: InstallGame | undefined,
+  item: { type: PackageKind; id: string },
+  note: string,
+): Promise<boolean> {
+  if (!game?.createBackup) return false;
+  let last: string | undefined;
+  const stop = tapProgress((p) => {
+    if (p.action === "createBackup" && p.packageId === item.id && p.step)
+      last = p.step;
+  });
+  try {
+    const title = titleOf(game, item.type, item.id);
+    const ok = await game
+      .createBackup({ ...item, title }, { note })
+      .catch(() => false);
+    return typeof ok === "boolean" ? ok : last === "complete";
+  } finally {
+    stop();
+  }
+}
+
 async function backupAll(
   game: InstallGame | undefined,
   req: InstallRequest,
@@ -83,10 +120,8 @@ async function backupAll(
     const note = version
       ? `Before updating to ${version} (Stagehand)`
       : "Before updating (Stagehand)";
-    const ok = await game
-      ?.createBackup?.({ type, id, title: titleOf(game, type, id) }, { note })
-      .catch(() => false);
-    if (ok === true) {
+    const ok = await backUp(game, { type, id }, note);
+    if (ok) {
       post({
         type: "PACKAGE_INSTALL",
         payload: {

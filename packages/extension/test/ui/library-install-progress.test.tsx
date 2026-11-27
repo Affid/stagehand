@@ -91,6 +91,28 @@ describe("a module's update, while Foundry installs it", () => {
     expect(line()).toBe("Installing 2 packages…");
   });
 
+  test("the panel's Update box says when its update failed, and why", () => {
+    const r = library();
+    fireEvent.click(el(card(r.container, "a"), "button.t"));
+    fireEvent.click(r.getByRole("tab", { name: "Package" }));
+    void act(() => {
+      r.store.set((s) => ({
+        install: {
+          ...s.install,
+          last: {
+            ok: [],
+            failed: [{ id: "a", error: "The server answered 500" }],
+            backups: false,
+          },
+        },
+      }));
+    });
+    const box = el(r.container, ".sts-panel .spu-box");
+    expect(el(box, ".spu-warn.failed").textContent).toBe(
+      "The update failed: The server answered 500",
+    );
+  });
+
   test("the panel's Update box shows the progress", () => {
     const r = library();
     fireEvent.click(el(card(r.container, "a"), "button.t"));

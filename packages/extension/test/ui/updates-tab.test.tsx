@@ -307,6 +307,27 @@ describe("updating the ticked packages (phase 3)", () => {
     });
   });
 
+  test("a package that failed for another reason stays to tick again, saying why", () => {
+    const r = updatesTab(checked([A, LIB]));
+    fireEvent.click(r.getByRole("button", { name: "Update 2" }));
+    void act(() => {
+      r.emit(ev({ kind: "item", id: "lib", state: "done" }));
+      r.emit(
+        ev({
+          kind: "item",
+          id: "a",
+          state: "failed",
+          error: "The server answered 500",
+        }),
+      );
+      r.emit(ev({ kind: "done" }));
+    });
+    const row = el(r.container, '.spu-sec:not(.updated) .spu-row[data-id="a"]');
+    expect(el(row, ".spu-warn.failed").textContent).toBe(
+      "The update failed: The server answered 500",
+    );
+  });
+
   test("the end: a summary, what was updated first, and a refused download remembered", async () => {
     const r = updatesTab(checked([A, LIB]));
     fireEvent.click(r.getByRole("button", { name: "Update 2" }));

@@ -1005,6 +1005,8 @@
   "upd.box.checkOne": "Check for update",
   "upd.box.locked": "Updates are locked: Foundry keeps it as it is. Turn off Lock updates below to check.",
   "upd.box.checking": "Checking its manifest…",
+  "upd.failed": "The update failed: {error}",
+  "upd.failedNoReason": "The update failed.",
   "upd.warn.needsMin": "Needs {title} {min} or newer (you have {have}).",
   "upd.warn.needsMax": "Works with {title} up to {max}; you'd have {have}.",
   "upd.warn.systemMin": "Fits {title} {min} or newer; you have {have}.",

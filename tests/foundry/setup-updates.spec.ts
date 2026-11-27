@@ -22,6 +22,7 @@ import {
   startUpdateServer,
   type UpdateServer,
 } from "../../scripts/foundry/update-fixtures.ts";
+import { ON_13 } from "./core.ts";
 import { SCREENS } from "./extension.ts";
 import { loadTarget, openSetupAsAdmin, type Target } from "./target.ts";
 
@@ -216,9 +217,17 @@ test("phase 3: Update installs only the ticked packages, after a backup, with pr
   await expect(shell().locator(".spu-sec.updated")).toContainText(
     "Updates fixture: needs library 1.1",
   );
-  await expect(
-    section("Not available to you").locator(rowSel("st-upd-download403")),
-  ).toBeVisible();
+  if (ON_13) {
+    // Foundry 13 doesn't report the 403: its install fails on the missing
+    // zip, so the row stays to tick again and says the download didn't arrive.
+    await expect(
+      section("Ready").locator(rowSel("st-upd-download403")),
+    ).toContainText("The update failed: The download didn't arrive");
+  } else {
+    await expect(
+      section("Not available to you").locator(rowSel("st-upd-download403")),
+    ).toBeVisible();
+  }
   // Backups, then installs: one bar that only ever moves forward.
   const widths = await bar();
   expect(widths.length).toBeGreaterThan(2);
@@ -294,6 +303,7 @@ test("phase 4: an update that needs a newer system asks first, offers the system
 });
 
 test("phase 5: a refused download's Try again tries the install again; refused again, it stays not available", async () => {
+  test.skip(ON_13, "Foundry 13 doesn't report a refused download's 403");
   const refused = section("Not available to you").locator(
     rowSel("st-upd-download403"),
   );

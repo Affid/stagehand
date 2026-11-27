@@ -45,6 +45,11 @@ const isObject = (v: unknown): v is Loose =>
 const text = (v: unknown): string | undefined =>
   typeof v === "string" && v.length > 0 && v.length <= 60 ? v : undefined;
 
+/** A manifest's address: kept in the page world only, never posted. */
+const MAX_URL = 2048;
+const address = (v: unknown): string | undefined =>
+  typeof v === "string" && v.length > 0 && v.length <= MAX_URL ? v : undefined;
+
 function gameOf(page: Pick<PageGlobals, "game">): CheckGame | undefined {
   return page.game;
 }
@@ -216,10 +221,14 @@ async function checkOne(
     return failed(item.type, item.id, "Foundry's check is missing", now);
   try {
     const answer = await game.checkPackage({ type: item.type, id: item.id });
-    const manifest = isObject(answer) ? answer.manifest : undefined;
-    if (typeof manifest === "string") {
-      const remote =
-        isObject(answer) && isObject(answer.remote) ? answer.remote : {};
+    const remote =
+      isObject(answer) && isObject(answer.remote) ? answer.remote : {};
+    // Foundry 14 answers with the manifest to install from; 13 only has the
+    // remote one's (its Setup#updateCheck installs from remote.manifest).
+    const manifest =
+      (isObject(answer) ? address(answer.manifest) : undefined) ??
+      address(remote.manifest);
+    if (manifest) {
       const version = text(remote.version);
       updates.set(`${item.type}:${item.id}`, {
         manifest,

@@ -300,6 +300,11 @@
   color: #f5c45e;
   font-size: 12px;
 }
+/* The last try failed: the run's failed colour, not a caution. */
+.sts-shell .spu-warn.failed,
+.sts-shell .spu-warn.failed > i {
+  color: #ffb3a6;
+}
 .sts-shell .spu-note {
   color: var(--color-light-3);
 }

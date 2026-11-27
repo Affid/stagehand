@@ -58,6 +58,29 @@ export const fixesOf = (w: Warning): string[] =>
       ? [w.fix]
       : [];
 
+/** The last run's failure for this package: shown until the next run. */
+export function lastFailure(
+  state: Pick<UiState, "install">,
+  id: string,
+): { readonly error?: string } | undefined {
+  return state.install.last?.failed.find((f) => f.id === id);
+}
+
+/** "The update failed", with Foundry's reason when it gave one. */
+export function FailedLine(props: { readonly error?: string | undefined }) {
+  const { t } = useUi();
+  return (
+    <div class="spu-warn failed" role="status">
+      <i class="fa-solid fa-circle-xmark" aria-hidden="true" />
+      <span>
+        {props.error
+          ? t("upd.failed", { error: props.error })
+          : t("upd.failedNoReason")}
+      </span>
+    </div>
+  );
+}
+
 /** A row's warnings as things stand: with what is ticked, and the row itself. */
 export function rowWarnings(
   state: Pick<UiState, "data" | "check" | "install">,
@@ -91,8 +114,10 @@ export function RowWarnings(props: { readonly row: Row }) {
   const title = titlesOf(state);
   const warnings = rowWarnings(state, props.row);
   const notes = notesOf(state, props.row);
+  const failed = lastFailure(state, props.row.id);
   return (
     <>
+      {failed ? <FailedLine error={failed.error} /> : null}
       {warnings.map((w, i) => (
         <div key={`w${String(i)}`} class="spu-warn">
           <i class="fa-solid fa-triangle-exclamation" aria-hidden="true" />

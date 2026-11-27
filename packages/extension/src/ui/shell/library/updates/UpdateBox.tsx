@@ -16,7 +16,7 @@ import {
   updatesInput,
 } from "../../../model/package-updates.ts";
 import { warningsOf } from "@stagehand/shared/updates/model";
-import { titlesOf, warningText } from "./Warnings.tsx";
+import { FailedLine, lastFailure, titlesOf, warningText } from "./Warnings.tsx";
 import { age } from "../../../model/worlds.ts";
 import { checkOne } from "../../../package-check.ts";
 import { askOrStart, setBackup } from "../../../package-install.ts";
@@ -27,9 +27,11 @@ import { useCheckDeps, useInstallDeps } from "./useCheckDeps.ts";
 
 function Box(props: {
   readonly when?: number;
+  readonly failed?: { readonly error?: string } | undefined;
   readonly children: ComponentChildren;
 }) {
   const { t } = useUi();
+  const { failed } = props;
   return (
     <div class="spu-box">
       <h4>
@@ -42,6 +44,7 @@ function Box(props: {
           </span>
         )}
       </h4>
+      {failed ? <FailedLine error={failed.error} /> : null}
       {props.children}
     </div>
   );
@@ -189,9 +192,11 @@ export function UpdateBox(props: {
   const at = result === undefined ? {} : { when: result.checkedAt };
   const row = rowsFor(state).find((r) => r.id === pkg.id);
   const updatedTo = state.install.last?.ok.find((u) => u.id === pkg.id)?.to;
+  // Its last try failed; a refused download is explained by its reason below.
+  const failed = row?.block ? undefined : lastFailure(state, pkg.id);
   if (!row)
     return (
-      <Box {...at}>
+      <Box {...at} failed={failed}>
         <NotOffered
           pkg={pkg}
           kind={props.kind}
@@ -210,7 +215,7 @@ export function UpdateBox(props: {
       </Box>
     );
   return (
-    <Box {...at}>
+    <Box {...at} failed={failed}>
       <Offered pkg={pkg} row={row} />
     </Box>
   );

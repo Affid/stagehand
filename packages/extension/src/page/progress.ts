@@ -2,7 +2,7 @@
 // layout. We wrap its public ui.setupPackages.onProgress and toggleLock once,
 // keep Foundry's own behaviour, and post a checked copy to our page.
 import type { PageToUi } from "../page-protocol.ts";
-import { parseLock, parseProgress } from "../page-progress.ts";
+import { parseLock, parseProgress, type Progress } from "../page-progress.ts";
 import type { PageGlobals } from "./globals.ts";
 
 interface SetupPackagesLike {
@@ -21,6 +21,17 @@ function forward(send: () => void): void {
   }
 }
 
+/** Listeners to Foundry's ticks inside the page world (a run that waits on one). */
+const taps = new Set<(p: Progress) => void>();
+
+/** Hears each tick Foundry draws; returns a function that stops hearing. */
+export function tapProgress(listener: (p: Progress) => void): () => void {
+  taps.add(listener);
+  return () => {
+    taps.delete(listener);
+  };
+}
+
 export function watchProgress(
   page: Pick<PageGlobals, "ui">,
   post: (m: PageToUi) => void,
@@ -34,7 +45,9 @@ export function watchProgress(
       const result = onProgress(data);
       forward(() => {
         const payload = parseProgress(data);
-        if (payload) post({ type: "PROGRESS", payload });
+        if (!payload) return;
+        post({ type: "PROGRESS", payload });
+        for (const tap of taps) tap(payload);
       });
       return result;
     };

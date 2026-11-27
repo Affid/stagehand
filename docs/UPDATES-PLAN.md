@@ -385,6 +385,15 @@ the new tab and flow. Foundry 14.371 came out the same day, so the
 "Foundry is up to date" test skips while foundryvtt.com offers a newer
 build than the server's.
 
+On Foundry 13 (2026-11-27): its `checkPackage` answers with the manifest
+to install from only inside `remote` (14 also puts it beside), and its
+`createBackup` answers nothing whether or not the backup was made, so the
+run reads the backup's last progress tick ("complete" or "error"). Foundry
+13 doesn't report a refused download's 403 either: its install fails on
+the zip that never arrived, which the row words as "The download didn't
+arrive…" and leaves to tick again (not remembered as not available). A
+package whose last try failed says so on its row and in its Update box.
+
 Each phase: unit tests, the live suites on 14 and 13, the app suite, then
 a commit.
 
