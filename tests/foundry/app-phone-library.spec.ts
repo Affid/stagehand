@@ -52,6 +52,7 @@ test.describe("on a phone", () => {
     await expect(shell(page).getByRole("tab")).toHaveText([
       /^Modules/,
       /^Systems/,
+      /^Updates/,
     ]);
     const head = shell(page).locator(".stp-libhead");
     await expect(head.getByRole("searchbox")).toBeVisible();
@@ -105,6 +106,7 @@ test("a tablet on its side keeps By world", async () => {
       /^Modules/,
       /^Systems/,
       /^By world/,
+      /^Updates/,
     ]);
   } finally {
     await app.close();

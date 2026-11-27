@@ -75,7 +75,7 @@ test("the Library's tabs and a module's details by keyboard", async () => {
   await shell(page).locator(".sts-lib").click();
   await walkTabs(
     shell(page).getByRole("tablist", { name: "Library sections" }),
-    ["Modules", "Systems", "By world"],
+    ["Modules", "Systems", "By world", "Updates"],
   );
   await shell(page).locator(".sts-main button.t").first().click();
   await walkTabs(shell(page).locator(".sts-panel").getByRole("tablist"), [

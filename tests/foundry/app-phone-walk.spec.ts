@@ -219,6 +219,13 @@ async function walkLibrary(
     await inPage(page, /^By world/);
     await stop(page, tag, "by-world");
   }
+  // The check that opening the tab starts ends before the stop (updates plan).
+  await inPage(page, /^Updates/);
+  await expect(shell(page).locator(".spu-head")).toBeVisible();
+  await expect(shell(page).locator(".spu-head.busy")).toHaveCount(0, {
+    timeout: 60_000,
+  });
+  await stop(page, tag, "updates");
 }
 
 async function walkServer(page: Page, tag: string): Promise<void> {
@@ -236,7 +243,7 @@ async function walkServer(page: Page, tag: string): Promise<void> {
   await shell(page).locator(".sth-ver").click();
   await menu(page, tag, "version-menu");
   await shell(page)
-    .getByRole("button", { name: /Update page|What's new/ })
+    .getByRole("button", { name: /Update page|what's new/i })
     .click();
   await shell(page)
     .locator(".sts-main .stb-head, .sts-main .stu-cols")

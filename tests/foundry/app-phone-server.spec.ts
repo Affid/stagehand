@@ -145,7 +145,7 @@ test("What's new opens from the version chip, and Back returns", async () => {
   await tab("Worlds").click();
   await shell().locator(".sth-ver").click();
   await shell()
-    .getByRole("button", { name: /Update page|What's new/ })
+    .getByRole("button", { name: /Update page|what's new/i })
     .click();
   await expect(
     shell().getByRole("heading", { level: 1, name: "What's new" }),

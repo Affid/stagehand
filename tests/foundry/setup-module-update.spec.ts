@@ -1,8 +1,9 @@
 // A module update against Foundry's real package list (Phase 6 follow-up):
 // an older socketlib is installed from its pinned release manifest, so
 // foundryvtt.com lists a newer one. The Library card shows Update with that
-// version, and pressing it runs Foundry's own update. The module is removed
-// again afterwards, so the server ends as it began.
+// version; pressing it opens the module's Update box, which checks it and
+// offers Update to that version (updates plan, phase 3). The module is
+// removed again afterwards, so the server ends as it began.
 import { existsSync, readFileSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import {
@@ -116,13 +117,28 @@ test("the Library card offers Foundry's newer version of the module", async () =
   await audit(page, "library: a module with an update");
 });
 
-test("Update runs Foundry's own update; the card then shows the new version", async () => {
+test("Update opens its Update box, which updates it; the card then shows the new version", async () => {
   await card()
     .getByRole("button", { name: `Update socketlib to ${latest}` })
     .click();
+  const box = shell().locator(".sts-panel .spu-box");
+  // The manifest's spelling of the version, with or without its "v".
+  const to = `v?${bareVersion(latest).replaceAll(".", "\\.")}`;
+  const update = box.getByRole("button", {
+    name: new RegExp(`^Update to ${to}$`),
+  });
+  // The box checks the module's manifest first: Foundry's list offered it.
+  await expect(update).toBeVisible({ timeout: 60_000 });
+  await expect(box).toContainText(`you have ${OLD}`);
+  // No backup left behind: the server ends as it began.
+  await box.getByRole("checkbox", { name: "Back up first" }).uncheck();
+  await update.click();
   await waitFor(`${ID} to update to ${latest}`, 2 * 60_000, () =>
     Promise.resolve(bareVersion(installedVersion()) === bareVersion(latest)),
   );
+  await expect(box).toContainText(new RegExp(`updated to ${to} just now`), {
+    timeout: 60_000,
+  });
   await expect(card().locator(".stw-upd")).toHaveCount(0, { timeout: 60_000 });
   // One "v", however the release spells its version.
   await expect(card()).toContainText(`v${bareVersion(latest)}`);

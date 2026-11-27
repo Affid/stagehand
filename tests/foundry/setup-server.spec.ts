@@ -157,7 +157,18 @@ async function openUpdatePage(): Promise<void> {
 
 test("the Version chip's menu opens the Update page: Foundry's own check says up to date", async () => {
   test.skip(ON_13, "Foundry 13 is offered 14: not the newest release");
-  await openUpdatePage();
+  await shell().locator(".sth-ver").click();
+  const menu = shell().getByRole("region", {
+    name: "Foundry Virtual Tabletop",
+  });
+  await expect(menu.locator(".avail")).toBeVisible();
+  const newer = await menu.locator(".avail:not(.none)").isVisible();
+  await menu
+    .getByRole("button", { name: /Update page|See what's new/ })
+    .click();
+  // A newer build out since this server's (14.371 on 2026-11-27): the
+  // answered-as-newer test below covers that page, starting on it.
+  test.skip(newer, "foundryvtt.com offers a newer build than this server's");
   const upd = shell().locator(".stu-page");
   await expect(upd).toContainText("Foundry is up to date", { timeout: 30_000 });
   await expect(upd).toContainText(`Foundry ${CORE.version} is the latest`);
@@ -188,8 +199,12 @@ test("the Update page reads Foundry's release notes; --noupdate disables the upd
   test.skip(ON_13, "fakes a newer 14 build; Foundry 13 is offered 14 itself");
   await answerNewer();
   const upd = shell().locator(".stu-page");
-  await upd.getByRole("button", { name: "Check again" }).click();
   const notes = upd.locator(".stu-notes");
+  // Up to date: Check again asks once more, answered as newer. Once
+  // foundryvtt.com has a newer build than the server's, its notes show.
+  const again = upd.getByRole("button", { name: "Check again" });
+  await expect(again.or(notes)).toBeVisible({ timeout: 30_000 });
+  if (await again.isVisible()) await again.click();
   await expect(notes.locator(".stu-nhead h3")).toContainText(
     "Release notes: Version 14",
     { timeout: 30_000 },
