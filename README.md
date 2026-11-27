@@ -62,7 +62,7 @@ flowchart LR
   companion -.->|"reads, for<br/>Module Management"| library
 ```
 
-Status: public release (companion 0.2.0, extension and app 0.3.3).
+Status: public release (companion 0.2.0, extension and app 0.4.0).
 Foundry VTT 13 and 14.
 
 ## Install

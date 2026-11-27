@@ -5,6 +5,49 @@ the companion module (`stagehand-v<version>`, its `module.json`), the
 browser extension (`stagehand-extension-v<version>`, its `manifest.json`)
 and the Android app (`stagehand-app-v<version>`, the extension's version).
 
+## 2026-11-27
+
+### Extension 0.4.0
+
+- The Library has an Updates tab. Stagehand checks every module and system
+  itself and lists what has an update, what it couldn't check and what is
+  up to date, before anything installs. Tick the updates you want and
+  press Update. Opening the tab checks again when the last check is over
+  an hour old, and Check again checks whenever you like. It replaces
+  Foundry's Update All on the Modules and Systems tabs.
+- Warnings before an update: one that needs a newer version of another
+  package (with a button to tick that one too, which then updates first),
+  one that doesn't fit your system, and a system update that modules
+  using it may not work with. When a ticked update still has a warning,
+  Stagehand asks before it starts. An update that needs a newer Foundry
+  says so, with a link to Foundry's update.
+- One package can be checked without installing it: the Update box in its
+  side panel shows the new version, any warnings and its changelog, and
+  installs only when you press Update. A card's update mark opens it.
+- Progress you can see: the tab has one bar for the whole run, and each
+  package's row, card and Update box say whether it is backing up,
+  waiting, downloading (with a percentage) or installing. With Back up
+  first on, as it is each time Setup opens, Foundry backs up each package
+  before it updates, restorable from Backups.
+- An update you can no longer download, for example after a Patreon
+  membership ended, shows under "Not available to you" with Check again,
+  instead of failing each time. On Foundry 13, which doesn't report a
+  refused download, its row says the download didn't arrive.
+- A failed update says why, on its row and in its Update box.
+- Text in a side panel can be selected and copied, such as a package's
+  name and id.
+- A short Systems list no longer stretches its cards to the height of the
+  pane.
+- Typing a name right after New tag or New preset can no longer rename a
+  different tag or preset.
+- A world's "Copy from" buttons in its Add menu read the same to screen
+  readers as they show.
+
+### Android app 0.4.0
+
+- The same changes, on the phone: the Updates tab is among the Library's
+  tabs, and a package's sheet has its Update box.
+
 ## 2026-11-19
 
 ### Companion module 0.2.0
