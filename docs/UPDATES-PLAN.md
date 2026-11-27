@@ -157,7 +157,10 @@ longer than that before it says "Couldn't check".
   - blocked or not available: the reason, as on the Updates tab.
 - **The arrow chip on a card** opens that panel on the Package tab rather
   than installing at once. No popover (the owner removed popups from the
-  page before).
+  page before). Until our check has run, the chip comes from Foundry's
+  package list; opening the box from it checks that package (unless the
+  library's check is running), so the box offers the update rather than
+  "Not checked yet".
 
 ### Warnings before updating
 
@@ -368,6 +371,15 @@ live fixtures: "Update the other N" leaves out risky packages until none
 left is risky (`safeSubset`), since leaving out a system can leave a module
 that needs it short; when nothing is left, the dialog offers only Update
 anyway (highlighted) and the fix.
+
+After the full live suite on 14 (2026-11-27): the chip's check above; a
+package's row says Waiting, not Backing up, once its backup is done and
+others are still backing up (the page reports `backedUp` after each
+backup, which the run's bar counts as done); the live specs that listed the Library's tabs, ran Update from a
+card, or matched the version menu's "What's new" case-sensitively follow
+the new tab and flow. Foundry 14.371 came out the same day, so the
+"Foundry is up to date" test skips while foundryvtt.com offers a newer
+build than the server's.
 
 Each phase: unit tests, the live suites on 14 and 13, the app suite, then
 a commit.

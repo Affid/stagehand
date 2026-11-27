@@ -16,7 +16,9 @@ import { unverifiedText } from "@stagehand/ui/model/unverified.ts";
 import { markFor } from "../../model/package-updates.ts";
 import { installOf } from "../../tasks.ts";
 import { waitingIn } from "../../package-install.ts";
+import { checkUnlessKnown } from "../../package-check.ts";
 import { hasUpdatesTab } from "./head/LibraryTabs.tsx";
+import { useCheckDeps } from "./updates/useCheckDeps.ts";
 import { InstallChip } from "./InstallChip.tsx";
 
 const MAX_TAGS = 3;
@@ -62,6 +64,7 @@ function UpdateChip(props: {
   readonly version: string;
 }) {
   const { state, store, page, t, canChange } = useUi();
+  const checks = useCheckDeps();
   const { pkg } = props;
   return (
     <button
@@ -74,13 +77,14 @@ function UpdateChip(props: {
         version: props.version,
       })}
       onClick={() => {
-        if (hasUpdatesTab(state))
+        if (hasUpdatesTab(state)) {
           store.set({
             panel: pkg.id,
             side: null,
             panelTab: { tab: "package", n: Date.now() },
           });
-        else
+          checkUnlessKnown(checks, "module", pkg.id);
+        } else
           page.foundryAction({
             action: "updatePackage",
             packageType: "module",

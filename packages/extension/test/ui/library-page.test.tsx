@@ -162,6 +162,12 @@ describe("a card's marks and line (6b)", () => {
     );
     fireEvent.click(chip);
     expect(r.page.foundryAction).not.toHaveBeenCalled();
+    // Foundry's list offered it; our check of it starts, so the box can offer it too.
+    expect(r.page.packageCheck).toHaveBeenCalledWith({
+      op: "one",
+      type: "module",
+      id: "b",
+    });
     expect(r.store.get().panel).toBe("b");
     expect(
       r.getByRole("tab", { name: "Package" }).getAttribute("aria-selected"),

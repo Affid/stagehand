@@ -225,6 +225,29 @@ describe("updating the ticked packages (phase 3)", () => {
     ).toBe(null);
   });
 
+  test("backups first: a backed-up row waits, and the foot moves on with each backup", () => {
+    const r = updatesTab(checked([A, LIB]));
+    fireEvent.click(r.getByRole("button", { name: "Update 2" }));
+    const side = (id: string) =>
+      el(r.container, `.spu-row[data-id="${id}"] .spu-side`).textContent;
+    void act(() => {
+      r.emit(ev({ kind: "item", id: "lib", state: "backup" }));
+    });
+    expect(side("lib")).toBe("Backing up");
+    expect(el(r.container, ".spu-foot").textContent).toContain(
+      "Backing up 2 packages · 25%",
+    );
+    void act(() => {
+      r.emit(ev({ kind: "item", id: "lib", state: "backedUp" }));
+      r.emit(ev({ kind: "item", id: "a", state: "backup" }));
+    });
+    expect(side("lib")).toBe("Waiting");
+    expect(side("a")).toBe("Backing up");
+    expect(el(r.container, ".spu-foot").textContent).toContain(
+      "Backing up 2 packages · 75%",
+    );
+  });
+
   test("the end: a summary, what was updated first, and a refused download remembered", async () => {
     const r = updatesTab(checked([A, LIB]));
     fireEvent.click(r.getByRole("button", { name: "Update 2" }));

@@ -10,12 +10,47 @@ import { worldsUsing } from "../../model/systems.ts";
 import { markFor } from "../../model/package-updates.ts";
 import { installOf } from "../../tasks.ts";
 import { waitingIn } from "../../package-install.ts";
+import { checkUnlessKnown } from "../../package-check.ts";
 import { hasUpdatesTab } from "./head/LibraryTabs.tsx";
+import { useCheckDeps } from "./updates/useCheckDeps.ts";
 import { InstallChip } from "./InstallChip.tsx";
 import { shownVersion } from "@stagehand/shared/version";
 
-function Marks(props: { readonly s: SystemInfo }) {
+/** A newer version: its panel opens and checks it (or Foundry's own update). */
+function SysUpdateChip(props: {
+  readonly s: SystemInfo;
+  readonly version: string;
+}) {
   const { state, store, page, t, canChange } = useUi();
+  const checks = useCheckDeps();
+  const { s } = props;
+  return (
+    <button
+      type="button"
+      class="stw-upd"
+      disabled={!canChange}
+      title={t("lib.updateFrom", { version: s.version })}
+      aria-label={t("lib.updateTo", { title: s.title, version: props.version })}
+      onClick={() => {
+        if (hasUpdatesTab(state)) {
+          store.set({ side: { kind: "system", id: s.id }, panel: null });
+          checkUnlessKnown(checks, "system", s.id);
+        } else
+          page.foundryAction({
+            action: "updatePackage",
+            packageType: "system",
+            id: s.id,
+          });
+      }}
+    >
+      <Icon name="arrow-up" />
+      {props.version}
+    </button>
+  );
+}
+
+function Marks(props: { readonly s: SystemInfo }) {
+  const { state, t } = useUi();
   const { s } = props;
   const update = markFor(state, "system", s);
   const installing = installOf(state, s.id);
@@ -39,26 +74,7 @@ function Marks(props: { readonly s: SystemInfo }) {
       {installing || waiting ? (
         <InstallChip task={installing} waiting={waiting} title={s.title} />
       ) : update ? (
-        <button
-          type="button"
-          class="stw-upd"
-          disabled={!canChange}
-          title={t("lib.updateFrom", { version: s.version })}
-          aria-label={t("lib.updateTo", { title: s.title, version: update })}
-          onClick={() => {
-            if (hasUpdatesTab(state))
-              store.set({ side: { kind: "system", id: s.id }, panel: null });
-            else
-              page.foundryAction({
-                action: "updatePackage",
-                packageType: "system",
-                id: s.id,
-              });
-          }}
-        >
-          <Icon name="arrow-up" />
-          {update}
-        </button>
+        <SysUpdateChip s={s} version={update} />
       ) : null}
     </>
   );

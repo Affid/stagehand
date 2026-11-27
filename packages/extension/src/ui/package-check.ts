@@ -6,6 +6,7 @@
 import type { PackageCheck } from "@stagehand/shared/updates/check";
 import type { PackageKind } from "../page-protocol.ts";
 import type { CheckEvent } from "../page-package-check.ts";
+import { checksOf } from "./model/package-updates.ts";
 import type { PageBridge } from "./page.ts";
 import type { CheckView, Store } from "./store.ts";
 
@@ -44,6 +45,20 @@ export function checkOne(deps: CheckDeps, type: PackageKind, id: string): void {
   if (Object.values(deps.store.get().check.one).includes(id)) return;
   const requestId = deps.page.packageCheck({ op: "one", type, id });
   setCheck(deps.store, (c) => ({ ...c, one: { ...c.one, [requestId]: id } }));
+}
+
+/**
+ * Checks one package the check has no result for (a card's chip offered
+ * Foundry's version of it), unless the library's check will bring it.
+ */
+export function checkUnlessKnown(
+  deps: CheckDeps,
+  type: PackageKind,
+  id: string,
+): void {
+  const state = deps.store.get();
+  if (state.check.running || checksOf(state)[id]) return;
+  checkOne(deps, type, id);
 }
 
 /** Stops the check of the library: what came in so far is kept. */

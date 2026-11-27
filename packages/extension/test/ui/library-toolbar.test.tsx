@@ -420,6 +420,26 @@ describe("a system's card and panel (6c)", () => {
     expect(r.store.get().route).toEqual({ kind: "world", worldId: "w1" });
   });
 
+  test("its update chip opens its panel and checks it; nothing installs at once", async () => {
+    const r = library();
+    r.store.set({ updates: { module: {}, system: { dnd5e: "99.0.0" } } });
+    fireEvent.click(r.getByRole("tab", { name: /^Systems/ }));
+    fireEvent.click(
+      await waitFor(() =>
+        r.getByRole("button", {
+          name: "Update Dungeons & Dragons Fifth Edition to 99.0.0",
+        }),
+      ),
+    );
+    expect(r.store.get().side).toEqual({ kind: "system", id: "dnd5e" });
+    expect(r.page.packageCheck).toHaveBeenCalledWith({
+      op: "one",
+      type: "system",
+      id: "dnd5e",
+    });
+    expect(r.page.foundryAction).not.toHaveBeenCalled();
+  });
+
   test("a system no world uses says it is safe to uninstall", () => {
     const base = setupState();
     const r = renderUi("shell", {

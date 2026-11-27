@@ -160,13 +160,14 @@ export function runPosition(run: InstallRun): { at: number; total: number } {
   return { at: Math.min(finished + 1, run.ids.length), total: run.ids.length };
 }
 
-/** A package waiting in the run, or being backed up, before its install. */
+/** A package waiting in the run (backed up or not), or being backed up. */
 export function waitingIn(
   state: Pick<UiState, "install">,
   id: string,
 ): "queued" | "backup" | undefined {
   const s = state.install.running?.states[id];
-  return s === "queued" || s === "backup" ? s : undefined;
+  if (s === "queued" || s === "backedUp") return "queued";
+  return s === "backup" ? s : undefined;
 }
 
 /**

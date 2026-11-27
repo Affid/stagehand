@@ -21,7 +21,7 @@ export function RunState(props: { readonly id: string }) {
   const run = state.install.running;
   const s = run?.states[props.id];
   if (!run || !s) return null;
-  if (s === "queued")
+  if (s === "queued" || s === "backedUp")
     return <span class="spu-st q">{t("upd.st.waiting")}</span>;
   if (s === "backup")
     return (

@@ -6,6 +6,7 @@ import type { PageToUi } from "../../src/page-protocol.ts";
 import {
   checkAll,
   checkOne,
+  checkUnlessKnown,
   stopCheck,
   trackChecks,
 } from "../../src/ui/package-check.ts";
@@ -102,5 +103,37 @@ describe("checking one package", () => {
     const { store, emit } = setup();
     emit(ev({ requestId: "stray", kind: "result", result: result("x") }));
     expect(store.get().check.live).toEqual({});
+  });
+});
+
+describe("checking a package the check knows nothing of", () => {
+  test("a package with no result is checked on its own", () => {
+    const { page, deps } = setup();
+    page.packageCheck.mockReset().mockReturnValue("one1");
+    checkUnlessKnown(deps, "module", "a");
+    expect(page.packageCheck).toHaveBeenCalledWith({
+      op: "one",
+      type: "module",
+      id: "a",
+    });
+  });
+
+  test("not while the library's check runs: it brings the result", () => {
+    const { page, deps } = setup();
+    checkAll(deps);
+    checkUnlessKnown(deps, "module", "a");
+    expect(page.packageCheck).toHaveBeenCalledTimes(1);
+  });
+
+  test("not when the last check has its result", () => {
+    const { store, page, deps } = setup();
+    store.set((s) => ({
+      data: {
+        ...s.data,
+        updatesCheck: { ...s.data.updatesCheck, results: [result("a")] },
+      },
+    }));
+    checkUnlessKnown(deps, "module", "a");
+    expect(page.packageCheck).not.toHaveBeenCalled();
   });
 });

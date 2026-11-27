@@ -17,7 +17,14 @@ export interface InstallRequest {
   readonly backup: boolean;
 }
 
-export const ITEM_STATES = ["backup", "installing", "done", "failed"] as const;
+/** "backedUp": its backup made, waiting for its install. */
+export const ITEM_STATES = [
+  "backup",
+  "backedUp",
+  "installing",
+  "done",
+  "failed",
+] as const;
 export type ItemState = (typeof ITEM_STATES)[number];
 
 export type InstallEvent =

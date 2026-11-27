@@ -104,6 +104,35 @@ describe("a module's update, while Foundry installs it", () => {
   });
 });
 
+describe("a module in our run of updates (phase 3)", () => {
+  test("its chip says backup while it is backed up, then waiting", () => {
+    const r = library();
+    const run = (state: "backup" | "backedUp") => {
+      r.store.set((s) => ({
+        install: {
+          ...s.install,
+          running: {
+            requestId: "i1",
+            ids: ["a"],
+            backup: true,
+            states: { a: state },
+            versions: { a: { from: "1.0.0", to: "1.1.0" } },
+            errors: {},
+          },
+        },
+      }));
+    };
+    void act(() => {
+      run("backup");
+    });
+    expect(el(card(r.container, "a"), ".spu-chip").textContent).toBe("backup");
+    void act(() => {
+      run("backedUp");
+    });
+    expect(el(card(r.container, "a"), ".spu-chip").textContent).toBe("waiting");
+  });
+});
+
 describe("a system's update, while Foundry installs it", () => {
   test("its chip on the Systems tab shows the progress", () => {
     const r = library();

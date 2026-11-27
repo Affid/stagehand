@@ -86,7 +86,18 @@ async function backupAll(
     const ok = await game
       ?.createBackup?.({ type, id, title: titleOf(game, type, id) }, { note })
       .catch(() => false);
-    if (ok === true) continue;
+    if (ok === true) {
+      post({
+        type: "PACKAGE_INSTALL",
+        payload: {
+          requestId: req.requestId,
+          kind: "item",
+          id,
+          state: "backedUp",
+        },
+      });
+      continue;
+    }
     failed.add(id);
     post({
       type: "PACKAGE_INSTALL",

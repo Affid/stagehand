@@ -63,7 +63,9 @@ describe("installing the ticked updates", () => {
     );
     expect(items(posted)).toEqual([
       "lib:backup",
+      "lib:backedUp",
       "a:backup",
+      "a:backedUp",
       "lib:installing",
       "lib:done",
       "a:installing",
@@ -199,6 +201,7 @@ describe("installing the ticked updates", () => {
       "a:backup",
       "a:failed",
       "b:backup",
+      "b:backedUp",
       "b:installing",
       "b:done",
     ]);
