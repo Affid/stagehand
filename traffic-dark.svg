@@ -18,13 +18,13 @@
 <line x1="45.2" x2="768" y1="104" y2="104" stroke="#21262d" stroke-width="1"/>
 <text x="37.2" y="108" font-size="11" fill="#9198a1" text-anchor="end">40</text>
 <text x="45.2" y="286" font-size="11" fill="#9198a1">Nov 10, 2026</text>
-<text x="180.7" y="286" font-size="11" fill="#9198a1" text-anchor="middle">Nov 13</text>
-<text x="316.2" y="286" font-size="11" fill="#9198a1" text-anchor="middle">Nov 16</text>
-<text x="497" y="286" font-size="11" fill="#9198a1" text-anchor="middle">Nov 20</text>
-<text x="632.5" y="286" font-size="11" fill="#9198a1" text-anchor="middle">Nov 23</text>
-<text x="768" y="286" font-size="11" fill="#9198a1" text-anchor="end">Nov 26</text>
-<path d="M45.2 260 L90.4 248 L135.6 152 L180.7 236 L225.9 256 L271.1 248 L316.2 240 L361.4 252 L406.6 240 L451.8 260 L497 256 L542.1 252 L587.3 264 L632.5 252 L677.7 256 L722.8 256 L768 264" fill="none" stroke="#3987e5" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
-<circle cx="768" cy="264" r="4" fill="#3987e5" stroke="#0d1117" stroke-width="2"/>
-<path d="M45.2 232 L90.4 152 L135.6 112 L180.7 124 L225.9 136 L271.1 224 L316.2 208 L361.4 184 L406.6 208 L451.8 188 L497 208 L542.1 128 L587.3 240 L632.5 236 L677.7 168 L722.8 248 L768 256" fill="none" stroke="#d95926" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
-<circle cx="768" cy="256" r="4" fill="#d95926" stroke="#0d1117" stroke-width="2"/>
+<text x="172.8" y="286" font-size="11" fill="#9198a1" text-anchor="middle">Nov 13</text>
+<text x="342.8" y="286" font-size="11" fill="#9198a1" text-anchor="middle">Nov 17</text>
+<text x="470.4" y="286" font-size="11" fill="#9198a1" text-anchor="middle">Nov 20</text>
+<text x="640.4" y="286" font-size="11" fill="#9198a1" text-anchor="middle">Nov 24</text>
+<text x="768" y="286" font-size="11" fill="#9198a1" text-anchor="end">Nov 27</text>
+<path d="M45.2 260 L87.7 248 L130.2 152 L172.8 236 L215.3 256 L257.8 248 L300.3 240 L342.8 252 L385.3 240 L427.9 260 L470.4 256 L512.9 252 L555.4 264 L597.9 252 L640.4 256 L683 256 L725.5 264 L768 260" fill="none" stroke="#3987e5" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="768" cy="260" r="4" fill="#3987e5" stroke="#0d1117" stroke-width="2"/>
+<path d="M45.2 232 L87.7 152 L130.2 112 L172.8 124 L215.3 136 L257.8 224 L300.3 208 L342.8 184 L385.3 208 L427.9 188 L470.4 208 L512.9 128 L555.4 240 L597.9 236 L640.4 168 L683 248 L725.5 256 L768 220" fill="none" stroke="#d95926" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="768" cy="220" r="4" fill="#d95926" stroke="#0d1117" stroke-width="2"/>
 </svg>
